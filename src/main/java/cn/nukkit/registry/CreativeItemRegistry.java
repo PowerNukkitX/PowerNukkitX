@@ -240,11 +240,11 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Determines whether a block should be shown in the creative inventory <p>
      * based on its NBT "menu_category" tag.
      */
-    public boolean shouldBeRegisteredBlock(@NotNull NbtMap nbt) {
-        if (nbt.containsKey("menu_category")) {
-            NbtMap menu = nbt.getCompound("menu_category");
+    public boolean shouldBeRegisteredBlock(@NotNull CompoundTag nbt) {
+        if (nbt.contains("menu_category")) {
+            CompoundTag menu = nbt.getCompound("menu_category");
 
-            if (menu.containsKey("category")) {
+            if (menu.contains("category")) {
                 try {
                     CreativeCategory category = CreativeCategory.valueOf(menu.getString("category").toUpperCase());
                     return category != CreativeCategory.NONE;
@@ -261,12 +261,12 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Determines if a custom item should be registered in creative inventory. <p>
      * Based on the `item_properties.creative_category` component.
      */
-    public boolean shouldBeRegisteredItem(@NotNull NbtMap nbt) {
-        if (nbt.containsKey("components")) {
-            NbtMap components = nbt.getCompound("components");
-            if (components.containsKey("item_properties")) {
-                NbtMap props = components.getCompound("item_properties");
-                if (props.containsKey("creative_category")) {
+    public boolean shouldBeRegisteredItem(@NotNull CompoundTag nbt) {
+        if (nbt.contains("components")) {
+            CompoundTag components = nbt.getCompound("components");
+            if (components.contains("item_properties")) {
+                CompoundTag props = components.getCompound("item_properties");
+                if (props.contains("creative_category")) {
                     int cat = props.getInt("creative_category");
                     return CreativeCategory.fromID(cat) != CreativeCategory.NONE;
                 }
@@ -362,17 +362,17 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         init();
     }
 
-    public int resolveGroupIndexFromBlockDefinition(String identifier, NbtMap nbt) {
-        if (nbt != null && nbt.containsKey("menu_category")) {
-            NbtMap menu = nbt.getCompound("menu_category");
+    public int resolveGroupIndexFromBlockDefinition(String identifier, CompoundTag nbt) {
+        if (nbt != null && nbt.contains("menu_category")) {
+            CompoundTag menu = nbt.getCompound("menu_category");
 
-            if (menu.containsKey("category")) {
+            if (menu.contains("category")) {
                 try {
                     String categoryStr = menu.getString("category");
                     CreativeCategory category = CreativeCategory.valueOf(categoryStr.toUpperCase());
                     Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
 
-                    if (menu.containsKey("group")) {
+                    if (menu.contains("group")) {
                         String groupName = menu.getString("group");
                         boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
 
@@ -424,14 +424,14 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
 
-    public int resolveGroupIndexFromItemDefinition(String identifier, NbtMap nbt) {
-        if (nbt != null && nbt.containsKey("components")) {
-            NbtMap components = nbt.getCompound("components");
+    public int resolveGroupIndexFromItemDefinition(String identifier, CompoundTag nbt) {
+        if (nbt != null && nbt.contains("components")) {
+            CompoundTag components = nbt.getCompound("components");
 
-            if (components.containsKey("item_properties")) {
-                NbtMap itemProps = components.getCompound("item_properties");
+            if (components.contains("item_properties")) {
+                CompoundTag itemProps = components.getCompound("item_properties");
 
-                if (itemProps.containsKey("creative_category")) {
+                if (itemProps.contains("creative_category")) {
                     try {
                         int catId = itemProps.getInt("creative_category");
                         CreativeCategory category = CreativeCategory.fromID(catId);
@@ -440,7 +440,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                         }
 
                         Map<String, Integer> groupMap = CATEGORY_GROUP_INDEX_MAP.getOrDefault(category, Map.of());
-                        String groupName = itemProps.containsKey("creative_group") ? itemProps.getString("creative_group") : "";
+                        String groupName = itemProps.contains("creative_group") ? itemProps.getString("creative_group") : "";
                         boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
 
                         if (!noGroup) {

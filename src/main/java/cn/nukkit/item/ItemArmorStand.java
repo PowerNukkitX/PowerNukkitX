@@ -13,7 +13,6 @@ import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.cloudburstmc.nbt.NbtMap;
 
 import static cn.nukkit.math.CompassRoseDirection.Precision.PRIMARY_INTER_CARDINAL;
 

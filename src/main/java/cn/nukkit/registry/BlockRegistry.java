@@ -16,6 +16,7 @@ import cn.nukkit.block.shelf.*;
 import cn.nukkit.education.Education;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -1370,7 +1371,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                     CUSTOM_BLOCK_DEFINITION_BY_ID.put(customBlock.getId(), customBlock.getDefinition());
                     int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
-                    NbtMap nbt = def.nbt();
+                    CompoundTag nbt = def.nbt();
                     if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
                         ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
                         itemBlock.setNetId(null);

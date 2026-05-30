@@ -37,8 +37,7 @@ import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

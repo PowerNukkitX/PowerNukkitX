@@ -33,7 +33,6 @@ import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.ArrayList;

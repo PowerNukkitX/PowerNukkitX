@@ -2,7 +2,6 @@ package cn.nukkit.level.format;
 
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.List;
 

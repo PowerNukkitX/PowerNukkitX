@@ -3,8 +3,6 @@ package cn.nukkit.level;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.GameRuleData;
 
 import javax.annotation.Nonnull;
@@ -13,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import static cn.nukkit.level.GameRule.*;
 
@@ -157,25 +154,6 @@ public class GameRules {
         return gameRules.keySet().toArray(EMPTY_ARRAY);
     }
 
-    // TODO: This needs to be moved out since there is not a separate compound tag in the LevelDB format for Game Rules.
-    public NbtMap writeNBT() {
-        NbtMapBuilder nbt = NbtMap.builder();
-        for (Entry<GameRule, Value<?>> entry : gameRules.entrySet()) {
-            nbt.putString(entry.getKey().getName(), entry.getValue().value.toString());
-        }
-        return nbt.build();
-    }
-
-    public void readNBT(NbtMap nbt) {
-        Preconditions.checkNotNull(nbt);
-        for (String key : nbt.keySet()) {
-            Optional<GameRule> gameRule = GameRule.parseString(key);
-            if (!gameRule.isPresent()) {
-                continue;
-            }
-            setGameRule(gameRule.get(), nbt.getString(key));
-        }
-    }
 
     public enum Type {
         UNKNOWN,

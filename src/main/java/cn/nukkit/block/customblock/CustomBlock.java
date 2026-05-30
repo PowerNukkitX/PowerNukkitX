@@ -3,6 +3,7 @@ package cn.nukkit.block.customblock;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -85,8 +86,8 @@ public interface CustomBlock {
     default double breakTime(@NotNull Item item, @Nullable Player player) {
         var block = this.toBlock();
         double breakTime = block.calculateBreakTime(item, player);
-        var comp = this.getDefinition().nbt().getCompound("components");
-        if (comp.containsKey("minecraft:destructible_by_mining")) {
+        CompoundTag comp = this.getDefinition().nbt().getCompound("components");
+        if (comp.contains("minecraft:destructible_by_mining")) {
             var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
             if (player != null) {
                 if (player.getLevel().getTick() - player.getLastInAirTick() < 5) {

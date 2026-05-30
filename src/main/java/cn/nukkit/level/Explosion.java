@@ -24,12 +24,11 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -347,7 +346,7 @@ public class Explosion {
         }
 
         int count = smokePositions.size();
-        NbtMapBuilder data = NbtMap.builder()
+        CompoundTag data = new CompoundTag(new Object2ObjectOpenHashMap<>(count, 0.999999f))
                 .putFloat("originX", (float) this.source.x)
                 .putFloat("originY", (float) this.source.y)
                 .putFloat("originZ", (float) this.source.z)
@@ -362,8 +361,7 @@ public class Explosion {
         }
         this.level.addSound(this.source, Sound.RANDOM_EXPLODE);
         this.level.addLevelEvent(this.source, LevelEvent.PARTICLE_EXPLOSION, Math.round((float) this.size));
-        this.level.addLevelEvent(this.source, LevelEvent.PARTICLE_BLOCK_EXPLOSION, data.build());
-
+        this.level.addLevelEvent(this.source, LevelEvent.PARTICLE_BLOCK_EXPLOSION, data);
         return true;
     }
 

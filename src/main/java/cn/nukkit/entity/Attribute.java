@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.payload.attribute.AttributeData;
 
 import java.util.Collection;

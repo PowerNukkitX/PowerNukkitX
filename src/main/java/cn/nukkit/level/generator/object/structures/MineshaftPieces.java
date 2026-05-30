@@ -16,14 +16,12 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntArrayTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -93,14 +91,14 @@ public class MineshaftPieces {
             this.type = type;
         }
 
-        public MineshaftPiece(NbtMap tag) {
+        public MineshaftPiece(CompoundTag tag) {
             super(tag);
             this.type = Type.byId(tag.getInt("MST"));
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
-            return tag.toBuilder().putInt("MST", this.type.ordinal()).build();
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return tag.putInt("MST", this.type.ordinal());
         }
 
         protected BlockState getPlanksBlock() {
@@ -164,9 +162,9 @@ public class MineshaftPieces {
             this.boundingBox = new BoundingBox(x, 50, z, x + 7 + random.nextBoundedInt(6), 54 + random.nextBoundedInt(6), z + 7 + random.nextBoundedInt(6));
         }
 
-        public MineshaftRoom(NbtMap tag) {
+        public MineshaftRoom(CompoundTag tag) {
             super(tag);
-            tag.getList("Entrances", NbtType.INT_ARRAY).forEach(arrayTag -> this.childEntranceBoxes.add(new BoundingBox(arrayTag)));
+            tag.getList("Entrances", IntArrayTag.class).getAll().forEach(arrayTag -> this.childEntranceBoxes.add(new BoundingBox(arrayTag.getData())));
         }
 
         @Override //\\ MineshaftRoom::getType() // 1297306189i64;
@@ -260,13 +258,13 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            List<int[]> entrances = new ObjectArrayList<>();
+            ListTag<IntArrayTag> entrances = new ListTag<>();
             for (BoundingBox childEntranceBox : this.childEntranceBoxes) {
-                entrances.add(childEntranceBox.createTag());
+                entrances.add(new IntArrayTag(childEntranceBox.createTag()));
             }
-            tag.put("Entrances", entrances);
+            tag.putList("Entrances", entrances);
             return tag;
         }
     }
@@ -291,7 +289,7 @@ public class MineshaftPieces {
             }
         }
 
-        public MineshaftCorridor(NbtMap tag) {
+        public MineshaftCorridor(CompoundTag tag) {
             super(tag);
             this.hasRails = tag.getBoolean("hr");
             this.spiderCorridor = tag.getBoolean("sc");
@@ -342,13 +340,13 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("hr", this.hasRails)
+            return tag.putBoolean("hr", this.hasRails)
                     .putBoolean("sc", this.spiderCorridor)
                     .putBoolean("hps", this.hasPlacedSpider)
                     .putInt("Num", this.numSections)
-                    .build();
+                    ;
         }
 
         @Override
@@ -648,7 +646,7 @@ public class MineshaftPieces {
             this.isTwoFloored = boundingBox.getYSpan() > 3;
         }
 
-        public MineshaftCrossing(NbtMap tag) {
+        public MineshaftCrossing(CompoundTag tag) {
             super(tag);
             this.isTwoFloored = tag.getBoolean("tf");
             this.direction = BlockFace.fromHorizontalIndex(tag.getInt("D"));
@@ -693,11 +691,11 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("tf", this.isTwoFloored)
+            return tag.putBoolean("tf", this.isTwoFloored)
                     .putInt("D", this.direction.getHorizontalIndex())
-                    .build();
+                    ;
         }
 
         @Override
@@ -790,7 +788,7 @@ public class MineshaftPieces {
             this.boundingBox = boundingBox;
         }
 
-        public MineshaftStairs(NbtMap tag) {
+        public MineshaftStairs(CompoundTag tag) {
             super(tag);
         }
 

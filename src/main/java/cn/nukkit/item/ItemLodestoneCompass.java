@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.Server;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.positiontracking.NamedPosition;
-import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

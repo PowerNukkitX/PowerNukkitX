@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.ItemHelper;
-import org.cloudburstmc.nbt.NbtMap;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import java.util.ArrayList;
@@ -44,8 +44,8 @@ public class FireworkBuilder {
         this.fireworkRandom = new Random();
     }
 
-    public FireworkBuilder addExplosion(NbtMap explosion) {
-        this.explosions.add(CompoundTag.fromNetwork(explosion));
+    public FireworkBuilder addExplosion(CompoundTag explosion) {
+        this.explosions.add(explosion);
         return this;
     }
 

@@ -6,7 +6,6 @@ import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.cloudburstmc.nbt.NbtMap;
 
 public class CreatureSpawnEvent extends Event implements Cancellable {
 

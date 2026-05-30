@@ -10,10 +10,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.StructureRotationUtil;
 import cn.nukkit.utils.random.RandomSourceProvider;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import javax.annotation.Nullable;
@@ -39,9 +38,9 @@ public abstract class StructurePiece {
         this.genDepth = genDepth;
     }
 
-    public StructurePiece(NbtMap tag) {
+    public StructurePiece(CompoundTag tag) {
         this(tag.getInt("GD"));
-        if (tag.containsKey("BB")) {
+        if (tag.contains("BB")) {
             this.boundingBox = new BoundingBox(tag.getIntArray("BB"));
         }
         int orientation = tag.getInt("O");
@@ -63,17 +62,17 @@ public abstract class StructurePiece {
         return piece;
     }
 
-    public final NbtMap createTag() {
+    public final CompoundTag createTag() {
         BlockFace orientation = this.getOrientation();
-        NbtMapBuilder tag = NbtMap.builder()
+        CompoundTag tag = new CompoundTag()
                 .putString("id", this.getType())
                 .putIntArray("BB", this.boundingBox.createTag())
                 .putInt("O", orientation == null ? -1 : orientation.getHorizontalIndex())
                 .putInt("GD", this.genDepth);
-        return this.addAdditionalSaveData(tag.build());
+        return this.addAdditionalSaveData(tag);
     }
 
-    protected abstract NbtMap addAdditionalSaveData(NbtMap tag);
+    protected abstract CompoundTag addAdditionalSaveData(CompoundTag tag);
 
     public void addChildren(StructurePiece piece, List<StructurePiece> pieces, RandomSourceProvider random) {
         //NOOP

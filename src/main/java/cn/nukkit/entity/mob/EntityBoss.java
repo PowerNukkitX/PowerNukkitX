@@ -6,7 +6,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
 import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 

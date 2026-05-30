@@ -21,11 +21,9 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
-import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class ShulkerAttackExecutor implements IBehaviorExecutor {

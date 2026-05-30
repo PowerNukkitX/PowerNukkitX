@@ -810,7 +810,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             CUSTOM_ITEM_DEFINITIONS.put(key, def);
             Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
 
-            NbtMap nbt = def.nbt().toNetwork();
+            CompoundTag nbt = def.nbt();
             if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
                 Item ci = (Item) customItem;
                 ci.setNetId(null);
@@ -832,7 +832,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         int rid = CustomItemDefinition.ensureRuntimeIdAllocated(eggId);
         Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(eggId, rid, false));
 
-        NbtMap nbt = def.nbt().toNetwork();
+        CompoundTag nbt = def.nbt();
         if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
             Item ci = this.get(eggId, 0);
             if (ci != null) {

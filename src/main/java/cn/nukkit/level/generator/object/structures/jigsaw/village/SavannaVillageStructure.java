@@ -15,7 +15,6 @@ import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePool;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
-import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.ArrayList;
 import java.util.List;

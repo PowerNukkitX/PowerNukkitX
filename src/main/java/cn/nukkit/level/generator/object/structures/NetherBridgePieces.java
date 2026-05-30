@@ -14,10 +14,10 @@ import cn.nukkit.level.generator.object.structures.utils.LiquidUpdater;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
-import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -123,7 +123,7 @@ public class NetherBridgePieces {
             super(genDepth);
         }
 
-        public NetherBridgePiece(NbtMap tag) {
+        public NetherBridgePiece(CompoundTag tag) {
             super(tag);
         }
 
@@ -132,7 +132,7 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             //NOOP
             return tag;
         }
@@ -289,7 +289,7 @@ public class NetherBridgePieces {
             }
         }
 
-        public StartPiece(NbtMap tag) {
+        public StartPiece(CompoundTag tag) {
             super(tag);
             this.pendingChildren = Lists.newArrayList();
         }
@@ -308,7 +308,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public BridgeStraight(NbtMap tag) {
+        public BridgeStraight(CompoundTag tag) {
             super(tag);
         }
 
@@ -371,7 +371,7 @@ public class NetherBridgePieces {
             this.selfSeed = random.nextInt();
         }
 
-        public BridgeEndFiller(NbtMap tag) {
+        public BridgeEndFiller(CompoundTag tag) {
             super(tag);
             this.selfSeed = tag.getInt("Seed");
         }
@@ -388,9 +388,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag=super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putInt("Seed", this.selfSeed).build();
+            return tag.putInt("Seed", this.selfSeed);
         }
 
         @Override
@@ -434,7 +434,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public BridgeCrossing(NbtMap tag) {
+        public BridgeCrossing(CompoundTag tag) {
             super(tag);
         }
 
@@ -506,7 +506,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public RoomCrossing(NbtMap tag) {
+        public RoomCrossing(CompoundTag tag) {
             super(tag);
         }
 
@@ -567,7 +567,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public StairsRoom(NbtMap tag) {
+        public StairsRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -629,7 +629,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public MonsterThrone(NbtMap tag) {
+        public MonsterThrone(CompoundTag tag) {
             super(tag);
             this.hasPlacedSpawner = tag.getBoolean("Mob");
         }
@@ -646,9 +646,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag=super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("Mob", this.hasPlacedSpawner).build();
+            return tag.putBoolean("Mob", this.hasPlacedSpawner);
         }
 
         @Override
@@ -718,7 +718,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleEntrance(NbtMap tag) {
+        public CastleEntrance(CompoundTag tag) {
             super(tag);
         }
 
@@ -824,7 +824,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleStalkRoom(NbtMap tag) {
+        public CastleStalkRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -966,7 +966,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleSmallCorridorPiece(NbtMap tag) {
+        public CastleSmallCorridorPiece(CompoundTag tag) {
             super(tag);
         }
 
@@ -1016,7 +1016,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleSmallCorridorCrossingPiece(NbtMap tag) {
+        public CastleSmallCorridorCrossingPiece(CompoundTag tag) {
             super(tag);
         }
 
@@ -1069,7 +1069,7 @@ public class NetherBridgePieces {
             this.isNeedingChest = (random.nextBoundedInt(3) == 0);
         }
 
-        public CastleSmallCorridorRightTurnPiece(NbtMap tag) {
+        public CastleSmallCorridorRightTurnPiece(CompoundTag tag) {
             super(tag);
             this.isNeedingChest = tag.getBoolean("Chest");
         }
@@ -1086,9 +1086,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag=super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("Chest", this.isNeedingChest).build();
+            return tag.putBoolean("Chest", this.isNeedingChest);
         }
 
         @Override
@@ -1151,7 +1151,7 @@ public class NetherBridgePieces {
             this.isNeedingChest = (random.nextBoundedInt(3) == 0);
         }
 
-        public CastleSmallCorridorLeftTurnPiece(NbtMap tag) {
+        public CastleSmallCorridorLeftTurnPiece(CompoundTag tag) {
             super(tag);
             this.isNeedingChest = tag.getBoolean("Chest");
         }
@@ -1170,9 +1170,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag=super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("Chest", this.isNeedingChest).build();
+            return tag.putBoolean("Chest", this.isNeedingChest);
         }
 
         @Override
@@ -1232,7 +1232,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleCorridorStairsPiece(NbtMap tag) {
+        public CastleCorridorStairsPiece(CompoundTag tag) {
             super(tag);
         }
 
@@ -1292,7 +1292,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleCorridorTBalconyPiece(NbtMap tag) {
+        public CastleCorridorTBalconyPiece(CompoundTag tag) {
             super(tag);
         }
 

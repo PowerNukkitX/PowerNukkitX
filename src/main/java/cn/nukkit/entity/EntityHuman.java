@@ -10,8 +10,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
+
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
 import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
@@ -29,7 +29,6 @@ import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 

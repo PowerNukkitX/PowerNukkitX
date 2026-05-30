@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author MagicDroidX (Nukkit Project)

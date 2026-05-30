@@ -1,13 +1,11 @@
 package cn.nukkit.level.generator.object.structures.utils;
 
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 
 import java.util.List;
 
@@ -55,20 +53,20 @@ public abstract class StructureStart {
         }
     }
 
-    public final NbtMap createTag() {
-        NbtMapBuilder tag = NbtMap.builder()
+    public final CompoundTag createTag() {
+        CompoundTag tag = new CompoundTag()
                 .putString("id", this.getType())
                 .putInt("ChunkX", this.chunkX)
                 .putInt("ChunkZ", this.chunkZ)
                 .putIntArray("BB", this.boundingBox.createTag());
 
-        List<NbtMap> children = new ObjectArrayList<>();
+        ListTag<CompoundTag> children = new ListTag<>();
         for (StructurePiece piece : this.pieces) {
             children.add(piece.createTag());
         }
-        tag.putList("Children", NbtType.COMPOUND, children);
+        tag.putList("Children", children);
 
-        return tag.build();
+        return tag;
     }
 
     protected void moveBelowSeaLevel(RandomSourceProvider random, int min) {

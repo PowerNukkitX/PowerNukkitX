@@ -157,7 +157,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         try (var stream = getClass().getClassLoader().getResourceAsStream("structures/" + name + ".nbt")) {
             if (stream == null) return null;
             try (final NBTInputStream inputStream = NbtUtils.createReader(stream)) {
-                return JeStructure.fromNbt((NbtMap) inputStream.readTag());
+                return JeStructure.fromNbt(CompoundTag.fromNetwork((NbtMap) inputStream.readTag()));
             }
         } catch (Exception e) {
             sender.sendMessage(e.getMessage());

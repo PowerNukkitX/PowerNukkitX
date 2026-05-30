@@ -57,7 +57,7 @@ public class ItemHelper {
         if (tag.contains("version")) {
             int ver = tag.getInt("version");
             if (ver < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
-                tag = CompoundTag.fromNetwork(ItemUpdaters.updateItem(tag.toNetwork(), NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION));
+                tag = ItemUpdaters.updateItem(tag, NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION);
                 name = tag.getString("Name");
             }
         }

@@ -91,8 +91,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
@@ -779,10 +777,10 @@ public class Level implements Metadatable {
         addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
     }
 
-    public void addLevelEvent(Vector3 pos, LevelEventType type, NbtMap data) {
+    public void addLevelEvent(Vector3 pos, LevelEventType type, CompoundTag data) {
         final LevelEventGenericPacket packet = new LevelEventGenericPacket();
         packet.setType(type);
-        packet.setTag(data);
+        packet.setTag(data.toNetwork());
 
         this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), packet);
     }
@@ -2834,7 +2832,7 @@ public class Level implements Metadatable {
                 CustomBlockDefinition def = target.getCustomDefinition();
                 if (def != null) {
                     var comp = def.nbt().getCompound("components");
-                    if (comp.containsKey("minecraft:destructible_by_mining")) {
+                    if (comp.contains("minecraft:destructible_by_mining")) {
                         var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
                         breakTime = Math.min(breakTime, clientBreakTime);
                     }

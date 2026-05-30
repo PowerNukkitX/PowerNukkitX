@@ -23,6 +23,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
@@ -30,8 +32,7 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -358,8 +359,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public double getFrictionFactor() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap comp = def.getComponents().getCompound("minecraft:friction");
-            if (comp != null && comp.containsKey("value")) {
+            CompoundTag comp = def.getComponents().getCompound("minecraft:friction");
+            if (comp != null && comp.contains("value")) {
                 return comp.getFloat("value");
             }
         }
@@ -393,8 +394,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public int getLightLevel() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap light = def.getComponents().getCompound("minecraft:light_emission");
-            if (light != null && light.containsKey("emission")) {
+            CompoundTag light = def.getComponents().getCompound("minecraft:light_emission");
+            if (light != null && light.contains("emission")) {
                 return light.getByte("emission");
             }
         }
@@ -555,10 +556,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean canBeActivated() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap components = def.getComponents();
-            if (components != null && components.containsKey("minecraft:custom_components")) {
-                NbtMap custom = components.getCompound("minecraft:custom_components");
-                if (custom.containsKey("hasPlayerInteract")) {
+            CompoundTag components = def.getComponents();
+            if (components != null && components.contains("minecraft:custom_components")) {
+                CompoundTag custom = components.getCompound("minecraft:custom_components");
+                if (custom.contains("hasPlayerInteract")) {
                     return custom.getByte("hasPlayerInteract") != 0;
                 }
             }
@@ -758,10 +759,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean hasTag(final String blockTag) {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap nbt = def.nbt();
-            if (nbt.containsKey("blockTags")) {
-                List<String> tagList = nbt.getList("blockTags", NbtType.STRING);
-                return tagList.stream().anyMatch(blockTag::equals);
+            CompoundTag nbt = def.nbt();
+            if (nbt.contains("blockTags")) {
+                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
+                return tagList.getAll().stream().anyMatch(t -> blockTag.equals(t.data));
             }
         }
 
@@ -774,10 +775,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public String[] getTags() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap nbt = def.nbt();
-            if (nbt.containsKey("blockTags")) {
-                List<String> tagList = nbt.getList("blockTags", NbtType.STRING);
-                return tagList.toArray(String[]::new);
+            CompoundTag nbt = def.nbt();
+            if (nbt.contains("blockTags")) {
+                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
+                return tagList.getAll().stream()
+                        .map(tag -> tag.data)
+                        .toArray(String[]::new);
             }
         }
 
@@ -1056,8 +1059,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean canBeMinedWith(Item item) {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap mining = def.getComponents().getCompound("minecraft:destructible_by_mining");
-            if (mining != null && mining.containsKey("value")) {
+            CompoundTag mining = def.getComponents().getCompound("minecraft:destructible_by_mining");
+            if (mining != null && mining.contains("value")) {
                 float secondsToDestroy = mining.getFloat("value");
                 return secondsToDestroy != -1f;
             }
@@ -1071,13 +1074,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean canBeExploded() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap resistance = def.getComponents().getCompound("minecraft:destructible_by_explosion");
+            CompoundTag resistance = def.getComponents().getCompound("minecraft:destructible_by_explosion");
             int resistanceValue = resistance.getInt("explosion_resistance");
             return resistanceValue != -1;
         }
         return this.getResistance() != -1;
     }
-
     public Block getTickCachedSide(BlockFace face) {
         return getTickCachedSideAtLayer(layer, face);
     }
@@ -1279,7 +1281,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     protected AxisAlignedBB recalculateBoundingBox() {
         try {
             CustomBlockDefinition def = getCustomDefinition();
-            if (def != null && def.getComponents().containsKey("minecraft:collision_box")) {
+            if (def != null && def.getComponents().contains("minecraft:collision_box")) {
                 AxisAlignedBB box = def.getBoundingBox(this);
                 if (box != null) return box;
             }
@@ -1700,8 +1702,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public int getLightFilter() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            NbtMap light = def.getComponents().getCompound("minecraft:light_dampening");
-            if (light != null && light.containsKey("lightLevel")) {
+            CompoundTag light = def.getComponents().getCompound("minecraft:light_dampening");
+            if (light != null && light.contains("lightLevel")) {
                 return light.getByte("lightLevel");
             }
         }

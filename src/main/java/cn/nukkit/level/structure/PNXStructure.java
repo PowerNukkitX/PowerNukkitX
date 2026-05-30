@@ -4,13 +4,13 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.StructureRotationUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
 import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
@@ -47,17 +47,17 @@ public class PNXStructure extends AbstractStructure {
         return new BlockVector3(sizeX, sizeY, sizeZ);
     }
 
-    public static PNXStructure fromNbt(NbtMap nbt) {
+    public static PNXStructure fromNbt(CompoundTag nbt) {
         int[] sizeNbt = nbt.getIntArray("size");
         int sizeX = sizeNbt.length > 0 ? sizeNbt[0] : 0;
         int sizeY = sizeNbt.length > 1 ? sizeNbt[1] : 0;
         int sizeZ = sizeNbt.length > 2 ? sizeNbt[2] : 0;
 
         // --- palette (direct BlockState array) ---
-        List<Integer> paletteNbt = nbt.getList("palette", NbtType.INT);
+        List<IntTag> paletteNbt = nbt.getList("palette", IntTag.class).getAll();
         BlockState[] palette = new BlockState[paletteNbt.size()];
         for (int i = 0; i < paletteNbt.size(); i++) {
-            int hash = paletteNbt.get(i);
+            int hash = paletteNbt.get(i).getData();
             BlockState state = Registries.BLOCKSTATE.get(hash);
             if (state == null) {
                 log.warn("Unknown block state hash in structure palette: {}", hash);
@@ -68,11 +68,11 @@ public class PNXStructure extends AbstractStructure {
 
         // --- blocks (raw indices) ---
         byte[] blocks = nbt.getByteArray("blocks");
-        Jigsaw[] jigsaws = nbt.getList("jigsaw", NbtType.COMPOUND).stream().map(Jigsaw::new).toArray(Jigsaw[]::new);
+        Jigsaw[] jigsaws = nbt.getList("jigsaw", CompoundTag.class).getAll().stream().map(Jigsaw::new).toArray(Jigsaw[]::new);
         return new PNXStructure(sizeX, sizeY, sizeZ, palette, blocks, jigsaws);
     }
 
-    public static CompletableFuture<PNXStructure> fromNbtAsync(NbtMap nbt) {
+    public static CompletableFuture<PNXStructure> fromNbtAsync(CompoundTag nbt) {
         return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
     }
 
@@ -270,7 +270,7 @@ public class PNXStructure extends AbstractStructure {
     }
 
     @Override
-    public NbtMap toNBT() {
+    public CompoundTag toNBT() {
         // implement if saving back needed
         return null;
     }
@@ -318,7 +318,7 @@ public class PNXStructure extends AbstractStructure {
         private int placementPriority;
         private int selectionPriority;
 
-        public Jigsaw(NbtMap tag) {
+        public Jigsaw(CompoundTag tag) {
             int[] pos = tag.getIntArray("pos");
             this.x = pos[0];
             this.y = pos[1];
@@ -328,8 +328,8 @@ public class PNXStructure extends AbstractStructure {
             this.joint = tag.getString("joint");
             this.pool = tag.getString("pool");
             this.target = tag.getString("target");
-            this.placementPriority = tag.containsKey("placement_priority") ? tag.getInt("placement_priority") : 0;
-            this.selectionPriority = tag.containsKey("selection_priority") ? tag.getInt("selection_priority") : 0;
+            this.placementPriority = tag.contains("placement_priority") ? tag.getInt("placement_priority") : 0;
+            this.selectionPriority = tag.contains("selection_priority") ? tag.getInt("selection_priority") : 0;
         }
 
         public Jigsaw withPosition(int x, int y, int z) {
