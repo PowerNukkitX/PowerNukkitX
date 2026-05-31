@@ -291,6 +291,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 Block siteBlock = getMemoryStorage().get(CoreMemoryTypes.SITE_BLOCK);
                                 if (siteBlock != null && !siteBlock.getLevelBlock().getId().equals(siteBlock.getId())) {
                                     getMemoryStorage().clear(CoreMemoryTypes.SITE_BLOCK);
+                                    if (getTradeExp() == 0) {
+                                        setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
+                                    }
                                 }
 
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.SITE_BLOCK)) {
