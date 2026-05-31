@@ -192,7 +192,7 @@ public class EntityHuman extends EntityHumanType {
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
             this.actorDataMap.put(RESERVED_139, 0L);
-            this.actorDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 0L);
+            this.actorDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX,  64.0f);
 
             final AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
             addPlayerPacket.setActorData(this.actorDataMap);
