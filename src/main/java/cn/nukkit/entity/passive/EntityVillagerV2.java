@@ -40,6 +40,7 @@ import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.mob.EntityIronGolem;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -573,6 +574,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             pk.setTargetRuntimeID(this.getId());
             pk.setType(ActorEvent.VILLAGER_ANGRY);
             Server.broadcastPacket(getViewers().values(), pk);
+            for (Entity e : getLevel().getCollidingEntities(getBoundingBox().grow(48, 8, 48))) {
+                if (e instanceof EntityIronGolem golem && golem.isAlive() && !golem.hasOwner(false)) {
+                    golem.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, player);
+                }
+            }
             return true;
         }
 
