@@ -294,6 +294,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private boolean hasSeenCredits;
     private boolean wasInSoulSandCompatible;
     private float soulSpeedMultiplier = 1;
+    private float walkSpeed = 1;
     private Entity killer = null;
     private TaskHandler delayedPosTrackingUpdate;
     protected boolean showingCredits;
@@ -4140,11 +4141,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    @Override
+    public float getWalkSpeed() {
+        return this.walkSpeed;
+    }
+
+    /**
+     * Sets the walk speed multiplier
+     * @param speed
+     */
+    @Override
+    public void setWalkSpeed(float speed) {
+        this.walkSpeed = speed;
+        recalcMovementSpeedFromEffects();
+    }
+
     /**
      * send=true
      *
      * @see #setMovementSpeed(float, boolean)
      */
+    @ApiStatus.Internal
     @Override
     public void setMovementSpeed(float speed) {
         setMovementSpeed(speed, true);
@@ -4152,25 +4169,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Set the movement speed of this player.
+     * Will be overwritten internally.
      *
+     * @see #setWalkSpeed(float)
      * @param speed Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
      * @param send  Whether to send {@link UpdateAttributesPacket} to the client
      */
+    @ApiStatus.Internal
     public void setMovementSpeed(float speed, boolean send) {
-        super.setMovementSpeed(speed);
-        if (this.spawned && send) {
-            this.sendMovementSpeed(speed);
+        float speedCorrected = speed * getWalkSpeed();
+        if(speedCorrected != getMovementSpeed()) {
+            super.setMovementSpeed(speedCorrected);
+            if (this.spawned && send) {
+                this.sendMovementSpeed();
+            }
         }
     }
 
     /**
      * Send {@link Attribute#MOVEMENT_SPEED} Attribute to Client.
-     *
-     * @param speed the speed value
      */
-    public void sendMovementSpeed(float speed) {
+    @ApiStatus.Internal
+    public void sendMovementSpeed() {
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.MOVEMENT_SPEED, Attribute::getAttribute);
-        attribute.setValue(speed);
+        attribute.setValue(getMovementSpeed());
         this.syncAttribute(attribute);
     }
 

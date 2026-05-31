@@ -708,6 +708,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return 0;
     }
 
+    public float getWalkSpeed() {
+        return this.getMovementSpeed();
+    }
+
+    public void setWalkSpeed(float speed) {
+        this.setMovementSpeed(speed);
+    }
+
     /**
      * Set the movement speed of this Entity.
      *
