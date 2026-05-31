@@ -267,7 +267,7 @@ public class Palette<V> {
                     // this way the only possibility is that the block hash is not represented in block_palette.nbt
                     if (resultingBlockState == null || Objects.equals(resultingBlockState, unknownState)) {
                         resultingBlockState = unknownState;
-                        log.warn("Block State updating failed, blockHash: {}, oldBlockState: {}, newBlockState: {}, blockTag: {}", hash, oldBlockNbt, newBlockNbt, blockTag);
+                        log.debug("Block State updating failed, blockHash: {}, oldBlockState: {}, newBlockState: {}, blockTag: {}", HashUtils.fnv1a_32_nbt(oldBlockNbt), oldBlockNbt, newBlockNbt, blockTag);
                     }
                 }
             }
