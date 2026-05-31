@@ -48,7 +48,9 @@ public abstract class ItemSpear extends ItemTool {
 
         applyLunge(player);
 
-        if (movementSpeed < MINIMUM_SPEED || !player.isSprinting()) {
+        Entity riding = player.getRiding();
+
+        if (movementSpeed < MINIMUM_SPEED || (!player.isSprinting() && riding == null)) {
             SoundEvent missSound = getMissSound();
             if (missSound != null) {
                 player.getLevel().addLevelSoundEvent(player.getPosition(), missSound);
@@ -63,7 +65,7 @@ public abstract class ItemSpear extends ItemTool {
         Vector3 direction = player.getDirectionVector().normalize();
 
         double maxDistance = 5.0;
-        double minDot = 0.866;
+        double minDot = riding != null ? 0.75 : 0.866;
         double bestScore = -1;
 
         Entity target = null;
@@ -71,6 +73,7 @@ public abstract class ItemSpear extends ItemTool {
         AxisAlignedBB searchBox = player.getBoundingBox().grow(maxDistance, maxDistance, maxDistance);
 
         for (Entity entity : level.getNearbyEntities(searchBox, player)) {
+            if (entity == riding) continue;
             if (!(entity instanceof EntityLiving living) || !living.isAlive()) continue;
 
             Vector3 targetPos = entity.getPosition().add(0, living.getEyeHeight() * 0.5, 0);
@@ -169,7 +172,10 @@ public abstract class ItemSpear extends ItemTool {
         if (!player.isItemCoolDownEnd(this.getIdentifier())) return;
 
         player.setItemCoolDown(5, this.getIdentifier());
-        float playerSpeed = player.getMovementSpeed();
+        Entity riding = player.getRiding();
+        float playerSpeed = riding != null
+                ? (float) riding.getMotion().length()
+                : player.getMovementSpeed();
 
         if (playerSpeed < MINIMUM_SPEED) {
             return;
@@ -188,6 +194,7 @@ public abstract class ItemSpear extends ItemTool {
         double closestDistance = Double.MAX_VALUE;
 
         for (Entity entity : level.getNearbyEntities(hitBox, player)) {
+            if (entity == riding) continue;
             if (!(entity instanceof EntityLiving living) || !living.isAlive()) {
                 continue;
             }
