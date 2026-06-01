@@ -98,7 +98,6 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.process.auth.ClientChainData;
-import cn.nukkit.network.process.pack.InternalPackManager;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -379,9 +378,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * </p>
      */
     protected EnumSet<ClientInputLockComponent> clientInputLocks = EnumSet.noneOf(ClientInputLockComponent.class);
-    @ApiStatus.Internal
-    @Getter
-    private final InternalPackManager internalPackManager;
 
     @UsedByReflection
     public Player(@NotNull BedrockServerSession session, @NotNull PlayerInfo info) {
@@ -416,7 +412,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
         this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
         this.movementDistanceThreshold = this.server.getSettings().playerSettings().movementDistanceThreshold();
-        this.internalPackManager = new InternalPackManager(this.session, this.server);
     }
 
     /**

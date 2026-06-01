@@ -9,6 +9,7 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.TrimData;
+import cn.nukkit.network.process.pack.InternalPackManager;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
@@ -79,8 +80,16 @@ public class PlayerSessionHolder {
     @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
     private long lastWarnTime;
+    private InternalPackManager internalPackManager;
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
+
+    public InternalPackManager getInternalPackManager() {
+        if (this.internalPackManager == null) {
+            this.internalPackManager = new InternalPackManager(this.session, Server.getInstance());
+        }
+        return this.internalPackManager;
+    }
 
     public boolean checkRateLimits(Server server) {
         if (this.getRateLimitSettings().rateLimitEnabled()) {
@@ -164,7 +173,7 @@ public class PlayerSessionHolder {
     }
 
     public void sendBeforeSpawn(Server server) {
-        this.doPlayerCreation(this.playerInfo);
+        this.doPlayerCreation();
         this.setState(SessionState.BEFORE_SPAWN);
         this.session.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
         this.sendStartGame(server);
@@ -223,8 +232,6 @@ public class PlayerSessionHolder {
         cameraAimAssistPresetsPacket.getPresets().addAll(DefaultCameraAimAssistPresets.getAllPresets());
         cameraAimAssistPresetsPacket.setOperation(CameraAimAssistPresetPacketOperation.SET);
         this.session.sendPacketImmediately(cameraAimAssistPresetsPacket);
-
-        this.playerHandle.doFirstSpawn();
     }
 
     private void sendStartGame(Server server) {
@@ -353,7 +360,7 @@ public class PlayerSessionHolder {
         this.player.sendPacketImmediately(itemRegistryPacket);
     }
 
-    public void doPlayerCreation(Player.PlayerInfo playerInfo) {
+    public void doPlayerCreation() {
         log.debug("Creating player");
 
         this.player = this.createPlayer(playerInfo);

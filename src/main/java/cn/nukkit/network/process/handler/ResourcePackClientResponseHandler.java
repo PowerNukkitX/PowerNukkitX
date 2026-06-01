@@ -46,7 +46,7 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                     final int maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
                     final int chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) maxChunkSize);
 
-                    holder.getPlayer().getInternalPackManager().registerPack(uuid, resourcePack, maxChunkSize, chunkCount);
+                    holder.getInternalPackManager().registerPack(resourcePack, maxChunkSize, chunkCount);
 
                     final ResourcePackDataInfoPacket resourcePackDataInfoPacket = new ResourcePackDataInfoPacket();
                     resourcePackDataInfoPacket.setPackId(resourcePack.getPackId());
@@ -67,7 +67,7 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                         Arrays.stream(server.getResourcePackManager().getResourceStack())
                                 .map(resourcePack ->
                                         new PackInstanceId(
-                                                resourcePack.getPackId() + "_" + resourcePack.getPackVersion(),
+                                                resourcePack.getPackId().toString(),
                                                 resourcePack.getPackVersion(),
                                                 resourcePack.getSubPackName()
                                         )

@@ -20,6 +20,7 @@ public class PacketHandlerRegistry {
         register(LoginPacket.class, new LoginHandler());
         register(ClientToServerHandshakePacket.class, new ClientToServerHandshakeHandler());
         register(ResourcePackClientResponsePacket.class, new ResourcePackClientResponseHandler());
+        register(ResourcePackChunkRequestPacket.class, new ResourcePackChunkRequestHandler());
         register(RequestChunkRadiusPacket.class, new RequestChunkRadiusHandler());
         register(SetLocalPlayerAsInitializedPacket.class, new SetLocalPlayerAsInitializedHandler());
         register(PlayerAuthInputPacket.class, new PlayerAuthInputHandler());

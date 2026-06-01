@@ -51,16 +51,13 @@ public class InternalPackManager {
     private final Map<UUID, PackMeta> packs = new HashMap<>();
     private final ArrayDeque<UUID> packOrder = new ArrayDeque<>();
     private UUID activePack = null;
-    private final Queue<ResourcePackChunkRequestPacket> chunkRequestQueue = new ArrayDeque<>();
     private volatile boolean draining = false;
 
-    public void registerPack(UUID uuid, ResourcePack resourcePack, int maxChunkSize, int chunkCount) {
+    public void registerPack(ResourcePack resourcePack, int maxChunkSize, int chunkCount) {
         this.packs.put(resourcePack.getPackId(), new InternalPackManager.PackMeta(resourcePack.getPackId(), resourcePack, maxChunkSize, chunkCount));
     }
 
     public void handleChunkRequest(ResourcePackChunkRequestPacket pk) {
-        chunkRequestQueue.add(pk);
-
         PackMeta meta = packs.get(pk.getPackId());
         if (meta == null) {
             var mgr = server.getResourcePackManager();
