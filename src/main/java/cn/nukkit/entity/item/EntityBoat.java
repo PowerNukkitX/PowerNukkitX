@@ -248,6 +248,27 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    public void updateMovement() {
+        if (passengers.isEmpty()) {
+            double drag = isBoatInWater() ? 0.75d : 0.25d;
+            motionX *= drag;
+            motionZ *= drag;
+            if (Math.abs(motionX) < 0.00001d) motionX = 0d;
+            if (Math.abs(motionZ) < 0.00001d) motionZ = 0d;
+        } else {
+            double riderMotionX = this.x - this.lastX;
+            double riderMotionZ = this.z - this.lastZ;
+            double motionSquared = (riderMotionX * riderMotionX) + (riderMotionZ * riderMotionZ);
+            if (motionSquared > 0.00001d && motionSquared <= 9d
+                    && Double.isFinite(riderMotionX) && Double.isFinite(riderMotionZ)) {
+                this.motionX = riderMotionX;
+                this.motionZ = riderMotionZ;
+            }
+        }
+        super.updateMovement();
+    }
+
+    @Override
     public boolean canCollideWith(Entity entity) {
         return super.canCollideWith(entity) && !isPassenger(entity);
     }
@@ -262,7 +283,9 @@ public class EntityBoat extends EntityVehicle {
 
         Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
 
-        move(this.motionX, this.motionY, this.motionZ);
+        if(passengers.isEmpty()) {
+            move(this.motionX, this.motionY, this.motionZ);
+        }
 
         Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
 
