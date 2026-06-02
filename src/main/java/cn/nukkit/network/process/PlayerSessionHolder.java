@@ -157,7 +157,7 @@ public class PlayerSessionHolder {
                         resourcePack.getPackSize(),
                         resourcePack.getEncryptionKey(),
                         resourcePack.getSubPackName(),
-                        resourcePack.getEncryptionKey(),
+                        !resourcePack.getEncryptionKey().isEmpty() ? resourcePack.getPackId().toString() : "",
                         resourcePack.usesScript(),
                         resourcePack.isRaytracingCapable(),
                         resourcePack.isAddonPack(),
