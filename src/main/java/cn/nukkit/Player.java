@@ -1389,6 +1389,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //level spawn point < block spawn = self spawn
         Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
+        //spawn level may have been unloaded/closed (e.g. dynamic worlds), fall back to default
+        Position spawnPos = spawnPair.left();
+        if (spawnPos == null || spawnPos.level == null || spawnPos.level.getProvider() == null) {
+            Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
+            this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
+            spawnPair = Pair.of(defaultSpawn, SpawnPointType.WORLD);
+        }       
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
         if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
             Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
