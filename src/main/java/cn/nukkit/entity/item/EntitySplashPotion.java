@@ -34,7 +34,7 @@ public class EntitySplashPotion extends EntityProjectile {
 
     public static final int DATA_POTION_ID = 37;
 
-    public int potionId;
+    public short potionId;
 
     public EntitySplashPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
