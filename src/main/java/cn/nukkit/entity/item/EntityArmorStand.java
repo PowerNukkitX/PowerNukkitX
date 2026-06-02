@@ -108,6 +108,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         this.equipmentInventory = new EntityEquipmentInventory(this);
         this.armorInventory = new EntityArmorInventory(this);
+        this.actorDataMap.putIfAbsent(ActorDataTypes.HURT, 0);
+        this.actorDataMap.putIfAbsent(ActorDataTypes.POSE_INDEX, 0);
 
         final CompoundTag nbtMap = this.getNbt();
         if (nbtMap.contains(TAG_MAINHAND)) {
@@ -330,7 +332,13 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     private int getPose() {
-        return this.actorDataMap.get(ActorDataTypes.POSE_INDEX);
+        Integer pose = this.actorDataMap.get(ActorDataTypes.POSE_INDEX);
+        return pose == null ? 0 : pose;
+    }
+
+    private int getHurtTicks() {
+        Integer hurt = this.getDataProperty(ActorDataTypes.HURT);
+        return hurt == null ? 0 : hurt;
     }
 
     private void setPose(int pose) {
@@ -517,7 +525,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
         setLastDamageCause(source);
 
-        if (getDataProperty(ActorDataTypes.HURT) > 0) {
+        if (this.getHurtTicks() > 0) {
             setHealthCurrent(0);
             return true;
         }
@@ -552,7 +560,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     public boolean entityBaseTick(int tickDiff) {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
 
-        int hurtTime = getDataProperty(ActorDataTypes.HURT);
+        int hurtTime = this.getHurtTicks();
         if (hurtTime > 0 && age % 2 == 0) {
             setDataProperty(ActorDataTypes.HURT, hurtTime - 1, true);
             hasUpdate = true;
