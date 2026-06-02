@@ -35,7 +35,6 @@ import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.GameType;
-import org.cloudburstmc.protocol.common.util.VarInts;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
@@ -352,6 +351,8 @@ public class LevelDBProvider implements LevelProvider {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
                 }
 
+                byteBuf.writeByte(0); //ToDo: Send border block data
+
                 // Block entities
                 final List<CompoundTag> tagList = new ObjectArrayList<>();
                 for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
@@ -364,7 +365,6 @@ public class LevelDBProvider implements LevelProvider {
                 try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf); final NBTOutputStream outputStream = NbtUtils.createNetworkWriter(stream)) {
                     if (tagList.isEmpty()) {
                         stream.writeByte(0);
-                        VarInts.writeUnsignedInt(byteBuf, 0);
                     } else {
                         for (CompoundTag nbtMap : tagList) {
                             outputStream.writeTag(nbtMap.toNetwork());
