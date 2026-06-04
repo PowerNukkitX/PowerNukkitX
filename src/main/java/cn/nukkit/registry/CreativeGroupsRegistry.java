@@ -192,7 +192,7 @@ public class CreativeGroupsRegistry {
                     newGroupId = fallbackIndex;
                 }
             }
-            rebuilt.add(new CreativeItemData(item.toNetwork(), item.getNetId(), newGroupId));
+            rebuilt.add(new CreativeItemData(item.toNetwork(), data.getCreativeNetId(), newGroupId));
         }
         current.clear();
         current.addAll(rebuilt);
