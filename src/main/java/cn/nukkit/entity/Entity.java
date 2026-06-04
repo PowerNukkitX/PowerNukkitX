@@ -1276,7 +1276,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         addActorPacket.setPosition(this.getPosition().toNetwork());
         addActorPacket.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
         addActorPacket.setRotation(Vector2f.from(this.pitch, this.yaw));
-        addActorPacket.setHeadRotation((float) this.headYaw);
+        addActorPacket.setHeadRotation((float) this.yaw);
         addActorPacket.setBodyRotation((float) this.yaw);
         final PropertySyncData propertySyncData = this.getClientSyncProperties();
         addActorPacket.getSyncedProperties().getIntProperties().addAll(propertySyncData.getIntProperties());
