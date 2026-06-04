@@ -185,6 +185,10 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
                 case BlockBookshelf ignored -> Instrument.BASS;
                 case BlockWoodenSlab ignored -> Instrument.BASS;
                 case AbstractBlockShelf ignored -> Instrument.BASS;
+                case BlockExposedCopper ignored -> Instrument.TRUMPET_EXPOSED;
+                case BlockWeatheredCopper ignored -> Instrument.TRUMPET_WEATHERED;
+                case BlockOxidizedCopper ignored -> Instrument.TRUMPET_OXIDIZED;
+                case BlockCopperBlock ignored -> Instrument.TRUMPET;
                 default -> Instrument.HARP;
             };
         };
@@ -200,13 +204,13 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
         Instrument instrument = this.getInstrument();
 
-        this.level.addLevelSoundEvent(this, LevelSoundEvent.NOTE, instrument.ordinal() << 8 | this.getStrength());
+        this.level.addLevelSoundEvent(this, LevelSoundEvent.NOTE, instrument.getId() << 8 | this.getStrength());
 
         BlockEventPacket pk = new BlockEventPacket();
         pk.x = this.getFloorX();
         pk.y = this.getFloorY();
         pk.z = this.getFloorZ();
-        pk.type = instrument.ordinal();
+        pk.type = instrument.getId();
         pk.value = this.getStrength();
         this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, pk);
     }
@@ -236,33 +240,43 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public enum Instrument {
-        HARP(Sound.NOTE_HARP),
-        BASS_DRUM(Sound.NOTE_BD),
-        SNARE_DRUM(Sound.NOTE_SNARE),
-        CLICKS_AND_STICKS(Sound.NOTE_HAT),
-        BASS(Sound.NOTE_BASS),
-        BELLS(Sound.NOTE_BELL),
-        FLUTE(Sound.NOTE_FLUTE),
-        CHIMES(Sound.NOTE_CHIME),
-        GUITAR(Sound.NOTE_GUITAR),
-        XYLOPHONE(Sound.NOTE_XYLOPHONE),
-        IRON_XYLOPHONE(Sound.NOTE_IRON_XYLOPHONE),
-        COW_BELL(Sound.NOTE_COW_BELL),
-        DIDGERIDOO(Sound.NOTE_DIDGERIDOO),
-        BIT(Sound.NOTE_BIT),
-        BANJO(Sound.NOTE_BANJO),
-        PLING(Sound.NOTE_PLING),
-        SKELETON(Sound.NOTE_SKELETON),
-        WITHER_SKELETON(Sound.NOTE_WITHERSKELETON),
-        ZOMBIE(Sound.NOTE_ZOMBIE),
-        CREEPER(Sound.NOTE_CREEPER),
-        ENDER_DRAGON(Sound.NOTE_ENDERDRAGON),
-        PIGLIN(Sound.NOTE_PIGLIN);
+        HARP(0, Sound.NOTE_HARP),
+        BASS_DRUM(1, Sound.NOTE_BD),
+        SNARE_DRUM(2, Sound.NOTE_SNARE),
+        CLICKS_AND_STICKS(3, Sound.NOTE_HAT),
+        BASS(4, Sound.NOTE_BASS),
+        FLUTE(5, Sound.NOTE_FLUTE),
+        BELLS(6, Sound.NOTE_BELL),
+        GUITAR(7, Sound.NOTE_GUITAR),
+        CHIMES(8, Sound.NOTE_CHIME),
+        XYLOPHONE(9, Sound.NOTE_XYLOPHONE),
+        IRON_XYLOPHONE(10, Sound.NOTE_IRON_XYLOPHONE),
+        COW_BELL(11, Sound.NOTE_COW_BELL),
+        DIDGERIDOO(12, Sound.NOTE_DIDGERIDOO),
+        BIT(13, Sound.NOTE_BIT),
+        BANJO(14, Sound.NOTE_BANJO),
+        PLING(15, Sound.NOTE_PLING),
+        TRUMPET(16, Sound.NOTE_TRUMPET),
+        TRUMPET_EXPOSED(17, Sound.NOTE_TRUMPET),
+        TRUMPET_WEATHERED(18, Sound.NOTE_TRUMPET),
+        TRUMPET_OXIDIZED(19, Sound.NOTE_TRUMPET),
+        ZOMBIE(20, Sound.NOTE_ZOMBIE),
+        SKELETON(21, Sound.NOTE_SKELETON),
+        CREEPER(22, Sound.NOTE_CREEPER),
+        ENDER_DRAGON(23, Sound.NOTE_ENDERDRAGON),
+        WITHER_SKELETON(24, Sound.NOTE_WITHERSKELETON),
+        PIGLIN(25, Sound.NOTE_PIGLIN);
 
+        private final int id;
         private final Sound sound;
 
-        Instrument(Sound sound) {
+        Instrument(int id, Sound sound) {
+            this.id = id;
             this.sound = sound;
+        }
+
+        public int getId() {
+            return id;
         }
 
         public Sound getSound() {
