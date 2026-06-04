@@ -3478,7 +3478,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param reason  Reason for logout
      */
     public void close(TextContainer message, String reason) {
-        if (!this.connected.compareAndSet(true, false) && this.closed) {
+        if (this.closed || !this.connected.compareAndSet(true, false)) {
             return;
         }
         //output logout information
