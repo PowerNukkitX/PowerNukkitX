@@ -282,7 +282,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
         }
-        ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1, groupIndex));
+        ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey(), groupIndex));
     }
 
     @Override
@@ -291,7 +291,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         } else {
-            ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1, CreativeItemRegistry.LAST_ITEMS_INDEX));
+            ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey(), CreativeItemRegistry.LAST_ITEMS_INDEX));
         }
     }
 
