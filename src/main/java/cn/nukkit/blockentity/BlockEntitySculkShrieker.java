@@ -34,7 +34,7 @@ public class BlockEntitySculkShrieker extends BlockEntity implements VibrationLi
     private static final int SHRIEK_TICKS = 90;
     private static final int PLAYER_COOLDOWN_TICKS = 200;
     private static final int WARNING_DECAY_TICKS = 12000;
-    private static final int DARKNESS_DURATION_TICKS = 240;
+    private static final int DARKNESS_DURATION_TICKS = 260;
     private static final int DARKNESS_RANGE = 40;
     private static final int WARDEN_WARNING_LEVEL = 4;
 
