@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 
@@ -68,8 +69,12 @@ public class SkinUtils {
             JsonObject object = Utils.GSON.fromJson(skinResourcePatch, JsonObject.class);
             JsonObject geometry = object.getAsJsonObject("geometry");
             return geometry.has("default") && geometry.get("default").isJsonPrimitive() && geometry.get("default").getAsJsonPrimitive().isString();
-        } catch (ClassCastException | NullPointerException e) {
+        } catch (ClassCastException | NullPointerException | JsonSyntaxException e) {
             return false;
         }
+    }
+
+    public static String convertGeometryName(String geometryName) {
+        return "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
     }
 }

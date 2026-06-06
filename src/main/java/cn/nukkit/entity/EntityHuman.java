@@ -23,12 +23,16 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesData;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesDataSerializedLayer;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedLayer;
+import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +44,22 @@ import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.RESERV
  */
 @Slf4j
 public class EntityHuman extends EntityHumanType {
+    public static final String GEOMETRY_CUSTOM = SkinUtils.convertGeometryName("geometry.humanoid.custom");
+    public static final String GEOMETRY_CUSTOM_SLIM = SkinUtils.convertGeometryName("geometry.humanoid.customSlim");
+    static final String GEOMETRY_HUMANOID;
+
+    static {
+        String geoData;
+        try (var stream = EntityHuman.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            geoData = reader.lines().collect(java.util.stream.Collectors.joining("\n", "", "\n"));
+        } catch (IOException e) {
+            geoData = "";
+            log.error("Failed to load skin geometry data", e);
+        }
+        GEOMETRY_HUMANOID = geoData;
+    }
+
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
@@ -126,6 +146,40 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    public void initHumanEntity(Entity ent) {
+        super.initHumanEntity(ent);
+
+        if(!(ent instanceof EntityHuman human)) return;
+
+
+        if(!(human instanceof Player) && human.getSkin() != null) {
+            SerializedSkin skin = human.getSkin().getSkin();
+            boolean trusted = human.getSkin().isTrusted();
+            SerializedSkin.Builder builder = human.getSkin().getSkin().toBuilder();
+
+            boolean changed = false;
+
+            if(skin.getSkinResourcePatch() == null || skin.getSkinResourcePatch().isEmpty()) {
+                builder.skinResourcePatch(GEOMETRY_CUSTOM_SLIM);
+                changed = true;
+            } else {
+                if(!SkinUtils.isValidResourcePatch(skin.getSkinResourcePatch())) {
+                    builder.skinResourcePatch(GEOMETRY_CUSTOM_SLIM);
+                    changed = true;
+                }
+            }
+
+            if(skin.getGeometryData() == null || skin.getGeometryData().isEmpty()) {
+                builder.skinResourcePatch(GEOMETRY_HUMANOID);
+                changed = true;
+            }
+
+            if(changed)
+                human.setSkin(new Skin(builder.build(), trusted));
+        }
+    }
+
+    @Override
     public String getOriginalName() {
         return "Human";
     }
@@ -181,6 +235,7 @@ public class EntityHuman extends EntityHumanType {
     public void spawnTo(Player player) {
         if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
             this.hasSpawned.put(player.getLoaderId(), player);
+
 
             if (!SkinUtils.isValid(this.skin.getSkin())) {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
