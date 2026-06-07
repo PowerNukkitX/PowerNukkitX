@@ -773,9 +773,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.getHealthCurrent() < 1) {
             this.setHealthCurrent(0);
-        } else setHealthCurrent(getHealthCurrent()); // Sends health to player
-
-        ServerScheduler scheduler = this.getServer().getSettings().levelSettings().levelThread() ? this.getLevel().getScheduler() : this.getServer().getScheduler();
+        } else setHealthCurrent(getHealthCurrent());
     }
 
     @Override
@@ -1349,6 +1347,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
          */
         this.setGamemode(this.gamemode, false, null, true);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), actorDataMap);
+        this.sendAttributes();
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
     }
@@ -2659,7 +2658,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 Arrays.asList(
                         Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0).toNetwork(),
                         Attribute.getAttribute(Attribute.ABSORPTION).setValue(this.getAbsorption()).toNetwork(),
-                        Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getFood()).toNetwork(),
+                        Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getMaxFood()).toNetwork(),
                         Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()).toNetwork(),
                         Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()).toNetwork(),
                         Attribute.getAttribute(Attribute.EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel())).toNetwork()
