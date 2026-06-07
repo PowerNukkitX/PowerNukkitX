@@ -88,7 +88,7 @@ public class BlockRespawnAnchor extends Block {
 
     protected boolean attemptToSetSpawn(@NotNull Player player) {
         if (this.level.getDimension() != Level.DIMENSION_NETHER) {
-            if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+            if (this.level.getGameRules().getBoolean(GameRule.RESPAWN_BLOCKS_EXPLODE)) {
                 explode(player);
             }
             return true;
