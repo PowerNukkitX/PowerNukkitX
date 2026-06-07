@@ -23,7 +23,7 @@ public class SyncEntityPropertyPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         try (ByteBufInputStream stream = new ByteBufInputStream(byteBuf)) {
-            this.data = NBTIO.read(stream, ByteOrder.BIG_ENDIAN, true);
+            this.data = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN, true);
         } catch (Exception e) {
             log.error("", e);
         }
@@ -32,7 +32,7 @@ public class SyncEntityPropertyPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         try {
-            byteBuf.writeBytes(NBTIO.write(data, ByteOrder.BIG_ENDIAN, true));
+            byteBuf.writeBytes(NBTIO.write(data, ByteOrder.LITTLE_ENDIAN, true));
         } catch (Exception e) {
             log.error("", e);
         }
