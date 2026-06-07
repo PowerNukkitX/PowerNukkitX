@@ -598,7 +598,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return true;
     }
 
-    private boolean isRideEffectivelyOnSlipperyGround() {
+    protected boolean isRideEffectivelyOnSlipperyGround() {
         if (this.hasWaterAt(0)) {
             return false;
         }
@@ -606,7 +606,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return isRideGroundSlipperyBlock();
     }
 
-    private void updateSlipperyGroundTransition(boolean slipperyGround) {
+    protected void updateSlipperyGroundTransition(boolean slipperyGround) {
         if (slipperyGround) {
             if (!wasOnSlipperyGround) {
                 double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
@@ -625,7 +625,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         slipperyEntrySpeed = 0.0d;
     }
 
-    private void applySlipperyGroundLookInput(double wishX, double wishZ, double strength, double cap) {
+    protected void applySlipperyGroundLookInput(double wishX, double wishZ, double strength, double cap) {
         double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
         if (speedSq < 0.000025d) {
@@ -683,11 +683,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         applySlipperyGroundImpulse(mergedX, mergedZ, strength, cap, controlScale);
     }
 
-    private void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap) {
+    protected void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap) {
         applySlipperyGroundImpulse(wishX, wishZ, strength, cap, 1.0d);
     }
 
-    private void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap, double controlScale) {
+    protected void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap, double controlScale) {
         double slipperiness = getRideGroundSlipperiness();
 
         double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
@@ -751,7 +751,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.motionZ = newZ;
     }
 
-    private double getRideGroundSlipperiness() {
+    protected double getRideGroundSlipperiness() {
         double friction = getRideGroundBlockFriction();
         double normal = Block.DEFAULT_FRICTION_FACTOR;
 
@@ -763,7 +763,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return slipperiness;
     }
 
-    private double getRideGroundSurfaceSpeedFactor() {
+    protected double getRideGroundSurfaceSpeedFactor() {
         Block under = getRideGroundBlock();
         if (under == null) return 1.0d;
 
@@ -781,7 +781,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return 1.0d + (slipperiness * 0.85d);
     }
 
-    private Block getRideGroundBlock() {
+    protected Block getRideGroundBlock() {
         if (this.level == null || this.getBoundingBox() == null) {
             return null;
         }
@@ -819,7 +819,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return bestBlock;
     }
 
-    private double getRideGroundBlockFriction() {
+    protected double getRideGroundBlockFriction() {
         Block under = getRideGroundBlock();
         if (under == null) {
             return Block.DEFAULT_FRICTION_FACTOR;
@@ -833,11 +833,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return friction;
     }
 
-    private boolean isRideGroundSlipperyBlock() {
+    protected boolean isRideGroundSlipperyBlock() {
         return getRideGroundBlockFriction() > Block.DEFAULT_FRICTION_FACTOR + 0.05d;
     }
 
-    private double getRideGroundBrakeFactor(double baseBrake) {
+    protected double getRideGroundBrakeFactor(double baseBrake) {
         Block under = getRideGroundBlock();
         if (under == null) return baseBrake;
 
@@ -1261,7 +1261,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
     }
 
-    private boolean isInWaterForDash() {
+    protected boolean isInWaterForDash() {
         if (this.isTouchingWater()) return true;
 
         final int bx = (int) Math.floor(this.x);
