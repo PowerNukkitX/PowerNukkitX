@@ -740,7 +740,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public int getAirTicks() {
-        return this.getDataProperty(ActorDataTypes.AIR_SUPPLY);
+        short airTicks = this.getDataProperty(ActorDataTypes.AIR_SUPPLY, (short) 300);
+        if (!this.getActorDataMap().containsKey(ActorDataTypes.AIR_SUPPLY)) {
+            this.setDataProperty(ActorDataTypes.AIR_SUPPLY, airTicks, false);
+        }
+        return airTicks;
     }
 
     public void setAirTicks(int ticks) {
