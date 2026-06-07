@@ -3,8 +3,6 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.Server;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
@@ -20,7 +18,6 @@ import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
@@ -29,8 +26,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NBTOutputStream;
@@ -78,29 +73,6 @@ public class LevelDBProvider implements LevelProvider {
     protected final String path;
     protected CompoundTag worldDynamicProperties;
     protected boolean worldDynamicPropertiesDirty = false;
-
-    private static final IntSet BORDER_BLOCK_STATE_HASHES = new IntOpenHashSet();
-    private static volatile boolean BORDER_BLOCK_STATE_HASHES_INITIALIZED = false;
-
-    private static void ensureBorderBlockStateHashes() {
-        if (BORDER_BLOCK_STATE_HASHES_INITIALIZED) {
-            return;
-        }
-
-        synchronized (BORDER_BLOCK_STATE_HASHES) {
-            if (BORDER_BLOCK_STATE_HASHES_INITIALIZED) {
-                return;
-            }
-
-            for (BlockState state : Registries.BLOCKSTATE.getAllState()) {
-                if (BlockID.BORDER_BLOCK.equals(state.getIdentifier())) {
-                    BORDER_BLOCK_STATE_HASHES.add(state.blockStateHash());
-                }
-            }
-
-            BORDER_BLOCK_STATE_HASHES_INITIALIZED = true;
-        }
-    }
 
     /**
      * @return int The nether coordinate scale for the world
@@ -378,7 +350,7 @@ public class LevelDBProvider implements LevelProvider {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
                 }
 
-                writeBorderBlockData(byteBuf, sections, total);
+                writeBorderBlockData(byteBuf, chunk);
 
                 // Block entities
                 final List<CompoundTag> tagList = new ObjectArrayList<>();
@@ -409,82 +381,48 @@ public class LevelDBProvider implements LevelProvider {
         return Pair.of(data.get(), subChunkCountRef.get());
     }
 
-    private void writeBorderBlockData(ByteBuf byteBuf, ChunkSection[] sections, int total) {
-        ensureBorderBlockStateHashes();
+    private void writeBorderBlockData(ByteBuf byteBuf, IChunk chunk) {
+        if (!chunk.areBorderBlockColumnsInitialized()) {
+            chunk.rebuildBorderBlockColumns();
+        }
 
         int countIndex = byteBuf.writerIndex();
         byteBuf.writeByte(0);
 
-        long borderColumnsLow = 0L;
-        long borderColumnsMidLow = 0L;
-        long borderColumnsMidHigh = 0L;
-        long borderColumnsHigh = 0L;
         int count = 0;
 
-        scan:
-        for (int sectionIndex = 0; sectionIndex < total; sectionIndex++) {
-            ChunkSection section = sections[sectionIndex];
-
-            if (section == null || section.isEmpty()) {
-                continue;
-            }
-
-            for (int localX = 0; localX < 16; localX++) {
-                for (int localZ = 0; localZ < 16; localZ++) {
-                    int entry = (localZ << 4) | localX;
-                    int bitIndex = entry & 63;
-                    long bit = 1L << bitIndex;
-                    int maskIndex = entry >>> 6;
-
-                    if (maskIndex == 0) {
-                        if ((borderColumnsLow & bit) != 0) {
-                            continue;
-                        }
-                    } else if (maskIndex == 1) {
-                        if ((borderColumnsMidLow & bit) != 0) {
-                            continue;
-                        }
-                    } else if (maskIndex == 2) {
-                        if ((borderColumnsMidHigh & bit) != 0) {
-                            continue;
-                        }
-                    } else {
-                        if ((borderColumnsHigh & bit) != 0) {
-                            continue;
-                        }
-                    }
-
-                    for (int localY = 0; localY < 16; localY++) {
-                        BlockState state = section.getBlockState(localX, localY, localZ);
-
-                        if (!BORDER_BLOCK_STATE_HASHES.contains(state.blockStateHash())) {
-                            continue;
-                        }
-
-                        if (maskIndex == 0) {
-                            borderColumnsLow |= bit;
-                        } else if (maskIndex == 1) {
-                            borderColumnsMidLow |= bit;
-                        } else if (maskIndex == 2) {
-                            borderColumnsMidHigh |= bit;
-                        } else {
-                            borderColumnsHigh |= bit;
-                        }
-
-                        byteBuf.writeByte(entry);
-                        count++;
-
-                        if (count >= 255) {
-                            break scan;
-                        }
-
-                        break;
-                    }
-                }
-            }
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsLow(), 0, count);
+        if (count >= 255) {
+            byteBuf.setByte(countIndex, count);
+            return;
         }
 
-        byteBuf.setByte(countIndex, count);
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsMidLow(), 64, count);
+        if (count >= 255) {
+            byteBuf.setByte(countIndex, count);
+            return;
+        }
+
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsMidHigh(), 128, count);
+        if (count >= 255) {
+            byteBuf.setByte(countIndex, count);
+            return;
+        }
+
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsHigh(), 192, count);
+
+        byteBuf.setByte(countIndex, Math.min(count, 255));
+    }
+
+    private int writeBorderColumnMask(ByteBuf byteBuf, long mask, int offset, int count) {
+        while (mask != 0L && count < 255) {
+            int bit = Long.numberOfTrailingZeros(mask);
+            byteBuf.writeByte(offset + bit);
+            mask &= ~(1L << bit);
+            count++;
+        }
+
+        return count;
     }
 
     @Override
