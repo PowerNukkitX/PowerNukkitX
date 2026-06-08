@@ -212,6 +212,7 @@ public class Palette<V> {
         try (final ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
             NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
+            final int storedVersion = blockTag.getInt("version");
             final NbtMapBuilder builder = blockTag.toBuilder();
             builder.remove("version");
             blockTag = builder.build();
@@ -226,13 +227,14 @@ public class Palette<V> {
             }
 
             V resultingBlockState = unknownState;
-            SemVersion semVersion = p.right();
 
-            if (semVersion == null) {
-                semVersion = SemVersion.fromString(NetworkConstants.CODEC.getMinecraftVersion());
+            int version;
+            if (storedVersion != 0) {
+                version = storedVersion;
+            } else {
+                SemVersion semVersion = SemVersion.fromString(NetworkConstants.CODEC.getMinecraftVersion());
+                version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
             }
-
-            int version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
 
             boolean isBlockOutdated = false;
 
