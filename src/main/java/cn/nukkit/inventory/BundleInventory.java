@@ -15,7 +15,6 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j

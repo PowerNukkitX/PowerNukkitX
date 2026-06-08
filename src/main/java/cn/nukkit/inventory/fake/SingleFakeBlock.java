@@ -13,7 +13,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.RuntimeBlockDefinition;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 

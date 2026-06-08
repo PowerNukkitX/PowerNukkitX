@@ -20,8 +20,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import java.util.List;
-
 import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTION;
 
 @Slf4j

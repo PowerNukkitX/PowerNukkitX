@@ -36,7 +36,6 @@ import cn.nukkit.utils.TextFormat;
 import it.unimi.dsi.fastutil.Pair;
 import org.cloudburstmc.nbt.NBTInputStream;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeConsolidatedFeatureData;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionChunkGenData;

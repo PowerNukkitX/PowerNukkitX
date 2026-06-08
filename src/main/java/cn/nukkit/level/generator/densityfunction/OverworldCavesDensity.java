@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.densityfunction;
 
-import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 
 /**

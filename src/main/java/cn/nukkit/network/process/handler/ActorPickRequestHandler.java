@@ -13,8 +13,6 @@ import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.utils.Identifier;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.packet.ActorPickRequestPacket;
 
 /**

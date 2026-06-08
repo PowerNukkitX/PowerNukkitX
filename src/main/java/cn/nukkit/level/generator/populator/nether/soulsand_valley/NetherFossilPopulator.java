@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.populator.nether.soulsand_valley;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDriedGhast;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;

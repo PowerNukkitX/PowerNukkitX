@@ -1,6 +1,5 @@
 package cn.nukkit.recipe;
 
-import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.registry.Registries;

@@ -1,6 +1,5 @@
 package cn.nukkit.block.property;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.block.property.enums.Orientation;
 import cn.nukkit.math.BlockFace;

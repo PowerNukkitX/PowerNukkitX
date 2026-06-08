@@ -6,7 +6,6 @@ import cn.nukkit.education.block.elements.*;
 import cn.nukkit.education.block.glass.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
 import cn.nukkit.registry.CreativeGroupsRegistry;
 import cn.nukkit.registry.CreativeItemRegistry;

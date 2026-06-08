@@ -9,7 +9,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;

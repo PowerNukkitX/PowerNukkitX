@@ -5,9 +5,7 @@ import cn.nukkit.level.generator.feature.LegacyTreeGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectFallenTree;
 import cn.nukkit.level.generator.object.TreeGenerator;
 import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
-import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class MesaTreeFeature extends LegacyTreeGeneratorFeature {

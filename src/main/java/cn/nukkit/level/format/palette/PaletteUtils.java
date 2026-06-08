@@ -1,13 +1,11 @@
 package cn.nukkit.level.format.palette;
 
-import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
 import org.cloudburstmc.nbt.NBTInputStream;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 
 /**
  * Allay Project 11/12/2023

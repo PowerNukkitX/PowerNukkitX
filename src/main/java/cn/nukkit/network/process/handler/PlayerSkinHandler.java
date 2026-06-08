@@ -9,7 +9,6 @@ import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerSkinPacket;
 
 import java.util.concurrent.TimeUnit;

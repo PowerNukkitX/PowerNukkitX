@@ -18,7 +18,6 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 

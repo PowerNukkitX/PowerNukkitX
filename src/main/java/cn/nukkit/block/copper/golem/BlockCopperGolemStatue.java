@@ -6,7 +6,6 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 /**

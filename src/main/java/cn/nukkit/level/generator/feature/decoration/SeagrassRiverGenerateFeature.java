@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.SeaGrassType;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.feature.river.DiscGenerateFeature.STATE_STILL_WATER;

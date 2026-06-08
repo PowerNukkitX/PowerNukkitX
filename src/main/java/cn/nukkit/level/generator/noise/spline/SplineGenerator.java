@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.noise.spline;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
 
 public class SplineGenerator {
 

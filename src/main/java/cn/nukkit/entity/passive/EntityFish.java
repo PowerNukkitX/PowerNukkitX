@@ -12,15 +12,12 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.Set;
 
 /**
  * 所有鱼的基类
  */
-
-
 public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
     public EntityFish(IChunk chunk, CompoundTag nbt) {

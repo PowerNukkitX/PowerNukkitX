@@ -15,12 +15,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityEnderPearl extends EntityProjectile {

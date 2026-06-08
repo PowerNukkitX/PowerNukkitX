@@ -1,11 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * @deprecated Use {@link Entity#getComponentNameable()}, {@link Entity#isNameable()} and

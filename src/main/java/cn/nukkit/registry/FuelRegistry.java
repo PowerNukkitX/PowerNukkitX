@@ -1,13 +1,7 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAcaciaSlab;
-import cn.nukkit.block.BlockBirchSlab;
-import cn.nukkit.block.BlockDarkOakSlab;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockJungleSlab;
-import cn.nukkit.block.BlockPaleOakSlab;
-import cn.nukkit.block.BlockSpruceSlab;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
