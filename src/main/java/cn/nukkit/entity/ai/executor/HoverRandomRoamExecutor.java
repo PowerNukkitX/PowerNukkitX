@@ -13,10 +13,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Allows the mob to hover around randomly, close to the surface.
- * Requires SpaceMoveController + LiftController + SimpleSpaceAStarRouteFinder(HoveringPosEvaluator).
+ * Requires SpaceMoveController + LiftController + SimpleSpaceAStarRouteFinder (HoveringPosEvaluator).
  */
 public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl {
-    private final float speed;
+    private final float speedMultiplier;
     private final int xzDist;
     private final int yDist;
     private final double yOffset;
@@ -27,7 +27,7 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
     private int ticks = 0;
 
     public HoverRandomRoamExecutor(
-            float speed,
+            float speedMultiplier,
             int xzDist,
             int yDist,
             double yOffset,
@@ -35,7 +35,7 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
             double hoverMax,
             int interval
     ) {
-        this.speed = speed;
+        this.speedMultiplier = speedMultiplier;
         this.xzDist = Math.max(1, xzDist);
         this.yDist = Math.max(1, yDist);
         this.yOffset = yOffset;
@@ -74,8 +74,11 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
         ticks++;
 
         if (entity.isEnablePitch()) { entity.setEnablePitch(false); }
+        if (correctHoverBand(entity)) { return true; }
 
-        boolean mustPick = ticks >= interval || entity.getMoveTarget() == null;
+        Vector3 currentTarget = entity.getMoveTarget();
+        boolean reached = currentTarget != null && entity.distanceSquared(currentTarget) <= 2.25;
+        boolean mustPick = currentTarget == null || reached || ticks >= interval * 3;
         if (!mustPick) { return true; }
 
         ticks = 0;
@@ -83,7 +86,40 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
         return true;
     }
 
+    private boolean correctHoverBand(EntityIntelligent entity) {
+        Level level = entity.level;
+        if (level == null) {
+            return false;
+        }
+
+        int surfaceY = findSurfaceBelow(level, entity.getFloorX(), entity.getFloorZ(), entity.getFloorY() - 1);
+        if (surfaceY < level.getMinHeight()) {
+            return false;
+        }
+
+        double maxFeetY = surfaceY + 1.0 + hoverMax + yOffset;
+        if (entity.y <= maxFeetY) {
+            entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_LIFT_FORCE, true);
+            return false;
+        }
+
+        entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_LIFT_FORCE, false);
+        if (entity.motionY > 0) {
+            entity.motionY = 0;
+        }
+
+        Vector3 currentTarget = entity.getMoveTarget();
+        Vector3 target = currentTarget != null ? new Vector3(currentTarget.x, maxFeetY, currentTarget.z) : new Vector3(entity.x, maxFeetY, entity.z);
+        applyHoverSpeed(entity);
+        setRouteTarget(entity, target);
+        setLookTarget(entity, target);
+        entity.getBehaviorGroup().setForceUpdateRoute(true);
+        ticks = 0;
+        return true;
+    }
+
     private void applyHoverSpeed(EntityIntelligent entity) {
+        float speed = entity.getDefaultFlyingSpeed() * speedMultiplier;
         if (entity.getMovementSpeed() != speed) {
             entity.setMovementSpeed(speed);
         }
@@ -108,6 +144,12 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
             // Random horizontal column around the mob
             int colX = baseEx + rnd.nextInt(-xzDist, xzDist + 1);
             int colZ = baseEz + rnd.nextInt(-xzDist, xzDist + 1);
+            int moveX = colX - baseEx;
+            int moveZ = colZ - baseEz;
+            int minTravel = Math.max(2, xzDist / 3);
+            if (tries < 8 && moveX * moveX + moveZ * moveZ < minTravel * minTravel) {
+                continue;
+            }
 
             int surfaceY = findSurfaceBelow(level, colX, colZ, entity.getFloorY() - 1);
             if (surfaceY < level.getMinHeight()) {
@@ -116,13 +158,13 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
 
             double minFeetY = surfaceY + 1.0 + hoverMin + yOffset;
             double maxFeetY = surfaceY + 1.0 + hoverMax + yOffset;
-            double stepLimit = Math.max(0.4, Math.min(1.25, yDist * 0.35));
-            double maxStep = Math.max(0.4, Math.min(stepLimit, (maxFeetY - minFeetY) * 0.5));
-            double minStep = Math.min(0.35, maxStep);
-            double deltaY = rnd.nextDouble(minStep, maxStep) * (rnd.nextBoolean() ? 1 : -1);
-            double feetY = entity.y + deltaY;
-            if (feetY < minFeetY) feetY = Math.min(maxFeetY, minFeetY + rnd.nextDouble(0.0, maxStep));
-            if (feetY > maxFeetY) feetY = Math.max(minFeetY, maxFeetY - rnd.nextDouble(0.0, maxStep));
+            double yStep = Math.max(0.75, Math.min(yDist * 0.25, 3.0));
+            double minCandidateY = Math.max(minFeetY, entity.y - yStep);
+            double maxCandidateY = Math.min(maxFeetY, entity.y + yStep);
+            double feetY = minCandidateY < maxCandidateY ? rnd.nextDouble(minCandidateY, maxCandidateY) : minCandidateY;
+            double horizontalDist = Math.sqrt(moveX * moveX + moveZ * moveZ);
+            double maxSlopeY = Math.max(0.75, horizontalDist * 0.45);
+            feetY = Math.max(entity.y - maxSlopeY, Math.min(entity.y + maxSlopeY, feetY));
             double centerY = feetY + height * 0.5;
 
             // World Y bounds

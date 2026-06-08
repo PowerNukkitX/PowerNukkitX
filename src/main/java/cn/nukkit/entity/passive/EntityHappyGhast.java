@@ -517,7 +517,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                     ),
                     new Behavior( // Hover roam near home
                         new HoverRandomRoamExecutor(
-                            this.getDefaultFlyingSpeed(),
+                            1.0f,
                             roamDistance(),
                             10, // TODO: Supposed to be 16, as we dont have leashable reduced a bit to not lost it
                             (this.isBaby()) ? -1 : 0,

@@ -5,17 +5,15 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
 
 /**
- * 处理飞行/游泳实体运动
+ * Dealing with physical movement in flight/swimming
  */
-
-
 public class SpaceMoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             Vector3 direction = entity.getMoveDirectionEnd();
             var speed = entity.getMovementSpeed();
-            if (entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
+            if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 return false;
             }
             var relativeVector = direction.clone().setComponents(direction.x - entity.x,
@@ -39,7 +37,6 @@ public class SpaceMoveController implements IController {
     }
 
     protected void needNewDirection(EntityIntelligent entity) {
-        //通知需要新的移动目标
         entity.setShouldUpdateMoveDirection(true);
     }
 }
