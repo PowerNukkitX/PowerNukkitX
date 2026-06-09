@@ -822,7 +822,7 @@ public class Level implements Metadatable {
      */
     public void addLevelSoundEvent(Vector3 pos, SoundEvent type, int data, String identifier, boolean isBaby, boolean isGlobal) {
         final LevelSoundEventPacket packet = new LevelSoundEventPacket();
-        packet.setSound(type);
+        packet.setSoundEvent(type);
         packet.setPosition(pos.toNetwork());
         packet.setData(data);
         packet.setActorIdentifier(identifier);
