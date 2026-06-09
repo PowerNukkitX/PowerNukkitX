@@ -30,7 +30,7 @@ public class ClientChainData {
     String gameVersion;
     GraphicsMode graphicsMode;
     int guiScale;
-    boolean isEditorMode;
+    boolean clientIsEditorCapable;
     String languageCode;
     int maxViewDistance;
     MemoryTier memoryTier;
@@ -45,6 +45,7 @@ public class ClientChainData {
     UserInterfaceProfile uiProfile;
     boolean isEduMode;
     WaterdogData waterdogData;
+    int clientEditorConnectionIntent;
 
     public static ClientChainData from(JwtClaims claims) {
         final Map<String, Object> map = claims.getClaimsMap();
@@ -86,7 +87,7 @@ public class ClientChainData {
         if (!map.containsKey("GuiScale") || !(map.get("GuiScale") instanceof Number guiScale)) {
             return null;
         }
-        if (!map.containsKey("IsEditorMode") || !(map.get("IsEditorMode") instanceof Boolean isEditorMode)) {
+        if (!map.containsKey("ClientIsEditorCapable") || !(map.get("ClientIsEditorCapable") instanceof Boolean clientIsEditorCapable)) {
             return null;
         }
         if (!map.containsKey("LanguageCode") || !(map.get("LanguageCode") instanceof String languageCode)) {
@@ -140,6 +141,10 @@ public class ClientChainData {
                         map.get("Waterdog_IP").toString(),
                         map.get("Waterdog_XUID").toString()
                 );
+        if (!map.containsKey("ClientEditorConnectionIntent")) {
+            return null;
+        }
+        final int clientEditorConnectionIntent = ((Number) map.get("ClientEditorConnectionIntent")).intValue();
         return new ClientChainData(
                 clientRandomId,
                 compatibleWithClientSideChunkGen,
@@ -151,7 +156,7 @@ public class ClientChainData {
                 gameVersion,
                 graphicsMode,
                 guiScale.intValue(),
-                isEditorMode,
+                clientIsEditorCapable,
                 languageCode,
                 maxViewDistance.intValue(),
                 memoryTier,
@@ -165,7 +170,8 @@ public class ClientChainData {
                 trustedSkin || Server.getInstance().getSettings().playerSettings().forceSkinTrusted(),
                 uiProfile,
                 map.containsKey("IsEduMode"),
-                waterdogData
+                waterdogData,
+                clientEditorConnectionIntent
         );
     }
 

@@ -3,7 +3,7 @@ package cn.nukkit.network;
 import cn.nukkit.utils.SemVersion;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
-import org.cloudburstmc.protocol.bedrock.codec.v975.Bedrock_v975;
+import org.cloudburstmc.protocol.bedrock.codec.v1001.Bedrock_v1001;
 
 /**
  * @author Kaooot
@@ -11,7 +11,7 @@ import org.cloudburstmc.protocol.bedrock.codec.v975.Bedrock_v975;
 @UtilityClass
 public class NetworkConstants {
 
-    public final BedrockCodec CODEC = Bedrock_v975.CODEC;
+    public final BedrockCodec CODEC = Bedrock_v1001.CODEC;
 
     public int BLOCK_STATE_VERSION_NO_REVISION;
 

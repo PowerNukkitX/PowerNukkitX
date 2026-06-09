@@ -122,11 +122,6 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 holder.disconnect(DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA);
                 return;
             }
-            if (clientChainData.isEditorMode()) {
-                holder.sendPlayStatus(PlayStatus.LOGIN_FAILED_EDITOR_MISMATCH_EDITOR_TO_VANILLA);
-                holder.disconnect(DisconnectFailReason.EDITION_MISMATCH_EDITOR_TO_VANILLA);
-                return;
-            }
             holder.setPlayerInfo(
                     new Player.PlayerInfo(
                             identityClaims,

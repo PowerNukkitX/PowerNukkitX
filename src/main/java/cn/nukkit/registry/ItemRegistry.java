@@ -622,6 +622,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(COPPER_SPEAR, ItemCopperSpear.class);
             register(COPPER_SWORD, ItemCopperSword.class);
 
+            register(SULFUR_CUBE_SPAWN_EGG, ItemSulfurCubeSpawnEgg.class);
+            register(MUSIC_DISC_BOUNCE, ItemMusicDiscBounce.class);
+            register(SULFUR_CUBE_BUCKET, ItemSulfurCubeBucket.class);
+
             registerBlockItem();
         } catch (RegisterException e) {
             throw new RuntimeException(e);
