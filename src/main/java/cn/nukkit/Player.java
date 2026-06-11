@@ -1393,7 +1393,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
             this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
             spawnPair = Pair.of(defaultSpawn, SpawnPointType.WORLD);
-        }       
+        }
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
         if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
             Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
@@ -2801,7 +2801,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement() > 0) { // For server-side use only, as client-side continue break is normal.
+            if (this.server.getServerAuthoritativeMovement() > 0 && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 
@@ -4148,6 +4148,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Sets the walk speed multiplier
+     *
      * @param speed
      */
     @Override
@@ -4171,14 +4172,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Set the movement speed of this player.
      * Will be overwritten internally.
      *
-     * @see #setWalkSpeed(float)
      * @param speed Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
      * @param send  Whether to send {@link UpdateAttributesPacket} to the client
+     * @see #setWalkSpeed(float)
      */
     @ApiStatus.Internal
     public void setMovementSpeed(float speed, boolean send) {
         float speedCorrected = speed * getWalkSpeed();
-        if(speedCorrected != getMovementSpeed()) {
+        if (speedCorrected != getMovementSpeed()) {
             super.setMovementSpeed(speedCorrected);
             if (this.spawned && send) {
                 this.sendMovementSpeed();

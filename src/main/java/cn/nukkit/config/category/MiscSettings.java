@@ -18,4 +18,6 @@ public class MiscSettings extends OkaeriConfig {
     boolean enableTerra = false;
     @Comment("pnx.settings.misc.bypassapicheck")
     boolean bypassAPICheck = false;
+    @Comment("pnx.settings.misc.overrideserverauthblockbreaking")
+    boolean overrideServerAuthBlockBreaking = false;
 }
