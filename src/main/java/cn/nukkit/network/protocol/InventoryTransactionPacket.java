@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.LegacySetItemSlotData;
 import cn.nukkit.network.protocol.types.inventory.transaction.NetworkInventoryAction;
@@ -7,6 +8,7 @@ import cn.nukkit.network.protocol.types.inventory.transaction.ReleaseItemData;
 import cn.nukkit.network.protocol.types.inventory.transaction.TransactionData;
 import cn.nukkit.network.protocol.types.inventory.transaction.UseItemData;
 import cn.nukkit.network.protocol.types.inventory.transaction.UseItemOnEntityData;
+import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.*;
 
@@ -66,7 +68,8 @@ public class InventoryTransactionPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.legacyRequestId = byteBuf.readVarInt();
-        if (legacyRequestId != 0) {
+        final boolean bool = byteBuf.readBoolean();
+        if (bool) {
             int length = byteBuf.readUnsignedVarInt();
             for (int i = 0; i < length; i++) {
                 byte containerId = byteBuf.readByte();
@@ -75,7 +78,11 @@ public class InventoryTransactionPacket extends DataPacket {
             }
         }
         //InventoryTransactionType
-        this.transactionType = byteBuf.readUnsignedVarInt();
+        this.transactionType = byteBuf.readOptional(0, byteBuf::readUnsignedVarInt);
+        final boolean hasValue = byteBuf.readBoolean();
+        if (!hasValue) {
+            return;
+        }
 
         int length = byteBuf.readUnsignedVarInt();
         Collection<NetworkInventoryAction> actions = new ArrayDeque<>();
@@ -92,17 +99,17 @@ public class InventoryTransactionPacket extends DataPacket {
             case TYPE_USE_ITEM:
                 UseItemData itemData = new UseItemData();
 
-                itemData.actionType = byteBuf.readUnsignedVarInt();
-                itemData.triggerType = UseItemData.TriggerType.values()[byteBuf.readUnsignedVarInt()];
+                itemData.actionType = byteBuf.readVarInt();
+                itemData.triggerType = UseItemData.TriggerType.values()[byteBuf.readUnsignedByte()];
                 itemData.blockPos = byteBuf.readBlockVector3();
-                itemData.face = byteBuf.readBlockFace();
-                itemData.hotbarSlot = byteBuf.readVarInt();
-                itemData.itemInHand = byteBuf.readSlot();
+                itemData.face = BlockFace.fromIndex(byteBuf.readUnsignedByte());
+                itemData.hotbarSlot = byteBuf.readUnsignedVarInt();
+                itemData.itemInHand = byteBuf.readCerealSlot();
                 itemData.playerPos = byteBuf.readVector3f().asVector3();
                 itemData.clickPos = byteBuf.readVector3f();
                 itemData.blockRuntimeId = byteBuf.readUnsignedVarInt();
-                itemData.clientInteractPrediction = UseItemData.PredictedResult.values()[byteBuf.readUnsignedVarInt()];
-                this.clientCooldownState = byteBuf.readByte();
+                itemData.clientInteractPrediction = UseItemData.PredictedResult.values()[byteBuf.readUnsignedByte()];
+                this.clientCooldownState = byteBuf.readUnsignedByte();
 
                 this.transactionData = itemData;
                 break;
@@ -110,9 +117,9 @@ public class InventoryTransactionPacket extends DataPacket {
                 UseItemOnEntityData useItemOnEntityData = new UseItemOnEntityData();
 
                 useItemOnEntityData.entityRuntimeId = byteBuf.readEntityRuntimeId();
-                useItemOnEntityData.actionType = byteBuf.readUnsignedVarInt();
+                useItemOnEntityData.actionType = byteBuf.readVarInt();
                 useItemOnEntityData.hotbarSlot = byteBuf.readVarInt();
-                useItemOnEntityData.itemInHand = byteBuf.readSlot();
+                useItemOnEntityData.itemInHand = byteBuf.readCerealSlot();
                 useItemOnEntityData.playerPos = byteBuf.readVector3f().asVector3();
                 useItemOnEntityData.clickPos = byteBuf.readVector3f().asVector3();
 
@@ -121,9 +128,9 @@ public class InventoryTransactionPacket extends DataPacket {
             case TYPE_RELEASE_ITEM:
                 ReleaseItemData releaseItemData = new ReleaseItemData();
 
-                releaseItemData.actionType = byteBuf.readUnsignedVarInt();
+                releaseItemData.actionType = byteBuf.readVarInt();
                 releaseItemData.hotbarSlot = byteBuf.readVarInt();
-                releaseItemData.itemInHand = byteBuf.readSlot();
+                releaseItemData.itemInHand = byteBuf.readCerealSlot();
                 releaseItemData.headRot = byteBuf.readVector3f().asVector3();
 
                 this.transactionData = releaseItemData;
@@ -136,8 +143,7 @@ public class InventoryTransactionPacket extends DataPacket {
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeVarInt(this.legacyRequestId);
-        byteBuf.writeUnsignedVarInt(this.transactionType);
-
+        byteBuf.writeBoolean(legacyRequestId != 0);
         //slots array
         if (legacyRequestId != 0) {
             byteBuf.writeUnsignedVarInt(this.legacySlots.size());
@@ -145,6 +151,12 @@ public class InventoryTransactionPacket extends DataPacket {
                 byteBuf.writeByte((byte) slot.getContainerId());
                 byteBuf.writeByteArray(slot.getSlots());
             }
+        }
+        byteBuf.writeOptional(OptionalValue.of(this.transactionType), byteBuf::writeUnsignedVarInt);
+        byteBuf.writeBoolean(this.actions.length > 0);
+
+        if (this.actions.length == 0) {
+            return;
         }
 
         byteBuf.writeUnsignedVarInt(this.actions.length);
@@ -158,34 +170,34 @@ public class InventoryTransactionPacket extends DataPacket {
                 break;
             case TYPE_USE_ITEM:
                 UseItemData useItemData = (UseItemData) this.transactionData;
-                byteBuf.writeUnsignedVarInt(useItemData.actionType);
-                byteBuf.writeUnsignedVarInt(useItemData.triggerType.ordinal());
+                byteBuf.writeVarInt(useItemData.actionType);
+                byteBuf.writeByte(useItemData.triggerType.ordinal());
                 byteBuf.writeBlockVector3(useItemData.blockPos);
-                byteBuf.writeBlockFace(useItemData.face);
-                byteBuf.writeVarInt(useItemData.hotbarSlot);
-                byteBuf.writeSlot(useItemData.itemInHand);
+                byteBuf.writeByte(useItemData.face.getIndex());
+                byteBuf.writeUnsignedVarInt(useItemData.hotbarSlot);
+                byteBuf.writeCerealSlot(useItemData.itemInHand);
                 byteBuf.writeVector3f(useItemData.playerPos.asVector3f());
                 byteBuf.writeVector3f(useItemData.clickPos);
                 byteBuf.writeUnsignedVarInt(useItemData.blockRuntimeId);
-                byteBuf.writeUnsignedVarInt(useItemData.clientInteractPrediction.ordinal());
+                byteBuf.writeByte(useItemData.clientInteractPrediction.ordinal());
                 byteBuf.writeByte(this.getClientCooldownState());
                 break;
             case TYPE_USE_ITEM_ON_ENTITY:
                 UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) this.transactionData;
 
                 byteBuf.writeEntityRuntimeId(useItemOnEntityData.entityRuntimeId);
-                byteBuf.writeUnsignedVarInt(useItemOnEntityData.actionType);
+                byteBuf.writeVarInt(useItemOnEntityData.actionType);
                 byteBuf.writeVarInt(useItemOnEntityData.hotbarSlot);
-                byteBuf.writeSlot(useItemOnEntityData.itemInHand);
+                byteBuf.writeCerealSlot(useItemOnEntityData.itemInHand);
                 byteBuf.writeVector3f(useItemOnEntityData.playerPos.asVector3f());
                 byteBuf.writeVector3f(useItemOnEntityData.clickPos.asVector3f());
                 break;
             case TYPE_RELEASE_ITEM:
                 ReleaseItemData releaseItemData = (ReleaseItemData) this.transactionData;
 
-                byteBuf.writeUnsignedVarInt(releaseItemData.actionType);
+                byteBuf.writeVarInt(releaseItemData.actionType);
                 byteBuf.writeVarInt(releaseItemData.hotbarSlot);
-                byteBuf.writeSlot(releaseItemData.itemInHand);
+                byteBuf.writeCerealSlot(releaseItemData.itemInHand);
                 byteBuf.writeVector3f(releaseItemData.headRot.asVector3f());
                 break;
             default:

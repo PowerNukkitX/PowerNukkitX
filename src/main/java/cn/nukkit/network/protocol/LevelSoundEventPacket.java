@@ -25,7 +25,8 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.sound = LevelSoundEvent.fromId(byteBuf.readUnsignedVarInt());
+      //  this.sound = LevelSoundEvent.fromId(byteBuf.readUnsignedVarInt()); TODO
+        byteBuf.readString();
         Vector3f v = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
@@ -40,7 +41,7 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeUnsignedVarInt(this.sound.getId());
+        byteBuf.writeString(""); // TODO
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.extraData);
         byteBuf.writeString(this.entityIdentifier);

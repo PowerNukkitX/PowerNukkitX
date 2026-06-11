@@ -4,6 +4,7 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.EntityDiagnosticTimingInfo;
 import cn.nukkit.network.protocol.types.MemoryCategoryCounter;
 import cn.nukkit.network.protocol.types.SystemDiagnosticTimingInfo;
+import cn.nukkit.network.protocol.types.WhiskerScopeDataSummary;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
     public List<MemoryCategoryCounter> memoryCategoryValues = new ArrayList<>();
     public List<EntityDiagnosticTimingInfo> entityDiagnostics = new ObjectArrayList<>();
     public List<SystemDiagnosticTimingInfo> systemDiagnostics = new ObjectArrayList<>();
+    public List<WhiskerScopeDataSummary> whiskerScopes = new ObjectArrayList<>();
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -49,6 +51,7 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
         )).toList();
         byteBuf.readArray(this.entityDiagnostics, this::readEntityDiagnostics);
         byteBuf.readArray(this.systemDiagnostics, this::readSystemDiagnostics);
+        byteBuf.readArray(this.whiskerScopes, this::readWhiskerScopeDataSummary);
     }
 
     @Override
@@ -82,5 +85,15 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
         systemDiagnostics.setTimeInNS(buffer.readLongLE());
         systemDiagnostics.setPercentOfTotal(buffer.readUnsignedByte());
         return systemDiagnostics;
+    }
+
+    protected WhiskerScopeDataSummary readWhiskerScopeDataSummary(HandleByteBuf buffer) {
+        final WhiskerScopeDataSummary whiskerScopeDataSummary = new WhiskerScopeDataSummary();
+        whiskerScopeDataSummary.setIndentation(buffer.readString());
+        whiskerScopeDataSummary.setLabel(buffer.readString());
+        whiskerScopeDataSummary.setTotalHighCostNS(buffer.readLongLE());
+        whiskerScopeDataSummary.setTotalMidCostNS(buffer.readLongLE());
+        whiskerScopeDataSummary.setTotalLowCostNS(buffer.readLongLE());
+        return whiskerScopeDataSummary;
     }
 }
