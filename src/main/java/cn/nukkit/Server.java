@@ -467,7 +467,9 @@ public class Server {
         this.consoleSender = new ConsoleCommandSender();
 
         // Initialize metrics
-        NukkitMetrics.startNow(this);
+        if (!this.settings.miscSettings().disableMetrics()) {
+            NukkitMetrics.startNow(this);
+        }
 
         final RegistryCache registryCache;
         Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
