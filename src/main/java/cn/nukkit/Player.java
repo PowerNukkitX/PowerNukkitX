@@ -278,9 +278,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int previousInteractTick = 0;
     private final float rotationUpdateThreshold;
     private final float movementDistanceThreshold;
-    private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
+    protected final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-    private int timeSinceRest;
+    protected int timeSinceRest;
     private String buttonText = "Button";
     private PermissibleBase perm = null;
     private int hash;
@@ -321,7 +321,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Entity lastBeAttackEntity = null;
     @Setter
     @ApiStatus.Internal
-    private @NotNull PlayerHandle playerHandle;
+    protected @NotNull PlayerHandle playerHandle;
     @Getter
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;

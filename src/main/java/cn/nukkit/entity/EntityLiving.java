@@ -66,7 +66,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected int attackTime = 0;
     protected boolean invisible = false;
     protected int turtleTicks = 0;
-    private boolean attackTimeByShieldKb;
+    protected boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
     private static final int SHIELD_TRANSITION_TICKS = 2;
