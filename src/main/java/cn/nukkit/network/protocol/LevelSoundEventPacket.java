@@ -3,9 +3,8 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import cn.nukkit.registry.mappings.MappingRegistries;
 import lombok.*;
-
-import static cn.nukkit.utils.Utils.dynamic;
 
 @Getter
 @Setter
@@ -25,8 +24,10 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-      //  this.sound = LevelSoundEvent.fromId(byteBuf.readUnsignedVarInt()); TODO
-        byteBuf.readString();
+        String soundName = byteBuf.readString();
+        Integer soundId = MappingRegistries.LEVEL_SOUND_EVENT.get().inverse().get(soundName);
+        LevelSoundEvent event = soundId == null ? null : LevelSoundEvent.fromId(soundId);
+        this.sound = event == null ? LevelSoundEvent.UNDEFINED : event;
         Vector3f v = byteBuf.readVector3f();
         this.x = v.x;
         this.y = v.y;
@@ -41,7 +42,8 @@ public class LevelSoundEventPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeString(""); // TODO
+        String soundName = this.sound == null ? null : MappingRegistries.LEVEL_SOUND_EVENT.get().get(this.sound.getId());
+        byteBuf.writeString(soundName == null ? "" : soundName);
         byteBuf.writeVector3f(this.x, this.y, this.z);
         byteBuf.writeVarInt(this.extraData);
         byteBuf.writeString(this.entityIdentifier);
