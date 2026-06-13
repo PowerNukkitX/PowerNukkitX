@@ -1169,13 +1169,13 @@ public class Server {
                 for (BlockEntity be : level.getBlockEntities().values()) {
                     if (!be.closed) {
                         be.saveNBT();
-                        be.serializationSnapshot = be.namedTag.copy();
+                        be.serializationSnapshot = be.getNbt().copy();
                     }
                 }
                 for (Entity entity : level.getEntities()) {
                     if (!(entity instanceof Player) && !entity.closed) {
                         entity.saveNBT();
-                        entity.serializationSnapshot = entity.namedTag.copy();
+                        entity.serializationSnapshot = entity.getNbt().copy();
                     }
                 }
             }

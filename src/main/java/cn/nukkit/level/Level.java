@@ -4328,13 +4328,13 @@ public class Level implements Metadatable {
                         for (BlockEntity be : chunk.getBlockEntities().values()) {
                             if (!be.closed) {
                                 be.saveNBT();
-                                be.serializationSnapshot = be.namedTag.copy();
+                                be.serializationSnapshot = be.getNbt().copy();
                             }
                         }
                         for (Entity e : chunk.getEntities().values()) {
                             if (!(e instanceof Player) && !e.closed) {
                                 e.saveNBT();
-                                e.serializationSnapshot = e.namedTag.copy();
+                                e.serializationSnapshot = e.getNbt().copy();
                             }
                         }
                         levelProvider.setChunk(x, z, chunk);
@@ -4750,13 +4750,13 @@ public class Level implements Metadatable {
                         for (BlockEntity be : c.getBlockEntities().values()) {
                             if (!be.closed) {
                                 be.saveNBT();
-                                be.serializationSnapshot = be.namedTag.copy();
+                                be.serializationSnapshot = be.getNbt().copy();
                             }
                         }
                         for (Entity e : c.getEntities().values()) {
                             if (!(e instanceof Player) && !e.closed) {
                                 e.saveNBT();
-                                e.serializationSnapshot = e.namedTag.copy();
+                                e.serializationSnapshot = e.getNbt().copy();
                             }
                         }
                     }
