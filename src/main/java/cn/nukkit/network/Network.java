@@ -146,7 +146,7 @@ public class Network implements NetworkInterface {
                             session.close("Your IP address has been blocked by this server!");
                             onSessionDisconnect(address);
                         } else {
-                            if (server.getSettings().miscSettings().disableEncodingLimits()) {
+                            if (server.getSettings().debugSettings().disableEncodingLimits()) {
                                 session.getPeer().getCodecHelper().setEncodingSettings(EncodingSettings.UNLIMITED);
                             }
                             session.setCodec(NetworkConstants.CODEC);
