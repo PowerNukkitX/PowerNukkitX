@@ -999,13 +999,21 @@ public class Level implements Metadatable {
     public void registerChunkLoader(ChunkLoader loader, int chunkX, int chunkZ, boolean autoLoad) {
         int hash = loader.getLoaderId();
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (!this.chunkLoaders.containsKey(index)) {
-            this.chunkLoaders.put(index, new HashMap<>());
-        } else if (this.chunkLoaders.get(index).containsKey(hash)) {
-            return;
+
+        Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(index);
+        if (chunkLoadersIndex == null) {
+            Map<Integer, ChunkLoader> newChunkLoadersIndex = new ConcurrentHashMap<>();
+            Map<Integer, ChunkLoader> existingChunkLoadersIndex =
+                    this.chunkLoaders.putIfAbsent(index, newChunkLoadersIndex);
+
+            chunkLoadersIndex = existingChunkLoadersIndex != null
+                    ? existingChunkLoadersIndex
+                    : newChunkLoadersIndex;
         }
 
-        this.chunkLoaders.get(index).put(hash, loader);
+        if (chunkLoadersIndex.putIfAbsent(hash, loader) != null) {
+            return;
+        }
 
         if (!this.loaders.containsKey(hash)) {
             this.loaderCounter.put(hash, 1);
@@ -4032,23 +4040,28 @@ public class Level implements Metadatable {
                 IChunk chunk = this.getChunk(x, z);
                 if (chunk != null && chunk.getChunkState().canSend()) {
                     final var pair = this.requireProvider().requestChunkData(x, z);
-                    for (Player player : Objects.requireNonNull(players).values()) {
-                        if (player.isConnected()) {
-                            final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-                            networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
-                            networkChunkPublisherUpdatePacket.setNewRadiusForView(player.getViewDistance() << 4);
-                            player.sendPacketImmediately(networkChunkPublisherUpdatePacket);
+                    final var chunkData = pair.first();
+                    try {
+                        for (Player player : Objects.requireNonNull(players).values()) {
+                            if (player.isConnected()) {
+                                final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+                                networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
+                                networkChunkPublisherUpdatePacket.setNewRadiusForView(player.getViewDistance() << 4);
+                                player.sendPacketImmediately(networkChunkPublisherUpdatePacket);
 
-                            final LevelChunkPacket levelChunkPacket;
-                            levelChunkPacket = new LevelChunkPacket();
-                            levelChunkPacket.setChunkX(x);
-                            levelChunkPacket.setChunkZ(z);
-                            levelChunkPacket.setDimension(DimensionType.from(this.getDimensionData().getDimensionId()));
-                            levelChunkPacket.setSubChunksCount(pair.second());
-                            levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/pair.first());
-                            player.sendChunk(x, z, levelChunkPacket);
-                            //player.refreshBlockEntity(chunk);
+                                final LevelChunkPacket levelChunkPacket;
+                                levelChunkPacket = new LevelChunkPacket();
+                                levelChunkPacket.setChunkX(x);
+                                levelChunkPacket.setChunkZ(z);
+                                levelChunkPacket.setDimension(DimensionType.from(this.getDimensionData().getDimensionId()));
+                                levelChunkPacket.setSubChunksCount(pair.second());
+                                levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/chunkData.retainedDuplicate());
+                                player.sendChunk(x, z, levelChunkPacket);
+                                //player.refreshBlockEntity(chunk);
+                            }
                         }
+                    } finally {
+                        chunkData.release();
                     }
                     this.chunkSendQueue.remove(index);
                 } else if (!this.chunkGenerationQueue.containsKey(index)) {
