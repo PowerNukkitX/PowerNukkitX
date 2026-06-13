@@ -34,6 +34,8 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.LevelConfig;
@@ -177,6 +179,7 @@ public class Server {
     private final AtomicBoolean isRunning = new AtomicBoolean(true);
     private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
     private boolean hasStopped = false;
+    private final AtomicBoolean hasBeforeStopped = new AtomicBoolean(false);
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
@@ -849,6 +852,8 @@ public class Server {
      * Shutdown the server
      */
     public void shutdown() {
+        this.beforeStop();
+
         network.setState(NetworkState.STOPPING);
         isRunning.compareAndSet(true, false);
     }
@@ -862,6 +867,8 @@ public class Server {
         }
 
         try {
+            this.beforeStop();
+
             network.setState(NetworkState.STOPPING);
             isRunning.compareAndSet(true, false);
 
@@ -923,6 +930,12 @@ public class Server {
         } catch (Exception e) {
             log.error("Exception happened while shutting down, exiting the process", e);
             System.exit(1);
+        }
+    }
+
+    private void beforeStop() {
+        if (this.hasBeforeStopped.compareAndSet(false, true)) {
+            this.pluginManager.beforeStopPlugins();
         }
     }
 
@@ -1104,9 +1117,21 @@ public class Server {
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
-            CompletableFuture.runAsync(() -> {
-                this.doAutoSave();
-            });
+            for (Level level : this.levelArray) {
+                for (BlockEntity be : level.getBlockEntities().values()) {
+                    if (!be.closed) {
+                        be.saveNBT();
+                        be.serializationSnapshot = be.namedTag.copy();
+                    }
+                }
+                for (Entity entity : level.getEntities()) {
+                    if (!(entity instanceof Player) && !entity.closed) {
+                        entity.saveNBT();
+                        entity.serializationSnapshot = entity.namedTag.copy();
+                    }
+                }
+            }
+            CompletableFuture.runAsync(this::doAutoSave);
         }
 
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {

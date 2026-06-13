@@ -982,13 +982,12 @@ public class Level implements Metadatable {
 
     public Map<Integer, Player> getChunkPlayers(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (this.chunkLoaders.containsKey(index)) {
-            return this.chunkLoaders.get(index).entrySet()
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders != null) {
+            return loaders.entrySet()
                     .stream()
                     .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
-                    .collect(HashMap::new, (m, e) -> {
-                        m.put(e.getKey(), (Player) e.getValue());
-                    }, HashMap::putAll);
+                    .collect(HashMap::new, (m, e) -> m.put(e.getKey(), (Player) e.getValue()), HashMap::putAll);
         }
         return Collections.emptyMap();
     }
@@ -1015,21 +1014,23 @@ public class Level implements Metadatable {
     public void registerChunkLoader(ChunkLoader loader, int chunkX, int chunkZ, boolean autoLoad) {
         int hash = loader.getLoaderId();
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (!this.chunkLoaders.containsKey(index)) {
-            this.chunkLoaders.put(index, new HashMap<>());
-        } else if (this.chunkLoaders.get(index).containsKey(hash)) {
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders == null) {
+            loaders = new ConcurrentHashMap<>();
+            this.chunkLoaders.put(index, loaders);
+        }
+        if (loaders.containsKey(hash)) {
             return;
         }
 
-        this.chunkLoaders.get(index).put(hash, loader);
-
-        if (!this.loaders.containsKey(hash)) {
-            this.loaderCounter.put(hash, 1);
-            synchronized (this.loaders) {
+        synchronized (this.loaders) {
+            loaders.put(hash, loader);
+            if (!this.loaders.containsKey(hash)) {
+                this.loaderCounter.put(hash, 1);
                 this.loaders.put(hash, loader);
+            } else {
+                this.loaderCounter.put(hash, this.loaderCounter.get(hash) + 1);
             }
-        } else {
-            this.loaderCounter.put(hash, this.loaderCounter.get(hash) + 1);
         }
 
         this.cancelUnloadChunkRequest(chunkX, chunkZ);
@@ -1052,14 +1053,14 @@ public class Level implements Metadatable {
                     return this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload);
                 }
 
-                int count = this.loaderCounter.get(loaderId);
-                if (--count == 0) {
-                    this.loaderCounter.remove(loaderId);
-                    synchronized (this.loaders) {
+                synchronized (this.loaders) {
+                    int count = this.loaderCounter.get(loaderId);
+                    if (--count == 0) {
+                        this.loaderCounter.remove(loaderId);
                         this.loaders.remove(loaderId);
+                    } else {
+                        this.loaderCounter.put(loaderId, count);
                     }
-                } else {
-                    this.loaderCounter.put(loaderId, count);
                 }
                 return true;
             }
@@ -4335,6 +4336,18 @@ public class Level implements Metadatable {
                     }
 
                     if (chunk.hasChanged() || !chunk.getBlockEntities().isEmpty() || entities > 0) {
+                        for (BlockEntity be : chunk.getBlockEntities().values()) {
+                            if (!be.closed) {
+                                be.saveNBT();
+                                be.serializationSnapshot = be.namedTag.copy();
+                            }
+                        }
+                        for (Entity e : chunk.getEntities().values()) {
+                            if (!(e instanceof Player) && !e.closed) {
+                                e.saveNBT();
+                                e.serializationSnapshot = e.namedTag.copy();
+                            }
+                        }
                         levelProvider.setChunk(x, z, chunk);
                         levelProvider.saveChunk(x, z);
                     }
@@ -4743,6 +4756,20 @@ public class Level implements Metadatable {
                         .collect(Collectors.toUnmodifiableSet());
 
                 if (!chunksToSave.isEmpty() && getAutoSave()) {
+                    for (IChunk c : chunksToSave) {
+                        for (BlockEntity be : c.getBlockEntities().values()) {
+                            if (!be.closed) {
+                                be.saveNBT();
+                                be.serializationSnapshot = be.namedTag.copy();
+                            }
+                        }
+                        for (Entity e : c.getEntities().values()) {
+                            if (!(e instanceof Player) && !e.closed) {
+                                e.saveNBT();
+                                e.serializationSnapshot = e.namedTag.copy();
+                            }
+                        }
+                    }
                     requireProvider().saveChunks(chunksToSave);
                 }
 
