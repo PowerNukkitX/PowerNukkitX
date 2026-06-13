@@ -103,7 +103,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 itemData.triggerType = UseItemData.TriggerType.values()[byteBuf.readUnsignedByte()];
                 itemData.blockPos = byteBuf.readBlockVector3();
                 itemData.face = BlockFace.fromIndex(byteBuf.readUnsignedByte());
-                itemData.hotbarSlot = byteBuf.readUnsignedVarInt();
+                itemData.hotbarSlot = byteBuf.readVarInt();
                 itemData.itemInHand = byteBuf.readCerealSlot();
                 itemData.playerPos = byteBuf.readVector3f().asVector3();
                 itemData.clickPos = byteBuf.readVector3f();
@@ -174,7 +174,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 byteBuf.writeByte(useItemData.triggerType.ordinal());
                 byteBuf.writeBlockVector3(useItemData.blockPos);
                 byteBuf.writeByte(useItemData.face.getIndex());
-                byteBuf.writeUnsignedVarInt(useItemData.hotbarSlot);
+                byteBuf.writeVarInt(useItemData.hotbarSlot);
                 byteBuf.writeCerealSlot(useItemData.itemInHand);
                 byteBuf.writeVector3f(useItemData.playerPos.asVector3f());
                 byteBuf.writeVector3f(useItemData.clickPos);
