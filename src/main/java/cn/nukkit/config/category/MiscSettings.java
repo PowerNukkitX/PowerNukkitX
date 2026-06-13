@@ -22,4 +22,6 @@ public class MiscSettings extends OkaeriConfig {
     boolean overrideServerAuthBlockBreaking = false;
     @Comment("pnx.settings.misc.disablemetrics")
     boolean disableMetrics = true;
+    @Comment("pnx.settings.disableencodinglimits")
+    boolean disableEncodingLimits = false;
 }
