@@ -12,8 +12,7 @@ public class NetworkStackLatencyHandler implements PacketHandler<NetworkStackLat
 
     @Override
     public void handle(NetworkStackLatencyPacket packet, PlayerSessionHolder holder, Server server) {
-        final long serverTime = holder.getPlayerHandle().getLastServerNetworkStackLatencyTimeInMS();
-        holder.getPlayerHandle().setLatencyTimeInMS(serverTime - (packet.getCreationTime() / 1_000_000L));
-        holder.getPlayerHandle().onAckReceive();
+        holder.getPlayerHandle().setLatencyTimeInMS(System.currentTimeMillis() - (packet.getCreationTime() / 1_000_000L));
+        holder.getPlayerHandle().onAckReceive(packet.getCreationTime());
     }
 }

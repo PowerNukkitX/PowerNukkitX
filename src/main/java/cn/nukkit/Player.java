@@ -378,7 +378,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected EnumSet<ClientInputLockComponent> clientInputLocks = EnumSet.noneOf(ClientInputLockComponent.class);
 
-    private Runnable ackRunnable;
+    private final Map<Long, Runnable> ackRunnables = new HashMap<>();
 
     @UsedByReflection
     public Player(@NotNull BedrockServerSession session, @NotNull PlayerInfo info) {
@@ -2830,12 +2830,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             foodData.sendFood();
         }
 
-        final long creationTime = System.currentTimeMillis();
-        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime);
-        final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
-        packet.setCreationTime(creationTime);
-        packet.setFromServer(true);
-        this.session.sendPacketImmediately(packet);
+        this.sendNetworkStackLatencyPacket();
 
         return true;
     }
@@ -5976,14 +5971,37 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void waitForAck(Runnable runnable) {
-        this.ackRunnable = runnable;
+        long creationTime = this.sendNetworkStackLatencyPacket(runnable);
+        this.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            Runnable delayedRunnable = this.ackRunnables.remove(creationTime);
+            if (delayedRunnable != null) {
+                delayedRunnable.run();
+            }
+        }, 5);
     }
 
-    protected void onAckReceive() {
-        if (this.ackRunnable == null) {
+    private long sendNetworkStackLatencyPacket() {
+        return this.sendNetworkStackLatencyPacket(null);
+    }
+
+    private long sendNetworkStackLatencyPacket(Runnable runnable) {
+        final long creationTime = System.currentTimeMillis() * 1_000_000L + Math.floorMod(System.nanoTime(), 1_000_000L);
+        if (runnable != null) {
+            this.ackRunnables.put(creationTime, runnable);
+        }
+        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime / 1_000_000L);
+        final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
+        packet.setCreationTime(creationTime);
+        packet.setFromServer(true);
+        this.session.sendPacketImmediately(packet);
+        return creationTime;
+    }
+
+    protected void onAckReceive(long creationTime) {
+        Runnable runnable = this.ackRunnables.remove(creationTime);
+        if (runnable == null) {
             return;
         }
-        this.ackRunnable.run();
-        this.ackRunnable = null;
+        runnable.run();
     }
 }
