@@ -31,8 +31,11 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     @Override
     public void close() {
         if (!closed) {
-            unpair();
-            this.getInventory().getViewers().forEach(p -> p.removeWindow(this.getInventory()));
+            DoubleChestInventory dblInv = this.doubleInventory;
+            if (dblInv != null) {
+                dblInv.getViewers().forEach(p -> p.removeWindow(dblInv));
+                this.doubleInventory = null;
+            }
             this.getRealInventory().getViewers().forEach(p -> p.removeWindow(this.getRealInventory()));
 
             this.closed = true;
@@ -89,11 +92,15 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
                 }
             }
         } else {
-            if (level.isChunkLoaded(this.namedTag.getInt("pairx") >> 4, this.namedTag.getInt("pairz") >> 4)) {
+            int pairChunkX = this.namedTag.getInt("pairx") >> 4;
+            int pairChunkZ = this.namedTag.getInt("pairz") >> 4;
+            IChunk pairChunk = level.getChunkIfLoaded(pairChunkX, pairChunkZ);
+            if (pairChunk != null && pairChunk.isInitiated()) {
                 this.doubleInventory = null;
                 this.namedTag.remove("pairx");
                 this.namedTag.remove("pairz");
                 this.namedTag.remove("pairlead");
+                this.setDirty();
             }
         }
     }
@@ -159,6 +166,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         this.doubleInventory = null;
         this.namedTag.remove("pairx");
         this.namedTag.remove("pairz");
+        this.setDirty();
 
         this.spawnToAll();
 
@@ -167,6 +175,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             chest.namedTag.remove("pairz");
             chest.doubleInventory = null;
             chest.checkPairing();
+            chest.setDirty();
             chest.spawnToAll();
         }
         this.checkPairing();
