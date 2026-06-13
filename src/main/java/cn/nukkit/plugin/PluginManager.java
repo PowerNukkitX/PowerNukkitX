@@ -542,6 +542,23 @@ public class PluginManager {
         }
     }
 
+    public void beforeStopPlugins() {
+        List<Plugin> plugins = new ArrayList<>(this.getPlugins().values());
+        ListIterator<Plugin> iterator = plugins.listIterator(plugins.size());
+
+        while (iterator.hasPrevious()) {
+            Plugin previous = iterator.previous();
+            if (previous != InternalPlugin.INSTANCE && previous.isEnabled()) {
+                try {
+                    previous.beforeStop();
+                } catch (Throwable e) {
+                    log.error("An error occurred while running beforeStop for plugin {}, {}, {}",
+                            previous.getDescription().getName(), previous.getDescription().getVersion(), previous.getDescription().getMain(), e);
+                }
+            }
+        }
+    }
+
     public void disablePlugin(Plugin plugin) {
         if (InternalPlugin.INSTANCE == plugin) {
             throw new UnsupportedOperationException("The PowerNukkitX Internal plugin can't be disabled.");

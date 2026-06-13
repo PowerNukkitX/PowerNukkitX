@@ -179,6 +179,7 @@ public class Server {
     private final AtomicBoolean isRunning = new AtomicBoolean(true);
     private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
     private boolean hasStopped = false;
+    private final AtomicBoolean hasBeforeStopped = new AtomicBoolean(false);
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
@@ -838,6 +839,8 @@ public class Server {
      * Shutdown the server
      */
     public void shutdown() {
+        this.beforeStop();
+
         network.setState(NetworkState.STOPPING);
         isRunning.compareAndSet(true, false);
     }
@@ -850,6 +853,13 @@ public class Server {
             return;
         }
 
+        try {
+            log.debug("BeforeStop");
+            this.beforeStop();
+        } catch (Throwable e) {
+            log.error("Exception while beforestop", e);
+        }
+  
         network.setState(NetworkState.STOPPING);
         isRunning.compareAndSet(true, false);
 
@@ -967,6 +977,12 @@ public class Server {
             log.error("Exception while closing thread pools", e);
         }
         // TODO: Other things
+    }
+
+    private void beforeStop() {
+        if (this.hasBeforeStopped.compareAndSet(false, true)) {
+            this.pluginManager.beforeStopPlugins();
+        }
     }
 
     public void start() {
