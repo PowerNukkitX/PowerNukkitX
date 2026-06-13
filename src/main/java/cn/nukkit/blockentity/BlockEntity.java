@@ -29,6 +29,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public boolean movable;
     public boolean closed = false;
     protected CompoundTag nbt;
+    public volatile CompoundTag serializationSnapshot;
     protected Server server;
 
     public static BlockEntity createBlockEntity(String type, Position position, Object... args) {

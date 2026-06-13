@@ -197,6 +197,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public int freezingTicks = 0;//0 - 140
     public float scale = 1;
     protected CompoundTag nbt;
+    public volatile CompoundTag serializationSnapshot;
     public boolean isCollided = false;
     public boolean isCollidedHorizontally = false;
     public boolean isCollidedVertically = false;
