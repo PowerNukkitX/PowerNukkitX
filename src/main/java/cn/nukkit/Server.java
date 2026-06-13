@@ -850,69 +850,123 @@ public class Server {
             return;
         }
 
+        network.setState(NetworkState.STOPPING);
+        isRunning.compareAndSet(true, false);
+
+        this.hasStopped = true;
+
         try {
-            network.setState(NetworkState.STOPPING);
-            isRunning.compareAndSet(true, false);
-
-            this.hasStopped = true;
-
             ServerStopEvent serverStopEvent = new ServerStopEvent();
             getPluginManager().callEvent(serverStopEvent);
+        } catch (Throwable e) {
+            log.error("Exception while calling ServerStopEvent", e);
+        }
 
-            for (Player player : new ArrayList<>(this.players.values())) {
+        for (Player player : new ArrayList<>(this.players.values())) {
+            try {
                 player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
+            } catch (Throwable e) {
+                log.error("Exception while kicking player on shutdown", e);
             }
+        }
 
-            this.getSettings().save();
+        this.getSettings().save();
 
+        try {
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
+        } catch (Throwable e) {
+            log.error("Exception while disabling plugins", e);
+        }
 
+        try {
             log.debug("Removing event handlers");
             HandlerList.unregisterAll();
+        } catch (Throwable e) {
+            log.error("Exception while removing event handlers", e);
+        }
 
+        try {
             log.debug("Saving scoreboards data");
             this.scoreboardManager.save();
+        } catch (Throwable e) {
+            log.error("Exception while saving scoreboards", e);
+        }
 
+        try {
             log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
             this.scheduler.mainThreadHeartbeat((int) (this.getNextTick() + 10000));
+        } catch (Throwable e) {
+            log.error("Exception while stopping tasks", e);
+        }
 
-            log.debug("Unloading all levels");
-            //Chunks may still generate. Waiting for all generation tasks to complete
-            while(!this.getComputeThreadPool().isQuiescent()) Thread.sleep(1);
-            for (Level level : this.levelArray) {
+        log.debug("Unloading all levels");
+        //Chunks may still generate. Waiting for all generation tasks to complete
+        try {
+            while (!this.getComputeThreadPool().isQuiescent()) Thread.sleep(1);
+        } catch (Throwable e) {
+            log.error("Exception while waiting for generation tasks", e);
+        }
+        for (Level level : this.levelArray) {
+            try {
                 this.unloadLevel(level, true);
                 //Waiting for level to complete its last tick
                 while (level.isThreadRunning()) Thread.sleep(1);
+            } catch (Throwable e) {
+                log.error("Exception while unloading/saving level {}", level.getName(), e);
             }
+        }
+
+        try {
             if (positionTrackingService != null) {
                 log.debug("Closing position tracking service");
                 positionTrackingService.close();
             }
-            this.levelTickExecutor.shutdown();
+        } catch (Throwable e) {
+            log.error("Exception while closing position tracking service", e);
+        }
 
+        try {
+            this.levelTickExecutor.shutdown();
+        } catch (Throwable e) {
+            log.error("Exception while shutting down level tick executor", e);
+        }
+
+        try {
             log.debug("Closing console");
             this.consoleThread.interrupt();
+        } catch (Throwable e) {
+            log.error("Exception while closing console", e);
+        }
 
+        try {
             log.debug("Stopping network interfaces");
             network.shutdown();
             playerDataDB.close();
-            // close watchdog and metrics
+        } catch (Throwable e) {
+            log.error("Exception while stopping network interfaces", e);
+        }
+
+        try {
+            // Close watchdog and metrics
             if (this.watchdog != null) {
                 this.watchdog.running = false;
             }
-            NukkitMetrics.closeNow(this);
-            // close threadPool
+        } catch (Throwable e) {
+            log.error("Exception while closing watchdog", e);
+        }
+
+        try {
+            // Close thread pool
             try (ForkJoinPool pool = ForkJoinPool.commonPool()) {
                 pool.shutdownNow();
             }
             this.computeThreadPool.shutdownNow();
-            // todo other things
-        } catch (Exception e) {
-            log.error("Exception happened while shutting down, exiting the process", e);
-            System.exit(1);
+        } catch (Throwable e) {
+            log.error("Exception while closing thread pools", e);
         }
+        // TODO: Other things
     }
 
     public void start() {
