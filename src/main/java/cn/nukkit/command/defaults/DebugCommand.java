@@ -12,6 +12,8 @@ import cn.nukkit.ddui.Observable;
 import cn.nukkit.ddui.element.options.SliderElementOptions;
 import cn.nukkit.ddui.element.options.TextFieldOptions;
 import cn.nukkit.entity.ai.EntityAI;
+import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.inventory.fake.FakeInventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
 import cn.nukkit.item.ItemFilledMap;
@@ -95,12 +97,21 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("toggle", new String[]{"toggle"}),
                 CommandParameter.newEnum("type", new String[]{"invulnerable"}),
         });
+        this.commandParameters.put("fakeinv", new CommandParameter[]{
+                CommandParameter.newEnum("fakeinv", new String[]{"fakeinv"})
+        });
         this.enableParamTree();
     }
 
     @Override
     public int execute(CommandSender sender, String label, Map.Entry<String, ParamList> result, CommandLogger log) {
         return switch (result.getKey()) {
+            case "fakeinv" -> {
+                final FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.CHEST, "Test");
+                fakeInventory.setItem(0, Item.get(Item.DIAMOND));
+                ((Player) sender).addWindow(fakeInventory);
+                yield 0;
+            }
             case "structure" -> handleStructure(sender, result.getValue(), log);
             case "entity" -> handleEntity(result.getValue(), log);
             case "rendermap" -> handleRenderMap(sender, result.getValue(), log);

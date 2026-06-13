@@ -389,4 +389,8 @@ public final class PlayerHandle {
     public void doFirstSpawn() {
         this.player.doFirstSpawn();
     }
+
+    public void onAckReceive() {
+        this.player.onAckReceive();
+    }
 }

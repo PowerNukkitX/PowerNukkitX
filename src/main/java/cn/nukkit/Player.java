@@ -378,6 +378,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected EnumSet<ClientInputLockComponent> clientInputLocks = EnumSet.noneOf(ClientInputLockComponent.class);
 
+    private Runnable ackRunnable;
+
     @UsedByReflection
     public Player(@NotNull BedrockServerSession session, @NotNull PlayerInfo info) {
         super(null, new CompoundTag());
@@ -5971,5 +5973,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
         playerFogPacket.getFogStack().addAll(this.getFogStack());
         this.sendPacketImmediately(playerFogPacket);
+    }
+
+    public void waitForAck(Runnable runnable) {
+        this.ackRunnable = runnable;
+    }
+
+    protected void onAckReceive() {
+        if (this.ackRunnable == null) {
+            return;
+        }
+        this.ackRunnable.run();
+        this.ackRunnable = null;
     }
 }
