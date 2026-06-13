@@ -67,7 +67,7 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         CompoundTag tag = this.getNamedTag();
         ListTag<CompoundTag> items = new ListTag<>(Tag.TAG_Compound);
         for(var entry : getInventory().getContents().entrySet()) {
-            items.add(entry.getKey(), NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
+            items.add(NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
         }
         tag.putList("storage_item_component_content", items);
         this.setNamedTag(tag);
@@ -82,6 +82,7 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
             player.dropItem(instance);
             getInventory().sendContents(player);
             getLevel().addSound(getVector3(), Sound.BUNDLE_DROP_CONTENTS);
+            player.getInventory().setItemInMainHand(this);
             return true;
         } else return false;
     }
