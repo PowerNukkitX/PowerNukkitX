@@ -3920,6 +3920,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             health = 0;
         }
         super.setHealthCurrent(health);
+
+        @SuppressWarnings("null")
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
         attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
@@ -3934,9 +3936,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setHealthMax(int maxHealth) {
         super.setHealthMax(maxHealth);
 
+        @SuppressWarnings("null")
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
-        if (this.spawned) {
+        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? Math.min(health, getHealthMax()) : 0);
+
+        if (this.spawned && this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.setRuntimeID(this.getId());
             pk.getAttributeList().add(attribute.toNetwork());
