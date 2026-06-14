@@ -23,7 +23,7 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
     @Override
     public PacketSignal handlePacket(BedrockPacket packet) {
         if (!this.session.checkRateLimits(this.server)) {
-            return PacketSignal.UNHANDLED;
+            return PacketSignal.HANDLED;
         }
         final Player player;
         if ((player = this.session.getPlayer()) != null) {
