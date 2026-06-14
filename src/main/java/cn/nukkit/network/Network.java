@@ -36,7 +36,6 @@ import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.protocol.bedrock.BedrockPong;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
-import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockServerInitializer;
 import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
@@ -146,9 +145,6 @@ public class Network implements NetworkInterface {
                             session.close("Your IP address has been blocked by this server!");
                             onSessionDisconnect(address);
                         } else {
-                            if (server.getSettings().debugSettings().disableEncodingLimits()) {
-                                session.getPeer().getCodecHelper().setEncodingSettings(EncodingSettings.UNLIMITED);
-                            }
                             session.setCodec(NetworkConstants.CODEC);
                             session.setPacketHandler(new NetworkPacketHandler(server,
                                     new PlayerSessionHolder(
