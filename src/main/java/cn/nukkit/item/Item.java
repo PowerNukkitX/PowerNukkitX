@@ -2638,6 +2638,18 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
+    public static void applyDamage(Player player, ItemTool item, int amount) {
+        if (!item.canTakeDamage() || item.isUnbreakable()) return;
+
+        item.setDamage(item.getDamage() + amount);
+
+        if (item.getDamage() >= item.getMaxDurability()) {
+            player.getInventory().setItemInMainHand(Item.AIR);
+        } else {
+            player.getInventory().setItemInMainHand(item);
+        }
+    }
+
     @Nullable
     public CustomItemDefinition getCustomDefinition() {
         if (this instanceof CustomItem customItem) {
