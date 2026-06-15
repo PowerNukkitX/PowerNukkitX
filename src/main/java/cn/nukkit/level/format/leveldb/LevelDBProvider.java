@@ -59,6 +59,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -74,6 +78,18 @@ public class LevelDBProvider implements LevelProvider {
     private final Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> normalTicksMap = new ConcurrentHashMap<>();
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
+    /**
+     * Single-threaded FIFO executor that performs the disk write of chunks serialized by
+     * {@link #saveChunkAsync(IChunk)}. Keeping it single-threaded preserves write ordering per chunk
+     * and isolates LevelDB I/O from the tick thread.
+     */
+    private final ExecutorService chunkWriteExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "LevelDB-Chunk-Writer");
+        t.setDaemon(true);
+        return t;
+    });
+    /// Number of chunk writes submitted to {@link #chunkWriteExecutor} but not yet flushed to disk.
+    private final AtomicInteger pendingChunkWrites = new AtomicInteger();
     protected final Level level;
     protected final String path;
     protected CompoundTag worldDynamicProperties = new CompoundTag();
@@ -537,6 +553,34 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
+    @Override
+    public void saveChunkAsync(IChunk chunk) {
+        if (chunk == null) {
+            return;
+        }
+        // Serialize on the calling (tick) thread into an in-memory batch. Because the tick thread is the
+        // sole mutator of this chunk's blocks and block entities, this captures a structurally consistent
+        // snapshot - the block palette and the block-entity set cannot be torn by a concurrent edit.
+        WriteBatchHelper helper = new WriteBatchHelper();
+        LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
+        chunk.setChanged(false);
+        // Only the disk write is asynchronous.
+        int x = chunk.getX();
+        int z = chunk.getZ();
+        pendingChunkWrites.incrementAndGet();
+        chunkWriteExecutor.execute(() -> {
+            try (WriteBatch batch = storage.createBatch()) {
+                helper.write(batch);
+                storage.writeBatch(batch);
+                log.debug("[auto-save] wrote chunk ({}, {}) to disk ({} pending)", x, z, pendingChunkWrites.get() - 1);
+            } catch (Exception e) {
+                log.error("Failed to asynchronously write chunk ({}, {})", x, z, e);
+            } finally {
+                pendingChunkWrites.decrementAndGet();
+            }
+        });
+    }
+
     public LevelDat getLevelData() {
         return this.levelDat;
     }
@@ -649,6 +693,21 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void close() {
         flushWorldDynamicProperties();
+        // Drain any pending asynchronous chunk writes before closing the database.
+        int pending = pendingChunkWrites.get();
+        if (pending > 0) {
+            log.debug("[auto-save] flushing {} pending async chunk write(s) before closing level {}", pending, path);
+        }
+        chunkWriteExecutor.shutdown();
+        try {
+            if (!chunkWriteExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+                log.warn("Timed out waiting for async chunk writes to flush for level {}", path);
+            } else if (pending > 0) {
+                log.debug("[auto-save] async chunk writes flushed for level {}", path);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         storage.close();
     }
 

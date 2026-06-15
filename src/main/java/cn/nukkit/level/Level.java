@@ -370,6 +370,16 @@ public class Level implements Metadatable {
     private long tickTime = System.currentTimeMillis();
     private final Long2ObjectMap<IntOpenHashSet> blockLightQueue = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>(8));
     private final int dimensionCount;
+    /// Auto-save: chunks are serialized on the tick thread (for a consistent snapshot), a bounded number
+    /// per tick (chunkSettings().saveChunksPerTick()), so a periodic save streams out over several ticks
+    /// instead of landing as one spike.
+    /// Set by {@link #requestAutoSave()} (possibly from another thread); consumed on the tick thread.
+    private volatile boolean autoSavePending = false;
+    /// Hashes of chunks still to be serialized for the current auto-save pass. Touched only on the tick thread.
+    private final LongArrayFIFOQueue autoSaveQueue = new LongArrayFIFOQueue();
+    /// Tracks the current auto-save pass for the debug-level progress logging in {@link #processAutoSave()}.
+    private boolean autoSavePassActive = false;
+    private int autoSaveWrittenThisPass = 0;
     /// base tick system
     private ScheduledFuture<?> baseTickTask;
     @Getter
@@ -1287,6 +1297,8 @@ public class Level implements Metadatable {
                 Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
                 gameRules.refresh();
             }
+
+            this.processAutoSave();
         } catch (Exception e) {
             log.error(getServer().getLanguage().tr("nukkit.level.tickError",
                     this.getFolderPath(), Utils.getExceptionMessage(e)), e);
@@ -1675,6 +1687,16 @@ public class Level implements Metadatable {
 
         this.server.getPluginManager().callEvent(new LevelSaveEvent(this));
 
+        this.saveLevelMetadata();
+        this.saveChunks();
+        return true;
+    }
+
+    /**
+     * Persists level metadata (time, weather, game rules, level.dat) without touching chunks.
+     * Cheap; safe to call separately from chunk saving.
+     */
+    public void saveLevelMetadata() {
         LevelProvider levelProvider = this.requireProvider();
         levelProvider.setTime((int) this.time);
         levelProvider.setRaining(this.raining);
@@ -1684,13 +1706,66 @@ public class Level implements Metadatable {
         levelProvider.setNoSleepNight(this.noSleepNights);
         levelProvider.setCurrentTick(this.levelCurrentTick);
         levelProvider.setGameRules(this.gameRules);
-        this.saveChunks();
         levelProvider.saveLevelData();
-        return true;
     }
 
     public void saveChunks() {
         requireProvider().saveChunks();
+    }
+
+    /**
+     * Requests an auto-save pass for this level. May be called from any thread; the actual work runs on
+     * the tick thread via {@link #processAutoSave()}, which serializes dirty chunks a bounded number per
+     * tick and flushes each to disk asynchronously.
+     */
+    public void requestAutoSave() {
+        this.autoSavePending = true;
+    }
+
+    /**
+     * Runs on the tick thread. When an auto-save has been requested and the previous pass has drained,
+     * collects the currently-dirty chunks; then serializes up to saveChunksPerTick of
+     * them this tick (consistent because the tick thread is the sole mutator) and writes them async.
+     */
+    private void processAutoSave() {
+        LevelProvider provider = this.getProvider();
+        if (provider == null) {
+            return;
+        }
+        if (this.autoSavePending && this.autoSaveQueue.isEmpty()) {
+            this.autoSavePending = false;
+            if (this.getAutoSave()) {
+                for (IChunk chunk : provider.getLoadedChunks().values()) {
+                    if (chunk != null && chunk.hasChanged()) {
+                        this.autoSaveQueue.enqueue(Level.chunkHash(chunk.getX(), chunk.getZ()));
+                    }
+                }
+                if (!this.autoSaveQueue.isEmpty()) {
+                    this.autoSavePassActive = true;
+                    this.autoSaveWrittenThisPass = 0;
+                    log.debug("[auto-save] level '{}': queued {} dirty chunk(s) (budget {}/tick)",
+                            this.getName(), this.autoSaveQueue.size(),
+                            Math.max(1, this.server.getSettings().chunkSettings().saveChunksPerTick()));
+                }
+            }
+        }
+        int budget = Math.max(1, this.server.getSettings().chunkSettings().saveChunksPerTick());
+        while (budget-- > 0 && !this.autoSaveQueue.isEmpty()) {
+            long hash = this.autoSaveQueue.dequeueLong();
+            IChunk chunk = this.getChunkIfLoaded(getHashX(hash), getHashZ(hash));
+            // Skip chunks that unloaded since being queued - the unload path already saved them.
+            if (chunk == null || !chunk.hasChanged()) {
+                continue;
+            }
+            provider.saveChunkAsync(chunk);
+            this.autoSaveWrittenThisPass++;
+        }
+        // Log (at debug) when a pass finishes draining.
+        if (this.autoSavePassActive && this.autoSaveQueue.isEmpty()) {
+            this.autoSavePassActive = false;
+            log.debug("[auto-save] level '{}': pass complete, serialized {} chunk(s) for async write",
+                    this.getName(), this.autoSaveWrittenThisPass);
+        }
     }
 
     public void updateComparatorOutputLevel(Vector3 v) {

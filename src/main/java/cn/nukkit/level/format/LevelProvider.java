@@ -40,6 +40,18 @@ public interface LevelProvider {
 
     void saveChunk(int x, int z, IChunk chunk);
 
+    /**
+     * Saves a single chunk by serializing it on the calling thread (so the snapshot is consistent with
+     * the caller, which must be the chunk's sole mutator) and flushing it to disk asynchronously.
+     * <p>
+     * Providers without async support fall back to a fully synchronous {@link #saveChunk(int, int, IChunk)}.
+     *
+     * @param chunk the chunk to save
+     */
+    default void saveChunkAsync(IChunk chunk) {
+        saveChunk(chunk.getX(), chunk.getZ(), chunk);
+    }
+
     void unloadChunks();
 
     boolean loadChunk(int x, int z);
