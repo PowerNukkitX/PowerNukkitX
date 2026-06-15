@@ -132,6 +132,7 @@
   "pnx.settings.chunk.perticksend": "Maximum number of chunks sent to players per tick",
   "pnx.settings.chunk.spawnthreshold": "Number of chunks a player needs to receive upon first spawn",
   "pnx.settings.chunk.chunksperticks": "Tick cycle of chunks",
+  "pnx.settings.chunk.savechunksperticks": "Max chunks serialized per tick during an auto-save. Lower spreads the save over more ticks (smoother TPS); higher finishes sooner.",
   "pnx.settings.chunk.tickRadius": "Tick radius of chunks",
   "pnx.settings.chunk.lightupdates": "Whether chunks perform light updates",
   "pnx.settings.chunk.clearticklist": "Whether to clear the tick list at the end of each tick",
