@@ -81,7 +81,7 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     @Override
     public boolean setItem(int index, Item item, boolean send) {
         if(super.setItem(index, item, send)) {
-            ((BlockCrafter) getHolder().getLevelBlock()).updateAllAroundRedstone();
+            updateRedstone();
             return true;
         } else return false;
     }
@@ -89,10 +89,29 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     @Override
     public boolean clear(int index, boolean send) {
         if(super.clear(index, send)) {
-            ((BlockCrafter) getHolder().getLevelBlock()).updateAllAroundRedstone();
+            updateRedstone();
             return true;
         }
         return false;
+    }
+
+    /**
+     * Triggers a redstone update on the crafter block backing this inventory.
+     * <p>
+     * Guards against orphaned block entities: if the block at the holder's position is no longer a
+     * {@link BlockCrafter} (e.g. it was replaced by another block while a stale {@link BlockEntityCrafter}
+     * lingered in the chunk), the update is skipped and the stale block entity is closed instead of
+     * throwing a {@link ClassCastException} that would crash the level tick.
+     */
+    private void updateRedstone() {
+        if (getHolder().getLevelBlock() instanceof BlockCrafter crafter) {
+            crafter.updateAllAroundRedstone();
+        } else {
+            getHolder().getLevel().getServer().getLogger()
+                    .debug("BlockCrafter guard triggered! Block entity does not match with block! Closing ...\n\n" +
+                            getHolder() + "\n\nBlock at this location: \n\n" + getHolder().getBlock());
+            getHolder().close();
+        }
     }
 
     protected int canAddItem(Item item, int slot) {
@@ -150,7 +169,7 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     public void setSlotState(@Range(from = 0, to = 8) int slot, boolean state) {
         this.setLockedBitMask(state ? disabledSlots ^ (1 << slot) : disabledSlots | (1 << slot));
         Server.broadcastPacket(getViewers(), getHolder().getSpawnPacket());
-        ((BlockCrafter) getHolder().getLevelBlock()).updateAllAroundRedstone();
+        updateRedstone();
     }
 
     public int getComperatorOutput() {
