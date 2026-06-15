@@ -46,7 +46,9 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -345,14 +347,38 @@ public class LevelDBChunkSerializer {
     }
 
     private void serializeTileAndEntity(WriteBatch writeBatch, IChunk chunk) {
-        List<BlockEntity> blockEntitySnapshot = new ArrayList<>(chunk.getBlockEntities().values());
+        // Deduplicate block entities by position before writing. getBlockEntities() is keyed by block-entity
+        // id, so a stale/orphaned entity can coexist with the live one at the same coordinates; writing both
+        // lets the stale copy win nondeterministically on reload (e.g. a sign reverting to old text). Prefer
+        // the entity currently registered at that position (chunk.getTile), and warn so the cause is visible.
+        Map<String, BlockEntity> byPosition = new LinkedHashMap<>();
+        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+            if (blockEntity == null) {
+                continue;
+            }
+            String posKey = blockEntity.getFloorX() + ":" + blockEntity.getFloorY() + ":" + blockEntity.getFloorZ();
+            BlockEntity existing = byPosition.get(posKey);
+            if (existing == null) {
+                byPosition.put(posKey, blockEntity);
+            } else {
+                BlockEntity authoritative = chunk.getTile(blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ());
+                BlockEntity keep = authoritative != null ? authoritative : blockEntity;
+                byPosition.put(posKey, keep);
+                log.warn("[block-entity] duplicate block entities at {},{},{} in chunk ({}, {}): '{}' (id {}) and '{}' (id {}); keeping '{}' (id {}). Stale/orphaned block entity skipped on save.",
+                        blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ(),
+                        chunk.getX(), chunk.getZ(),
+                        existing.getSaveId(), existing.getId(), blockEntity.getSaveId(), blockEntity.getId(),
+                        keep.getSaveId(), keep.getId());
+            }
+        }
+
         ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
         try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(tileBuffer);
              final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(bufOutputStream)) {
             byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-            if (blockEntitySnapshot.isEmpty()) writeBatch.delete(key);
+            if (byPosition.isEmpty()) writeBatch.delete(key);
             else {
-                for (BlockEntity blockEntity : blockEntitySnapshot) {
+                for (BlockEntity blockEntity : byPosition.values()) {
                     try {
                         CompoundTag tag = blockEntity.serializationSnapshot;
                         if (tag != null) {
@@ -368,6 +394,7 @@ public class LevelDBChunkSerializer {
                                 chunk.getX(), chunk.getZ(), e);
                     }
                 }
+                log.debug("[block-entity] chunk ({}, {}): wrote {} block entit(y/ies)", chunk.getX(), chunk.getZ(), byPosition.size());
                 writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }
         } catch (IOException e) {
