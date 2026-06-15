@@ -68,7 +68,10 @@ public class Chunk implements IChunk {
     protected final StampedLock heightAndBiomeLock;
     protected final StampedLock lightLock;
     protected final LevelProvider provider;
-    protected boolean isInit;
+    protected volatile boolean isInit;
+    /// Guards {@link #initChunk()} so a chunk's entities/block-entities are created exactly once even when
+    /// the load path (forceLoadChunk) is entered concurrently from several threads.
+    private final Object initLock = new Object();
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
 
@@ -543,11 +546,11 @@ public class Chunk implements IChunk {
     @Override
     public void addBlockEntity(BlockEntity blockEntity) {
         Server server = Server.getInstance();
-        if (server != null && !server.isPrimaryThread()) {
+        if (server != null && !server.isPrimaryThread() && log.isDebugEnabled()) {
             long now = System.nanoTime();
             long last = lastOffThreadTileLogNanos.get();
             if (now - last >= 2_000_000_000L && lastOffThreadTileLogNanos.compareAndSet(last, now)) {
-                log.warn("[block-entity] addBlockEntity for '{}' at {},{},{} (chunk {},{}) called off the primary thread '{}' - this can race the dedup and create duplicates. Caller:",
+                log.debug("[block-entity] addBlockEntity for '{}' at {},{},{} (chunk {},{}) called off the primary thread '{}'. Caller:",
                         blockEntity.getSaveId(), blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ(),
                         this.getX(), this.getZ(), Thread.currentThread().getName(),
                         new Throwable("off-thread block-entity registration trace"));
@@ -746,9 +749,16 @@ public class Chunk implements IChunk {
 
     @Override
     public void initChunk() {
-        if (this.getProvider() != null && !this.isInit) {
-            boolean changed = false;
-            if (this.entityNBT != null) {
+        if (this.getProvider() == null || this.isInit) {
+            return;
+        }
+        // Double-checked locking: forceLoadChunk can be entered concurrently for the same chunk from the
+        // tick thread, async chunk loader and netty login threads. Without this guard each thread would
+        // re-run the body and create a duplicate set of entities/block-entities in the shared chunk.
+        synchronized (this.initLock) {
+            if (this.getProvider() != null && !this.isInit) {
+                boolean changed = false;
+                if (this.entityNBT != null) {
                 for (CompoundTag nbt : entityNBT) {
                     if (!nbt.contains("identifier")) {
                         this.setChanged();
@@ -792,11 +802,12 @@ public class Chunk implements IChunk {
                 }
                 this.blockEntityNBT = null;
             }
-            if (changed) {
-                this.setChanged();
-            }
+                if (changed) {
+                    this.setChanged();
+                }
 
-            this.isInit = true;
+                this.isInit = true;
+            }
         }
     }
 
