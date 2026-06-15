@@ -39,6 +39,8 @@ public class BaseSettings extends OkaeriConfig {
     @Comment("pnx.settings.base.autosave")
     boolean autoSave = true;
     int autosaveDelay = 6000;
+    @Comment("pnx.settings.base.savechunksperticks")
+    int saveChunksPerTick = 16;
     @Comment("pnx.settings.base.saveunknownblock")
     boolean saveUnknownBlock = true;
     @Comment("pnx.settings.base.xboxauth")
