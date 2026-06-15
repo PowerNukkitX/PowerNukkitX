@@ -371,7 +371,7 @@ public class Level implements Metadatable {
     private final Long2ObjectMap<IntOpenHashSet> blockLightQueue = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>(8));
     private final int dimensionCount;
     /// Auto-save: chunks are serialized on the tick thread (for a consistent snapshot), a bounded number
-    /// per tick (chunkSettings().saveChunksPerTick()), so a periodic save streams out over several ticks
+    /// per tick (baseSettings().saveChunksPerTick()), so a periodic save streams out over several ticks
     /// instead of landing as one spike.
     /// Set by {@link #requestAutoSave()} (possibly from another thread); consumed on the tick thread.
     private volatile boolean autoSavePending = false;
@@ -1745,11 +1745,11 @@ public class Level implements Metadatable {
                     this.autoSaveWrittenThisPass = 0;
                     log.debug("[auto-save] level '{}': queued {} dirty chunk(s) (budget {}/tick)",
                             this.getName(), this.autoSaveQueue.size(),
-                            Math.max(1, this.server.getSettings().chunkSettings().saveChunksPerTick()));
+                            Math.max(1, this.server.getSettings().baseSettings().saveChunksPerTick()));
                 }
             }
         }
-        int budget = Math.max(1, this.server.getSettings().chunkSettings().saveChunksPerTick());
+        int budget = Math.max(1, this.server.getSettings().baseSettings().saveChunksPerTick());
         while (budget-- > 0 && !this.autoSaveQueue.isEmpty()) {
             long hash = this.autoSaveQueue.dequeueLong();
             IChunk chunk = this.getChunkIfLoaded(getHashX(hash), getHashZ(hash));
