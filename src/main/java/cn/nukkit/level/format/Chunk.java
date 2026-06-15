@@ -535,8 +535,24 @@ public class Chunk implements IChunk {
         }
     }
 
+    /// Diagnostic throttle: addBlockEntity's check-then-act on tileList is not atomic, so concurrent
+    /// (off-tick-thread) registration at the same position can skip the dedup and duplicate the entity.
+    /// Log such off-primary-thread calls (throttled) with a stack trace to find the offending caller.
+    private static final AtomicLong lastOffThreadTileLogNanos = new AtomicLong(0);
+
     @Override
     public void addBlockEntity(BlockEntity blockEntity) {
+        Server server = Server.getInstance();
+        if (server != null && !server.isPrimaryThread()) {
+            long now = System.nanoTime();
+            long last = lastOffThreadTileLogNanos.get();
+            if (now - last >= 2_000_000_000L && lastOffThreadTileLogNanos.compareAndSet(last, now)) {
+                log.warn("[block-entity] addBlockEntity for '{}' at {},{},{} (chunk {},{}) called off the primary thread '{}' - this can race the dedup and create duplicates. Caller:",
+                        blockEntity.getSaveId(), blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ(),
+                        this.getX(), this.getZ(), Thread.currentThread().getName(),
+                        new Throwable("off-thread block-entity registration trace"));
+            }
+        }
         this.tiles.put(blockEntity.getId(), blockEntity);
         int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
         BlockEntity existing = this.tileList.put(index, blockEntity);
