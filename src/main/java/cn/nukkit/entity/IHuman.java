@@ -167,7 +167,7 @@ public interface IHuman extends InventoryHolder {
             }
 
             if (this.getSkin() == null) {
-                this.setSkin(new Skin(SerializedSkin.builder().build()));
+                this.setSkin(new Skin(SerializedSkin.builder().skinData(ImageData.EMPTY).build()));
             }
             this.setUniqueId(Utils.dataToUUID(String.valueOf(human.getId()).getBytes(StandardCharsets.UTF_8),
                     this.getSkin().getSkin().getSkinData().getImage(), human.getNameTag().getBytes(StandardCharsets.UTF_8)));

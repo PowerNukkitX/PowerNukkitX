@@ -22,7 +22,6 @@ import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
-import com.google.errorprone.annotations.Var;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
@@ -279,7 +278,7 @@ public class LevelDBProvider implements LevelProvider {
     public void putChunk(long index, IChunk chunk) {
         if (this.chunks.containsKey(index)) {
             level.getPlayers().values().forEach(player -> {
-                synchronized (player.getPlayerChunkManager().getUsedChunks()) {
+                synchronized (player.getPlayerChunkManager()) {
                     player.getPlayerChunkManager().getUsedChunks().remove(index);
                 }
             });
@@ -351,7 +350,7 @@ public class LevelDBProvider implements LevelProvider {
                     sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
                 }
 
-                byteBuf.writeByte(0); //ToDo: Send border block data
+                writeBorderBlockData(byteBuf, chunk);
 
                 // Block entities
                 final List<CompoundTag> tagList = new ObjectArrayList<>();
@@ -382,6 +381,49 @@ public class LevelDBProvider implements LevelProvider {
         return Pair.of(data.get(), subChunkCountRef.get());
     }
 
+    private void writeBorderBlockData(ByteBuf byteBuf, IChunk chunk) {
+        if (!chunk.areBorderBlockColumnsInitialized()) {
+            chunk.rebuildBorderBlockColumns();
+        }
+
+        int countIndex = byteBuf.writerIndex();
+        byteBuf.writeByte(0);
+
+        int count = 0;
+
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsLow(), 0, count);
+        if (count >= 255) {
+            byteBuf.setByte(countIndex, count);
+            return;
+        }
+
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsMidLow(), 64, count);
+        if (count >= 255) {
+            byteBuf.setByte(countIndex, count);
+            return;
+        }
+
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsMidHigh(), 128, count);
+        if (count >= 255) {
+            byteBuf.setByte(countIndex, count);
+            return;
+        }
+
+        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsHigh(), 192, count);
+
+        byteBuf.setByte(countIndex, Math.min(count, 255));
+    }
+
+    private int writeBorderColumnMask(ByteBuf byteBuf, long mask, int offset, int count) {
+        while (mask != 0L && count < 255) {
+            int bit = Long.numberOfTrailingZeros(mask);
+            byteBuf.writeByte(offset + bit);
+            mask &= ~(1L << bit);
+            count++;
+        }
+
+        return count;
+    }
 
     @Override
     public String getPath() {

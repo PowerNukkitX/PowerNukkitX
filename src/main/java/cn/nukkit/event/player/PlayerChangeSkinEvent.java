@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 
 /**
  * @author KCodeYT (Nukkit Project)

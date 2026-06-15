@@ -61,6 +61,11 @@ public abstract class PluginBase implements Plugin {
     }
 
     @Override
+    public void beforeStop() {
+
+    }
+
+    @Override
     public final boolean isEnabled() {
         return isEnabled;
     }

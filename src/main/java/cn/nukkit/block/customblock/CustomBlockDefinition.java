@@ -118,8 +118,11 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             } else {
                 block_id = INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
             }
-            nbt.putCompound("vanilla_block_data", new CompoundTag().putInt("block_id", block_id)
-                    /*.putString("material", "")*/); //todo Figure what is dirt, maybe that corresponds to https://wiki.bedrock.dev/documentation/materials.html
+            nbt.putCompound("vanilla_block_data",
+                    new CompoundTag()
+                            .putInt("block_id", block_id)
+                            .putString("material", "dirt") // No one knows what its for, but it's required for making the blocks work
+            );
         }
 
         public Builder name(String name) {
@@ -570,8 +573,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                     if (each instanceof BooleanPropertyType booleanBlockProperty) {
                         nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
                                 .putList("enum", new ListTag<>()
-                                        .add(new ByteTag(0))
-                                        .add(new ByteTag(1))));
+                                        .add(new ByteTag((byte) 0))
+                                        .add(new ByteTag((byte) 1))));
                     } else if (each instanceof IntPropertyType intBlockProperty) {
                         var enumList = new ListTag<IntTag>();
                         for (int i = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {

@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
@@ -9,19 +8,11 @@ import cn.nukkit.command.tree.node.FloatNode;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.tree.node.RelativeFloatNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector2f;
-import cn.nukkit.math.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.camera.EasingType;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
-import org.cloudburstmc.protocol.bedrock.packet.CameraInstructionPacket;
 
-import java.awt.*;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author daoge_cmd (PowerNukkitX Project)

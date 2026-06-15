@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraAimAssistPresetPacketOperation;
@@ -84,6 +83,8 @@ public class PlayerSessionHolder {
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
 
+    private boolean disconnected = false;
+
     public InternalPackManager getInternalPackManager() {
         if (this.internalPackManager == null) {
             this.internalPackManager = new InternalPackManager(this.session, Server.getInstance());
@@ -95,7 +96,8 @@ public class PlayerSessionHolder {
         if (this.getRateLimitSettings().rateLimitEnabled()) {
             this.setPacketCounter(this.getPacketCounter() + 1L);
             this.setPacketCounterForTicks(this.getPacketCounterForTicks() + 1L);
-            if (this.getPacketCounter() > this.getRateLimitSettings().maxInboundPacketsPerSecond()) {
+            if (this.getPacketCounter() > this.getRateLimitSettings().maxInboundPacketsPerSecond() &&
+                    !this.disconnected) {
                 log.warn(
                         "{}: exceeded the limit for the maximum packets per second (limit: {}, received: {}) ",
                         this.getPlayer() != null ? this.getPlayer().getName() : this.getSession().getSocketAddress(),
@@ -138,6 +140,7 @@ public class PlayerSessionHolder {
     }
 
     public void disconnect(DisconnectFailReason reason) {
+        this.disconnected = true;
         this.disconnect(reason, Registries.DISCONNECT_REASON.get(reason));
     }
 

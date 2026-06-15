@@ -66,7 +66,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected int attackTime = 0;
     protected boolean invisible = false;
     protected int turtleTicks = 0;
-    private boolean attackTimeByShieldKb;
+    protected boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
     private static final int SHIELD_TRANSITION_TICKS = 2;
@@ -740,7 +740,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public int getAirTicks() {
-        return this.getDataProperty(ActorDataTypes.AIR_SUPPLY);
+        short airTicks = this.getDataProperty(ActorDataTypes.AIR_SUPPLY, (short) 300);
+        if (!this.getActorDataMap().containsKey(ActorDataTypes.AIR_SUPPLY)) {
+            this.setDataProperty(ActorDataTypes.AIR_SUPPLY, airTicks, false);
+        }
+        return airTicks;
     }
 
     public void setAirTicks(int ticks) {

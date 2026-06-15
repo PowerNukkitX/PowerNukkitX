@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -25,6 +26,8 @@ import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -68,6 +71,34 @@ public class Chunk implements IChunk {
     protected boolean isInit;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
+
+    private static final IntSet BORDER_BLOCK_STATE_HASHES = new IntOpenHashSet();
+    private static volatile boolean BORDER_BLOCK_STATE_HASHES_INITIALIZED = false;
+    private long borderColumnsLow;
+    private long borderColumnsMidLow;
+    private long borderColumnsMidHigh;
+    private long borderColumnsHigh;
+    private boolean borderBlockColumnsInitialized;
+
+    private static void ensureBorderBlockStateHashes() {
+        if (BORDER_BLOCK_STATE_HASHES_INITIALIZED) {
+            return;
+        }
+
+        synchronized (BORDER_BLOCK_STATE_HASHES) {
+            if (BORDER_BLOCK_STATE_HASHES_INITIALIZED) {
+                return;
+            }
+
+            for (BlockState state : Registries.BLOCKSTATE.getAllState()) {
+                if (BlockID.BORDER_BLOCK.equals(state.getIdentifier())) {
+                    BORDER_BLOCK_STATE_HASHES.add(state.blockStateHash());
+                }
+            }
+
+            BORDER_BLOCK_STATE_HASHES_INITIALIZED = true;
+        }
+    }
 
     private Chunk(
             final int chunkX,
@@ -171,6 +202,7 @@ public class Chunk implements IChunk {
         long stamp = blockLock.writeLock();
         try {
             this.sections[fY - getDimensionData().getMinSectionY()] = section;
+            invalidateBorderBlockColumns();
             setChanged();
         } finally {
             blockLock.unlockWrite(stamp);
@@ -247,7 +279,11 @@ public class Chunk implements IChunk {
         long stamp = blockLock.writeLock();
         try {
             setChanged();
-            return getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
+
+            BlockState oldState = getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
+            updateBorderBlockColumnCache(x, y, z, oldState, blockstate);
+
+            return oldState;
         } finally {
             blockLock.unlockWrite(stamp);
             removeInvalidTile(x, y, z);
@@ -259,7 +295,12 @@ public class Chunk implements IChunk {
         long stamp = blockLock.writeLock();
         try {
             setChanged();
-            getOrCreateSection(y >> 4).setBlockState(x, y & 0x0f, z, blockstate, layer);
+
+            ChunkSection section = getOrCreateSection(y >> 4);
+            BlockState oldState = section.getBlockState(x, y & 0x0f, z, layer);
+
+            section.setBlockState(x, y & 0x0f, z, blockstate, layer);
+            updateBorderBlockColumnCache(x, y, z, oldState, blockstate);
         } finally {
             blockLock.unlockWrite(stamp);
             removeInvalidTile(x, y, z);
@@ -850,15 +891,6 @@ public class Chunk implements IChunk {
                     log.warn("Block entity validation failed", e);
                 }
             }
-            // [ITEM_DEBUG] Log when a block entity is being removed as invalid
-            if (log.isDebugEnabled()) {
-                boolean valid;
-                try { valid = entity.isBlockEntityValid(); } catch (Exception ignored) { valid = false; }
-                log.debug("[ITEM_DEBUG] removeInvalidTile closing {} at {},{},{} (closed={}, valid={}). Caller: {}",
-                        entity.getClass().getSimpleName(), (int) entity.x, (int) entity.y, (int) entity.z,
-                        entity.closed, valid,
-                        Thread.currentThread().getStackTrace()[2]);
-            }
             entity.close();
         }
     }
@@ -889,6 +921,120 @@ public class Chunk implements IChunk {
                 "x=" + x +
                 ", z=" + z +
                 '}';
+    }
+
+    @Override
+    public boolean areBorderBlockColumnsInitialized() {
+        return this.borderBlockColumnsInitialized;
+    }
+
+    @Override
+    public void invalidateBorderBlockColumns() {
+        this.borderBlockColumnsInitialized = false;
+        this.borderColumnsLow = 0L;
+        this.borderColumnsMidLow = 0L;
+        this.borderColumnsMidHigh = 0L;
+        this.borderColumnsHigh = 0L;
+    }
+
+    @Override
+    public long getBorderColumnsLow() {
+        return this.borderColumnsLow;
+    }
+
+    @Override
+    public long getBorderColumnsMidLow() {
+        return this.borderColumnsMidLow;
+    }
+
+    @Override
+    public long getBorderColumnsMidHigh() {
+        return this.borderColumnsMidHigh;
+    }
+
+    @Override
+    public long getBorderColumnsHigh() {
+        return this.borderColumnsHigh;
+    }
+
+    private void setBorderBlockColumn(int localX, int localZ, boolean value) {
+        int entry = (localZ << 4) | localX;
+        int bitIndex = entry & 63;
+        long bit = 1L << bitIndex;
+        int maskIndex = entry >>> 6;
+
+        if (maskIndex == 0) {
+            this.borderColumnsLow = value ? this.borderColumnsLow | bit : this.borderColumnsLow & ~bit;
+        } else if (maskIndex == 1) {
+            this.borderColumnsMidLow = value ? this.borderColumnsMidLow | bit : this.borderColumnsMidLow & ~bit;
+        } else if (maskIndex == 2) {
+            this.borderColumnsMidHigh = value ? this.borderColumnsMidHigh | bit : this.borderColumnsMidHigh & ~bit;
+        } else {
+            this.borderColumnsHigh = value ? this.borderColumnsHigh | bit : this.borderColumnsHigh & ~bit;
+        }
+    }
+
+    @Override
+    public void rebuildBorderBlockColumns() {
+        this.borderColumnsLow = 0L;
+        this.borderColumnsMidLow = 0L;
+        this.borderColumnsMidHigh = 0L;
+        this.borderColumnsHigh = 0L;
+
+        for (int localX = 0; localX < 16; localX++) {
+            for (int localZ = 0; localZ < 16; localZ++) {
+                if (hasBorderBlockInColumnInternal(localX, localZ)) {
+                    setBorderBlockColumn(localX, localZ, true);
+                }
+            }
+        }
+
+        this.borderBlockColumnsInitialized = true;
+    }
+
+    private void updateBorderBlockColumnCache(int localX, int y, int localZ, BlockState oldState, BlockState newState) {
+        if (!this.borderBlockColumnsInitialized) {
+            return;
+        }
+
+        boolean oldBorder = isBorderBlock(oldState);
+        boolean newBorder = isBorderBlock(newState);
+
+        if (oldBorder == newBorder) {
+            return;
+        }
+
+        if (newBorder) {
+            setBorderBlockColumn(localX, localZ, true);
+            return;
+        }
+
+        setBorderBlockColumn(localX, localZ, hasBorderBlockInColumnInternal(localX, localZ));
+    }
+
+    private boolean hasBorderBlockInColumnInternal(int localX, int localZ) {
+        for (ChunkSection section : this.sections) {
+            if (section == null || section.isEmpty()) {
+                continue;
+            }
+
+            for (int localY = 0; localY < 16; localY++) {
+                BlockState state = section.getBlockState(localX, localY, localZ);
+
+                if (isBorderBlock(state)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean isBorderBlock(BlockState state) {
+        if (state == null) return false;
+
+        ensureBorderBlockStateHashes();
+        return BORDER_BLOCK_STATE_HASHES.contains(state.blockStateHash());
     }
 
     public static class Builder implements IChunkBuilder {

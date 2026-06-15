@@ -197,6 +197,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public int freezingTicks = 0;//0 - 140
     public float scale = 1;
     protected CompoundTag nbt;
+    public volatile CompoundTag serializationSnapshot;
     public boolean isCollided = false;
     public boolean isCollidedHorizontally = false;
     public boolean isCollidedVertically = false;
@@ -1276,7 +1277,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         addActorPacket.setPosition(this.getPosition().toNetwork());
         addActorPacket.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
         addActorPacket.setRotation(Vector2f.from(this.pitch, this.yaw));
-        addActorPacket.setHeadRotation((float) this.headYaw);
+        addActorPacket.setHeadRotation((float) this.yaw);
         addActorPacket.setBodyRotation((float) this.yaw);
         final PropertySyncData propertySyncData = this.getClientSyncProperties();
         addActorPacket.getSyncedProperties().getIntProperties().addAll(propertySyncData.getIntProperties());
@@ -6030,19 +6031,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
         }
         final List<org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty> intProperties = new ObjectArrayList<>();
+        int intIndex = 0;
         for (Integer anInt : ints) {
             intProperties.add(
                     new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(
-                            ints.indexOf(anInt),
+                            intIndex++,
                             anInt
                     )
             );
         }
         final List<org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty> floatProperties = new ObjectArrayList<>();
+        int floatIndex = 0;
         for (Float aFloat : floats) {
             floatProperties.add(
                     new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(
-                            floats.indexOf(aFloat),
+                            floatIndex++,
                             aFloat
                     )
             );
@@ -6151,19 +6154,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         final List<Integer> ints = new IntArrayList(intProperties.values());
         final List<Float> floats = new FloatArrayList(floatProperties.values());
         final List<org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty> intProperties = new ObjectArrayList<>();
+        int intIndex = 0;
         for (Integer anInt : ints) {
             intProperties.add(
                     new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(
-                            ints.indexOf(anInt),
+                            intIndex++,
                             anInt
                     )
             );
         }
         final List<org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty> floatProperties = new ObjectArrayList<>();
+        int floatIndex = 0;
         for (Float aFloat : floats) {
             floatProperties.add(
                     new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(
-                            floats.indexOf(aFloat),
+                            floatIndex++,
                             aFloat
                     )
             );

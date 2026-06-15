@@ -27,7 +27,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
-import lombok.extern.slf4j.Slf4j;
 
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.packet.SetActorDataPacket;
@@ -37,8 +36,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
-
-@Slf4j
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable {
     @Override
     @NotNull
@@ -115,20 +112,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (nbtMap.contains(TAG_MAINHAND)) {
             final Item mainhand = ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND));
             this.equipmentInventory.setItemInHand(mainhand, true);
-            if (mainhand != null && !mainhand.isNull()) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded mainhand {} x{}",
-                        (int) x, (int) y, (int) z, mainhand.getId(), mainhand.getCount());
-            }
         }
 
         if (nbtMap.contains(TAG_OFFHAND)) {
             final Item offhand = ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND));
             this.equipmentInventory.setItemInOffhand(offhand, true);
-            // [ITEM_DEBUG]
-            if (offhand != null && !offhand.isNull()) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded offhand {} x{}",
-                        (int) x, (int) y, (int) z, offhand.getId(), offhand.getCount());
-            }
         }
 
         if (nbtMap.contains(TAG_ARMOR)) {
@@ -137,11 +125,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 final int slot = armorTag.getByte("Slot");
                 final Item armorItem = ItemHelper.read(armorTag);
                 this.armorInventory.setItem(slot, armorItem);
-                // [ITEM_DEBUG]
-                if (armorItem != null && !armorItem.isNull()) {
-                    log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded armor slot {} = {} x{}",
-                            (int) x, (int) y, (int) z, slot, armorItem.getId(), armorItem.getCount());
-                }
             }
         }
 
@@ -270,10 +253,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             Item itemClone = handItem.clone();
             itemClone.setCount(1);
             inventory.setItem(slot, itemClone);
-            // [ITEM_DEBUG]
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} equip: player {} added {} x1 to {}[{}]",
-                    (int) x, (int) y, (int) z, player.getName(), handItem.getId(),
-                    isArmorSlot ? "armor" : "equipment", slot);
             if (!player.isCreative()) {
                 handItem.count--;
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), handItem);
@@ -306,11 +285,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), itemToSetToPlayerInv);
             }
 
-            // [ITEM_DEBUG] Removing/swapping item from the armor stand
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} swap: player {} removing {} x{} from {}[{}], replacing with {}",
-                    (int) x, (int) y, (int) z, player.getName(), item.getId(), item.getCount(),
-                    isArmorSlot ? "armor" : "equipment", slot,
-                    itemtoAddToArmorStand.isNull() ? "AIR" : itemtoAddToArmorStand.getId());
             Item[] notAdded = player.getInventory().addItem(item);
             if (notAdded.length > 0) {
                 if (notAdded[0].count == item.count) {
@@ -362,10 +336,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (this.equipmentInventory != null) {
             this.nbt.putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null));
             this.nbt.putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
-        } else {
-            // [ITEM_DEBUG] This means items in hand/offhand will NOT be saved
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: equipmentInventory is NULL, hand items will not be saved!",
-                    (int) x, (int) y, (int) z);
         }
 
         if (this.armorInventory != null) {
@@ -374,47 +344,9 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
             this.nbt.putList(TAG_ARMOR, armorTag);
-        } else {
-            // [ITEM_DEBUG] This means armor will NOT be saved
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: armorInventory is NULL, armor will not be saved!",
-                    (int) x, (int) y, (int) z);
         }
 
         this.nbt.putInt(TAG_POSE_INDEX, this.getPose());
-    }
-
-    @Override
-    public void close() {
-        // [ITEM_DEBUG] Log when an armor stand is closed while still holding items
-        if (!this.closed) {
-            boolean hasItems = false;
-            StringBuilder items = new StringBuilder();
-            if (this.equipmentInventory != null) {
-                for (var entry : this.equipmentInventory.getContents().entrySet()) {
-                    if (!entry.getValue().isNull()) {
-                        hasItems = true;
-                        items.append("equip[").append(entry.getKey()).append("]=")
-                                .append(entry.getValue().getId()).append("x").append(entry.getValue().getCount()).append(", ");
-                    }
-                }
-            }
-            if (this.armorInventory != null) {
-                for (int i = 0; i < 4; i++) {
-                    Item armorItem = this.armorInventory.getItem(i);
-                    if (!armorItem.isNull()) {
-                        hasItems = true;
-                        items.append("armor[").append(i).append("]=")
-                                .append(armorItem.getId()).append("x").append(armorItem.getCount()).append(", ");
-                    }
-                }
-            }
-            if (hasItems) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} CLOSE with items still present: {}. Stack trace:",
-                        (int) x, (int) y, (int) z, items,
-                        new Throwable("ArmorStand close trace"));
-            }
-        }
-        super.close();
     }
 
     @Override

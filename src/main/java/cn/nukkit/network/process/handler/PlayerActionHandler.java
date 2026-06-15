@@ -18,7 +18,6 @@ import cn.nukkit.event.player.PlayerToggleSprintEvent;
 import cn.nukkit.event.player.PlayerToggleSwimEvent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;

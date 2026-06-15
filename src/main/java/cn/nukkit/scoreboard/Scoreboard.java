@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.cloudburstmc.protocol.bedrock.data.ObjectiveSortOrder;
 
 import javax.annotation.Nullable;
-import javax.swing.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;

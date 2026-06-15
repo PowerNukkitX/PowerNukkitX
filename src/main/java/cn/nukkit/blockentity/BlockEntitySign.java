@@ -1,17 +1,13 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockStandingSign;
-import cn.nukkit.event.block.SignChangeEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.StringUtils;
-import cn.nukkit.utils.TextFormat;
 
-import java.util.Objects;
 
 /**
  * @author MagicDroidX (Nukkit Project)

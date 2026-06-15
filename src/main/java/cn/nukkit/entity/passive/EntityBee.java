@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
 import cn.nukkit.block.Pollinable;
 import cn.nukkit.block.BlockWitherRose;
-import cn.nukkit.block.Pollinable;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
@@ -33,8 +32,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.NbtHelper;
-import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

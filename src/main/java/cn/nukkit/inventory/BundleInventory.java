@@ -15,7 +15,6 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -60,7 +59,7 @@ public class BundleInventory extends BaseInventory {
 
     @Override
     public boolean clear(int index) {
-        return super.clear(index, true);
+        return this.clear(index, true);
     }
 
     @Override

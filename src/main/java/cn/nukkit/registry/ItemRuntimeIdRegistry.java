@@ -2,7 +2,6 @@ package cn.nukkit.registry;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.network.NetworkConstants;
-import com.google.errorprone.annotations.Var;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

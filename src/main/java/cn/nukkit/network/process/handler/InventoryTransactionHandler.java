@@ -34,8 +34,6 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
-import cn.nukkit.utils.NbtHelper;
-import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.InventorySourceFlags;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.InventorySourceType;
@@ -54,6 +52,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Kaooot

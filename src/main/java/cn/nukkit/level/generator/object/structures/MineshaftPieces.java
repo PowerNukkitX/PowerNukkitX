@@ -24,7 +24,6 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.List;
 
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_10;

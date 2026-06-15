@@ -4,26 +4,18 @@ import io.netty.util.internal.EmptyArrays;
 import org.cloudburstmc.nbt.NbtList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
 
 public class CompoundTag extends Tag {
     protected final Map<String, Tag> tags;
 
     public CompoundTag() {
-        this(new HashMap<>());
+        this(new LinkedHashMap<>());
     }
 
     public CompoundTag(Map<String, Tag> tags) {
@@ -45,6 +37,11 @@ public class CompoundTag extends Tag {
     }
 
     public CompoundTag putByte(String name, int value) {
+        tags.put(name, new ByteTag((byte) value));
+        return this;
+    }
+
+    public CompoundTag putByte(String name, byte value) {
         tags.put(name, new ByteTag(value));
         return this;
     }
@@ -301,7 +298,7 @@ public class CompoundTag extends Tag {
     }
 
     public Map<String, Tag> getTags() {
-        return new HashMap<>(this.tags);
+        return new LinkedHashMap<>(this.tags);
     }
 
     @UnmodifiableView
@@ -311,7 +308,7 @@ public class CompoundTag extends Tag {
 
     @Override
     public Map<String, Object> parseValue() {
-        Map<String, Object> value = new HashMap<>(this.tags.size());
+        Map<String, Object> value = new LinkedHashMap<>(this.tags.size());
 
         for (Entry<String, Tag> entry : this.tags.entrySet()) {
             value.put(entry.getKey(), entry.getValue().parseValue());

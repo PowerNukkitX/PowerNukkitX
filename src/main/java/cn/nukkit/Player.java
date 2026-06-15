@@ -13,6 +13,8 @@ import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWool;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityHangingSign;
+import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.command.Command;
@@ -147,7 +149,6 @@ import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
-import org.cloudburstmc.protocol.bedrock.data.Dimension;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -279,9 +280,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int previousInteractTick = 0;
     private final float rotationUpdateThreshold;
     private final float movementDistanceThreshold;
-    private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
+    protected final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-    private int timeSinceRest;
+    protected int timeSinceRest;
     private String buttonText = "Button";
     private PermissibleBase perm = null;
     private int hash;
@@ -322,7 +323,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Entity lastBeAttackEntity = null;
     @Setter
     @ApiStatus.Internal
-    private @NotNull PlayerHandle playerHandle;
+    protected @NotNull PlayerHandle playerHandle;
     @Getter
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
@@ -378,6 +379,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * </p>
      */
     protected EnumSet<ClientInputLockComponent> clientInputLocks = EnumSet.noneOf(ClientInputLockComponent.class);
+
+    private final Map<Long, Runnable> ackRunnables = new HashMap<>();
 
     @UsedByReflection
     public Player(@NotNull BedrockServerSession session, @NotNull PlayerInfo info) {
@@ -773,9 +776,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.getHealthCurrent() < 1) {
             this.setHealthCurrent(0);
-        } else setHealthCurrent(getHealthCurrent()); // Sends health to player
-
-        ServerScheduler scheduler = this.getServer().getSettings().levelSettings().levelThread() ? this.getLevel().getScheduler() : this.getServer().getScheduler();
+        } else setHealthCurrent(getHealthCurrent());
     }
 
     @Override
@@ -1349,6 +1350,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
          */
         this.setGamemode(this.gamemode, false, null, true);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), actorDataMap);
+        this.sendAttributes();
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
     }
@@ -1389,6 +1391,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //level spawn point < block spawn = self spawn
         Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
+        //spawn level may have been unloaded/closed (e.g. dynamic worlds), fall back to default
+        Position spawnPos = spawnPair.left();
+        if (spawnPos == null || spawnPos.level == null || spawnPos.level.getProvider() == null) {
+            Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
+            this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
+            spawnPair = Pair.of(defaultSpawn, SpawnPointType.WORLD);
+        }
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
         if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
             Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
@@ -2286,6 +2295,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
+        this.server.getScheduler().scheduleDelayedTask(() -> {
+            if (!this.isConnected() || this.level == null) return;
+            for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+                if ((entity instanceof BlockEntityItemFrame || entity instanceof BlockEntitySign) && !entity.closed) {
+                    ((BlockEntitySpawnable) entity).spawnTo(this);
+                }
+            }
+        }, 2);
+
         if (this.needDimensionChangeACK) {
             this.needDimensionChangeACK = false;
             final PlayerActionPacket playerActionPacket = new PlayerActionPacket();
@@ -2652,7 +2670,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 Arrays.asList(
                         Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0).toNetwork(),
                         Attribute.getAttribute(Attribute.ABSORPTION).setValue(this.getAbsorption()).toNetwork(),
-                        Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getFood()).toNetwork(),
+                        Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getMaxFood()).toNetwork(),
                         Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()).toNetwork(),
                         Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()).toNetwork(),
                         Attribute.getAttribute(Attribute.EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel())).toNetwork()
@@ -2796,7 +2814,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement() > 0) { // For server-side use only, as client-side continue break is normal.
+            if (this.server.getServerAuthoritativeMovement() > 0 && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 
@@ -2823,12 +2841,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             foodData.sendFood();
         }
 
-        final long creationTime = System.currentTimeMillis();
-        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime);
-        final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
-        packet.setCreationTime(creationTime);
-        packet.setFromServer(true);
-        this.session.sendPacketImmediately(packet);
+        this.sendNetworkStackLatencyPacket();
 
         return true;
     }
@@ -3471,7 +3484,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param reason  Reason for logout
      */
     public void close(TextContainer message, String reason) {
-        if (!this.connected.compareAndSet(true, false) && this.closed) {
+        if (this.closed || !this.connected.compareAndSet(true, false)) {
             return;
         }
         //output logout information
@@ -3915,6 +3928,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             health = 0;
         }
         super.setHealthCurrent(health);
+
+        @SuppressWarnings("null")
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
         attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
@@ -3929,9 +3944,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setHealthMax(int maxHealth) {
         super.setHealthMax(maxHealth);
 
+        @SuppressWarnings("null")
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
-        if (this.spawned) {
+        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? Math.min(health, getHealthMax()) : 0);
+
+        if (this.spawned && this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.setRuntimeID(this.getId());
             pk.getAttributeList().add(attribute.toNetwork());
@@ -4051,7 +4068,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.lastPlayedLevelUpSoundTime = this.age;
             this.level.addLevelSoundEvent(
                     this,
-                    SoundEvent.LEVELUP,
+                    SoundEvent.LEVEL_UP,
                     Math.min(7, level / 5) << 28,
                     "",
                     false, false
@@ -4143,6 +4160,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Sets the walk speed multiplier
+     *
      * @param speed
      */
     @Override
@@ -4166,14 +4184,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Set the movement speed of this player.
      * Will be overwritten internally.
      *
-     * @see #setWalkSpeed(float)
      * @param speed Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
      * @param send  Whether to send {@link UpdateAttributesPacket} to the client
+     * @see #setWalkSpeed(float)
      */
     @ApiStatus.Internal
     public void setMovementSpeed(float speed, boolean send) {
         float speedCorrected = speed * getWalkSpeed();
-        if(speedCorrected != getMovementSpeed()) {
+        if (speedCorrected != getMovementSpeed()) {
             super.setMovementSpeed(speedCorrected);
             if (this.spawned && send) {
                 this.sendMovementSpeed();
@@ -5961,5 +5979,40 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
         playerFogPacket.getFogStack().addAll(this.getFogStack());
         this.sendPacketImmediately(playerFogPacket);
+    }
+
+    public void waitForAck(Runnable runnable) {
+        long creationTime = this.sendNetworkStackLatencyPacket(runnable);
+        this.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            Runnable delayedRunnable = this.ackRunnables.remove(creationTime);
+            if (delayedRunnable != null) {
+                delayedRunnable.run();
+            }
+        }, 5);
+    }
+
+    private long sendNetworkStackLatencyPacket() {
+        return this.sendNetworkStackLatencyPacket(null);
+    }
+
+    private long sendNetworkStackLatencyPacket(Runnable runnable) {
+        final long creationTime = System.currentTimeMillis() * 1_000_000L + Math.floorMod(System.nanoTime(), 1_000_000L);
+        if (runnable != null) {
+            this.ackRunnables.put(creationTime, runnable);
+        }
+        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime / 1_000_000L);
+        final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
+        packet.setCreationTime(creationTime);
+        packet.setFromServer(true);
+        this.session.sendPacketImmediately(packet);
+        return creationTime;
+    }
+
+    protected void onAckReceive(long creationTime) {
+        Runnable runnable = this.ackRunnables.remove(creationTime);
+        if (runnable == null) {
+            return;
+        }
+        runnable.run();
     }
 }

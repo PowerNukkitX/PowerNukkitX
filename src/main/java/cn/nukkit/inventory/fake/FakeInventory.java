@@ -120,7 +120,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             this.fakeBlock.create(player, this.getTitle());
         }
 
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        player.waitForAck(() -> {
             if (this.fakeBlock == null) {
                 player.setFakeInventoryOpen(false);
                 return;
@@ -138,7 +138,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
                 this.fakeBlock.remove(player);
                 player.setFakeInventoryOpen(false);
             }
-        }, 5);
+        });
     }
 
     private void sendOpenContainerPacket(Player player, int x, int y, int z, long entityId) {
@@ -164,9 +164,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             if (this.fakeInventoryType == FakeInventoryType.ENTITY) {
                 this.fakeBlock.remove(player);
             } else {
-                player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-                    this.fakeBlock.remove(player);
-                }, 5);
+                player.waitForAck(() -> this.fakeBlock.remove(player));
             }
         }
 
