@@ -164,7 +164,7 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
         updateRedstone();
     }
 
-    public int getComperatorOutput() {
+    public int getComparatorOutput() {
         int output = 0;
         for(int i = 0; i < getSize(); i++) {
             if(!getItem(i).isNull() || isLocked(i)) output++;
