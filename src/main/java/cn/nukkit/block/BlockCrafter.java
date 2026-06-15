@@ -275,7 +275,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
     public int getComparatorInputOverride() {
         InventoryHolder blockEntity = getBlockEntity();
         if (blockEntity != null) {
-            return getBlockEntity().getInventory().getComperatorOutput();
+            return getBlockEntity().getInventory().getComparatorOutput();
         }
         return 0;
     }
