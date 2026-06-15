@@ -51,29 +51,29 @@ public class BlockEntityBeehive extends BlockEntity {
     public void loadNBT() {
         super.loadNBT();
         this.occupants = new ArrayList<>(4);
-        if (!this.namedTag.contains("ShouldSpawnBees")) {
-            this.namedTag.putByte("ShouldSpawnBees", 0);
+        if (!this.nbt.contains("ShouldSpawnBees")) {
+            this.nbt.putByte("ShouldSpawnBees", 0);
         }
 
-        if (!this.namedTag.contains("Occupants")) {
-            this.namedTag.putList("Occupants", new ListTag<>());
+        if (!this.nbt.contains("Occupants")) {
+            this.nbt.putList("Occupants", new ListTag<>());
         } else {
-            ListTag<CompoundTag> occupantsTag = namedTag.getList("Occupants", CompoundTag.class);
+            ListTag<CompoundTag> occupantsTag = nbt.getList("Occupants", CompoundTag.class);
             for (int i = 0; i < occupantsTag.size(); i++) {
                 this.occupants.add(new Occupant(occupantsTag.get(i)));
             }
         }
 
         // Backward compatibility
-        if (this.namedTag.contains("HoneyLevel")) {
+        if (this.nbt.contains("HoneyLevel")) {
             Block block = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.namedTag.getByte("HoneyLevel");
+                int honeyLevel = this.nbt.getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
-            this.namedTag.remove("HoneyLevel");
+            this.nbt.remove("HoneyLevel");
         }
     }
 
@@ -84,18 +84,18 @@ public class BlockEntityBeehive extends BlockEntity {
         for (Occupant occupant : occupants) {
             occupantsTag.add(occupant.saveNBT());
         }
-        this.namedTag.putList("Occupants", occupantsTag);
+        this.nbt.putList("Occupants", occupantsTag);
 
         // Backward compatibility
-        if (this.namedTag.contains("HoneyLevel")) {
+        if (this.nbt.contains("HoneyLevel")) {
             Block block = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.namedTag.getByte("HoneyLevel");
+                int honeyLevel = this.nbt.getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
-            this.namedTag.remove("HoneyLevel");
+            this.nbt.remove("HoneyLevel");
         }
     }
 
@@ -118,9 +118,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public boolean addOccupant(Occupant occupant) {
         occupants.add(occupant);
-        ListTag<CompoundTag> occupants = this.namedTag.getList("Occupants", CompoundTag.class);
+        ListTag<CompoundTag> occupants = this.nbt.getList("Occupants", CompoundTag.class);
         occupants.add(occupant.saveNBT());
-        this.namedTag.putList("Occupants", occupants);
+        this.nbt.putList("Occupants", occupants);
         scheduleUpdate();
         return true;
     }
@@ -145,7 +145,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
         entity.saveNBT();
-        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.namedTag.copy());
+        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.getNbt().copy());
         if (!addOccupant(occupant)) {
             return null;
         }

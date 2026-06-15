@@ -3,12 +3,12 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -21,20 +21,20 @@ public class TitlerawCommand extends VanillaCommand {
         this.setPermission("nukkit.command.titleraw");
         this.commandParameters.clear();
         this.commandParameters.put("clear", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("clear", new CommandEnum("TitleClear", "clear"))
         });
         this.commandParameters.put("reset", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("reset", new CommandEnum("TitleReset", "reset"))
         });
         this.commandParameters.put("set", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("titleLocation", new CommandEnum("TitleSet", "title", "subtitle", "actionbar")),
-                CommandParameter.newType("titleJson", CommandParamType.RAWTEXT)
+                CommandParameter.newType("titleJson", CommandParamType.JSON_OBJECT)
         });
         this.commandParameters.put("times", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("times", new CommandEnum("TitleTimes", "times")),
                 CommandParameter.newType("fadeIn", CommandParamType.INT),
                 CommandParameter.newType("stay", CommandParamType.INT),

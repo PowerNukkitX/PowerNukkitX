@@ -5,10 +5,10 @@ import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectLegacyObjectWrapper;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class SavannaTreeFeature extends ObjectGeneratorFeature {
 
@@ -30,8 +30,8 @@ public class SavannaTreeFeature extends ObjectGeneratorFeature {
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.SAVANNA);
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
+        return Registries.BIOME.containsTag(BiomeTags.SAVANNA, definition);
     }
 
     @Override

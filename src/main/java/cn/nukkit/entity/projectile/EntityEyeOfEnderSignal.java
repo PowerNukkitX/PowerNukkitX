@@ -2,15 +2,15 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.block.BlockFrame;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -50,14 +50,14 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
         super.initEntity();
         this.closeOnCollide = false;
 
-        this.setDataFlag(EntityFlag.HAS_GRAVITY, false);
-        this.setDataFlag(EntityFlag.HAS_COLLISION, false);
+        this.setDataFlag(ActorFlags.HAS_GRAVITY, false);
+        this.setDataFlag(ActorFlags.HAS_COLLISION, false);
 
-        this.life = this.namedTag.getInt(TAG_LIFE, 0);
-        this.surviveAfterDeath = this.namedTag.getBoolean(TAG_SURVIVE_AFTER_DEATH);
+        this.life = this.getNbt().getInt(TAG_LIFE, 0);
+        this.surviveAfterDeath = this.getNbt().getBoolean(TAG_SURVIVE_AFTER_DEATH);
 
-        if (this.namedTag.contains(TAG_TARGET)) {
-            CompoundTag targetTag = this.namedTag.getCompound(TAG_TARGET);
+        if (this.nbt.contains(TAG_TARGET)) {
+            CompoundTag targetTag = this.getNbt().getCompound(TAG_TARGET);
             this.target = new Vector3(
                     targetTag.getDouble(TAG_TARGET_X),
                     targetTag.getDouble(TAG_TARGET_Y),
@@ -127,9 +127,9 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
         if (this.surviveAfterDeath) {
             this.level.dropItem(this, Item.get(Item.ENDER_EYE));
         } else {
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_EYE_OF_ENDER_DEATH);
+            this.level.addLevelEvent(this, LevelEvent.PARTICLE_EYE_OF_ENDER_DEATH);
             //      https://bugs.mojang.com/browse/MCPE/issues/MCPE-115646 (Game misses right sound file and plays this instead)
-            this.level.addLevelSoundEvent(this, LevelSoundEvent.BREAK, BlockFrame.PROPERTIES.getDefaultState().blockStateHash());
+            this.level.addLevelSoundEvent(this, SoundEvent.BREAK, BlockFrame.PROPERTIES.getDefaultState().blockStateHash());
         }
         this.kill();
     }
@@ -158,10 +158,10 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putInt(TAG_LIFE, this.life);
-        this.namedTag.putBoolean(TAG_SURVIVE_AFTER_DEATH, this.surviveAfterDeath);
+        this.nbt.putInt(TAG_LIFE, this.life);
+        this.nbt.putBoolean(TAG_SURVIVE_AFTER_DEATH, this.surviveAfterDeath);
         if (this.target != null) {
-            this.namedTag.putCompound(TAG_TARGET, new CompoundTag()
+            this.nbt.putCompound(TAG_TARGET, new CompoundTag()
                     .putDouble(TAG_TARGET_X, this.target.x)
                     .putDouble(TAG_TARGET_Y, this.target.y)
                     .putDouble(TAG_TARGET_Z, this.target.z));

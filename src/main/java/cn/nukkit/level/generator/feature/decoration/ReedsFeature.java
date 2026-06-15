@@ -2,13 +2,10 @@ package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.BlockReeds;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockSweetBerryBush;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_16;
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;

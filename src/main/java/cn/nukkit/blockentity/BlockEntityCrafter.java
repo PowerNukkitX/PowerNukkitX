@@ -20,22 +20,22 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
                 .putInt("crafting_ticks_remaining", 0)
-                .putShort("disabled_slots", getInventory().getLockedBitMask());
+                .putShort("disabled_slots", (short) getInventory().getLockedBitMask());
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.contains("disabledSlots")) {
-            this.namedTag.putShort("disabledSlots", 0);
+        if (!this.nbt.contains("disabledSlots")) {
+            this.nbt.putShort("disabledSlots", (short) 0);
         }
-        this.getInventory().setLockedBitMask(this.namedTag.getShort("disabledSlots"));
+        this.getInventory().setLockedBitMask(this.getNbt().getShort("disabledSlots"));
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putShort("disabledSlots", getInventory().getLockedBitMask());
+        this.nbt.putShort("disabledSlots", (short) getInventory().getLockedBitMask());
     }
 
     @Override
@@ -50,21 +50,21 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Crafter";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Crafter";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 }

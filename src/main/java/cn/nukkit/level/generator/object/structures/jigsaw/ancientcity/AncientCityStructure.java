@@ -23,7 +23,6 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 

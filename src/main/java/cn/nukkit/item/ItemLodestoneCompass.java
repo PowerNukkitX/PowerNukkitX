@@ -42,15 +42,12 @@ public class ItemLodestoneCompass extends Item {
     }
 
     public int getTrackingHandle() {
-        return hasCompoundTag() ? getNamedTag().getInt("trackingHandle") : 0;
+        return hasNbt() ? getNbt().getInt("trackingHandle") : 0;
     }
 
     public void setTrackingHandle(int trackingHandle) {
-        CompoundTag tag = getNamedTag();
-        if (tag == null) {
-            tag = new CompoundTag();
-        }
+        CompoundTag tag = getOrCreateNbt();
         tag.putInt("trackingHandle", trackingHandle);
-        setNamedTag(tag);
+        setNbt(tag);
     }
 }

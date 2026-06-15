@@ -1,18 +1,9 @@
 package cn.nukkit.level.generator.object.structures;
 
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockChest;
-import cn.nukkit.block.BlockCobblestone;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockMobSpawner;
-import cn.nukkit.block.BlockState;
+import cn.nukkit.block.*;
 import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.block.property.enums.TorchFacingDirection;
-import cn.nukkit.block.BlockWallBase;
-import cn.nukkit.block.BlockStructureBlock;
-import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.inventory.Inventory;
@@ -26,10 +17,11 @@ import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.StructureRotationUtil;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -248,7 +240,8 @@ public final class WoodlandMansionPieces {
 
     private static MobSpawnPlan getMobSpawnPlan(String templateName) {
         return switch (templateName) {
-            case "1x2_a1", "1x2_a3", "1x2_a8", "1x2_a9", "1x2_b1", "1x2_b2", "1x2_b3", "2x2_a2" -> new MobSpawnPlan(0, 1, 0);
+            case "1x2_a1", "1x2_a3", "1x2_a8", "1x2_a9", "1x2_b1", "1x2_b2", "1x2_b3", "2x2_a2" ->
+                    new MobSpawnPlan(0, 1, 0);
             case "1x2_a2", "1x2_d3", "2x2_b1", "2x2_b2", "2x2_b4" -> new MobSpawnPlan(1, 2, 0);
             case "2x2_a1" -> new MobSpawnPlan(0, 1, 3);
             default -> null;
@@ -794,13 +787,13 @@ public final class WoodlandMansionPieces {
                                 BlockVector3 southPos = relative(relative(pos, rotation, BlockFace.SOUTH, 5), rotation, BlockFace.WEST, 1);
                                 southPos = applyTemplateRotationOffset(southPiece, southPos, rotation);
                                 southPos = relative(relative(southPos, rotation, BlockFace.WEST, 2), rotation, BlockFace.SOUTH, 1);
-                                pieces.add(new WoodlandMansionPiece(southPiece, southPos, rotation.rotateBy(Rotation.ROTATE_180)));
+                                pieces.add(new WoodlandMansionPiece(southPiece, southPos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
                             }
                             if (grid.get(x - 1, y) == 1) {
                                 BlockVector3 westPos = relative(relative(pos, rotation, BlockFace.WEST, 1), rotation, BlockFace.NORTH, 1);
                                 westPos = applyTemplateRotationOffset(westPiece, westPos, rotation);
                                 westPos = relative(relative(westPos, rotation, BlockFace.WEST, 2), rotation, BlockFace.SOUTH, 1);
-                                pieces.add(new WoodlandMansionPiece(westPiece, westPos, rotation.rotateBy(Rotation.ROTATE_180)));
+                                pieces.add(new WoodlandMansionPiece(westPiece, westPos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
                             }
                         }
                     }
@@ -847,12 +840,12 @@ public final class WoodlandMansionPieces {
 
                             if (MansionGrid.isHouse(grid, x, y + 1) && !mansion.isRoomId(grid, x, y + 1, floorNum, roomId)) {
                                 BlockVector3 posx = relative(relative(roomPos, rotation, BlockFace.SOUTH, 7), rotation, BlockFace.EAST, 7);
-                                pieces.add(new WoodlandMansionPiece(doorDir == BlockFace.SOUTH ? doorPiece : wallPiece, posx, rotation.rotateBy(Rotation.ROTATE_90)));
+                                pieces.add(new WoodlandMansionPiece(doorDir == BlockFace.SOUTH ? doorPiece : wallPiece, posx, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
                             }
 
                             if (grid.get(x, y - 1) == 1 && !thirdFloorStartRoom) {
                                 BlockVector3 posx = relative(relative(roomPos, rotation, BlockFace.NORTH, 1), rotation, BlockFace.EAST, 7);
-                                pieces.add(new WoodlandMansionPiece(doorDir == BlockFace.NORTH ? doorPiece : wallPiece, posx, rotation.rotateBy(Rotation.ROTATE_90)));
+                                pieces.add(new WoodlandMansionPiece(doorDir == BlockFace.NORTH ? doorPiece : wallPiece, posx, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
                             }
 
                             if (roomType == 65536) {
@@ -939,17 +932,17 @@ public final class WoodlandMansionPieces {
 
                         if (!MansionGrid.isHouse(grid, x - 1, y)) {
                             BlockVector3 p2 = relative(relative(position, rotation, BlockFace.EAST, 0), rotation, BlockFace.SOUTH, 7);
-                            pieces.add(new WoodlandMansionPiece("roof_front", p2, rotation.rotateBy(Rotation.ROTATE_180)));
+                            pieces.add(new WoodlandMansionPiece("roof_front", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
                         }
 
                         if (!MansionGrid.isHouse(grid, x, y - 1)) {
                             BlockVector3 p2 = relative(position, rotation, BlockFace.WEST, 1);
-                            pieces.add(new WoodlandMansionPiece("roof_front", p2, rotation.rotateBy(Rotation.ROTATE_270)));
+                            pieces.add(new WoodlandMansionPiece("roof_front", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270)));
                         }
 
                         if (!MansionGrid.isHouse(grid, x, y + 1)) {
                             BlockVector3 p2 = relative(relative(position, rotation, BlockFace.EAST, 6), rotation, BlockFace.SOUTH, 6);
-                            pieces.add(new WoodlandMansionPiece("roof_front", p2, rotation.rotateBy(Rotation.ROTATE_90)));
+                            pieces.add(new WoodlandMansionPiece("roof_front", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
                         }
                     }
                 }
@@ -969,17 +962,17 @@ public final class WoodlandMansionPieces {
 
                             if (!MansionGrid.isHouse(grid, x - 1, y)) {
                                 BlockVector3 p2 = relative(relative(pos, rotation, BlockFace.WEST, 1), rotation, BlockFace.SOUTH, 6);
-                                pieces.add(new WoodlandMansionPiece("small_wall", p2, rotation.rotateBy(Rotation.ROTATE_180)));
+                                pieces.add(new WoodlandMansionPiece("small_wall", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
                             }
 
                             if (!MansionGrid.isHouse(grid, x, y - 1)) {
                                 BlockVector3 p2 = relative(relative(pos, rotation, BlockFace.WEST, 0), rotation, BlockFace.NORTH, 1);
-                                pieces.add(new WoodlandMansionPiece("small_wall", p2, rotation.rotateBy(Rotation.ROTATE_270)));
+                                pieces.add(new WoodlandMansionPiece("small_wall", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270)));
                             }
 
                             if (!MansionGrid.isHouse(grid, x, y + 1)) {
                                 BlockVector3 p2 = relative(relative(pos, rotation, BlockFace.EAST, 6), rotation, BlockFace.SOUTH, 7);
-                                pieces.add(new WoodlandMansionPiece("small_wall", p2, rotation.rotateBy(Rotation.ROTATE_90)));
+                                pieces.add(new WoodlandMansionPiece("small_wall", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
                             }
 
                             if (!MansionGrid.isHouse(grid, x + 1, y)) {
@@ -990,19 +983,19 @@ public final class WoodlandMansionPieces {
 
                                 if (!MansionGrid.isHouse(grid, x, y + 1)) {
                                     BlockVector3 p2 = relative(relative(pos, rotation, BlockFace.EAST, 8), rotation, BlockFace.SOUTH, 7);
-                                    pieces.add(new WoodlandMansionPiece("small_wall_corner", p2, rotation.rotateBy(Rotation.ROTATE_90)));
+                                    pieces.add(new WoodlandMansionPiece("small_wall_corner", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
                                 }
                             }
 
                             if (!MansionGrid.isHouse(grid, x - 1, y)) {
                                 if (!MansionGrid.isHouse(grid, x, y - 1)) {
                                     BlockVector3 p2 = relative(relative(pos, rotation, BlockFace.WEST, 2), rotation, BlockFace.NORTH, 1);
-                                    pieces.add(new WoodlandMansionPiece("small_wall_corner", p2, rotation.rotateBy(Rotation.ROTATE_270)));
+                                    pieces.add(new WoodlandMansionPiece("small_wall_corner", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270)));
                                 }
 
                                 if (!MansionGrid.isHouse(grid, x, y + 1)) {
                                     BlockVector3 p2 = relative(relative(pos, rotation, BlockFace.WEST, 1), rotation, BlockFace.SOUTH, 8);
-                                    pieces.add(new WoodlandMansionPiece("small_wall_corner", p2, rotation.rotateBy(Rotation.ROTATE_180)));
+                                    pieces.add(new WoodlandMansionPiece("small_wall_corner", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
                                 }
                             }
                         }
@@ -1027,10 +1020,10 @@ public final class WoodlandMansionPieces {
                             }
 
                             if (!MansionGrid.isHouse(grid, x, y - 1)) {
-                                pieces.add(new WoodlandMansionPiece("roof_corner", p2, rotation.rotateBy(Rotation.ROTATE_270)));
+                                pieces.add(new WoodlandMansionPiece("roof_corner", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270)));
                             } else if (MansionGrid.isHouse(grid, x + 1, y - 1)) {
                                 BlockVector3 p3 = relative(relative(pos, rotation, BlockFace.EAST, 9), rotation, BlockFace.NORTH, 2);
-                                pieces.add(new WoodlandMansionPiece("roof_inner_corner", p3, rotation.rotateBy(Rotation.ROTATE_90)));
+                                pieces.add(new WoodlandMansionPiece("roof_inner_corner", p3, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
                             }
                         }
 
@@ -1038,17 +1031,17 @@ public final class WoodlandMansionPieces {
                             BlockVector3 p2 = relative(relative(pos, rotation, BlockFace.EAST, 0), rotation, BlockFace.SOUTH, 0);
                             if (!MansionGrid.isHouse(grid, x, y + 1)) {
                                 BlockVector3 p3 = relative(p2, rotation, BlockFace.SOUTH, 6);
-                                pieces.add(new WoodlandMansionPiece("roof_corner", p3, rotation.rotateBy(Rotation.ROTATE_90)));
+                                pieces.add(new WoodlandMansionPiece("roof_corner", p3, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
                             } else if (MansionGrid.isHouse(grid, x - 1, y + 1)) {
                                 BlockVector3 p3 = relative(relative(p2, rotation, BlockFace.SOUTH, 8), rotation, BlockFace.WEST, 3);
-                                pieces.add(new WoodlandMansionPiece("roof_inner_corner", p3, rotation.rotateBy(Rotation.ROTATE_270)));
+                                pieces.add(new WoodlandMansionPiece("roof_inner_corner", p3, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270)));
                             }
 
                             if (!MansionGrid.isHouse(grid, x, y - 1)) {
-                                pieces.add(new WoodlandMansionPiece("roof_corner", p2, rotation.rotateBy(Rotation.ROTATE_180)));
+                                pieces.add(new WoodlandMansionPiece("roof_corner", p2, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
                             } else if (MansionGrid.isHouse(grid, x - 1, y - 1)) {
                                 BlockVector3 p3 = relative(p2, rotation, BlockFace.SOUTH, 1);
-                                pieces.add(new WoodlandMansionPiece("roof_inner_corner", p3, rotation.rotateBy(Rotation.ROTATE_180)));
+                                pieces.add(new WoodlandMansionPiece("roof_inner_corner", p3, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
                             }
                         }
                     }
@@ -1072,13 +1065,13 @@ public final class WoodlandMansionPieces {
             pieces.add(new WoodlandMansionPiece("wall_corner", data.position, data.rotation));
             data.position = relative(data.position, data.rotation, BlockFace.SOUTH, -7);
             data.position = relative(data.position, data.rotation, BlockFace.WEST, -6);
-            data.rotation = data.rotation.rotateBy(Rotation.ROTATE_90);
+            data.rotation = StructureRotationUtil.rotateBy(data.rotation, Rotation.ROTATE_90);
         }
 
         private void traverseInnerTurn(List<WoodlandMansionPiece> pieces, PlacementData data) {
             data.position = relative(data.position, data.rotation, BlockFace.SOUTH, 6);
             data.position = relative(data.position, data.rotation, BlockFace.EAST, 8);
-            data.rotation = data.rotation.rotateBy(Rotation.ROTATE_270);
+            data.rotation = StructureRotationUtil.rotateBy(data.rotation, Rotation.ROTATE_270);
         }
 
         private void addRoom1x1(List<WoodlandMansionPiece> pieces, BlockVector3 roomPos, Rotation rotation, BlockFace doorDir, FloorRoomCollection rooms) {
@@ -1086,18 +1079,18 @@ public final class WoodlandMansionPieces {
             String roomType = rooms.get1x1(this.random);
             if (doorDir != BlockFace.EAST) {
                 if (doorDir == BlockFace.NORTH) {
-                    pieceRot = pieceRot.rotateBy(Rotation.ROTATE_270);
+                    pieceRot = StructureRotationUtil.rotateBy(pieceRot, Rotation.ROTATE_270);
                 } else if (doorDir == BlockFace.WEST) {
-                    pieceRot = pieceRot.rotateBy(Rotation.ROTATE_180);
+                    pieceRot = StructureRotationUtil.rotateBy(pieceRot, Rotation.ROTATE_180);
                 } else if (doorDir == BlockFace.SOUTH) {
-                    pieceRot = pieceRot.rotateBy(Rotation.ROTATE_90);
+                    pieceRot = StructureRotationUtil.rotateBy(pieceRot, Rotation.ROTATE_90);
                 } else {
                     roomType = rooms.get1x1Secret(this.random);
                 }
             }
 
             BlockVector3 orientation = getZeroPositionWithTransform(new BlockVector3(1, 0, 0), Mirror.NONE, pieceRot, 7, 7);
-            pieceRot = pieceRot.rotateBy(rotation);
+            pieceRot = StructureRotationUtil.rotateBy(pieceRot, rotation);
             orientation = rotateOffset(orientation, rotation);
             BlockVector3 pos = roomPos.add(orientation.getX(), 0, orientation.getZ());
             pieces.add(new WoodlandMansionPiece(roomType, pos, pieceRot));
@@ -1123,37 +1116,37 @@ public final class WoodlandMansionPieces {
                 pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, rotation, Mirror.LEFT_RIGHT));
             } else if (doorDir == BlockFace.WEST && roomDir == BlockFace.NORTH) {
                 BlockVector3 pos = relative(relative(roomPos, rotation, BlockFace.EAST, 7), rotation, BlockFace.SOUTH, 6);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_180)));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
             } else if (doorDir == BlockFace.WEST && roomDir == BlockFace.SOUTH) {
                 BlockVector3 pos = relative(roomPos, rotation, BlockFace.EAST, 7);
                 pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, rotation, Mirror.FRONT_BACK));
             } else if (doorDir == BlockFace.SOUTH && roomDir == BlockFace.EAST) {
                 BlockVector3 pos = relative(roomPos, rotation, BlockFace.EAST, 1);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_90), Mirror.LEFT_RIGHT));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90), Mirror.LEFT_RIGHT));
             } else if (doorDir == BlockFace.SOUTH && roomDir == BlockFace.WEST) {
                 BlockVector3 pos = relative(roomPos, rotation, BlockFace.EAST, 7);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_90)));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
             } else if (doorDir == BlockFace.NORTH && roomDir == BlockFace.WEST) {
                 BlockVector3 pos = relative(relative(roomPos, rotation, BlockFace.EAST, 7), rotation, BlockFace.SOUTH, 6);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_90), Mirror.FRONT_BACK));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90), Mirror.FRONT_BACK));
             } else if (doorDir == BlockFace.NORTH && roomDir == BlockFace.EAST) {
                 BlockVector3 pos = relative(relative(roomPos, rotation, BlockFace.EAST, 1), rotation, BlockFace.SOUTH, 6);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_270)));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2SideEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270)));
             } else if (doorDir == BlockFace.SOUTH && roomDir == BlockFace.NORTH) {
                 BlockVector3 pos = relative(relative(roomPos, rotation, BlockFace.EAST, 1), rotation, BlockFace.NORTH, 8);
                 pieces.add(new WoodlandMansionPiece(rooms.get1x2FrontEntrance(this.random, isStairsRoom), pos, rotation));
             } else if (doorDir == BlockFace.NORTH && roomDir == BlockFace.SOUTH) {
                 BlockVector3 pos = relative(relative(roomPos, rotation, BlockFace.EAST, 7), rotation, BlockFace.SOUTH, 14);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2FrontEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_180)));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2FrontEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180)));
             } else if (doorDir == BlockFace.WEST && roomDir == BlockFace.EAST) {
                 BlockVector3 pos = relative(roomPos, rotation, BlockFace.EAST, 15);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2FrontEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_90)));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2FrontEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
             } else if (doorDir == BlockFace.EAST && roomDir == BlockFace.WEST) {
                 BlockVector3 pos = relative(relative(roomPos, rotation, BlockFace.WEST, 7), rotation, BlockFace.SOUTH, 6);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2FrontEntrance(this.random, isStairsRoom), pos, rotation.rotateBy(Rotation.ROTATE_270)));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2FrontEntrance(this.random, isStairsRoom), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270)));
             } else if (doorDir == BlockFace.UP && roomDir == BlockFace.EAST) {
                 BlockVector3 pos = relative(roomPos, rotation, BlockFace.EAST, 15);
-                pieces.add(new WoodlandMansionPiece(rooms.get1x2Secret(this.random), pos, rotation.rotateBy(Rotation.ROTATE_90)));
+                pieces.add(new WoodlandMansionPiece(rooms.get1x2Secret(this.random), pos, StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90)));
             } else if (doorDir == BlockFace.UP && roomDir == BlockFace.SOUTH) {
                 BlockVector3 pos = relative(relative(roomPos, rotation, BlockFace.EAST, 1), rotation, BlockFace.NORTH, 0);
                 pieces.add(new WoodlandMansionPiece(rooms.get1x2Secret(this.random), pos, rotation));
@@ -1181,25 +1174,25 @@ public final class WoodlandMansionPieces {
             } else if (doorDir == BlockFace.NORTH && roomDir == BlockFace.EAST) {
                 east = 1;
                 south = 14;
-                rot = rotation.rotateBy(Rotation.ROTATE_270);
+                rot = StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270);
             } else if (doorDir == BlockFace.NORTH && roomDir == BlockFace.WEST) {
                 east = 7;
                 south = 14;
-                rot = rotation.rotateBy(Rotation.ROTATE_270);
+                rot = StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_270);
                 mirror = Mirror.LEFT_RIGHT;
             } else if (doorDir == BlockFace.SOUTH && roomDir == BlockFace.WEST) {
                 east = 7;
                 south = -8;
-                rot = rotation.rotateBy(Rotation.ROTATE_90);
+                rot = StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90);
             } else if (doorDir == BlockFace.SOUTH && roomDir == BlockFace.EAST) {
                 east = 1;
                 south = -8;
-                rot = rotation.rotateBy(Rotation.ROTATE_90);
+                rot = StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_90);
                 mirror = Mirror.LEFT_RIGHT;
             } else if (doorDir == BlockFace.WEST && roomDir == BlockFace.NORTH) {
                 east = 15;
                 south = 6;
-                rot = rotation.rotateBy(Rotation.ROTATE_180);
+                rot = StructureRotationUtil.rotateBy(rotation, Rotation.ROTATE_180);
             } else if (doorDir == BlockFace.WEST && roomDir == BlockFace.SOUTH) {
                 east = 15;
                 mirror = Mirror.FRONT_BACK;
@@ -1440,9 +1433,9 @@ public final class WoodlandMansionPieces {
 
         private static BlockState rotateState(BlockState state, Rotation rotation) {
             return switch (rotation) {
-                case ROTATE_90 -> Rotation.clockwise90(state);
-                case ROTATE_180 -> Rotation.clockwise180(state);
-                case ROTATE_270 -> Rotation.counterclockwise90(state);
+                case ROTATE_90 -> StructureRotationUtil.clockwise90(state);
+                case ROTATE_180 -> StructureRotationUtil.clockwise180(state);
+                case ROTATE_270 -> StructureRotationUtil.counterclockwise90(state);
                 default -> state;
             };
         }
@@ -1510,10 +1503,14 @@ public final class WoodlandMansionPieces {
 
         private static MinecraftCardinalDirection mirrorCardinalDirection(MinecraftCardinalDirection direction, Mirror mirror) {
             return switch (direction) {
-                case EAST -> mirror == Mirror.FRONT_BACK ? MinecraftCardinalDirection.WEST : MinecraftCardinalDirection.EAST;
-                case WEST -> mirror == Mirror.FRONT_BACK ? MinecraftCardinalDirection.EAST : MinecraftCardinalDirection.WEST;
-                case NORTH -> mirror == Mirror.LEFT_RIGHT ? MinecraftCardinalDirection.SOUTH : MinecraftCardinalDirection.NORTH;
-                case SOUTH -> mirror == Mirror.LEFT_RIGHT ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.SOUTH;
+                case EAST ->
+                        mirror == Mirror.FRONT_BACK ? MinecraftCardinalDirection.WEST : MinecraftCardinalDirection.EAST;
+                case WEST ->
+                        mirror == Mirror.FRONT_BACK ? MinecraftCardinalDirection.EAST : MinecraftCardinalDirection.WEST;
+                case NORTH ->
+                        mirror == Mirror.LEFT_RIGHT ? MinecraftCardinalDirection.SOUTH : MinecraftCardinalDirection.NORTH;
+                case SOUTH ->
+                        mirror == Mirror.LEFT_RIGHT ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.SOUTH;
             };
         }
 

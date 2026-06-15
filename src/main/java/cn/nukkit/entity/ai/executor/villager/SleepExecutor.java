@@ -5,13 +5,13 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 
 public class SleepExecutor implements EntityControl, IBehaviorExecutor {
@@ -44,18 +44,18 @@ public class SleepExecutor implements EntityControl, IBehaviorExecutor {
                 sleepingLocation.setHeadYaw(sleepingLocation.getYaw());
                 entity.teleport(sleepingLocation);
                 entity.respawnToAll();
-                entity.setDataFlag(EntityFlag.SLEEPING);
-                entity.setDataProperty(EntityDataTypes.BED_POSITION, head.asBlockVector3());
-                entity.setDataFlag(EntityFlag.BODY_ROTATION_BLOCKED);
+                entity.setDataFlag(ActorFlags.SLEEPING);
+                entity.setDataProperty(ActorDataTypes.BED_POSITION, head.asBlockVector3());
+                entity.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED);
             }
         }
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.SLEEPING, false);
-        entity.setDataFlag(EntityFlag.BODY_ROTATION_BLOCKED, false);
-        entity.setDataProperty(EntityDataTypes.BED_POSITION, new BlockVector3(0, 0 ,0));
+        entity.setDataFlag(ActorFlags.SLEEPING, false);
+        entity.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+        entity.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0 ,0));
         if(!entity.getLevel().isNight()) {
             if(entity instanceof EntityVillagerV2 villager) {
                 villager.heal(villager.getHealthMax());

@@ -1,11 +1,10 @@
 package cn.nukkit.scheduler;
 
-import cn.nukkit.Server;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Nukkit Project Team

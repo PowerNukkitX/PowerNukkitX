@@ -28,7 +28,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public long id;
     public boolean movable;
     public boolean closed = false;
-    public CompoundTag namedTag;
+    protected CompoundTag nbt;
     public volatile CompoundTag serializationSnapshot;
     protected Server server;
 
@@ -101,19 +101,22 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
         this.server = chunk.getProvider().getLevel().getServer();
         this.chunk = chunk;
+        this.nbt = nbt;
         this.setLevel(chunk.getProvider().getLevel());
-        this.namedTag = nbt;
-        this.name = "";
+        if (nbt.getString("id") == null || nbt.getString("id").isEmpty()) {
+            log.warn("Tried to create a block entity with an invalid id, {}", this.getClass().getSimpleName());
+        }
+        this.name = nbt.getString("id");
         this.id = BlockEntity.count++;
-        this.x = this.namedTag.getInt("x");
-        this.y = this.namedTag.getInt("y");
-        this.z = this.namedTag.getInt("z");
+        this.x = nbt.getInt("x");
+        this.y = nbt.getInt("y");
+        this.z = nbt.getInt("z");
 
-        if (namedTag.contains("isMovable")) {
-            this.movable = this.namedTag.getBoolean("isMovable");
+        if (this.nbt.contains("isMovable")) {
+            this.movable = nbt.getBoolean("isMovable");
         } else {
             this.movable = true;
-            namedTag.putBoolean("isMovable", true);
+            this.nbt.putBoolean("isMovable", true);
         }
 
         this.initBlockEntity();
@@ -130,21 +133,15 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         loadNBT();
     }
 
-    /**
-     * 从方块实体的namedtag中读取数据
-     */
     public void loadNBT() {
     }
 
-    /**
-     * 存储方块实体数据到namedtag
-     */
     public void saveNBT() {
-        this.namedTag.putString("id", this.getSaveId());
-        this.namedTag.putInt("x", (int) this.getX());
-        this.namedTag.putInt("y", (int) this.getY());
-        this.namedTag.putInt("z", (int) this.getZ());
-        this.namedTag.putBoolean("isMovable", this.movable);
+        this.nbt.putString("id", this.getSaveId())
+                .putInt("x", (int) this.getX())
+                .putInt("y", (int) this.getY())
+                .putInt("z", (int) this.getZ())
+                .putBoolean("isMovable", this.movable);
     }
 
     public final String getSaveId() {
@@ -157,10 +154,9 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
-        CompoundTag tag = this.namedTag.copy();
-        tag.remove("x").remove("y").remove("z").remove("id");
-        if (!tag.getTags().isEmpty()) {
-            return tag;
+        this.nbt.remove("id", "x", "y", "z");
+        if (!this.nbt.isEmpty()) {
+            return getNbt();
         } else {
             return null;
         }
@@ -173,7 +169,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public abstract boolean isBlockEntityValid();
 
     public boolean onUpdate() {
-        if(!isBlockEntityValid()) {
+        if (!isBlockEntityValid()) {
             close();
         }
         return false;
@@ -246,4 +242,9 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public final BlockEntity getLevelBlockEntity() {
         return super.getLevelBlockEntity();
     }
+
+    public CompoundTag getNbt() {
+        return this.nbt;
+    }
+
 }

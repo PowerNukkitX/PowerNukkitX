@@ -6,7 +6,6 @@ import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.level.generator.feature.river.DiscGenerateFeature.STATE_STILL_WATER;

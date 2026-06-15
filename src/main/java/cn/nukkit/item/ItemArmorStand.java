@@ -78,6 +78,8 @@ public class ItemArmorStand extends Item {
     }
 
     /**
+     * 1
+     *
      * @param block The block which is in the same space as the armor stand.
      * @return {@code true} if the armor stand entity can be placed
      */

@@ -2,8 +2,9 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -16,7 +17,7 @@ public class InventorySlice implements Inventory {
     private final Inventory rawInv;
     private int startSlot;
     private int endSlot;
-    private Map<Integer, ContainerSlotType> slotTypeMap;
+    private Map<Integer, ContainerEnumName> slotTypeMap;
     private BiMap<Integer, Integer> networkSlotMap;
 
     public InventorySlice(@NotNull Inventory rawInv, int startSlot, int endSlot) {
@@ -26,10 +27,10 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
-    public ContainerSlotType getSlotType(int nativeSlot) {
+    public ContainerEnumName getContainerEnumName(int nativeSlot) {
         if (slotTypeMap != null) {
             return slotTypeMap.get(nativeSlot);
-        } else return rawInv.getSlotType(nativeSlot);
+        } else return rawInv.getContainerEnumName(nativeSlot);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class InventorySlice implements Inventory {
         } else return rawInv.fromNetworkSlot(networkSlot);
     }
 
-    public void setNetworkMapping(Map<Integer, ContainerSlotType> map, BiMap<Integer, Integer> biMap) {
+    public void setNetworkMapping(Map<Integer, ContainerEnumName> map, BiMap<Integer, Integer> biMap) {
         slotTypeMap = map;
         networkSlotMap = biMap;
     }
@@ -110,7 +111,7 @@ public class InventorySlice implements Inventory {
     public boolean canAddItem(Item item) {
         item = item.clone();
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getNamedTag() != null;
+        boolean checkTag = item.getNbt() != null;
         for (int i = startSlot; i < endSlot; ++i) {
             Item slot = rawInv.getItem(i);
             if (item.equals(slot, checkDamage, checkTag)) {
@@ -195,7 +196,7 @@ public class InventorySlice implements Inventory {
     public boolean contains(Item item) {
         int count = Math.max(1, item.getCount());
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Item i : this.getContents().values()) {
             if (item.equals(i, checkDamage, checkTag)) {
                 count -= i.getCount();
@@ -212,7 +213,7 @@ public class InventorySlice implements Inventory {
     public Map<Integer, Item> all(Item item) {
         Map<Integer, Item> slots = new HashMap<>();
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag)) {
                 slots.put(entry.getKey(), entry.getValue());
@@ -226,7 +227,7 @@ public class InventorySlice implements Inventory {
     public int first(Item item, boolean exact) {
         int count = Math.max(1, item.getCount());
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag) && (entry.getValue().getCount() == count || (!exact && entry.getValue().getCount() > count))) {
                 return entry.getKey();
@@ -259,7 +260,7 @@ public class InventorySlice implements Inventory {
     @Override
     public void remove(Item item) {
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag)) {
                 this.clear(entry.getKey());
@@ -312,7 +313,7 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
-    public InventoryType getType() {
+    public ContainerType getType() {
         return rawInv.getType();
     }
 

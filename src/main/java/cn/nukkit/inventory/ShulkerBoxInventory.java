@@ -5,9 +5,11 @@ import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.tags.BlockTags;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 
 import java.util.Map;
 
@@ -16,7 +18,7 @@ import java.util.Map;
  */
 public class ShulkerBoxInventory extends ContainerInventory {
     public ShulkerBoxInventory(BlockEntityShulkerBox box) {
-        super(box, InventoryType.CONTAINER, 27);
+        super(box, ContainerType.CONTAINER, 27);
     }
 
     @Override
@@ -26,9 +28,9 @@ public class ShulkerBoxInventory extends ContainerInventory {
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(i, ContainerSlotType.SHULKER_BOX);
+            map.put(i, ContainerEnumName.SHULKER_BOX_CONTAINER);
         }
     }
 
@@ -37,12 +39,10 @@ public class ShulkerBoxInventory extends ContainerInventory {
         super.onOpen(who);
 
         if (this.getVisibleViewersCount() == 1) {
-            BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
-            pk.type = 1;
-            pk.value = 2;
+            final BlockEventPacket pk = new BlockEventPacket();
+            pk.setBlockPosition(Vector3i.from(this.getHolder().getX(), this.getHolder().getY(), this.getHolder().getZ()));
+            pk.setEventType(1);
+            pk.setEventValue(2);
 
             Level level = this.getHolder().getLevel();
             if (level != null) {
@@ -55,12 +55,10 @@ public class ShulkerBoxInventory extends ContainerInventory {
     @Override
     public void onClose(Player who) {
         if (this.getVisibleViewersCount() == 1) {
-            BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
-            pk.type = 1;
-            pk.value = 0;
+            final BlockEventPacket pk = new BlockEventPacket();
+            pk.setBlockPosition(Vector3i.from(this.getHolder().getX(), this.getHolder().getY(), this.getHolder().getZ()));
+            pk.setEventType(1);
+            pk.setEventValue(0);
 
             Level level = this.getHolder().getLevel();
             if (level != null) {

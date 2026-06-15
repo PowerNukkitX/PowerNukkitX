@@ -22,4 +22,6 @@ public class DebugSettings extends OkaeriConfig {
     boolean mode = false; //false = ignore packets, true = allow packets
     @Comment("pnx.settings.debug.packetList")
     ArrayList<String> packetList = new ArrayList<>();
+    @Comment("pnx.settings.debug.disableencodinglimits")
+    boolean disableEncodingLimits = false;
 }

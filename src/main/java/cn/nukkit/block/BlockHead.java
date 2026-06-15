@@ -77,11 +77,11 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
 
         setBlockFace(face);
         CompoundTag nbt = new CompoundTag()
-                .putByte("SkullType", item.getDamage())
-                .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
+                .putByte("SkullType", (byte) item.getDamage())
+                .putByte("Rot", (byte) ((int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f));
         if (item.hasCustomBlockData()) {
-            for (var e : item.getCustomBlockData().getEntrySet()) {
-                nbt.put(e.getKey(), e.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
@@ -94,7 +94,7 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
         }
 
         BlockEntitySkull entity = getBlockEntity();
-        if (entity == null || entity.namedTag.getByte("SkullType") != 5) {
+        if (entity == null || entity.getNbt().getByte("SkullType") != 5) {
             return 0;
         }
 

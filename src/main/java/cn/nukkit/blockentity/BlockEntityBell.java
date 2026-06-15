@@ -32,31 +32,31 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("Ringing") || !(namedTag.get("Ringing") instanceof ByteTag)) {
+        if (!nbt.contains("Ringing") || !(nbt.get("Ringing") instanceof ByteTag)) {
             ringing = false;
         } else {
-            ringing = namedTag.getBoolean("Ringing");
+            ringing = nbt.getBoolean("Ringing");
         }
 
-        if (!namedTag.contains("Direction") || !(namedTag.get("Direction") instanceof IntTag)) {
+        if (!nbt.contains("Direction") || !(nbt.get("Direction") instanceof IntTag)) {
             direction = 255;
         } else {
-            direction = namedTag.getInt("Direction");
+            direction = nbt.getInt("Direction");
         }
 
-        if (!namedTag.contains("Ticks") || !(namedTag.get("Ticks") instanceof IntTag)) {
+        if (!nbt.contains("Ticks") || !(nbt.get("Ticks") instanceof IntTag)) {
             ticks = 0;
         } else {
-            ticks = namedTag.getInt("Ticks");
+            ticks = nbt.getInt("Ticks");
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        namedTag.putBoolean("Ringing", ringing);
-        namedTag.putInt("Direction", direction);
-        namedTag.putInt("Ticks", ticks);
+        nbt.putBoolean("Ringing", ringing);
+        nbt.putInt("Direction", direction);
+        nbt.putInt("Ticks", ticks);
     }
 
     @Override

@@ -76,7 +76,7 @@ public final class MemoryType<Data> {
 
     public void encode(Entity entity, Data data) {
         if (codec != null) {
-            codec.encode(data, entity.namedTag);
+            codec.encode(data, entity.getNbt());
         }
     }
 
@@ -90,12 +90,12 @@ public final class MemoryType<Data> {
 
     public void forceEncode(Entity entity, Object data) {
         if (codec != null) {
-            codec.encode((Data) data, entity.namedTag);
+            codec.encode((Data) data, entity.getNbt());
         }
     }
 
     public @Nullable Data decode(Entity entity) {
-        return codec != null ? codec.decode(entity.namedTag) : null;
+        return codec != null ? codec.decode(entity.getNbt()) : null;
     }
 
     @Override

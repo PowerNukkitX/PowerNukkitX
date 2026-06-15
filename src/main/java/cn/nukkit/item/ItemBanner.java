@@ -52,50 +52,48 @@ public class ItemBanner extends Item {
     }
 
     public int getType() {
-        return this.getOrCreateNamedTag().getInt("Type");
+        return this.getOrCreateNbt().getInt("Type");
     }
 
     public void setType(int type) {
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
-        assert tag != null;
+        CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
         tag.putInt("Type", type);
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     public void addPattern(BannerPattern bannerPattern) {
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
-        assert tag != null;
+        CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag().
-                putInt("Color", bannerPattern.color().getDyeData() & 0x0f).
-                putString("Pattern", bannerPattern.type().getCode()));
+        patterns.add(new CompoundTag()
+                .putInt("Color", bannerPattern.color().getDyeData() & 0x0f)
+                .putString("Pattern", bannerPattern.type().getCode()));
         tag.putList("Patterns", patterns);
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     public BannerPattern getPattern(int index) {
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
-        assert tag != null;
-        return BannerPattern.fromCompoundTag(tag.getList("Patterns").size() > index && index >= 0 ?
-                tag.getList("Patterns", CompoundTag.class).get(index) :
+        final CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
+        ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
+        return BannerPattern.fromCompoundTag(patterns.size() > index && index >= 0 ?
+                patterns.get(index) :
                 new CompoundTag());
     }
 
     public void removePattern(int index) {
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
-        assert tag != null;
+        CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
         if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
-        this.setNamedTag(tag);
+        tag.putList("Patterns", patterns);
+        this.setNbt(tag);
     }
 
     public int getPatternsSize() {
-        return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).getList("Patterns").size();
+        return (this.hasNbt() ? this.getNbt() : new CompoundTag()).getList("Patterns", CompoundTag.class).size();
     }
 
     public boolean hasPattern() {
-        return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).contains("Patterns");
+        return (this.hasNbt() ? this.getNbt() : new CompoundTag()).contains("Patterns");
     }
 }

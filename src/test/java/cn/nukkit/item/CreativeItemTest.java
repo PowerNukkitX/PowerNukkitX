@@ -1,18 +1,18 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.BlockState;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.registry.Registries;
 import com.google.gson.Gson;
 import io.netty.util.internal.EmptyArrays;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.ByteOrder;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class CreativeItemTest {
                     var isBlock = tag.containsKey("block_state_b64");
                     if (isBlock) {
                         byte[] blockTag = Base64.getDecoder().decode(tag.get("block_state_b64").toString());
-                        CompoundTag blockCompoundTag = NBTIO.read(blockTag, ByteOrder.LITTLE_ENDIAN);
+                        NbtMap blockCompoundTag = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(blockTag)).readTag();
                         int blockHash = blockCompoundTag.getInt("network_id");
                         BlockState block = Registries.BLOCKSTATE.get(blockHash);
                         if (block == null) {

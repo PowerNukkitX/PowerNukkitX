@@ -2,7 +2,7 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -18,7 +18,7 @@ public abstract class EntityIllager extends EntityMob implements EntityWalkable 
     public boolean attackTarget(Entity entity) {
         return switch (entity.getIdentifier()) {
             case VILLAGER ->
-                    entity instanceof EntityVillager villager && !villager.isBaby();
+                    entity instanceof EntityVillagerV2 villager && !villager.isBaby();
             case IRON_GOLEM, WANDERING_TRADER -> true;
             default -> super.attackTarget(entity);
         };

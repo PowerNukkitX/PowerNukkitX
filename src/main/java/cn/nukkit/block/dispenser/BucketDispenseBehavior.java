@@ -50,7 +50,7 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
                         target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
                     else
                         target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
-                    return Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag());
+                    return Item.get(ItemID.BUCKET, 0, 1, bucket.getNbtBytes());
                 }
 
             }
@@ -59,17 +59,17 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
                 target.level.addSound(block, Sound.BUCKET_FILL_WATER);
-                return Item.get(ItemID.WATER_BUCKET, 0, 1, bucket.getCompoundTag());
+                return Item.get(ItemID.WATER_BUCKET, 0, 1, bucket.getNbtBytes());
             } else if (target instanceof BlockFlowingLava lava && lava.getLiquidDepth() == 0) {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
                 target.level.addSound(block, Sound.BUCKET_FILL_LAVA);
-                return Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getCompoundTag());
+                return Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getNbtBytes());
             } else if (target instanceof BlockPowderSnow) {
                 target.level.setBlock(target, Block.get(BlockID.AIR));
                 target.level.addSound(block, Sound.BUCKET_FILL_POWDER_SNOW);
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
-                return Item.get(ItemID.POWDER_SNOW_BUCKET, 0, 1, bucket.getCompoundTag());
+                return Item.get(ItemID.POWDER_SNOW_BUCKET, 0, 1, bucket.getNbtBytes());
             }
         }
 

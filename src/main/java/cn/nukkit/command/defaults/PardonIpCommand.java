@@ -1,10 +1,10 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -22,7 +22,7 @@ public class PardonIpCommand extends VanillaCommand {
         this.setAliases(new String[]{"unbanip", "unban-ip", "pardonip"});
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("ip", CommandParamType.STRING)
+                CommandParameter.newType("ip", CommandParamType.ID)
         });
         this.enableParamTree();
     }

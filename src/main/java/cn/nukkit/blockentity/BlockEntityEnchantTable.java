@@ -20,22 +20,22 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Enchanting Table";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Enchanting Table";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
                 .putBoolean("isMovable", false);
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            c.putString("CustomName", this.getNbt().getString("CustomName"));
         }
 
         return c;

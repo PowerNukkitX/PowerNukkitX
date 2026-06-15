@@ -5,9 +5,9 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -62,7 +62,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
                 setLookTarget(entity, target);
 
                 if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
-                    entity.setDataFlag(EntityFlag.INTERESTED, true);
+                    entity.setDataFlag(ActorFlags.INTERESTED, true);
                 }
 
                 if (updateRouteImmediatelyWhenTargetChange) {
@@ -97,7 +97,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
-            entity.setDataFlag(EntityFlag.INTERESTED, false);
+            entity.setDataFlag(ActorFlags.INTERESTED, false);
         }
         oldTarget = null;
     }
@@ -111,7 +111,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
-            entity.setDataFlag(EntityFlag.INTERESTED, false);
+            entity.setDataFlag(ActorFlags.INTERESTED, false);
         }
         oldTarget = null;
     }

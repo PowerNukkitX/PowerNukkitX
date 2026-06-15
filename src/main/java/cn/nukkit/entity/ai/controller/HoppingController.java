@@ -2,12 +2,12 @@ package cn.nukkit.entity.ai.controller;
 
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityPhysical;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntitySlime;
 import cn.nukkit.entity.passive.EntityRabbit;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 /**
  * 处理陆地行走实体运动
@@ -33,14 +33,14 @@ public class HoppingController extends WalkController {
             Vector3 direction = entity.getMoveDirectionEnd().clone();
             var speed = entity.getMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
-                entity.setDataFlag(EntityFlag.MOVING, false);
+                entity.setDataFlag(ActorFlags.MOVING, false);
                 return false;
             }
             var relativeVector = direction.clone().setComponents(direction.x - entity.x,
                     direction.y - entity.y, direction.z - entity.z);
             var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
             if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
-                entity.setDataFlag(EntityFlag.MOVING, false);
+                entity.setDataFlag(ActorFlags.MOVING, false);
                 return false;
             }
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
@@ -53,18 +53,18 @@ public class HoppingController extends WalkController {
                 dy += entity.getJumpingMotion(diffY);
                 Sound jumpSound = entity instanceof EntityRabbit ? Sound.MOB_RABBIT_HOP : entity instanceof EntitySlime ? Sound.JUMP_SLIME : null;
                 if(jumpSound != null) entity.getLevel().addSound(entity, jumpSound);
-                entity.setDataProperty(EntityDataTypes.CLIENT_EVENT, 2);
+                entity.setDataProperty(ActorDataTypes.CLIENT_EVENT, 2);
                 currentJumpCoolDown = 0;
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
-            entity.setDataFlag(EntityFlag.MOVING, true);
+            entity.setDataFlag(ActorFlags.MOVING, true);
             if (xzLength < speed) {
                 needNewDirection(entity);
                 return false;
             }
             return true;
         } else {
-            entity.setDataFlag(EntityFlag.MOVING, false);
+            entity.setDataFlag(ActorFlags.MOVING, false);
             return false;
         }
     }

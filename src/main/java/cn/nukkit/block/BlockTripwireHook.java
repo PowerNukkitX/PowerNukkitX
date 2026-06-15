@@ -10,8 +10,8 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -25,14 +25,17 @@ import static cn.nukkit.block.property.CommonBlockProperties.POWERED_BIT;
  */
 
 public class BlockTripwireHook extends BlockTransparent implements RedstoneComponent {
-    /** Includes 40 tripwire and both tripwire hooks */
+    /**
+     * Includes 40 tripwire and both tripwire hooks
+     */
     public static final int MAX_TRIPWIRE_CIRCUIT_LENGTH = 42;
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIPWIRE_HOOK,
             DIRECTION, ATTACHED_BIT, POWERED_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -51,7 +54,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     @Override
     public int onUpdate(int type) {
-        switch(type) {
+        switch (type) {
             case Level.BLOCK_UPDATE_NORMAL -> {
                 var supportBlock = this.getSide(this.getFacing().getOpposite());
                 if (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass)) {
@@ -183,10 +186,14 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
             }
         }
 
-        if (wasConnected == isConnected) { return; }
+        if (wasConnected == isConnected) {
+            return;
+        }
         for (int steps = 1; steps < pairedHookDistance; steps++) {
             BlockTripWire wire = line[steps];
-            if(wire == null) { continue; }
+            if (wire == null) {
+                continue;
+            }
             Vector3 vc = position.getSide(facing, steps);
             wire.setAttached(isConnected);
             this.level.setBlock(vc, wire, true, true);
@@ -199,15 +206,15 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     private void addSound(Vector3 pos, boolean canConnect, boolean nextPowered, boolean attached, boolean powered) {
         if (nextPowered && !powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEvent.POWER_ON);
+            this.level.addLevelSoundEvent(pos, SoundEvent.POWER_ON);
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         } else if (!nextPowered && powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEvent.POWER_OFF);
+            this.level.addLevelSoundEvent(pos, SoundEvent.POWER_OFF);
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
         } else if (canConnect && !attached) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEvent.ATTACH);
+            this.level.addLevelSoundEvent(pos, SoundEvent.ATTACH);
         } else if (!canConnect && attached) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEvent.DETACH);
+            this.level.addLevelSoundEvent(pos, SoundEvent.DETACH);
         }
     }
 
@@ -228,7 +235,9 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     public void setPowered(boolean isPowered) {
-        if (this.isPowered() == isPowered) { return; }
+        if (this.isPowered() == isPowered) {
+            return;
+        }
         this.setPropertyValue(POWERED_BIT, isPowered);
         var pos = this.add(0.5, 0.5, 0.5);
         VibrationType vibrationType = (isPowered) ? VibrationType.BLOCK_ACTIVATE : VibrationType.BLOCK_DEACTIVATE;
@@ -236,7 +245,9 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     public void setAttached(boolean isAttached) {
-        if (this.isAttached() == isAttached) { return; }
+        if (this.isAttached() == isAttached) {
+            return;
+        }
         this.setPropertyValue(ATTACHED_BIT, isAttached);
         var pos = this.add(0.5, 0.5, 0.5);
         VibrationType vibrationType = (isAttached) ? VibrationType.BLOCK_ATTACH : VibrationType.BLOCK_DETACH;
@@ -245,7 +256,9 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     public void setFace(BlockFace face) {
         int direction = face.getHorizontalIndex();
-        if(this.getDirection() == direction) { return; }
+        if (this.getDirection() == direction) {
+            return;
+        }
         this.setPropertyValue(DIRECTION, direction);
     }
 

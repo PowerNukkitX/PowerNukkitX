@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
@@ -12,14 +11,15 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.PlayerFogPacket;
-import cn.nukkit.network.protocol.types.PlayerBlockActionData;
+import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.security.PacketRateLimiter;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
-import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
+import lombok.Getter;
+import lombok.Setter;
+import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -34,6 +34,14 @@ import java.util.UUID;
 public final class PlayerHandle {
     public final @NotNull Player player;
     public final @NotNull PacketRateLimiter packetRateLimiter;
+
+    @Getter
+    @Setter
+    private long lastServerNetworkStackLatencyTimeInMS;
+
+    @Getter
+    @Setter
+    private long latencyTimeInMS;
 
     public PlayerHandle(@NotNull Player player) {
         this.player = player;
@@ -190,11 +198,11 @@ public final class PlayerHandle {
         return player.formWindows;
     }
 
-    public BiMap<Inventory, Integer> getWindows() {
+    public BiMap<Inventory, Byte> getWindows() {
         return player.windows;
     }
 
-    public BiMap<Integer, Inventory> getWindowIndex() {
+    public BiMap<Byte, Inventory> getWindowIndex() {
         return player.windowIndex;
     }
 
@@ -250,11 +258,11 @@ public final class PlayerHandle {
         player.lastAttackEntity = lastAttackEntity;
     }
 
-    public List<PlayerFogPacket.Fog> getFogStack() {
+    public List<String> getFogStack() {
         return player.fogStack;
     }
 
-    public void setFogStack(List<PlayerFogPacket.Fog> fogStack) {
+    public void setFogStack(List<String> fogStack) {
         player.fogStack = fogStack;
     }
 
@@ -262,8 +270,8 @@ public final class PlayerHandle {
         player.lastBeAttackEntity = lastBeAttackEntity;
     }
 
-    public LoginChainData getLoginChainData() {
-        return player.loginChainData;
+    public ClientChainData getLoginChainData() {
+        return player.clientChainData;
     }
 
     public AsyncTask getPreLoginEventTask() {
@@ -296,10 +304,6 @@ public final class PlayerHandle {
 
     public void initEntity() {
         player.initEntity();
-    }
-
-    public void doFirstSpawn() {
-        player.doFirstSpawn();
     }
 
     public void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
@@ -380,5 +384,13 @@ public final class PlayerHandle {
 
     public void addDefaultWindows() {
         player.addDefaultWindows();
+    }
+
+    public void doFirstSpawn() {
+        this.player.doFirstSpawn();
+    }
+
+    public void onAckReceive(long creationTime) {
+        this.player.onAckReceive(creationTime);
     }
 }
