@@ -1071,6 +1071,7 @@ public class Server {
             }
 
             for (Level level : this.levelArray) {
+                level.requestAutoSave();
                 // Chunk data is saved on the tick thread (see Level#processAutoSave); here we only persist
                 // the cheap level metadata (time, weather, game rules, level.dat) off-thread.
                 level.saveLevelMetadata();
@@ -1119,13 +1120,6 @@ public class Server {
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
-            // Chunks are serialized on each level's own tick thread, a bounded number per tick, and flushed
-            // to disk asynchronously - this avoids the block/block-entity desync that arose from serializing
-            // a live, concurrently-mutated chunk off-thread. Here we just request the pass; players, level
-            // metadata and scoreboards are still saved off-thread in doAutoSave.
-            for (Level level : this.levelArray) {
-                level.requestAutoSave();
-            }
             CompletableFuture.runAsync(this::doAutoSave);
         }
 
