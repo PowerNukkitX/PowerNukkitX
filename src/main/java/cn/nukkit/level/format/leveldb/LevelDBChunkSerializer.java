@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -353,9 +352,6 @@ public class LevelDBChunkSerializer {
         // the entity currently registered at that position (chunk.getTile), and warn so the cause is visible.
         Map<String, BlockEntity> byPosition = new LinkedHashMap<>();
         for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-            if (blockEntity == null) {
-                continue;
-            }
             String posKey = blockEntity.getFloorX() + ":" + blockEntity.getFloorY() + ":" + blockEntity.getFloorZ();
             BlockEntity existing = byPosition.get(posKey);
             if (existing == null) {
