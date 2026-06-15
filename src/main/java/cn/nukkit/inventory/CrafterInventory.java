@@ -9,11 +9,9 @@ import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.ShapedRecipe;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.MainLogger;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -98,19 +96,11 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
 
     /**
      * Triggers a redstone update on the crafter block backing this inventory.
-     * <p>
-     * Guards against orphaned block entities: if the block at the holder's position is no longer a
-     * {@link BlockCrafter} (e.g. it was replaced by another block while a stale {@link BlockEntityCrafter}
-     * lingered in the chunk), the update is skipped and the stale block entity is closed instead of
-     * throwing a {@link ClassCastException} that would crash the level tick.
      */
     private void updateRedstone() {
         if (getHolder().getLevelBlock() instanceof BlockCrafter crafter) {
             crafter.updateAllAroundRedstone();
         } else {
-            getHolder().getLevel().getServer().getLogger()
-                    .debug("BlockCrafter guard triggered! Block entity does not match with block! Closing ...\n\n" +
-                            getHolder() + "\n\nBlock at this location: \n\n" + getHolder().getBlock());
             getHolder().close();
         }
     }
