@@ -7,6 +7,7 @@ import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.MoveActorAbsoluteData;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarOverlay;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
 import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
@@ -150,6 +151,8 @@ public class DummyBossBar {
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.text);
         bossEventPacket.setHealthPercent(this.length / 100);
+        bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
+        bossEventPacket.setColor(color != null ? color.toNetwork() : org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.PINK);
         this.player.sendPacket(bossEventPacket);
     }
 
@@ -164,7 +167,7 @@ public class DummyBossBar {
         final BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setTargetActorID(this.bossBarId);
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_STYLE);
-        bossEventPacket.setColor(color != null ? org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.from(color.ordinal()) : org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.PINK);
+        bossEventPacket.setColor(color != null ? color.toNetwork() : org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.PINK);
         this.player.sendPacket(bossEventPacket);
     }
 
