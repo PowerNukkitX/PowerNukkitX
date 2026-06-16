@@ -62,27 +62,26 @@ public class Observable<T> {
                 continue;
             }
 
-            final DataStoreUpdate update = new DataStoreUpdate();
-
-            update.setDataStoreName(screen.getIdentifier().split(":")[0]);
-            update.setProperty(screen.getProperty());
-            update.setPath(element.getPath());
-            update.setType(
-                    switch (value) {
-                        case Boolean n -> DataStorePropertyType.BOOLEAN;
-                        case Number n -> DataStorePropertyType.DOUBLE;
-                        case String n -> DataStorePropertyType.STRING;
-                        default -> throw new IllegalStateException("Unexpected value: " + value);
-                    }
-            );
-            update.setData(value);
-            update.setPropertyUpdateCount(1);
-            update.setPathUpdateCount(1);
-
-            ClientboundDataStorePacket cbDataStore = new ClientboundDataStorePacket();
-            cbDataStore.getUpdates().add(update);
-
             for (Player viewer : screen.getAllViewers()) {
+                final DataStoreUpdate update = new DataStoreUpdate();
+
+                update.setDataStoreName(screen.getIdentifier().split(":")[0]);
+                update.setProperty(screen.getClientProperty(viewer));
+                update.setPath(element.getPath());
+                update.setType(
+                        switch (value) {
+                            case Boolean n -> DataStorePropertyType.BOOLEAN;
+                            case Number n -> DataStorePropertyType.DOUBLE;
+                            case String n -> DataStorePropertyType.STRING;
+                            default -> throw new IllegalStateException("Unexpected value: " + value);
+                        }
+                );
+                update.setData(value);
+                update.setPropertyUpdateCount(1);
+                update.setPathUpdateCount(1);
+
+                ClientboundDataStorePacket cbDataStore = new ClientboundDataStorePacket();
+                cbDataStore.getUpdates().add(update);
                 viewer.sendPacket(cbDataStore);
             }
         }

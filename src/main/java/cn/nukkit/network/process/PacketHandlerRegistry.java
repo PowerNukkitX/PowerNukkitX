@@ -55,6 +55,7 @@ public class PacketHandlerRegistry {
         register(RequestPermissionsPacket.class, new RequestPermissionsHandler());
         register(RespawnPacket.class, new RespawnHandler());
         register(ServerboundDataStorePacket.class, new ServerboundDataStoreHandler());
+        register(ServerboundDataDrivenScreenClosedPacket.class, new ServerboundDataDrivenScreenClosedHandler());
         register(ServerSettingsRequestPacket.class, new ServerSettingsRequestHandler());
         register(ServerboundDiagnosticsPacket.class, new ServerboundDiagnosticsHandler());
         register(SetDifficultyPacket.class, new SetDifficultyHandler());
