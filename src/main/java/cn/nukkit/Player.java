@@ -1069,8 +1069,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
+            boolean recentlyTeleported = lastTeleportMessage != null
+                    && (System.currentTimeMillis() - lastTeleportMessage.right()) < 1000;
             //Handling saturation updates
-            if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0) {
+            if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0 && !recentlyTeleported) {
                 //UpdateFoodExpLevel
                 if (distance >= 0.05) {
                     double jump = 0;
