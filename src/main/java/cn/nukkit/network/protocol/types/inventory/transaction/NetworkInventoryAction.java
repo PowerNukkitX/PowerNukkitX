@@ -61,6 +61,7 @@ public class NetworkInventoryAction {
                         case SOURCE_TYPE_TRADING_INPUT_1, SOURCE_TYPE_TRADING_INPUT_2, SOURCE_TYPE_TRADING_USE_INPUTS,
                              SOURCE_TYPE_TRADING_OUTPUT -> pk.isTradeItemPart = true;
                     }
+                    inventorySource = InventorySource.fromNonImplementedTodo(containerId);
                 }
                 default -> inventorySource = InventorySource.fromInvalid();
             }
