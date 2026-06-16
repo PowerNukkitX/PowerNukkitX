@@ -31,8 +31,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
     public abstract String getProperty();
 
     /**
-     * Returns the per-player property name, with formId suffix for protocol v944+.
-     * Since PNX only supports v975+ (above v944), this always returns {@code property_formId}.
+     * Returns the per-player property name, with formId suffix
      */
     public String getClientProperty(Player player) {
         Integer formId = playerFormIds.get(player);
