@@ -189,8 +189,7 @@ public class Server {
      */
     private int tickCounter;
     private long nextTick;
-    private final float[] tickAverage = { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-            20 };
+    private final float[] tickAverage = { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 };
     private final float[] useAverage = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     private float maxTick = 20;
     private float maxUse = 0;
