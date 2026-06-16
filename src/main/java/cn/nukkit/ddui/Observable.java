@@ -76,7 +76,7 @@ public class Observable<T> {
                             default -> throw new IllegalStateException("Unexpected value: " + value);
                         }
                 );
-                update.setData(value);
+                update.setData(value instanceof Number n ? n.doubleValue() : value);
                 update.setPropertyUpdateCount(1);
                 update.setPathUpdateCount(1);
 
