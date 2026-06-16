@@ -87,7 +87,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             "minecraft:sulfur_brick_stairs",
             "minecraft:cinnabar_bricks",
             "minecraft:cinnabar_brick_slab",
-            "minecraft:polished_cinnabar"
+            "minecraft:polished_cinnabar",
+            "minecraft:sulfur_spike"
     );
 
     @Override

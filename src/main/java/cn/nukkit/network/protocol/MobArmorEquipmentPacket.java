@@ -25,21 +25,21 @@ public class MobArmorEquipmentPacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.eid = byteBuf.readEntityRuntimeId();
         this.slots = new Item[4];
-        this.slots[0] = byteBuf.readSlot();
-        this.slots[1] = byteBuf.readSlot();
-        this.slots[2] = byteBuf.readSlot();
-        this.slots[3] = byteBuf.readSlot();
-        this.body = byteBuf.readSlot();
+        this.slots[0] = byteBuf.readCerealSlot();
+        this.slots[1] = byteBuf.readCerealSlot();
+        this.slots[2] = byteBuf.readCerealSlot();
+        this.slots[3] = byteBuf.readCerealSlot();
+        this.body = byteBuf.readCerealSlot();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeEntityRuntimeId(this.eid);
-        byteBuf.writeSlot(this.slots[0]);
-        byteBuf.writeSlot(this.slots[1]);
-        byteBuf.writeSlot(this.slots[2]);
-        byteBuf.writeSlot(this.slots[3]);
-        byteBuf.writeSlot(this.body);
+        byteBuf.writeCerealSlot(this.slots[0]);
+        byteBuf.writeCerealSlot(this.slots[1]);
+        byteBuf.writeCerealSlot(this.slots[2]);
+        byteBuf.writeCerealSlot(this.slots[3]);
+        byteBuf.writeCerealSlot(this.body);
     }
 
     @Override

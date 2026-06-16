@@ -1,7 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author CreeperFace
@@ -48,61 +52,25 @@ public class BossEventPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.bossEid = byteBuf.readEntityUniqueId();
-        this.type = (int) byteBuf.readUnsignedVarInt();
-        switch (this.type) {
-            case TYPE_REGISTER_PLAYER:
-            case TYPE_UNREGISTER_PLAYER:
-            case TYPE_QUERY:
-                this.playerEid = byteBuf.readEntityUniqueId();
-                break;
-            case TYPE_SHOW:
-                this.title = byteBuf.readString();
-                this.filteredName = byteBuf.readString();
-                this.healthPercent = byteBuf.readFloatLE();
-            case TYPE_UPDATE_PROPERTIES:
-                this.darkenSky = (short) byteBuf.readShort();
-            case TYPE_TEXTURE:
-                this.color = (int) byteBuf.readUnsignedVarInt();
-                this.overlay = (int) byteBuf.readUnsignedVarInt();
-                break;
-            case TYPE_HEALTH_PERCENT:
-                this.healthPercent = byteBuf.readFloatLE();
-                break;
-            case TYPE_TITLE:
-                this.title = byteBuf.readString();
-                break;
-        }
+        this.playerEid = byteBuf.readEntityUniqueId();
+        this.type = byteBuf.readUnsignedByte();
+        this.title = byteBuf.readString();
+        this.filteredName = byteBuf.readString();
+        this.healthPercent = byteBuf.readFloatLE();
+        this.color = byteBuf.readUnsignedByte();
+        this.overlay = byteBuf.readUnsignedByte();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
         byteBuf.writeEntityUniqueId(this.bossEid);
-        byteBuf.writeUnsignedVarInt(this.type);
-        switch (this.type) {
-            case TYPE_REGISTER_PLAYER:
-            case TYPE_UNREGISTER_PLAYER:
-            case TYPE_QUERY:
-                byteBuf.writeEntityUniqueId(this.playerEid);
-                break;
-            case TYPE_SHOW:
-                byteBuf.writeString(this.title);
-                byteBuf.writeString(this.filteredName);
-                byteBuf.writeFloatLE(this.healthPercent);
-            case TYPE_UNKNOWN_6:
-                byteBuf.writeShort(this.darkenSky);
-            case TYPE_TEXTURE:
-                byteBuf.writeUnsignedVarInt(this.color);
-                byteBuf.writeUnsignedVarInt(this.overlay);
-                break;
-            case TYPE_HEALTH_PERCENT:
-                byteBuf.writeFloatLE(this.healthPercent);
-                break;
-            case TYPE_TITLE:
-                byteBuf.writeString(this.title);
-                byteBuf.writeString(this.filteredName);
-                break;
-        }
+        byteBuf.writeEntityUniqueId(this.playerEid);
+        byteBuf.writeByte(this.type);
+        byteBuf.writeString(this.title);
+        byteBuf.writeString(this.filteredName);
+        byteBuf.writeFloatLE(this.healthPercent);
+        byteBuf.writeByte(this.color);
+        byteBuf.writeByte(this.overlay);
     }
 
     @Override

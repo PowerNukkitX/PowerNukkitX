@@ -87,12 +87,13 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 player.clearLastUsedItem();
             }
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
-            if (pk.actions.length == 2 && pk.actions[0].getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION) &&
-                    pk.actions[0].getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM) &&
-                    pk.actions[1].getInventorySource().getType().equals(InventorySource.Type.CONTAINER)
-                    && pk.actions[1].getInventorySource().getFlag().equals(InventorySource.Flag.NONE)) {//handle throw hotbar item for player
-                int slot = pk.actions[1].inventorySlot;
-                int count = Math.min(pk.actions[0].newItem.count, player.getInventory().getItem(slot).count); //Make sure that we won't drop more items than the player has.
+            // looks like an action index swap for u3
+            if (pk.actions.length == 2 && pk.actions[1].getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION) &&
+                    pk.actions[1].getInventorySource().getFlag().equals(InventorySource.Flag.DROP_ITEM) &&
+                    pk.actions[0].getInventorySource().getType().equals(InventorySource.Type.CONTAINER)
+                    && pk.actions[0].getInventorySource().getFlag().equals(InventorySource.Flag.NONE)) {//handle throw hotbar item for player
+                int slot = pk.actions[0].inventorySlot;
+                int count = Math.min(pk.actions[1].newItem.count, player.getInventory().getItem(slot).count); //Make sure that we won't drop more items than the player has.
                 dropHotBarItemForPlayer(slot, count, player);
             }
         }
