@@ -33,6 +33,8 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.LevelConfig;
@@ -179,6 +181,7 @@ public class Server {
     private final AtomicBoolean isRunning = new AtomicBoolean(true);
     private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
     private boolean hasStopped = false;
+    private final AtomicBoolean hasBeforeStopped = new AtomicBoolean(false);
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
@@ -186,8 +189,7 @@ public class Server {
      */
     private int tickCounter;
     private long nextTick;
-    private final float[] tickAverage = { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-            20 };
+    private final float[] tickAverage = { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 };
     private final float[] useAverage = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     private float maxTick = 20;
     private float maxUse = 0;
@@ -467,7 +469,9 @@ public class Server {
         this.consoleSender = new ConsoleCommandSender();
 
         // Initialize metrics
-        NukkitMetrics.startNow(this);
+        if (!this.settings.miscSettings().disableMetrics()) {
+            NukkitMetrics.startNow(this);
+        }
 
         final RegistryCache registryCache;
         Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
@@ -836,6 +840,8 @@ public class Server {
      * Shutdown the server
      */
     public void shutdown() {
+        this.beforeStop();
+
         network.setState(NetworkState.STOPPING);
         isRunning.compareAndSet(true, false);
     }
@@ -849,67 +855,134 @@ public class Server {
         }
 
         try {
-            network.setState(NetworkState.STOPPING);
-            isRunning.compareAndSet(true, false);
+            log.debug("BeforeStop");
+            this.beforeStop();
+        } catch (Throwable e) {
+            log.error("Exception while beforestop", e);
+        }
+  
+        network.setState(NetworkState.STOPPING);
+        isRunning.compareAndSet(true, false);
 
-            this.hasStopped = true;
+        this.hasStopped = true;
 
+        try {
             ServerStopEvent serverStopEvent = new ServerStopEvent();
             getPluginManager().callEvent(serverStopEvent);
+        } catch (Throwable e) {
+            log.error("Exception while calling ServerStopEvent", e);
+        }
 
-            for (Player player : new ArrayList<>(this.players.values())) {
+        for (Player player : new ArrayList<>(this.players.values())) {
+            try {
                 player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
+            } catch (Throwable e) {
+                log.error("Exception while kicking player on shutdown", e);
             }
+        }
 
-            this.getSettings().save();
+        this.getSettings().save();
 
+        try {
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
+        } catch (Throwable e) {
+            log.error("Exception while disabling plugins", e);
+        }
 
+        try {
             log.debug("Removing event handlers");
             HandlerList.unregisterAll();
+        } catch (Throwable e) {
+            log.error("Exception while removing event handlers", e);
+        }
 
+        try {
             log.debug("Saving scoreboards data");
             this.scoreboardManager.save();
+        } catch (Throwable e) {
+            log.error("Exception while saving scoreboards", e);
+        }
 
+        try {
             log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
             this.scheduler.mainThreadHeartbeat((int) (this.getNextTick() + 10000));
+        } catch (Throwable e) {
+            log.error("Exception while stopping tasks", e);
+        }
 
-            log.debug("Unloading all levels");
-            //Chunks may still generate. Waiting for all generation tasks to complete
-            while(!this.getComputeThreadPool().isQuiescent()) Thread.sleep(1);
-            for (Level level : this.levelArray) {
+        log.debug("Unloading all levels");
+        //Chunks may still generate. Waiting for all generation tasks to complete
+        try {
+            while (!this.getComputeThreadPool().isQuiescent()) Thread.sleep(1);
+        } catch (Throwable e) {
+            log.error("Exception while waiting for generation tasks", e);
+        }
+        for (Level level : this.levelArray) {
+            try {
                 this.unloadLevel(level, true);
                 //Waiting for level to complete its last tick
                 while (level.isThreadRunning()) Thread.sleep(1);
+            } catch (Throwable e) {
+                log.error("Exception while unloading/saving level {}", level.getName(), e);
             }
+        }
+
+        try {
             if (positionTrackingService != null) {
                 log.debug("Closing position tracking service");
                 positionTrackingService.close();
             }
-            this.levelTickExecutor.shutdown();
+        } catch (Throwable e) {
+            log.error("Exception while closing position tracking service", e);
+        }
 
+        try {
+            this.levelTickExecutor.shutdown();
+        } catch (Throwable e) {
+            log.error("Exception while shutting down level tick executor", e);
+        }
+
+        try {
             log.debug("Closing console");
             this.consoleThread.interrupt();
+        } catch (Throwable e) {
+            log.error("Exception while closing console", e);
+        }
 
+        try {
             log.debug("Stopping network interfaces");
             network.shutdown();
             playerDataDB.close();
-            // close watchdog and metrics
+        } catch (Throwable e) {
+            log.error("Exception while stopping network interfaces", e);
+        }
+
+        try {
+            // Close watchdog and metrics
             if (this.watchdog != null) {
                 this.watchdog.running = false;
             }
-            NukkitMetrics.closeNow(this);
-            // close threadPool
+        } catch (Throwable e) {
+            log.error("Exception while closing watchdog", e);
+        }
+
+        try {
+            // Close thread pool
             try (ForkJoinPool pool = ForkJoinPool.commonPool()) {
                 pool.shutdownNow();
             }
             this.computeThreadPool.shutdownNow();
-            // todo other things
-        } catch (Exception e) {
-            log.error("Exception happened while shutting down, exiting the process", e);
-            System.exit(1);
+        } catch (Throwable e) {
+            log.error("Exception while closing thread pools", e);
+        }
+        // TODO: Other things
+    }
+
+    private void beforeStop() {
+        if (this.hasBeforeStopped.compareAndSet(false, true)) {
+            this.pluginManager.beforeStopPlugins();
         }
     }
 
@@ -1091,9 +1164,21 @@ public class Server {
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
-            CompletableFuture.runAsync(() -> {
-                this.doAutoSave();
-            });
+            for (Level level : this.levelArray) {
+                for (BlockEntity be : level.getBlockEntities().values()) {
+                    if (!be.closed) {
+                        be.saveNBT();
+                        be.serializationSnapshot = be.getNbt().copy();
+                    }
+                }
+                for (Entity entity : level.getEntities()) {
+                    if (!(entity instanceof Player) && !entity.closed) {
+                        entity.saveNBT();
+                        entity.serializationSnapshot = entity.getNbt().copy();
+                    }
+                }
+            }
+            CompletableFuture.runAsync(this::doAutoSave);
         }
 
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {

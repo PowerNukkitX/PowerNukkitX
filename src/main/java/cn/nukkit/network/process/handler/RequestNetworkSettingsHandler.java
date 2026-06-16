@@ -7,6 +7,7 @@ import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.network.process.SessionState;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
+import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.packet.NetworkSettingsPacket;
@@ -56,6 +57,10 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
 
         session.sendPacketImmediately(networkSettingsPacket);
         session.setCompression(algorithm);
+
+        if (server.getSettings().debugSettings().disableEncodingLimits()) {
+            session.getPeer().getCodecHelper().setEncodingSettings(EncodingSettings.UNLIMITED);
+        }
 
         holder.setState(SessionState.LOGIN);
     }

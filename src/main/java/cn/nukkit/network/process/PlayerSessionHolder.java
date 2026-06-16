@@ -83,6 +83,8 @@ public class PlayerSessionHolder {
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
 
+    private boolean disconnected = false;
+
     public InternalPackManager getInternalPackManager() {
         if (this.internalPackManager == null) {
             this.internalPackManager = new InternalPackManager(this.session, Server.getInstance());
@@ -94,7 +96,8 @@ public class PlayerSessionHolder {
         if (this.getRateLimitSettings().rateLimitEnabled()) {
             this.setPacketCounter(this.getPacketCounter() + 1L);
             this.setPacketCounterForTicks(this.getPacketCounterForTicks() + 1L);
-            if (this.getPacketCounter() > this.getRateLimitSettings().maxInboundPacketsPerSecond()) {
+            if (this.getPacketCounter() > this.getRateLimitSettings().maxInboundPacketsPerSecond() &&
+                    !this.disconnected) {
                 log.warn(
                         "{}: exceeded the limit for the maximum packets per second (limit: {}, received: {}) ",
                         this.getPlayer() != null ? this.getPlayer().getName() : this.getSession().getSocketAddress(),
@@ -137,6 +140,7 @@ public class PlayerSessionHolder {
     }
 
     public void disconnect(DisconnectFailReason reason) {
+        this.disconnected = true;
         this.disconnect(reason, Registries.DISCONNECT_REASON.get(reason));
     }
 

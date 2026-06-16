@@ -389,4 +389,8 @@ public final class PlayerHandle {
     public void doFirstSpawn() {
         this.player.doFirstSpawn();
     }
+
+    public void onAckReceive(long creationTime) {
+        this.player.onAckReceive(creationTime);
+    }
 }

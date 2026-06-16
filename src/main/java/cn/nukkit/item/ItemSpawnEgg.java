@@ -116,7 +116,11 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
 
     public @Nullable String getEntityName() {
         String entityIdentifier = Registries.ENTITY.getEntityIdentifier(getEntityNetworkId());
-        var path = entityIdentifier.split(":")[1];
+        if (entityIdentifier == null) {
+            return null;
+        }
+        String[] split = entityIdentifier.split(":");
+        var path = split.length > 1 ? split[1] : split[0];
         StringBuilder result = new StringBuilder();
         String[] parts = path.split("_");
         for (String part : parts) {

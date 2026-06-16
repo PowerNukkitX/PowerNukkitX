@@ -13,6 +13,8 @@ import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWool;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityHangingSign;
+import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.command.Command;
@@ -278,9 +280,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int previousInteractTick = 0;
     private final float rotationUpdateThreshold;
     private final float movementDistanceThreshold;
-    private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
+    protected final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-    private int timeSinceRest;
+    protected int timeSinceRest;
     private String buttonText = "Button";
     private PermissibleBase perm = null;
     private int hash;
@@ -321,7 +323,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Entity lastBeAttackEntity = null;
     @Setter
     @ApiStatus.Internal
-    private @NotNull PlayerHandle playerHandle;
+    protected @NotNull PlayerHandle playerHandle;
     @Getter
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
@@ -377,6 +379,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * </p>
      */
     protected EnumSet<ClientInputLockComponent> clientInputLocks = EnumSet.noneOf(ClientInputLockComponent.class);
+
+    private final Map<Long, Runnable> ackRunnables = new HashMap<>();
 
     @UsedByReflection
     public Player(@NotNull BedrockServerSession session, @NotNull PlayerInfo info) {
@@ -1065,8 +1069,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
+            boolean recentlyTeleported = lastTeleportMessage != null
+                    && (System.currentTimeMillis() - lastTeleportMessage.right()) < 1000;
             //Handling saturation updates
-            if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0) {
+            if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0 && !recentlyTeleported) {
                 //UpdateFoodExpLevel
                 if (distance >= 0.05) {
                     double jump = 0;
@@ -1393,7 +1399,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
             this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
             spawnPair = Pair.of(defaultSpawn, SpawnPointType.WORLD);
-        }       
+        }
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, spawnPair);
         if (spawnPair.right() == SpawnPointType.BLOCK) {//block spawn
             Block spawnBlock = playerRespawnEvent.getRespawnPosition().first().getLevelBlock();
@@ -2291,6 +2297,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
+        this.server.getScheduler().scheduleDelayedTask(() -> {
+            if (!this.isConnected() || this.level == null) return;
+            for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+                if ((entity instanceof BlockEntityItemFrame || entity instanceof BlockEntitySign) && !entity.closed) {
+                    ((BlockEntitySpawnable) entity).spawnTo(this);
+                }
+            }
+        }, 2);
+
         if (this.needDimensionChangeACK) {
             this.needDimensionChangeACK = false;
             final PlayerActionPacket playerActionPacket = new PlayerActionPacket();
@@ -2801,7 +2816,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement() > 0) { // For server-side use only, as client-side continue break is normal.
+            if (this.server.getServerAuthoritativeMovement() > 0 && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 
@@ -2828,12 +2843,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             foodData.sendFood();
         }
 
-        final long creationTime = System.currentTimeMillis();
-        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime);
-        final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
-        packet.setCreationTime(creationTime);
-        packet.setFromServer(true);
-        this.session.sendPacketImmediately(packet);
+        this.sendNetworkStackLatencyPacket();
 
         return true;
     }
@@ -3920,6 +3930,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             health = 0;
         }
         super.setHealthCurrent(health);
+
+        @SuppressWarnings("null")
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
         attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
@@ -3934,9 +3946,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setHealthMax(int maxHealth) {
         super.setHealthMax(maxHealth);
 
+        @SuppressWarnings("null")
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
-        if (this.spawned) {
+        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? Math.min(health, getHealthMax()) : 0);
+
+        if (this.spawned && this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.setRuntimeID(this.getId());
             pk.getAttributeList().add(attribute.toNetwork());
@@ -4148,6 +4162,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Sets the walk speed multiplier
+     *
      * @param speed
      */
     @Override
@@ -4171,14 +4186,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Set the movement speed of this player.
      * Will be overwritten internally.
      *
-     * @see #setWalkSpeed(float)
      * @param speed Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
      * @param send  Whether to send {@link UpdateAttributesPacket} to the client
+     * @see #setWalkSpeed(float)
      */
     @ApiStatus.Internal
     public void setMovementSpeed(float speed, boolean send) {
         float speedCorrected = speed * getWalkSpeed();
-        if(speedCorrected != getMovementSpeed()) {
+        if (speedCorrected != getMovementSpeed()) {
             super.setMovementSpeed(speedCorrected);
             if (this.spawned && send) {
                 this.sendMovementSpeed();
@@ -5966,5 +5981,40 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
         playerFogPacket.getFogStack().addAll(this.getFogStack());
         this.sendPacketImmediately(playerFogPacket);
+    }
+
+    public void waitForAck(Runnable runnable) {
+        long creationTime = this.sendNetworkStackLatencyPacket(runnable);
+        this.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            Runnable delayedRunnable = this.ackRunnables.remove(creationTime);
+            if (delayedRunnable != null) {
+                delayedRunnable.run();
+            }
+        }, 5);
+    }
+
+    private long sendNetworkStackLatencyPacket() {
+        return this.sendNetworkStackLatencyPacket(null);
+    }
+
+    private long sendNetworkStackLatencyPacket(Runnable runnable) {
+        final long creationTime = System.currentTimeMillis() * 1_000_000L + Math.floorMod(System.nanoTime(), 1_000_000L);
+        if (runnable != null) {
+            this.ackRunnables.put(creationTime, runnable);
+        }
+        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime / 1_000_000L);
+        final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
+        packet.setCreationTime(creationTime);
+        packet.setFromServer(true);
+        this.session.sendPacketImmediately(packet);
+        return creationTime;
+    }
+
+    protected void onAckReceive(long creationTime) {
+        Runnable runnable = this.ackRunnables.remove(creationTime);
+        if (runnable == null) {
+            return;
+        }
+        runnable.run();
     }
 }
