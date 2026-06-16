@@ -360,7 +360,7 @@ public class LevelDBChunkSerializer {
                 BlockEntity authoritative = chunk.getTile(blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ());
                 BlockEntity keep = authoritative != null ? authoritative : blockEntity;
                 byPosition.put(posKey, keep);
-                log.warn("[block-entity] duplicate block entities at {},{},{} in chunk ({}, {}): '{}' (id {}) and '{}' (id {}); keeping '{}' (id {}). Stale/orphaned block entity skipped on save.",
+                log.debug("[block-entity] Duplicate block entities at {},{},{} in chunk ({}, {}): '{}' (id {}) and '{}' (id {}); keeping '{}' (id {}). Stale/orphaned block entity skipped on save.",
                         blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ(),
                         chunk.getX(), chunk.getZ(),
                         existing.getSaveId(), existing.getId(), blockEntity.getSaveId(), blockEntity.getId(),
