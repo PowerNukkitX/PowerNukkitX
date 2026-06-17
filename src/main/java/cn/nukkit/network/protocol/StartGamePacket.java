@@ -182,7 +182,8 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.clientSideGenerationEnabled);
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
-        byteBuf.writeNotNull(this.serverJoinInfo, info -> writeServerJoinInfo(byteBuf, info)); // serverJoinInformation
+        byteBuf.writeBoolean(false); // isChatLogging edu only
+        byteBuf.writeBoolean(false); // serverJoinInformation
 
         // Server telemetry data
         byteBuf.writeString(this.serverTelemetryData.getServerId()); // serverId
@@ -248,6 +249,8 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(false); // force Experimental Gameplay (exclusive to debug clients)
         byteBuf.writeByte(this.chatRestrictionLevel);
         byteBuf.writeBoolean(this.disablePlayerInteractions);
+        byteBuf.writeVarInt(0); // ServerEditorConnectionPolicy
+        byteBuf.writeBoolean(false); // AllowAnonymousBlockDropsInEditorWorlds
         /* Level settings end */
     }
 

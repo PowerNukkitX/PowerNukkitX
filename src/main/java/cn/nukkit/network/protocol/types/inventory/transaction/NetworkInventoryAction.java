@@ -43,50 +43,57 @@ public class NetworkInventoryAction {
 
     public NetworkInventoryAction read(InventoryTransactionPacket pk, HandleByteBuf byteBuf) {
         //read InventorySource
-        InventorySource.Type type = InventorySource.Type.byId((int) byteBuf.readUnsignedVarInt());
-        switch (type) {
-            case UNTRACKED_INTERACTION_UI ->
-                    inventorySource = InventorySource.fromUntrackedInteractionUI(byteBuf.readVarInt());
-            case CONTAINER -> {
-                inventorySource = InventorySource.fromContainerWindowId(byteBuf.readVarInt());
-            }
-            case GLOBAL -> inventorySource = InventorySource.fromGlobalInventory();
-            case WORLD_INTERACTION -> {
-                InventorySource.Flag flag = InventorySource.Flag.values()[(int) byteBuf.readUnsignedVarInt()];
-                inventorySource = InventorySource.fromWorldInteraction(flag);
-            }
-            case CREATIVE -> inventorySource = InventorySource.fromCreativeInventory();
-            case NON_IMPLEMENTED_TODO -> {
-                int wid = byteBuf.readVarInt();
-                switch (wid) {
-                    case SOURCE_TYPE_CRAFTING_RESULT, SOURCE_TYPE_CRAFTING_USE_INGREDIENT ->
-                            pk.isCraftingPart = true;
-                    case SOURCE_TYPE_ENCHANT_INPUT, SOURCE_TYPE_ENCHANT_OUTPUT, SOURCE_TYPE_ENCHANT_MATERIAL ->
-                            pk.isEnchantingPart = true;
-                    case SOURCE_TYPE_ANVIL_INPUT, SOURCE_TYPE_ANVIL_MATERIAL, SOURCE_TYPE_ANVIL_RESULT ->
-                            pk.isRepairItemPart = true;
-                    case SOURCE_TYPE_TRADING_INPUT_1, SOURCE_TYPE_TRADING_INPUT_2, SOURCE_TYPE_TRADING_USE_INPUTS, SOURCE_TYPE_TRADING_OUTPUT ->
-                            pk.isTradeItemPart = true;
+        InventorySource.Type type = InventorySource.Type.byId(byteBuf.readUnsignedVarInt());
+        if (byteBuf.readBoolean() && byteBuf.readBoolean()) {
+            final int containerId = byteBuf.readByte();
+            switch (type){
+                case CONTAINER -> inventorySource = InventorySource.fromContainerWindowId(containerId);
+                case UNTRACKED_INTERACTION_UI -> inventorySource = InventorySource.fromUntrackedInteractionUI(containerId);
+                case GLOBAL -> inventorySource = InventorySource.fromGlobalInventory();
+                case CREATIVE ->  inventorySource = InventorySource.fromCreativeInventory();
+                case NON_IMPLEMENTED_TODO -> {
+                    switch (containerId) {
+                        case SOURCE_TYPE_CRAFTING_RESULT, SOURCE_TYPE_CRAFTING_USE_INGREDIENT -> pk.isCraftingPart = true;
+                        case SOURCE_TYPE_ENCHANT_INPUT, SOURCE_TYPE_ENCHANT_OUTPUT, SOURCE_TYPE_ENCHANT_MATERIAL ->
+                                pk.isEnchantingPart = true;
+                        case SOURCE_TYPE_ANVIL_INPUT, SOURCE_TYPE_ANVIL_MATERIAL, SOURCE_TYPE_ANVIL_RESULT ->
+                                pk.isRepairItemPart = true;
+                        case SOURCE_TYPE_TRADING_INPUT_1, SOURCE_TYPE_TRADING_INPUT_2, SOURCE_TYPE_TRADING_USE_INPUTS,
+                             SOURCE_TYPE_TRADING_OUTPUT -> pk.isTradeItemPart = true;
+                    }
+                    inventorySource = InventorySource.fromNonImplementedTodo(containerId);
                 }
-                inventorySource = InventorySource.fromNonImplementedTodo(wid);
+                default -> inventorySource = InventorySource.fromInvalid();
             }
-            default -> inventorySource = InventorySource.fromInvalid();
         }
-        this.inventorySlot = (int) byteBuf.readUnsignedVarInt();
-        this.oldItem = byteBuf.readSlot();
-        this.newItem = byteBuf.readSlot();
+        if (byteBuf.readBoolean() && byteBuf.readBoolean()) {
+            InventorySource.Flag flag = InventorySource.Flag.values()[byteBuf.readUnsignedVarInt()];
+            inventorySource = InventorySource.fromWorldInteraction(flag);
+        }
+        this.inventorySlot = byteBuf.readUnsignedVarInt();
+        this.oldItem = byteBuf.readCerealSlot();
+        this.newItem = byteBuf.readCerealSlot();
         return this;
     }
 
     public void write(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(this.inventorySource.getType().id());
-        switch (inventorySource.getType()) {
-            case CONTAINER, UNTRACKED_INTERACTION_UI, NON_IMPLEMENTED_TODO ->
-                    byteBuf.writeVarInt(inventorySource.getContainerId());
-            case WORLD_INTERACTION -> byteBuf.writeUnsignedVarInt(inventorySource.getFlag().ordinal());
+        final boolean hasContainerId = inventorySource.getType().equals(InventorySource.Type.CONTAINER) ||
+                inventorySource.getType().equals(InventorySource.Type.UNTRACKED_INTERACTION_UI) ||
+                inventorySource.getType().equals(InventorySource.Type.NON_IMPLEMENTED_TODO);
+        byteBuf.writeBoolean(hasContainerId);
+        byteBuf.writeBoolean(hasContainerId);
+        if (hasContainerId) {
+            byteBuf.writeByte(inventorySource.getContainerId());
+        }
+        final boolean hasFlags = inventorySource.getType().equals(InventorySource.Type.WORLD_INTERACTION);
+        byteBuf.writeBoolean(hasFlags);
+        byteBuf.writeBoolean(hasFlags);
+        if (hasFlags) {
+            byteBuf.writeUnsignedVarInt(inventorySource.getFlag().ordinal());
         }
         byteBuf.writeUnsignedVarInt(this.inventorySlot);
-        byteBuf.writeSlot(this.oldItem);
-        byteBuf.writeSlot(this.newItem);
+        byteBuf.writeCerealSlot(this.oldItem);
+        byteBuf.writeCerealSlot(this.newItem);
     }
 }
