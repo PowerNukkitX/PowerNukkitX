@@ -4,7 +4,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -27,10 +31,10 @@ public class InventoryContentPacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slots.length);
         for (Item slot : this.slots) {
-            byteBuf.writeSlot(slot);
+            byteBuf.writeCerealSlot(slot);
         }
         byteBuf.writeFullContainerName(this.fullContainerName);
-        byteBuf.writeSlot(this.storageItem);
+        byteBuf.writeCerealSlot(this.storageItem);
     }
 
     @Override
