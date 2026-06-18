@@ -42,6 +42,10 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             return;
         }
         if (!pk.blockActionData.isEmpty()) {
+            if (pk.blockActionData.size() > 100){
+                log.debug("Player {} sent too many actions in item use transaction (got {})", playerHandle.getUsername(), pk.blockActionData.size());
+                return;
+            }
             for (PlayerBlockActionData action : pk.blockActionData.values()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
