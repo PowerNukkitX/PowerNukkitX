@@ -344,7 +344,8 @@ public class Level implements Metadatable {
     public int tickRateOptDelay = 1;
     public GameRules gameRules;
     private AtomicReference<LevelProvider> provider;
-    private float time;
+    /// Cumulative world game time in ticks. Stored as a long (the provider persists it as a long)
+    private long time;
     private int nextTimeSendTick;
     private final String name;
     private final String folderPath;
@@ -1059,14 +1060,14 @@ public class Level implements Metadatable {
 
     public void checkTime() {
         if (!this.stopTime && this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
-            float prior = this.time;
+            long prior = this.time;
             this.time += tickRate;
             if (prior % TIME_FULL > TIME_NIGHT && this.time % TIME_FULL < TIME_DAY) this.noSleepNights++;
         }
     }
 
     public void sendTime(Player... players) {
-        SetTimePacket pk = new SetTimePacket();
+        final SetTimePacket pk = new SetTimePacket();
         pk.setTime((int) this.time);
 
         Server.broadcastPacket(players, pk);
@@ -1445,7 +1446,7 @@ public class Level implements Metadatable {
         }
 
         if (playerCount > 0 && sleepingPlayerCount / playerCount * 100 >= this.gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
-            int time = this.getTime() % Level.TIME_FULL;
+            int time = (int) (this.getTime() % Level.TIME_FULL);
 
             if (isNight() || isThundering()) {
                 this.setTime(this.getTime() + Level.TIME_FULL - time);
@@ -1662,7 +1663,7 @@ public class Level implements Metadatable {
         this.server.getPluginManager().callEvent(new LevelSaveEvent(this));
 
         LevelProvider levelProvider = this.requireProvider();
-        levelProvider.setTime((int) this.time);
+        levelProvider.setTime(this.time);
         levelProvider.setRaining(this.raining);
         levelProvider.setRainTime(this.rainTime);
         levelProvider.setThundering(this.thundering);
@@ -2180,7 +2181,7 @@ public class Level implements Metadatable {
         return calculateCelestialAngle(getTime(), tickDiff);
     }
 
-    public float calculateCelestialAngle(int time, float tickDiff) {
+    public float calculateCelestialAngle(long time, float tickDiff) {
         int i = (int) (time % 24000L);
         float angle = ((float) i + tickDiff) / 24000.0F - 0.25F;
 
@@ -4459,16 +4460,14 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 获取这个地图经历的时间(一直会累加)
-     * <p>
-     * Get the elapsed time for this level
+     * Get the elapsed game time for this level (accumulates continuously)
      */
-    public int getTime() {
-        return (int) time;
+    public long getTime() {
+        return time;
     }
 
     public int getDayTime() {
-        return this.getTime() % Level.TIME_FULL;
+        return (int) (this.getTime() % Level.TIME_FULL);
     }
 
     public boolean isDay() {
@@ -4480,11 +4479,9 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 设置这个地图经历的时间
-     * <p>
-     * Set the elapsed time for this level
+     * Set the elapsed game time for this level
      */
-    public void setTime(int time) {
+    public void setTime(long time) {
         if (isRaining()) {
             if (getTime() % TIME_FULL != time % TIME_FULL) {
                 //Day changed
