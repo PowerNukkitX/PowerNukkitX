@@ -697,7 +697,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setEnableClientCommand(true);
 
         final SetTimePacket setTimePacket = new SetTimePacket();
-        setTimePacket.setTime(this.level.getTime());
+        setTimePacket.setTime((int) this.level.getTime());
         this.sendPacket(setTimePacket);
 
         this.noDamageTicks = 60;
@@ -4971,8 +4971,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 playerChunkManager.getUsedChunks().clear();
             }
 
-            SetTimePacket setTime = new SetTimePacket();
-            setTime.setTime(level.getTime());
+            final SetTimePacket setTime = new SetTimePacket();
+            setTime.setTime((int) level.getTime());
             this.sendPacket(setTime);
 
             GameRulesChangedPacket gameRulesChanged = new GameRulesChangedPacket();
