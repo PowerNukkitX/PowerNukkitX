@@ -245,14 +245,23 @@ public class AdventureSettings implements Cloneable {
         this.playerPermission = PlayerPermissionLevel.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
 
         final String commandPermissionLevelRaw = nbt.getString(KEY_COMMAND_PERMISSION);
+        this.commandPermission = parseCommandPermission(commandPermissionLevelRaw);
+    }
+
+    /**
+     * Parse a {@link CommandPermissionLevel} from its saved name, tolerating the legacy enum
+     * constants used before the protocol migration (NORMAL/OPERATOR/AUTOMATION).
+     */
+    private static CommandPermissionLevel parseCommandPermission(String raw) {
         try {
-            this.commandPermission = CommandPermissionLevel.valueOf(commandPermissionLevelRaw);
+            return CommandPermissionLevel.valueOf(raw);
         } catch (IllegalArgumentException e) {
-            if (commandPermissionLevelRaw.equalsIgnoreCase("operator")) {
-                this.commandPermission = CommandPermissionLevel.GAME_DIRECTORS;
-            } else {
-                e.printStackTrace();
-            }
+            return switch (raw.toUpperCase()) {
+                case "NORMAL" -> CommandPermissionLevel.ANY;
+                case "OPERATOR" -> CommandPermissionLevel.GAME_DIRECTORS;
+                case "AUTOMATION" -> CommandPermissionLevel.INTERNAL;
+                default -> CommandPermissionLevel.ANY;
+            };
         }
     }
 
