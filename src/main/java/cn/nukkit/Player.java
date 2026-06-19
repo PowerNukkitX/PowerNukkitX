@@ -3232,13 +3232,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     // TODO: Support Translation Parameters
     public void sendPopup(String message, String subtitle) {
-        final MessageOnly messageOnly = new MessageOnly();
-        messageOnly.setMessage(this.server.getLanguage().tr(message));
+        final MessageAndParams body = new MessageAndParams();
+        body.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
         pk.setMessageType(TextPacketType.POPUP);
         pk.setSendersXUID("");
-        pk.setBody(messageOnly);
+        pk.setBody(body);
         this.sendPacket(pk);
     }
 
@@ -5352,7 +5352,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     // TODO: Support Translation Parameters
     public void sendPopupJukebox(String message) {
-        final MessageOnly body = new MessageOnly();
+        final MessageAndParams body = new MessageAndParams();
         body.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
@@ -5386,7 +5386,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         body.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
-        pk.setMessageType(TextPacketType.JUKEBOX_POPUP);
+        pk.setMessageType(TextPacketType.WHISPER);
         pk.setSendersXUID("");
         pk.setBody(body);
 
