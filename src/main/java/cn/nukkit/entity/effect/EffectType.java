@@ -71,6 +71,8 @@ public record EffectType(String stringId, Integer id) {
 
     public static final EffectType TRIAL_OMEN = new EffectType("trial_omen", 31);
 
+    public static final EffectType RAID_OMEN = new EffectType("raid_omen", 32);
+
     public static EffectType get(String stringId) {
         return Registries.EFFECT.getType(stringId);
     }

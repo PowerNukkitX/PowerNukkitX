@@ -34,6 +34,7 @@ public class NearestPlayerSensor implements ISensor {
         double minRangeSquared = this.minRange * this.minRange;
         //寻找范围内最近的玩家
         for (Player p : entity.getLevel().getPlayers().values()) {
+            if (!p.isAlive()) continue;
             if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared) {
                 if (player == null) {
                     player = p;

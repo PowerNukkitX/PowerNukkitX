@@ -11,8 +11,10 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.NearbyFlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
@@ -35,6 +37,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -64,7 +67,8 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
                         new Behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
                         new Behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 3, 1),
                         new Behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.5f, 12, 100, false, -1, true, 10), none(), 1, 1)
+                        new Behavior(new NearbyFlatRandomRoamExecutor(CoreMemoryTypes.STAY_NEARBY, 0.5f, 24, 100, false, -1, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY), 1, 1),
+                        new Behavior(new FlatRandomRoamExecutor(0.5f, 12, 100, false, -1, true, 10), none(), 0, 1)
                 ),
                 Set.of(new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
@@ -133,12 +137,16 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
         Item axe = Item.get(Item.IRON_AXE);
         axe.setDamage(ThreadLocalRandom.current().nextInt(1, axe.getMaxDurability()));
-        return new Item[]{
-                axe,
-                Item.get(Item.EMERALD, 0, Utils.rand(0, 2 + looting))
-        };
+        drops.add(axe);
+        int emeralds = Utils.rand(0, 2 + looting);
+        if (emeralds > 0) drops.add(Item.get(Item.EMERALD, 0, emeralds));
+        if (isRaider()) {
+            addRaidDrops(drops, weapon);
+        }
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
