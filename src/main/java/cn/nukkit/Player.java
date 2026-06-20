@@ -761,6 +761,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.sendPlayStatus(PlayStatus.PLAYER_SPAWN);
         log.debug("Sent PlayStatus.PLAYER_SPAWN to {}, waiting for init packet", getName());
+        this.server.sendFullPlayerListData(this);
 
         // Initialize the client before transferring the player to prevent falling (x)
         // Falling is already handled since immobile is set
@@ -5532,7 +5533,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         final SetDisplayObjectivePacket setDisplayObjectivePacket = new SetDisplayObjectivePacket();
         setDisplayObjectivePacket.setDisplaySlotName(slot.getSlotName());
         setDisplayObjectivePacket.setObjectiveName(scoreboard.getObjectiveName());
-        setDisplayObjectivePacket.setObjectiveDisplayName(scoreboard.getDisplayName());
+        setDisplayObjectivePacket.setObjectiveDisplayName(scoreboard.getDisplayName() != null ? scoreboard.getDisplayName() : "");
         setDisplayObjectivePacket.setCriteriaName(scoreboard.getCriteriaName());
         setDisplayObjectivePacket.setSortOrder(scoreboard.getSortOrder());
         this.sendPacket(setDisplayObjectivePacket);
@@ -5561,6 +5562,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         setDisplayObjectivePacket.setDisplaySlotName(slot.getSlotName());
         setDisplayObjectivePacket.setObjectiveName("");
         setDisplayObjectivePacket.setDisplaySlotName("");
+        setDisplayObjectivePacket.setObjectiveDisplayName("");
         setDisplayObjectivePacket.setCriteriaName("");
         setDisplayObjectivePacket.setSortOrder(ObjectiveSortOrder.ASCENDING);
         this.sendPacket(setDisplayObjectivePacket);

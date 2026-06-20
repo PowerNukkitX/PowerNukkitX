@@ -6,6 +6,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarOverlay;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
 import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 
@@ -25,7 +27,13 @@ public abstract class EntityBoss extends EntityMob {
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
         bossEventPacket.setName(this.getName());
         bossEventPacket.setHealthPercent(health / getHealthMax());
+        bossEventPacket.setColor(getBossBarColor());
+        bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
         Server.broadcastPacket(getViewers().values(), bossEventPacket);
+    }
+
+    public BossBarColor getBossBarColor() {
+        return BossBarColor.PINK;
     }
 
     @Override
