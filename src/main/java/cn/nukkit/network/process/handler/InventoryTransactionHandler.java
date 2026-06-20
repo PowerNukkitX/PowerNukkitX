@@ -52,6 +52,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -97,14 +98,16 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 player.clearLastUsedItem();
             }
         } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.NORMAL)) {
+            System.out.println(packet);
             // looks like an action index swap for u3
             if (packet.getTransaction().getActions().getActions().size() == 2 &&
                     packet.getTransaction().getActions().getActions().get(1).getSource().getSourceType().equals(InventorySourceType.WORLD_INTERACTION) &&
                     packet.getTransaction().getActions().getActions().get(1).getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG) &&
                     packet.getTransaction().getActions().getActions().getFirst().getSource().getSourceType().equals(InventorySourceType.CONTAINER_INVENTORY) &&
-                    packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG)) { //handle throw hotbar item for player
+                    packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags() == null) { //handle throw hotbar item for player
                 final int slot = packet.getTransaction().getActions().getActions().getFirst().getSlot();
                 final int count = Math.min(packet.getTransaction().getActions().getActions().get(1).getToItem().getCount(), player.getInventory().getItem(slot).getCount());
+                System.out.println("dropHotBarItemForPlayer");
                 dropHotBarItemForPlayer(slot, count, player);
             }
         }
