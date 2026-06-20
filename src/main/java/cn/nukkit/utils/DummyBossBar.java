@@ -184,7 +184,10 @@ public class DummyBossBar {
         final BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setTargetActorID(this.bossBarId);
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
+        bossEventPacket.setName(this.text);
         bossEventPacket.setHealthPercent(this.length / 100);
+        bossEventPacket.setColor(color != null ? color.toNetwork() : org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.PINK);
+        bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
         this.player.sendPacket(bossEventPacket);
     }
 

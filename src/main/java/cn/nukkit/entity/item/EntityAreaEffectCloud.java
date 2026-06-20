@@ -142,7 +142,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public float getRadiusChangeOnPickup() {
-        return this.getDataProperty(ActorDataTypes.DATA_CHANGE_ON_PICKUP);
+        return this.getDataProperty(ActorDataTypes.DATA_CHANGE_ON_PICKUP, -0.5F);
     }
 
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup) {
@@ -154,7 +154,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public float getRadiusPerTick() {
-        return this.getDataProperty(ActorDataTypes.DATA_CHANGE_RATE);
+        return this.getDataProperty(ActorDataTypes.DATA_CHANGE_RATE, -0.005F);
     }
 
     public void setRadiusPerTick(float radiusPerTick) {
@@ -178,7 +178,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public int getDuration() {
-        return this.getDataProperty(ActorDataTypes.DATA_DURATION);
+        return this.getDataProperty(ActorDataTypes.DATA_DURATION, 600);
     }
 
     public void setDuration(int duration) {
@@ -190,7 +190,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public float getRadius() {
-        return this.getDataProperty(ActorDataTypes.DATA_RADIUS);
+        return this.getDataProperty(ActorDataTypes.DATA_RADIUS, initialRadius);
     }
 
     public void setRadius(float radius) {
