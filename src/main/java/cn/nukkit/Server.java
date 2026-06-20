@@ -90,6 +90,7 @@ import cn.nukkit.utils.collection.FreezableArrayManager;
 import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.sun.management.OperatingSystemMXBean;
 import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
@@ -122,7 +123,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -194,6 +194,7 @@ public class Server {
     private float maxTick = 20;
     private float maxUse = 0;
     private int sendUsageTicker = 0;
+    private volatile double cachedCpuLoad = -1;
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
@@ -285,11 +286,11 @@ public class Server {
     private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage,
-            WizardConfig wizardConfig) {
+           WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
         currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in
-                                                // Server#isPrimaryThread()
+        // Server#isPrimaryThread()
         instance = this;
 
         this.filePath = filePath;
@@ -860,7 +861,7 @@ public class Server {
         } catch (Throwable e) {
             log.error("Exception while beforestop", e);
         }
-  
+
         network.setState(NetworkState.STOPPING);
         isRunning.compareAndSet(true, false);
 
@@ -1055,7 +1056,7 @@ public class Server {
         int baseTickRate = getSettings().levelSettings().baseTickRate();
         //Do level ticks if level threading is disabled
         if (!this.getSettings().levelSettings().levelThread()) {
-            for (Level level : this.getLevels().values()) {
+            for (Level level : this.levelArray) {
                 if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
                     continue;
                 }
@@ -1152,6 +1153,12 @@ public class Server {
             this.titleTick();
             this.maxTick = 20;
             this.maxUse = 0;
+            if (ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean osBean) {
+                double load = osBean.getProcessCpuLoad();
+                if (load >= 0) {
+                    this.cachedCpuLoad = load;
+                }
+            }
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
@@ -1256,15 +1263,10 @@ public class Server {
     }
 
     public String getCPULoad() {
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
-            double cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getProcessCpuLoad();
-            if (cpuLoad < 0) {
-                return "N/A";
-            }
-            return String.format("%.1f%%", cpuLoad * 100);
+        if (this.cachedCpuLoad < 0) {
+            return "N/A";
         }
-        return "N/A";
+        return String.format("%.1f%%", this.cachedCpuLoad * 100);
     }
 
     // TODO: Fix title tick
