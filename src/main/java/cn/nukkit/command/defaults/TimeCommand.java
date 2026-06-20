@@ -23,9 +23,6 @@ public class TimeCommand extends VanillaCommand {
                 "nukkit.command.time.start;" +
                 "nukkit.command.time.stop");
         this.commandParameters.clear();
-        this.commandParameters.put("1arg", new CommandParameter[]{
-                CommandParameter.newEnum("mode", new CommandEnum("TimeMode", "query", "start", "stop"))
-        });
         this.commandParameters.put("add", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("TimeModeAdd", "add")),
                 CommandParameter.newType("amount", CommandParamType.INT)
@@ -38,6 +35,13 @@ public class TimeCommand extends VanillaCommand {
                 CommandParameter.newEnum("mode", new CommandEnum("TimeModeSet", "set")),
                 CommandParameter.newEnum("time", new CommandEnum("TimeSpec", "day", "night", "midnight", "noon", "sunrise", "sunset"))
         });
+        this.commandParameters.put("timeModeQuery", new CommandParameter[]{
+                CommandParameter.newEnum("mode", new CommandEnum("TimeModeQuery", "query")),
+                CommandParameter.newEnum("mode", new CommandEnum("TimeQuery", "daytime", "gametime", "day"))
+        });
+        this.commandParameters.put("timeModeOther", new CommandParameter[]{
+                CommandParameter.newEnum("mode", new CommandEnum("TimeMode", "start", "stop"))
+        });
         this.enableParamTree();
     }
 
@@ -46,35 +50,6 @@ public class TimeCommand extends VanillaCommand {
         var list = result.getValue();
         final Level level = sender.getLocation().getLevel();
         switch (result.getKey()) {
-            case "1arg" -> {
-                final String mode = list.getResult(0);
-                if ("start".equals(mode)) {
-                    if (!sender.hasPermission("nukkit.command.time.start")) {
-                        log.addMessage("nukkit.command.generic.permission").output();
-                        return 0;
-                    }
-                    level.checkTime();
-                    level.startTime();
-                    level.checkTime();
-                    log.addSuccess("Restarted the time").output(true);
-                } else if ("stop".equals(mode)) {
-                    if (!sender.hasPermission("nukkit.command.time.stop")) {
-                        log.addMessage("nukkit.command.generic.permission").output();
-                        return 0;
-                    }
-                    level.checkTime();
-                    level.stopTime();
-                    level.checkTime();
-                    log.addSuccess("Stopped the time").output(true);
-                } else if ("query".equals(mode)) {
-                    if (!sender.hasPermission("nukkit.command.time.query")) {
-                        log.addMessage("nukkit.command.generic.permission").output();
-                        return 0;
-                    }
-                    log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true);
-                }
-                return 1;
-            }
             case "add" -> {
                 if (!sender.hasPermission("nukkit.command.time.add")) {
                     log.addMessage("nukkit.command.generic.permission").output();
@@ -118,6 +93,48 @@ public class TimeCommand extends VanillaCommand {
                 level.setTime(level.getTime() - level.getDayTime() + value);
                 level.checkTime();
                 log.addSuccess("commands.time.set", String.valueOf(value)).output(true);
+                return 1;
+            }
+            case "timeModeQuery" -> {
+                if (!sender.hasPermission("nukkit.command.time.query")) {
+                    log.addMessage("nukkit.command.generic.permission").output();
+                    return 0;
+                }
+                final String mode = list.getResult(1);
+                switch (mode) {
+                    case "daytime" -> log.addSuccess("commands.time.query.daytime", String.valueOf(level.getDayTime())).output(true);
+                    case "gametime" -> log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true);
+                    case "day" -> log.addSuccess("commands.time.query.day", String.valueOf(level.getDay())).output(true);
+                }
+                return 1;
+            }
+            case "timeModeOther" -> {
+                final String mode = list.getResult(0);
+                if ("start".equals(mode)) {
+                    if (!sender.hasPermission("nukkit.command.time.start")) {
+                        log.addMessage("nukkit.command.generic.permission").output();
+                        return 0;
+                    }
+                    level.checkTime();
+                    level.startTime();
+                    level.checkTime();
+                    log.addSuccess("Restarted the time").output(true);
+                } else if ("stop".equals(mode)) {
+                    if (!sender.hasPermission("nukkit.command.time.stop")) {
+                        log.addMessage("nukkit.command.generic.permission").output();
+                        return 0;
+                    }
+                    level.checkTime();
+                    level.stopTime();
+                    level.checkTime();
+                    log.addSuccess("Stopped the time").output(true);
+                } else if ("query".equals(mode)) {
+                    if (!sender.hasPermission("nukkit.command.time.query")) {
+                        log.addMessage("nukkit.command.generic.permission").output();
+                        return 0;
+                    }
+                    log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true);
+                }
                 return 1;
             }
             default -> {
