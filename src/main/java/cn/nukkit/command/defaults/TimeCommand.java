@@ -94,7 +94,7 @@ public class TimeCommand extends VanillaCommand {
                 }
                 final int value = list.getResult(1);
                 level.checkTime();
-                level.setTime(level.getTime() - level.getDayTime() + value);
+                level.setTime(value);
                 level.checkTime();
                 log.addSuccess("commands.time.set", String.valueOf(value)).output(true);
                 return 1;
