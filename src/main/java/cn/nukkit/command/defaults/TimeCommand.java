@@ -80,11 +80,7 @@ public class TimeCommand extends VanillaCommand {
                     log.addMessage("nukkit.command.generic.permission").output();
                     return 0;
                 }
-                int value = list.getResult(1);
-                if (value < 0) {
-                    log.addNumTooSmall(1, 0).output();
-                    return 0;
-                }
+                final int value = list.getResult(1);
                 level.checkTime();
                 level.setTime(level.getTime() + value);
                 level.checkTime();
@@ -96,11 +92,7 @@ public class TimeCommand extends VanillaCommand {
                     log.addMessage("nukkit.command.generic.permission").output();
                     return 0;
                 }
-                int value = list.getResult(1);
-                if (value < 0) {
-                    log.addNumTooSmall(1, 0).output();
-                    return 0;
-                }
+                final int value = list.getResult(1);
                 level.checkTime();
                 level.setTime(level.getTime() - level.getDayTime() + value);
                 level.checkTime();
