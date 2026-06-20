@@ -98,7 +98,6 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 player.clearLastUsedItem();
             }
         } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.NORMAL)) {
-            System.out.println(packet);
             // looks like an action index swap for u3
             if (packet.getTransaction().getActions().getActions().size() == 2 &&
                     packet.getTransaction().getActions().getActions().get(1).getSource().getSourceType().equals(InventorySourceType.WORLD_INTERACTION) &&
@@ -107,7 +106,6 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                     packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags() == null) { //handle throw hotbar item for player
                 final int slot = packet.getTransaction().getActions().getActions().getFirst().getSlot();
                 final int count = Math.min(packet.getTransaction().getActions().getActions().get(1).getToItem().getCount(), player.getInventory().getItem(slot).getCount());
-                System.out.println("dropHotBarItemForPlayer");
                 dropHotBarItemForPlayer(slot, count, player);
             }
         }
