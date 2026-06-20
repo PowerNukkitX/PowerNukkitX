@@ -4461,13 +4461,31 @@ public class Level implements Metadatable {
 
     /**
      * Get the elapsed game time for this level (accumulates continuously)
+     *
+     * @return the elapsed game time for this level
      */
     public long getTime() {
         return time;
     }
 
+    /**
+     * Get the current day time, derived from the elapsed game time of this level
+     *
+     * @return the current day time of this level
+     * @see #getTime()
+     */
     public int getDayTime() {
         return (int) (this.getTime() % Level.TIME_FULL);
+    }
+
+    /**
+     * Get the current day, derived from the elapsed game time of this level
+     *
+     * @return the current day of this level
+     * @see #getTime()
+     */
+    public int getDay() {
+        return (int) (this.getTime() / Level.TIME_FULL);
     }
 
     public boolean isDay() {
