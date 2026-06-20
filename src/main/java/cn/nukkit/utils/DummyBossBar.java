@@ -184,6 +184,7 @@ public class DummyBossBar {
         final BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setTargetActorID(this.bossBarId);
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
+        bossEventPacket.setName(this.text);
         bossEventPacket.setHealthPercent(this.length / 100);
         this.player.sendPacket(bossEventPacket);
     }
