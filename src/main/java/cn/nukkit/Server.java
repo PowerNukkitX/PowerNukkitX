@@ -1797,6 +1797,7 @@ public class Server {
             entry.setSkin(value.getSkin().getSkin());
             entry.setTrustedSkin(value.getSkin().isTrusted());
             entry.setPlayerColor(value.getLocatorBarColor());
+            pk.getEntries().add(entry);
         }
         player.sendPacket(pk);
     }
