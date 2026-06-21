@@ -390,7 +390,7 @@ public class LevelDBChunkSerializer {
                                 chunk.getX(), chunk.getZ(), e);
                     }
                 }
-                log.debug("[block-entity] chunk ({}, {}): wrote {} block entit(y/ies)", chunk.getX(), chunk.getZ(), byPosition.size());
+                log.trace("[block-entity] chunk ({}, {}): wrote {} block entity", chunk.getX(), chunk.getZ(), byPosition.size());
                 writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }
         } catch (IOException e) {
