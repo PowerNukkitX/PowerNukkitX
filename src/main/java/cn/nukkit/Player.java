@@ -3400,7 +3400,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void sendTranslatedTitle(String key, int fadeIn, int stay, int fadeOut) {
         this.setTitleAnimationTimes(fadeIn, stay, fadeOut);
-        this.setRawTextTitle(cn.nukkit.command.utils.RawText.fromRawText("{\"rawtext\":[{\"translate\":\"" + key + "\"}]}"));
+        this.setRawTextTitle(RawText.fromRawText("{\"rawtext\":[{\"translate\":\"" + key + "\"}]}"));
     }
 
     /**
