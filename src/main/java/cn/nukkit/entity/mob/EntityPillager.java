@@ -31,6 +31,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,14 +48,11 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     private static final int CAPTAIN_SPAWN_RARITY = 10;
     private static final int CAPTAIN_BAD_OMEN_DURATION_TICKS = 6000 * 20;
 
+    @Getter
     private boolean isIllagerCaptain = false;
 
     public EntityPillager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    public boolean isIllagerCaptain() {
-        return isIllagerCaptain;
     }
 
     public void setIllagerCaptain(boolean captain) {

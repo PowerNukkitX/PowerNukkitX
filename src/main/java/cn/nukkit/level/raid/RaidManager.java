@@ -1,4 +1,4 @@
-package cn.nukkit.entity.raid;
+package cn.nukkit.level.raid;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.utils.RawText;

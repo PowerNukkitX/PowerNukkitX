@@ -1,8 +1,7 @@
-package cn.nukkit.entity.raid;
+package cn.nukkit.level.raid;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.command.utils.RawText;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
@@ -14,10 +13,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
-import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
-import org.cloudburstmc.protocol.bedrock.packet.OnScreenTextureAnimationPacket;
 import cn.nukkit.utils.BossBarColor;
 import cn.nukkit.utils.DummyBossBar;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 import java.util.*;
 
@@ -63,7 +61,6 @@ public class Raid {
 
     private static final int WAVE_DELAY        = 300;
     private static final int RAID_EXPIRY_TICKS = 48000;
-    private static final int OMEN_SCREEN_ANIMATION_EFFECT_ID = 1;
 
     private static final double VILLAGE_RADIUS_SQ = 128.0 * 128.0;
     private static final double NOTIFY_RADIUS_SQ  =  96.0 *  96.0;
@@ -101,15 +98,9 @@ public class Raid {
         this.difficultyIdx = (difficulty <= 1) ? 0 : (difficulty == 2) ? 1 : 2;
         this.totalWaves    = WAVES[difficultyIdx].length;
         level.addLevelSoundEvent(this.center, SoundEvent.BELL, -1);
-        playOmenScreenAnimation();
-    }
-
-    private void playOmenScreenAnimation() {
-        OnScreenTextureAnimationPacket packet = new OnScreenTextureAnimationPacket();
-        packet.setEffectId(OMEN_SCREEN_ANIMATION_EFFECT_ID);
         for (Player p : level.getPlayers().values()) {
             if (p.isOnline() && p.distanceSquared(center) <= NOTIFY_RADIUS_SQ) {
-                p.sendPacket(packet);
+                p.playOmenScreenAnimation();
             }
         }
     }
@@ -299,7 +290,7 @@ public class Raid {
         for (Player p : level.getPlayers().values()) {
             if (p.distanceSquared(center) <= NOTIFY_RADIUS_SQ) {
                 p.addEffect(hero);
-                sendTranslatedTitle(p, "raid.victory", 20, 60, 20);
+                p.sendTranslatedTitle("raid.victory", 20, 60, 20);
             }
         }
         raidMobs.forEach(e -> { if (e.isAlive()) e.kill(); });
@@ -311,7 +302,7 @@ public class Raid {
         destroyAllBossBars();
         for (Player p : level.getPlayers().values()) {
             if (p.distanceSquared(center) <= NOTIFY_RADIUS_SQ) {
-                sendTranslatedTitle(p, "raid.defeat", 20, 60, 20);
+                p.sendTranslatedTitle("raid.defeat", 20, 60, 20);
             }
         }
         for (Entity mob : raidMobs) {
@@ -328,16 +319,11 @@ public class Raid {
         destroyAllBossBars();
         for (Player p : level.getPlayers().values()) {
             if (p.distanceSquared(center) <= NOTIFY_RADIUS_SQ) {
-                sendTranslatedTitle(p, "raid.expiry", 10, 40, 10);
+                p.sendTranslatedTitle("raid.expiry", 10, 40, 10);
             }
         }
         raidMobs.forEach(e -> { if (e.isAlive()) e.despawnable = true; });
         raidMobs.clear();
-    }
-
-    private static void sendTranslatedTitle(Player p, String key, int fadeIn, int stay, int fadeOut) {
-        p.setTitleAnimationTimes(fadeIn, stay, fadeOut);
-        p.setRawTextTitle(RawText.fromRawText("{\"rawtext\":[{\"translate\":\"" + key + "\"}]}"));
     }
 
     /**
