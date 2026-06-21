@@ -20,17 +20,16 @@ public class NetworkStackLatencyHandler implements PacketHandler<NetworkStackLat
         playerHandle.onAckReceive(packet.getCreationTime());
 
         if (packet.isFromServer()) {
-            // If creationTime matches our last server-sent ping, this is the client echoing it back
-            long sentTimeMs = playerHandle.getLastServerNetworkStackLatencyTimeInMS();
             long packetTimeMs = packet.getCreationTime() / 1_000_000L;
-            if (sentTimeMs > 0 && packetTimeMs == sentTimeMs) {
+            if (playerHandle.removeInflightPingTime(packetTimeMs)) {
+                // client echoed back our server-initiated ping
                 final long latency = System.currentTimeMillis() - packetTimeMs;
                 if (latency >= 0 && latency <= MAX_PLAUSIBLE_PING_MS) {
                     playerHandle.setLatencyTimeInMS(latency);
                 }
                 return;
             }
-            // Client-initiated ping: echo it back
+            // client-initiated ping: echo it back
             final NetworkStackLatencyPacket response = new NetworkStackLatencyPacket();
             response.setCreationTime(packet.getCreationTime());
             response.setFromServer(false);

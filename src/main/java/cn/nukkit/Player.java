@@ -6004,7 +6004,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (runnable != null) {
             this.ackRunnables.put(creationTime, runnable);
         }
-        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime / 1_000_000L);
+        this.playerHandle.addInflightPingTime(creationTime / 1_000_000L);
         final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
         packet.setCreationTime(creationTime);
         packet.setFromServer(true);
