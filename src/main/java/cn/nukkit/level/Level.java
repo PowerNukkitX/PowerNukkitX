@@ -165,7 +165,7 @@ public class Level implements Metadatable {
     // endregion finals - number finals
 
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
-    private static final Entity[] ENTITY_BUFFER = new Entity[512];
+    private static final ThreadLocal<Entity[]> ENTITY_BUFFER = ThreadLocal.withInitial(() -> new Entity[512]);
 
     static {
         randomTickBlocks.add(BlockID.GRASS_BLOCK);
@@ -1224,6 +1224,7 @@ public class Level implements Metadatable {
                             int chunkZ = Level.getHashZ(index);
                             if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
                                 IChunk chunk = this.getChunk(chunkX, chunkZ);
+                                if (chunk == null) continue;
                                 chunk.reObfuscateChunk();
                                 for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
                                     p.onChunkChanged(chunk);
@@ -3605,8 +3606,9 @@ public class Level implements Metadatable {
     }
 
     private ArrayList<Entity> addEntityToBuffer(int index, ArrayList<Entity> overflow, Entity ent) {
-        if (index < ENTITY_BUFFER.length) {
-            ENTITY_BUFFER[index] = ent;
+        Entity[] buf = ENTITY_BUFFER.get();
+        if (index < buf.length) {
+            buf[index] = ent;
         } else {
             if (overflow == null) overflow = new ArrayList<>(1024);
             overflow.add(ent);
@@ -3616,15 +3618,17 @@ public class Level implements Metadatable {
 
     private Entity[] getEntitiesFromBuffer(int index, ArrayList<Entity> overflow) {
         if (index == 0) return Entity.EMPTY_ARRAY;
+        Entity[] buf = ENTITY_BUFFER.get();
         Entity[] copy;
         if (overflow == null) {
-            copy = Arrays.copyOfRange(ENTITY_BUFFER, 0, index);
-            Arrays.fill(ENTITY_BUFFER, 0, index, null);
+            copy = Arrays.copyOfRange(buf, 0, index);
+            Arrays.fill(buf, 0, index, null);
         } else {
-            copy = new Entity[ENTITY_BUFFER.length + overflow.size()];
-            System.arraycopy(ENTITY_BUFFER, 0, copy, 0, ENTITY_BUFFER.length);
+            copy = new Entity[buf.length + overflow.size()];
+            System.arraycopy(buf, 0, copy, 0, buf.length);
+            Arrays.fill(buf, null);
             for (int i = 0; i < overflow.size(); i++) {
-                copy[ENTITY_BUFFER.length + i] = overflow.get(i);
+                copy[buf.length + i] = overflow.get(i);
             }
         }
         return copy;
@@ -4026,6 +4030,7 @@ public class Level implements Metadatable {
     }
 
     private void processChunkRequest() {
+        if (getProvider() == null) return;
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
@@ -4461,13 +4466,31 @@ public class Level implements Metadatable {
 
     /**
      * Get the elapsed game time for this level (accumulates continuously)
+     *
+     * @return the elapsed game time for this level
      */
     public long getTime() {
         return time;
     }
 
+    /**
+     * Get the current day time, derived from the elapsed game time of this level
+     *
+     * @return the current day time of this level
+     * @see #getTime()
+     */
     public int getDayTime() {
         return (int) (this.getTime() % Level.TIME_FULL);
+    }
+
+    /**
+     * Get the current day, derived from the elapsed game time of this level
+     *
+     * @return the current day of this level
+     * @see #getTime()
+     */
+    public int getDay() {
+        return (int) (this.getTime() / Level.TIME_FULL);
     }
 
     public boolean isDay() {

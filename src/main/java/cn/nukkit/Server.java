@@ -1112,7 +1112,12 @@ public class Server {
         if (this.getAutoSave()) {
             for (Player player : new ArrayList<>(this.players.values())) {
                 if (player.isOnline()) {
-                    player.save(true);
+                    if (!player.closed) {
+                        try {
+                            player.save(true);
+                        } catch (IllegalStateException ignored) {
+                        }
+                    }
                 } else if (!player.isConnected()) {
                     this.removePlayer(player);
                 }

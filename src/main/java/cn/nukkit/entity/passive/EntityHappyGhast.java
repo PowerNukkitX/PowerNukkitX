@@ -505,57 +505,57 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                                     Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
                                     if (home == null) return false;
 
-                                    double max = g.roamDistance();
-                                    return entity.distanceSquared(home) > (max * max);
-                                },
-                                4, 1
+                            double max = g.roamDistance();
+                            return entity.distanceSquared(home) > (max * max);
+                        },
+                        4, 1
+                    ),
+                    new Behavior(
+                        new FloatTemptExecutor(true, 16, 7.0f, TEMPT_ITEMS),
+                            entity -> {
+                                EntityHappyGhast g = (EntityHappyGhast) entity;
+                                if (!g.canMove()) return false;
+                                if (g.hasPassengers) return false;
+                                if (g.dismountUnlockDelayTicks > 0) return false;
+                                return TemptExecutor.hasTemptingPlayer(entity, true, 16, TEMPT_ITEMS);
+                            },
+                        3, 1
+                    ),
+                    new Behavior( // Hover roam near home
+                        new HoverRandomRoamExecutor(
+                            1.0f,
+                            roamDistance(),
+                            10, // TODO: Supposed to be 16, as we dont have leashable reduced a bit to not lost it
+                            (this.isBaby()) ? -1 : 0,
+                            (this.isBaby()) ? 1 : 6,
+                            (this.isBaby()) ? 4 : 14,
+                            160
                         ),
-                        new Behavior(
-                                new FloatTemptExecutor(true, 16, 7.0f, TEMPT_ITEMS),
-                                entity -> {
-                                    EntityHappyGhast g = (EntityHappyGhast) entity;
-                                    if (!g.canMove()) return false;
-                                    if (g.hasPassengers) return false;
-                                    if (g.dismountUnlockDelayTicks > 0) return false;
-                                    return TemptExecutor.hasTemptingPlayer(entity, true, 16, TEMPT_ITEMS);
+                        entity -> {
+                            EntityHappyGhast g = (EntityHappyGhast) entity;
+                            if (!g.canMove()) return false;
+                            if (g.hasPassengers) return false;
+                            return true;
+                        },
+                        2, 1
+                    ),
+                    new Behavior( // Look at nearest player
+                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                            all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> ((EntityHappyGhast) e).getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    EntityHappyGhast h = (EntityHappyGhast) e;
+                                    Player p = h.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !h.isPassenger(p);
                                 },
-                                3, 1
-                        ),
-                        new Behavior( // Hover roam near home
-                                new HoverRandomRoamExecutor(
-                                        this.getDefaultFlyingSpeed(),
-                                        roamDistance(),
-                                        10, // TODO: Supposed to be 16, as we dont have leashable reduced a bit to not lost it
-                                        (this.isBaby()) ? -1 : 0,
-                                        (this.isBaby()) ? 1 : 6,
-                                        (this.isBaby()) ? 4 : 14,
-                                        160
-                                ),
-                                entity -> {
-                                    EntityHappyGhast g = (EntityHappyGhast) entity;
-                                    if (!g.canMove()) return false;
-                                    if (g.hasPassengers) return false;
-                                    return true;
-                                },
-                                2, 1
-                        ),
-                        new Behavior( // Look at nearest player
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ProbabilityEvaluator(4, 10),
-                                        e -> ((EntityHappyGhast) e).getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                        e -> {
-                                            EntityHappyGhast h = (EntityHappyGhast) e;
-                                            Player p = h.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                            return p != null && !h.isPassenger(p);
-                                        },
-                                        e -> {
-                                            EntityHappyGhast g = (EntityHappyGhast) e;
-                                            return !g.hasPassengers && g.dismountUnlockDelayTicks <= 0;
-                                        }
-                                ),
-                                1, 1, 100
-                        )
+                                e -> {
+                                    EntityHappyGhast g = (EntityHappyGhast) e;
+                                    return !g.hasPassengers && g.dismountUnlockDelayTicks <= 0;
+                                }
+                            ),
+                        1, 1, 100
+                    )
                 ),
                 Set.of(
                         new NearestPlayerSensor(56, 0, 20),

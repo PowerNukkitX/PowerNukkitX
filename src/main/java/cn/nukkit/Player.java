@@ -2284,7 +2284,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.sendPacket(packet);
 
-        if (this.spawned) {
+        if (this.spawned && this.level.getProvider() != null) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
                     entity.spawnTo(this);
@@ -2292,9 +2292,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
-            if (entity instanceof BlockEntitySpawnable spawnable) {
-                spawnable.spawnTo(this);
+        if (this.level.getProvider() != null) {
+            for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+                if (entity instanceof BlockEntitySpawnable spawnable) {
+                    spawnable.spawnTo(this);
+                }
             }
         }
 
