@@ -123,12 +123,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract versions from source
+      - name: Extract release metadata from source
         id: versions
         run: |
-          MC_VERSION=$(sed -n 's/.*MINECRAFT_VERSION_NETWORK = dynamic("\([^"]*\)").*/\1/p' src/main/java/cn/nukkit/network/protocol/ProtocolInfo.java)
+          PROTOCOL_VERSION=$(sed -n 's/.*import org\.cloudburstmc\.protocol\.bedrock\.codec\.v\([0-9][0-9]*\)\.Bedrock_v[0-9][0-9]*;.*/\1/p' src/main/java/cn/nukkit/network/NetworkConstants.java | head -n 1)
           API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/cn/nukkit/Nukkit.java)
-          echo "mc_version=$MC_VERSION" >> $GITHUB_OUTPUT
+          if [ -z "$PROTOCOL_VERSION" ]; then
+            echo "Unable to extract protocol version from NetworkConstants.java" >&2
+            exit 1
+          fi
+          if [ -z "$API_VERSION" ]; then
+            echo "Unable to extract API version from Nukkit.java" >&2
+            exit 1
+          fi
+          echo "protocol_version=$PROTOCOL_VERSION" >> $GITHUB_OUTPUT
           echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/download-artifact@v4
@@ -140,7 +148,7 @@ jobs:
         if: needs.publish.outputs.tag != 'nightly'
         run: |
           TAG="${{ needs.publish.outputs.tag }}"
-          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+          PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
 
           mkdir -p changelogs
@@ -157,7 +165,7 @@ jobs:
           |----------|-------|
           | PowerNukkitX Version | $TAG |
           | API Version | $API_VERSION |
-          | Supported Minecraft Version | $MC_VERSION |
+          | Protocol Version | $PROTOCOL_VERSION |
 
           EOF
 
@@ -231,7 +239,7 @@ jobs:
         run: |
           TAG="${{ needs.publish.outputs.tag }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
-          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+          PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
 
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
@@ -242,7 +250,7 @@ jobs:
             git commit -m "docs: add changelog for PowerNukkitX ${TAG} [skip ci]
 
           Release ${TAG}
-          - Minecraft: ${MC_VERSION}
+          - Protocol: ${PROTOCOL_VERSION}
           - API: ${API_VERSION}
           - See the full changelog at changelogs/${TAG}.md"
             git push
@@ -254,7 +262,7 @@ jobs:
           TAG="${{ needs.publish.outputs.tag }}"
           IS_DRAFT="${{ needs.publish.outputs.is_draft }}"
           IS_PRERELEASE="${{ needs.publish.outputs.is_prerelease }}"
-          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+          PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
 
           cat > release-notes.md << EOF
@@ -265,7 +273,7 @@ jobs:
           |---|---|
           | **PowerNukkitX Version** | $TAG |
           | **API Version** | $API_VERSION |
-          | **Supported Minecraft Version** | $MC_VERSION |
+          | **Protocol Version** | $PROTOCOL_VERSION |
 
           ---
 
