@@ -2,12 +2,14 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.CameraShakePacket;
+import org.cloudburstmc.protocol.bedrock.data.CameraShakeAction;
+import org.cloudburstmc.protocol.bedrock.data.CameraShakeType;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+import org.cloudburstmc.protocol.bedrock.packet.CameraShakePacket;
 
 import java.util.List;
 import java.util.Map;
@@ -23,14 +25,14 @@ public class CameraShakeCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("add", new CommandParameter[]{
                 CommandParameter.newEnum("add", false, new String[]{"add"}),
-                CommandParameter.newType("player", false, CommandParamType.TARGET, new PlayersNode()),
+                CommandParameter.newType("player", false, CommandParamType.SELECTION, new PlayersNode()),
                 CommandParameter.newType("intensity", false, CommandParamType.FLOAT),
                 CommandParameter.newType("second", false, CommandParamType.FLOAT),
                 CommandParameter.newEnum("shakeType", false, new String[]{"positional", "rotational"})
         });
         this.commandParameters.put("stop", new CommandParameter[]{
                 CommandParameter.newEnum("stop", false, new String[]{"stop"}),
-                CommandParameter.newType("player", false, CommandParamType.TARGET, new PlayersNode()),
+                CommandParameter.newType("player", false, CommandParamType.SELECTION, new PlayersNode()),
         });
         this.enableParamTree();
     }
@@ -50,29 +52,29 @@ public class CameraShakeCommand extends VanillaCommand {
                 float intensity = list.getResult(2);
                 float second = list.getResult(3);
                 String type = list.getResult(4);
-                CameraShakePacket.CameraShakeType shakeType = switch (type) {
-                    case "positional" -> CameraShakePacket.CameraShakeType.POSITIONAL;
-                    case "rotational" -> CameraShakePacket.CameraShakeType.ROTATIONAL;
+                CameraShakeType shakeType = switch (type) {
+                    case "positional" -> CameraShakeType.POSITIONAL;
+                    case "rotational" -> CameraShakeType.ROTATIONAL;
                     default -> null;
                 };
-                CameraShakePacket packet = new CameraShakePacket();
-                packet.intensity = intensity;
-                packet.duration = second;
-                packet.shakeType = shakeType;
-                packet.shakeAction = CameraShakePacket.CameraShakeAction.ADD;
-                players.forEach(player -> player.dataPacket(packet));
+                final CameraShakePacket packet = new CameraShakePacket();
+                packet.setIntensity(intensity);
+                packet.setSeconds(second);
+                packet.setShakeType(shakeType);
+                packet.setShakeAction(CameraShakeAction.ADD);
+                players.forEach(player -> player.sendPacket(packet));
                 log.addSuccess("commands.screenshake.success", players_str).output();
                 return 1;
             }
             case "stop" -> {
                 String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
                 CameraShakePacket packet = new CameraShakePacket();
-                packet.shakeAction = CameraShakePacket.CameraShakeAction.STOP;
-                //avoid NPE
-                packet.intensity = -1;
-                packet.duration = -1;
-                packet.shakeType = CameraShakePacket.CameraShakeType.POSITIONAL;
-                players.forEach(player -> player.dataPacket(packet));
+                packet.setIntensity(-1);
+                packet.setSeconds(-1);
+                packet.setIntensity(-1);
+                packet.setShakeType(CameraShakeType.POSITIONAL);
+                packet.setShakeAction(CameraShakeAction.STOP);
+                players.forEach(player -> player.sendPacket(packet));
                 log.addSuccess("commands.screenshake.successStop", players_str).output();
                 return 1;
             }

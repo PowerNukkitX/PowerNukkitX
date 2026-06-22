@@ -4,7 +4,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.TextFormat;
-import cn.nukkit.utils.ThreadCache;
 
 /**
  * @author xtypr
@@ -40,7 +39,6 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
             tilesCollected += tilesCount - level.getBlockEntities().size();
         }
 
-        ThreadCache.clean();
         System.gc();
 
         long freedMemory = usedMemory - (runtime.totalMemory() - runtime.freeMemory());

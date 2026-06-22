@@ -14,7 +14,6 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
 

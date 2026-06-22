@@ -18,11 +18,11 @@ public class BlockEntityComparator extends BlockEntity {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("OutputSignal")) {
-            namedTag.putInt("OutputSignal", 0);
+        if (!nbt.contains("OutputSignal")) {
+            this.nbt.putInt("OutputSignal", 0);
         }
 
-        this.outputSignal = namedTag.getInt("OutputSignal");
+        this.outputSignal = getNbt().getInt("OutputSignal");
     }
 
     @Override
@@ -41,6 +41,6 @@ public class BlockEntityComparator extends BlockEntity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putInt("OutputSignal", this.outputSignal);
+        this.nbt.putInt("OutputSignal", this.outputSignal);
     }
 }

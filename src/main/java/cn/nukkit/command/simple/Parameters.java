@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * <b>Example:</b>
  * <pre>
  * @Parameters(name = "send", parameters = {
- *     @Parameter(name = "player", type = CommandParamType.TARGET),
+ *     @Parameter(name = "player", type = CommandParamType.SELECTION),
  *     @Parameter(name = "message", type = CommandParamType.RAWTEXT, optional = true)
  * })
  * public void onSendCommand(CommandSender sender, String[] args) {

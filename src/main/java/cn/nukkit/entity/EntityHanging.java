@@ -21,10 +21,11 @@ public abstract class EntityHanging extends Entity {
         this.setHealthMax(1);
         this.setHealthCurrent(1);
 
-        if (this.namedTag.contains("Direction")) {
-            this.direction = this.namedTag.getByte("Direction");
-        } else if (this.namedTag.contains("Dir")) {
-            int d = this.namedTag.getByte("Dir");
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("Direction")) {
+            this.direction = nbtMap.getByte("Direction");
+        } else if (nbtMap.contains("Dir")) {
+            int d = nbtMap.getByte("Dir");
             if (d == 2) {
                 this.direction = 0;
             } else if (d == 0) {
@@ -37,11 +38,10 @@ public abstract class EntityHanging extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-
-        this.namedTag.putByte("Direction", this.getDirection().getHorizontalIndex());
-        this.namedTag.putInt("TileX", (int) this.x);
-        this.namedTag.putInt("TileY", (int) this.y);
-        this.namedTag.putInt("TileZ", (int) this.z);
+        this.nbt.putByte("Direction", (byte) this.getDirection().getHorizontalIndex())
+                .putInt("TileX", (int) this.x)
+                .putInt("TileY", (int) this.y)
+                .putInt("TileZ", (int) this.z);
     }
 
     @Override

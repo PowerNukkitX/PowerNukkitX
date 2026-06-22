@@ -17,11 +17,11 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.contains("color")) {
-            this.namedTag.putByte("color", 0);
+        if (!this.nbt.contains("color")) {
+            this.nbt.putByte("color", (byte) 0);
         }
 
-        this.color = this.namedTag.getByte("color");
+        this.color = this.getNbt().getByte("color");
     }
 
     @Override
@@ -32,7 +32,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte("color", this.color);
+       this.nbt.putByte("color", (byte) this.color);
     }
 
     @Override
@@ -41,44 +41,45 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     public int getBaseColor() {
-        return this.namedTag.getInt("Base");
+        return this.getNbt().getInt("Base");
     }
 
     public void setBaseColor(DyeColor color) {
-        this.namedTag.putInt("Base", color.getDyeData() & 0x0f);
+        this.nbt.putInt("Base", color.getDyeData() & 0x0f);
     }
 
     public int getType() {
-        return this.namedTag.getInt("Type");
+        return this.getNbt().getInt("Type");
     }
 
     public void setType(int type) {
-        this.namedTag.putInt("Type", type);
+      this.nbt.putInt("Type", type);
     }
 
     public void addPattern(BannerPattern pattern) {
-        ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag().
-                putInt("Color", pattern.color().getDyeData() & 0x0f).
-                putString("Pattern", pattern.type().getCode()));
-        this.namedTag.putList("Patterns", patterns);
+        ListTag<CompoundTag> patterns = this.getNbt().getList("Patterns", CompoundTag.class);
+        patterns.add(new CompoundTag()
+                .putInt("Color", pattern.color().getDyeData() & 0x0f)
+                .putString("Pattern", pattern.type().getCode()));
+        this.nbt.putList("Patterns", patterns);
     }
 
     public BannerPattern getPattern(int index) {
-        return BannerPattern.fromCompoundTag(this.namedTag.getList("Patterns").size() > index && index >= 0 ?
-                this.namedTag.getList("Patterns", CompoundTag.class).get(index) :
+        ListTag<CompoundTag> patterns = this.getNbt().getList("Patterns", CompoundTag.class);
+        return BannerPattern.fromCompoundTag(patterns.size() > index && index >= 0 ?
+                patterns.get(index) :
                 new CompoundTag());
     }
 
     public void removePattern(int index) {
-        ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
+        ListTag<CompoundTag> patterns = this.getNbt().getList("Patterns", CompoundTag.class);
         if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
     }
 
     public int getPatternsSize() {
-        return this.namedTag.getList("Patterns").size();
+        return this.getNbt().getList("Patterns", CompoundTag.class).size();
     }
 
     @Override
@@ -89,19 +90,19 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
-        if(!isBlockEntityValid()) {
+        if (!isBlockEntityValid()) {
             close();
         }
         return !closed;
     }
 
-    @Override   
+    @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
                 .putInt("Base", getBaseColor())
-                .putList("Patterns", this.namedTag.getList("Patterns"))
+                .putList("Patterns", (ListTag<CompoundTag>) this.getNbt().getList("Patterns", CompoundTag.class).copy())
                 .putInt("Type", getType())
-                .putByte("color", this.color);
+                .putByte("color", (byte) this.color);
     }
 
     public DyeColor getDyeColor() {

@@ -6,11 +6,8 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.legacytree.LegacyCrimsonTree;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.NukkitRandom;
-import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.ArrayList;
 

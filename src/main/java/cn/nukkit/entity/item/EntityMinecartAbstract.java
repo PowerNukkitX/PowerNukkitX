@@ -9,7 +9,6 @@ import cn.nukkit.block.BlockRail;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
@@ -31,6 +30,8 @@ import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -108,7 +109,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         super.initEntity();
 
         prepareDataProperty();
-        setDataFlag(EntityFlag.COLLIDABLE);
+        setDataFlag(ActorFlags.COLLIDABLE);
         lastRailMountedState = isOnRailForMountOffset();
     }
 
@@ -718,37 +719,38 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private void prepareDataProperty() {
         setRollingAmplitude(0);
         setRollingDirection(1);
-        if (namedTag.contains("CustomDisplayTile")) {
-            if (namedTag.getBoolean("CustomDisplayTile")) {
-                int display = namedTag.getInt("DisplayTile");
-                int offSet = namedTag.getInt("DisplayOffset");
-                setDataProperty(CUSTOM_DISPLAY, 1);
-                setDataProperty(DISPLAY_TILE_RUNTIME_ID, display);
-                setDataProperty(DISPLAY_OFFSET, offSet);
+        CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("CustomDisplayTile")) {
+            if (nbtMap.getBoolean("CustomDisplayTile")) {
+                int display = nbtMap.getInt("DisplayTile");
+                int offSet = nbtMap.getInt("DisplayOffset");
+                setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 1);
+                setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, display);
+                setDataProperty(ActorDataTypes.DISPLAY_OFFSET, offSet);
             }
         } else {
             int display = blockInside == null ? 0 : blockInside.getRuntimeId();
             if (display == 0) {
-                setDataProperty(CUSTOM_DISPLAY, 0);
+                setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 0);
                 return;
             }
-            setDataProperty(CUSTOM_DISPLAY, 1);
-            setDataProperty(DISPLAY_TILE_RUNTIME_ID, display);
-            setDataProperty(DISPLAY_OFFSET, 6);
+            setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 1);
+            setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, display);
+            setDataProperty(ActorDataTypes.DISPLAY_OFFSET, 6);
         }
     }
 
     private void saveEntityData() {
-        boolean hasDisplay = super.getDataProperty(CUSTOM_DISPLAY) == 1
+        boolean hasDisplay = super.getDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 0) == (byte) 1
                 || blockInside != null;
         int display;
         int offSet;
-        namedTag.putBoolean("CustomDisplayTile", hasDisplay);
+        this.nbt.putBoolean("CustomDisplayTile", hasDisplay);
         if (hasDisplay) {
             display = blockInside.getRuntimeId();
-            offSet = getDataProperty(DISPLAY_OFFSET);
-            namedTag.putInt("DisplayTile", display);
-            namedTag.putInt("DisplayOffset", offSet);
+            offSet = getDataProperty(ActorDataTypes.DISPLAY_OFFSET);
+            this.nbt.putInt("DisplayTile", display);
+            this.nbt.putInt("DisplayOffset", offSet);
         }
     }
 
@@ -783,15 +785,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 blockInside = block;
                 //              Runtimeid
                 int display = blockInside.getRuntimeId();
-                setDataProperty(CUSTOM_DISPLAY, 1);
-                setDataProperty(DISPLAY_TILE_RUNTIME_ID, display);
+                setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 1);
+                setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, display);
                 setDisplayBlockOffset(6);
             }
         } else {
             // Set block to air (default).
             blockInside = null;
-            setDataProperty(CUSTOM_DISPLAY, 0);
-            setDataProperty(DISPLAY_TILE_RUNTIME_ID, 0);
+            setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 0);
+            setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, 0);
             setDisplayBlockOffset(0);
         }
         return true;
@@ -812,7 +814,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @return integer
      */
     public int getDisplayBlockOffset() {
-        return super.getDataProperty(DISPLAY_OFFSET);
+        return super.getDataProperty(ActorDataTypes.DISPLAY_OFFSET);
     }
 
     /**
@@ -821,7 +823,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param offset The offset
      */
     public void setDisplayBlockOffset(int offset) {
-        setDataProperty(DISPLAY_OFFSET, offset);
+        setDataProperty(ActorDataTypes.DISPLAY_OFFSET, offset);
     }
 
     /**

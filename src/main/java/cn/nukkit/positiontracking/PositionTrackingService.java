@@ -6,8 +6,6 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemLodestoneCompass;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.MapMaker;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -15,6 +13,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBServerBroadcastPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -102,13 +104,19 @@ public class PositionTrackingService implements Closeable {
 
     private void sendTrackingUpdate(Player player, int trackingHandler, PositionTracking pos) {
         if (player.getLevelName().equals(pos.getLevelName())) {
-            PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
+            final PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
             packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.UPDATE);
-            packet.setPosition(pos);
-            packet.setDimension(player.getLevel().getDimension());
             packet.setTrackingId(trackingHandler);
-            packet.setStatus(0);
-            player.dataPacket(packet);
+            packet.setPositionTrackingData(
+                    NbtMap.builder()
+                            .putByte("version", (byte) 1)
+                            .putString("id", String.format("0x%08x", trackingHandler))
+                            .putList("pos", NbtType.INT, Arrays.asList(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))
+                            .putByte("status", (byte) 0)
+                            .putInt("dim", player.getLevel().getDimension())
+                            .build()
+            );
+            player.sendPacket(packet);
         } else {
             sendTrackingDestroy(player, trackingHandler);
         }
@@ -116,7 +124,7 @@ public class PositionTrackingService implements Closeable {
 
     private void sendTrackingDestroy(Player player, int trackingHandler) {
         PositionTrackingDBServerBroadcastPacket packet = destroyPacket(trackingHandler);
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     public @Nullable
@@ -154,21 +162,27 @@ public class PositionTrackingService implements Closeable {
         PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
         packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.DESTROY);
         packet.setTrackingId(trackingHandler);
-        packet.setDimension(0);
-        packet.setPosition(0, 0, 0);
-        packet.setStatus(2);
+        packet.setPositionTrackingData(
+                NbtMap.builder()
+                        .putByte("version", (byte) 1)
+                        .putString("id", String.format("0x%08x", trackingHandler))
+                        .putList("pos", NbtType.INT, Arrays.asList(0, 0, 0))
+                        .putByte("status", (byte) 2)
+                        .putInt("dim", 0)
+                        .build()
+        );
         return packet;
     }
 
     public synchronized boolean stopTracking(Player player) {
         Map<PositionTrackingStorage, IntSet> toRemove = tracking.remove(player);
         if (toRemove != null && player.isOnline()) {
-            DataPacket[] packets = toRemove.values().stream()
+            BedrockPacket[] packets = toRemove.values().stream()
                     .flatMapToInt(handlers -> IntStream.of(handlers.toIntArray()))
                     .mapToObj(this::destroyPacket)
-                    .toArray(DataPacket[]::new);
+                    .toArray(BedrockPacket[]::new);
             for (var p : packets) {
-                player.dataPacket(p);
+                player.sendPacket(p);
             }
         }
         return toRemove != null;
@@ -185,7 +199,7 @@ public class PositionTrackingService implements Closeable {
                 if (entry.getValue().isEmpty()) {
                     tracking.remove(entry.getKey());
                 }
-                player.dataPacket(destroyPacket(trackingHandler));
+                player.sendPacket(destroyPacket(trackingHandler));
                 return true;
             }
         }

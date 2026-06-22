@@ -21,7 +21,8 @@ import java.util.List;
 public class EntityDragonFireball extends EntityProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return DRAGON_FIREBALL;
     }
 
@@ -63,7 +64,7 @@ public class EntityDragonFireball extends EntityProjectile {
 
     @Override
     public void onCollideWithEntity(Entity entity) {
-        if(!(entity instanceof EntityEnderDragon)) onCollide();
+        if (!(entity instanceof EntityEnderDragon)) onCollide();
     }
 
     @Override

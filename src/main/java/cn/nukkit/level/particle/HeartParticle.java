@@ -1,6 +1,7 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 
 /**
  * @author xtypr
@@ -12,6 +13,6 @@ public class HeartParticle extends GenericParticle {
     }
 
     public HeartParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_HEART, scale);
+        super(pos, ParticleType.HEART, scale);
     }
 }

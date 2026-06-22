@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "org.powernukkitx"
-version = "2.0.0-SNAPSHOT"
+version = providers.gradleProperty("buildVersion").orElse("nightly-SNAPSHOT").get()
 description = "powernukkitx"
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
@@ -60,10 +60,12 @@ dependencies {
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
+    implementation(libs.bedrock.connection)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
+    
     testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)
@@ -82,6 +84,7 @@ configurations.all {
 
 tasks.withType<JavaCompile>().configureEach {
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+    options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000"))
 }
 
 java {
@@ -202,6 +205,9 @@ tasks.test {
     finalizedBy("jacocoTestReport") // report is always generated after tests run
 }
 
+tasks.withType<Test>().configureEach {
+    onlyIf { !project.hasProperty("skipTests") }
+}
 
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {

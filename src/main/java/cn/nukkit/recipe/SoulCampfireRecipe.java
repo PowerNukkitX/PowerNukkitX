@@ -21,4 +21,9 @@ public class SoulCampfireRecipe extends CampfireRecipe {
     public RecipeType getType() {
         return RecipeType.SOUL_CAMPFIRE;
     }
+
+    @Override
+    public String getRecipeIdTag() {
+        return "soul_campfire";
+    }
 }

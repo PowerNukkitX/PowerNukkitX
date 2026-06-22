@@ -3,9 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.CompoundTagView;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @Unmodifiable
 public interface BlockState {
-    static BlockState makeUnknownBlockState(int hash, CompoundTag blockTag) {
+    static BlockState makeUnknownBlockState(int hash, NbtMap blockTag) {
         return BlockStateImpl.makeUnknownBlockState(hash, blockTag);
     }
 
@@ -48,7 +47,7 @@ public interface BlockState {
     List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getBlockPropertyValues();
 
     @UnmodifiableView
-    CompoundTagView getBlockStateTag();
+    NbtMap getBlockStateTag();
 
     <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p);
 

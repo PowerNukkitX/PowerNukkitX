@@ -8,11 +8,9 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
  * @author CreeperFace
@@ -103,9 +101,8 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
 
@@ -123,8 +120,8 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         }
 
         BlockEntityEnchantTable enchantTable = getOrCreateBlockEntity();
-        if (enchantTable.namedTag.contains("Lock") && enchantTable.namedTag.get("Lock") instanceof StringTag
-                && !enchantTable.namedTag.getString("Lock").equals(item.getCustomName())) {
+        if (enchantTable.getNbt().contains("Lock") && enchantTable.getNbt().get("Lock") instanceof StringTag
+                && !enchantTable.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 

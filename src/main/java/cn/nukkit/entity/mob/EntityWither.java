@@ -34,8 +34,6 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.item.Item;
@@ -48,8 +46,17 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,7 +66,8 @@ import java.util.Set;
 public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmite {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return WITHER;
     }
 
@@ -81,36 +89,36 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 any(
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_DASH, 400),
-                                        entity -> getDataFlag(EntityFlag.CAN_DASH)
+                                        entity -> getDataFlag(ActorFlags.CAN_DASH)
                                 ),
                                 new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 65, 3),
-                                entity -> getHealthCurrent() <= getHealthMax()/2f,
+                                entity -> getHealthCurrent() <= getHealthMax() / 2f,
                                 entity -> age >= 200
                         ), 10, 1),
                         new Behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_PLAYER, 1f, true, 64, 0), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 any(
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_DASH, 400),
-                                        entity -> getDataFlag(EntityFlag.CAN_DASH)
+                                        entity -> getDataFlag(ActorFlags.CAN_DASH)
                                 ),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 65, 3),
-                                entity -> getHealthCurrent() <= getHealthMax()/2f,
+                                entity -> getHealthCurrent() <= getHealthMax() / 2f,
                                 entity -> age >= 200
                         ), 9, 1),
                         new Behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 1f, true, 64, 0), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 any(
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_DASH, 400),
-                                        entity -> getDataFlag(EntityFlag.CAN_DASH)
+                                        entity -> getDataFlag(ActorFlags.CAN_DASH)
                                 ),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 65, 3),
-                                entity -> getHealthCurrent() <= getHealthMax()/2f,
+                                entity -> getHealthCurrent() <= getHealthMax() / 2f,
                                 entity -> age >= 200
                         ), 8, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, true, 64, 16), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 65, 17),
-                                entity -> age >= 200                        ), 7, 1),
+                                entity -> age >= 200), 7, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.7f, true, 64, 16), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 65, 17),
@@ -152,12 +160,12 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
     @Override
     public void kill() {
-        if(deathTicks == -1) {
+        if (deathTicks == -1) {
             deathTicks = 190;
-            getLevel().addLevelSoundEvent(this, LevelSoundEvent.DEATH, -1, Entity.WITHER, false, false);
-            EntityEventPacket packet = new EntityEventPacket();
-            packet.event = EntityEventPacket.DEATH_ANIMATION;
-            packet.eid = getId();
+            getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, Entity.WITHER, false, false);
+            final ActorEventPacket packet = new ActorEventPacket();
+            packet.setTargetRuntimeID(this.getId());
+            packet.setType(ActorEvent.DEATH);
             Server.broadcastPacket(getViewers().values(), packet);
             setImmobile(true);
         } else {
@@ -168,14 +176,14 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
             super.kill();
         }
     }
-    
+
     @Override
     public void setHealthCurrent(float health) {
         float healthBefore = getHealthCurrent();
-        float halfHealth = getHealthMax()/2f;
+        float halfHealth = getHealthMax() / 2f;
         super.setHealthCurrent(health);
-        if(health <= halfHealth && healthBefore > halfHealth) {
-            if(!isInvulnerable()) {
+        if (health <= halfHealth && healthBefore > halfHealth) {
+            if (!isInvulnerable()) {
                 this.explode();
                 setInvulnerable(176);
             }
@@ -183,17 +191,17 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
 
     public void setInvulnerable(int ticks) {
-        this.setDataProperty(EntityDataTypes.WITHER_INVULNERABLE_TICKS, ticks);
+        this.setDataProperty(ActorDataTypes.INV, ticks);
     }
 
     public boolean isInvulnerable() {
-        return getDataProperty(EntityDataTypes.WITHER_INVULNERABLE_TICKS) > 0;
+        return getDataProperty(ActorDataTypes.INV) > 0;
     }
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(age < 200 || deathTicks != -1) return false;
-        if(source.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+        if (age < 200 || deathTicks != -1) return false;
+        if (source.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return false;
         }
         return super.attack(source);
@@ -221,23 +229,19 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = getNetworkId();
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y;
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
-        addEntity.attributes = new Attribute[]{Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth())};
-        return addEntity;
+    protected BedrockPacket createAddEntityPacket() {
+        final AddActorPacket packet = new AddActorPacket();
+        packet.getAttributesList().add(
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth()).toNetwork()
+        );
+        packet.setActorData(this.getActorDataMap());
+        packet.setTargetActorID(this.getId());
+        packet.setTargetRuntimeID(this.getId());
+        packet.setActorType("minecraft:wither");
+        packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
+        packet.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
+        packet.setRotation(org.cloudburstmc.math.vector.Vector2f.from(this.pitch, this.yaw));
+        return packet;
     }
 
     private int getMaxDiffHealth() {
@@ -261,21 +265,21 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if(!closed) {
-            if(deathTicks != -1) {
-                if(deathTicks <= 0) {
+        if (!closed) {
+            if (deathTicks != -1) {
+                if (deathTicks <= 0) {
                     kill();
                 } else deathTicks--;
             }
-            if(isInvulnerable()) {
-                this.setDataProperty(EntityDataTypes.WITHER_INVULNERABLE_TICKS, getDataProperty(WITHER_INVULNERABLE_TICKS)-1);
+            if (isInvulnerable()) {
+                this.setDataProperty(ActorDataTypes.INV, getDataProperty(ActorDataTypes.INV) - 1);
             }
             if (this.age == 200) {
                 this.explode();
                 setHealthCurrent(getHealthMax());
                 getLevel().addSound(this, Sound.MOB_WITHER_SPAWN);
-            } else if(age < 200) {
-                heal(getHealthMax()/200f);
+            } else if (age < 200) {
+                heal(getHealthMax() / 200f);
             }
         }
         return super.onUpdate(currentTick);
@@ -283,20 +287,20 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
     @Override
     public boolean attackTarget(Entity entity) {
-        if(entity instanceof EntityWither) return false;
+        if (entity instanceof EntityWither) return false;
         return entity instanceof EntityIntelligent;
     }
 
     @Override
     public void addBossbar(Player player) {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = this.id;
-        pkBoss.type = BossEventPacket.TYPE_SHOW;
-        pkBoss.title = this.getName();
-        pkBoss.color = 6;
-        pkBoss.darkenSky = 1;
-        pkBoss.healthPercent = 0;
-        player.dataPacket(pkBoss);
+        final BossEventPacket bossEventPacket = new BossEventPacket();
+        bossEventPacket.setTargetActorID(this.id);
+        bossEventPacket.setEventType(BossEventUpdateType.ADD);
+        bossEventPacket.setName(this.getName());
+        bossEventPacket.setHealthPercent(0f);
+        bossEventPacket.setDarkenScreen(1);
+        bossEventPacket.setColor(BossBarColor.REBECCA_PURPLE);
+        player.sendPacket(bossEventPacket);
     }
 
     @Override
@@ -341,12 +345,12 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
     @Override
     public boolean move(double dx, double dy, double dz) {
-        if((age%40==0 || getDataFlag(EntityFlag.CAN_DASH) && age > 200)) {
+        if ((age % 40 == 0 || getDataFlag(ActorFlags.CAN_DASH) && age > 200)) {
             Block[] blocks = level.getCollisionBlocks(getBoundingBox().grow(1, 1, 1));
-            if(blocks.length > 0) {
-                if(blockBreakSound != null) level.addSound(this, blockBreakSound);
+            if (blocks.length > 0) {
+                if (blockBreakSound != null) level.addSound(this, blockBreakSound);
                 for (Block collisionBlock : blocks) {
-                    if(!(collisionBlock instanceof BlockBedrock)) {
+                    if (!(collisionBlock instanceof BlockBedrock)) {
                         level.breakBlock(collisionBlock);
                     }
                 }
@@ -358,47 +362,47 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     public static boolean checkAndSpawnWither(Block block) {
         Block check = block;
         BlockFace skullFace = null;
-        if(block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            for(BlockFace face : Set.of(BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)) {
+        if (block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            for (BlockFace face : Set.of(BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)) {
                 boolean[] skulls = new boolean[5];
                 for (int i = -2; i <= 2; i++) {
                     skulls[i + 2] = block.getSide(face, i) instanceof BlockWitherSkeletonSkull;
                 }
                 int inrow = 0;
-                for(int i = 0; i < skulls.length; i++) {
-                    if(skulls[i]) {
+                for (int i = 0; i < skulls.length; i++) {
+                    if (skulls[i]) {
                         inrow++;
-                        if(inrow == 2) check = block.getSide(face, i-2);
-                    } else if(inrow < 3) {
+                        if (inrow == 2) check = block.getSide(face, i - 2);
+                    } else if (inrow < 3) {
                         inrow = 0;
                     }
                 }
-                if(inrow >= 3) {
+                if (inrow >= 3) {
                     skullFace = face;
                 }
             }
-            if(skullFace == null) return false;
-            if(check instanceof BlockWitherSkeletonSkull) {
+            if (skullFace == null) return false;
+            if (check instanceof BlockWitherSkeletonSkull) {
                 faces:
-                for(BlockFace blockFace : BlockFace.values()) {
-                    for(int i = 1; i<=2; i++) {
-                        if(!(check.getSide(blockFace, i) instanceof BlockSoulSand)) {
+                for (BlockFace blockFace : BlockFace.values()) {
+                    for (int i = 1; i <= 2; i++) {
+                        if (!(check.getSide(blockFace, i) instanceof BlockSoulSand)) {
                             continue faces;
                         }
                     }
                     faces1:
-                    for(BlockFace face : Set.of(BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)) {
-                        for(int i = -1; i<=1; i++) {
-                            if(!(check.getSide(blockFace).getSide(face, i) instanceof BlockSoulSand)) {
+                    for (BlockFace face : Set.of(BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)) {
+                        for (int i = -1; i <= 1; i++) {
+                            if (!(check.getSide(blockFace).getSide(face, i) instanceof BlockSoulSand)) {
                                 continue faces1;
                             }
                         }
 
-                        for(int i = 0; i<=2; i++) {
+                        for (int i = 0; i <= 2; i++) {
                             Block location = check.getSide(blockFace, i);
                             location.level.breakBlock(location);
                         }
-                        for(int i = -1; i<=1; i++) {
+                        for (int i = -1; i <= 1; i++) {
                             Block location = check.getSide(blockFace).getSide(face, i);
                             location.level.breakBlock(location);
                             location.level.breakBlock(location.getSide(blockFace.getOpposite()));

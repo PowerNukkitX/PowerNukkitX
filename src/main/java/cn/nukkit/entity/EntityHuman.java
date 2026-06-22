@@ -2,27 +2,64 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddPlayerPacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
-import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.utils.SkinUtils;
+import lombok.extern.slf4j.Slf4j;
 
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
+import org.cloudburstmc.protocol.bedrock.data.PlayerPermissionLevel;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
+import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesData;
+import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesDataSerializedLayer;
+import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedLayer;
+import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
+import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 import java.util.UUID;
+
+import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX;
+import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.RESERVED_139;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@Slf4j
 public class EntityHuman extends EntityHumanType {
+    public static final String GEOMETRY_CUSTOM = SkinUtils.convertGeometryName("geometry.humanoid.custom");
+    public static final String GEOMETRY_CUSTOM_SLIM = SkinUtils.convertGeometryName("geometry.humanoid.customSlim");
+    static final String GEOMETRY_HUMANOID;
+
+    static {
+        String geoData;
+        try (var stream = EntityHuman.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            geoData = reader.lines().collect(java.util.stream.Collectors.joining("\n", "", "\n"));
+        } catch (IOException e) {
+            geoData = "";
+            log.error("Failed to load skin geometry data", e);
+        }
+        GEOMETRY_HUMANOID = geoData;
+    }
+
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
@@ -109,6 +146,40 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
+    public void initHumanEntity(Entity ent) {
+        super.initHumanEntity(ent);
+
+        if(!(ent instanceof EntityHuman human)) return;
+
+
+        if(!(human instanceof Player) && human.getSkin() != null) {
+            SerializedSkin skin = human.getSkin().getSkin();
+            boolean trusted = human.getSkin().isTrusted();
+            SerializedSkin.Builder builder = human.getSkin().getSkin().toBuilder();
+
+            boolean changed = false;
+
+            if(skin.getSkinResourcePatch() == null || skin.getSkinResourcePatch().isEmpty()) {
+                builder.skinResourcePatch(GEOMETRY_CUSTOM_SLIM);
+                changed = true;
+            } else {
+                if(!SkinUtils.isValidResourcePatch(skin.getSkinResourcePatch())) {
+                    builder.skinResourcePatch(GEOMETRY_CUSTOM_SLIM);
+                    changed = true;
+                }
+            }
+
+            if(skin.getGeometryData() == null || skin.getGeometryData().isEmpty()) {
+                builder.skinResourcePatch(GEOMETRY_HUMANOID);
+                changed = true;
+            }
+
+            if(changed)
+                human.setSkin(new Skin(builder.build(), trusted));
+        }
+    }
+
+    @Override
     public String getOriginalName() {
         return "Human";
     }
@@ -165,46 +236,55 @@ public class EntityHuman extends EntityHumanType {
         if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
             this.hasSpawned.put(player.getLoaderId(), player);
 
-            if (!this.skin.isValid()) {
+
+            if (!SkinUtils.isValid(this.skin.getSkin())) {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
             if (this instanceof Player)
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getLoginChainData().getXUID(), ((Player) this).getLocatorBarColor(), new Player[]{player});
+                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getXUID(), ((Player) this).getLocatorBarColor(), new Player[]{player});
             else
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
-            this.entityDataMap.put(RESERVED_139, 0L);
-            this.entityDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
+            this.actorDataMap.put(RESERVED_139, 0L);
+            this.actorDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX,  64.0f);
 
-            AddPlayerPacket pk = new AddPlayerPacket();
-            pk.uuid = this.getUniqueId();
-            pk.username = this.getName();
-            pk.entityUniqueId = this.getId();
-            pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
-            pk.speedX = (float) this.motionX;
-            pk.speedY = (float) this.motionY;
-            pk.speedZ = (float) this.motionZ;
-            pk.yaw = (float) this.yaw;
-            pk.pitch = (float) this.pitch;
-            pk.item = this.getInventory().getItemInMainHand();
-            pk.entityData = this.entityDataMap;
-            player.dataPacket(pk);
+            final AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
+            addPlayerPacket.setActorData(this.actorDataMap);
+            addPlayerPacket.setUuid(this.getUniqueId());
+            addPlayerPacket.setPlayerName(this.getName());
+            addPlayerPacket.setTargetActorID(this.getId());
+            addPlayerPacket.setTargetRuntimeID(this.getId());
+            addPlayerPacket.setPosition(this.getPosition().toNetwork());
+            addPlayerPacket.setVelocity(this.getMotionVector());
+            addPlayerPacket.setRotation(this.getRotationVector());
+            addPlayerPacket.setCarriedItem(this.getInventory().getItemInMainHand().toNetwork());
+            addPlayerPacket.setDeviceId("");
+            addPlayerPacket.setPlatformChatId("");
+            addPlayerPacket.setBuildPlatform(BuildPlatform.UNKNOWN);
+            addPlayerPacket.setPlayerGameType(GameType.SURVIVAL);
+            addPlayerPacket.setAbilitiesData(
+                    this instanceof Player asPlayer ? asPlayer.getAdventureSettings().buildSerializedAbilitiesData() :
+                            this.buildSerializedAbilitiesData()
+            );
+            player.sendPacket(addPlayerPacket);
 
             this.inventory.sendArmorContents(player);
             this.offhandInventory.sendContents(player);
 
             if (this.riding != null) {
-                SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-                pkk.vehicleUniqueId = this.riding.getId();
-                pkk.riderUniqueId = this.getId();
-                pkk.type = EntityLink.Type.RIDER;
-                pkk.immediate = 1;
-
-                player.dataPacket(pkk);
+                final SetActorLinkPacket setActorLinkPacket = new SetActorLinkPacket();
+                setActorLinkPacket.setLink(
+                        new ActorLink(
+                                this.riding.getId(),
+                                this.getId(),
+                                ActorLinkType.RIDING,
+                                true,
+                                false,
+                                0f
+                        )
+                );
+                player.sendPacket(setActorLinkPacket);
             }
 
             if (!(this instanceof Player)) {
@@ -213,13 +293,26 @@ public class EntityHuman extends EntityHumanType {
         }
     }
 
+    public SerializedAbilitiesData buildSerializedAbilitiesData() {
+        final SerializedAbilitiesData data = new SerializedAbilitiesData();
+        data.setTargetPlayerRawId(this.getId());
+        data.setCommandPermissions(CommandPermissionLevel.ANY);
+        data.setPlayerPermissions(PlayerPermissionLevel.MEMBER);
+        final SerializedAbilitiesDataSerializedLayer layer = new SerializedAbilitiesDataSerializedLayer();
+        layer.setSerializedLayer(SerializedLayer.BASE);
+        layer.getAbilitiesSet().addAll(List.of(AbilitiesIndex.values()));
+        layer.setFlySpeed(Player.DEFAULT_FLY_SPEED);
+        layer.setVerticalFlySpeed(1f);
+        layer.setWalkSpeed(Player.DEFAULT_SPEED);
+        return data;
+    }
+
     @Override
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
-
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
-            player.dataPacket(pk);
+            final RemoveActorPacket packet = new RemoveActorPacket();
+            packet.setTargetActorID(this.getId());
+            player.sendPacket(packet);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }
@@ -249,5 +342,13 @@ public class EntityHuman extends EntityHumanType {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
+    }
+
+    protected Vector3f getMotionVector() {
+        return Vector3f.from(this.motionX, this.motionY, this.motionZ);
+    }
+
+    protected Vector3f getRotationVector() {
+        return Vector3f.from(this.pitch, this.yaw, this.headYaw);
     }
 }

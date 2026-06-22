@@ -165,7 +165,7 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
-    public CompoundTag remove(String name) {
+    public CompoundTag remove(String... names) {
         throw new UnsupportedOperationException();
     }
 

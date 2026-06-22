@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
@@ -13,10 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
 
 public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
@@ -80,9 +77,8 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
 
@@ -107,20 +103,20 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
                 }
             }
 
-            if (brewing.namedTag.contains("Lock")
-                    && brewing.namedTag.get("Lock") instanceof StringTag tag
-                    && !tag.data.equals(item.getCustomName())) {
+            if (brewing.getNbt().contains("Lock")
+                    && brewing.getNbt().get("Lock") instanceof StringTag
+                    && !brewing.getNbt().getString("Lock").equals(item.getCustomName())) {
                 return false;
             }
 
             player.addWindow(brewing.getInventory());
             // Without this, the brewing stand starts brewing (visually) once opened.
-            if(brewing.brewTime == BlockEntityBrewingStand.MAX_BREW_TIME) {
-                ContainerSetDataPacket pk = new ContainerSetDataPacket();
-                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-                pk.value = 0;
-                pk.windowId = player.getWindowId(brewing.getInventory());;
-                player.dataPacket(pk);
+            if (brewing.brewTime == BlockEntityBrewingStand.MAX_BREW_TIME) {
+                final ContainerSetDataPacket pk = new ContainerSetDataPacket();
+                pk.setContainerID((byte) player.getWindowId(brewing.getInventory()));
+                pk.setId(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
+                pk.setValue(0);
+                player.sendPacket(pk);
             }
         }
 
@@ -200,17 +196,13 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     protected BlockEntityBrewingStand createBrewingStand(CompoundTag additions) {
-        CompoundTag nbt = new CompoundTag()
-                .putList("Items", new ListTag<>())
-                .putString("id", BlockEntity.BREWING_STAND)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
-
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
         if (additions != null) {
-            additions.getTags().forEach(nbt::put);
+            for (var entry : additions.getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
-        return (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+        return createBlockEntity(nbt);
     }
 }
