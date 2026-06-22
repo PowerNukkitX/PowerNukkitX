@@ -1373,17 +1373,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected float wrapDegrees(float angle) {
-        angle %= 360f;
-
-        if (angle >= 180f) {
-            angle -= 360f;
-        }
-
-        if (angle < -180f) {
-            angle += 360f;
-        }
-
-        return angle;
+        return angle - 360f * (float) Math.floor((angle + 180f) / 360f);
     }
 
     protected float approachDegrees(float current, float target, float maxStep) {
