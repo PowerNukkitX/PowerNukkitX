@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.noise.d;
 
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class NoiseGeneratorOctavesD {

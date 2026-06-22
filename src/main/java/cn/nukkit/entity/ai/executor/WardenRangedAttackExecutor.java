@@ -4,15 +4,15 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventGenericPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventGenericPacket;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -82,14 +82,12 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
 
-        entity.setDataFlag(EntityFlag.SONIC_BOOM, false);
-        entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, false);
+        entity.setDataFlag(ActorFlags.SONIC_BOOM, false);
     }
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.SONIC_BOOM, true);
-        entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, true);
+        entity.setDataFlag(ActorFlags.SONIC_BOOM, true);
 
         entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
 //        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
@@ -106,8 +104,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
 
-        entity.setDataFlag(EntityFlag.SONIC_BOOM, false);
-        entity.setDataFlagExtend(EntityFlag.SONIC_BOOM, false);
+        entity.setDataFlag(ActorFlags.SONIC_BOOM, false);
     }
 
     protected void sendAttackParticle(EntityIntelligent entity, Vector3 from, Vector3 to) {
@@ -115,16 +112,17 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         var relativeVector = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
         for (int i = 1; i <= (length + 4); i++) {
             var pk = new LevelEventGenericPacket();
-            pk.eventId = LevelEventPacket.EVENT_SONIC_EXPLOSION;
-            pk.tag = createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f());
+            pk.setType(LevelEvent.SONIC_EXPLOSION);
+            pk.setTag(createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f()));
             Server.broadcastPacket(entity.getViewers().values(), pk);
         }
     }
 
-    protected CompoundTag createVec3fTag(Vector3f vec3f) {
-        return new CompoundTag()
+    protected NbtMap createVec3fTag(Vector3f vec3f) {
+        return NbtMap.builder()
                 .putFloat("x", vec3f.x)
                 .putFloat("y", vec3f.y)
-                .putFloat("z", vec3f.z);
+                .putFloat("z", vec3f.z)
+                .build();
     }
 }

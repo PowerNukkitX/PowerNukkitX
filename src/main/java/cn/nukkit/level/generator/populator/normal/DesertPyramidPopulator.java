@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;

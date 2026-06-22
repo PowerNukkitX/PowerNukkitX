@@ -39,11 +39,6 @@ public class BlockBarrier extends BlockSolid {
     }
 
     @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
     public double getHardness() {
         return -1;
     }
@@ -61,5 +56,10 @@ public class BlockBarrier extends BlockSolid {
     @Override
     public boolean canBePushed() {
         return false;
+    }
+
+    @Override
+    public int getLightFilter() {
+        return 1;
     }
 }

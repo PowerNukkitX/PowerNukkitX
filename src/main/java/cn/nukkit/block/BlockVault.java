@@ -8,9 +8,9 @@ import cn.nukkit.blockentity.BlockEntityID;
 import cn.nukkit.blockentity.BlockEntityVault;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,11 +41,11 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
         BlockEntityVault vault = getOrCreateBlockEntity();
         boolean ominous = getPropertyValue(CommonBlockProperties.OMINOUS);
         if (!vault.canPlayerOpen(player)) {
-            this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.VAULT_REJECT_REWARDED_PLAYER);
+            this.getLevel().addLevelSoundEvent(this, SoundEvent.VAULT_REJECT_REWARDED_PLAYER);
             return false;
         }
         if (!vault.matchesKey(item, ominous)) {
-            this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.VAULT_INSERT_ITEM_FAIL);
+            this.getLevel().addLevelSoundEvent(this, SoundEvent.VAULT_INSERT_ITEM_FAIL);
             return false;
         }
 
@@ -93,10 +93,10 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
         setPropertyValue(CommonBlockProperties.VAULT_STATE, state);
         getLevel().setBlock(this, this, false, false);
         this.getLevel().addLevelSoundEvent(this, switch (state) {
-            case ACTIVE -> LevelSoundEvent.VAULT_ACTIVATE;
-            case INACTIVE -> LevelSoundEvent.VAULT_DEACTIVATE;
-            case EJECTING -> LevelSoundEvent.VAULT_OPEN_SHUTTER;
-            case UNLOCKING -> LevelSoundEvent.VAULT_CLOSE_SHUTTER;
+            case ACTIVE -> SoundEvent.VAULT_ACTIVATE;
+            case INACTIVE -> SoundEvent.VAULT_DEACTIVATE;
+            case EJECTING -> SoundEvent.VAULT_OPEN_SHUTTER;
+            case UNLOCKING -> SoundEvent.VAULT_CLOSE_SHUTTER;
         });
     }
 

@@ -21,7 +21,6 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -37,8 +36,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
+
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EntitySnowGolem extends EntityGolem {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SNOW_GOLEM;
     }
 
@@ -66,7 +68,7 @@ public class EntitySnowGolem extends EntityGolem {
                 Set.of(
                         new Behavior(new SnowGolemShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 16, true, 20, 0), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                        entity -> !(getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntitySnowGolem)),
+                                entity -> !(getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntitySnowGolem)),
                                 3, 1),
                         new Behavior(new SnowGolemShootExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, 10, true, 20, 0), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
@@ -83,11 +85,12 @@ public class EntitySnowGolem extends EntityGolem {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if(item instanceof ItemShears) {
-            if(!isSheared()) {
+        if (item instanceof ItemShears) {
+            if (!isSheared()) {
                 this.setSheared(true);
-                this.level.addLevelSoundEvent(this, LevelSoundEvent.SHEAR);
-                if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInMainHand().setDamage(item.getDamage() + 1);
+                this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
+                if (player.getGamemode() != Player.CREATIVE)
+                    player.getInventory().getItemInMainHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.CARVED_PUMPKIN));
             }
         }
@@ -136,26 +139,26 @@ public class EntitySnowGolem extends EntityGolem {
     }
 
     public void setSheared(boolean sheared) {
-        setDataFlag(EntityFlag.SHEARED, sheared);
+        setDataFlag(ActorFlags.SHEARED, sheared);
     }
 
     public boolean isSheared() {
-        return getDataFlag(EntityFlag.SHEARED);
+        return getDataFlag(ActorFlags.SHEARED);
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
         this.waterTicks++;
-        if(this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
-            if(this.getLevelBlock().isAir()) {
+        if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+            if (this.getLevelBlock().isAir()) {
                 Block support = this.getLevelBlock().down();
-                if(support.isFullBlock() && !support.isAir()){
+                if (support.isFullBlock() && !support.isAir()) {
                     this.getLevel().setBlock(this.getLevelBlock(), Block.get(Block.SNOW_LAYER));
                 }
             }
         }
-        if(this.waterTicks >= 20) {
-            if((this.level.isRaining() && !this.isUnderBlock()) || this.getLevelBlock() instanceof BlockLiquid || Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).data.temperature > 1.0) {
+        if (this.waterTicks >= 20) {
+            if ((this.level.isRaining() && !this.isUnderBlock()) || this.getLevelBlock() instanceof BlockLiquid || Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).second().getTemperature() > 1.0) {
                 this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.WEATHER, 1));
             }
             this.waterTicks = 0;
@@ -186,21 +189,21 @@ public class EntitySnowGolem extends EntityGolem {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(source.getCause() == EntityDamageEvent.DamageCause.FALL) return false;
+        if (source.getCause() == EntityDamageEvent.DamageCause.FALL) return false;
         return super.attack(source);
     }
 
     public static void checkAndSpawnGolem(Block block) {
-        if(block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            if(block instanceof BlockPumpkin) {
+        if (block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            if (block instanceof BlockPumpkin) {
                 faces:
-                for(BlockFace blockFace : BlockFace.values()) {
-                    for(int i = 1; i<=2; i++) {
-                        if(!(block.getSide(blockFace, i) instanceof BlockSnow)) {
+                for (BlockFace blockFace : BlockFace.values()) {
+                    for (int i = 1; i <= 2; i++) {
+                        if (!(block.getSide(blockFace, i) instanceof BlockSnow)) {
                             continue faces;
                         }
                     }
-                    for(int i = 0; i<=2; i++) {
+                    for (int i = 0; i <= 2; i++) {
                         Block location = block.getSide(blockFace, i);
                         block.level.setBlock(location, Block.get(Block.AIR));
                         block.level.addParticle(new DestroyBlockParticle(location.add(0.5, 0.5, 0.5), block));
@@ -220,7 +223,6 @@ public class EntitySnowGolem extends EntityGolem {
                             .putList("Rotation", new ListTag<FloatTag>()
                                     .add(new FloatTag(0f))
                                     .add(new FloatTag(0f)));
-
                     Entity snowgolem = Entity.createEntity(EntityID.SNOW_GOLEM, block.level.getChunk(block.getChunkX(), block.getChunkZ()), nbt);
                     snowgolem.spawnToAll();
                     return;

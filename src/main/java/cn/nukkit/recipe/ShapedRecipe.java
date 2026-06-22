@@ -1,14 +1,18 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
+import cn.nukkit.recipe.descriptor.InvalidDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Value;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.CraftingDataEntryType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,8 +30,8 @@ public class ShapedRecipe extends CraftingRecipe {
     private final int col;
     private final boolean mirror;
 
-    public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
-        this(null, 1, primaryResult, shape, ingredients, extraResults);
+    public ShapedRecipe(Item primaryResult, int netId, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+        this(null, netId, 1, primaryResult, shape, ingredients, extraResults);
     }
 
     /**
@@ -45,24 +49,24 @@ public class ShapedRecipe extends CraftingRecipe {
      *                      <p>
      *                      Note: Recipes do not need to be square. Do NOT add padding for empty rows/columns.
      */
-    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
-        this(recipeId, priority, primaryResult, shape,
+    public ShapedRecipe(String recipeId, int netId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+        this(recipeId, netId, priority, primaryResult, shape,
                 Maps.transformEntries(ingredients, (Maps.EntryTransformer<Character, Item, ItemDescriptor>) (k, v) -> new DefaultDescriptor(v)),
                 extraResults);
     }
 
-    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
-        this(recipeId, null, priority, primaryResult, shape, ingredients, extraResults, false);
+    public ShapedRecipe(String recipeId, int netId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
+        this(recipeId, null, netId, priority, primaryResult, shape, ingredients, extraResults, false);
     }
 
-    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
-        this(recipeId, uuid, priority, primaryResult, shape, ingredients, extraResults, mirror, null);
+    public ShapedRecipe(String recipeId, UUID uuid, int netId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
+        this(recipeId, new Data(uuid, netId, priority), primaryResult, shape, ingredients, extraResults, mirror, null);
     }
 
-    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
+    public ShapedRecipe(String recipeId, Data data, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
                         Collection<Item> extraResults, boolean mirror, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority, recipeUnlockingRequirement);
-        this.uuid = uuid;
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, data.getNetId(), data.getPriority(),recipeUnlockingRequirement);
+        this.uuid = data.getUuid();
         this.mirror = mirror;
 
         this.row = shape.length;
@@ -144,7 +148,7 @@ public class ShapedRecipe extends CraftingRecipe {
     public ItemDescriptor getIngredient(int x, int y) {
         String shape = this.shape[y];
         var res = x < shape.length() ? this.shapedIngredients.get(shape.charAt(x)) : null;
-        return res == null ? new DefaultDescriptor(Item.AIR) : res;
+        return res == null ? InvalidDescriptor.INSTANCE : res;
     }
 
     public String[] getShape() {
@@ -158,7 +162,7 @@ public class ShapedRecipe extends CraftingRecipe {
             mirrorInput = new Input(3, 3, mirrorItemArray(input.getData()));
         }
         tryShrinkMatrix(input);
-        if(input.getRow() != row || input.getCol() != col) return false;
+        if (input.getRow() != row || input.getCol() != col) return false;
 
         boolean checkMirror = false;
         next:
@@ -221,7 +225,7 @@ public class ShapedRecipe extends CraftingRecipe {
      */
     public static void tryShrinkMatrix(Input input) {
         Item[][] inputs = input.getData();
-        if(inputs.length == 0) return;
+        if (inputs.length == 0) return;
         int startRow = 0, endRow = inputs.length - 1;
         for (int row = 0; row < inputs.length; row++) {
             if (notAllEmptyRow(inputs[row])) {
@@ -297,5 +301,35 @@ public class ShapedRecipe extends CraftingRecipe {
     @Override
     public RecipeType getType() {
         return RecipeType.SHAPED;
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapedRecipe toNetwork() {
+        final List<ItemDescriptor> ingredients = new ObjectArrayList<>();
+        for (int y = 0; y < this.getHeight(); y++) {
+            for (int x = 0; x < this.getWidth(); x++) {
+                ingredients.add(this.getIngredient(x, y));
+            }
+        }
+        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapedRecipe.of(
+                CraftingDataEntryType.SHAPED_RECIPE,
+                this.getRecipeId(),
+                this.getWidth(),
+                this.getHeight(),
+                ingredients.stream().map(ItemDescriptor::toNetwork).toList(),
+                this.getResults().stream().map(Item::toNetwork).toList(),
+                this.getUUID(),
+                "crafting_table",
+                this.getPriority(),
+                this.getNetId(),
+                this.isMirror(),
+                this.getRequirement()
+        );
+    }
+
+    @Value
+    public static class Data {
+        UUID uuid;
+        int netId;
+        int priority;
     }
 }

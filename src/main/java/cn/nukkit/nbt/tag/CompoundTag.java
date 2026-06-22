@@ -1,24 +1,21 @@
 package cn.nukkit.nbt.tag;
 
 import io.netty.util.internal.EmptyArrays;
+import org.cloudburstmc.nbt.NbtList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
 
 public class CompoundTag extends Tag {
     protected final Map<String, Tag> tags;
 
     public CompoundTag() {
-        this(new HashMap<>());
+        this(new LinkedHashMap<>());
     }
 
     public CompoundTag(Map<String, Tag> tags) {
@@ -40,6 +37,11 @@ public class CompoundTag extends Tag {
     }
 
     public CompoundTag putByte(String name, int value) {
+        tags.put(name, new ByteTag((byte) value));
+        return this;
+    }
+
+    public CompoundTag putByte(String name, byte value) {
         tags.put(name, new ByteTag(value));
         return this;
     }
@@ -96,6 +98,13 @@ public class CompoundTag extends Tag {
 
     public CompoundTag putBoolean(String string, boolean val) {
         putByte(string, val ? 1 : 0);
+        return this;
+    }
+
+    public CompoundTag putAll(CompoundTag compoundTag) {
+        for(var entry : compoundTag.getTags().entrySet()) {
+            put(entry.getKey(), entry.getValue());
+        }
         return this;
     }
 
@@ -161,8 +170,10 @@ public class CompoundTag extends Tag {
         return tags.get(name) instanceof FloatTag;
     }
 
-    public CompoundTag remove(String name) {
-        tags.remove(name);
+    public CompoundTag remove(String... names) {
+        for(String name : names) {
+            tags.remove(name);
+        }
         return this;
     }
 
@@ -287,17 +298,17 @@ public class CompoundTag extends Tag {
     }
 
     public Map<String, Tag> getTags() {
-        return new HashMap<>(this.tags);
+        return new LinkedHashMap<>(this.tags);
     }
 
     @UnmodifiableView
-    public Set<Map.Entry<String, Tag>> getEntrySet() {
+    public Set<Entry<String, Tag>> getEntrySet() {
         return Collections.unmodifiableSet(this.tags.entrySet());
     }
 
     @Override
     public Map<String, Object> parseValue() {
-        Map<String, Object> value = new HashMap<>(this.tags.size());
+        Map<String, Object> value = new LinkedHashMap<>(this.tags.size());
 
         for (Entry<String, Tag> entry : this.tags.entrySet()) {
             value.put(entry.getKey(), entry.getValue().parseValue());
@@ -308,7 +319,8 @@ public class CompoundTag extends Tag {
 
     public boolean getBoolean(String name) {
         if (!tags.containsKey(name)) return false;
-        return ((ByteTag) tags.get(name)).getData() != 0;
+        Tag tag = tags.get(name);
+        return tag instanceof NumberTag<?> numberTag && numberTag.getData().byteValue() != 0;
     }
 
     @Override
@@ -368,5 +380,49 @@ public class CompoundTag extends Tag {
      */
     public boolean exist(String name) {
         return tags.containsKey(name);
+    }
+
+    @Override
+    public NbtMap toNetwork() {
+        NbtMapBuilder builder = NbtMap.builder();
+        for(var entry : this.getTags().entrySet()) {
+            builder.put(entry.getKey(), entry.getValue().toNetwork());
+        }
+        return builder.build();
+    }
+
+    public static CompoundTag fromNetwork(NbtMap map) {
+        CompoundTag tag = new CompoundTag();
+        for (Entry<String, Object> entry : map.entrySet()) {
+            tag.put(entry.getKey(), fromNetworkValue(entry.getValue()));
+        }
+        return tag;
+    }
+
+    private static Tag fromNetworkValue(Object value) {
+        return switch (value) {
+            case null -> new EndTag();
+            case Byte byteValue -> new ByteTag(byteValue);
+            case Short shortValue -> new ShortTag(shortValue);
+            case Integer intValue -> new IntTag(intValue);
+            case Long longValue -> new LongTag(longValue);
+            case Float floatValue -> new FloatTag(floatValue);
+            case Double doubleValue -> new DoubleTag(doubleValue);
+            case String stringValue -> new StringTag(stringValue);
+            case NbtMap compoundValue -> fromNetwork(compoundValue);
+            case NbtList<?> listValue -> fromNetworkList((byte) listValue.getType().getId(), listValue);
+            case byte[] byteArray -> new ByteArrayTag(byteArray);
+            case int[] intArray -> new IntArrayTag(intArray);
+            case long[] longArray -> new LongArrayTag(longArray);
+            default -> throw new IllegalArgumentException("Unsupported network NBT value type: " + value.getClass().getName());
+        };
+    }
+
+    private static ListTag<Tag> fromNetworkList(byte type, List<?> values) {
+        ListTag<Tag> tag = new ListTag<>(type);
+        for (Object value : values) {
+            tag.add(fromNetworkValue(value));
+        }
+        return tag;
     }
 }

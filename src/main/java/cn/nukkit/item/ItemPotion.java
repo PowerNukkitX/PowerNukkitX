@@ -7,8 +7,8 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.CompletedUsingItemPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 
 import javax.annotation.Nullable;
 
@@ -106,7 +106,7 @@ public class ItemPotion extends Item {
             return false;
         }
 
-        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_CONSUME);
+        player.completeUsingItem(this.getRuntimeId(), ItemUseMethod.CONSUME);
 
         PotionType potion = PotionType.get(this.getDamage());
 
@@ -116,7 +116,7 @@ public class ItemPotion extends Item {
             --this.count;
             player.getInventory().setItemInMainHand(this);
             player.getInventory().addItem(new ItemGlassBottle());
-            player.level.addLevelSoundEvent(player, LevelSoundEvent.BOTTLE_EMPTY);
+            player.level.addLevelSoundEvent(player, SoundEvent.BOTTLE_EMPTY);
         }
 
         if (potion != null) {

@@ -85,64 +85,64 @@ public class PillagerOutpostPopulator extends Populator {
         Level level = chunk.getLevel();
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
         if (PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
-            random.setSeed(((chunkX >> 4) ^ (chunkZ >> 4) << 4) ^ level.getSeed());
-            random.nextInt();
-            if (random.nextInt(5) == 0) {
-                int y = chunk.getHeightMap(0, 0);
+            random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+            int y = chunk.getHeightMap(0, 0);
 
-                Block block = chunk.getBlockState(0, y, 0).toBlock();
-                while (block.canBeReplaced() && y > 1) {
-                    block = chunk.getBlockState(0, --y, 0).toBlock();
-                }
-                BlockManager manager = new BlockManager(level);
-                Position vec = new Position(chunkX << 4, y, chunkZ << 4);
-                WATCHTOWER.preparePlace(vec, manager);
-                BlockManager manager2 = new BlockManager(level);
-                WATCHTOWER_OVERGROWN.preparePlace(vec, manager2);
-                for(Block b : manager2.getBlocks()) {
-                    if(random.nextInt(20) != 0) manager2.unsetBlockStateAt(b);
-                }
-                manager.merge(manager2);
-
-                BlockVector3 size = new BlockVector3(WATCHTOWER.getSizeX(), WATCHTOWER.getSizeY(), WATCHTOWER.getSizeZ());
-                fillBase(level.getChunk(chunkX, chunkZ), y, 0, 0, size.getX(), size.getZ());
-                random.setSeed(((chunkX >> 4) ^ (chunkZ >> 4) << 4) ^ level.getSeed());
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX - 1, chunkZ - 1), random, manager);
-                }
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX - 1, chunkZ + 1), random, manager);
-                }
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX + 1, chunkZ - 1), random, manager);
-                }
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX + 1, chunkZ + 1), random, manager);
-                }
-                for(Block block1 : manager.getBlocks()) {
-                    if(block1.isAir()) manager.unsetBlockStateAt(block1);
-                    if(block1 instanceof BlockChest chest) {
-                        manager.addHook(() -> {
-                            CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
-                        });
-                    }
-                    if(block1 instanceof BlockJigsaw) {
-                        manager.unsetBlockStateAt(block1);
-                    }
-                    if(block1 instanceof BlockWallBanner banner) {
-                        manager.addHook(() -> {
-                            BlockEntityBanner be = banner.getOrCreateBlockEntity();
-                            be.setType(1);
-                            be.spawnToAll();
-                        });
-                    }
-                }
-                queueObject(chunk, manager);
+            Block block = chunk.getBlockState(0, y, 0).toBlock();
+            while (block.canBeReplaced() && y > 1) {
+                block = chunk.getBlockState(0, --y, 0).toBlock();
             }
+            BlockManager manager = new BlockManager(level);
+            Position vec = new Position(chunkX << 4, y, chunkZ << 4);
+            WATCHTOWER.preparePlace(vec, manager);
+            BlockManager manager2 = new BlockManager(level);
+            WATCHTOWER_OVERGROWN.preparePlace(vec, manager2);
+            for(Block b : manager2.getBlocks()) {
+                if(random.nextInt(20) != 0) manager2.unsetBlockStateAt(b);
+            }
+            manager.merge(manager2);
+
+            BlockVector3 size = new BlockVector3(WATCHTOWER.getSizeX(), WATCHTOWER.getSizeY(), WATCHTOWER.getSizeZ());
+            fillBase(chunk, y, 0, 0, size.getX(), size.getZ());
+            random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ 0x5DEECE66DL);
+            if (random.nextBoolean()) {
+                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX - 1, chunkZ - 1), random, manager);
+            }
+            if (random.nextBoolean()) {
+                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX - 1, chunkZ + 1), random, manager);
+            }
+            if (random.nextBoolean()) {
+                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX + 1, chunkZ - 1), random, manager);
+            }
+            if (random.nextBoolean()) {
+                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX + 1, chunkZ + 1), random, manager);
+            }
+            for(Block block1 : manager.getBlocks()) {
+                if(block1.isAir()) manager.unsetBlockStateAt(block1);
+                if(block1 instanceof BlockChest chest) {
+                    manager.addHook(() -> {
+                        CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
+                    });
+                }
+                if(block1 instanceof BlockJigsaw) {
+                    manager.unsetBlockStateAt(block1);
+                }
+                if(block1 instanceof BlockWallBanner banner) {
+                    manager.addHook(() -> {
+                        BlockEntityBanner be = banner.getOrCreateBlockEntity();
+                        be.setType(1);
+                        be.spawnToAll();
+                    });
+                }
+            }
+            queueObject(chunk, manager);
         }
     }
 
     protected static void fillBase(IChunk chunk, int baseY, int startX, int startZ, int sizeX, int sizeZ) {
+        if (chunk == null) {
+            return;
+        }
         for (int x = startX; x < startX + sizeX; x++) {
             for (int z = startZ; z < startZ + sizeZ; z++) {
                 String baseId = chunk.getBlockState(x, baseY, z).getIdentifier();

@@ -1,6 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockHead;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
@@ -14,28 +13,28 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     public BlockEntitySkull(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-    
+
     private boolean mouthMoving;
-    
+
     private int mouthTickCount;
 
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("SkullType")) {
-            namedTag.putByte("SkullType", 0);
+        if (!nbt.contains("SkullType")) {
+            nbt.putByte("SkullType", (byte) 0);
         }
-        if (!namedTag.contains("Rot")) {
-            namedTag.putByte("Rot", 0);
-        }
-
-        if (namedTag.containsByte("MouthMoving")) {
-            mouthMoving = namedTag.getBoolean("MouthMoving");
+        if (!nbt.contains("Rot")) {
+            nbt.putByte("Rot", (byte) 0);
         }
 
-        if (namedTag.containsInt("MouthTickCount")) {
-            mouthTickCount = NukkitMath.clamp(namedTag.getInt("MouthTickCount"), 0, 60);
+        if (nbt.contains("MouthMoving")) {
+            mouthMoving = getNbt().getBoolean("MouthMoving");
+        }
+
+        if (nbt.contains("MouthTickCount")) {
+            mouthTickCount = NukkitMath.clamp(getNbt().getInt("MouthTickCount"), 0, 60);
         }
     }
 
@@ -93,10 +92,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag
-                .putBoolean("MouthMoving", this.mouthMoving)
-                .putInt("MouthTickCount", mouthTickCount)
-                .remove("Creator");
+        this.nbt.putBoolean("MouthMoving", this.mouthMoving)
+                .putInt("MouthTickCount", mouthTickCount);
+        this.nbt.remove("Creator");
     }
 
     @Override
@@ -107,10 +105,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .put("SkullType", this.namedTag.get("SkullType"))
-                .put("Rot", this.namedTag.get("Rot"))
+                .putByte("SkullType", this.nbt.getByte("SkullType"))
+                .putByte("Rot", this.nbt.getByte("Rot"))
                 .putBoolean("MouthMoving", this.mouthMoving)
                 .putInt("MouthTickCount", mouthTickCount);
     }
-
 }

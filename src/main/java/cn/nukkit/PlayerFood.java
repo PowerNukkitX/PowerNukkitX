@@ -6,7 +6,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFood;
 import cn.nukkit.level.GameRule;
 
 /**

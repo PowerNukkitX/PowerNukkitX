@@ -58,7 +58,7 @@ public abstract class StructureStart {
                 .putString("id", this.getType())
                 .putInt("ChunkX", this.chunkX)
                 .putInt("ChunkZ", this.chunkZ)
-                .put("BB", this.boundingBox.createTag());
+                .putIntArray("BB", this.boundingBox.createTag());
 
         ListTag<CompoundTag> children = new ListTag<>();
         for (StructurePiece piece : this.pieces) {

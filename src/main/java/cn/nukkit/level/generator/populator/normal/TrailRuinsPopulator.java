@@ -25,7 +25,7 @@ public class TrailRuinsPopulator extends Populator {
             .salt(83469867L)
             .minDistance(8)
             .maxDistance(34)
-            .isBiomeValid(biome -> Registries.BIOME.get(biome).getTags().contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS))
+            .isBiomeValid(biome -> Registries.BIOME.getTags(biome).contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS))
             .build());
 
     private static final TrailRuinsStructure TRAIL_RUINS = new TrailRuinsStructure();

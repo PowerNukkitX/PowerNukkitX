@@ -389,4 +389,12 @@ public class Vector3f implements Cloneable {
     public BlockVector3 asBlockVector3() {
         return new BlockVector3(getFloorX(), getFloorY(), getFloorZ());
     }
+
+    public static Vector3f fromNetwork(org.cloudburstmc.math.vector.Vector3f vector3f) {
+        return new Vector3f(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+    }
+
+    public org.cloudburstmc.math.vector.Vector3f toNetwork() {
+        return org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z);
+    }
 }

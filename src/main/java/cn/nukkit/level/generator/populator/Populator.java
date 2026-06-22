@@ -6,7 +6,6 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.utils.random.Xoroshiro128;
 import lombok.Setter;
 
-import java.util.HashMap;
 
 public abstract class Populator {
 
