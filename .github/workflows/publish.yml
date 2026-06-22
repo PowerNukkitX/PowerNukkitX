@@ -126,7 +126,7 @@ jobs:
       - name: Extract release metadata from source
         id: versions
         run: |
-          PROTOCOL_VERSION=$(sed -n 's/.*CODEC = Bedrock_v\([0-9][0-9]*\)\.CODEC.*/\1/p' src/main/java/cn/nukkit/network/NetworkConstants.java | head -n 1)
+          PROTOCOL_VERSION=$(sed -En 's/.*CODEC = Bedrock_v([0-9]+)\.CODEC.*/\1/p' src/main/java/cn/nukkit/network/NetworkConstants.java | head -n 1)
           API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/cn/nukkit/Nukkit.java)
           if [ -z "$PROTOCOL_VERSION" ]; then
             echo "Unable to extract protocol version from NetworkConstants.java" >&2
