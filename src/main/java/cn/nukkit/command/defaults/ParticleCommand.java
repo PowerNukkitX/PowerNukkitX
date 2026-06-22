@@ -1,14 +1,13 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.List;

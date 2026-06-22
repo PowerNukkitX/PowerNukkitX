@@ -2,12 +2,12 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.tree.node.XpLevelNode;
 import cn.nukkit.command.utils.CommandLogger;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -24,11 +24,11 @@ public class XpCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("amount", CommandParamType.INT),
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
+                CommandParameter.newType("player", true, CommandParamType.SELECTION, new PlayersNode())
         });
         this.commandParameters.put("level", new CommandParameter[]{
-                CommandParameter.newType("level", CommandParamType.STRING, new XpLevelNode()),
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
+                CommandParameter.newType("level", CommandParamType.ID, new XpLevelNode()),
+                CommandParameter.newType("player", true, CommandParamType.SELECTION, new PlayersNode())
         });
         this.enableParamTree();
     }

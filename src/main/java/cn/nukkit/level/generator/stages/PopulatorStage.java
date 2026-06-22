@@ -1,8 +1,5 @@
 package cn.nukkit.level.generator.stages;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -12,7 +9,6 @@ import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class PopulatorStage extends GenerateStage {

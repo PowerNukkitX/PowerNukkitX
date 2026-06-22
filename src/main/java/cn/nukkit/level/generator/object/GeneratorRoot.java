@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBamboo;
-import cn.nukkit.block.BlockFlowable;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 

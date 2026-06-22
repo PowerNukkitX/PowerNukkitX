@@ -14,9 +14,9 @@ import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class FossilPopulator extends Populator {
 
@@ -34,8 +34,8 @@ public class FossilPopulator extends Populator {
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3), 3);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         if (random.nextInt(RARITY) == 0 && isFossilBiome(definition)) {
             int y = Math.min(64, chunk.getHeightMap(0, 0));
 
@@ -62,10 +62,10 @@ public class FossilPopulator extends Populator {
         }
     }
 
-    private boolean isFossilBiome(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.DESERT)
-                || definition.getTags().contains(BiomeTags.SWAMP)
-                || definition.getTags().contains(BiomeTags.MANGROVE_SWAMP);
+    private boolean isFossilBiome(BiomeDefinitionData definition) {
+        return Registries.BIOME.containsTag(BiomeTags.DESERT, definition)
+                || Registries.BIOME.containsTag(BiomeTags.SWAMP, definition)
+                || Registries.BIOME.containsTag(BiomeTags.MANGROVE_SWAMP, definition);
     }
 
     private int countEmptyCorners(Level level, BlockManager object) {

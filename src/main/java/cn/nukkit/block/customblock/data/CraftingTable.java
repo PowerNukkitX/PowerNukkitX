@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-
 public record CraftingTable(@NotNull String tableName, @Nullable List<String> craftingTags) implements NBTData {
     public CompoundTag toCompoundTag() {
         var listTag = new ListTag<StringTag>();

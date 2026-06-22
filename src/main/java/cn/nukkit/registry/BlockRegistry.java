@@ -1,13 +1,60 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.*;
-import cn.nukkit.block.copper.bars.*;
-import cn.nukkit.block.copper.bulb.*;
-import cn.nukkit.block.copper.chain.*;
-import cn.nukkit.block.copper.chest.*;
-import cn.nukkit.block.copper.golem.*;
-import cn.nukkit.block.copper.lantern.*;
-import cn.nukkit.block.copper.lightningrod.*;
+import cn.nukkit.block.copper.bars.BlockCopperBars;
+import cn.nukkit.block.copper.bars.BlockExposedCopperBars;
+import cn.nukkit.block.copper.bars.BlockOxidizedCopperBars;
+import cn.nukkit.block.copper.bars.BlockWaxedCopperBars;
+import cn.nukkit.block.copper.bars.BlockWaxedExposedCopperBars;
+import cn.nukkit.block.copper.bars.BlockWaxedOxidizedCopperBars;
+import cn.nukkit.block.copper.bars.BlockWaxedWeatheredCopperBars;
+import cn.nukkit.block.copper.bars.BlockWeatheredCopperBars;
+import cn.nukkit.block.copper.bulb.BlockCopperBulb;
+import cn.nukkit.block.copper.bulb.BlockExposedCopperBulb;
+import cn.nukkit.block.copper.bulb.BlockWaxedCopperBulb;
+import cn.nukkit.block.copper.bulb.BlockWaxedExposedCopperBulb;
+import cn.nukkit.block.copper.bulb.BlockWaxedOxidizedCopperBulb;
+import cn.nukkit.block.copper.bulb.BlockWeatheredCopperBulb;
+import cn.nukkit.block.copper.chain.BlockCopperChain;
+import cn.nukkit.block.copper.chain.BlockExposedCopperChain;
+import cn.nukkit.block.copper.chain.BlockOxidizedCopperChain;
+import cn.nukkit.block.copper.chain.BlockWaxedCopperChain;
+import cn.nukkit.block.copper.chain.BlockWaxedExposedCopperChain;
+import cn.nukkit.block.copper.chain.BlockWaxedOxidizedCopperChain;
+import cn.nukkit.block.copper.chain.BlockWaxedWeatheredCopperChain;
+import cn.nukkit.block.copper.chain.BlockWeatheredCopperChain;
+import cn.nukkit.block.copper.chest.BlockCopperChest;
+import cn.nukkit.block.copper.chest.BlockExposedCopperChest;
+import cn.nukkit.block.copper.chest.BlockOxidizedCopperChest;
+import cn.nukkit.block.copper.chest.BlockWaxedCopperChest;
+import cn.nukkit.block.copper.chest.BlockWaxedExposedCopperChest;
+import cn.nukkit.block.copper.chest.BlockWaxedOxidizedCopperChest;
+import cn.nukkit.block.copper.chest.BlockWaxedWeatheredCopperChest;
+import cn.nukkit.block.copper.chest.BlockWeatheredCopperChest;
+import cn.nukkit.block.copper.golem.BlockCopperGolemStatue;
+import cn.nukkit.block.copper.golem.BlockExposedCopperGolemStatue;
+import cn.nukkit.block.copper.golem.BlockOxidizedCopperGolemStatue;
+import cn.nukkit.block.copper.golem.BlockWaxedCopperGolemStatue;
+import cn.nukkit.block.copper.golem.BlockWaxedExposedCopperGolemStatue;
+import cn.nukkit.block.copper.golem.BlockWaxedOxidizedCopperGolemStatue;
+import cn.nukkit.block.copper.golem.BlockWaxedWeatheredCopperGolemStatue;
+import cn.nukkit.block.copper.golem.BlockWeatheredCopperGolemStatue;
+import cn.nukkit.block.copper.lantern.BlockCopperLantern;
+import cn.nukkit.block.copper.lantern.BlockExposedCopperLantern;
+import cn.nukkit.block.copper.lantern.BlockOxidizedCopperLantern;
+import cn.nukkit.block.copper.lantern.BlockWaxedCopperLantern;
+import cn.nukkit.block.copper.lantern.BlockWaxedExposedCopperLantern;
+import cn.nukkit.block.copper.lantern.BlockWaxedOxidizedCopperLantern;
+import cn.nukkit.block.copper.lantern.BlockWaxedWeatheredCopperLantern;
+import cn.nukkit.block.copper.lantern.BlockWeatheredCopperLantern;
+import cn.nukkit.block.copper.lightningrod.BlockExposedLightningRod;
+import cn.nukkit.block.copper.lightningrod.BlockLightningRod;
+import cn.nukkit.block.copper.lightningrod.BlockOxidizedLightningRod;
+import cn.nukkit.block.copper.lightningrod.BlockWaxedExposedLightningRod;
+import cn.nukkit.block.copper.lightningrod.BlockWaxedLightningRod;
+import cn.nukkit.block.copper.lightningrod.BlockWaxedOxidizedLightningRod;
+import cn.nukkit.block.copper.lightningrod.BlockWaxedWeatheredLightningRod;
+import cn.nukkit.block.copper.lightningrod.BlockWeatheredLightningRod;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.block.dispenser.BlockDispenser;
@@ -24,6 +71,7 @@ import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -35,8 +83,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.annotation.Nullable;
 
 /**
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
@@ -53,41 +99,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2",
-            "minecraft:polished_sulfur",
-            "minecraft:polished_sulfur_wall",
-            "minecraft:cinnabar_wall",
-            "minecraft:sulfur_bricks",
-            "minecraft:sulfur_brick_double_slab",
-            "minecraft:sulfur_slab",
-            "minecraft:sulfur_stairs",
-            "minecraft:cinnabar_double_slab",
-            "minecraft:polished_cinnabar_wall",
-            "minecraft:polished_cinnabar_wall",
-            "minecraft:polished_sulfur_stairs",
-            "minecraft:cinnabar_brick_double_slab",
-            "minecraft:polished_cinnabar_double_slab",
-            "minecraft:sulfur_wall",
-            "minecraft:chiseled_sulfur",
-            "minecraft:polished_cinnabar_slab",
-            "minecraft:polished_sulfur_double_slab",
-            "minecraft:sulfur_double_slab",
-            "minecraft:potent_sulfur",
-            "minecraft:cinnabar_brick_stairs",
-            "minecraft:cinnabar",
-            "minecraft:chiseled_cinnabar",
-            "minecraft:cinnabar_stairs",
-            "minecraft:sulfur_brick_wall",
-            "minecraft:polished_sulfur_slab",
-            "minecraft:sulfur",
-            "minecraft:sulfur_brick_slab",
-            "minecraft:polished_cinnabar_stairs",
-            "minecraft:cinnabar_brick_wall",
-            "minecraft:cinnabar_slab",
-            "minecraft:sulfur_brick_stairs",
-            "minecraft:cinnabar_bricks",
-            "minecraft:cinnabar_brick_slab",
-            "minecraft:polished_cinnabar"
+            "minecraft:deprecated_purpur_block_2"
     );
 
     @Override
@@ -1260,6 +1272,41 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CRIMSON_SHELF, BlockCrimsonShelf.class);
         register0(WARPED_SHELF, BlockWarpedShelf.class);
         register0(BAMBOO_SHELF, BlockBambooShelf.class);
+
+        register0(SULFUR, BlockSulfur.class);
+        register0(SULFUR_BRICKS, BlockSulfurBricks.class);
+        register0(SULFUR_SPIKE, BlockSulfurSpike.class);
+        register0(POTENT_SULFUR, BlockPotentSulfur.class);
+        register0(POLISHED_SULFUR, BlockPolishedSulfur.class);
+        register0(CHISELED_SULFUR, BlockChiseledSulfur.class);
+        register0(SULFUR_WALL, BlockSulfurWall.class);
+        register0(SULFUR_BRICK_WALL, BlockSulfurBrickWall.class);
+        register0(POLISHED_SULFUR_WALL, BlockPolishedSulfurWall.class);
+        register0(SULFUR_SLAB, BlockSulfurSlab.class);
+        register0(SULFUR_DOUBLE_SLAB, BlockSulfurDoubleSlab.class);
+        register0(SULFUR_BRICK_SLAB, BlockSulfurBrickSlab.class);
+        register0(SULFUR_BRICK_DOUBLE_SLAB, BlockSulfurBrickDoubleSlab.class);
+        register0(POLISHED_SULFUR_SLAB, BlockPolishedSulfurSlab.class);
+        register0(POLISHED_SULFUR_DOUBLE_SLAB, BlockPolishedSulfurDoubleSlab.class);
+        register0(SULFUR_STAIRS, BlockSulfurStairs.class);
+        register0(SULFUR_BRICK_STAIRS, BlockSulfurBrickStairs.class);
+        register0(POLISHED_SULFUR_STAIRS, BlockPolishedSulfurStairs.class);
+        register0(CINNABAR, BlockCinnabar.class);
+        register0(CINNABAR_BRICKS, BlockCinnabarBricks.class);
+        register0(POLISHED_CINNABAR, BlockPolishedCinnabar.class);
+        register0(CHISELED_CINNABAR, BlockChiseledCinnabar.class);
+        register0(CINNABAR_WALL, BlockCinnabarWall.class);
+        register0(CINNABAR_BRICK_WALL, BlockCinnabarBrickWall.class);
+        register0(POLISHED_CINNABAR_WALL, BlockPolishedCinnabarWall.class);
+        register0(CINNABAR_SLAB, BlockCinnabarSlab.class);
+        register0(CINNABAR_DOUBLE_SLAB, BlockCinnabarDoubleSlab.class);
+        register0(CINNABAR_BRICK_SLAB, BlockCinnabarBrickSlab.class);
+        register0(CINNABAR_BRICK_DOUBLE_SLAB, BlockCinnabarBrickDoubleSlab.class);
+        register0(POLISHED_CINNABAR_SLAB, BlockPolishedCinnabarSlab.class);
+        register0(POLISHED_CINNABAR_DOUBLE_SLAB, BlockPolishedCinnabarDoubleSlab.class);
+        register0(CINNABAR_STAIRS, BlockCinnabarStairs.class);
+        register0(CINNABAR_BRICK_STAIRS, BlockCinnabarBrickStairs.class);
+        register0(POLISHED_CINNABAR_STAIRS, BlockPolishedCinnabarStairs.class);
     }
 
     public void trim() {

@@ -3,8 +3,9 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 
 import java.util.Random;
 
@@ -37,17 +38,16 @@ public class EntityCrossbowFirework extends EntityFireworksRocket {
                     this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D);
                     this.pitch = (float) (Math.atan2(this.motionY, f) * 57.29577951308232D);
                     if (this.fireworkAge == 0) {
-                        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.LAUNCH);
+                        this.getLevel().addLevelSoundEvent(this, SoundEvent.LAUNCH);
                     }
 
                     ++this.fireworkAge;
                     hasUpdate = true;
                     if (this.fireworkAge >= this.lifetime) {
-                        EntityEventPacket pk = new EntityEventPacket();
-                        pk.data = 0;
-                        pk.event = 25;
-                        pk.eid = this.getId();
-                        this.level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, 72);
+                        ActorEventPacket pk = new ActorEventPacket();
+                        pk.setTargetRuntimeID(this.getId());
+                        pk.setType(ActorEvent.FIREWORKS_EXPLODE);
+                        this.level.addLevelSoundEvent(this, SoundEvent.LARGE_BLAST, -1, 72);
                         Server.broadcastPacket(this.getViewers().values(), pk);
                         this.kill();
                     }

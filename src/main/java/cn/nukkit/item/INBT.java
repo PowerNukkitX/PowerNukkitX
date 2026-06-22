@@ -9,24 +9,24 @@ public interface INBT {
 
     String START_TIME_KEY = "StartTime";
 
-    CompoundTag getNamedTag();
+    CompoundTag getNbt();
 
-    Item setNamedTag(@Nullable CompoundTag tag);
+    Item setNbt(@Nullable CompoundTag tag);
 
-    boolean hasCompoundTag();
+    boolean hasNbt();
 
     default void onChange(Inventory inventory) {
         CompoundTag tag;
-        if (!this.hasCompoundTag()) {
+        if (!this.hasNbt()) {
             tag = new CompoundTag();
-            setNamedTag(tag);
+            setNbt(tag);
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
-        if(!tag.contains(START_TIME_KEY)) tag.putLong(START_TIME_KEY, -1);
-        if(Nukkit.START_TIME != tag.getLong(START_TIME_KEY)){
+        if (!tag.contains(START_TIME_KEY)) tag.putLong(START_TIME_KEY, -1);
+        if (Nukkit.START_TIME != tag.getLong(START_TIME_KEY)) {
             tag.putLong(START_TIME_KEY, Nukkit.START_TIME);
         }
+        this.setNbt(tag);
     }
-
 }

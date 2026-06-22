@@ -6,19 +6,20 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @deprecated Since 2.0.0 (2026-02-19).
  * Replaced by {@link RideableTameExecutor}, which provides a generic
  * ride-based taming behavior usable by any rideable entity, not only horses.
- *
+ * <p>
  * This executor was specific to {@link EntityHorse} and is kept temporarily
  * for backward compatibility.
- *
+ * <p>
  * Planned removal: after 6 months (>= 2026-08-19).
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
@@ -92,24 +93,24 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
             if (Utils.rand(0, 100) <= tameProbability) {
                 var horse = (EntityHorse) entity;
                 horse.setOwnerName(horse.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME));
-                EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = horse.getId();
-                packet.event = EntityEventPacket.TAME_SUCCESS;
+                final ActorEventPacket packet = new ActorEventPacket();
+                packet.setTargetRuntimeID(horse.getId());
+                packet.setType(ActorEvent.TAMING_SUCCEEDED);
                 Player player = (Player) horse.getRider();
                 if (player == null) {
                     return false;
                 }
-                player.dataPacket(packet);
+                player.sendPacket(packet);
             } else {
                 var horse = (EntityHorse) entity;
-                EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = horse.getId();
-                packet.event = EntityEventPacket.TAME_FAIL;
+                final ActorEventPacket packet = new ActorEventPacket();
+                packet.setTargetRuntimeID(horse.getId());
+                packet.setType(ActorEvent.TAMING_FAILED);
                 Player player = (Player) horse.getRider();
                 if (player == null) {
                     return false;
                 }
-                player.dataPacket(packet);
+                player.sendPacket(packet);
                 horse.dismountEntity(player, true, false);
                 horse.setPersistent(true);
                 tick1++;

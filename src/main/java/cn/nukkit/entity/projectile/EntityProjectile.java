@@ -26,6 +26,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import javax.annotation.Nullable;
 import java.util.EnumMap;
@@ -61,12 +62,12 @@ public abstract class EntityProjectile extends Entity {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
-            this.setDataProperty(OWNER_EID, shootingEntity.getId());
+            this.setDataProperty(ActorDataTypes.OWNER, shootingEntity.getId());
         }
     }
 
     protected double getDamage() {
-        return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
+        return nbt.contains("damage") ? getNbt().getDouble("damage") : getBaseDamage();
     }
 
     protected double getBaseDamage() {
@@ -151,12 +152,12 @@ public abstract class EntityProjectile extends Entity {
 
         this.setHealthMax(1);
         this.setHealthCurrent(1);
-        if (this.namedTag.contains("Age") && !this.noAge) {
-            this.age = this.namedTag.getShort("Age");
+        if (this.nbt.contains("Age") && !this.noAge) {
+            this.age = this.getNbt().getShort("Age");
         }
 
-        if (this.namedTag.contains("ench")) {
-            ListTag<CompoundTag> enchs = this.namedTag.getList("ench", CompoundTag.class);
+        if (this.nbt.contains("ench")) {
+            ListTag<CompoundTag> enchs = this.getNbt().getList("ench", CompoundTag.class);
             this.enchantments = new Enchantment[enchs.size()];
             for (int i = 0; i < enchs.size(); i++) {
                 CompoundTag entry = enchs.get(i);
@@ -174,7 +175,7 @@ public abstract class EntityProjectile extends Entity {
     public void saveNBT() {
         super.saveNBT();
         if (!this.noAge) {
-            this.namedTag.putShort("Age", this.age);
+            this.nbt.putShort("Age", this.age);
         }
 
         if (this.enchantments != null && this.enchantments.length > 0) {
@@ -185,7 +186,7 @@ public abstract class EntityProjectile extends Entity {
                         .putShort("lvl", (short) enchantment.getLevel())
                 );
             }
-            this.namedTag.putList("ench", enchs);
+            this.nbt.putList("ench", enchs);
         }
     }
 

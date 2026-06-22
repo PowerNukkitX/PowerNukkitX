@@ -11,6 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityCreature extends EntityLiving implements EntityNameable, EntityAgeable {
+
     public EntityCreature(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

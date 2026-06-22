@@ -6,9 +6,9 @@ import cn.nukkit.entity.projectile.EntityEyeOfEnderSignal;
 import cn.nukkit.level.generator.populator.normal.StrongholdPopulator;
 import cn.nukkit.math.ChunkVector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 public class ItemEnderEye extends ProjectileItem {
     private static final int STRONGHOLD_SEARCH_RADIUS_CHUNKS = 100;
@@ -78,6 +78,6 @@ public class ItemEnderEye extends ProjectileItem {
 
     @Override
     protected void addThrowSound(Player player) {
-        player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.BOW, -1, "minecraft:player", false, false);
+        player.getLevel().addLevelSoundEvent(player, SoundEvent.BOW, -1, "minecraft:player", false, false);
     }
 }

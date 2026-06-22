@@ -3,16 +3,17 @@ package cn.nukkit.registry;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BlockColor;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,10 +27,11 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
 
     @Override
     public void init() {
-        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/kaooot/block_palette.nbt")) {
-            CompoundTag root = NBTIO.readCompressed(stream);
-            final ListTag<CompoundTag> blocks = root.getList("blocks", CompoundTag.class);
-            for (CompoundTag block : blocks.getAll()) {
+        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/kaooot/block_palette.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            final NbtMap nbtMap = (NbtMap) nbtInputStream.readTag();
+            final List<NbtMap> blocks = nbtMap.getList("blocks", NbtType.COMPOUND);
+            for (NbtMap block : blocks) {
                 int hash = block.getInt("network_id");
                 String name = block.getString("name");
                 if (BlockRegistry.shouldSkip(name)) continue; //Skip blocks

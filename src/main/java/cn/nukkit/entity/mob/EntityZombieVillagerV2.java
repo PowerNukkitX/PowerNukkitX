@@ -8,10 +8,10 @@ import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable, EntitySmite {
     @Override

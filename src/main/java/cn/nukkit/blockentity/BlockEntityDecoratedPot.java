@@ -5,8 +5,10 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.utils.ItemHelper;
 
 
 public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
@@ -22,20 +24,19 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("Item")) {
-            namedTag.putCompound("Item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
+        if (!nbt.contains("Item")) {
+            this.nbt.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putList("sherds", namedTag.getList("sherds"));
+                .putList("sherds", (ListTag<StringTag>) getNbt().getList("sherds", StringTag.class).copy());
     }
 
     public Item getItem() {
-        CompoundTag NBTTag = this.namedTag.getCompound("Item");
-        return NBTIO.getItemHelper(NBTTag);
+        return ItemHelper.read(this.getNbt().getCompound("Item"));
     }
 
     public void setItem(Item item) {
@@ -43,7 +44,7 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
-        this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
+        this.nbt.putCompound("Item", ItemHelper.write(item, null));
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);
@@ -51,7 +52,7 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
 
     @Override
     public void close() {
-        if(isValid() && chunk.isLoaded() && level.isChunkInUse(chunk.getX(), chunk.getZ())) {
+        if (isValid() && chunk.isLoaded() && level.isChunkInUse(chunk.getX(), chunk.getZ())) {
             //Those also drop when broken in creative mode
             level.dropItem(this.add(HALF), this.getItem());
         }

@@ -10,9 +10,9 @@ import cn.nukkit.inventory.CampfireInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.recipe.CampfireRecipe;
+import cn.nukkit.utils.ItemHelper;
 
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,12 +42,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         this.burnTime = new int[4];
         this.recipes = new CampfireRecipe[4];
         this.keepItem = new boolean[4];
+        final CompoundTag nbtMap = getNbt();
         for (int i = 1; i <= burnTime.length; i++) {
-            burnTime[i - 1] = namedTag.getInt("ItemTime" + i);
-            keepItem[i - 1] = namedTag.getBoolean("KeepItem" + 1);
+            burnTime[i - 1] = nbtMap.getInt("ItemTime" + i);
+            keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + 1);
 
-            if (this.namedTag.contains("Item" + i) && this.namedTag.get("Item" + i) instanceof CompoundTag) {
-                inventory.setItem(i - 1, NBTIO.getItemHelper(this.namedTag.getCompound("Item" + i)));
+            if (this.nbt.contains("Item" + i) && this.nbt.get("Item" + i) instanceof CompoundTag itemNBT) {
+                inventory.setItem(i - 1, ItemHelper.read(itemNBT));
             }
         }
     }
@@ -126,13 +127,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
-                namedTag.remove("Item" + i);
-                namedTag.putInt("ItemTime" + i, 0);
-                namedTag.remove("KeepItem" + i);
+                this.nbt.remove("Item" + i);
+                this.nbt.remove("KeepItem" + i);
+                this.nbt.putInt("ItemTime" + i, 0);
             } else {
-                namedTag.putCompound("Item" + i, NBTIO.putItemHelper(item));
-                namedTag.putInt("ItemTime" + i, burnTime[i - 1]);
-                namedTag.putBoolean("KeepItem" + i, keepItem[i - 1]);
+                this.nbt.putCompound("Item" + i, ItemHelper.write(item, null))
+                        .putInt("ItemTime" + i, burnTime[i - 1])
+                        .putBoolean("KeepItem" + i, keepItem[i - 1]);
             }
         }
     }
@@ -160,37 +161,37 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Campfire";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Campfire";
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            namedTag.remove("CustomName");
+            nbt.remove("CustomName");
             return;
         }
-        namedTag.putString("CustomName", name);
+        nbt.putString("CustomName", name);
     }
 
     @Override
     public boolean hasName() {
-        return namedTag.contains("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound();
+        CompoundTag builder = super.getSpawnCompound();
 
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item.isNull()) {
-                c.remove("Item" + i);
+                builder.remove("Item" + i);
             } else {
-                c.putCompound("Item" + i, NBTIO.putItemHelper(item));
+                builder.putCompound("Item" + i, ItemHelper.write(item, null));
             }
         }
 
-        return c;
+        return builder;
     }
 
     @Override
@@ -206,8 +207,8 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         if (index < 0 || index >= getSize()) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            CompoundTag data = this.namedTag.getCompound("Item" + (index + 1));
-            return NBTIO.getItemHelper(data);
+            CompoundTag data = this.getNbt().getCompound("Item" + (index + 1));
+            return ItemHelper.read(data);
         }
     }
 
@@ -216,8 +217,8 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
             return;
         }
 
-        CompoundTag nbt = NBTIO.putItemHelper(item);
-        this.namedTag.putCompound("Item" + (index + 1), nbt);
+        CompoundTag nbt = ItemHelper.write(item, null);
+        this.nbt.putCompound("Item" + (index + 1), nbt);
     }
 
     @Override

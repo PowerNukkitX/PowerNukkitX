@@ -5,8 +5,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.ItemHelper;
 
 public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
@@ -16,35 +16,35 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Glow Item Frame";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Glow Item Frame";
     }
 
     public boolean hasName() {
-        return namedTag.contains("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        if (!this.namedTag.contains("Item")) {
+        if (!this.nbt.contains("Item")) {
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();
         CompoundTag tag = super.getSpawnCompound();
 
         if (!item.isNull()) {
-            CompoundTag itemTag = NBTIO.putItemHelper(item);
+            CompoundTag builder = ItemHelper.write(item,null);
             int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
-                itemTag.remove("id");
-                itemTag.putShort("Damage", networkDamage);
-                itemTag.putString("Name", namespacedId);
+                builder.remove("id");
+                builder.putShort("Damage", (short) networkDamage);
+                builder.putString("Name", namespacedId);
             }
             if (item.isBlock()) {
-                itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+                builder.putCompound("Block", CompoundTag.fromNetwork(item.getBlockUnsafe().getBlockState().getBlockStateTag()));
             }
-            tag.putCompound("Item", itemTag)
-                    .putByte("ItemRotation", this.getItemRotation());
+            tag.putCompound("Item", builder)
+                    .putByte("ItemRotation", (byte) this.getItemRotation());
         }
         return tag;
     }
