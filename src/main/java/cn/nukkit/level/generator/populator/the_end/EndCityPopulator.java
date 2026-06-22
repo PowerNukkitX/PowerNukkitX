@@ -1,15 +1,14 @@
 package cn.nukkit.level.generator.populator.the_end;
 
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.structures.EndCityPieces;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.utils.random.Xoroshiro128;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 public class EndCityPopulator extends Populator {
 

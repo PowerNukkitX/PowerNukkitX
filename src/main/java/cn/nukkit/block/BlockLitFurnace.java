@@ -17,8 +17,6 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
 public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityFurnace> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
@@ -82,17 +80,14 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
@@ -115,8 +110,8 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
             }
 
         BlockEntityFurnace furnace = getOrCreateBlockEntity();
-        if (furnace.namedTag.contains("Lock") && furnace.namedTag.get("Lock") instanceof StringTag
-                && !furnace.namedTag.getString("Lock").equals(item.getCustomName())) {
+        if (furnace.getNbt().contains("Lock") && furnace.getNbt().get("Lock") instanceof StringTag
+                && !furnace.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 

@@ -17,7 +17,7 @@ public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if(this.namedTag.containsInt("Pose")) {
+        if (!this.nbt.contains("Pose")) {
             this.setPose(CopperPose.STANDING);
         }
     }
@@ -31,16 +31,15 @@ public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
                 .putBoolean("isMovable", false)
-                .putInt("Pose", this.namedTag.getInt("Pose")
-                );
+                .putInt("Pose", this.getNbt().getInt("Pose"));
     }
 
     public void setPose(CopperPose pose) {
-        this.namedTag.putInt("Pose", pose.ordinal());
+        this.nbt.putInt("Pose", pose.ordinal());
     }
 
     public CopperPose getPose() {
-        return CopperPose.values()[this.namedTag.getInt("Pose")];
+        return CopperPose.values()[this.getNbt().getInt("Pose")];
     }
 
     public enum CopperPose {

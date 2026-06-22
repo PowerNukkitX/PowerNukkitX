@@ -1,6 +1,7 @@
 package cn.nukkit.entity.data.property;
 
-import cn.nukkit.nbt.tag.CompoundTag;
+
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author Peng_Lx
@@ -42,11 +43,13 @@ public class IntEntityProperty extends EntityProperty {
     }
 
     @Override
-    public void populateTag(CompoundTag tag) {
-        tag.putInt("type", 0);
-        tag.putInt("default", getDefaultValue());
-        tag.putInt("min", getMinValue());
-        tag.putInt("max", getMaxValue());
-        tag.putBoolean("clientSync", isClientSync());
+    public NbtMap populateTag(NbtMap tag) {
+        return tag.toBuilder()
+                .putInt("type", 0)
+                .putInt("default", getDefaultValue())
+                .putInt("min", getMinValue())
+                .putInt("max", getMaxValue())
+                .putBoolean("clientSync", isClientSync())
+                .build();
     }
 }

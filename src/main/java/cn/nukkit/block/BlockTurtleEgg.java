@@ -7,7 +7,6 @@ import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityGhast;
 import cn.nukkit.entity.mob.EntityPhantom;
 import cn.nukkit.entity.passive.EntityBat;
@@ -29,8 +28,9 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -118,7 +118,7 @@ public class BlockTurtleEgg extends BlockFlowable {
             }
             Block placeBlock = placeEvent.getBlock();
             this.level.addLevelSoundEvent(this,
-                    LevelSoundEvent.PLACE,
+                    SoundEvent.PLACE,
                     placeBlock.getRuntimeId());
             item.setCount(item.getCount() - 1);
 
@@ -232,7 +232,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                     if (turtle != null) {
                         turtle.setBreedingAge(-24000);
                         turtle.setHomePos(new Vector3(x, y, z));
-                        turtle.setDataFlag(EntityFlag.BABY, true);
+                        turtle.setDataFlag(ActorFlags.BABY, true);
                         turtle.setScale(0.16f);
                         turtle.spawnToAll();
                         continue;

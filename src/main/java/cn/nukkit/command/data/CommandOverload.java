@@ -10,7 +10,7 @@ package cn.nukkit.command.data;
  * <ul>
  *   <li>Stores a {@link CommandInput} instance describing the argument signature for the overload.</li>
  *   <li>Indicates whether this overload supports chaining with other commands via the {@link #chaining} flag.</li>
- *   <li>Used in {@link CommandData#overloads} to support multiple argument sets for a single command.</li>
+ *   <li>Used in {@link NukkitCommandData#overloads} to support multiple argument sets for a single command.</li>
  * </ul>
  * <p>
  * Usage:
@@ -31,7 +31,7 @@ package cn.nukkit.command.data;
  *
  * @author PowerNukkitX Project Team
  * @see CommandInput
- * @see CommandData
+ * @see NukkitCommandData
  */
 public class CommandOverload {
 

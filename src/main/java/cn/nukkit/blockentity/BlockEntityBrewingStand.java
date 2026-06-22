@@ -15,13 +15,14 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.recipe.ContainerRecipe;
 import cn.nukkit.recipe.MixRecipe;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 
 import java.util.HashSet;
 
@@ -51,42 +52,43 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public void loadNBT() {
         super.loadNBT();
         inventory = new BrewingInventory(this);
-        if (!namedTag.contains("Items") || !(namedTag.get("Items") instanceof ListTag)) {
-            namedTag.putList("Items", new ListTag<>());
+        if (!nbt.containsList("Items", Tag.TAG_Compound)) {
+            nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
         for (int i = 0; i < getSize(); i++) {
             inventory.setItem(i, this.getItem(i));
         }
 
-        if (!namedTag.contains("CookTime") || namedTag.getShort("CookTime") > MAX_BREW_TIME) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (!nbt.contains("CookTime") || nbtMap.getShort("CookTime") > MAX_BREW_TIME) {
             this.brewTime = MAX_BREW_TIME;
         } else {
-            this.brewTime = namedTag.getShort("CookTime");
+            this.brewTime = nbtMap.getShort("CookTime");
         }
 
-        this.fuelAmount = namedTag.getShort("FuelAmount");
-        this.fuelTotal = namedTag.getShort("FuelTotal");
+        this.fuelAmount = nbtMap.getShort("FuelAmount");
+        this.fuelTotal = nbtMap.getShort("FuelTotal");
     }
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Brewing Stand";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Brewing Stand";
     }
 
     @Override
     public boolean hasName() {
-        return namedTag.contains("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 
     @Override
@@ -110,14 +112,13 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     @Override
     public void saveNBT() {
         super.saveNBT();
-        namedTag.putList("Items", new ListTag<>());
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound))
+                .putShort("CookTime", (short) brewTime)
+                .putShort("FuelAmount", (short) this.fuelAmount)
+                .putShort("FuelTotal", (short) this.fuelTotal);
         for (int index = 0; index < getSize(); index++) {
             this.setItem(index, inventory.getItem(index));
         }
-
-        namedTag.putShort("CookTime", brewTime);
-        namedTag.putShort("FuelAmount", this.fuelAmount);
-        namedTag.putShort("FuelTotal", this.fuelTotal);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     protected int getSlotIndex(int index) {
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -145,25 +146,28 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         if (i < 0) {
             return Item.AIR;
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
-            return NBTIO.getItemHelper(data);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
+            return ItemHelper.read(data);
         }
     }
 
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
+
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
 
         if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
             if (i >= 0) {
-                this.namedTag.getList("Items").getAll().remove(i);
+                items.remove(i);
             }
         } else if (i < 0) {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(d);
+            items.add(d);
         } else {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
+            items.add(i, d);
         }
+        this.nbt.putList("Items", items);
     }
 
     @Override
@@ -173,7 +177,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public boolean onUpdate() {
-        if(!isBlockEntityValid()) this.close();
+        if (!isBlockEntityValid()) this.close();
 
         if (closed) {
             return false;
@@ -302,31 +306,31 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         for (Player p : this.inventory.getViewers()) {
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
-                ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
-                pk1.windowId = windowId;
-                pk1.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
-                pk1.value = this.fuelAmount;
-                p.dataPacket(pk1);
+                final ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+                pk1.setContainerID((byte) windowId);
+                pk1.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_AMOUNT);
+                pk1.setValue(this.fuelAmount);
+                p.sendPacket(pk1);
 
-                ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
-                pk2.windowId = windowId;
-                pk2.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
-                pk2.value = this.fuelTotal;
-                p.dataPacket(pk2);
+                final ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
+                pk1.setContainerID((byte) windowId);
+                pk1.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_TOTAL);
+                pk1.setValue(this.fuelTotal);
+                p.sendPacket(pk2);
             }
         }
     }
 
     protected void sendBrewTime() {
-        ContainerSetDataPacket pk = new ContainerSetDataPacket();
-        pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-        pk.value = brewTime;
+        final ContainerSetDataPacket pk = new ContainerSetDataPacket();
+        pk.setId(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
+        pk.setValue(this.fuelTotal);
 
         for (Player p : this.inventory.getViewers()) {
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
-                pk.windowId = windowId;
-                p.dataPacket(pk);
+                pk.setContainerID((byte) windowId);
+                p.sendPacket(pk);
             }
         }
     }
@@ -375,15 +379,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public CompoundTag getSpawnCompound() {
         CompoundTag nbt = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
-                .putShort("FuelTotal", this.fuelTotal)
-                .putShort("FuelAmount", this.fuelAmount);
+                .putShort("FuelTotal", (short) this.fuelTotal)
+                .putShort("FuelAmount", (short) this.fuelAmount);
 
         if (this.brewTime < MAX_BREW_TIME) {
-            nbt.putShort("CookTime", this.brewTime);
+            nbt.putShort("CookTime", (short) this.brewTime);
         }
 
         if (this.hasName()) {
-            nbt.put("CustomName", namedTag.get("CustomName"));
+            nbt.putString("CustomName", this.getNbt().getString("CustomName"));
         }
 
         return nbt;

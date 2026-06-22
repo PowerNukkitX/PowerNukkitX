@@ -115,6 +115,8 @@ public interface CommonBlockProperties {
 
     EnumPropertyType<DripstoneThickness> DRIPSTONE_THICKNESS = EnumPropertyType.of("dripstone_thickness", DripstoneThickness.class, DripstoneThickness.values()[0]);
 
+    EnumPropertyType<PotentSulfurState> POTENT_SULFUR_STATE = EnumPropertyType.of("potent_sulfur_state", PotentSulfurState.class, PotentSulfurState.values()[0]);
+
     BooleanPropertyType END_PORTAL_EYE_BIT = BooleanPropertyType.of("end_portal_eye_bit", false);
 
     BooleanPropertyType EXPLODE_BIT = BooleanPropertyType.of("explode_bit", false);

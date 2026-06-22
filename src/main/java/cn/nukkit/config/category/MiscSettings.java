@@ -16,4 +16,10 @@ public class MiscSettings extends OkaeriConfig {
     boolean installSpark = false;
     @Comment("pnx.settings.misc.enableterra")
     boolean enableTerra = false;
+    @Comment("pnx.settings.misc.bypassapicheck")
+    boolean bypassAPICheck = false;
+    @Comment("pnx.settings.misc.overrideserverauthblockbreaking")
+    boolean overrideServerAuthBlockBreaking = false;
+    @Comment("pnx.settings.misc.disablemetrics")
+    boolean disableMetrics = true;
 }

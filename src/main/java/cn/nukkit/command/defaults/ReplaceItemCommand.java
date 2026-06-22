@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -14,6 +13,7 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -26,24 +26,24 @@ public class ReplaceItemCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("block", new CommandParameter[]{
                 CommandParameter.newEnum("block", false, new String[]{"block"}),
-                CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newEnum("slot.container", false, new String[]{"slot.container"}),
                 CommandParameter.newType("slotId", CommandParamType.INT),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("data", true, CommandParamType.INT),
-                CommandParameter.newType("components", true, CommandParamType.JSON),
+                CommandParameter.newType("components", true, CommandParamType.JSON_OBJECT),
         });
         this.commandParameters.put("block-oldItemHandling", new CommandParameter[]{
                 CommandParameter.newEnum("block", false, new String[]{"block"}),
-                CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newEnum("slot.container", false, new String[]{"slot.container"}),
                 CommandParameter.newType("slotId", CommandParamType.INT),
                 CommandParameter.newEnum("oldItemHandling", false, new String[]{"destroy", "keep"}),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("data", true, CommandParamType.INT),
-                CommandParameter.newType("components", true, CommandParamType.JSON),
+                CommandParameter.newType("components", true, CommandParamType.JSON_OBJECT),
         });
         List<String> slotTypes = List.of(
                 "slot.weapon.mainhand",
@@ -61,24 +61,24 @@ public class ReplaceItemCommand extends VanillaCommand {
         );
         this.commandParameters.put("entity", new CommandParameter[]{
                 CommandParameter.newEnum("entity", false, new String[]{"entity"}),
-                CommandParameter.newType("target", CommandParamType.TARGET),
+                CommandParameter.newType("target", CommandParamType.SELECTION),
                 CommandParameter.newEnum("slotType", false, slotTypes.toArray(new String[0])),
                 CommandParameter.newType("slotId", CommandParamType.INT),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("data", true, CommandParamType.INT),
-                CommandParameter.newType("components", true, CommandParamType.JSON),
+                CommandParameter.newType("components", true, CommandParamType.JSON_OBJECT),
         });
         this.commandParameters.put("entity-oldItemHandling", new CommandParameter[]{
                 CommandParameter.newEnum("entity", false, new String[]{"entity"}),
-                CommandParameter.newType("target", CommandParamType.TARGET),
+                CommandParameter.newType("target", CommandParamType.SELECTION),
                 CommandParameter.newEnum("slotType", false, slotTypes.toArray(new String[0])),
                 CommandParameter.newType("slotId", CommandParamType.INT),
                 CommandParameter.newEnum("oldItemHandling", false, new String[]{"destroy", "keep"}),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("data", true, CommandParamType.INT),
-                CommandParameter.newType("components", true, CommandParamType.JSON),
+                CommandParameter.newType("components", true, CommandParamType.JSON_OBJECT),
         });
         this.enableParamTree();
     }

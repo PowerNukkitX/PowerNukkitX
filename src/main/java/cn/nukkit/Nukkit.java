@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.wizard.SetupWizard;
 import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
@@ -57,7 +56,7 @@ public class Nukkit {
     public final static String VERSION = getVersion();
     public final static String CODENAME = dynamic("PowerNukkitX");
     public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("2.0.0");
+    public final static String API_VERSION = dynamic("3.0.0");
     public final static String PATH = System.getProperty("user.dir") + "/";
     public final static String DATA_PATH = System.getProperty("user.dir") + "/";
     public final static String PLUGIN_PATH = DATA_PATH + "plugins";
@@ -224,7 +223,6 @@ public class Nukkit {
         }
         log.info("Stopping other threads");
 
-        PGZIPOutputStream.getSharedThreadPool().shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {
                 continue;
@@ -266,7 +264,7 @@ public class Nukkit {
 
     private static String getVersion() {
         if (GIT_INFO == null) {
-            return "2.0.0-SNAPSHOT";
+            return "3.0.0-DEV-SNAPSHOT";
         }
 
         String version = GIT_INFO.getProperty("git.build.version");
@@ -274,7 +272,7 @@ public class Nukkit {
             version = GIT_INFO.getProperty("git.commit.id.describe");
         }
 
-        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "2.0.0-SNAPSHOT";
+        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "3.0.0-DEV-SNAPSHOT";
     }
 
     private static String getGitCommit() {

@@ -9,11 +9,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 
 public class BlockTrappedChest extends BlockChest {
@@ -63,7 +61,7 @@ public class BlockTrappedChest extends BlockChest {
 
         this.getLevel().setBlock(block, this, true, true);
         CompoundTag nbt = new CompoundTag()
-                .putList("Items", new ListTag<>())
+                .putList("Items", new ListTag<CompoundTag>())
                 .putString("id", BlockEntity.CHEST)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)
@@ -74,10 +72,7 @@ public class BlockTrappedChest extends BlockChest {
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
         BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);

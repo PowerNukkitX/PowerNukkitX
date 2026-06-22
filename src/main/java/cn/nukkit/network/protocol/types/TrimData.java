@@ -2,6 +2,8 @@ package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.utils.JSONUtils;
 import com.google.gson.JsonObject;
+import org.cloudburstmc.protocol.bedrock.data.TrimMaterial;
+import org.cloudburstmc.protocol.bedrock.data.TrimPattern;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;

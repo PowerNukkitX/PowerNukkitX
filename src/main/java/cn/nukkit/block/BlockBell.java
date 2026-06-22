@@ -340,7 +340,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (block.canBeReplaced() && block.isAir() && !block.getId().equals(BUBBLE_COLUMN) && !(block instanceof BlockLiquid)) {
+        if (block.canBeReplaced() && !block.isAir() && !block.getId().equals(BUBBLE_COLUMN) && !(block instanceof BlockLiquid)) {
             face = BlockFace.UP;
         }
         BlockFace playerDirection = player != null ? player.getDirection() : BlockFace.EAST;

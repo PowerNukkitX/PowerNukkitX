@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockFern;
 import cn.nukkit.block.BlockShortGrass;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.utils.random.NukkitRandom;
 
 public class TaigaGrassFeature extends SurfaceGenerateFeature {
 
