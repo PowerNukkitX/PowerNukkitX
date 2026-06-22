@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
@@ -356,6 +357,7 @@ public class LevelDBProvider implements LevelProvider {
                 final List<CompoundTag> tagList = new ObjectArrayList<>();
                 for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                        if (blockEntity instanceof BlockEntityMobSpawner spawner && !spawner.hasSpawnEntityType()) continue;
                         tagList.add(blockEntitySpawnable.getSpawnCompound());
                         //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
                         level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
