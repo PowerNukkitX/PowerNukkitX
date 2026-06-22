@@ -19,6 +19,7 @@ import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.SmithingTransformRecipe;
 import cn.nukkit.recipe.UserDataShapelessRecipe;
 import cn.nukkit.recipe.SmithingTrimRecipe;
+import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ItemHelper;
@@ -251,7 +252,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         ItemDescriptor expectEquipment = recipe.getBase();
         ItemDescriptor expectIngredient = recipe.getAddition();
         ItemDescriptor expectTemplate = recipe.getTemplate();
-        boolean match = expectEquipment.match(equipment);
+        boolean match;
+        if (expectEquipment instanceof DefaultDescriptor dd) {
+            match = equipment.getId().equals(dd.getItem().getId());
+        } else {
+            match = expectEquipment.match(equipment);
+        }
         match &= expectIngredient.match(ingredient);
         match &= expectTemplate.match(template);
         if (match) {
@@ -259,6 +265,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             CompoundTag tag = equipment.getNbt();
             if (tag != null) {
                 result.setNbt(tag);
+            }
+            if (equipment.getDamage() > 0) {
+                result.setDamage(equipment.getDamage());
             }
             player.getCreativeOutputInventory().setItem(result);
             return null;
