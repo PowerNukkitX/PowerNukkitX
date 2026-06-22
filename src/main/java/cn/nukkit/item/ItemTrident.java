@@ -73,6 +73,7 @@ public class ItemTrident extends ItemTool {
                         .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag((float) -player.pitch)));
 
+
         EntityThrownTrident trident = new EntityThrownTrident(player.chunk, nbt, player);
         trident.setItem(this);
 

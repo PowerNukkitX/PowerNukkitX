@@ -97,8 +97,8 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
 
         BlockEntityBarrel barrel = getOrCreateBlockEntity();
 
-        if (barrel.namedTag.contains("Lock") && barrel.namedTag.get("Lock") instanceof StringTag
-                && !barrel.namedTag.getString("Lock").equals(item.getCustomName())) {
+        if (barrel.getNbt().contains("Lock") && barrel.getNbt().get("Lock") instanceof StringTag
+                && !barrel.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 

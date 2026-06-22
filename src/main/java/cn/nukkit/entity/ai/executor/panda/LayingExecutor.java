@@ -1,12 +1,11 @@
 package cn.nukkit.entity.ai.executor.panda;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 public class LayingExecutor implements EntityControl, IBehaviorExecutor {
 
@@ -27,9 +26,9 @@ public class LayingExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public void onStart(EntityIntelligent entity) {
         ticks = Utils.rand(MIN_SITTING, MIN_SITTING+10) * 20;
-        entity.setDataFlag(EntityFlag.LAYING_DOWN);
-        entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT, 1.05f);
-        entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT_PREVIOUS, 1.05f);
+        entity.setDataFlag(ActorFlags.LAYING_DOWN);
+        entity.setDataProperty(ActorDataTypes.SITTING_AMOUNT, 1.05f);
+        entity.setDataProperty(ActorDataTypes.SITTING_AMOUNT_PREVIOUS, 1.05f);
         entity.setMovementSpeed(0);
         removeRouteTarget(entity);
         removeLookTarget(entity);
@@ -46,9 +45,9 @@ public class LayingExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     public void stop(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.LAYING_DOWN, false);
-        entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT, 0);
-        entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT_PREVIOUS, 0);
+        entity.setDataFlag(ActorFlags.LAYING_DOWN, false);
+        entity.setDataProperty(ActorDataTypes.SITTING_AMOUNT, 0);
+        entity.setDataProperty(ActorDataTypes.SITTING_AMOUNT_PREVIOUS, 0);
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
     }
 }

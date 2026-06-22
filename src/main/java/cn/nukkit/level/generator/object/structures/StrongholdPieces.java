@@ -45,7 +45,8 @@ public class StrongholdPieces {
     private static final BlockState OAK_FENCE = BlockOakFence.PROPERTIES.getDefaultState();
     private static final BlockState OAK_PLANKS = BlockOakPlanks.PROPERTIES.getDefaultState();
     private static final BlockState OAK_DOOR = BlockWoodenDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST));
-    private static final BlockState OAK_DOOR_U = BlockWoodenDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST), CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));    private static final BlockState IRON_DOOR = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST));
+    private static final BlockState OAK_DOOR_U = BlockWoodenDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST), CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
+    private static final BlockState IRON_DOOR = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST));
     private static final BlockState IRON_DOOR_U = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST), CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
     private static final BlockState IRON_BARS = BlockIronBars.PROPERTIES.getDefaultState();
     private static final BlockState TORCH = BlockTorch.PROPERTIES.getBlockState(CommonBlockProperties.TORCH_FACING_DIRECTION.createValue(TorchFacingDirection.TOP));
@@ -270,8 +271,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            tag.putString("EntryDoor", this.entryDoor.name());
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return tag.putString("EntryDoor", this.entryDoor.name());
         }
 
         //\\ StrongholdPiece::generateSmallDoor(BlockSource *,Random &,BoundingBox const &,StrongholdPiece::SmallDoorType,int,int,int)
@@ -441,9 +442,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("Steps", this.steps);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putInt("Steps", this.steps);
         }
 
         @Override
@@ -511,9 +512,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Source", this.isSource);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putBoolean("Source", this.isSource);
         }
 
         @Override
@@ -596,10 +597,11 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Left", this.leftChild);
-            tag.putBoolean("Right", this.rightChild);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putBoolean("Left", this.leftChild)
+                    .putBoolean("Right", this.rightChild)
+                    ;
         }
 
         @Override
@@ -663,9 +665,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Chest", this.hasPlacedChest);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putBoolean("Chest", this.hasPlacedChest);
         }
 
         @Override
@@ -696,7 +698,7 @@ public class StrongholdPieces {
                 BlockManager chest = new BlockManager(level.getLevel());
                 this.placeBlock(chest, BlockChest.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue((orientation == null ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.valueOf(orientation.getOpposite().getName().toUpperCase())))), 3, 2, 3, boundingBox);
                 level.merge(chest);
-                for(Block block : chest.getBlocks()) {
+                for (Block block : chest.getBlocks()) {
                     level.addHook(() -> {
                         CORRIDOR.create(((BlockEntityHolder<BlockEntityChest>) block).getOrCreateBlockEntity().getInventory(), random);
                     });
@@ -895,9 +897,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("Type", this.type);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putInt("Type", this.type);
         }
 
         @Override
@@ -1122,9 +1124,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Tall", this.isTall);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putBoolean("Tall", this.isTall);
         }
 
         @Override
@@ -1284,12 +1286,12 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("leftLow", this.leftLow);
-            tag.putBoolean("leftHigh", this.leftHigh);
-            tag.putBoolean("rightLow", this.rightLow);
-            tag.putBoolean("rightHigh", this.rightHigh);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return super.addAdditionalSaveData(tag).putBoolean("leftLow", this.leftLow)
+                    .putBoolean("leftHigh", this.leftHigh)
+                    .putBoolean("rightLow", this.rightLow)
+                    .putBoolean("rightHigh", this.rightHigh)
+                    ;
         }
 
         @Override
@@ -1385,9 +1387,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Mob", this.hasPlacedSpawner);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return super.addAdditionalSaveData(tag).putBoolean("Mob", this.hasPlacedSpawner);
         }
 
         @Override
@@ -1523,7 +1524,7 @@ public class StrongholdPieces {
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.MUSIC_DISC_OTHERSIDE, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK,0,1, 1, 6, getTreasure()));
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 6, getTreasure()));
 
             this.pools.put(pool1.build(), new RollEntry(3, 2, pool1.getTotalWeight()));
 

@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -21,7 +21,7 @@ public class ResourcePackManager {
     private int maxChunkSize = 1024 * 256; // 256kb is default
     
     private final Map<UUID, ResourcePack> resourcePacksById = new HashMap<>();
-    private final Set<ResourcePack> resourcePacks = new HashSet<>();
+    private final Set<ResourcePack> resourcePacks = new LinkedHashSet<>();
     private final Set<ResourcePackLoader> loaders;
 
 

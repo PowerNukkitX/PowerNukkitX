@@ -3,15 +3,10 @@ package cn.nukkit.entity.ai.evaluator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
 
 /**
- * 提供部分实用方法封装
- * <br/>
  * Provide some utility method encapsulation
  */
-
-
 public interface LogicalUtils {
 
     default IBehaviorEvaluator any(@NotNull ObjectArrayList<IBehaviorEvaluator> evaluators) {

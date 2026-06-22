@@ -7,11 +7,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.ByteBufVarInt;
 import cn.nukkit.utils.random.NukkitRandom;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import org.cloudburstmc.protocol.common.util.VarInts;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -82,7 +82,7 @@ public class BlockPalette extends Palette<BlockState> {
         byteBuf.writeByte(getPaletteHeader(write.bitArray.version(), true));
         for (int word : write.bitArray.words()) byteBuf.writeIntLE(word);
         this.bitArray.writeSizeToNetwork(byteBuf, write.palette.size());
-        for (BlockState value : write.palette) ByteBufVarInt.writeInt(byteBuf, serializer.serialize(value));
+        for (BlockState value : write.palette) VarInts.writeInt(byteBuf, serializer.serialize(value));
     }
 
     public void setNeedReObfuscate() {

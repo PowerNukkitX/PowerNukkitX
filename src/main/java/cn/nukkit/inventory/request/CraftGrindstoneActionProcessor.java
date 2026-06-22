@@ -9,11 +9,11 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftGrindstoneAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftGrindstoneAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -93,11 +93,10 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
         }
         int resultExperience = recalculateResultExperience(inventory);
         Item result = firstItem.clone();
-        CompoundTag tag = result.getNamedTag();
-        if (tag == null) tag = new CompoundTag();
-        tag.remove("ench");
-        tag.remove("custom_ench");
-        result.setCompoundTag(tag);
+        CompoundTag compoundTag = result.getNbt() == null ? new CompoundTag() : result.getNbt();
+        compoundTag.remove("ench");
+        compoundTag.remove("custom_ench");
+        result.setNbt(compoundTag);
 
         if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
             int first = firstItem.getMaxDurability() - firstItem.getDamage();

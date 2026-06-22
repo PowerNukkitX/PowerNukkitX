@@ -1,6 +1,6 @@
 package cn.nukkit.command.simple;
 
-import cn.nukkit.command.data.CommandParamType;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,13 +23,13 @@ import java.lang.annotation.Target;
  * <p>
  * <b>Usage:</b>
  * <ul>
- *   <li>Annotate a command method with <code>@Parameter(name = "player", type = CommandParamType.TARGET, optional = false)</code>.</li>
+ *   <li>Annotate a command method with <code>@Parameter(name = "player", type = CommandParamType.SELECTION, optional = false)</code>.</li>
  *   <li>Multiple @Parameter annotations can be used in conjunction with a container annotation (e.g., {@code @Parameters}).</li>
  * </ul>
  * <p>
  * <b>Example:</b>
  * <pre>
- * @Parameter(name = "player", type = CommandParamType.TARGET)
+ * @Parameter(name = "player", type = CommandParamType.SELECTION)
  * @Parameter(name = "message", type = CommandParamType.RAWTEXT, optional = true)
  * public void onMessageCommand(CommandSender sender, String[] args) {
  *     // Command logic here
@@ -45,7 +45,7 @@ import java.lang.annotation.Target;
 public @interface Parameter {
     String name();
 
-    CommandParamType type() default CommandParamType.RAWTEXT;
+    CommandParamType type() default CommandParamType.RAW_TEXT;
 
     boolean optional() default false;
 }

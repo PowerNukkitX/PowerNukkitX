@@ -24,8 +24,8 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         CompoundTag tag = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable());
-        if (namedTag.containsCompound("PlantBlock"))
-            tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));
+        if (nbt.containsCompound("PlantBlock"))
+            tag.putCompound("PlantBlock", nbt.getCompound("PlantBlock"));
         return tag;
     }
 }

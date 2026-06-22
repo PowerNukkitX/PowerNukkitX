@@ -2,7 +2,6 @@ package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 

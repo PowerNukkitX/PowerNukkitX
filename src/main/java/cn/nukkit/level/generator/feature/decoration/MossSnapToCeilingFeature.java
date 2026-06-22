@@ -16,7 +16,6 @@ import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.block.BlockID.*;
 

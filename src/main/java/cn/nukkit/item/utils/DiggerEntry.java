@@ -61,31 +61,31 @@ public final class DiggerEntry {
 
     public DiggerEntry addAllStone() {
         return addTags(
-            "stone",
-            "is_pickaxe_item_destructible"
+                "stone",
+                "is_pickaxe_item_destructible"
         );
     }
 
     public DiggerEntry addAllWooden() {
         return addTags(
-            "wood",
-            "is_axe_item_destructible"
+                "wood",
+                "is_axe_item_destructible"
         );
     }
 
     public DiggerEntry addAllSand() {
         return addTags(
-            "sand",
-            "dirt",
-            "gravel",
-            "is_shovel_item_destructible"
+                "sand",
+                "dirt",
+                "gravel",
+                "is_shovel_item_destructible"
         );
     }
 
     public DiggerEntry addAllMetal() {
         return addTags(
-            "metal",
-            "diamond_tier_destructible"
+                "metal",
+                "diamond_tier_destructible"
         );
     }
 

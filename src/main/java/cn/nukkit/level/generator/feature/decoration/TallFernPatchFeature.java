@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.BlockLargeFern;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockTallGrass;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.generator.object.BlockManager;
 

@@ -3,7 +3,6 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -12,6 +11,7 @@ import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -27,12 +27,12 @@ public class EnchantCommand extends VanillaCommand {
         this.setPermission("nukkit.command.enchant");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newType("enchantmentId", CommandParamType.INT),
                 CommandParameter.newType("level", true, CommandParamType.INT)
         });
         this.commandParameters.put("byName", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("enchantmentName", CommandEnum.ENUM_ENCHANTMENT),
                 CommandParameter.newType("level", true, CommandParamType.INT)
         });
@@ -90,7 +90,7 @@ public class EnchantCommand extends VanillaCommand {
                 item.addEnchantment(enchantment);
                 player.getInventory().setItemInMainHand(item);
             } else {
-                Item enchanted = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getCompoundTag());
+                Item enchanted = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getNbtBytes());
                 enchanted.addEnchantment(enchantment);
                 Item clone = item.clone();
                 clone.count--;

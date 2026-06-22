@@ -1,10 +1,7 @@
 package cn.nukkit.level.generator.object.structures;
 
-import cn.nukkit.Server;
-
 import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityChestMinecart;
 import cn.nukkit.entity.mob.EntityElderGuardian;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -13,7 +10,6 @@ import cn.nukkit.level.generator.object.structures.utils.NukkitCollections;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -122,8 +118,8 @@ public class OceanMonumentPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return tag;
         }
 
         //\\ OceanMonumentPiece::generateWaterBox(BlockSource *,BoundingBox const &,int,int,int,int,int,int,bool)
@@ -368,7 +364,7 @@ public class OceanMonumentPieces {
                 int count = 0;
                 while (foundCount < 2 && count < 5) {
                     ++count;
-                    int index = random.nextBoundedInt(6-1);
+                    int index = random.nextBoundedInt(6 - 1);
                     if (room.hasOpening[index]) {
                         int oppositeIndex = BlockFace.fromIndex(index).getOpposite().getIndex();
                         room.hasOpening[index] = false;

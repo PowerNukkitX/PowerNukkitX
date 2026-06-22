@@ -45,7 +45,7 @@ public class TestUtils {
     }
 
     public static void resetPlayerStatus(TestPlayer player) {
-        player.level = GameMockExtension.level;
+//        player.level = GameMockExtension.level;
         player.setPosition(new Vector3(0, 100, 0));
         player.getPlayerChunkManager().getUsedChunks().clear();
         player.getPlayerChunkManager().getInRadiusChunks().clear();

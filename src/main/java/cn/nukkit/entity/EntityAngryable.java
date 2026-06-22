@@ -1,8 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityFlag;
-
 /**
  * @deprecated Since 2.0.0 (2026-02-19).
  * Anger state handling was moved to {@link Entity}.
@@ -19,7 +16,7 @@ public interface EntityAngryable extends EntityComponent {
 
     default void setAngry(boolean angry) {
         getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, angry);
-        asEntity().setDataFlag(EntityFlag.ANGRY, angry);
+        asEntity().setDataFlag(ActorFlags.ANGRY, angry);
     }
      */
 }

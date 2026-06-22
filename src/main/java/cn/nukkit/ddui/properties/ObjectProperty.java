@@ -1,7 +1,8 @@
 package cn.nukkit.ddui.properties;
 
-import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
-import cn.nukkit.network.protocol.types.ddui.DataStorePropertyValue;
+
+import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValue;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,8 +14,8 @@ import java.util.Map;
 public class ObjectProperty<T> extends DataDrivenProperty<Map<String, DataDrivenProperty<?, ?>>, T> {
 
     @Override
-    public DataStorePropertyType getType() {
-        return DataStorePropertyType.OBJECT;
+    public DataStorePropertyValueType getType() {
+        return DataStorePropertyValueType.TYPE;
     }
 
     public ObjectProperty(String name) {
@@ -44,16 +45,16 @@ public class ObjectProperty<T> extends DataDrivenProperty<Map<String, DataDriven
             children.put(key, child);
         }
 
-        return DataStorePropertyValue.ofObject(children);
+        return new DataStorePropertyValue(DataStorePropertyValueType.TYPE, children);
     }
 
     private static DataStorePropertyValue convertProperty(DataDrivenProperty<?, ?> prop) {
         return switch (prop) {
             case ObjectProperty<?> obj -> obj.toPropertyValue();
-            case BooleanProperty bp -> DataStorePropertyValue.ofBoolean(bp.getValue());
-            case LongProperty lp -> DataStorePropertyValue.ofLong(lp.getValue());
-            case StringProperty sp -> DataStorePropertyValue.ofString(sp.getValue());
-            default -> DataStorePropertyValue.ofString(String.valueOf(prop.getValue()));
+            case BooleanProperty bp -> new DataStorePropertyValue(bp.getType(), bp.getValue());
+            case LongProperty lp -> new DataStorePropertyValue(lp.getType(), lp.getValue());
+            case StringProperty sp -> new DataStorePropertyValue(sp.getType(), sp.getValue());
+            default -> new DataStorePropertyValue(prop.getType(), String.valueOf(prop.getValue()));
         };
     }
 }

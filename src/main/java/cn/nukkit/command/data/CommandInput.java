@@ -17,7 +17,7 @@ package cn.nukkit.command.data;
  * Usage:
  * <ul>
  *   <li>Instantiate and set the {@link #parameters} field to define command arguments.</li>
- *   <li>Use in {@link CommandOverload} and {@link CommandData} to specify command signatures.</li>
+ *   <li>Use in {@link CommandOverload} and {@link NukkitCommandData} to specify command signatures.</li>
  * </ul>
  * <p>
  * Example:
@@ -32,7 +32,7 @@ package cn.nukkit.command.data;
  * @author PowerNukkitX Project Team
  * @see CommandParameter
  * @see CommandOverload
- * @see CommandData
+ * @see NukkitCommandData
  */
 public class CommandInput {
 

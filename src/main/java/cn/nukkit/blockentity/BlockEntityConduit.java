@@ -15,6 +15,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 
@@ -48,23 +49,23 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         validBlocks = -1;
-        if (!namedTag.contains("Target")) {
-            namedTag.putLong("Target", -1);
+        if (!nbt.contains("Target")) {
+            this.nbt = nbt.putLong("Target", -1);
             target = -1;
             targetEntity = null;
         } else {
-            target = namedTag.getLong("Target");
+            target = getNbt().getLong("Target");
         }
 
-        active = namedTag.getBoolean("Active");
+        active = getNbt().getBoolean("Active");
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
         Entity targetEntity = this.targetEntity;
-        namedTag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
-        namedTag.putBoolean("Active", active);
+        nbt.putLong("Target", targetEntity != null ? targetEntity.getId() : -1)
+                .putBoolean("Active", active);
     }
 
     @Override
@@ -207,7 +208,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public boolean canAffect(Entity target) {
         return target.isTouchingWater()
                 || target.level.isRaining() && target.level.canBlockSeeSky(target)
-                && !BiomeTags.containTag(target.level.getBiomeId(target.getFloorX(), target.getFloorY(), target.getFloorZ()), BiomeTags.FROZEN);
+                && !Registries.BIOME.containsTag(BiomeTags.FROZEN, target.level.getBiomeId(target.getFloorX(), target.getFloorY(), target.getFloorZ()));
     }
 
     private boolean scanWater() {

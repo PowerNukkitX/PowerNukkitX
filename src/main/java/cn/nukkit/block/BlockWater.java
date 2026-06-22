@@ -10,7 +10,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -78,13 +78,13 @@ public class BlockWater extends BlockFlowingWater {
             return false;
         }
 
-        BiomeDefinition biome = Registries.BIOME.get(biomeId);
+        BiomeDefinitionData biome = Registries.BIOME.get(biomeId).second();
         if (biome == null) {
             return false;
         }
 
-        if (biome.data.temperature <= 0.05f || biome.getTags().contains(BiomeTags.FROZEN)) {
-            return isColdEnoughForSnowfall(biome.data.temperature);
+        if (biome.getTemperature() <= 0.05f || Registries.BIOME.getTags(biomeId).contains(BiomeTags.FROZEN)) {
+            return isColdEnoughForSnowfall(biome.getTemperature());
         }
 
         return false;

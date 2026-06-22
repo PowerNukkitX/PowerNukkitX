@@ -1,8 +1,8 @@
 package cn.nukkit.inventory.request;
 
 
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.PlaceAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.PlaceAction;
 
 /**
  * Allay Project 2023/7/26

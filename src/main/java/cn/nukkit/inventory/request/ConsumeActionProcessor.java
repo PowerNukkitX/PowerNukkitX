@@ -3,14 +3,14 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainerInfo;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
 
 import java.util.List;
 
@@ -32,9 +32,9 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
 
             return context.error();
         }
-        FullContainerName containerName = action.getSource().getContainerName();
-        Integer dynamicId = containerName.getDynamicId();
-        Inventory sourceContainer = NetworkMapping.getInventory(player, containerName.getContainer(), dynamicId);
+        FullContainerName containerName = action.getSource().getFullContainerName();
+        Integer dynamicId = containerName.getDynamicID();
+        Inventory sourceContainer = NetworkMapping.getInventory(player, containerName.getContainerName(), dynamicId);
         int slot = sourceContainer.fromNetworkSlot(action.getSource().getSlot());
         Item item = sourceContainer.getItem(slot);
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
@@ -64,26 +64,27 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         }
 
         Boolean isEnchRecipe = context.get(ENCH_RECIPE_KEY);
-        if (isEnchRecipe != null && isEnchRecipe && containerName.getContainer() == ContainerSlotType.ENCHANTING_INPUT) {
+        if (isEnchRecipe != null && isEnchRecipe && containerName.getContainerName() == ContainerEnumName.ENCHANTING_INPUT_CONTAINER) {
             return null;
         }
 
-        ContainerSlotType containerSlotType = sourceContainer.getSlotType(slot);
-        if (containerSlotType == null) {
+        ContainerEnumName containerEnumName = sourceContainer.getContainerEnumName(slot);
+        if (containerEnumName == null) {
             throw new IllegalStateException("Unknown slot type for slot " + slot + " in inventory " + sourceContainer.getClass().getSimpleName());
         }
 
         return context.success(List.of(
-                new ItemStackResponseContainer(
-                        containerSlotType,
+                new ItemStackResponseContainerInfo(
+                        containerEnumName,
                         Lists.newArrayList(
-                                new ItemStackResponseSlot(
+                                new ItemStackResponseSlotInfo(
                                         sourceContainer.toNetworkSlot(slot),
                                         sourceContainer.toNetworkSlot(slot),
                                         item.getCount(),
                                         item.getNetId(),
                                         item.getCustomName(),
-                                        item.getDamage()
+                                        item.getDamage(),
+                                        ""
                                 )
                         ),
                         containerName

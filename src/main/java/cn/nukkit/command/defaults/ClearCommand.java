@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.tree.ParamList;
@@ -11,6 +10,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class ClearCommand extends VanillaCommand {
         this.setPermission("nukkit.command.clear");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
+                CommandParameter.newType("player", true, CommandParamType.SELECTION, new PlayersNode()),
                 GenericParameter.ITEM_NAME.get(true),
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("maxCount", true, CommandParamType.INT)

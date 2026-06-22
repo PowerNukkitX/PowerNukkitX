@@ -18,8 +18,6 @@ import java.util.Set;
 /**
  * 所有鱼的基类
  */
-
-
 public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
     public EntityFish(IChunk chunk, CompoundTag nbt) {

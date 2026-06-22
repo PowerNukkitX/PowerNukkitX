@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;

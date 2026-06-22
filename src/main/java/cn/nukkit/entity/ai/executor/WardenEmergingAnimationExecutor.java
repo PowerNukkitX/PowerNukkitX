@@ -1,9 +1,8 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Sound;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 
 public class WardenEmergingAnimationExecutor implements IBehaviorExecutor {
@@ -24,23 +23,19 @@ public class WardenEmergingAnimationExecutor implements IBehaviorExecutor {
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
-        entity.setDataFlag(EntityFlag.EMERGING, false);
-        entity.setDataFlagExtend(EntityFlag.EMERGING, false);
+        entity.setDataFlag(ActorFlags.EMERGING, false);
     }
 
     @Override
     public void onStart(EntityIntelligent entity) {
         entity.getLevel().addSound(entity, Sound.MOB_WARDEN_EMERGE);
         entity.setMoveTarget(null);
-
-        entity.setDataFlag(EntityFlag.EMERGING, true);
-        entity.setDataFlagExtend(EntityFlag.EMERGING, true);
+        entity.setDataFlag(ActorFlags.EMERGING, true);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
-        entity.setDataFlag(EntityFlag.EMERGING, false);
-        entity.setDataFlagExtend(EntityFlag.EMERGING, false);
+        entity.setDataFlag(ActorFlags.EMERGING, false);
     }
 }

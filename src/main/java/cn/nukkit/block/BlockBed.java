@@ -17,7 +17,6 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
@@ -39,7 +38,8 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     public static final BlockProperties PROPERTIES = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -52,12 +52,14 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBed> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBed> getBlockEntityClass() {
         return BlockEntityBed.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BED;
     }
 
@@ -94,11 +96,11 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
         BlockFace dir = getBlockFace();
 
         boolean shouldExplode = this.level.getDimension() != Level.DIMENSION_OVERWORLD;
-        boolean willExplode = shouldExplode && this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES);
+        boolean willExplode = shouldExplode && this.level.getGameRules().getBoolean(GameRule.RESPAWN_BLOCKS_EXPLODE);
 
         Block head;
         if (isHeadPiece()) {
@@ -156,7 +158,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         Location spawn = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
         if (!player.getSpawn().first().equals(spawn)) {
-            player.setSpawn(this, SpawnPointType.BLOCK);
+            player.setSpawn(this, Player.SpawnPointType.BLOCK);
         }
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
 
@@ -218,9 +220,9 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         BlockEntityBed thisBed = null;
         try {
-            thisBed = createBlockEntity(new CompoundTag().putByte("color", item.getDamage()));
+            thisBed = createBlockEntity(new CompoundTag().putByte("color", (byte) item.getDamage()));
             BlockEntityHolder<?> nextBlock = (BlockEntityHolder<?>) next.getLevelBlock();
-            nextBlock.createBlockEntity(new CompoundTag().putByte("color", item.getDamage()));
+            nextBlock.createBlockEntity(new CompoundTag().putByte("color", (byte) item.getDamage()));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {} and {}", getBlockEntityType(), getLocation(), next.getLocation(), e);
             if (thisBed != null) {
@@ -279,7 +281,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION,face.getHorizontalIndex());
+        setPropertyValue(DIRECTION, face.getHorizontalIndex());
     }
 
     public boolean isHeadPiece() {
