@@ -15,23 +15,24 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-
 public class StrafeExecutor implements EntityControl, IBehaviorExecutor {
 
     private boolean fired = false;
 
-    public StrafeExecutor() {}
+    public StrafeExecutor() {
+    }
+
     @Override
     public boolean execute(EntityIntelligent entity) {
 
-        if(fired) return false;
+        if (fired) return false;
 
         Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-        if(player == null) return false;
+        if (player == null) return false;
         setLookTarget(entity, player);
         setRouteTarget(entity, player);
 
-        if(entity.distance(player) <= 64) {
+        if (entity.distance(player) <= 64) {
 
             Vector3 toPlayerVector = new Vector3(player.x - entity.x, player.y - entity.y, player.z - entity.z).normalize();
 
@@ -63,7 +64,7 @@ public class StrafeExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public void onStart(EntityIntelligent entity) {
         Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-        if(player == null) return;
+        if (player == null) return;
         setLookTarget(entity, player);
         setRouteTarget(entity, player);
         this.fired = false;

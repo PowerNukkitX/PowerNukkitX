@@ -8,13 +8,13 @@ import cn.nukkit.form.element.simple.ButtonImage;
 import cn.nukkit.form.element.simple.ElementButton;
 import cn.nukkit.form.element.simple.ElementSimple;
 import cn.nukkit.form.response.SimpleResponse;
-import cn.nukkit.network.protocol.types.ModalFormCancelReason;
 import com.google.gson.JsonArray;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 
 import java.util.Map;
 import java.util.function.BiConsumer;

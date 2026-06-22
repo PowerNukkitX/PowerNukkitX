@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.noise.spline;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class FactorSpline {
 

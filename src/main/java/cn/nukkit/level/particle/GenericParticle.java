@@ -1,8 +1,10 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 
 /**
  * @author xtypr
@@ -11,27 +13,24 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 public class GenericParticle extends Particle {
 
     protected final int data;
-    protected int id = 0;
+    protected final LevelEventType type;
 
-    public GenericParticle(Vector3 pos, int id) {
-        this(pos, id, 0);
+    public GenericParticle(Vector3 pos, LevelEventType type) {
+        this(pos, type, 0);
     }
 
-    public GenericParticle(Vector3 pos, int id, int data) {
+    public GenericParticle(Vector3 pos, LevelEventType type, int data) {
         super(pos.x, pos.y, pos.z);
-        this.id = id;
+        this.type = type;
         this.data = data;
     }
 
     @Override
-    public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
-        pk.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | this.id);
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.data = this.data;
-
-        return new DataPacket[]{pk};
+    public BedrockPacket[] encode() {
+        final LevelEventPacket pk = new LevelEventPacket();
+        pk.setType(this.type);
+        pk.setPosition(Vector3f.from(this.x, this.y, this.z));
+        pk.setData(this.data);
+        return new LevelEventPacket[]{pk};
     }
 }

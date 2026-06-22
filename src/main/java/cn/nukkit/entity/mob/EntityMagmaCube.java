@@ -40,7 +40,8 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
     public static final int SIZE_BIG = 4;
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return MAGMA_CUBE;
     }
 
@@ -55,8 +56,8 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             if (variant != null) return variant;
         }
 
-        if (this.namedTag.contains(TAG_SLIME_SIZE)) {
-            return this.namedTag.getInt(TAG_SLIME_SIZE);
+        if (this.nbt.contains(TAG_SLIME_SIZE)) {
+            return this.getNbt().getInt(TAG_SLIME_SIZE);
         }
 
         return SIZE_BIG;
@@ -64,7 +65,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     public void setVariant(int variant) {
-        this.namedTag.putInt(TAG_SLIME_SIZE, variant);
+        this.nbt.putInt(TAG_SLIME_SIZE, variant);
 
         if (getBehaviorGroup() != null) {
             getMemoryStorage().put(CoreMemoryTypes.VARIANT, variant);
@@ -77,7 +78,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             return true;
         }
 
-        return this.namedTag.contains(TAG_SLIME_SIZE);
+        return this.nbt.contains(TAG_SLIME_SIZE);
     }
 
     @Override
@@ -100,22 +101,22 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     protected void initEntity() {
-        if (!this.namedTag.contains(TAG_SLIME_SIZE)) {
-            this.namedTag.putInt(TAG_SLIME_SIZE, randomVariant());
+        if (!this.nbt.contains(TAG_SLIME_SIZE)) {
+            this.nbt.putInt(TAG_SLIME_SIZE, randomVariant());
         }
 
         super.initEntity();
 
         if (getBehaviorGroup() != null) {
-            getMemoryStorage().put(CoreMemoryTypes.VARIANT, this.namedTag.getInt(TAG_SLIME_SIZE));
+            getMemoryStorage().put(CoreMemoryTypes.VARIANT, this.getNbt().getInt(TAG_SLIME_SIZE));
         }
 
         if (getVariant() == SIZE_BIG) {
-            this.diffHandDamage = new float[] {4, 6, 9};
+            this.diffHandDamage = new float[]{4, 6, 9};
         } else if (getVariant() == SIZE_MEDIUM) {
-            this.diffHandDamage = new float[] {3, 4, 6};
+            this.diffHandDamage = new float[]{3, 4, 6};
         } else {
-            this.diffHandDamage = new float[] {2.5f, 3, 4.5f};
+            this.diffHandDamage = new float[]{2.5f, 3, 4.5f};
         }
 
         recalculateBoundingBox();
@@ -128,13 +129,13 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     public float getWidth() {
-        if(getBehaviorGroup() == null) return 0;
+        if (getBehaviorGroup() == null) return 0;
         return 0.51f + getVariant() * 0.51f;
     }
 
     @Override
     public float getHeight() {
-        if(getBehaviorGroup() == null) return 0;
+        if (getBehaviorGroup() == null) return 0;
         return 0.51f + getVariant() * 0.51f;
     }
 
@@ -220,15 +221,15 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
     private int getSmaller() {
         return switch (getVariant()) {
             case 4 -> 2;
-            default -> getVariant()-1;
+            default -> getVariant() - 1;
         };
     }
 
     @Override
     public void kill() {
-        if(getVariant() != SIZE_SMALL) {
-            for(int i = 1; i < Utils.rand(2, 5); i++) {
-                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), this.namedTag);
+        if (getVariant() != SIZE_SMALL) {
+            for (int i = 1; i < Utils.rand(2, 5); i++) {
+                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), this.getNbt());
                 magmaCube.setPosition(this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
                 magmaCube.setRotation(this.yaw, this.pitch);
                 magmaCube.setVariant(getSmaller());

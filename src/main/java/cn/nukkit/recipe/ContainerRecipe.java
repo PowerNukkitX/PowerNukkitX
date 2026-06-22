@@ -1,10 +1,9 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemGunpowder;
 import cn.nukkit.item.ItemPotion;
-import cn.nukkit.item.ItemSplashPotion;
 import cn.nukkit.registry.RecipeRegistry;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.ContainerMixDataEntry;
 
 import java.util.List;
 
@@ -29,5 +28,13 @@ public class ContainerRecipe extends MixRecipe {
     @Override
     public RecipeType getType() {
         return RecipeType.CONTAINER;
+    }
+
+    public ContainerMixDataEntry toNetwork() {
+        return new ContainerMixDataEntry(
+                this.getInput().getRuntimeId(),
+                this.getIngredient().getRuntimeId(),
+                this.getResult().getRuntimeId()
+        );
     }
 }

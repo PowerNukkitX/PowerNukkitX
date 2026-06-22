@@ -14,12 +14,12 @@ import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
-import java.util.Set;
+
+import java.util.List;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -73,8 +73,7 @@ public class PopulatorRuinedPortal extends Populator {
             random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
-            BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7));
-            Set<String> tags = definition.getTags();
+            List<String> tags = Registries.BIOME.getTags(chunk.getBiomeId(7, SEA_LEVEL, 7));
             PortalHeight height = null;
             if(tags.contains(BiomeTags.DESERT)) height = PortalHeight.PARTLY_BURIED;
             else if(tags.contains(BiomeTags.JUNGLE) || tags.contains(BiomeTags.SWAMP)) height = PortalHeight.ON_LAND_SURFACE;
@@ -106,7 +105,7 @@ public class PopulatorRuinedPortal extends Populator {
                         manager.setBlockStateAt(block, CRYING_OBSIDIAN);
                     }
                 }
-                if(block instanceof BlockMagma) {
+                if (block instanceof BlockMagma) {
                     manager.addHook(() -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
@@ -120,20 +119,20 @@ public class PopulatorRuinedPortal extends Populator {
                         }
                     });
                 }
-                if(level.getDimension() == Level.DIMENSION_NETHER) {
+                if (level.getDimension() == Level.DIMENSION_NETHER) {
                     if (block instanceof BlockChiseledStoneBricks) {
                         manager.setBlockStateAt(block, CHISELED_POLISHED_BLACKSTONE.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockCrackedStoneBricks) {
+                    } else if (block instanceof BlockCrackedStoneBricks) {
                         manager.setBlockStateAt(block, CRACKED_POLISHED_BLACKSTONE_BRICKS.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockMossyStoneBricks) {
+                    } else if (block instanceof BlockMossyStoneBricks) {
                         manager.unsetBlockStateAt(block);
-                    } else if(block instanceof BlockStoneBricks) {
+                    } else if (block instanceof BlockStoneBricks) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICKS);
-                    }  else if(block instanceof BlockStoneBrickSlab) {
+                    } else if (block instanceof BlockStoneBrickSlab) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_SLAB.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockStoneBrickStairs) {
+                    } else if (block instanceof BlockStoneBrickStairs) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_STAIRS.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockStoneBrickWall) {
+                    } else if (block instanceof BlockStoneBrickWall) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_WALL.setPropertyValues(block.getProperties()));
                     }
                 }

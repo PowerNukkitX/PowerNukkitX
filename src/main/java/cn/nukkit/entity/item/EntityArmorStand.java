@@ -23,20 +23,19 @@ import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.SetEntityDataPacket;
-import org.jetbrains.annotations.NotNull;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ItemHelper;
 
-import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.packet.SetActorDataPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
-
-@Slf4j
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable {
     @Override
     @NotNull
@@ -106,43 +105,31 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         this.equipmentInventory = new EntityEquipmentInventory(this);
         this.armorInventory = new EntityArmorInventory(this);
+        this.actorDataMap.putIfAbsent(ActorDataTypes.HURT, 0);
+        this.actorDataMap.putIfAbsent(ActorDataTypes.POSE_INDEX, 0);
 
-        if (this.namedTag.contains(TAG_MAINHAND)) {
-            Item mainhand = NBTIO.getItemHelper(this.namedTag.getCompound(TAG_MAINHAND));
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains(TAG_MAINHAND)) {
+            final Item mainhand = ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND));
             this.equipmentInventory.setItemInHand(mainhand, true);
-            // [ITEM_DEBUG]
-            if (mainhand != null && !mainhand.isNull()) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded mainhand {} x{}",
-                        (int) x, (int) y, (int) z, mainhand.getId(), mainhand.getCount());
-            }
         }
 
-        if (this.namedTag.contains(TAG_OFFHAND)) {
-            Item offhand = NBTIO.getItemHelper(this.namedTag.getCompound(TAG_OFFHAND));
+        if (nbtMap.contains(TAG_OFFHAND)) {
+            final Item offhand = ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND));
             this.equipmentInventory.setItemInOffhand(offhand, true);
-            // [ITEM_DEBUG]
-            if (offhand != null && !offhand.isNull()) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded offhand {} x{}",
-                        (int) x, (int) y, (int) z, offhand.getId(), offhand.getCount());
-            }
         }
 
-        if (this.namedTag.contains(TAG_ARMOR)) {
-            ListTag<CompoundTag> armorList = this.namedTag.getList(TAG_ARMOR, CompoundTag.class);
+        if (nbtMap.contains(TAG_ARMOR)) {
+            ListTag<CompoundTag> armorList = nbtMap.getList(TAG_ARMOR, CompoundTag.class);
             for (CompoundTag armorTag : armorList.getAll()) {
-                Item armorItem = NBTIO.getItemHelper(armorTag);
-                int slot = armorTag.getByte("Slot");
+                final int slot = armorTag.getByte("Slot");
+                final Item armorItem = ItemHelper.read(armorTag);
                 this.armorInventory.setItem(slot, armorItem);
-                // [ITEM_DEBUG]
-                if (armorItem != null && !armorItem.isNull()) {
-                    log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded armor slot {} = {} x{}",
-                            (int) x, (int) y, (int) z, slot, armorItem.getId(), armorItem.getCount());
-                }
             }
         }
 
-        if (this.namedTag.contains(TAG_POSE_INDEX)) {
-            this.setPose(this.namedTag.getInt(TAG_POSE_INDEX));
+        if (nbtMap.contains(TAG_POSE_INDEX)) {
+            this.setPose(nbtMap.getInt(TAG_POSE_INDEX));
         }
     }
 
@@ -167,7 +154,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         // Name tag
-        if (!item.isNull() && item.getId().equals(Item.NAME_TAG) && isNameable() && trySetNameTag(player, item)) return true;
+        if (!item.isNull() && item.getId().equals(Item.NAME_TAG) && isNameable() && trySetNameTag(player, item))
+            return true;
 
         //Pose
         if (player.isSneaking()) {
@@ -265,10 +253,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             Item itemClone = handItem.clone();
             itemClone.setCount(1);
             inventory.setItem(slot, itemClone);
-            // [ITEM_DEBUG]
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} equip: player {} added {} x1 to {}[{}]",
-                    (int) x, (int) y, (int) z, player.getName(), handItem.getId(),
-                    isArmorSlot ? "armor" : "equipment", slot);
             if (!player.isCreative()) {
                 handItem.count--;
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), handItem);
@@ -301,11 +285,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), itemToSetToPlayerInv);
             }
 
-            // [ITEM_DEBUG] Removing/swapping item from the armor stand
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} swap: player {} removing {} x{} from {}[{}], replacing with {}",
-                    (int) x, (int) y, (int) z, player.getName(), item.getId(), item.getCount(),
-                    isArmorSlot ? "armor" : "equipment", slot,
-                    itemtoAddToArmorStand.isNull() ? "AIR" : itemtoAddToArmorStand.getId());
             Item[] notAdded = player.getInventory().addItem(item);
             if (notAdded.length > 0) {
                 if (notAdded[0].count == item.count) {
@@ -327,15 +306,21 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     private int getPose() {
-        return this.entityDataMap.get(Entity.ARMOR_STAND_POSE_INDEX);
+        Integer pose = this.actorDataMap.get(ActorDataTypes.POSE_INDEX);
+        return pose == null ? 0 : pose;
+    }
+
+    private int getHurtTicks() {
+        Integer hurt = this.getDataProperty(ActorDataTypes.HURT);
+        return hurt == null ? 0 : hurt;
     }
 
     private void setPose(int pose) {
-        this.entityDataMap.put(Entity.ARMOR_STAND_POSE_INDEX, pose);
-        SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
-        setEntityDataPacket.eid = this.getId();
-        setEntityDataPacket.entityData = this.getEntityDataMap();
-        Server.getInstance().getOnlinePlayers().values().forEach(all -> all.dataPacket(setEntityDataPacket));
+        this.actorDataMap.put(ActorDataTypes.POSE_INDEX, pose);
+        final SetActorDataPacket packet = new SetActorDataPacket();
+        packet.setTargetRuntimeID(this.getId());
+        packet.setActorData(this.getActorDataMap());
+        Server.getInstance().getOnlinePlayers().values().forEach(all -> all.sendPacket(packet));
     }
 
     private void markChunkChanged() {
@@ -349,61 +334,19 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         super.saveNBT();
 
         if (this.equipmentInventory != null) {
-            this.namedTag.put(TAG_MAINHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInHand()));
-            this.namedTag.put(TAG_OFFHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInOffhand()));
-        } else {
-            // [ITEM_DEBUG] This means items in hand/offhand will NOT be saved
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: equipmentInventory is NULL, hand items will not be saved!",
-                    (int) x, (int) y, (int) z);
+            this.nbt.putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null));
+            this.nbt.putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
         }
 
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>();
+            ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
             for (int i = 0; i < 4; i++) {
-                armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(TAG_ARMOR, armorTag);
-        } else {
-            // [ITEM_DEBUG] This means armor will NOT be saved
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: armorInventory is NULL, armor will not be saved!",
-                    (int) x, (int) y, (int) z);
+            this.nbt.putList(TAG_ARMOR, armorTag);
         }
 
-        this.namedTag.putInt(TAG_POSE_INDEX, this.getPose());
-    }
-
-    @Override
-    public void close() {
-        // [ITEM_DEBUG] Log when an armor stand is closed while still holding items
-        if (!this.closed) {
-            boolean hasItems = false;
-            StringBuilder items = new StringBuilder();
-            if (this.equipmentInventory != null) {
-                for (var entry : this.equipmentInventory.getContents().entrySet()) {
-                    if (!entry.getValue().isNull()) {
-                        hasItems = true;
-                        items.append("equip[").append(entry.getKey()).append("]=")
-                                .append(entry.getValue().getId()).append("x").append(entry.getValue().getCount()).append(", ");
-                    }
-                }
-            }
-            if (this.armorInventory != null) {
-                for (int i = 0; i < 4; i++) {
-                    Item armorItem = this.armorInventory.getItem(i);
-                    if (!armorItem.isNull()) {
-                        hasItems = true;
-                        items.append("armor[").append(i).append("]=")
-                                .append(armorItem.getId()).append("x").append(armorItem.getCount()).append(", ");
-                    }
-                }
-            }
-            if (hasItems) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} CLOSE with items still present: {}. Stack trace:",
-                        (int) x, (int) y, (int) z, items,
-                        new Throwable("ArmorStand close trace"));
-            }
-        }
-        super.close();
+        this.nbt.putInt(TAG_POSE_INDEX, this.getPose());
     }
 
     @Override
@@ -497,11 +440,12 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         if (source.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            if (namedTag.getByte("InvulnerableTimer") > 0) {
+            final CompoundTag nbtMap = this.getNbt();
+            if (nbtMap.getByte("InvulnerableTimer") > 0) {
                 source.setCancelled(true);
             }
             if (super.attack(source)) {
-                namedTag.putByte("InvulnerableTimer", 9);
+                this.nbt.putByte("InvulnerableTimer", (byte) 9);
                 return true;
             }
             return false;
@@ -513,7 +457,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
         setLastDamageCause(source);
 
-        if (getDataProperty(HURT_TICKS) > 0) {
+        if (this.getHurtTicks() > 0) {
             setHealthCurrent(0);
             return true;
         }
@@ -528,7 +472,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        setDataProperty(HURT_TICKS, 9, true);
+        setDataProperty(ActorDataTypes.HURT, 9, true);
         level.addSound(this, Sound.MOB_ARMOR_STAND_HIT);
 
         return true;
@@ -548,14 +492,15 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     public boolean entityBaseTick(int tickDiff) {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
 
-        int hurtTime = getDataProperty(HURT_TICKS);
+        int hurtTime = this.getHurtTicks();
         if (hurtTime > 0 && age % 2 == 0) {
-            setDataProperty(HURT_TICKS, hurtTime - 1, true);
+            setDataProperty(ActorDataTypes.HURT, hurtTime - 1, true);
             hasUpdate = true;
         }
-        hurtTime = namedTag.getByte("InvulnerableTimer");
+        final CompoundTag nbtMap = this.getNbt();
+        hurtTime = nbtMap.getByte("InvulnerableTimer");
         if (hurtTime > 0 && age % 2 == 0) {
-            namedTag.putByte("InvulnerableTimer", hurtTime - 1);
+            this.nbt.putByte("InvulnerableTimer", (byte) (hurtTime - 1));
         }
 
         return hasUpdate;

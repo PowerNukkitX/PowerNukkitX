@@ -13,7 +13,6 @@ import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.slf4j.Slf4j;
@@ -116,13 +115,13 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER)
                 .putInt("Base", item.getDamage() & 0xf);
 
-        Tag type = item.getNamedTagEntry("Type");
-        if (type instanceof IntTag) {
-            nbt.put("Type", type);
+        Object type = item.getNbtEntry("Type");
+        if (type instanceof IntTag tag) {
+            nbt.put("Type", tag.copy());
         }
-        Tag patterns = item.getNamedTagEntry("Patterns");
-        if (patterns instanceof ListTag) {
-            nbt.put("Patterns", patterns);
+        Object patterns = item.getNbtEntry("Patterns");
+        if (patterns instanceof ListTag<?> tag) {
+            nbt.put("Patterns", tag.copy());
         }
 
         try {
@@ -159,15 +158,15 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         Item item = Item.get(ItemID.BANNER);
         if (banner != null) {
             item.setDamage(banner.getBaseColor() & 0xf);
-            int type = banner.namedTag.getInt("Type");
+            int type = banner.getNbt().getInt("Type");
             if (type > 0) {
-                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
+                item.setNbt((item.hasNbt() ? item.getNbt().copy() : new CompoundTag())
                         .putInt("Type", type));
             }
-            ListTag<CompoundTag> patterns = banner.namedTag.getList("Patterns", CompoundTag.class);
+            ListTag<?> patterns = banner.getNbt().getList("Patterns");
             if (patterns.size() > 0) {
-                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
-                        .putList("Patterns", patterns));
+                item.setNbt((item.hasNbt() ? item.getNbt().copy() : new CompoundTag())
+                        .putList("Patterns", (ListTag<?>) patterns.copy()));
             }
         }
         return item;

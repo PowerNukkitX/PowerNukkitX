@@ -6,7 +6,7 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.CompletedUsingItemPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 
 public class ItemMilkBucket extends ItemBucket {
     public ItemMilkBucket() {
@@ -44,7 +44,7 @@ public class ItemMilkBucket extends ItemBucket {
 
         player.removeAllEffects();
 
-        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_CONSUME);
+        player.completeUsingItem(this.getRuntimeId(), ItemUseMethod.CONSUME);
 
         if (player.isAdventure() || player.isSurvival()) {
             --this.count;

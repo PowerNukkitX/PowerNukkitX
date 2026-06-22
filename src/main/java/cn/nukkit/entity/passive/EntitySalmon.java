@@ -6,11 +6,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-
-import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * @author PetteriM1
@@ -85,6 +84,6 @@ public class EntitySalmon extends EntityFish {
 
     //巨型体系
     public boolean isLarge() {
-        return this.namedTag.getBoolean("isLarge");
+        return this.getNbt().getBoolean("isLarge");
     }
 }

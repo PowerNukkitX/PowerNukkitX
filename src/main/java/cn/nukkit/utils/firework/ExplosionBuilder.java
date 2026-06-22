@@ -12,7 +12,7 @@ import cn.nukkit.utils.DyeColor;
  * @since 2025/04/08
  */
 public class ExplosionBuilder {
-    private final CompoundTag explosionTag;
+    private CompoundTag explosionTag;
 
     public ExplosionBuilder() {
         this.explosionTag = new CompoundTag();

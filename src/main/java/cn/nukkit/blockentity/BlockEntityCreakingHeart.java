@@ -65,7 +65,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
-        if(!getBlock().isValid()) return false;
+        if(!isValid() || closed) return false;
         if(getLevel().getTick() % 40 == 0 && isBlockEntityValid() && getHeart().isActive()) {
             getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_AMBIENT);
         }
@@ -91,16 +91,18 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
             if(!pos.getLevelBlock().isAir()) return true;
 
-            Entity ent = Entity.createEntity(Entity.CREAKING, pos);
-            if(ent != null) {
-                CreatureSpawnEvent ev = new CreatureSpawnEvent(ent.getNetworkId(), pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.CREAKING_HEART);
-                level.getServer().getPluginManager().callEvent(ev);
-                if(ev.isCancelled()) {
-                    ent.close();
-                } else {
-                    setLinkedCreaking((EntityCreaking) ent);
-                    this.getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_MOB_SPAWN, 1, 1);
-                    ent.spawnToAll();
+            if(isValid()) {
+                Entity ent = Entity.createEntity(Entity.CREAKING, pos);
+                if(ent != null) {
+                    CreatureSpawnEvent ev = new CreatureSpawnEvent(ent.getNetworkId(), pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.CREAKING_HEART);
+                    level.getServer().getPluginManager().callEvent(ev);
+                    if(ev.isCancelled()) {
+                        ent.close();
+                    } else {
+                        setLinkedCreaking((EntityCreaking) ent);
+                        this.getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_MOB_SPAWN, 1, 1);
+                        ent.spawnToAll();
+                    }
                 }
             }
         }

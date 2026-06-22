@@ -1,24 +1,9 @@
 package cn.nukkit.player;
 
 import cn.nukkit.GameMockExtension;
-import cn.nukkit.TestPlayer;
-import cn.nukkit.level.Level;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.MovePlayerPacket;
-import cn.nukkit.utils.GameLoop;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-
-import static cn.nukkit.TestUtils.gameLoop0;
-import static cn.nukkit.TestUtils.resetPlayerStatus;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(GameMockExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

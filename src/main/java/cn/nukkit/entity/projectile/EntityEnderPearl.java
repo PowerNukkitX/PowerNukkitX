@@ -3,7 +3,6 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityTntMinecart;
 import cn.nukkit.entity.mob.EntityEndermite;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -16,7 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,7 +23,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityEnderPearl extends EntityProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ENDER_PEARL;
     }
 
@@ -36,7 +36,6 @@ public class EntityEnderPearl extends EntityProjectile {
         super(chunk, nbt, shootingEntity);
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -103,16 +102,16 @@ public class EntityEnderPearl extends EntityProjectile {
             return;
         }
 
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_TELEPORT_ENDERPEARL);
-        Vector3 destination = new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y+1, NukkitMath.floorDouble(this.z) + 0.5);
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
+        Vector3 destination = new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y + 1, NukkitMath.floorDouble(this.z) + 0.5);
         this.shootingEntity.teleport(destination, TeleportCause.ENDER_PEARL);
         if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
             this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
         }
-        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_TELEPORT);
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_TELEPORT_ENDERPEARL);
-        if(this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            if(ThreadLocalRandom.current().nextInt(1,20) == 1) {
+        this.level.addLevelEvent(this, LevelEvent.PARTICLE_TELEPORT);
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
+        if (this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            if (ThreadLocalRandom.current().nextInt(1, 20) == 1) {
                 EntityEndermite endermite = (EntityEndermite) Entity.createEntity(Entity.ENDERMITE,
                         level.getChunk(destination.getFloorX() >> 4, destination.getFloorZ() >> 4), new CompoundTag()
                                 .putList("Pos", new ListTag<>()

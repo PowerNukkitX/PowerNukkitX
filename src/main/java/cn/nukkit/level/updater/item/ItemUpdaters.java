@@ -32,7 +32,7 @@ public class ItemUpdaters {
     }
 
     public static CompoundTag updateItem(CompoundTag tag, int version) {
-        return CONTEXT.update(tag, version);
+        return CompoundTag.fromNetwork(CONTEXT.update(tag.toNetwork(), version));
     }
 
     public static int getLatestVersion() {

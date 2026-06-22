@@ -9,6 +9,7 @@ import cn.nukkit.level.generator.object.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.Xoroshiro128;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

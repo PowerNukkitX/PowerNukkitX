@@ -11,9 +11,9 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -29,7 +29,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature implements 
         return 6;
     }
 
-    public boolean canSpawnHere(BiomeDefinition definition) {
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
         return true;
     }
 
@@ -51,7 +51,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature implements 
                 continue;
             }
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
-            if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))) continue;
+            if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).second())) continue;
             while(checkBlock(level.getBlock(v))) {
                 v.y--;
             }

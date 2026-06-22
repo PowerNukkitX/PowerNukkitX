@@ -43,11 +43,11 @@ public class TradeRecipeBuildUtils {
                         .putString("Name", output.getId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("uses", 0); // Unknown
-        if (buyA.hasCompoundTag()) {
-            cmp.getCompound("buyA").putCompound("tag", buyA.getNamedTag());
+        if (buyA.hasNbt()) {
+            cmp.getCompound("buyA").putCompound("tag", buyA.getNbt());
         }
-        if (output.hasCompoundTag()) {
-            cmp.getCompound("sell").putCompound("tag", output.getNamedTag());
+        if (output.hasNbt()) {
+            cmp.getCompound("sell").putCompound("tag", output.getNbt());
         }
         return new TradeRecipeBuildUtils(cmp, 2);
     }
@@ -80,14 +80,14 @@ public class TradeRecipeBuildUtils {
                         .putString("Name", output.getId())
                         .putBoolean("WasPickedUp", false))
                 .putInt("uses", 0); // Unknown
-        if (buyA.hasCompoundTag()) {
-            cmp.getCompound("buyA").putCompound("tag", buyA.getNamedTag());
+        if (buyA.hasNbt()) {
+            cmp.getCompound("buyA").putCompound("tag", buyA.getNbt());
         }
-        if (buyB.hasCompoundTag()) {
-            cmp.getCompound("buyB").putCompound("tag", buyB.getNamedTag());
+        if (buyB.hasNbt()) {
+            cmp.getCompound("buyB").putCompound("tag", buyB.getNbt());
         }
-        if (output.hasCompoundTag()) {
-            cmp.getCompound("sell").putCompound("tag", output.getNamedTag());
+        if (output.hasNbt()) {
+            cmp.getCompound("sell").putCompound("tag", output.getNbt());
         }
         return new TradeRecipeBuildUtils(cmp, 3);
     }

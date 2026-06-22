@@ -57,9 +57,9 @@ abstract public class ItemColorArmor extends ItemArmor {
      */
     public ItemColorArmor setColor(int r, int g, int b) {
         int rgb = r << 16 | g << 8 | b;
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+        CompoundTag tag = this.getOrCreateNbt();
         tag.putInt("customColor", rgb);
-        this.setNamedTag(tag);
+        this.setNbt(tag);
         return this;
     }
 
@@ -69,9 +69,9 @@ abstract public class ItemColorArmor extends ItemArmor {
      * @return - BlockColor, or null if item has no color
      */
     public BlockColor getColor() {
-        if (!this.hasCompoundTag()) return null;
-        CompoundTag tag = this.getNamedTag();
-        if (!tag.exist("customColor")) return null;
+        if (!this.hasNbt()) return null;
+        CompoundTag tag = this.getNbt();
+        if (!tag.containsInt("customColor")) return null;
         int rgb = tag.getInt("customColor");
         return new BlockColor(rgb);
     }
