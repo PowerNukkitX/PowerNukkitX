@@ -13,6 +13,7 @@ import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -64,6 +65,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     private boolean wasOnSlipperyGround = false;
     private int slipperyEntryGraceTicks = 0;
     private double slipperyEntrySpeed = 0.0d;
+    private boolean airRideRotationInitialized = false;
+    private float airRideTargetYaw = 0f;
+    private int airRideRotationDelayTicks = 0;
 
 
     public EntityPhysical(IChunk chunk, CompoundTag nbt) {
@@ -480,6 +484,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return false;
         }
 
+        this.syncRiderLocationFromInput(rider, pk);
+
         if ((type == RideableComponent.InputType.GROUND || type == RideableComponent.InputType.WATER) && handleRideJumpOrDash(pk, type)) {
             return true;
         }
@@ -491,16 +497,26 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         };
     }
 
+    protected void syncRiderLocationFromInput(Player rider, PlayerAuthInputPacket pk) {
+        org.cloudburstmc.math.vector.Vector3f pos = pk.getPosition();
+
+        rider.applyClientLocationFromAuthInput(new Location(
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                pk.getInteractRotation().getY(),
+                pk.getInteractRotation().getX(),
+                pk.getInteractRotation().getY(),
+                rider.getLevel()
+        ));
+    }
+
     /**
      * Ground Input Controls
      */
     public boolean onRiderInputGroundControlled(Player rider, PlayerAuthInputPacket pk) {
-        int controlSeat = getControllingSeatIndex();
-        if (controlSeat < 0 || controlSeat >= passengers.size() || passengers.get(controlSeat) != rider) return false;
-
-        if (!(this instanceof EntityControlUtils me)) return false;
-        me.setMoveTarget(null);
-        me.setLookTarget(null);
+        if (!isControllingRider(rider)) return false;
+        if (!prepareManualRiderControl()) return false;
 
         // INPUT KNOBS
         final double DEADZONE = 0.08;        // stick drift tolerance
@@ -543,7 +559,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
             } else {
                 Vector2 dir = adjusted.normalize();
-                double yawRad = Math.toRadians(pk.getPlayerRotation().getY());
+                double yawRad = Math.toRadians(pk.getInteractRotation().getY());
                 double wishX = -Math.sin(yawRad) * dir.y + Math.cos(yawRad) * dir.x;
                 double wishZ =  Math.cos(yawRad) * dir.y + Math.sin(yawRad) * dir.x;
 
@@ -593,8 +609,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             }
         }
 
-        this.yaw = pk.getPlayerRotation().getY();
-        this.headYaw = pk.getPlayerRotation().getY();
+        this.yaw = pk.getInteractRotation().getY();
+        this.headYaw = pk.getInteractRotation().getY();
         return true;
     }
 
@@ -864,21 +880,18 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     /** Air Input Controls */
     public boolean onRiderInputAirControlled(Player rider, PlayerAuthInputPacket pk) {
-        int controlSeat = getControllingSeatIndex();
-        if (controlSeat < 0 || controlSeat >= passengers.size() || passengers.get(controlSeat) != rider) return false;
-
-        if (!(this instanceof EntityControlUtils me)) return false;
-        me.setMoveTarget(null);
-        me.setLookTarget(null);
+        if (!isControllingRider(rider)) {
+            resetAirRideRotation();
+            return false;
+        }
+        if (!prepareManualRiderControl()) return false;
 
         // INPUT KNOBS
         final double HORIZONTAL_TUNE = 0.97d;   // Horizontal movement speed
         final double VERTICAL_TUNE = 0.60d;   // Vertical movement speed
         final double FRICTION_KNOB = 7.0d;      // Knob to parity with BDS speed
 
-        setYaw(pk.getInteractRotation().getY());
-        setHeadYaw(pk.getInteractRotation().getY());
-        setPitch(pk.getInteractRotation().getX());
+        applyAirRideRotation(pk.getInteractRotation().getY());
 
         Vector2f input = Vector2f.fromNetwork(pk.getRawMoveVector());
         float forward = input.y;
@@ -932,12 +945,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * Water Input Controls
      */
     public boolean onRiderInputWaterControlled(Player rider, PlayerAuthInputPacket pk) {
-        int controlSeat = getControllingSeatIndex();
-        if (controlSeat < 0 || controlSeat >= passengers.size() || passengers.get(controlSeat) != rider) return false;
-
-        if (!(this instanceof EntityControlUtils me)) return false;
-        me.setMoveTarget(null);
-        me.setLookTarget(null);
+        if (!isControllingRider(rider)) return false;
+        if (!prepareManualRiderControl()) return false;
 
         // INPUT KNOBS
         final double HORIZONTAL_TUNE = 0.97d;
@@ -1347,5 +1356,156 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return maxY;
     }
 
+    protected int getAirRideRotationDelayTicks() {
+        return 2;
+    }
+
+    protected float getAirRideYawTurnSpeed() {
+        return 4.21875f;
+    }
+
+    protected float getAirRideYawInputThreshold() {
+        return 2.0f;
+    }
+
+    protected float getAirRideYawStopDistance() {
+        return 1.25f;
+    }
+
+    protected float wrapDegrees(float angle) {
+        return angle - 360f * (float) Math.floor((angle + 180f) / 360f);
+    }
+
+    protected float approachDegrees(float current, float target, float maxStep) {
+        float delta = wrapDegrees(target - current);
+
+        if (delta > maxStep) {
+            delta = maxStep;
+        } else if (delta < -maxStep) {
+            delta = -maxStep;
+        }
+
+        return current + delta;
+    }
+
+    protected void applyAirRideRotation(float targetYaw) {
+        float currentYaw = (float) this.getYaw();
+
+        if (!this.airRideRotationInitialized) {
+            this.airRideRotationInitialized = true;
+            this.airRideTargetYaw = currentYaw;
+            this.airRideRotationDelayTicks = 0;
+        }
+
+        float distanceToCurrentTarget = Math.abs(wrapDegrees(this.airRideTargetYaw - currentYaw));
+        boolean targetReached = distanceToCurrentTarget <= getAirRideYawStopDistance();
+
+        if (targetReached) {
+            float yawDelta = Math.abs(wrapDegrees(targetYaw - this.airRideTargetYaw));
+
+            if (yawDelta > getAirRideYawInputThreshold()) {
+                this.airRideTargetYaw = targetYaw;
+                this.airRideRotationDelayTicks = getAirRideRotationDelayTicks();
+            }
+        }
+
+        if (this.airRideRotationDelayTicks > 0) {
+            this.airRideRotationDelayTicks--;
+            return;
+        }
+
+        float newYaw = approachDegrees(currentYaw, this.airRideTargetYaw, getAirRideYawTurnSpeed());
+
+        if (Math.abs(wrapDegrees(newYaw - currentYaw)) > 0.01f) {
+            this.setYaw(newYaw);
+            this.setHeadYaw(newYaw);
+        }
+
+        if (Math.abs(this.getPitch()) > 0.01f) {
+            this.setPitch(0f);
+        }
+    }
+
+    protected void resetAirRideRotation() {
+        this.airRideRotationInitialized = false;
+        this.airRideTargetYaw = 0f;
+        this.airRideRotationDelayTicks = 0;
+    }
+
+    protected boolean shouldLockBodyRotationWhenStoodOn() {
+        return false;
+    }
+
+    protected boolean hasEntityStandingOnTop() {
+        if (this.passengers != null && !this.passengers.isEmpty()) return false;
+        if (this.level == null || this.getBoundingBox() == null) return false;
+
+        AxisAlignedBB bb = this.getBoundingBox();
+
+        double topY = bb.getMaxY();
+        double pad = 0.10d;
+
+        AxisAlignedBB area = new SimpleAxisAlignedBB(
+                bb.getMinX() + pad,
+                topY - 0.35d,
+                bb.getMinZ() + pad,
+                bb.getMaxX() - pad,
+                topY + 2.20d,
+                bb.getMaxZ() - pad
+        );
+
+        for (Entity e : this.level.getNearbyEntitiesSafe(area, this)) {
+            if (!(e instanceof Player p)) continue;
+            if (!p.isAlive()) continue;
+            if (this.isPassenger(p)) continue;
+
+            AxisAlignedBB pbb = p.getBoundingBox();
+            if (pbb == null) continue;
+
+            double feetY = pbb.getMinY();
+
+            if (feetY >= topY - 0.45d && feetY <= topY + 2.00d) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected boolean isControllingRider(Player rider) {
+        int controlSeat = getControllingSeatIndex();
+        return controlSeat >= 0 && controlSeat < passengers.size() && passengers.get(controlSeat) == rider;
+    }
+
+    protected boolean prepareManualRiderControl() {
+        if (!(this instanceof EntityControlUtils me)) return false;
+
+        me.setMoveTarget(null);
+        me.setLookTarget(null);
+        return true;
+    }
+
+
+    @Override
+    public boolean mountEntity(Entity entity, boolean riderInitiated) {
+        boolean result = super.mountEntity(entity, riderInitiated);
+
+        if (result && this.getInputControlType() == RideableComponent.InputType.AIR) {
+            this.resetAirRideRotation();
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean dismountEntity(Entity entity, boolean sendLinks, boolean riderInitiated) {
+        boolean result = super.dismountEntity(entity, sendLinks, riderInitiated);
+
+        if (result && this.getInputControlType() == RideableComponent.InputType.AIR && this.passengers.isEmpty()) {
+            this.resetAirRideRotation();
+        }
+
+        return result;
+    }
     // INPUT CONTROLS HELPERS END
 }

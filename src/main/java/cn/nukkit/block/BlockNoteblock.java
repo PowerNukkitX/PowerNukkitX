@@ -81,10 +81,22 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         return true;
     }
 
+    /**
+     * A note block can play when the block directly above it is air or a skull.
+     * Any other block above silences it entirely.
+     */
+    private boolean canPlay() {
+        Block above = this.up();
+        return above.isAir() || above instanceof BlockHead;
+    }
+
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null && player.isSneaking() || (this.up().isAir() && blockFace.equals(BlockFace.UP) && item.isBlock() && item.getBlock() instanceof BlockHead)) {
             return false;
+        }
+        if (!canPlay()) {
+            return true;
         }
         this.increaseStrength();
         this.emitSound(player);
@@ -100,7 +112,9 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
-            this.emitSound(player);
+            if (canPlay()) {
+                this.emitSound(player);
+            }
         }
     }
 
@@ -114,69 +128,70 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public Instrument getInstrument() {
-        return switch (this.down()) {
-            case BlockWool ignored -> Instrument.GUITAR;
-            case BlockConcretePowder ignored -> Instrument.SNARE_DRUM;
-            case BlockSand ignored -> Instrument.SNARE_DRUM;
-            case BlockGravel ignored -> Instrument.SNARE_DRUM;
-            case BlockGlass ignored -> Instrument.SNARE_DRUM;
-            case BlockSeaLantern ignored -> Instrument.SNARE_DRUM;
-            case BlockBeacon ignored -> Instrument.SNARE_DRUM;
-            case BlockStone ignored -> Instrument.BASS_DRUM;
-            case BlockBlackstone ignored -> Instrument.BASS_DRUM;
-            case BlockNetherrack ignored -> Instrument.BASS_DRUM;
-            case BlockNylium ignored -> Instrument.BASS_DRUM;
-            case BlockObsidian ignored -> Instrument.BASS_DRUM;
-            case BlockQuartzBlock ignored -> Instrument.BASS_DRUM;
-            case BlockSandstone ignored -> Instrument.BASS_DRUM;
-            case BlockOre ignored -> Instrument.BASS_DRUM;
-            case BlockBrickBlock ignored -> Instrument.BASS_DRUM;
-            case BlockCoral ignored -> Instrument.BASS_DRUM;
-            case BlockRespawnAnchor ignored -> Instrument.BASS_DRUM;
-            case BlockBedrock ignored -> Instrument.BASS_DRUM;
-            case BlockConcrete ignored -> Instrument.BASS_DRUM;
-            case BlockStonecutter ignored -> Instrument.BASS_DRUM;
-            case BlockFurnace ignored -> Instrument.BASS_DRUM;
-            case BlockObserver ignored -> Instrument.BASS_DRUM;
-            case BlockHardenedClay ignored -> Instrument.BASS_DRUM;
-            case BlockPrismarine ignored -> Instrument.BASS_DRUM;
-            case BlockGoldBlock ignored -> Instrument.BELLS;
-            case BlockClay ignored -> Instrument.FLUTE;
-            case BlockHoneycombBlock ignored -> Instrument.FLUTE;
-            case BlockInfestedChiseledStoneBricks ignored -> Instrument.FLUTE;
-            case BlockInfestedMossyStoneBricks ignored -> Instrument.FLUTE;
-            case BlockInfestedStone ignored -> Instrument.FLUTE;
-            case BlockInfestedDeepslate ignored -> Instrument.FLUTE;
-            case BlockInfestedCrackedStoneBricks ignored -> Instrument.FLUTE;
-            case BlockInfestedStoneBricks ignored -> Instrument.FLUTE;
-            case BlockPackedIce ignored -> Instrument.CHIMES;
-            case BlockBoneBlock ignored -> Instrument.XYLOPHONE;
-            case BlockIronBlock ignored -> Instrument.IRON_XYLOPHONE;
-            case BlockSoulSand ignored -> Instrument.COW_BELL;
-            case BlockPumpkin ignored -> Instrument.DIDGERIDOO;
-            case BlockEmeraldBlock ignored -> Instrument.BIT;
-            case BlockHayBlock ignored -> Instrument.BANJO;
-            case BlockGlowstone ignored -> Instrument.PLING;
-            case AbstractBlockShelf ignored -> Instrument.BASS;
-            default -> {
-                if (this.up() instanceof BlockHead skull) {
-                    int meta = 0;
-                    if (skull.getBlockEntity() != null) {
-                        meta = skull.getBlockEntity().getNbt().getByte("SkullType");
-                    }
-                    yield switch (meta) {
-                        case 0, 3 ->
-                                Instrument.SKELETON;   //skull with meta 3 is a steve head but the sound depends. More info at https://minecraft.wiki/w/Note_Block
-                        case 1 -> Instrument.WITHER_SKELETON;
-                        case 2 -> Instrument.ZOMBIE;
-                        case 4 -> Instrument.CREEPER;
-                        case 5 -> Instrument.ENDER_DRAGON;
-                        default -> Instrument.PIGLIN;
-                    };
-                } else {
-                    yield Instrument.HARP;
-                }
-            }
+        return switch (this.up()) {
+            case BlockSkeletonSkull ignored -> Instrument.SKELETON;
+            case BlockWitherSkeletonSkull ignored -> Instrument.WITHER_SKELETON;
+            case BlockZombieHead ignored -> Instrument.ZOMBIE;
+            case BlockCreeperHead ignored -> Instrument.CREEPER;
+            case BlockDragonHead ignored -> Instrument.ENDER_DRAGON;
+            case BlockPiglinHead ignored -> Instrument.PIGLIN;
+            case BlockPlayerHead ignored -> Instrument.HARP;
+            default -> switch (this.down()) {
+                case BlockConcretePowder ignored -> Instrument.SNARE_DRUM;
+                case BlockSand ignored -> Instrument.SNARE_DRUM;
+                case BlockGravel ignored -> Instrument.SNARE_DRUM;
+                case BlockGlass ignored -> Instrument.CLICKS_AND_STICKS;
+                case BlockSeaLantern ignored -> Instrument.CLICKS_AND_STICKS;
+                case BlockBeacon ignored -> Instrument.CLICKS_AND_STICKS;
+                case BlockStone ignored -> Instrument.BASS_DRUM;
+                case BlockBlackstone ignored -> Instrument.BASS_DRUM;
+                case BlockNetherrack ignored -> Instrument.BASS_DRUM;
+                case BlockNylium ignored -> Instrument.BASS_DRUM;
+                case BlockObsidian ignored -> Instrument.BASS_DRUM;
+                case BlockQuartzBlock ignored -> Instrument.BASS_DRUM;
+                case BlockSandstone ignored -> Instrument.BASS_DRUM;
+                case BlockOre ignored -> Instrument.BASS_DRUM;
+                case BlockBrickBlock ignored -> Instrument.BASS_DRUM;
+                case BlockCoral ignored -> Instrument.BASS_DRUM;
+                case BlockRespawnAnchor ignored -> Instrument.BASS_DRUM;
+                case BlockBedrock ignored -> Instrument.BASS_DRUM;
+                case BlockConcrete ignored -> Instrument.BASS_DRUM;
+                case BlockStonecutter ignored -> Instrument.BASS_DRUM;
+                case BlockFurnace ignored -> Instrument.BASS_DRUM;
+                case BlockObserver ignored -> Instrument.BASS_DRUM;
+                case BlockHardenedClay ignored -> Instrument.BASS_DRUM;
+                case BlockPrismarine ignored -> Instrument.BASS_DRUM;
+                case BlockGoldBlock ignored -> Instrument.BELLS;
+                case BlockClay ignored -> Instrument.FLUTE;
+                case BlockHoneycombBlock ignored -> Instrument.FLUTE;
+                case BlockInfestedChiseledStoneBricks ignored -> Instrument.FLUTE;
+                case BlockInfestedMossyStoneBricks ignored -> Instrument.FLUTE;
+                case BlockInfestedStone ignored -> Instrument.FLUTE;
+                case BlockInfestedDeepslate ignored -> Instrument.FLUTE;
+                case BlockInfestedCrackedStoneBricks ignored -> Instrument.FLUTE;
+                case BlockInfestedStoneBricks ignored -> Instrument.FLUTE;
+                case BlockPackedIce ignored -> Instrument.CHIMES;
+                case BlockWool ignored -> Instrument.GUITAR;
+                case BlockBoneBlock ignored -> Instrument.XYLOPHONE;
+                case BlockIronBlock ignored -> Instrument.IRON_XYLOPHONE;
+                case BlockSoulSand ignored -> Instrument.COW_BELL;
+                case BlockPumpkin ignored -> Instrument.DIDGERIDOO;
+                case BlockEmeraldBlock ignored -> Instrument.BIT;
+                case BlockHayBlock ignored -> Instrument.BANJO;
+                case BlockGlowstone ignored -> Instrument.PLING;
+                case BlockLog ignored -> Instrument.BASS;
+                case BlockPlanks ignored -> Instrument.BASS;
+                case BlockChest ignored -> Instrument.BASS;
+                case BlockCraftingTable ignored -> Instrument.BASS;
+                case BlockBookshelf ignored -> Instrument.BASS;
+                case BlockWoodenSlab ignored -> Instrument.BASS;
+                case AbstractBlockShelf ignored -> Instrument.BASS;
+                case BlockExposedCopper ignored -> Instrument.TRUMPET_EXPOSED;
+                case BlockWeatheredCopper ignored -> Instrument.TRUMPET_WEATHERED;
+                case BlockOxidizedCopper ignored -> Instrument.TRUMPET_OXIDIZED;
+                case BlockCopperBlock ignored -> Instrument.TRUMPET;
+                default -> Instrument.HARP;
+            };
         };
     }
 
@@ -211,7 +226,9 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
             if (this.isGettingPower()) {
                 if (!music.isPowered()) {
-                    this.emitSound();
+                    if (canPlay()) {
+                        this.emitSound();
+                    }
                 }
                 music.setPowered(true);
             } else {
@@ -222,33 +239,43 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public enum Instrument {
-        HARP(Sound.NOTE_HARP),
-        BASS_DRUM(Sound.NOTE_BD),
-        SNARE_DRUM(Sound.NOTE_SNARE),
-        CLICKS_AND_STICKS(Sound.NOTE_HAT),
-        BASS(Sound.NOTE_BASS),
-        BELLS(Sound.NOTE_BELL),
-        FLUTE(Sound.NOTE_FLUTE),
-        CHIMES(Sound.NOTE_CHIME),
-        GUITAR(Sound.NOTE_GUITAR),
-        XYLOPHONE(Sound.NOTE_XYLOPHONE),
-        IRON_XYLOPHONE(Sound.NOTE_IRON_XYLOPHONE),
-        COW_BELL(Sound.NOTE_COW_BELL),
-        DIDGERIDOO(Sound.NOTE_DIDGERIDOO),
-        BIT(Sound.NOTE_BIT),
-        BANJO(Sound.NOTE_BANJO),
-        PLING(Sound.NOTE_PLING),
-        SKELETON(Sound.NOTE_SKELETON),
-        WITHER_SKELETON(Sound.NOTE_WITHERSKELETON),
-        ZOMBIE(Sound.NOTE_ZOMBIE),
-        CREEPER(Sound.NOTE_CREEPER),
-        ENDER_DRAGON(Sound.NOTE_ENDERDRAGON),
-        PIGLIN(Sound.NOTE_PIGLIN);
+        HARP(0, Sound.NOTE_HARP),
+        BASS_DRUM(1, Sound.NOTE_BD),
+        SNARE_DRUM(2, Sound.NOTE_SNARE),
+        CLICKS_AND_STICKS(3, Sound.NOTE_HAT),
+        BASS(4, Sound.NOTE_BASS),
+        FLUTE(5, Sound.NOTE_FLUTE),
+        BELLS(6, Sound.NOTE_BELL),
+        GUITAR(7, Sound.NOTE_GUITAR),
+        CHIMES(8, Sound.NOTE_CHIME),
+        XYLOPHONE(9, Sound.NOTE_XYLOPHONE),
+        IRON_XYLOPHONE(10, Sound.NOTE_IRON_XYLOPHONE),
+        COW_BELL(11, Sound.NOTE_COW_BELL),
+        DIDGERIDOO(12, Sound.NOTE_DIDGERIDOO),
+        BIT(13, Sound.NOTE_BIT),
+        BANJO(14, Sound.NOTE_BANJO),
+        PLING(15, Sound.NOTE_PLING),
+        TRUMPET(16, Sound.NOTE_TRUMPET),
+        TRUMPET_EXPOSED(17, Sound.NOTE_TRUMPET),
+        TRUMPET_WEATHERED(18, Sound.NOTE_TRUMPET),
+        TRUMPET_OXIDIZED(19, Sound.NOTE_TRUMPET),
+        ZOMBIE(20, Sound.NOTE_ZOMBIE),
+        SKELETON(21, Sound.NOTE_SKELETON),
+        CREEPER(22, Sound.NOTE_CREEPER),
+        ENDER_DRAGON(23, Sound.NOTE_ENDERDRAGON),
+        WITHER_SKELETON(24, Sound.NOTE_WITHERSKELETON),
+        PIGLIN(25, Sound.NOTE_PIGLIN);
 
+        private final int id;
         private final Sound sound;
 
-        Instrument(Sound sound) {
+        Instrument(int id, Sound sound) {
+            this.id = id;
             this.sound = sound;
+        }
+
+        public int getId() {
+            return id;
         }
 
         public Sound getSound() {
