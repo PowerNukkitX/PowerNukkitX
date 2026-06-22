@@ -2,12 +2,12 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.Locale;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class WhitelistCommand extends VanillaCommand {
         });
         this.commandParameters.put("2args", new CommandParameter[]{
                 CommandParameter.newEnum("action", new CommandEnum("AllowlistPlayerAction", "add", "remove")),
-                CommandParameter.newType("player", CommandParamType.TARGET, new StringNode())
+                CommandParameter.newType("player", CommandParamType.SELECTION, new StringNode())
         });
         this.enableParamTree();
     }

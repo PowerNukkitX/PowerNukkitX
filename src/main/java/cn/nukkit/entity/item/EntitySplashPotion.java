@@ -12,9 +12,10 @@ import cn.nukkit.event.potion.PotionCollideEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.Particle;
-import cn.nukkit.level.particle.SpellParticle;
+import cn.nukkit.level.particle.PotionSplashParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -26,13 +27,14 @@ import java.util.List;
 public class EntitySplashPotion extends EntityProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SPLASH_POTION;
     }
 
     public static final int DATA_POTION_ID = 37;
 
-    public int potionId;
+    public short potionId;
 
     public EntitySplashPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -46,9 +48,9 @@ public class EntitySplashPotion extends EntityProjectile {
     protected void initEntity() {
         super.initEntity();
 
-        potionId = this.namedTag.getShort("PotionId");
+        potionId = this.getNbt().getShort("PotionId");
 
-        this.entityDataMap.put(AUX_VALUE_DATA, this.potionId);
+        this.actorDataMap.put(ActorDataTypes.AUX_VALUE_DATA, this.potionId);
 
         /*Effect effect = Potion.getEffect(potionId, true); TODO: potion color
 
@@ -65,7 +67,6 @@ public class EntitySplashPotion extends EntityProjectile {
         }*/
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -113,8 +114,8 @@ public class EntitySplashPotion extends EntityProjectile {
             return;
         }
 
-        if(potion.equals(PotionType.WATER)) {
-            if(collidedWith instanceof EntityBlaze blaze) {
+        if (potion.equals(PotionType.WATER)) {
+            if (collidedWith instanceof EntityBlaze blaze) {
                 blaze.attack(new EntityDamageByEntityEvent(this, blaze, EntityDamageEvent.DamageCause.MAGIC, 1));
             }
         }
@@ -142,7 +143,7 @@ public class EntitySplashPotion extends EntityProjectile {
         int r = (color[0] / count) & 0xff;
         int g = (color[1] / count) & 0xff;
         int b = (color[2] / count) & 0xff;
-        Particle particle = new SpellParticle(this, r, g, b);
+        Particle particle = new PotionSplashParticle(this, r, g, b);
 
         this.getLevel().addParticle(particle);
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);

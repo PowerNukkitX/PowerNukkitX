@@ -24,7 +24,6 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.passive.EntityVillagerV2;
@@ -34,6 +33,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -41,7 +42,8 @@ import java.util.Set;
 public class EntityZombieVillager extends EntityZombie implements EntityWalkable, EntitySmite {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ZOMBIE_VILLAGER;
     }
 
@@ -78,12 +80,12 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 v) {
-        if(item instanceof ItemGoldenApple) {
-            if(hasEffect(EffectType.WEAKNESS)) {
-                if(!getDataFlag(EntityFlag.SHAKING)) {
-                    setDataFlag(EntityFlag.SHAKING);
-                    if(!player.isCreative()) {
-                        this.namedTag.putString("purifyPlayer", player.getLoginChainData().getXUID());
+        if (item instanceof ItemGoldenApple) {
+            if (hasEffect(EffectType.WEAKNESS)) {
+                if (!getDataFlag(ActorFlags.SHAKING)) {
+                    setDataFlag(ActorFlags.SHAKING);
+                    if (!player.isCreative()) {
+                        this.nbt.putString("purifyPlayer", player.getXUID());
                         player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                     }
                     getLevel().addSound(this, Sound.MOB_ZOMBIE_REMEDY);
@@ -97,8 +99,8 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if(getDataFlag(EntityFlag.SHAKING)) {
-            if(curingTick < 2000) {
+        if (getDataFlag(ActorFlags.SHAKING)) {
+            if (curingTick < 2000) {
                 curingTick++;
             } else transformVillager();
         }
@@ -126,7 +128,7 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
         this.close();
         getArmorInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
         getEquipmentInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
-        EntityVillagerV2 villager = new EntityVillagerV2(this.getChunk(), this.namedTag);
+        EntityVillagerV2 villager = new EntityVillagerV2(this.getChunk(), this.getNbt());
         villager.addEffect(Effect.get(EffectType.NAUSEA).setDuration(200));
         villager.setPosition(this);
         villager.setRotation(this.yaw, this.pitch);

@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockFern;
 import cn.nukkit.block.BlockShortGrass;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.utils.random.NukkitRandom;
 
 public class JungleGrassFeature extends SurfaceGenerateFeature {
 
@@ -15,18 +14,17 @@ public class JungleGrassFeature extends SurfaceGenerateFeature {
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
-        random.setSeed(x + y + z);
         manager.setBlockStateAt(x, y, z, random.nextInt(7) == 0 ? FERN : SHORT_GRASS);
     }
 
     @Override
     public int getBase() {
-        return 10;
+        return 100;
     }
 
     @Override
     public int getRandom() {
-        return 0;
+        return 10;
     }
 
     @Override

@@ -2,137 +2,349 @@ name: PowerNukkitX Publish
 
 on:
   push:
-  pull_request:
+    branches:
+      - master
+      - r/**
+      - b/**
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 2.0.0)'
+        required: true
+      draft:
+        description: 'Create as draft (review before publishing)'
+        type: boolean
+        default: true
 
 jobs:
-  move-tag:
-    name: Move snapshot tag
+  publish:
+    name: Build & Publish to Maven
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && contains(github.ref_name, 'master')
-    steps:
-      - name: Move CI tag
-        run: |
-          mkdir repo
-          git clone -b "$BRANCH_NAME" "https://github.com/${GITHUB_REPOSITORY}" repo
-          cd repo
-          bash .github/workflows/move-tag.sh "snapshot" "Last commit build by the CI"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-
-  check-files:
-    name: Check repository files
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
     outputs:
-      changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
-
+      tag: ${{ steps.meta.outputs.tag }}
+      skip_release: ${{ steps.meta.outputs.skip_release }}
+      is_draft: ${{ steps.meta.outputs.is_draft }}
+      is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
+      title: ${{ steps.meta.outputs.title }}
     steps:
-      - name: Check out repository contents
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
-      - name: Check for file changes
-        id: check-changed-files
-        uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # v47.0.1
-
-      - name: Output list of changed files
-        run: echo "${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}"
-
-  build-and-publish:
-    name: Build and Publish PNX
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    needs: [move-tag, check-files]
-    if: |
-      (github.event_name == 'push' || 
-      github.event.pull_request.head.repo.full_name != github.repository) && 
-      (contains(needs.check-files.outputs.changed-files, 'src/') ||
-      contains(needs.check-files.outputs.changed-files, '.github/workflows') || 
-      contains(needs.check-files.outputs.changed-files, 'build.gradle.kts') || 
-      (github.event_name == 'push' && 
-      (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))
-      ))
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
           submodules: true
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@f236b35da9d031e13b1005234ebe4392ed54c580
+      - run: chmod +x gradlew
 
-      - name: Build PNX & Publish to repository
-        run: ./gradlew publish --no-configuration-cache
+      - name: Compute metadata
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.version }}"                 >> $GITHUB_OUTPUT
+            echo "title=PowerNukkitX ${{ inputs.version }}"  >> $GITHUB_OUTPUT
+            echo "skip_release=false"                        >> $GITHUB_OUTPUT
+            echo "is_draft=${{ inputs.draft }}"              >> $GITHUB_OUTPUT
+            echo "is_prerelease=false"                       >> $GITHUB_OUTPUT
+
+          elif [ "${{ github.ref_name }}" = "master" ]; then
+            echo "tag=nightly"                               >> $GITHUB_OUTPUT
+            echo "title=Dev Build (nightly)"                 >> $GITHUB_OUTPUT
+            echo "skip_release=false"                        >> $GITHUB_OUTPUT
+            echo "is_draft=false"                            >> $GITHUB_OUTPUT
+            echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
+
+          elif [[ "${{ github.ref_name }}" == r/* ]]; then
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#r/}"
+            echo "tag=$VERSION"                              >> $GITHUB_OUTPUT
+            echo "title=PowerNukkitX $VERSION"               >> $GITHUB_OUTPUT
+            echo "skip_release=false"                        >> $GITHUB_OUTPUT
+            echo "is_draft=true"                             >> $GITHUB_OUTPUT
+            echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
+
+          else
+            # b/* branches: publish to Maven only, no GitHub release
+            BRANCH="${{ github.ref_name }}"
+            SAFE_BRANCH=$(echo "$BRANCH" | sed 's|[^a-zA-Z0-9._-]|-|g')
+            echo "tag=$SAFE_BRANCH"                          >> $GITHUB_OUTPUT
+            echo "title="                                    >> $GITHUB_OUTPUT
+            echo "skip_release=true"                         >> $GITHUB_OUTPUT
+            echo "is_draft=false"                            >> $GITHUB_OUTPUT
+            echo "is_prerelease=false"                       >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build & Publish to Maven
+        run: |
+          if [ "${{ github.ref_name }}" = "master" ]; then
+            VERSION="nightly-SNAPSHOT"
+          elif [[ "${{ github.ref_name }}" == b/* ]]; then
+            BRANCH="${{ github.ref_name }}"
+            SAFE_BRANCH=$(echo "$BRANCH" | sed 's|[^a-zA-Z0-9._-]|-|g')
+            VERSION="${SAFE_BRANCH}-SNAPSHOT"
+          else
+            VERSION="${{ steps.meta.outputs.tag }}-SNAPSHOT"
+          fi
+          ./gradlew publish --no-configuration-cache -PbuildVersion="$VERSION"
         env:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
 
-      - name: Upload test results to Codecov
-        if: success() && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
-        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+      - uses: actions/upload-artifact@v6
+        with:
+          name: powernukkitx.jar
+          path: build/powernukkitx.jar
+
+      - if: success()
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Read version
-        id: read_version
-        uses: christian-draeger/read-properties@908f99d3334be3802ec7cb528395a69d19914e7b # v1.1.1
+  release:
+    name: Create Release
+    if: needs.publish.outputs.skip_release == 'false'
+    runs-on: ubuntu-latest
+    needs: publish
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
         with:
-          path: 'build/resources/main/git.properties'
-          properties: 'git.build.version'
-      - name: Archive PowerNukkitX artifact
-        uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: PowerNukkitX
-          path: build/powernukkitx.jar
+          fetch-depth: 0
 
-      - name: Release latest snapshot
-        uses: xotl/cool-github-releases@7dcf348937ee2345e1b3a4bc80926d6cdb4a4492 # v1.1.10
-        if: success() && contains(github.ref_name, 'master')
+      - name: Extract versions from source
+        id: versions
+        run: |
+          MC_VERSION=$(sed -n 's/.*MINECRAFT_VERSION_NETWORK = dynamic("\([^"]*\)").*/\1/p' src/main/java/cn/nukkit/network/protocol/ProtocolInfo.java)
+          API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/cn/nukkit/Nukkit.java)
+          echo "mc_version=$MC_VERSION" >> $GITHUB_OUTPUT
+          echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
+
+      - uses: actions/download-artifact@v4
         with:
-          mode: update
-          isPrerelease: false
-          tag_name: snapshot
-          release_name: "Latest Snapshot"
-          body_mrkdwn: |
-            This is the **latest version of PowerNukkitX**, built from the latest source. 
-            (_Please note that the date on GitHub might appear outdated due to certain limitations._)
-            
-            **Corresponding commit:** <https://github.com/powernukkitx/powernukkitx/commit/${{ github.sha }}>
-            
-            > [!NOTE]
-            > If you encounter any issues, please report them directly on our [Discord](https://discord.gg/apwd7uauZg) or in the [GitHub Issues](https://github.com/powernukkitx/powernukkitx/issues) tab.
-            
-            ### How to Update
-            
-            To update to the latest version, follow these steps:
-            1. Download the `powernukkitx.jar` file from the assets below.
-            2. Replace the `powernukkitx.jar` file in your server's directory with the new one.
-            3. Restart your server.
-            4. Enjoy the latest features and bug fixes!
-            
-            
-            Thank you for using PowerNukkitX ⭐
-          assets: build/powernukkitx.jar
-          replace_assets: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          name: powernukkitx.jar
+          path: build
+
+      - name: Create changelog file
+        if: needs.publish.outputs.tag != 'nightly'
+        run: |
+          TAG="${{ needs.publish.outputs.tag }}"
+          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+          API_VERSION="${{ steps.versions.outputs.api_version }}"
+
+          mkdir -p changelogs
+          FILE="changelogs/${TAG}.md"
+
+          cat > "$FILE" << EOF
+          # Changelog - PowerNukkitX $TAG
+
+          > **Release:** [$TAG](${{ github.server_url }}/${{ github.repository }}/releases/tag/$TAG)
+
+          ## 📋 Release Info
+
+          | Property | Value |
+          |----------|-------|
+          | PowerNukkitX Version | $TAG |
+          | API Version | $API_VERSION |
+          | Supported Minecraft Version | $MC_VERSION |
+
+          EOF
+
+          LAST=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -n "$LAST" ] && [ "$LAST" != "$TAG" ]; then
+            COMPARE=$(gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}")
+
+            TOTAL_COMMITS=$(echo "$COMPARE" | jq '.total_commits')
+            FILES_CHANGED=$(echo "$COMPARE" | jq '.files | length')
+
+            echo "" >> "$FILE"
+            echo "## 📊 Summary" >> "$FILE"
+            echo "" >> "$FILE"
+            echo "| Metric | Value |" >> "$FILE"
+            echo "|--------|-------|" >> "$FILE"
+            echo "| Commits since $LAST | $TOTAL_COMMITS |" >> "$FILE"
+            echo "| Files changed | $FILES_CHANGED |" >> "$FILE"
+            echo "| Full diff | [$LAST...$TAG](${{ github.server_url }}/${{ github.repository }}/compare/$LAST...$TAG) |" >> "$FILE"
+            echo "" >> "$FILE"
+
+            echo "## ✨ Changes since $LAST" >> "$FILE"
+            echo "" >> "$FILE"
+
+            echo "$COMPARE" | jq -r '
+              .commits | reverse | .[].commit.message | split("\n")[0]
+            ' > /tmp/commits.txt
+
+            LAST_SECTION=""
+            while IFS= read -r msg; do
+              if echo "$msg" | grep -q ':'; then
+                prefix=$(echo "$msg" | sed 's/:.*//' | sed 's/[^a-z-]//g' || echo "")
+              else
+                prefix=""
+              fi
+              case "$prefix" in
+                feat|feature) sec="### 🚀 Features";;
+                fix)          sec="### 🐛 Bug Fixes";;
+                docs)         sec="### 📝 Documentation";;
+                refactor)     sec="### ♻️ Refactoring";;
+                perf)         sec="### ⚡ Performance";;
+                test)         sec="### 🧪 Tests";;
+                build|ci)     sec="### 🛠️ Build & CI";;
+                chore)        sec="### 🔧 Chores";;
+                *)            sec="### 📦 Other";;
+              esac
+              if [ -n "$sec" ] && [ "$sec" != "$LAST_SECTION" ]; then
+                echo "" >> "$FILE"
+                echo "$sec" >> "$FILE"
+                echo "" >> "$FILE"
+                LAST_SECTION="$sec"
+              fi
+              if [ -n "$prefix" ]; then
+                body="${msg#*: }"
+              else
+                body="$msg"
+              fi
+              echo "- $body" >> "$FILE"
+            done < /tmp/commits.txt
+          else
+            echo "## ✨ Changes" >> "$FILE"
+            echo "" >> "$FILE"
+            echo "Initial release." >> "$FILE"
+          fi
+
+          echo "created=${FILE}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit and push changelog
+        if: needs.publish.outputs.tag != 'nightly'
+        run: |
+          TAG="${{ needs.publish.outputs.tag }}"
+          API_VERSION="${{ steps.versions.outputs.api_version }}"
+          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add "changelogs/${TAG}.md"
+          if git diff --staged --quiet; then
+            echo "Changelog already exists, skipping commit"
+          else
+            git commit -m "docs: add changelog for PowerNukkitX ${TAG} [skip ci]
+
+          Release ${TAG}
+          - Minecraft: ${MC_VERSION}
+          - API: ${API_VERSION}
+          - See the full changelog at changelogs/${TAG}.md"
+            git push
+          fi
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          TAG="${{ needs.publish.outputs.tag }}"
+          IS_DRAFT="${{ needs.publish.outputs.is_draft }}"
+          IS_PRERELEASE="${{ needs.publish.outputs.is_prerelease }}"
+          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+          API_VERSION="${{ steps.versions.outputs.api_version }}"
+
+          cat > release-notes.md << EOF
+
+          ## 📦 PowerNukkitX $TAG
+
+          | | |
+          |---|---|
+          | **PowerNukkitX Version** | $TAG |
+          | **API Version** | $API_VERSION |
+          | **Supported Minecraft Version** | $MC_VERSION |
+
+          ---
+
+          EOF
+
+          if [ "$IS_DRAFT" = "true" ]; then
+            cat >> release-notes.md << EOF
+          > [!IMPORTANT]
+          > This release is a **draft** — pending review. Publish it manually from the Releases page once verified.
+
+          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
+          EOF
+          elif [ "$IS_PRERELEASE" = "true" ]; then
+            cat >> release-notes.md << EOF
+          > [!WARNING]
+          > This is a **dev build** — built automatically from the latest source. May be unstable.
+          >
+          > Report issues on [Discord](https://discord.gg/apwd7uauZg) or [GitHub Issues](https://github.com/${{ github.repository }}/issues).
+
+          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
+          EOF
+          else
+            cat >> release-notes.md << EOF
+          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
+          EOF
+          fi
+
+          LAST=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -n "$LAST" ] && [ "$LAST" != "$TAG" ]; then
+            echo "" >> release-notes.md
+            echo "### ✨ Changes since $LAST" >> release-notes.md
+            echo "" >> release-notes.md
+            gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}" \
+              --jq '.commits | reverse | .[] | "- \(.commit.message | split("\n")[0])"' \
+              >> release-notes.md 2>/dev/null || true
+          fi
+
+          if [ "$IS_DRAFT" != "true" ]; then
+            cat >> release-notes.md << EOF
+
+          ### 🚀 How to Update
+          1. Download \`powernukkitx.jar\` from the assets below.
+          2. Replace the JAR in your server directory.
+          3. Restart your server.
+          EOF
+          fi
+
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "is_draft=$IS_DRAFT" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.notes.outputs.tag }}"
+          TITLE="${{ needs.publish.outputs.title }}"
+          IS_DRAFT="${{ steps.notes.outputs.is_draft }}"
+          IS_PRERELEASE="${{ steps.notes.outputs.is_prerelease }}"
+
+          if gh release view "$TAG" --json id &>/dev/null 2>&1; then
+            echo "Updating existing release $TAG"
+            gh release upload "$TAG" build/powernukkitx.jar --clobber
+            gh release edit "$TAG" \
+              --notes-file release-notes.md \
+              --draft="$IS_DRAFT" \
+              --prerelease="$IS_PRERELEASE"
+          else
+            echo "Creating release $TAG"
+            gh release create "$TAG" \
+              --title "$TITLE" \
+              --notes-file release-notes.md \
+              --draft="$IS_DRAFT" \
+              --prerelease="$IS_PRERELEASE" \
+              --latest=false \
+              build/powernukkitx.jar
+          fi

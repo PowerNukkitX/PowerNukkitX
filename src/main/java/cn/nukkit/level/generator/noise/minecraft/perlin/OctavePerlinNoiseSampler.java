@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.noise.minecraft.perlin;
 
 import cn.nukkit.level.generator.noise.minecraft.noise.NoiseSampler;
-import cn.nukkit.level.generator.noise.minecraft.utils.MathHelper;
 import cn.nukkit.level.generator.noise.minecraft.utils.Pair;
 import cn.nukkit.level.generator.noise.minecraft.utils.Quad;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -17,6 +16,8 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
     public final double persistence;
     private final PerlinNoiseSampler[] octaveSamplers;
     private final List<Double> amplitudes;
+    private final double[] amplitudesArray;
+    private final int octaveSamplersCount;
 
     public OctavePerlinNoiseSampler(RandomSourceProvider random, int octaveCount) {
         this.amplitudes = null;
@@ -26,6 +27,8 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
         }
         this.lacunarity = 1.0;
         this.persistence = 1.0;
+        this.amplitudesArray = null;
+        this.octaveSamplersCount = this.octaveSamplers.length;
     }
 
     public int getCount() {
@@ -100,6 +103,8 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 
         this.persistence = Math.pow(2.0D, -start);
         this.lacunarity = Math.pow(2.0D, length - 1) / (Math.pow(2.0D, length) - 1.0D);
+        this.amplitudesArray = toDoubleArray(this.amplitudes);
+        this.octaveSamplersCount = this.octaveSamplers.length;
     }
 
     private static Quad<Integer, Integer, Integer, List<Integer>> processOctaves(List<Integer> octaves) {
@@ -156,6 +161,8 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 
         this.persistence = Math.pow(2.0D, end);
         this.lacunarity = 1.0D / (Math.pow(2.0D, length) - 1.0D);
+        this.amplitudesArray = null;
+        this.octaveSamplersCount = this.octaveSamplers.length;
     }
 
     public double sample(double x, double y, double z) {
@@ -169,20 +176,33 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
         // distance between octaves, increased for each by a factor of 2
         double lacunarity = this.lacunarity;
 
-        for(int idx = 0; idx < this.octaveSamplers.length; idx++) {
+        double[] amplitudes = this.amplitudesArray;
+        for(int idx = 0; idx < this.octaveSamplersCount; idx++) {
             PerlinNoiseSampler sampler = this.octaveSamplers[idx];
             if(sampler != null) {
-                double sample = sampler.sample(MathHelper.maintainPrecision(x * persistence),
-                        useDefaultY ? -sampler.originY : MathHelper.maintainPrecision(y * persistence),
-                        MathHelper.maintainPrecision(z * persistence),
+                double sample = sampler.sample(maintainPrecision(x * persistence),
+                        useDefaultY ? -sampler.originY : maintainPrecision(y * persistence),
+                        maintainPrecision(z * persistence),
                         yAmplification * persistence,
                         minY * persistence) * lacunarity;
-                noise += (this.amplitudes != null ? this.amplitudes.get(idx) : 1.0D) * sample;
+                noise += (amplitudes != null ? amplitudes[idx] : 1.0D) * sample;
             }
             persistence /= 2.0D;
             lacunarity *= 2.0D;
         }
         return noise;
+    }
+
+    public static double maintainPrecision(double value) {
+        return value - Math.floor(value / 3.3554432E7D + 0.5D) * 3.3554432E7D;
+    }
+
+    private static double[] toDoubleArray(List<Double> values) {
+        double[] array = new double[values.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = values.get(i);
+        }
+        return array;
     }
 
     public PerlinNoiseSampler getOctave(int octave) {

@@ -3,10 +3,10 @@ package cn.nukkit.level.generator.feature.tree;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectMangroveTree;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class MangroveTreeFeature extends ObjectGeneratorFeature {
 
@@ -14,24 +14,24 @@ public class MangroveTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        ObjectMangroveTree tree = new ObjectMangroveTree();
-        tree.setWithBeenest(random.nextInt(15) == 0);
+        ObjectMangroveTree tree = new ObjectMangroveTree(random.nextFloat() > 0.15F);
+        tree.setWithBeenest(random.nextFloat() < 0.01F);
         return tree;
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.MANGROVE_SWAMP);
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
+        return Registries.BIOME.containsTag(BiomeTags.MANGROVE_SWAMP, definition);
     }
 
     @Override
     public int getMin() {
-        return 4;
+        return 12;
     }
 
     @Override
     public int getMax() {
-        return 7;
+        return 15;
     }
 
     @Override

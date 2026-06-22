@@ -2,23 +2,24 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.List;
 import java.util.Map;
 
 public class CraftingGridInventory extends BaseInventory implements InputInventory {
     public CraftingGridInventory(Player holder) {
-        super(holder, InventoryType.INVENTORY, 4);
+        super(holder, ContainerType.INVENTORY, 4);
     }
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map2.put(i, ContainerSlotType.CRAFTING_INPUT);
+            map2.put(i, ContainerEnumName.CRAFTING_INPUT_CONTAINER);
         }
 
         BiMap<Integer, Integer> map1 = super.networkSlotMap();

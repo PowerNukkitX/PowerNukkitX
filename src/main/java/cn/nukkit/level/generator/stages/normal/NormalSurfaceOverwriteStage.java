@@ -2,20 +2,16 @@ package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.block.*;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.UnsafeChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
-import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.Arrays;
 
 import static cn.nukkit.level.biome.BiomeID.*;
-import static cn.nukkit.block.BlockID.FLOWING_WATER;
-import static cn.nukkit.block.BlockID.WATER;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -71,7 +67,7 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                         }
                         case MANGROVE_SWAMP -> {
                             if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
-                                if(y >= SEA_LEVEL -2 && y <= SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
+                                if(y >= SEA_LEVEL -2 && y < SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
                         }
                         case MESA_PLATEAU_STONE -> {
                             if(y > 97) {

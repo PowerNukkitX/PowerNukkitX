@@ -58,7 +58,7 @@ public abstract class BlockFallable extends BlockSolid {
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))
-                .putCompound("Block", this.blockstate.getBlockStateTag().copy());
+                .putCompound("Block", CompoundTag.fromNetwork(this.blockstate.getBlockStateTag()).copy());
 
         for (var e : customNbt.getEntrySet()) {
             nbt.put(e.getKey(), e.getValue().copy());

@@ -2,13 +2,9 @@ package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLichen;
-import cn.nukkit.block.BlockLiquid;
-import cn.nukkit.block.BlockRedWool;
 import cn.nukkit.block.BlockSculk;
 import cn.nukkit.block.BlockSculkVein;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
@@ -20,7 +16,6 @@ import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.HashMap;
 import java.util.Map;

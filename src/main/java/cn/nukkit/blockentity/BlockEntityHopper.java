@@ -18,17 +18,17 @@ import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemPotion;
 import cn.nukkit.item.ItemSplashPotion;
-import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.ItemHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -72,16 +72,16 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.namedTag.contains("TransferCooldown")) {
-            this.transferCooldown = this.namedTag.getInt("TransferCooldown");
+        if (this.nbt.contains("TransferCooldown")) {
+            this.transferCooldown = this.getNbt().getInt("TransferCooldown");
         } else {
             this.transferCooldown = 8;
         }
 
         this.inventory = new HopperInventory(this);
 
-        if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        if (!this.nbt.containsList("Items", Tag.TAG_Compound)) {
+            this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -121,22 +121,22 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Hopper";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Hopper";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 
     public boolean isOnTransferCooldown() {
@@ -152,7 +152,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     }
 
     protected int getSlotIndex(int index) {
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -167,36 +167,39 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         if (i < 0) {
             return Item.AIR;
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
-            return NBTIO.getItemHelper(data);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
+            return ItemHelper.read(data);
         }
     }
 
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
+
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
 
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
-                this.namedTag.getList("Items").getAll().remove(i);
+                items.remove(i);
             }
         } else if (i < 0) {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(d);
+            items.add(d);
         } else {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
+            items.add(i, d);
         }
+        this.nbt.putList("Items", items);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
 
-        this.namedTag.putInt("TransferCooldown", this.transferCooldown);
+        this.nbt.putInt("TransferCooldown", this.transferCooldown);
     }
 
     @Override
@@ -218,7 +221,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
             return false;
         }
 
-        if(!isBlockEntityValid()) {
+        if (!isBlockEntityValid()) {
             this.close();
             return false;
         }
@@ -581,7 +584,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         CompoundTag c = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            c.put("CustomName", this.nbt.get("CustomName").copy());
         }
 
         return c;

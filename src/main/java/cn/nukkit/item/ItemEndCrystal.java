@@ -15,7 +15,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemEndCrystal extends Item {
 
@@ -57,7 +57,7 @@ public class ItemEndCrystal extends Item {
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0)))
                 .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(new Random().nextFloat() * 360))
+                        .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
                         .add(new FloatTag(0)));
 
         if (this.hasCustomName()) {

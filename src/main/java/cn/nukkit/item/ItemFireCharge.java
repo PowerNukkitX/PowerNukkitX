@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.event.block.BlockIgniteEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -58,7 +58,7 @@ public class ItemFireCharge extends Item {
 
                 if (!e.isCancelled()) {
                     level.setBlock(fire, fire, true);
-                    level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_GHAST_FIREBALL, 78642);
+                    level.addLevelEvent(block, LevelEvent.SOUND_GHAST_FIREBALL, 78642);
                     level.scheduleUpdate(fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                 }
                 if (player.isSurvival()) {

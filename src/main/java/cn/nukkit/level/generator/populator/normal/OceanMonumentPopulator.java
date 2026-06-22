@@ -44,7 +44,7 @@ public class OceanMonumentPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level l = chunk.getLevel();
-        int biome = Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7)).getId();
+        int biome = Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7)).second().getId();
         if (!PLACEMENT.canGenerate(l.getSeed(), random, chunkX, chunkZ, biome)) {
             return;
         }

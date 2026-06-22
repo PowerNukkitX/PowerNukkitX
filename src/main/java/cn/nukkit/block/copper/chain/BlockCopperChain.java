@@ -6,13 +6,8 @@ import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.utils.LevelException;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.math.VectorMath.calculateFace;
 
 /**
  * @author keksdev

@@ -132,8 +132,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             //NOOP
+            return tag;
         }
 
         private int updatePieceWeight(List<PieceWeight> weights) {
@@ -387,9 +388,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("Seed", this.selfSeed);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.putInt("Seed", this.selfSeed);
         }
 
         @Override
@@ -645,9 +646,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Mob", this.hasPlacedSpawner);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.putBoolean("Mob", this.hasPlacedSpawner);
         }
 
         @Override
@@ -1085,9 +1086,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Chest", this.isNeedingChest);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.putBoolean("Chest", this.isNeedingChest);
         }
 
         @Override
@@ -1111,7 +1112,7 @@ public class NetherBridgePieces {
                 this.isNeedingChest = false;
 
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()-2])), 1, 2, 3, boundingBox);
+                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex() - 2])), 1, 2, 3, boundingBox);
 
                 BlockVector3 vec = new BlockVector3(this.getWorldX(1, 3), this.getWorldY(2), this.getWorldZ(1, 3));
                 if (boundingBox.isInside(vec)) {
@@ -1169,9 +1170,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Chest", this.isNeedingChest);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.putBoolean("Chest", this.isNeedingChest);
         }
 
         @Override
@@ -1195,7 +1196,7 @@ public class NetherBridgePieces {
                 this.isNeedingChest = false;
 
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()-2])), 3, 2, 3, boundingBox);
+                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex() - 2])), 3, 2, 3, boundingBox);
 
                 BlockVector3 vec = new BlockVector3(this.getWorldX(3, 3), this.getWorldY(2), this.getWorldZ(3, 3));
                 if (boundingBox.isInside(vec)) {
@@ -1361,7 +1362,7 @@ public class NetherBridgePieces {
                     .register(new ItemEntry(Item.GOLDEN_SWORD, 5))
                     .register(new ItemEntry(Item.GOLDEN_CHESTPLATE, 5))
                     .register(new ItemEntry(Item.FLINT_AND_STEEL, 5))
-                    .register(new ItemEntry(Block.NETHER_WART , 0, 7, 3, 5))
+                    .register(new ItemEntry(Block.NETHER_WART, 0, 7, 3, 5))
                     .register(new ItemEntry(Item.SADDLE, 10))
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 8))
                     .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 5))

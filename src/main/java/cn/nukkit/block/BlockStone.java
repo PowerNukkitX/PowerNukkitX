@@ -56,6 +56,10 @@ public class BlockStone extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
+        if (!canHarvest(item)) {
+            return Item.EMPTY_ARRAY;
+        }
+
         return new Item[] {Block.get(COBBLESTONE).toItem()};
     }
 }

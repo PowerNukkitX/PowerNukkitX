@@ -3,19 +3,15 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 import static cn.nukkit.block.property.CommonBlockProperties.STRUCTURE_BLOCK_TYPE;
 
@@ -70,9 +66,8 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
         CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
 

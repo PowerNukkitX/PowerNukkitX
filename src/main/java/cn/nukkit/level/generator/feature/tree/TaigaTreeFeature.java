@@ -1,20 +1,21 @@
 package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.block.BlockSnowLayer;
-import cn.nukkit.block.BlockSpruceLeaves;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.GriddedFeature;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectFallenTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class TaigaTreeFeature extends GriddedFeature {
 
@@ -29,17 +30,12 @@ public class TaigaTreeFeature extends GriddedFeature {
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return new ObjectSmallSpruceTree();
+        return random.nextInt(100) == 0 ? new ObjectFallenTree(WoodType.SPRUCE) : new ObjectSmallSpruceTree();
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.TAIGA);
-    }
-
-    @Override
-    public int getSplit() {
-        return 2;
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
+        return Registries.BIOME.containsTag(BiomeTags.TAIGA, definition);
     }
 
     @Override

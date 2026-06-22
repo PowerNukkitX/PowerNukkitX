@@ -5,8 +5,9 @@ import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 
 public class SmithingArmorTrimCorrectedRecipe extends SmithingTrimRecipe {
 
-    public SmithingArmorTrimCorrectedRecipe() {
+    public SmithingArmorTrimCorrectedRecipe(int netId) {
         super("minecraft:smithing_armor_trim_corrected",
+                netId,
                 new ItemTagDescriptor("minecraft:trimmable_armors", 1),
                 new ItemTagDescriptor("minecraft:trim_materials", 1),
                 new ItemTagDescriptor("minecraft:trim_templates", 1),

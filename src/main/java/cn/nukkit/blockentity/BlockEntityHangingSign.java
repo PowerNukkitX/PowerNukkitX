@@ -11,11 +11,11 @@ public class BlockEntityHangingSign extends BlockEntitySign {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Hanging Sign";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Hanging Sign";
     }
 
     public boolean hasName() {
-        return namedTag.contains("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override

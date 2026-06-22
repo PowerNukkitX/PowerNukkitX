@@ -13,7 +13,6 @@ import cn.nukkit.utils.Utils;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 public class GossipExecutor implements EntityControl, IBehaviorExecutor {

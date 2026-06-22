@@ -9,15 +9,16 @@ import cn.nukkit.inventory.MinecartChestInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.MinecartType;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Snake1999
@@ -74,7 +75,7 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return false;
     }
 
@@ -94,31 +95,32 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
         super.initEntity();
 
         this.inventory = new MinecartChestInventory(this);
-        if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Items", CompoundTag.class);
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.containsList("Items")) {
+            ListTag<CompoundTag> inventoryList = nbtMap.getList("Items", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
-                this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
+                this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
 
-        this.entityDataMap.put(CONTAINER_TYPE, 10);
-        entityDataMap.put(CONTAINER_SIZE, this.inventory.getSize());
-        entityDataMap.put(CONTAINER_STRENGTH_MODIFIER, 0);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 10);
+        actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+        actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putList("Items",new ListTag<CompoundTag>());
+        final ListTag<CompoundTag> serializedItems = new ListTag<>(Tag.TAG_Compound);
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
-                    this.namedTag.getList("Items", CompoundTag.class)
-                            .add(NBTIO.putItemHelper(item, slot));
+                    serializedItems.add(ItemHelper.write(item, slot));
                 }
             }
         }
+        this.nbt.putList("Items", serializedItems);
     }
 }

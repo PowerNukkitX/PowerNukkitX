@@ -7,10 +7,11 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ItemHelper;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,15 +36,15 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
     public void onChange(Inventory inventory) {
         INBT.super.onChange(inventory);
         this.holder = inventory;
-        if(holder == null || holder != inventory.getHolder()) {
-            for(Player player : inventory.getViewers()) {
+        if (holder == null || holder != inventory.getHolder()) {
+            for (Player player : inventory.getViewers()) {
                 getInventory().sendContents(player);
             }
         }
     }
 
     public int getBundleId() {
-        return getNamedTag().getInt("bundle_id");
+        return getNbt().getInt("bundle_id");
     }
 
     @Override
@@ -56,32 +57,33 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         if(inventory == null) {
             CompoundTag tag;
             inventory = new BundleInventory(this);
-            tag = this.getNamedTag();
-            this.setNamedTag(tag);
+            tag = this.getNbt();
+            this.setNbt(tag);
         }
         if(inventory.getHolder() != this) inventory.setHolder(this);
         return inventory;
     }
 
     public void saveNBT() {
-        CompoundTag tag = this.getNamedTag();
+        CompoundTag tag = this.getNbt();
         ListTag<CompoundTag> items = new ListTag<>(Tag.TAG_Compound);
         for(var entry : getInventory().getContents().entrySet()) {
-            items.add(entry.getKey(), NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
+            items.add(ItemHelper.write(entry.getValue(), entry.getKey()));
         }
         tag.putList("storage_item_component_content", items);
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         Optional<Item> item = getInventory().getContents().values().stream().findFirst();
-        if(item.isPresent()) {
+        if (item.isPresent()) {
             Item instance = item.get();
             getInventory().remove(instance);
             player.dropItem(instance);
             getInventory().sendContents(player);
             getLevel().addSound(getVector3(), Sound.BUNDLE_DROP_CONTENTS);
+            player.getInventory().setItemInMainHand(this);
             return true;
         } else return false;
     }

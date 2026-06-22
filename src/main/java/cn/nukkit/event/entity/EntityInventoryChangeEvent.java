@@ -4,7 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -19,11 +19,11 @@ public class EntityInventoryChangeEvent extends EntityEvent implements Cancellab
     private final Item oldItem;
     private Item newItem;
     private final int slot;
-    private final ContainerSlotType slotType;
+    private final ContainerEnumName containerEnumName;
     private final int heldHotbarIndex;
 
     /**
-     * @deprecated Use {@link #EntityInventoryChangeEvent(Entity, Item, Item, int, ContainerSlotType, int)}
+     * @deprecated Use {@link #EntityInventoryChangeEvent(Entity, Item, Item, int, ContainerEnumName, int)}
      * so listeners know the slot type and currently selected hotbar index.
      */
     @Deprecated
@@ -32,16 +32,16 @@ public class EntityInventoryChangeEvent extends EntityEvent implements Cancellab
         this.oldItem = oldItem;
         this.newItem = newItem;
         this.slot = slot;
-        this.slotType = ContainerSlotType.INVENTORY;
+        this.containerEnumName = ContainerEnumName.INVENTORY_CONTAINER;
         this.heldHotbarIndex = -1;
     }
 
-    public EntityInventoryChangeEvent(Entity entity, Item oldItem, Item newItem, int slot, ContainerSlotType slotType, int heldHotbarIndex) {
+    public EntityInventoryChangeEvent(Entity entity, Item oldItem, Item newItem, int slot, ContainerEnumName containerEnumName, int heldHotbarIndex) {
         this.entity = entity;
         this.oldItem = oldItem;
         this.newItem = newItem;
         this.slot = slot;
-        this.slotType = slotType;
+        this.containerEnumName = containerEnumName;
         this.heldHotbarIndex = heldHotbarIndex;
     }
 
@@ -61,8 +61,8 @@ public class EntityInventoryChangeEvent extends EntityEvent implements Cancellab
         return oldItem;
     }
 
-    public ContainerSlotType getSlotType() {
-        return slotType;
+    public ContainerEnumName getContainerEnumName() {
+        return containerEnumName;
     }
 
     public int getHeldHotbarIndex() {
@@ -73,6 +73,6 @@ public class EntityInventoryChangeEvent extends EntityEvent implements Cancellab
      * @return true if this change targets the currently selected hotbar slot
      */
     public boolean isSelectedHotbar() {
-        return this.slotType == ContainerSlotType.HOTBAR && this.slot == this.heldHotbarIndex && this.heldHotbarIndex >= 0;
+        return this.containerEnumName == ContainerEnumName.HOTBAR_CONTAINER && this.slot == this.heldHotbarIndex && this.heldHotbarIndex >= 0;
     }
 }

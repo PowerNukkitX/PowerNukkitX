@@ -18,31 +18,31 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag spawnCompound = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable());
+        CompoundTag spawnCompound = super.getSpawnCompound();
+        spawnCompound.putBoolean("isMovable", this.isMovable());
         if (this.hasName()) {
-            spawnCompound.put("CustomName", this.namedTag.get("CustomName"));
+            spawnCompound.put("CustomName", this.nbt.get("CustomName"));
         }
         return spawnCompound;
     }
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "EnderChest";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "EnderChest";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 }

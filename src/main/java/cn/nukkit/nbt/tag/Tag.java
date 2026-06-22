@@ -15,6 +15,7 @@ public abstract class Tag {
     public static final byte TAG_List = 9;
     public static final byte TAG_Compound = 10;
     public static final byte TAG_Int_Array = 11;
+    public static final byte TAG_Long_Array = 12;
 
     @Override
     public abstract String toString();
@@ -57,6 +58,7 @@ public abstract class Tag {
             case TAG_Double -> new DoubleTag();
             case TAG_Byte_Array -> new ByteArrayTag();
             case TAG_Int_Array -> new IntArrayTag();
+            case TAG_Long_Array -> new LongArrayTag();
             case TAG_String -> new StringTag();
             case TAG_List -> new ListTag<>();
             case TAG_Compound -> new CompoundTag();
@@ -75,6 +77,7 @@ public abstract class Tag {
             case TAG_Double -> "TAG_Double";
             case TAG_Byte_Array -> "TAG_Byte_Array";
             case TAG_Int_Array -> "TAG_Int_Array";
+            case TAG_Long_Array -> "TAG_Long_Array";
             case TAG_String -> "TAG_String";
             case TAG_List -> "TAG_List";
             case TAG_Compound -> "TAG_Compound";
@@ -105,10 +108,16 @@ public abstract class Tag {
             return TAG_Byte_Array;
         } else if (type == IntArrayTag.class) {
             return TAG_Int_Array;
+        } if (type == LongArrayTag.class) {
+            return TAG_Long_Array;
         } else if (type == StringTag.class) {
-            return TAG_Int_Array;
+            return TAG_String;
         } else {
             throw new IllegalArgumentException("Unknown tag type " + type.getSimpleName());
         }
+    }
+
+    public <T> T toNetwork() {
+        return parseValue();
     }
 }

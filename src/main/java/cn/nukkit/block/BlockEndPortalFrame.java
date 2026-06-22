@@ -13,8 +13,6 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 import static cn.nukkit.block.property.CommonBlockProperties.END_PORTAL_EYE_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;

@@ -1,10 +1,10 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,24 +17,24 @@ import static cn.nukkit.recipe.RecipeType.USER_DATA_SHAPELESS_RECIPE;
  * @since 2021-09-25
  */
 public class UserDataShapelessRecipe extends ShapelessRecipe {
-    public UserDataShapelessRecipe(Item result, Collection<Item> ingredients) {
-        this(null, 10, result, ingredients);
+    public UserDataShapelessRecipe(Item result, Collection<Item> ingredients, int netId) {
+        this(null, netId, 10, result, ingredients);
     }
 
-    public UserDataShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
-        this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
+    public UserDataShapelessRecipe(String recipeId, int netId, int priority, Item result, Collection<Item> ingredients) {
+        this(recipeId, netId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
     }
 
-    public UserDataShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
-        this(recipeId, null, priority, result, ingredients);
+    public UserDataShapelessRecipe(String recipeId, int netId, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, null, netId, priority, result, ingredients);
     }
 
-    public UserDataShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
-        this(recipeId, null, priority, result, ingredients, null);
+    public UserDataShapelessRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, uuid, netId, priority, result, ingredients, null);
     }
 
-    public UserDataShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, USER_DATA_SHAPELESS_RECIPE) : recipeId, uuid, priority, result, ingredients, recipeUnlockingRequirement);
+    public UserDataShapelessRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, USER_DATA_SHAPELESS_RECIPE) : recipeId, uuid, netId, priority, result, ingredients, recipeUnlockingRequirement);
     }
 
     @Override

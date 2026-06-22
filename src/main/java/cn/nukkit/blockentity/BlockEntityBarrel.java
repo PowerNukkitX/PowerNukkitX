@@ -38,21 +38,21 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Barrel";
+        return this.hasName() ? this.nbt.getString("CustomName") : "Barrel";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            this.namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 }
