@@ -198,24 +198,24 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.remove(TAG_ENTITY_ID);
-        this.namedTag.remove(TAG_ENTITY_IDENTIFIER);
-        this.namedTag.remove(TAG_SPAWN_DATA);
+        this.nbt.remove(TAG_ENTITY_ID);
+        this.nbt.remove(TAG_ENTITY_IDENTIFIER);
+        this.nbt.remove(TAG_SPAWN_DATA);
         if (this.entityId > 0) {
-            this.namedTag.putInt(TAG_ENTITY_ID, this.entityId);
+            this.nbt.putInt(TAG_ENTITY_ID, this.entityId);
             String identifier = resolveEntityIdentifier();
             if (identifier != null && !identifier.isEmpty()) {
-                this.namedTag.putString(TAG_ENTITY_IDENTIFIER, identifier);
+                this.nbt.putString(TAG_ENTITY_IDENTIFIER, identifier);
             }
         }
-        this.namedTag.putString(TAG_ID, BlockEntity.MOB_SPAWNER);
-        this.namedTag.putShort(TAG_SPAWN_RANGE, this.spawnRange);
-        this.namedTag.putShort(TAG_MIN_SPAWN_DELAY, this.minSpawnDelay);
-        this.namedTag.putShort(TAG_MAX_SPAWN_DELAY, this.maxSpawnDelay);
-        this.namedTag.putShort(TAG_MAX_NEARBY_ENTITIES, this.maxNearbyEntities);
-        this.namedTag.putShort(TAG_REQUIRED_PLAYER_RANGE, this.requiredPlayerRange);
-        this.namedTag.putShort(TAG_MINIMUM_SPAWN_COUNT, this.minSpawnCount);
-        this.namedTag.putShort(TAG_MAXIMUM_SPAWN_COUNT, this.maxSpawnCount);
+        this.nbt.putString(TAG_ID, BlockEntity.MOB_SPAWNER);
+        this.nbt.putShort(TAG_SPAWN_RANGE, this.spawnRange);
+        this.nbt.putShort(TAG_MIN_SPAWN_DELAY, this.minSpawnDelay);
+        this.nbt.putShort(TAG_MAX_SPAWN_DELAY, this.maxSpawnDelay);
+        this.nbt.putShort(TAG_MAX_NEARBY_ENTITIES, this.maxNearbyEntities);
+        this.nbt.putShort(TAG_REQUIRED_PLAYER_RANGE, this.requiredPlayerRange);
+        this.nbt.putShort(TAG_MINIMUM_SPAWN_COUNT, this.minSpawnCount);
+        this.nbt.putShort(TAG_MAXIMUM_SPAWN_COUNT, this.maxSpawnCount);
     }
 
     @Override
@@ -261,7 +261,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
     private String resolveEntityIdentifier() {
         String currentIdentifier = Registries.ENTITY.getEntityIdentifier(this.entityId);
         if (currentIdentifier != null && !currentIdentifier.isEmpty()) return currentIdentifier;
-        String identifier = this.namedTag.getString(TAG_ENTITY_IDENTIFIER);
+        String identifier = this.nbt.getString(TAG_ENTITY_IDENTIFIER);
         if (identifier != null && !identifier.isEmpty()) return identifier;
         return null;
     }
