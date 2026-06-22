@@ -2,7 +2,6 @@ package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
 import cn.nukkit.form.response.Response;
-import cn.nukkit.network.protocol.types.ModalFormCancelReason;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -11,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -31,11 +31,14 @@ public abstract class Form<T extends Response> {
     protected String title = "";
 
     @Setter(AccessLevel.NONE)
-    protected Consumer<Player> closed = player -> {};
+    protected Consumer<Player> closed = player -> {
+    };
     @Setter(AccessLevel.NONE)
-    protected BiConsumer<Player, T> submitted = (player, response) -> {};
+    protected BiConsumer<Player, T> submitted = (player, response) -> {
+    };
     @Setter(AccessLevel.NONE)
-    protected BiConsumer<Player, ModalFormCancelReason> cancelled = (player, reason) -> {};
+    protected BiConsumer<Player, ModalFormCancelReason> cancelled = (player, reason) -> {
+    };
 
     @Getter
     protected T response;
@@ -46,6 +49,7 @@ public abstract class Form<T extends Response> {
 
     /**
      * Internally used to accept the consumer to execute when the form was closed
+     *
      * @param player The player who closed the form
      */
     public void supplyClosed(Player player) {
@@ -55,8 +59,9 @@ public abstract class Form<T extends Response> {
 
     /**
      * Internally used to accept the consumer to execute when the form was submitted
+     *
      * @param player The player who submitted the form
-     * @param data The data submitted by the player
+     * @param data   The data submitted by the player
      */
     public void supplySubmitted(Player player, T data) {
         this.response = data;
@@ -66,8 +71,9 @@ public abstract class Form<T extends Response> {
 
     /**
      * Internally used to accept the consumer to execute when the form was cancelled
+     *
      * @param player The player who submitted the form
-     * @param data The reason why the form was cancelled
+     * @param data   The reason why the form was cancelled
      */
     public void supplyCancelled(Player player, ModalFormCancelReason data) {
         if (this.cancelled != null)
@@ -103,6 +109,7 @@ public abstract class Form<T extends Response> {
 
     /**
      * Sends the form to a player
+     *
      * @param player The player to send the form to
      * @return The form
      */
@@ -119,8 +126,9 @@ public abstract class Form<T extends Response> {
 
     /**
      * Sends the form to a player
+     *
      * @param player The player to send the form to
-     * @param id The ID to use internally for the player
+     * @param id     The ID to use internally for the player
      * @return The form
      */
     public Form<T> send(Player player, int id) {
@@ -168,8 +176,8 @@ public abstract class Form<T extends Response> {
      * Get the value of a key
      *
      * @param key The key
-     * @return The value
      * @param <M> Any
+     * @return The value
      */
     @SuppressWarnings("unchecked")
     public <M> M getMeta(String key) {
@@ -179,10 +187,10 @@ public abstract class Form<T extends Response> {
     /**
      * Get the value of a key
      *
-     * @param key The key
+     * @param key          The key
      * @param defaultValue The default value
+     * @param <M>          Any
      * @return If present, the value. Otherwise, returns the default value
-     * @param <M> Any
      */
     @SuppressWarnings("unchecked")
     public <M> M getMeta(String key, M defaultValue) {
@@ -193,9 +201,9 @@ public abstract class Form<T extends Response> {
     /**
      * Put data inside here, e.g. to identify which form has been opened
      *
-     * @param key The key
+     * @param key    The key
      * @param object The value
-     * @param <M> Any
+     * @param <M>    Any
      */
     public <M> Form<?> putMeta(String key, M object) {
         this.meta.put(key, object);

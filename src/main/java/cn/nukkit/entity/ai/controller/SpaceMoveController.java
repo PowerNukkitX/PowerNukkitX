@@ -1,8 +1,8 @@
 package cn.nukkit.entity.ai.controller;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 /**
  * Dealing with physical movement in flight/swimming
@@ -24,14 +24,14 @@ public class SpaceMoveController implements IController {
             var dy = relativeVector.y * k;
             var dz = relativeVector.z * k;
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
-            entity.setDataFlag(EntityFlag.MOVING, true);
+            entity.setDataFlag(ActorFlags.MOVING, true);
             if (xyzLength < speed) {
                 needNewDirection(entity);
                 return false;
             }
             return true;
         } else {
-            entity.setDataFlag(EntityFlag.MOVING, false);
+            entity.setDataFlag(ActorFlags.MOVING, false);
             return false;
         }
     }

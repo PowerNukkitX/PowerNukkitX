@@ -3,16 +3,16 @@ package cn.nukkit.block;
 import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import lombok.SneakyThrows;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import java.util.List;
 
 public class BlockStateTest {
 
@@ -21,14 +21,15 @@ public class BlockStateTest {
     @SneakyThrows
     void BlockStateTest_initStates() {
         Registries.BLOCK.init();
-        int blocksCounter = 0;
-        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/kaooot/block_palette.nbt")) {
-            CompoundTag root = NBTIO.readCompressed(stream);
-            final ListTag<CompoundTag> blocks = root.getList("blocks", CompoundTag.class);
-            for (CompoundTag block : blocks.getAll()) {
+        int blocks = 0;
+        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/kaooot/block_palette.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            final NbtMap nbtMap = (NbtMap) nbtInputStream.readTag();
+            final List<NbtMap> blocksList = nbtMap.getList("blocks", NbtType.COMPOUND);
+            for (NbtMap block : blocksList) {
                 int hash = block.getInt("network_id");
                 String name = block.getString("name");
-                if (BlockRegistry.shouldSkip(name)) continue; //Skip blocks
+                if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if (state == null) {
                     Server.getInstance().getLogger().alert("failed to find block state for " + name + " (" + hash + ")");
@@ -37,10 +38,9 @@ public class BlockStateTest {
                         Server.getInstance().getLogger().alert("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());
                     }
                 }
-                blocksCounter++;
+                blocks++;
             }
-            Assertions.assertEquals(blocksCounter, Registries.BLOCKSTATE.getAllState().size());
-        } catch (IOException e) {
+            Assertions.assertEquals(blocks, Registries.BLOCKSTATE.getAllState().size());
         }
     }
 

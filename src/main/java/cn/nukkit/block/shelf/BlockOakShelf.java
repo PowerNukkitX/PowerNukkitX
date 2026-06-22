@@ -2,9 +2,7 @@ package cn.nukkit.block.shelf;
 
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.copper.lantern.BlockCopperLantern;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 /**

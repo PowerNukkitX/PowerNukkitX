@@ -103,14 +103,12 @@ public class ItemBoat extends Item {
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (face != BlockFace.UP) return false;
-        if(block instanceof BlockFlowingWater) block = block.up();
-        double spawnY = target instanceof BlockFlowingWater ? block.getY() - 0.375 : block.getY() + 0.01d; // this 0.01 workaround to avoid boat bump when placed on solid surface.
-
+        if (block instanceof BlockFlowingWater) block = block.up();
         EntityBoat boat = (EntityBoat) Entity.createEntity(Entity.BOAT,
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
                         .putList("Pos", new ListTag<DoubleTag>()
                                 .add(new DoubleTag(block.getX() + 0.5))
-                                .add(new DoubleTag(spawnY))
+                                .add(new DoubleTag(block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
                                 .add(new DoubleTag(block.getZ() + 0.5)))
                         .putList("Motion", new ListTag<DoubleTag>()
                                 .add(new DoubleTag(0))

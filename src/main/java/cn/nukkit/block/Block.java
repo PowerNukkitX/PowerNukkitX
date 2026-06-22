@@ -25,7 +25,6 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
@@ -33,8 +32,10 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -230,7 +231,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     /**
      * Handles ticking logic for custom blocks using either RANDOM or SCHEDULED tick types.
-     * 
+     * <p>
      * To enable ticking, configure the block with:
      * <pre>{@code
      *     .blockTick(60, 60, true)
@@ -316,8 +317,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
             return def.getComponents()
-                      .getCompound("minecraft:destructible_by_explosion")
-                      .getInt("explosion_resistance");
+                    .getCompound("minecraft:destructible_by_explosion")
+                    .getInt("explosion_resistance");
         }
         return 1;
     }
@@ -672,18 +673,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
         if (s.length() == 6) {
             return new BlockColor(
-                (int) ((val >> 16) & 0xFF),
-                (int) ((val >> 8) & 0xFF),
-                (int) (val & 0xFF),
-                0xFF
+                    (int) ((val >> 16) & 0xFF),
+                    (int) ((val >> 8) & 0xFF),
+                    (int) (val & 0xFF),
+                    0xFF
             );
         }
         if (s.length() == 8) {
             return new BlockColor(
-                (int) ((val >> 16) & 0xFF),
-                (int) ((val >> 8) & 0xFF),
-                (int) (val & 0xFF),
-                (int) ((val >> 24) & 0xFF)
+                    (int) ((val >> 16) & 0xFF),
+                    (int) ((val >> 8) & 0xFF),
+                    (int) (val & 0xFF),
+                    (int) ((val >> 24) & 0xFF)
             );
         }
         return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -778,8 +779,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             if (nbt.contains("blockTags")) {
                 ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
                 return tagList.getAll().stream()
-                    .map(tag -> tag.data)
-                    .toArray(String[]::new);
+                        .map(tag -> tag.data)
+                        .toArray(String[]::new);
             }
         }
 
@@ -1079,7 +1080,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         return this.getResistance() != -1;
     }
-
     public Block getTickCachedSide(BlockFace face) {
         return getTickCachedSideAtLayer(layer, face);
     }
@@ -1285,7 +1285,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 AxisAlignedBB box = def.getBoundingBox(this);
                 if (box != null) return box;
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return this;
     }
 
@@ -1318,7 +1319,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public double getMaxZ() {
         return this.z + 1;
     }
-
 
 
     @Override
@@ -1655,29 +1655,29 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public final boolean isBlockChangeAllowed(@Nullable Player player) {
         if (isBlockChangeAllowed()) {
-            int height = (int) (this.getY()-1);
-            for(int i = height; i >= getLevel().getMinHeight(); i--) {
-                Block block = this.down(height-i);
-                if(block instanceof BlockAllow) {
+            int height = (int) (this.getY() - 1);
+            for (int i = height; i >= getLevel().getMinHeight(); i--) {
+                Block block = this.down(height - i);
+                if (block instanceof BlockAllow) {
                     return true;
-                } else if(block instanceof BlockDeny) {
+                } else if (block instanceof BlockDeny) {
                     return player == null || player.isCreative();
                 }
             }
-            if(player == null) return true;
+            if (player == null) return true;
 
             if(player.isAdventure()) {
                 Item itemInHand = player.getInventory().getItemInMainHand();
                 if(itemInHand.isNull()) return false;
 
-                Tag tag = itemInHand.getNamedTagEntry("CanDestroy");
+                CompoundTag tag = (CompoundTag) itemInHand.getNbtEntry("CanDestroy");
                 boolean canBreak = false;
-                if (tag instanceof ListTag) {
-                    for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
-                        if (!(v instanceof StringTag stringTag)) {
+                if (tag instanceof List<?> list) {
+                    for (Object v : list) {
+                        if (!(v instanceof String stringTag)) {
                             continue;
                         }
-                        Item entry = Item.get(stringTag.data);
+                        Item entry = Item.get(stringTag);
                         if (!entry.isNull() &&
                                 entry.getBlock().getId().equals(this.getId())) {
                             canBreak = true;
@@ -1687,7 +1687,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 }
 
                 return canBreak;
-            }else{
+            } else {
                 return true;
             }
         }
@@ -1696,6 +1696,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     /**
      * Controls the amount of light absorbed by the block
+     *
      * @return Light absorbed by the block 0-15
      */
     public int getLightFilter() {

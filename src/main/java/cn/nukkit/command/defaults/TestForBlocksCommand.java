@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -11,6 +10,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.Locale;
 import java.util.Map;
@@ -25,9 +25,9 @@ public class TestForBlocksCommand extends VanillaCommand {
         this.setPermission("nukkit.command.testforblocks");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("begin", false, CommandParamType.POSITION),
+                CommandParameter.newType("end", false, CommandParamType.POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.POSITION),
                 CommandParameter.newEnum("mode", true, new String[]{"all", "masked"})
         });
         this.enableParamTree();

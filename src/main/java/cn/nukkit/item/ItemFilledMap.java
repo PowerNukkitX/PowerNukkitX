@@ -5,9 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
+import org.cloudburstmc.protocol.bedrock.packet.ClientboundMapItemDataPacket;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -16,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 public class ItemFilledMap extends Item {
@@ -34,10 +39,8 @@ public class ItemFilledMap extends Item {
     public ItemFilledMap(Integer meta, int count) {
         super(FILLED_MAP, meta, count, "Map");
         updateName();
-        if (!hasCompoundTag() || !getNamedTag().contains("map_uuid")) {
-            CompoundTag tag = new CompoundTag();
-            tag.putLong("map_uuid", mapCount++);
-            this.setNamedTag(tag);
+        if (!hasNbt() || !getNbt().contains("map_uuid")) {
+            this.setNbt(getOrCreateNbt().putLong("map_uuid", mapCount++));
         }
     }
 
@@ -74,7 +77,7 @@ public class ItemFilledMap extends Item {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(this.image, "png", baos);
 
-            this.setNamedTag(this.getNamedTag().putByteArray("Colors", baos.toByteArray()));
+            this.setNbt(this.getOrCreateNbt().putByteArray("Colors", baos.toByteArray()));
         } catch (IOException e) {
             log.error("Error while adding an image to an ItemMap", e);
         }
@@ -82,7 +85,7 @@ public class ItemFilledMap extends Item {
 
     protected BufferedImage loadImageFromNBT() {
         try {
-            byte[] data = getNamedTag().getByteArray("Colors");
+            byte[] data = getNbt().getByteArray("Colors");
             image = ImageIO.read(new ByteArrayInputStream(data));
             return image;
         } catch (IOException e) {
@@ -93,23 +96,23 @@ public class ItemFilledMap extends Item {
     }
 
     public long getMapId() {
-        return getNamedTag().getLong("map_uuid");
+        return getNbt().getLong("map_uuid");
     }
 
     public int getMapWorld() {
-        return getNamedTag().getInt("map_level");
+        return getNbt().getInt("map_level");
     }
 
     public int getMapStartX() {
-        return getNamedTag().getInt("map_startX");
+        return getNbt().getInt("map_startX");
     }
 
     public int getMapStartZ() {
-        return getNamedTag().getInt("map_startZ");
+        return getNbt().getInt("map_startZ");
     }
 
     public int getMapScale() {
-        return getNamedTag().getInt("map_scale");
+        return getNbt().getInt("map_scale");
     }
 
     public void sendImage(Player player) {
@@ -120,19 +123,25 @@ public class ItemFilledMap extends Item {
         // don't load the image from NBT if it has been done before.
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
-        ClientboundMapItemDataPacket pk = new ClientboundMapItemDataPacket();
-        pk.eids = new long[]{getMapId()};
-        pk.mapId = getMapId();
-        pk.update = 2;
-        pk.scale = (byte) (scale - 1);
-        pk.width = 128;
-        pk.height = 128;
-        pk.offsetX = 0;
-        pk.offsetZ = 0;
-        pk.image = image;
+        final ClientboundMapItemDataPacket packet = new ClientboundMapItemDataPacket();
+        packet.getTrackedEntityIds().add(this.getMapId());
+        packet.setMapID(this.getMapId());
+        packet.setDimension(DimensionType.from(player.getLevel().getDimension()));
+        packet.setMapOrigin(Vector3i.from(player.getFloorX(), player.getFloorY(), player.getFloorZ()));
+        packet.setScale(scale);
+        packet.setTextureHeight(128);
+        packet.setTextureWidth(128);
 
-        player.dataPacket(pk);
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.dataPacket(pk), 20);
+        final List<Integer> pixels = new IntArrayList();
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                pixels.add((int) Utils.toABGR(this.image.getRGB(x, y)));
+            }
+        }
+        packet.setPixels(pixels.stream().mapToInt(Integer::intValue).toArray());
+
+        player.sendPacket(packet);
+        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.sendPacket(packet), 20);
     }
 
     public boolean trySendImage(Player p) {
@@ -159,10 +168,12 @@ public class ItemFilledMap extends Item {
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
             image.setRGB(0, 0, 128, 128, pixels, 0, 128);
 
-            this.setNamedTag(this.getNamedTag().putInt("map_level", level.getId()));
-            this.setNamedTag(this.getNamedTag().putInt("map_startX", startX));
-            this.setNamedTag(this.getNamedTag().putInt("map_startZ", startZ));
-            this.setNamedTag(this.getNamedTag().putInt("map_scale", zoom));
+            CompoundTag tag = this.getOrCreateNbt()
+                    .putInt("map_level", level.getId())
+                    .putInt("map_startX", startX)
+                    .putInt("map_startZ", startZ)
+                    .putInt("map_scale", zoom);
+            this.setNbt(tag);
 
             setImage(image);
         } catch (Exception ex) {

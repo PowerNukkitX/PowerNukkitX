@@ -82,6 +82,7 @@ public class VanillaRecipeParser {
         List<String> tags = tags(recipeData);
         if (tags.size() == 1 && tags.get(0).equals("crafting_table")) {
             int prior = (int) recipeData.getOrDefault("priority", 0);
+            int netId = (int) recipeData.get("netId");
             List<String> pattern = MapParsingUtils.stringList(recipeData.get("pattern"), "pattern", RECIPE_ERROR);
             String[] shapes;
             if (pattern.size() > 1) {
@@ -117,7 +118,7 @@ public class VanillaRecipeParser {
                 } else if (o instanceof List<?> list && !list.isEmpty()) {
                     result = MapParsingUtils.stringObjectMap(list.get(0), "result", RECIPE_ERROR);
                 }
-                Registries.RECIPE.register(new ShapedRecipe(description(recipeData), prior, parseItem(result), shapes, ingredients, List.of()));
+                Registries.RECIPE.register(new ShapedRecipe(description(recipeData), netId, prior, parseItem(result), shapes, ingredients, List.of()));
             } catch (AssertionError ignore) {
             }
         }
@@ -125,6 +126,7 @@ public class VanillaRecipeParser {
 
     private void parseAndRegisterShapeLessRecipe(Map<String, Object> recipeData) {
         int prior = (int) recipeData.getOrDefault("priority", 0);
+        int netId = (int) recipeData.get("netId");
         List<Map<String, Object>> ingredients = MapParsingUtils.stringObjectMapList(recipeData.get("ingredients"), "ingredients", RECIPE_ERROR);
         final List<ItemDescriptor> itemDescriptors = new ArrayList<>();
         try {
@@ -142,12 +144,14 @@ public class VanillaRecipeParser {
             List<String> tags = tags(recipeData);
             for (var tag : tags) {
                 Recipe recipe = switch (tag) {
-                    case CRAFTING_TABLE_TAG -> new ShapelessRecipe(description(recipeData), prior, re, itemDescriptors);
-                    case SHULKER_BOX_TAG -> new UserDataShapelessRecipe(description(recipeData), prior, re, itemDescriptors);
+                    case CRAFTING_TABLE_TAG ->
+                            new ShapelessRecipe(description(recipeData), netId, prior, re, itemDescriptors);
+                    case SHULKER_BOX_TAG ->
+                            new UserDataShapelessRecipe(description(recipeData), netId, prior, re, itemDescriptors);
                     case STONE_CUTTER_TAG ->
-                            new StonecutterRecipe(description(recipeData), prior, re, itemDescriptors.get(0).toItem());
+                            new StonecutterRecipe(description(recipeData), netId, prior, re, itemDescriptors.getFirst().toItem());
                     case CARTOGRAPHY_TABLE_TAG ->
-                            new CartographyRecipe(description(recipeData), prior, re, itemDescriptors);
+                            new CartographyRecipe(description(recipeData), netId, prior, re, itemDescriptors);
                     default -> throw new IllegalArgumentException(tag);
                 };
                 Registries.RECIPE.register(recipe);

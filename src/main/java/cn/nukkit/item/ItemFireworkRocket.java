@@ -8,12 +8,12 @@ import cn.nukkit.entity.item.EntityFireworksRocket;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.ItemHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +91,7 @@ public class ItemFireworkRocket extends Item {
             fds[i] = (byte) fades.get(i).getDyeData();
         }
 
-        ListTag<CompoundTag> explosions = this.getNamedTag().getCompound("Fireworks").getList("Explosions", CompoundTag.class);
+        ListTag<CompoundTag> explosions = this.getNbt().getCompound("Fireworks").getList("Explosions", CompoundTag.class);
         CompoundTag tag = new CompoundTag()
                 .putByteArray("FireworkColor", clrs)
                 .putByteArray("FireworkFade", fds)
@@ -103,7 +103,7 @@ public class ItemFireworkRocket extends Item {
     }
 
     public void clearExplosions() {
-        this.getNamedTag().getCompound("Fireworks").putList("Explosions", new ListTag<CompoundTag>());
+        this.getNbt().getCompound("Fireworks").putList("Explosions", new ListTag<CompoundTag>());
     }
 
     private void spawnFirework(Level level, Vector3 pos) {
@@ -119,7 +119,7 @@ public class ItemFireworkRocket extends Item {
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))
-                .putCompound("FireworkItem", NBTIO.putItemHelper(this));
+                .putCompound("FireworkItem", ItemHelper.write(this));
 
         EntityFireworksRocket entity = (EntityFireworksRocket) Entity.createEntity(Entity.FIREWORKS_ROCKET, level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
         if (entity != null) {
@@ -140,7 +140,7 @@ public class ItemFireworkRocket extends Item {
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))
-                .putCompound("FireworkItem", NBTIO.putItemHelper(this));
+                .putCompound("FireworkItem", ItemHelper.write(this));
 
         EntityElytraFirework entity = new EntityElytraFirework(player.getChunk(), nbt, player);
         entity.spawnToAll();

@@ -5,9 +5,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.RedstoneComponent;
 
 
@@ -29,12 +28,12 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!(this.namedTag.get("book") instanceof CompoundTag)) {
-            this.namedTag.remove("book");
+        if (!this.nbt.containsCompound("book")) {
+            this.nbt.remove("book");
         }
 
-        if (!(this.namedTag.get("page") instanceof IntTag)) {
-            this.namedTag.remove("page");
+        if (!this.nbt.containsInt("page")) {
+            this.nbt.remove("page");
         }
     }
 
@@ -45,7 +44,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
         Item book = getBook();
         if (!book.isNull()) {
-            c.putCompound("book", NBTIO.putItemHelper(book));
+            c.putCompound("book", ItemHelper.write(book, null));
             c.putBoolean("hasBook", true);
             c.putInt("page", getRawPage());
             c.putInt("totalPages", totalPages);
@@ -67,23 +66,23 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     public boolean hasBook() {
-        return this.namedTag.contains("book") && this.namedTag.get("book") instanceof CompoundTag;
+        return this.nbt.containsCompound("book");
     }
 
     public Item getBook() {
         if (!hasBook()) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            return NBTIO.getItemHelper(this.namedTag.getCompound("book"));
+            return ItemHelper.read(this.getNbt().getCompound("book"));
         }
     }
 
     public void setBook(Item item) {
         if (item.getId().equals(Item.WRITTEN_BOOK) || item.getId().equals(Item.WRITABLE_BOOK)) {
-            this.namedTag.putCompound("book", NBTIO.putItemHelper(item));
+            this.nbt.putCompound("book", ItemHelper.write(item, null));
         } else {
-            this.namedTag.remove("book");
-            this.namedTag.remove("page");
+            this.nbt.remove("book");
+            this.nbt.remove("page");
         }
         updateTotalPages();
     }
@@ -97,33 +96,33 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     public void setLeftPage(int newLeftPage) {
-        setRawPage((newLeftPage - 1) /2);
+        setRawPage((newLeftPage - 1) / 2);
     }
 
     public void setRightPage(int newRightPage) {
-        setLeftPage(newRightPage -1);
+        setLeftPage(newRightPage - 1);
     }
 
     public void setRawPage(int page) {
-        this.namedTag.putInt("page", Math.min(page, totalPages));
+        this.nbt.putInt("page", Math.min(page, totalPages));
         this.getLevel().updateAround(this);
     }
 
     public int getRawPage() {
-        return this.namedTag.getInt("page");
+        return this.getNbt().getInt("page");
     }
 
     public int getTotalPages() {
         return totalPages;
     }
 
-    
+
     private void updateTotalPages() {
         Item book = getBook();
-        if (book.isNull() || !book.hasCompoundTag()) {
+        if (book.isNull() || !book.hasNbt()) {
             totalPages = 0;
         } else {
-            totalPages = book.getNamedTag().getList("pages", CompoundTag.class).size();
+            totalPages = book.getNbt().getList("pages", CompoundTag.class).size();
         }
         RedstoneComponent.updateAroundRedstone(this);
     }

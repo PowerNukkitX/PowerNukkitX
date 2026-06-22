@@ -318,27 +318,27 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Also allows the item to render as a 3D block, for that you need also to provide the desired block with your custom geometry.
          * @param blockId sting name id of the desired block
          * @param useOn set of string block Ids of blocks that this block can be placed
-        */
+         */
         public SimpleBuilder blockPlacer(String blockId, String... useOn) {
             ListTag<CompoundTag> useOnList = new ListTag<>();
             if (useOn != null && useOn.length > 0) {
                 for (String s : useOn) {
                     useOnList.add(new CompoundTag()
-                        .putString("name", s)
-                        .putCompound("states", new CompoundTag())
-                        .putString("tags", ""));
+                            .putString("name", s)
+                            .putCompound("states", new CompoundTag())
+                            .putString("tags", ""));
                 }
             }
 
             CompoundTag blockPlacer = new CompoundTag()
-                .putString("block", blockId)
-                .putBoolean("canUseBlockAsIcon", true)
-                .putList("use_on", useOnList);
+                    .putString("block", blockId)
+                    .putBoolean("canUseBlockAsIcon", true)
+                    .putList("use_on", useOnList);
 
             CompoundTag components = ensureComponents();
             components.putCompound("minecraft:block_placer", blockPlacer);
             components.putCompound("minecraft:publisher_on_use_on",
-                new CompoundTag().putBoolean("autoSucceedOnClient", false));
+                    new CompoundTag().putBoolean("autoSucceedOnClient", false));
             return this;
         }
 
@@ -749,9 +749,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
          * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
          * If you skip it, this builder will use duration as 0s and movement as 1.0 by default. <p>
-         * 
+         *
          * nutrition defaults to 0, saturation_modifier defaults to 0.6, using_converts_to defaults to "".
-         * 
+         *
          * @param canAlwaysEat if true, food can be always eaten even without hungry
          */
         public SimpleBuilder food(boolean canAlwaysEat) {
@@ -763,9 +763,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
          * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
          * If you skip it, this builder will use duration as 0s and movement as 1.0 by default. <p>
-         * 
+         *
          * using_converts_to defaults to "".
-         * 
+         *
          * @param canAlwaysEat if true, food can be always eaten even without hungry
          * @param nutrition nutrition level of the food as int value
          * @param saturationModifier saturation modifier provides the saturation of the food by: (nutrition * saturation_modifier * 2), defaults is 0.6
@@ -779,7 +779,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Note: Bedrock requires {@code minecraft:use_modifiers} for eat/drink behavior.
          * Call {@link #useModifiers(float, float)} to set the use time (seconds) and movement modifier.
          * If you skip it, this builder will use duration as 0s and movement as 1.0 by default.
-         * 
+         *
          * @param canAlwaysEat if true, food can be always eaten even without hungry
          * @param nutrition nutrition level of the food as int value
          * @param saturationModifier saturation modifier provides the saturation of the food by: (nutrition * saturation_modifier * 2), defaults is 0.6
@@ -885,12 +885,12 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             Preconditions.checkArgument(minDrawDuration  >= 0f, "min_draw_duration must be >= 0");
 
             ensureComponents().putCompound("minecraft:throwable", new CompoundTag()
-                .putByte ("do_swing_animation",          (byte) (doSwingAnimation ? 1 : 0))
-                .putFloat("launch_power_scale",          launchPowerScale)
-                .putFloat("max_draw_duration",           maxDrawDuration)
-                .putFloat("max_launch_power",            maxLaunchPower)
-                .putFloat("min_draw_duration",           minDrawDuration)
-                .putByte ("scale_power_by_draw_duration",(byte) (scalePowerByDrawDuration ? 1 : 0))
+                    .putByte ("do_swing_animation",          (byte) (doSwingAnimation ? 1 : 0))
+                    .putFloat("launch_power_scale",          launchPowerScale)
+                    .putFloat("max_draw_duration",           maxDrawDuration)
+                    .putFloat("max_launch_power",            maxLaunchPower)
+                    .putFloat("min_draw_duration",           minDrawDuration)
+                    .putByte ("scale_power_by_draw_duration",(byte) (scalePowerByDrawDuration ? 1 : 0))
             );
 
             return this;
@@ -936,7 +936,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * Determines how long an item takes to use in combination with components such as Shooter, Throwable, or Food.
          * @param movementModifier float moviment reduction while using this item
          * @param useDurationSeconds float seconds to successful use this item
-        */
+         */
         public SimpleBuilder useModifiers(float movementModifier, float useDurationSeconds) {
             Preconditions.checkArgument(movementModifier > 0f && movementModifier <= 1f, "movementModifier must be in (0,1]");
             Preconditions.checkArgument(useDurationSeconds >= 0f, "useDurationSeconds must be >= 0");
@@ -949,7 +949,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * The duration of time (in seconds) items with a matching category will spend cooling down before becoming usable again.
          * @param category string category cooldown name of this item
          * @param duration float seconds value to fully cooldown items of the same category name
-        */
+         */
         public SimpleBuilder cooldown(String category, float duration) {
             this.cooldownCategory = category;
             this.cooldownDuration = duration;
@@ -979,7 +979,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         /**
          * Finalizes and assembles the complete custom item definition NBT to be sent to the client.<p>
-        */
+         */
         protected CustomItemDefinition buildDefinition() {
             CompoundTag itemProps  = ensureItemProperties();
             CompoundTag components = ensureComponents();
@@ -1093,9 +1093,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         private void writeFood(CompoundTag components, CompoundTag itemProps) {
             boolean hasFood =
                     (foodCanAlwaysEat != null) ||
-                    (foodNutrition != null) ||
-                    (foodSaturation != null) ||
-                    (foodUsingConvertsTo != null);
+                            (foodNutrition != null) ||
+                            (foodSaturation != null) ||
+                            (foodUsingConvertsTo != null);
 
             if (!hasFood) return;
 
@@ -1723,7 +1723,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
                 CompoundTag entry = useOnTag.get(i);
                 String useOnName = entry.getString("name");
                 if (!useOnName.isEmpty()) {
-                useOnList.add(useOnName);
+                    useOnList.add(useOnName);
                 }
             }
         }
@@ -1829,20 +1829,20 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
     public int maxDurability() {
         return hasComponent("minecraft:durability") ?
-            getComponent("minecraft:durability").getInt("max_durability")
-            : 0;
+                getComponent("minecraft:durability").getInt("max_durability")
+                : 0;
     }
 
     public int damageChanceMin() {
         return hasComponent("minecraft:durability")
-            ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("min")
-            : 100;
+                ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("min")
+                : 100;
     }
 
     public int damageChanceMax() {
         return hasComponent("minecraft:durability")
-            ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("max")
-            : 100;
+                ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("max")
+                : 100;
     }
 
     public CompoundTag getNbt() {

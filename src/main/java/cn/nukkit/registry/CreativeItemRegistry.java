@@ -5,18 +5,28 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
+import cn.nukkit.utils.MapParsingUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CraftingCatalogGroup;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -24,17 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-
-import cn.nukkit.utils.MapParsingUtils;
-import lombok.extern.slf4j.Slf4j;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import org.jetbrains.annotations.NotNull;
-import io.netty.util.internal.EmptyArrays;
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-
 
 /**
  * Allay Project 12/21/2023
@@ -47,7 +46,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
-    static final ObjectLinkedOpenHashSet<CreativeItemGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
+    static final ObjectLinkedOpenHashSet<CraftingCatalogGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
     public static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
@@ -66,7 +65,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json");
              InputStreamReader reader = new InputStreamReader(input)) {
-            Map<String, Object> data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
+            Map<String, Object> data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {
+            }.getType());
             List<Map<String, Object>> groups = MapParsingUtils.stringObjectMapList(data.get("groups"), "groups", CREATIVE_ITEMS_ERROR);
             int index = 0;
             for (Map<String, Object> tag : groups) {
@@ -74,7 +74,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 String name = (String) tag.get("name");
                 Map iconMap = (Map) tag.get("icon");
                 Item icon = Item.get((String) iconMap.get("id"));
-                CreativeItemGroup group = new CreativeItemGroup(CreativeItemCategory.VALUES[creativeCategory], name, icon);
+                CraftingCatalogGroup group = new CraftingCatalogGroup(CreativeItemCategory.values()[creativeCategory], name, icon.toNetwork());
                 GROUPS.add(group);
 
                 CreativeCategory category = CreativeCategory.fromID(creativeCategory);
@@ -95,9 +95,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 byte[] nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
                 String name = tag.get("id").toString();
                 Item item = Item.get(name, damage, 1, nbt, false);
-                item.setCompoundTag(nbt);
-                if(ItemRegistry.getItemComponents().containsCompound(name)) {
-                    item.setNamedTag(ItemRegistry.getItemComponents().getCompound(name).getCompound("components"));
+                item.setNbtBytes(nbt);
+                if (ItemRegistry.getItemComponents().containsKey(name)) {
+                    item.setNbt(CompoundTag.fromNetwork(ItemRegistry.getItemComponents().getCompound(name).getCompound("components")));
                 }
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;
@@ -106,7 +106,11 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 var isBlock = tag.containsKey("block_state_b64");
                 if (isBlock) {
                     byte[] blockTag = Base64.getDecoder().decode(tag.get("block_state_b64").toString());
-                    CompoundTag blockCompoundTag = NBTIO.read(blockTag, ByteOrder.LITTLE_ENDIAN);
+                    NbtMap blockCompoundTag;
+                    try (var inputStream = new ByteArrayInputStream(blockTag);
+                         var nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+                        blockCompoundTag = (NbtMap) nbtInputStream.readTag();
+                    }
                     int blockHash = blockCompoundTag.getInt("network_id");
                     BlockState block = Registries.BLOCKSTATE.get(blockHash);
                     if (block == null) {
@@ -123,7 +127,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     INTERNAL_DIFF_ITEM.put(i, item.clone());
                     item.setBlockUnsafe(null);
                 }
-                ITEM_DATA.add(new CreativeItemData(item, groupIndex));
+                ITEM_DATA.add(new CreativeItemData(item.toNetwork(), i, groupIndex));
                 register(i, item);
             }
         } catch (IOException e) {
@@ -275,18 +279,19 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Register a creative item and specify its group index directly.
      */
     public void register(Integer key, Item value, int groupIndex) throws RegisterException {
-        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItem().equals(value))) {
+        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
         }
-        ITEM_DATA.add(new CreativeItemData(value, groupIndex));
+        ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey(), groupIndex));
     }
+
     @Override
     public void register(Integer key, Item value) throws RegisterException {
-        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItem().equals(value))) {
+        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         } else {
-            ITEM_DATA.add(new CreativeItemData(value, CreativeItemRegistry.LAST_ITEMS_INDEX));
+            ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey(), CreativeItemRegistry.LAST_ITEMS_INDEX));
         }
     }
 
@@ -306,17 +311,18 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
     }
 
-    public ObjectLinkedOpenHashSet<CreativeItemGroup> getCreativeGroups() {
+    public ObjectLinkedOpenHashSet<CraftingCatalogGroup> getCreativeGroups() {
         return GROUPS;
     }
 
-    public ObjectLinkedOpenHashSet<CreativeItemGroup> getGroupList() {
+    public ObjectLinkedOpenHashSet<CraftingCatalogGroup> getGroupList() {
         return GROUPS;
     }
 
     public ObjectLinkedOpenHashSet<CreativeItemData> getCreativeItemData() {
         return ITEM_DATA;
     }
+
     /**
      * Detect if the item exists in the Creative backpack
      */
@@ -418,7 +424,6 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     }
 
 
-
     public int resolveGroupIndexFromItemDefinition(String identifier, CompoundTag nbt) {
         if (nbt != null && nbt.contains("components")) {
             CompoundTag components = nbt.getCompound("components");
@@ -486,10 +491,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     private static int tailIndexForCategory(CreativeCategory category) {
         return switch (category) {
             case CONSTRUCTION -> LAST_CONSTRUCTION_INDEX;
-            case EQUIPMENT    -> LAST_EQUIPMENTS_INDEX;
-            case ITEMS        -> LAST_ITEMS_INDEX;
-            case NATURE       -> LAST_NATURE_INDEX;
-            default           -> LAST_ITEMS_INDEX;
+            case EQUIPMENT -> LAST_EQUIPMENTS_INDEX;
+            case ITEMS -> LAST_ITEMS_INDEX;
+            case NATURE -> LAST_NATURE_INDEX;
+            default -> LAST_ITEMS_INDEX;
         };
     }
 
@@ -505,9 +510,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         out.writeInt(MAP.size());
         int di = 0;
         for (var e : MAP.int2ObjectEntrySet()) {
-            int  index   = e.getIntKey();
-            Item item    = e.getValue();
-            int  groupId = di < dataList.size() ? dataList.get(di).getGroupId() : -1;
+            int index = e.getIntKey();
+            Item item = e.getValue();
+            int groupId = di < dataList.size() ? dataList.get(di).getGroupIndex() : -1;
             di++;
 
             out.writeInt(index);
@@ -518,7 +523,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             } else {
                 out.writeUTF(item.getId());
                 out.writeInt(item.getDamage());
-                byte[] nbt = item.getCompoundTag();
+                byte[] nbt = item.getNbtBytes();
                 out.writeInt(nbt.length);
                 if (nbt.length > 0) out.write(nbt);
                 // hasBlock = true when the item had block_state data (not in INTERNAL_DIFF_ITEM)
@@ -534,39 +539,39 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     void restoreCache(DataInputStream in) throws IOException {
         if (isLoad.getAndSet(true)) return;
 
-        List<CreativeItemGroup> groups = RegistryCache.readCreativeGroups(in);
+        List<CraftingCatalogGroup> groups = RegistryCache.readCreativeGroups(in);
         GROUPS.addAll(groups);
 
         LAST_CONSTRUCTION_INDEX = in.readInt();
-        LAST_EQUIPMENTS_INDEX   = in.readInt();
-        LAST_ITEMS_INDEX        = in.readInt();
-        LAST_NATURE_INDEX       = in.readInt();
+        LAST_EQUIPMENTS_INDEX = in.readInt();
+        LAST_ITEMS_INDEX = in.readInt();
+        LAST_NATURE_INDEX = in.readInt();
 
         CATEGORY_GROUP_INDEX_MAP.putAll(RegistryCache.readCategoryGroupIndexMap(in));
 
         int count = in.readInt();
         for (int j = 0; j < count; j++) {
-            int    index   = in.readInt();
-            int    groupId = in.readInt();
-            String id      = in.readUTF();
+            int index = in.readInt();
+            int groupId = in.readInt();
+            String id = in.readUTF();
 
             if (id.isEmpty()) {
-                ITEM_DATA.add(new CreativeItemData(Item.AIR, groupId));
+                ITEM_DATA.add(new CreativeItemData(Item.AIR.toNetwork(), index, groupId));
                 MAP.put(index, Item.AIR);
                 continue;
             }
 
-            int    damage = in.readInt();
-            int    nbtLen = in.readInt();
-            byte[] nbt    = nbtLen > 0 ? new byte[nbtLen] : EmptyArrays.EMPTY_BYTES;
+            int damage = in.readInt();
+            int nbtLen = in.readInt();
+            byte[] nbt = nbtLen > 0 ? new byte[nbtLen] : EmptyArrays.EMPTY_BYTES;
             if (nbtLen > 0) in.readFully(nbt);
             boolean hasBlock = in.readBoolean();
 
             Item item = Item.get(id, damage, 1, nbt);
 
             if (hasBlock) {
-                int        blockHash = in.readInt();
-                BlockState block     = Registries.BLOCKSTATE.get(blockHash);
+                int blockHash = in.readInt();
+                BlockState block = Registries.BLOCKSTATE.get(blockHash);
                 if (block == null) {
                     item = Item.AIR;
                 } else {
@@ -581,7 +586,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 item.setBlockUnsafe(null);
             }
 
-            ITEM_DATA.add(new CreativeItemData(item, groupId));
+            ITEM_DATA.add(new CreativeItemData(item.toNetwork(), index, groupId));
             MAP.put(index, item);
         }
     }

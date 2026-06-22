@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCreakingHeart;
-import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockPaleHangingMoss;
 import cn.nukkit.block.BlockPaleOakLeaves;
 import cn.nukkit.block.BlockPaleOakLog;

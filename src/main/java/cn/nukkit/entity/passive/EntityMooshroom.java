@@ -185,7 +185,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
         this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
         this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
-        EntityCow cow = new EntityCow(this.getChunk(), this.namedTag);
+        EntityCow cow = new EntityCow(this.getChunk(), this.getNbt());
         cow.setPosition(this);
         cow.setHealthCurrent(this.health);
         cow.setRotation(this.yaw, this.pitch);

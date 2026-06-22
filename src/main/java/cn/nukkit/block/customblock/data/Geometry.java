@@ -9,6 +9,7 @@ import java.util.Map;
 
 
 public class Geometry implements NBTData {
+
     private final String geometryName;
     private String culling = "";
     private String culling_shape = "";

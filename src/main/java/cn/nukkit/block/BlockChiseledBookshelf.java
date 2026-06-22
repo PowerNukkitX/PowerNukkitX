@@ -13,12 +13,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 import static cn.nukkit.block.property.CommonBlockProperties.BOOKS_STORED;
 
@@ -65,9 +62,8 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
             nbt.putString("CustomName", item.getCustomName());
         }
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
@@ -87,7 +83,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
 
     @Override
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
-        if(action== PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
+        if (action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
             BlockFace blockFace = getBlockFace();
             assert player != null;
             if (player.getHorizontalFacing().getOpposite() == blockFace) {

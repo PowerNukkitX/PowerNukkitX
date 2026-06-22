@@ -1,7 +1,5 @@
 package cn.nukkit.utils;
 
-import lombok.Getter;
-
 import java.lang.ref.Cleaner;
 
 /**

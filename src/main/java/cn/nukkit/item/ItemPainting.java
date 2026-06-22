@@ -62,7 +62,7 @@ public class ItemPainting extends Item {
                 validMotives.add(motive);
             }
         }
-        if(validMotives.isEmpty()) return false;
+        if (validMotives.isEmpty()) return false;
 
         int direction = DIRECTION[face.getIndex() - 2];
         EntityPainting.Motive motive = validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
@@ -125,7 +125,7 @@ public class ItemPainting extends Item {
     }
 
     private static double offset(int value) {
-        if(value > 1 && value != 3) {
+        if (value > 1 && value != 3) {
             return 0.5;
         }
         return 0;

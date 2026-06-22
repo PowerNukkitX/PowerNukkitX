@@ -8,16 +8,11 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static cn.nukkit.block.BlockID.*;
-import static cn.nukkit.block.BlockID.ANCIENT_DEBRIS;
-import static cn.nukkit.block.BlockID.CRIMSON_ROOTS;
-import static cn.nukkit.block.BlockID.NETHER_GOLD_ORE;
-import static cn.nukkit.block.BlockID.QUARTZ_ORE;
 
 public class WarpedTwistingVinesPopulator extends Populator {
 
