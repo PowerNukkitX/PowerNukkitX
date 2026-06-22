@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockSulfur;
 import cn.nukkit.block.BlockSulfurSpike;
+import cn.nukkit.block.BlockWater;
 import cn.nukkit.block.property.enums.DripstoneThickness;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
@@ -27,6 +28,7 @@ public class SulfurSpikeFeature extends GenerateFeature {
 
     private static final BlockState CINNABAR = BlockCinnabar.PROPERTIES.getDefaultState();
     private static final BlockState SULFUR = BlockSulfur.PROPERTIES.getDefaultState();
+    private static final BlockState WATER = BlockWater.PROPERTIES.getDefaultState();
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -135,8 +137,7 @@ public class SulfurSpikeFeature extends GenerateFeature {
     }
 
     private boolean isAirOrWater(Block block) {
-        String id = block.getId();
-        return block.isAir() || BlockID.WATER.equals(id) || BlockID.FLOWING_WATER.equals(id);
+        return block.isAir() || isWater(block);
     }
 
     private void tryPlaceFromFloorScan(BlockManager manager, SimplexNoise gradient, int x, int y, int z) {
@@ -201,11 +202,20 @@ public class SulfurSpikeFeature extends GenerateFeature {
         int lastIndex = plannedY.size() - 1;
         for (int i = 0; i < plannedY.size(); i++) {
             DripstoneThickness thickness = getThicknessForIndex(i, lastIndex, mergeY != Integer.MIN_VALUE);
-            manager.setBlockStateAt(x, plannedY.get(i), z, getSulfurSpikeState(hanging, thickness));
+            setSulfurSpikeStateAt(manager, x, plannedY.get(i), z, getSulfurSpikeState(hanging, thickness));
         }
 
         if (mergeY != Integer.MIN_VALUE) {
-            manager.setBlockStateAt(x, mergeY, z, getSulfurSpikeState(!hanging, DripstoneThickness.MERGE));
+            setSulfurSpikeStateAt(manager, x, mergeY, z, getSulfurSpikeState(!hanging, DripstoneThickness.MERGE));
+        }
+    }
+
+    private void setSulfurSpikeStateAt(BlockManager manager, int x, int y, int z, BlockState state) {
+        boolean waterlogged = isWater(manager.getBlockIfCachedOrLoaded(x, y, z))
+                || isWater(manager.getLevel().getBlock(x, y, z, 1));
+        manager.setBlockStateAt(x, y, z, state);
+        if (waterlogged) {
+            manager.setBlockStateAt(x, y, z, 1, WATER);
         }
     }
 
@@ -227,6 +237,10 @@ public class SulfurSpikeFeature extends GenerateFeature {
                 HANGING.createValue(hanging),
                 DRIPSTONE_THICKNESS.createValue(thickness)
         );
+    }
+
+    private boolean isWater(Block block) {
+        return block instanceof BlockWater;
     }
 
     private int clampedNormal(float deviation, int max) {
