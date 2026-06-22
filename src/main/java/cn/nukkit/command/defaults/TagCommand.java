@@ -1,11 +1,11 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,17 +20,17 @@ public class TagCommand extends VanillaCommand {
         this.setPermission("nukkit.command.tag");
         this.commandParameters.clear();
         this.commandParameters.put("add", new CommandParameter[]{
-                CommandParameter.newType("targets", CommandParamType.TARGET),
+                CommandParameter.newType("targets", CommandParamType.SELECTION),
                 CommandParameter.newEnum("add", new String[]{"add"}),
-                CommandParameter.newType("name", CommandParamType.STRING)
+                CommandParameter.newType("name", CommandParamType.ID)
         });
         this.commandParameters.put("remove", new CommandParameter[]{
-                CommandParameter.newType("targets", CommandParamType.TARGET),
+                CommandParameter.newType("targets", CommandParamType.SELECTION),
                 CommandParameter.newEnum("remove", new String[]{"remove"}),
-                CommandParameter.newType("name", CommandParamType.STRING)}
+                CommandParameter.newType("name", CommandParamType.ID)}
         );
         this.commandParameters.put("list", new CommandParameter[]{
-                CommandParameter.newType("targets", CommandParamType.TARGET),
+                CommandParameter.newType("targets", CommandParamType.SELECTION),
                 CommandParameter.newEnum("list", new String[]{"list"}),
         });
         this.enableParamTree();

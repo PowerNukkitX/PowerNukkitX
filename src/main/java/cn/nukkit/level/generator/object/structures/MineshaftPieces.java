@@ -2,12 +2,10 @@ package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.enums.TorchFacingDirection;
-import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.item.EntityChestMinecart;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
@@ -98,8 +96,8 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            tag.putInt("MST", this.type.ordinal());
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return tag.putInt("MST", this.type.ordinal());
         }
 
         protected BlockState getPlanksBlock() {
@@ -165,7 +163,7 @@ public class MineshaftPieces {
 
         public MineshaftRoom(CompoundTag tag) {
             super(tag);
-            tag.getList("Entrances", IntArrayTag.class).getAll().forEach(arrayTag -> this.childEntranceBoxes.add(new BoundingBox(arrayTag.data)));
+            tag.getList("Entrances", IntArrayTag.class).getAll().forEach(arrayTag -> this.childEntranceBoxes.add(new BoundingBox(arrayTag.getData())));
         }
 
         @Override //\\ MineshaftRoom::getType() // 1297306189i64;
@@ -259,13 +257,14 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
             ListTag<IntArrayTag> entrances = new ListTag<>();
             for (BoundingBox childEntranceBox : this.childEntranceBoxes) {
-                entrances.add(childEntranceBox.createTag());
+                entrances.add(new IntArrayTag(childEntranceBox.createTag()));
             }
-            tag.put("Entrances", entrances);
+            tag.putList("Entrances", entrances);
+            return tag;
         }
     }
 
@@ -340,12 +339,13 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("hr", this.hasRails);
-            tag.putBoolean("sc", this.spiderCorridor);
-            tag.putBoolean("hps", this.hasPlacedSpider);
-            tag.putInt("Num", this.numSections);
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putBoolean("hr", this.hasRails)
+                    .putBoolean("sc", this.spiderCorridor)
+                    .putBoolean("hps", this.hasPlacedSpider)
+                    .putInt("Num", this.numSections)
+                    ;
         }
 
         @Override
@@ -690,10 +690,11 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("tf", this.isTwoFloored);
-            tag.putInt("D", this.direction.getHorizontalIndex());
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.putBoolean("tf", this.isTwoFloored)
+                    .putInt("D", this.direction.getHorizontalIndex())
+                    ;
         }
 
         @Override
@@ -858,6 +859,7 @@ public class MineshaftPieces {
             return true;
         }
     }
+
     public enum Type {
         NORMAL,
         MESA;
@@ -877,7 +879,7 @@ public class MineshaftPieces {
                     .register(new ItemEntry(Item.GOLDEN_APPLE, 20))
                     .register(new ItemEntry(Item.ENCHANTED_GOLDEN_APPLE, 1))
                     .register(new ItemEntry(Item.NAME_TAG, 30))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1,1, 10, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 10, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.IRON_PICKAXE, 5))
                     .register(new ItemEntry(Item.AIR.getId(), 5));
             this.pools.put(pool1.build(), new RollEntry(1, pool1.getTotalWeight()));

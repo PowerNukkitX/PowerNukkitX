@@ -7,9 +7,10 @@ import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ItemHelper;
 
 import java.util.HashSet;
 
@@ -30,18 +31,18 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         super.loadNBT();
         this.inventory = new ShulkerBoxInventory(this);
 
-        if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        if (!this.nbt.contains("Items") || !(this.nbt.get("Items") instanceof ListTag<?>)) {
+            this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
+        final ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (CompoundTag compound : list.getAll()) {
-            Item item = NBTIO.getItemHelper(compound);
+            Item item = ItemHelper.read(compound);
             this.inventory.setItemInternal(compound.getByte("Slot"), item);
         }
 
-        if (!this.namedTag.containsByte("facing")) {
-            this.namedTag.putByte("facing", 0);
+        if (!this.nbt.contains("facing")) {
+            this.nbt.putByte("facing", (byte) 0);
         }
     }
 
@@ -58,7 +59,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -75,7 +76,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     protected int getSlotIndex(int index) {
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -90,25 +91,28 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         if (i < 0) {
             return Item.AIR;
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
-            return NBTIO.getItemHelper(data);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
+            return ItemHelper.read(data);
         }
     }
 
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
+
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
 
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
-                this.namedTag.getList("Items").remove(i);
+                items.remove(i);
             }
         } else if (i < 0) {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(d);
+            items.add(d);
         } else {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
+            items.add(i, d);
         }
+        this.nbt.putList("Items", items);
     }
 
     @Override
@@ -122,22 +126,22 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Shulker Box";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Shulker Box";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 
     @Override
@@ -145,11 +149,11 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false)
-                .putList("Items", this.namedTag.getList("Items", CompoundTag.class))
-                .putByte("facing", this.namedTag.getByte("facing"));
+                .putList("Items", this.getNbt().getList("Items", CompoundTag.class))
+                .putByte("facing", this.getNbt().getByte("facing"));
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            c.put("CustomName", this.nbt.get("CustomName").copy());
         }
 
         return c;

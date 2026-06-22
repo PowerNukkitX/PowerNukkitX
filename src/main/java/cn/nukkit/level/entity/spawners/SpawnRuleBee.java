@@ -1,7 +1,6 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityBee;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
 import cn.nukkit.level.entity.condition.ConditionInAir;

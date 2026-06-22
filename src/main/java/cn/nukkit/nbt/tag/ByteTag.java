@@ -1,22 +1,22 @@
 package cn.nukkit.nbt.tag;
 
-public class ByteTag extends NumberTag<Integer> {
-    public int data;
+public class ByteTag extends NumberTag<Byte> {
+    public byte data;
 
     public ByteTag() {
     }
 
-    public ByteTag(int data) {
+    public ByteTag(byte data) {
         this.data = (byte) data;
     }
 
     @Override
-    public Integer getData() {
-        return (int) data;
+    public Byte getData() {
+        return (byte) data;
     }
 
     @Override
-    public void setData(Integer data) {
+    public void setData(Byte data) {
         this.data = (byte) (data == null ? 0 : data);
     }
 
@@ -26,8 +26,8 @@ public class ByteTag extends NumberTag<Integer> {
     }
 
     @Override
-    public Integer parseValue() {
-        return (int) this.data;
+    public Byte parseValue() {
+        return (byte) this.data;
     }
 
     @Override

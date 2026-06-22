@@ -1,6 +1,5 @@
 package cn.nukkit.block.copper.chain;
 
-import cn.nukkit.block.BlockConnectable;
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;

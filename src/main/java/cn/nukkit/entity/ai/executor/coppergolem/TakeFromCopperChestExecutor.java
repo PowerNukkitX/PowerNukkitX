@@ -12,7 +12,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.mob.EntityCopperGolem;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.BlockEventPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class TakeFromCopperChestExecutor implements EntityControl, IBehaviorExec
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if(tick < STAY_TICKS) {
+        if (tick < STAY_TICKS) {
             tick++;
             return true;
         }
@@ -40,7 +41,7 @@ public class TakeFromCopperChestExecutor implements EntityControl, IBehaviorExec
     @Override
     public void onStart(EntityIntelligent entity) {
         this.tick = 0;
-        if(entity instanceof EntityCopperGolem golem) {
+        if (entity instanceof EntityCopperGolem golem) {
             chest = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK_2);
             animateChest(golem, true);
             golem.setEnumEntityProperty(EntityCopperGolem.PROPERTIES[0].getIdentifier(), "take");
@@ -50,15 +51,15 @@ public class TakeFromCopperChestExecutor implements EntityControl, IBehaviorExec
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        if(entity instanceof EntityCopperGolem golem) {
+        if (entity instanceof EntityCopperGolem golem) {
             animateChest(golem, false);
-            if(chest instanceof BlockCopperChest chest) {
+            if (chest instanceof BlockCopperChest chest) {
                 BlockEntityChest blockEntityChest = chest.getOrCreateBlockEntity();
                 ChestInventory chestInventory = (ChestInventory) blockEntityChest.getInventory();
                 Optional<Item> optionalItem = chestInventory.getContents().values().stream().filter(item1 -> !item1.isNull()).findFirst();
-                if(optionalItem.isPresent()) {
+                if (optionalItem.isPresent()) {
                     Item item = optionalItem.get().clone();
-                    if(item.getCount() > 16) {
+                    if (item.getCount() > 16) {
                         item.setCount(16);
                     }
                     chestInventory.removeItem(item);
@@ -69,8 +70,8 @@ public class TakeFromCopperChestExecutor implements EntityControl, IBehaviorExec
                 golem.sendData(golem.getViewers().values().toArray(Player[]::new));
                 var copperchests = entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS);
                 copperchests.addLast(blockEntityChest);
-                if(copperchests.size() >= 10) {
-                    entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7*20);
+                if (copperchests.size() >= 10) {
+                    entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
                     copperchests.clear();
                 }
             }
@@ -83,13 +84,11 @@ public class TakeFromCopperChestExecutor implements EntityControl, IBehaviorExec
     }
 
     public void animateChest(EntityCopperGolem entity, boolean open) {
-        if(chest instanceof BlockCopperChest) {
-            BlockEventPacket packet = new BlockEventPacket();
-            packet.x = (int) chest.getX();
-            packet.y = (int) chest.getY();
-            packet.z = (int) chest.getZ();
-            packet.type = 1;
-            packet.value = open ? 2 : 0;
+        if (chest instanceof BlockCopperChest) {
+            final BlockEventPacket packet = new BlockEventPacket();
+            packet.setBlockPosition(Vector3i.from(chest.getX(), chest.getY(), chest.getZ()));
+            packet.setEventType(1);
+            packet.setEventValue(open ? 2 : 0);
             Server.broadcastPacket(entity.getViewers().values(), packet);
         }
     }

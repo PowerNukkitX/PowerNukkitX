@@ -236,6 +236,8 @@ public interface IChunk {
 
     CompoundTag getExtraData();
 
+    void setExtraData(CompoundTag extraData);
+
     boolean hasChanged();
 
     void setChanged();
@@ -289,4 +291,18 @@ public interface IChunk {
     default void setPopulated() {
         setChunkState(ChunkState.POPULATED);
     }
+
+    boolean areBorderBlockColumnsInitialized();
+
+    void rebuildBorderBlockColumns();
+
+    void invalidateBorderBlockColumns();
+
+    long getBorderColumnsLow();
+
+    long getBorderColumnsMidLow();
+
+    long getBorderColumnsMidHigh();
+
+    long getBorderColumnsHigh();
 }

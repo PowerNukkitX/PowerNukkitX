@@ -6,16 +6,17 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.StructureRotationUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -53,10 +54,10 @@ public class PNXStructure extends AbstractStructure {
         int sizeZ = sizeNbt.length > 2 ? sizeNbt[2] : 0;
 
         // --- palette (direct BlockState array) ---
-        ListTag<IntTag> paletteNbt = nbt.getList("palette", IntTag.class);
+        List<IntTag> paletteNbt = nbt.getList("palette", IntTag.class).getAll();
         BlockState[] palette = new BlockState[paletteNbt.size()];
         for (int i = 0; i < paletteNbt.size(); i++) {
-            int hash = paletteNbt.get(i).data;
+            int hash = paletteNbt.get(i).getData();
             BlockState state = Registries.BLOCKSTATE.get(hash);
             if (state == null) {
                 log.warn("Unknown block state hash in structure palette: {}", hash);
@@ -179,9 +180,9 @@ public class PNXStructure extends AbstractStructure {
                 continue;
             }
             rotatedPalette[i] = switch (stateRotation) {
-                case ROTATE_90 -> Rotation.clockwise90(state);
-                case ROTATE_180 -> Rotation.clockwise180(state);
-                case ROTATE_270 -> Rotation.counterclockwise90(state);
+                case ROTATE_90 -> StructureRotationUtil.clockwise90(state);
+                case ROTATE_180 -> StructureRotationUtil.clockwise180(state);
+                case ROTATE_270 -> StructureRotationUtil.counterclockwise90(state);
                 default -> state;
             };
         }
@@ -205,9 +206,9 @@ public class PNXStructure extends AbstractStructure {
             int rx = rotateX(sizeX, sizeZ, jigsaw.x, jigsaw.z, geometryRotation);
             int rz = rotateZ(sizeX, sizeZ, jigsaw.x, jigsaw.z, geometryRotation);
             BlockState rotatedFinalState = switch (stateRotation) {
-                case ROTATE_90 -> Rotation.clockwise90(jigsaw.finalState);
-                case ROTATE_180 -> Rotation.clockwise180(jigsaw.finalState);
-                case ROTATE_270 -> Rotation.counterclockwise90(jigsaw.finalState);
+                case ROTATE_90 -> StructureRotationUtil.clockwise90(jigsaw.finalState);
+                case ROTATE_180 -> StructureRotationUtil.clockwise180(jigsaw.finalState);
+                case ROTATE_270 -> StructureRotationUtil.counterclockwise90(jigsaw.finalState);
                 default -> jigsaw.finalState;
             };
             rotatedJigsaws[idx] = new Jigsaw(rx, jigsaw.y, rz, rotatedFinalState, jigsaw.name, jigsaw.joint, jigsaw.pool, jigsaw.target, jigsaw.placementPriority, jigsaw.selectionPriority);
@@ -225,8 +226,8 @@ public class PNXStructure extends AbstractStructure {
     }
 
     @Override
-    public PNXStructure mirror(StructureMirror mirror) {
-        if (mirror == StructureMirror.NONE) return this;
+    public PNXStructure mirror(Mirror mirror) {
+        if (mirror == Mirror.NONE) return this;
 
         byte[] mirroredBlocks = new byte[blocks.length];
 
@@ -239,7 +240,10 @@ public class PNXStructure extends AbstractStructure {
             switch (mirror) {
                 case X -> mx = sizeX - 1 - x;
                 case Z -> mz = sizeZ - 1 - z;
-                case XZ -> { mx = sizeX - 1 - x; mz = sizeZ - 1 - z; }
+                case XZ -> {
+                    mx = sizeX - 1 - x;
+                    mz = sizeZ - 1 - z;
+                }
             }
 
             int newIdx = mx + (y * sizeX) + (mz * sizeX * sizeY);

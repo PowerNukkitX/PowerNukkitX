@@ -10,7 +10,6 @@ import cn.nukkit.entity.ai.evaluator.NotMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.mob.EntityShulker;
 import cn.nukkit.entity.mob.EntityShulkerBullet;
 import cn.nukkit.level.Location;
@@ -23,6 +22,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.RequiredArgsConstructor;
 
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+
+
 @RequiredArgsConstructor
 public class ShulkerAttackExecutor implements IBehaviorExecutor {
 
@@ -33,9 +35,9 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         Entity target = entity.getMemoryStorage().get(this.target);
-        if(target == null) return false;
+        if (target == null) return false;
         tick++;
-        if(tick > nextAttack) {
+        if (tick > nextAttack) {
             tick = 0;
             nextAttack = Utils.rand(20, 110);
             Location bulletLocation = entity.getLocation().clone().add(new Vector3(target.x - entity.x, target.y - entity.y, target.z - entity.z).normalize()).add(0, 0.5f, 0);
@@ -55,7 +57,7 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
 
             Entity bulletEntity = Entity.createEntity(EntityID.SHULKER_BULLET, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
 
-            if(bulletEntity instanceof EntityShulkerBullet bullet) {
+            if (bulletEntity instanceof EntityShulkerBullet bullet) {
                 bullet.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, target);
             }
             bulletEntity.spawnToAll();
@@ -68,18 +70,18 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
     public void onStart(EntityIntelligent entity) {
         tick = 0;
         nextAttack = 0;
-        if(entity instanceof EntityShulker shulker) {
+        if (entity instanceof EntityShulker shulker) {
             shulker.setPeeking(40);
             Entity target = entity.getMemoryStorage().get(this.target);
-            if(target == null) return;
-            shulker.setDataProperty(EntityDataTypes.TARGET_EID, target.getId());
+            if (target == null) return;
+            shulker.setDataProperty(ActorDataTypes.TARGET, target.getId());
         }
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        if(entity instanceof EntityShulker shulker) {
-            shulker.setDataProperty(EntityDataTypes.TARGET_EID, 0);
+        if (entity instanceof EntityShulker shulker) {
+            shulker.setDataProperty(ActorDataTypes.TARGET, 0);
             shulker.setPeeking(0);
         }
     }

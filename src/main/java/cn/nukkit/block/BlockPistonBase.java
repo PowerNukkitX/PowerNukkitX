@@ -269,14 +269,14 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                         .putInt("pistonPosX", this.getFloorX())
                         .putInt("pistonPosY", this.getFloorY())
                         .putInt("pistonPosZ", this.getFloorZ())
-                        .putCompound("movingBlock", blockToMove.blockstate.getBlockStateTag())
-                        .putCompound("movingBlockExtra", level.getBlock(blockToMove, 1).getBlockState().getBlockStateTag())
+                        .putCompound("movingBlock", CompoundTag.fromNetwork(blockToMove.blockstate.getBlockStateTag()))
+                        .putCompound("movingBlockExtra", CompoundTag.fromNetwork(level.getBlock(blockToMove, 1).getBlockState().getBlockStateTag()))
                         .putBoolean("isMovable", true);
                 var blockEntity = this.level.getBlockEntity(oldPos);
                 //Moveable Block Entity
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
-                    nbt.putCompound("movingEntity", new CompoundTag(blockEntity.namedTag.getTags()));
+                    nbt.putCompound("movingEntity", blockEntity.getNbt());
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);

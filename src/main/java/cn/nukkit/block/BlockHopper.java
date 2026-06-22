@@ -28,8 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import java.util.Map;
-
 import static cn.nukkit.block.property.CommonBlockProperties.TOGGLE_BIT;
 
 /**
@@ -102,11 +100,10 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
@@ -114,7 +111,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
 
         BlockEntityHopper blockEntity = getOrCreateBlockEntity();
 

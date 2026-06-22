@@ -9,6 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.Map;
 
@@ -18,7 +19,7 @@ import java.util.Map;
 public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected BeaconInventory inventory;
 
-    public BlockEntityBeacon(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityBeacon(IChunk chunk, CompoundTag  nbt) {
         super(chunk, nbt);
         inventory = new BeaconInventory(this);
     }
@@ -32,20 +33,20 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("Lock")) {
-            namedTag.putString("Lock", "");
+        if (!nbt.containsString("Lock")) {
+            this.nbt.putString("Lock", "");
         }
 
-        if (!namedTag.contains("Levels")) {
-            namedTag.putInt("Levels", 0);
+        if (!nbt.containsInt("Levels")) {
+            this.nbt.putInt("Levels", 0);
         }
 
-        if (!namedTag.contains("Primary")) {
-            namedTag.putInt("Primary", 0);
+        if (!nbt.containsInt("Primary")) {
+            this.nbt.putInt("Primary", 0);
         }
 
-        if (!namedTag.contains("Secondary")) {
-            namedTag.putInt("Secondary", 0);
+        if (!nbt.containsInt("Secondary")) {
+            this.nbt.putInt("Secondary", 0);
         }
     }
 
@@ -58,20 +59,20 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putString("Lock", this.namedTag.getString("Lock"))
-                .putInt("Levels", this.namedTag.getInt("Levels"))
-                .putInt("primary", this.namedTag.getInt("Primary"))
-                .putInt("secondary", this.namedTag.getInt("Secondary"));
+                .putString("Lock", this.nbt.getString("Lock"))
+                .putInt("Levels", this.nbt.getInt("Levels"))
+                .putInt("primary", this.nbt.getInt("Primary"))
+                .putInt("secondary", this.nbt.getInt("Secondary"));
     }
 
     private long currentTick = 0;
 
     @Override
     public boolean onUpdate() {
-        if(!isBlockEntityValid()) {
+        if (!isBlockEntityValid()) {
             this.close();
         }
-        if(closed) return true;
+        if (closed) return true;
         //Only apply effects every 4 secs
         if (currentTick++ % 80 != 0) {
             return true;
@@ -153,9 +154,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
         int tileZ = getFloorZ();
 
         //Check every block from our y coord to the top of the world
-        for (int y = tileY + 1; y <= 255; y++) {
+        for (int y = tileY + 1; y < level.getMaxHeight(); y++) {
             Block test = level.getBlock(tileX, y, tileZ);
-            if (!test.isTransparent()) {
+            if (test.getLightFilter() > 1 && !test.getId().equals(Block.BEDROCK)) {
                 //There is no sky access
                 return false;
             }
@@ -195,46 +196,46 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     }
 
     public int getPowerLevel() {
-        return namedTag.getInt("Levels");
+        return getNbt().getInt("Levels");
     }
 
     public void setPowerLevel(int level) {
         int currentLevel = getPowerLevel();
         if (level != currentLevel) {
-            namedTag.putInt("Levels", level);
+            this.nbt.putInt("Levels", level);
             setDirty();
             this.spawnToAll();
         }
     }
 
     public int getPrimaryPower() {
-        return namedTag.getInt("Primary");
+        return getNbt().getInt("Primary");
     }
 
     public void setPrimaryPower(int power) {
         int currentPower = getPrimaryPower();
         if (power != currentPower) {
-            namedTag.putInt("Primary", power);
+            this.nbt.putInt("Primary", power);
             setDirty();
             this.spawnToAll();
         }
     }
 
     public int getSecondaryPower() {
-        return namedTag.getInt("Secondary");
+        return getNbt().getInt("Secondary");
     }
 
     public void setSecondaryPower(int power) {
         int currentPower = getSecondaryPower();
         if (power != currentPower) {
-            namedTag.putInt("Secondary", power);
+            this.nbt.putInt("Secondary", power);
             setDirty();
             this.spawnToAll();
         }
     }
 
     @Override
-    public boolean updateCompoundTag(CompoundTag nbt, Player player) {
+    public boolean updateCompoundTag(NbtMap nbt, Player player) {
         if (!nbt.getString("id").equals(BlockEntity.BEACON)) {
             return false;
         }
@@ -268,22 +269,22 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Beacon";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Beacon";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag.remove("CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.nbt.putString("CustomName", name);
     }
 
     @Override

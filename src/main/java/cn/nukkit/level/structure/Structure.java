@@ -10,16 +10,25 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ItemHelper;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -59,6 +68,7 @@ public class Structure extends AbstractStructure {
         this.y = y;
         this.z = z;
     }
+
     /**
      * @see #create(Level, int, int, int, int, int, int, boolean)
      */
@@ -114,7 +124,7 @@ public class Structure extends AbstractStructure {
                         z <= location.z && z + sizeZ > location.z) {
                     // Position data for entity is also saved, see the comment above
                     entity.saveNBT();
-                    entities.add(entity.namedTag);
+                    entities.add(entity.getNbt());
                 }
             });
         }
@@ -148,7 +158,7 @@ public class Structure extends AbstractStructure {
         List<IntTag> layer1 = blockIndices.get(1).getAll();
         CompoundTag palette = structureNBT.getCompound("palette").getCompound("default");
         CompoundTag blockEntityNBT = palette.getCompound("block_position_data");
-        List<BlockState> blockPalette = palette.getList("block_palette", CompoundTag.class).getAll().stream().map(NBTIO::getBlockStateHelper).toList();
+        List<BlockState> blockPalette = palette.getList("block_palette", CompoundTag.class).getAll().stream().map(ItemHelper::getBlockStateHelper).toList();
         //replace null block states with unknown state
         blockPalette = blockPalette.stream().map(bs -> bs == null ? STATE_UNKNOWN : bs).toList();
 
@@ -223,8 +233,8 @@ public class Structure extends AbstractStructure {
                     BlockState l1 = blockStates[1][lx][ly][lz];
                     if (l0.equals(STRUCTURE_VOID_DEFAULT_STATE)) l0 = STATE_AIR;
                     if (l1.equals(STRUCTURE_VOID_DEFAULT_STATE)) l1 = STATE_AIR;
-                    if(l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
-                    if(l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
+                    if (l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
+                    if (l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
 
                 }
             }
@@ -398,7 +408,7 @@ public class Structure extends AbstractStructure {
         // Create block_palette
         ListTag<CompoundTag> blockPaletteList = new ListTag<>();
         for (BlockState state : uniqueBlockStates) {
-            CompoundTag blockStateTag = new CompoundTag(new HashMap(state.getBlockStateTag().getTags()));            // Remove version field if it exists to match expected format
+            CompoundTag blockStateTag = CompoundTag.fromNetwork(state.getBlockStateTag());
             blockStateTag.remove("version");
             blockPaletteList.add(blockStateTag);
         }
@@ -519,8 +529,8 @@ public class Structure extends AbstractStructure {
      * @param mirror the mirror operation to apply
      * @return a new mirrored Structure instance
      */
-    public Structure mirror(StructureMirror mirror) {
-        if (mirror == StructureMirror.NONE) {
+    public Structure mirror(Mirror mirror) {
+        if (mirror == Mirror.NONE) {
             return this;
         }
 

@@ -1,7 +1,5 @@
 package cn.nukkit.plugin;
 
-import cn.nukkit.Server;
-
 import java.io.File;
 import java.util.regex.Pattern;
 

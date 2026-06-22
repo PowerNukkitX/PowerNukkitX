@@ -1,9 +1,9 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.level.Sound;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 
 public class WardenSniffExecutor implements IBehaviorExecutor {
@@ -29,21 +29,18 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
     @Override
     public void onStart(EntityIntelligent entity) {
         this.endTime = entity.getLevel().getTick() + this.duration;
-        entity.setDataFlag(EntityFlag.SNIFFING, true);
-        entity.setDataFlagExtend(EntityFlag.SNIFFING, true);
+        entity.setDataFlag(ActorFlags.SNIFFING, true);
         entity.level.addSound(entity.clone(), Sound.MOB_WARDEN_SNIFF);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.SNIFFING, false);
-        entity.setDataFlagExtend(EntityFlag.SNIFFING, false);
+        entity.setDataFlag(ActorFlags.SNIFFING, false);
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.SNIFFING, false);
-        entity.setDataFlagExtend(EntityFlag.SNIFFING, false);
+        entity.setDataFlag(ActorFlags.SNIFFING, false);
     }
 
     protected void sniff(EntityIntelligent entity) {

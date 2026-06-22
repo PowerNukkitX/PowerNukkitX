@@ -4,9 +4,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-
-public record SelectionBox(double originX, double originY, double originZ, double sizeX, double sizeY,
-                           double sizeZ) implements NBTData {
+public record SelectionBox(double originX, double originY, double originZ, double sizeX, double sizeY, double sizeZ) implements NBTData {
     public CompoundTag toCompoundTag() {
         return new CompoundTag()
                 .putBoolean("enabled", true)

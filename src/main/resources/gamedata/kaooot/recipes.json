@@ -7664,6 +7664,39 @@
       }
     },
     {
+      "id": "minecraft:stonecutter_chiseled_cinnabar_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:chiseled_cinnabar",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "8873ca01-369f-4053-a8c9-f7ac0fdd250d",
+      "netId": 20,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
       "id": "minecraft:stonecutter_chiseled_from_polished_blackstone",
       "type": 0,
       "input": [
@@ -7790,6 +7823,501 @@
             "type": "default",
             "count": 1,
             "itemId": "minecraft:cobblestone",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_chiseled_sulfur_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:chiseled_sulfur",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "c34f7ecc-1cc3-4b72-9480-c9ad25373ce1",
+      "netId": 21,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_slab_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "794b19e7-e0e7-42ba-a230-f2a9f59eca0b",
+      "netId": 24,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_slab_from_cinnabar_bricks",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar_bricks",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "4a876bf6-f6ed-4ae8-aa66-0877de1e0cfe",
+      "netId": 25,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_slab_from_polished_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "77fffeff-f245-437f-9556-c4da9ad29c88",
+      "netId": 26,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_stairs_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "b85aba26-5ba6-40b6-9050-9b53c0908dec",
+      "netId": 27,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_stairs_from_cinnabar_bricks",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar_bricks",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "f57d3cc6-1668-46d7-86ad-0e0d70b04331",
+      "netId": 28,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_stairs_from_polished_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "e3de3026-d27a-4d82-b1fc-ee141d52f0c2",
+      "netId": 29,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_wall_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "0433a935-2038-4838-93ef-f71ce41a5adf",
+      "netId": 30,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_wall_from_cinnabar_bricks",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar_bricks",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "9e4c15db-5510-4ebf-867f-77fa907e4c21",
+      "netId": 31,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_brick_wall_from_polished_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "e3bd205d-f80a-428a-9137-634a71e68412",
+      "netId": 32,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_bricks_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_bricks",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "af49afe5-0ad9-46c5-a2c5-d7de683a93f9",
+      "netId": 22,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_bricks_from_polished_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_bricks",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "0be7a938-6f84-4241-bfec-210d693531d1",
+      "netId": 23,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_slab_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "9a3e2c5f-f79f-48a2-9f25-916ae24b82e6",
+      "netId": 33,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_stairs_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "5d60996c-e1c2-4005-aed2-1620a01dfff7",
+      "netId": 34,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_cinnabar_wall_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:cinnabar_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "6b3c618b-7713-428d-a02a-c119a2a09709",
+      "netId": 35,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
             "auxValue": 32767
           }
         ]
@@ -10139,6 +10667,237 @@
       }
     },
     {
+      "id": "minecraft:stonecutter_polished_cinnabar_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "369689f2-428d-412d-9a7a-4f9b089d8ee3",
+      "netId": 36,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_cinnabar_slab_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "4ac7061b-baae-4735-aacd-853a4d7f75f6",
+      "netId": 37,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_cinnabar_slab_from_polished_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "eef3eb87-4343-45a3-b2d5-683839f06c12",
+      "netId": 38,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_cinnabar_stairs_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "5e71b75c-5486-4ae2-afde-6a9862cb5b74",
+      "netId": 39,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_cinnabar_stairs_from_polished_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "dc13ea11-91fe-4be8-9e18-9135e3a59996",
+      "netId": 40,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_cinnabar_wall_from_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "7f8bd472-0cde-47d2-a072-94d49ddc823e",
+      "netId": 41,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_cinnabar_wall_from_polished_cinnabar",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "befbdee2-0c7f-4a43-ba4a-94c6fa89fa42",
+      "netId": 42,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
       "id": "minecraft:stonecutter_polished_diorite",
       "type": 0,
       "input": [
@@ -10562,6 +11321,237 @@
             "type": "default",
             "count": 1,
             "itemId": "minecraft:blackstone",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_sulfur_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "951f1e87-a491-4ba6-a9d5-e336dd0145d5",
+      "netId": 43,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_sulfur_slab_from_polished_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "b90945df-a3f8-4514-a3c2-ec5ee85f5914",
+      "netId": 44,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_sulfur_slab_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "c677806d-0366-4ce4-998c-154a6800ba7c",
+      "netId": 45,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_sulfur_stairs_from_polished_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "b61c1050-0d2b-4593-a06d-e5c1fa334208",
+      "netId": 46,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_sulfur_stairs_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "b5c03394-297e-496a-98ea-6e992e507710",
+      "netId": 47,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_sulfur_wall_from_polished_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "e66ff31d-a946-4bf7-b516-5bb183963342",
+      "netId": 48,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_polished_sulfur_wall_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "c999efa3-e7a4-400f-bc77-7a2ed2c76416",
+      "netId": 49,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
             "auxValue": 32767
           }
         ]
@@ -12641,6 +13631,468 @@
             "type": "default",
             "count": 1,
             "itemId": "minecraft:stone_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_slab_from_polished_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "df65a673-fa3a-4982-abbb-8181cf892d66",
+      "netId": 52,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_slab_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "0014169f-e390-4db3-8bd1-a5b0181282d7",
+      "netId": 53,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_slab_from_sulfur_bricks",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_bricks",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "ab8a9fb8-5640-4653-938f-ba64c7a5eaea",
+      "netId": 54,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_stairs_from_polished_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "db59fae8-317f-49b2-9883-38f85468c5db",
+      "netId": 55,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_stairs_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "ca1290eb-e630-43e5-92b2-0072bfd54dfa",
+      "netId": 56,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_stairs_from_sulfur_bricks",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_bricks",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "173f16fc-7fc3-4454-8b1f-b49c5d08d5ba",
+      "netId": 57,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_wall_from_polished_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "c8209fcb-637c-40ac-a10e-2bb2e7c34c5d",
+      "netId": 58,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_wall_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "bc9c24b7-65ad-45da-a59f-182f4c4ca058",
+      "netId": 59,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_brick_wall_from_sulfur_bricks",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_bricks",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "d8884d6a-0958-4243-9bf4-146a59e3b409",
+      "netId": 60,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_bricks_from_polished_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_bricks",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "25a00bf1-8c48-4b87-b155-5e733a1600f9",
+      "netId": 50,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_bricks_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_bricks",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "30eef20f-04ba-4eb8-9a41-543be945efa5",
+      "netId": 51,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_slab_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "758fb04d-bce7-4aac-8830-8116c2bc5269",
+      "netId": 61,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_stairs_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_stairs",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "bdac5a23-a8f5-42a6-a8ff-dae4e172c4f3",
+      "netId": 62,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:stonecutter_sulfur_wall_from_sulfur",
+      "type": 0,
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:sulfur_wall",
+          "count": 1
+        }
+      ],
+      "block": "stonecutter",
+      "uuid": "01db1237-ebca-4a74-805e-bc2063d10c73",
+      "netId": 63,
+      "priority": 0,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
             "auxValue": 32767
           }
         ]
@@ -67519,6 +68971,45 @@
       }
     },
     {
+      "id": "minecraft:chiseled_cinnabar",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar_slab",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:chiseled_cinnabar",
+          "count": 1
+        }
+      ],
+      "shape": [
+        "A",
+        "A"
+      ],
+      "block": "crafting_table",
+      "uuid": "dfe618cc-ee2b-45ad-ade8-2316d9cf99bc",
+      "netId": 1,
+      "priority": 1,
+      "width": 1,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar_slab",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
       "id": "minecraft:chiseled_deepslate",
       "type": 1,
       "input": {
@@ -67675,6 +69166,45 @@
       }
     },
     {
+      "id": "minecraft:chiseled_sulfur",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_slab",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:chiseled_sulfur",
+          "count": 1
+        }
+      ],
+      "shape": [
+        "A",
+        "A"
+      ],
+      "block": "crafting_table",
+      "uuid": "47a38874-da0b-4d64-94aa-838f0de47341",
+      "netId": 2,
+      "priority": 1,
+      "width": 1,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_slab",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
       "id": "minecraft:chiseled_tuff",
       "type": 1,
       "input": {
@@ -67747,6 +69277,279 @@
             "type": "default",
             "count": 1,
             "itemId": "minecraft:tuff_brick_slab",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:cinnabar_brick_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar_bricks",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "c7291a76-65b9-48c2-9722-642668ea301b",
+      "netId": 4,
+      "priority": 0,
+      "width": 3,
+      "height": 1,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:cinnabar_brick_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar_bricks",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "45276424-5400-411c-ba14-f3807e556740",
+      "netId": 5,
+      "priority": 0,
+      "width": 3,
+      "height": 3,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:cinnabar_brick_wall",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar_bricks",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:cinnabar_brick_wall",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "c445d98e-1171-4100-af7e-15c9ff4e01b3",
+      "netId": 6,
+      "priority": 0,
+      "width": 3,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:cinnabar_bricks",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:cinnabar_bricks",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "uuid": "fe058660-7b09-4ae4-85c0-190cc83120d8",
+      "netId": 3,
+      "priority": 0,
+      "width": 2,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:cinnabar_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:cinnabar_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "f0b2b9f7-c697-4a90-8fba-89beddeb2cf8",
+      "netId": 7,
+      "priority": 0,
+      "width": 3,
+      "height": 1,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:cinnabar_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:cinnabar_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "b1c1a5a4-4046-40bd-b8e7-333881e179e6",
+      "netId": 8,
+      "priority": 0,
+      "width": 3,
+      "height": 3,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:cinnabar_wall",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:cinnabar_wall",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "378fe407-d2d8-4224-8a6a-a9e1fd9aade2",
+      "netId": 9,
+      "priority": 0,
+      "width": 3,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
             "auxValue": 32767
           }
         ]
@@ -89634,6 +91437,162 @@
       }
     },
     {
+      "id": "minecraft:polished_cinnabar",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "uuid": "6c8bc24e-4400-47c6-8a26-386f425aa266",
+      "netId": 11,
+      "priority": 0,
+      "width": 2,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:polished_cinnabar_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "f8cbe3b0-22de-42f6-aca6-ea0a37e65588",
+      "netId": 12,
+      "priority": 0,
+      "width": 3,
+      "height": 1,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:polished_cinnabar_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "c97fb799-a935-49d0-8677-43097333f96c",
+      "netId": 13,
+      "priority": 0,
+      "width": 3,
+      "height": 3,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:polished_cinnabar_wall",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_cinnabar",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_cinnabar_wall",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "7c76b7b7-58e1-48a3-af03-d24c399cc2c1",
+      "netId": 14,
+      "priority": 0,
+      "width": 3,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_cinnabar",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
       "id": "minecraft:polished_deepslate",
       "type": 1,
       "input": {
@@ -89948,6 +91907,162 @@
       }
     },
     {
+      "id": "minecraft:polished_sulfur",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "uuid": "0fd7679a-e8bd-437b-bd41-4e2a2913eb2f",
+      "netId": 15,
+      "priority": 0,
+      "width": 2,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:polished_sulfur_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "db90f695-ba74-4faa-a4f6-16056859d11f",
+      "netId": 16,
+      "priority": 0,
+      "width": 3,
+      "height": 1,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:polished_sulfur_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "d673b209-3e6e-455f-8999-d90f5379379c",
+      "netId": 17,
+      "priority": 0,
+      "width": 3,
+      "height": 3,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:polished_sulfur_wall",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:polished_sulfur_wall",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "c2df6989-510a-467b-bfb8-0bce4aa1a14b",
+      "netId": 18,
+      "priority": 0,
+      "width": 3,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
       "id": "minecraft:polished_tuff",
       "type": 1,
       "input": {
@@ -90098,6 +92213,46 @@
             "type": "default",
             "count": 1,
             "itemId": "minecraft:polished_tuff",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:potent_sulfur",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:potent_sulfur",
+          "count": 1
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "acd4bd31-7137-4792-84f9-437eaa8fc15d",
+      "netId": 19,
+      "priority": 0,
+      "width": 3,
+      "height": 3,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
             "auxValue": 32767
           }
         ]
@@ -98925,6 +101080,318 @@
             "type": "default",
             "count": 1,
             "itemId": "minecraft:sugar_cane",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_spike",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur",
+          "count": 1
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "uuid": "26df4157-e2f1-44de-91a4-1afbd2df4608",
+      "netId": 64,
+      "priority": 0,
+      "width": 2,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_spike",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur_brick_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_bricks",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "15080262-dcba-458c-82ac-73f4ca76dcea",
+      "netId": 66,
+      "priority": 0,
+      "width": 3,
+      "height": 1,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur_brick_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_bricks",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "2c7d6338-f591-4edd-bcf4-bae96de89604",
+      "netId": 67,
+      "priority": 0,
+      "width": 3,
+      "height": 3,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur_brick_wall",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur_bricks",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur_brick_wall",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "f1b9c3fe-4ed2-420f-9dc8-6dcd19db71d8",
+      "netId": 68,
+      "priority": 0,
+      "width": 3,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur_bricks",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur_bricks",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:polished_sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur_bricks",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "uuid": "901e0c7d-29bf-4b7e-96cd-adca6e41cbc9",
+      "netId": 65,
+      "priority": 0,
+      "width": 2,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:polished_sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "4dbfab8e-0d3f-4a9d-9ef1-d0aff9bee43c",
+      "netId": 69,
+      "priority": 0,
+      "width": 3,
+      "height": 1,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "5332077b-e507-4843-a636-ba76ee30caad",
+      "netId": 70,
+      "priority": 0,
+      "width": 3,
+      "height": 3,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
+      "id": "minecraft:sulfur_wall",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:sulfur",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:sulfur_wall",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "uuid": "b0babb9e-67e1-4884-aab7-49e0fc10fede",
+      "netId": 71,
+      "priority": 0,
+      "width": 3,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:sulfur",
             "auxValue": 32767
           }
         ]

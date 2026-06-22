@@ -4,10 +4,9 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.GenericParticle;
-import cn.nukkit.level.particle.Particle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 
 public class EnchantmentWindBurst extends Enchantment {
 
@@ -80,12 +79,12 @@ public class EnchantmentWindBurst extends Enchantment {
                 targetMotion.y = Math.max(targetMotion.y, 0.4d + 0.1d * level);
                 entity.setMotion(targetMotion);
 
-                entity.level.addParticle(new GenericParticle(entity.add(0, entity.getEyeHeight() * 0.6, 0), Particle.TYPE_WIND_EXPLOSION));
+                entity.level.addParticle(new GenericParticle(entity.add(0, entity.getEyeHeight() * 0.6, 0), ParticleType.WIND_EXPLOSION));
             }
         }
 
         if (damager.level != null) {
-            damager.level.addParticle(new GenericParticle(damager.add(0, damager.getEyeHeight() * 0.6, 0), Particle.TYPE_WIND_EXPLOSION));
+            damager.level.addParticle(new GenericParticle(damager.add(0, damager.getEyeHeight() * 0.6, 0), ParticleType.WIND_EXPLOSION));
             damager.level.addSound(damager, Sound.MACE_SMASH_AIR);
         }
     }

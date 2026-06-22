@@ -24,16 +24,18 @@ public class PerchingExecutor implements EntityControl, IBehaviorExecutor {
 
     private int stayTick = -1;
 
-    public PerchingExecutor() {}
+    public PerchingExecutor() {
+    }
+
     @Override
     public boolean execute(EntityIntelligent entity) {
         Vector3 target = new Vector3(0, entity.getLevel().getHighestBlockAt(0, 0) + 1, 0);
-        if(stayTick >= 0) {
+        if (stayTick >= 0) {
             stayTick++;
         }
-        if(entity.distance(target) <= 1) {
-            if(stayTick == -1) stayTick=0;
-            if(stayTick == 25) {
+        if (entity.distance(target) <= 1) {
+            if (stayTick == -1) stayTick = 0;
+            if (stayTick == 25) {
                 entity.getViewers().values().stream().filter(player -> player.distance(new Vector3(0, 64, 0)) <= 20).findAny().ifPresent(player -> {
                     removeRouteTarget(entity);
                     setLookTarget(entity, player);
@@ -77,20 +79,19 @@ public class PerchingExecutor implements EntityControl, IBehaviorExecutor {
             setRouteTarget(entity, target);
             setLookTarget(entity, target);
         }
-        if(stayTick > 100) {
+        if (stayTick > 100) {
             return false;
-        } else if(stayTick >= 0) {
+        } else if (stayTick >= 0) {
             entity.teleport(target);
         }
         return true;
     }
 
 
-
     @Override
     public void onStart(EntityIntelligent entity) {
         Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-        if(player == null) return;
+        if (player == null) return;
         setLookTarget(entity, player);
         setRouteTarget(entity, player);
         stayTick = -1;

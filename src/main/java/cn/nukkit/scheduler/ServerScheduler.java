@@ -1,6 +1,5 @@
 package cn.nukkit.scheduler;
 
-import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;

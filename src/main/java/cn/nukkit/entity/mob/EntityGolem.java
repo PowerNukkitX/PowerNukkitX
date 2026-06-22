@@ -27,8 +27,8 @@ public abstract class EntityGolem extends EntityIntelligent implements EntityWal
 
     @Override
     public boolean attackTarget(Entity entity) {
-        if(entity instanceof EntityGolem) return false;
-        if(entity instanceof EntityAllay) return false;
+        if (entity instanceof EntityGolem) return false;
+        if (entity instanceof EntityAllay) return false;
         return entity instanceof EntityMob;
     }
 }

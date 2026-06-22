@@ -31,12 +31,13 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,10 +54,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySpider extends EntityMob implements EntityWalkable, EntityArthropod {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SPIDER;
     }
-    
+
 
     public EntitySpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -81,8 +83,8 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         private final int id;
 
         private static final SpawnRiderType[] BY_ID = new SpawnRiderType[
-            Collections.max(List.of(values()), Comparator.comparingInt(t -> t.id)).id + 1
-        ];
+                Collections.max(List.of(values()), Comparator.comparingInt(t -> t.id)).id + 1
+                ];
 
         static {
             for (SpawnRiderType t : values()) BY_ID[t.id] = t;
@@ -136,7 +138,8 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
                 z = -0.1f;
             }
 
-            default -> { }
+            default -> {
+            }
         }
 
         return new RideableComponent(
@@ -246,17 +249,18 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
     public void setRideableType(SpawnRiderType type) {
         this.jockeyType = (type == null ? SpawnRiderType.NORMAL : type);
-        if (this.namedTag != null) {
-            this.namedTag.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
+        if (this.nbt != null) {
+            this.nbt.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
         }
     }
 
     private void spawnPendingRider() {
         if (this.closed || this.level == null) return;
-        if (this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED)) return;
+        if (this.nbt != null && this.getNbt().getBoolean(NBT_RIDER_SPAWNED)) return;
 
         if (!this.passengers.isEmpty()) {
-            if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+            if (this.nbt != null)
+                this.nbt.putBoolean(NBT_RIDER_SPAWNED, true);
             return;
         }
 
@@ -268,7 +272,8 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
             case BOGGED_JOCKEY -> rider = createRiderEntity(Entity.BOGGED);
             case PARCHED_JOCKEY -> rider = createRiderEntity(Entity.PARCHED);
             case WITHER_SKELETON_JOCKEY -> rider = createRiderEntity(Entity.WITHER_SKELETON);
-            default -> { }
+            default -> {
+            }
         }
 
         if (rider == null) return;
@@ -276,7 +281,8 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         rider.spawnToAll();
         this.mountEntity(rider, true);
 
-        if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+        if (this.nbt != null)
+            this.nbt.putBoolean(NBT_RIDER_SPAWNED, true);
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
@@ -284,13 +290,13 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
         switch (this.jockeyType) {
             case SKELETON_JOCKEY, STRAY_JOCKEY, BOGGED_JOCKEY, PARCHED_JOCKEY -> {
-                    Item bow = Item.get(Item.BOW, 0, 1);
-                    nbt.put("Mainhand", NBTIO.putItemHelper(bow));
-                }
+                Item bow = Item.get(Item.BOW, 0, 1);
+                nbt.put("Mainhand", ItemHelper.write(bow));
+            }
             case WITHER_SKELETON_JOCKEY -> {
-                    Item sword = Item.get(Item.STONE_SWORD, 0, 1);
-                    nbt.put("Mainhand", NBTIO.putItemHelper(sword));
-                }
+                Item sword = Item.get(Item.STONE_SWORD, 0, 1);
+                nbt.put("Mainhand", ItemHelper.write(sword));
+            }
             default -> {}
         }
 
@@ -298,7 +304,6 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         if (rider == null) return null;
         return rider;
     }
-
     private boolean isUnderground() {
         if (this.level == null) return false;
 
@@ -313,8 +318,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     private @Nullable Set<String> getSpawnBiomeTags() {
         if (this.level == null) return null;
         int biomeId = this.level.getBiomeId((int) this.x, (int) this.y, (int) this.z);
-        BiomeDefinition def = Registries.BIOME.get(biomeId);
-        return def == null ? null : def.getTags();
+        return new ObjectOpenHashSet<>(Registries.BIOME.getTags(biomeId));
     }
 
     private boolean hasSpawnBiomeTag(String tag) {
@@ -350,16 +354,16 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
 
-        if (this.namedTag != null && this.namedTag.contains(NBT_RIDEABLE_TYPE)) {
-            this.jockeyType = SpawnRiderType.fromId(this.namedTag.getInt(NBT_RIDEABLE_TYPE));
+        if (this.nbt != null && this.nbt.contains(NBT_RIDEABLE_TYPE)) {
+            this.jockeyType = SpawnRiderType.fromId(this.getNbt().getInt(NBT_RIDEABLE_TYPE));
         } else {
             this.jockeyType = rollInitialRideableType();
-            if (this.namedTag != null) {
-                this.namedTag.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
+            if (this.nbt != null) {
+                nbt.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
             }
         }
 
-        boolean riderSpawned = this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED);
+        boolean riderSpawned = this.nbt != null && this.getNbt().getBoolean(NBT_RIDER_SPAWNED);
         if (!riderSpawned && (this.jockeyType != SpawnRiderType.NORMAL)) {
             this.pendingJockeySpawn = true;
         }

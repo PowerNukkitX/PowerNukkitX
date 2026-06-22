@@ -122,26 +122,28 @@ public class IglooPopulator extends Populator {
                     EntityZombieVillagerV2 entity2 = (EntityZombieVillagerV2) Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, nbt2);
                     entity2.spawnToAll();
                 });
-            } else object.setBlockStateAt(new BlockVector3(vec.x +3, vec.y, vec.z+5), BlockSnow.PROPERTIES.getDefaultState());
-            for(Block block : object.getBlocks()) {
-                if(block instanceof BlockStructureBlock) object.setBlockStateAt(block, BlockAir.STATE);
-                if(block instanceof BlockIce) object.setBlockStateAt(block, BlockPackedIce.PROPERTIES.getDefaultState());
-                if(block instanceof BlockBrewingStand stand) {
+            } else
+                object.setBlockStateAt(new BlockVector3(vec.x + 3, vec.y, vec.z + 5), BlockSnow.PROPERTIES.getDefaultState());
+            for (Block block : object.getBlocks()) {
+                if (block instanceof BlockStructureBlock) object.setBlockStateAt(block, BlockAir.STATE);
+                if (block instanceof BlockIce)
+                    object.setBlockStateAt(block, BlockPackedIce.PROPERTIES.getDefaultState());
+                if (block instanceof BlockBrewingStand stand) {
                     object.addHook(() -> {
                         stand.getOrCreateBlockEntity().getInventory().setResult(2, ItemSplashPotion.get(ItemPotion.SPLASH_POTION, PotionType.WEAKNESS.id()));
                     });
                 }
-                if(block instanceof BlockChest chest) {
+                if (block instanceof BlockChest chest) {
                     object.addHook(() -> {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
-                if(block instanceof BlockBed bed) {
+                if (block instanceof BlockBed bed) {
                     object.addHook(() -> {
                         bed.createBlockEntity(new CompoundTag().putByte("color", 14));
                     });
                 }
-                if(block instanceof BlockFlowerPot pot) {
+                if (block instanceof BlockFlowerPot pot) {
                     object.addHook(() -> {
                         pot.setFlower(Item.get(Block.CACTUS));
                     });

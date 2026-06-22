@@ -2,6 +2,8 @@ package cn.nukkit.command.data;
 
 import cn.nukkit.command.tree.node.ChainedCommandNode;
 import cn.nukkit.command.tree.node.ItemNode;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamOption;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 /**
  * Provides generic parameter suppliers for common command argument types in PowerNukkitX.
@@ -59,9 +61,9 @@ public interface GenericParameter {
     CommandParameterSupplier<CommandParameter> CHAINED_COMMAND = (optional) -> CommandParameter.newEnum("chainedCommand", optional, CommandEnum.CHAINED_COMMAND_ENUM, new ChainedCommandNode(), CommandParamOption.ENUM_AS_CHAINED_COMMAND);
     /**
      * Supplier for origin selector parameters.
-     * Produces a parameter named "origin" using {@link CommandParamType#TARGET}.
+     * Produces a parameter named "origin" using {@link CommandParamType#SELECTION}.
      */
-    CommandParameterSupplier<CommandParameter> ORIGIN = (optional) -> CommandParameter.newType("origin", optional, CommandParamType.TARGET);
+    CommandParameterSupplier<CommandParameter> ORIGIN = (optional) -> CommandParameter.newType("origin", optional, CommandParamType.SELECTION);
 
     /**
      * Functional interface for supplying command parameters with optionality.

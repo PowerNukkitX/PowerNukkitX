@@ -2,12 +2,12 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class GameruleCommand extends VanillaCommand {
         if (!unknownGameRules.isEmpty()) {
             this.commandParameters.put("unknownGameRules", new CommandParameter[]{
                     CommandParameter.newEnum("rule", new CommandEnum("UnknownGameRule", unknownGameRules)),
-                    CommandParameter.newType("value", true, CommandParamType.STRING)
+                    CommandParameter.newType("value", true, CommandParamType.ID)
             });
         }
         this.enableParamTree();

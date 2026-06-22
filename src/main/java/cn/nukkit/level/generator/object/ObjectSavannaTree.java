@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.object;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAcaciaLeaves;
 import cn.nukkit.block.BlockAcaciaLog;
-import cn.nukkit.block.BlockAcaciaWood;
 import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;

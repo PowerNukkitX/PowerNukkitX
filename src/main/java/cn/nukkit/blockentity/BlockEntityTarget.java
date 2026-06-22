@@ -23,10 +23,10 @@ public class BlockEntityTarget extends BlockEntity {
     }
 
     public void setActivePower(int power) {
-        namedTag.putInt("activePower", power);
+        this.nbt.putInt("activePower", power);
     }
 
     public int getActivePower() {
-        return NukkitMath.clamp(namedTag.getInt("activePower"), 0, 15);
+        return NukkitMath.clamp(getNbt().getInt("activePower"), 0, 15);
     }
 }
