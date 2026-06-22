@@ -21,7 +21,7 @@ public class SwampHutPopulator extends Populator {
             .salt(14357620L)
             .minDistance(8)
             .maxDistance(32)
-            .isBiomeValid(biome -> Registries.BIOME.get(biome).getTags().contains(BiomeTags.SWAMP))
+            .isBiomeValid(biome -> Registries.BIOME.getTags(biome).contains(BiomeTags.SWAMP))
             .build());
 
     protected static final ObjectSwampHut SWAMP_HUT = new ObjectSwampHut();

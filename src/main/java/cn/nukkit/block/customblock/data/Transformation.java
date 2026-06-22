@@ -7,7 +7,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * supports rotation, scaling, and translation. The component can be added to the whole block and/or to individual block permutations. Transformed geometries still have the same restrictions that non-transformed geometries have such as a maximum size of 30/16 units.
  */
 
-
 public record Transformation(Vector3 translation, Vector3 scale, Vector3 rotation) implements NBTData {
     @Override
     public CompoundTag toCompoundTag() {

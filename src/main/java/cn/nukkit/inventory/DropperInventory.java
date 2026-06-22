@@ -3,13 +3,14 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.blockentity.BlockEntityDropper;
 import cn.nukkit.blockentity.BlockEntityNameable;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 
 public class DropperInventory extends EjectableInventory {
 
 
     public DropperInventory(BlockEntityDropper blockEntity) {
-        super(blockEntity, InventoryType.DROPPER, 9);
+        super(blockEntity, ContainerType.DROPPER, 9);
     }
 
     @Override

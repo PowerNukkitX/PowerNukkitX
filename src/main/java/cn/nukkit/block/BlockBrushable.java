@@ -30,8 +30,8 @@ public abstract class BlockBrushable extends BlockFallable implements BlockEntit
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         int progress = getPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS);
-        if(progress < 3) {
-            setPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS, progress+1);
+        if (progress < 3) {
+            setPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS, progress + 1);
             getLevel().addSound(this, getHitSound());
             getLevel().setBlock(this, this, false, true);
         } else {
@@ -45,7 +45,7 @@ public abstract class BlockBrushable extends BlockFallable implements BlockEntit
 
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
-        customNbt.putBoolean("BreakOnGround", true);
+        customNbt = customNbt.copy().putBoolean("BreakOnGround", true);
         return super.createFallingEntity(customNbt);
     }
 

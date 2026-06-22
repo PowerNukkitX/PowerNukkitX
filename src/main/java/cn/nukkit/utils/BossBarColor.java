@@ -14,5 +14,9 @@ public enum BossBarColor {
     YELLOW,
     PURPLE,
     REBECCA_PURPLE,
-    WHITE
+    WHITE;
+
+    public org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor toNetwork() {
+        return org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.from(this.ordinal());
+    }
 }

@@ -2,8 +2,6 @@ package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;

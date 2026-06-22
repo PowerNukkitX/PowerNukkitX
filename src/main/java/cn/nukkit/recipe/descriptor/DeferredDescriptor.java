@@ -1,6 +1,7 @@
 package cn.nukkit.recipe.descriptor;
 
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 import java.util.Objects;
 
@@ -41,6 +42,13 @@ public class DeferredDescriptor implements ItemDescriptor {
 
     public int getCount() {
         return this.count;
+    }
+
+    @Override
+    public ItemDescriptorWithCount toNetwork() {
+        final org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DeferredDescriptor descriptor =
+                new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DeferredDescriptor(this.fullName, this.auxValue);
+        return new ItemDescriptorWithCount(descriptor, this.count);
     }
 
     public boolean equals(final Object o) {

@@ -6,7 +6,7 @@ import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.request.ActionResponse;
 import cn.nukkit.inventory.request.ItemStackRequestContext;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 
 public class ItemStackRequestActionEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();

@@ -7,6 +7,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +20,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityTropicalfish extends EntityFish {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return TROPICALFISH;
     }
 
@@ -68,29 +70,29 @@ public class EntityTropicalfish extends EntityFish {
     @Override
     public void initEntity() {
         super.initEntity();
-        if (this.namedTag.contains("Variant")) {
-            this.variant = this.namedTag.getInt("Variant");
+        if (this.nbt.contains("Variant")) {
+            this.variant = this.getNbt().getInt("Variant");
         } else {
             this.variant = getRandomVariant();
         }
-        if (this.namedTag.contains("Mark_Variant")) {
-            this.mark_variant = this.namedTag.getInt("Mark_Variant");
+        if (this.nbt.contains("Mark_Variant")) {
+            this.mark_variant = this.getNbt().getInt("Mark_Variant");
         } else {
             this.mark_variant = getRandomMarkVariant();
         }
-        if (!this.namedTag.contains("Color")) {
+        if (!this.nbt.contains("Color")) {
             this.setColor(getRandomColor());
         } else {
-            this.setColor(this.namedTag.getByte("Color"));
+            this.setColor(this.getNbt().getByte("Color"));
         }
-        if (this.namedTag.contains("Color2")) {
-            this.color2 = this.namedTag.getInt("Color2");
+        if (this.nbt.contains("Color2")) {
+            this.color2 = this.getNbt().getInt("Color2");
         } else {
             this.color2 = getRandomColor2();
         }
-        this.setDataProperty(MARK_VARIANT, this.mark_variant);
-        this.setDataProperty(VARIANT, this.variant);
-        this.setDataProperty(COLOR_2, this.color2);
+        this.setDataProperty(ActorDataTypes.MARK_VARIANT, this.mark_variant);
+        this.setDataProperty(ActorDataTypes.VARIANT, this.variant);
+        this.setDataProperty(ActorDataTypes.COLOR_2_INDEX, (byte) this.color2);
     }
 
     private int getRandomColor() {
@@ -113,7 +115,7 @@ public class EntityTropicalfish extends EntityFish {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putByte("Color", this.color);
+        this.nbt.putByte("Color", (byte) this.color);
     }
 
     @Override
@@ -125,13 +127,13 @@ public class EntityTropicalfish extends EntityFish {
     }
 
     public int getColor() {
-        return namedTag.getByte("Color");
+        return getNbt().getByte("Color");
     }
 
     public void setColor(int color) {
         this.color = color;
-        this.setDataProperty(COLOR, color);
-        this.namedTag.putByte("Color", this.color);
+        this.setDataProperty(ActorDataTypes.COLOR_INDEX, (byte) color);
+        this.nbt.putByte("Color", (byte) this.color);
     }
 
 }

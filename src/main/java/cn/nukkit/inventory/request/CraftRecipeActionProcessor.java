@@ -11,16 +11,9 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SmithingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.item.enchantment.EnchantmentHelper;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
 import cn.nukkit.network.protocol.types.TrimData;
-import cn.nukkit.network.protocol.types.TrimMaterial;
-import cn.nukkit.network.protocol.types.TrimPattern;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.SmithingTransformRecipe;
@@ -28,8 +21,18 @@ import cn.nukkit.recipe.UserDataShapelessRecipe;
 import cn.nukkit.recipe.SmithingTrimRecipe;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.TrimMaterial;
+import org.cloudburstmc.protocol.bedrock.data.TrimPattern;
+import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantmentInstance;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchantOption;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +58,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             log.error("The trade recipe does not match, expect {} actual {}, count {}", recipeInput, input, required);
             return true;
         }
-        if (recipeInput.contains("tag")) {
+        if (recipeInput.containsCompound("tag")) {
             CompoundTag tag = recipeInput.getCompound("tag");
-            CompoundTag compoundTag = input.getNamedTag();
+            CompoundTag compoundTag = input.getNbt();
             if (!tag.equals(compoundTag)) {
                 log.error("The trade recipe tag does not match tag, expect {} actual {}", tag, compoundTag);
                 return true;
@@ -69,29 +72,35 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     @Override
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
         Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
-        if (action.getRecipeNetworkId() >= PlayerEnchantOptionsPacket.ENCH_RECIPEID) {  //handle ench recipe
-            PlayerEnchantOptionsPacket.EnchantOptionData enchantOptionData = PlayerEnchantOptionsPacket.RECIPE_MAP.get(action.getRecipeNetworkId());
-            if (enchantOptionData == null) {
+        if (action.getRecipeNetworkId() >= EnchantmentHelper.ENCH_RECIPEID) {  //handle ench recipe
+            EnchantmentHelper.ItemEnchantOptionWithEntry enchantOptionWithEntry = EnchantmentHelper.RECIPE_MAP.get(action.getRecipeNetworkId());
+            if (enchantOptionWithEntry == null) {
                 log.error("Can't find enchant recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
             }
+            final ItemEnchantOption enchantOptionData = enchantOptionWithEntry.getOption();
             Item first = inventory.getItem(0);
             if (first.isNull()) {
                 log.error("Can't find enchant input!");
                 return context.error();
             }
             Item item = first.clone().autoAssignStackNetworkId();
-            if(item.getId().equals(Item.BOOK)) item = Item.get(Item.ENCHANTED_BOOK);
-            List<Enchantment> enchantments = enchantOptionData.enchantments();
+            if (item.getId().equals(Item.BOOK)) item = Item.get(Item.ENCHANTED_BOOK);
+            final List<Enchantment> enchantments = new ObjectArrayList<>();
+            for (EnchantmentInstance instance : enchantOptionData.getItemEnchants().getEnchants0()) {
+                final Enchantment enchantment = Enchantment.get(instance.getEnchantType());
+                enchantment.setLevel(instance.getEnchantLevel());
+                enchantments.add(enchantment);
+            }
             item.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
-            EnchantItemEvent event = new EnchantItemEvent((EnchantInventory) inventory, first.clone().autoAssignStackNetworkId(), item, enchantOptionData.minLevel(), player);
+            EnchantItemEvent event = new EnchantItemEvent((EnchantInventory) inventory, first.clone().autoAssignStackNetworkId(), item, enchantOptionData.getCost(), player);
             Server.getInstance().getPluginManager().callEvent(event);
-            if(!event.isCancelled()) {
+            if (!event.isCancelled()) {
                 if ((player.getGamemode() & 0x01) == 0) {
-                    player.setExperience(player.getExperience(), player.getExperienceLevel() - (enchantOptionData.entry()+1));
+                    player.setExperience(player.getExperience(), player.getExperienceLevel() - (enchantOptionWithEntry.getEntry() + 1));
                 }
                 player.getCreativeOutputInventory().setItem(item);
-                PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
+                EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetworkId());
                 player.regenerateEnchantmentSeed();
                 context.put(ENCH_RECIPE_KEY, true);
             }
@@ -104,9 +113,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             }
             Item first = inventory.getUnclonedItem(0);
             Item second = inventory.getUnclonedItem(1);
-            Item output = NBTIO.getItemHelper(tradeRecipe.getCompound("sell"));
+            Item output = ItemHelper.read(tradeRecipe.getCompound("sell"));
             int reputation = 0;
-            if(inventory.getHolder() instanceof EntityVillagerV2 villager) {
+            if (inventory.getHolder() instanceof EntityVillagerV2 villager) {
                 reputation = villager.getReputation(player);
             }
             output.setCount(output.getCount() * action.getNumberOfRequestedCrafts());
@@ -135,19 +144,20 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     return context.error();
                 } else {
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first, reductionA)) return context.error();
-                    if(tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses")) return context.error();
+                    if (tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses"))
+                        return context.error();
                     inventory.sendContents(player);
                     player.getCreativeOutputInventory().setItem(output);
                 }
             }
-            if(ca) {
+            if (ca) {
                 int traderExp = tradeRecipe.contains("traderExp") ? tradeRecipe.getInt("traderExp") : 0;
                 int rewardExp = tradeRecipe.contains("rewardExp") ? tradeRecipe.getInt("rewardExp") : 0;
-                player.addExperience(rewardExp*action.getNumberOfRequestedCrafts());
+                player.addExperience(rewardExp * action.getNumberOfRequestedCrafts());
                 tradeRecipe.putInt("uses", tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts());
-                if(inventory.getHolder() instanceof EntityVillagerV2 villager) {
-                    villager.addExperience(traderExp*action.getNumberOfRequestedCrafts());
-                    villager.addGossip(player.getLoginChainData().getXUID(), EntityVillagerV2.Gossip.TRADING, 2);
+                if (inventory.getHolder() instanceof EntityVillagerV2 villager) {
+                    villager.addExperience(traderExp * action.getNumberOfRequestedCrafts());
+                    villager.addGossip(player.getXUID(), EntityVillagerV2.Gossip.TRADING, 2);
                 }
             }
             return null;
@@ -208,8 +218,8 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 if (recipe instanceof UserDataShapelessRecipe) {
                     for (Item[] row : data) {
                         for (Item inputItem : row) {
-                            if (!inputItem.isNull() && inputItem.hasCompoundTag()) {
-                                output.setCompoundTag(inputItem.getCompoundTag());
+                            if (!inputItem.isNull() && inputItem.hasNbt()) {
+                                output.setNbtBytes(inputItem.getNbtBytes());
                                 break;
                             }
                         }
@@ -246,9 +256,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
-            CompoundTag tag = equipment.getNamedTag();
+            CompoundTag tag = equipment.getNbt();
             if (tag != null) {
-                result.setCompoundTag(tag.copy());
+                result.setNbt(tag);
             }
             player.getCreativeOutputInventory().setItem(result);
             return null;
@@ -271,22 +281,22 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         Item template = smithingInventory.getTemplate();
 
         if (!ingredient.isNull() && !template.isNull()) {
-            Optional<TrimPattern> find1 = TrimData.trimPatterns.stream().filter(trimPattern -> template.getId().equals(trimPattern.itemName())).findFirst();
-            Optional<TrimMaterial> find2 = TrimData.trimMaterials.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.itemName())).findFirst();
+            Optional<TrimPattern> find1 = TrimData.trimPatterns.stream().filter(trimPattern -> template.getId().equals(trimPattern.getItemName())).findFirst();
+            Optional<TrimMaterial> find2 = TrimData.trimMaterials.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.getItemName())).findFirst();
             if (equipment.isNull() || find1.isEmpty() || find2.isEmpty()) {
                 return context.error();
             }
             TrimPattern trimPattern = find1.get();
             TrimMaterial trimMaterial = find2.get();
             Item result = equipment.clone();
-            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.materialId())
-                    .putString("Pattern", trimPattern.patternId());
-            CompoundTag compound = ingredient.getNamedTag();
+            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.getMaterialId())
+                    .putString("Pattern", trimPattern.getPatternId());
+            CompoundTag compound = ingredient.getNbt();
             if (compound == null) {
-                compound = result.getOrCreateNamedTag();
+                compound = result.getOrCreateNbt();
             } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
             compound.putCompound("Trim", trim);
-            result.setNamedTag(compound);
+            result.setNbt(compound);
             player.getCreativeOutputInventory().setItem(result);
             return null;
         }

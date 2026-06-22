@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
 import cn.nukkit.block.Pollinable;
 import cn.nukkit.block.BlockWitherRose;
-import cn.nukkit.block.Pollinable;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
@@ -42,13 +41,14 @@ import java.util.Set;
 
 public class EntityBee extends EntityAnimal implements EntityFlyable {
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new BooleanEntityProperty("minecraft:has_nectar", false, true)
+            new BooleanEntityProperty("minecraft:has_nectar", false, true)
     };
     private static final String PROPERTY_HAS_NECTAR = "minecraft:has_nectar";
     private static final int POLLINATION_REQUIRED_TICKS = 400;
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return BEE;
     }
 
@@ -351,25 +351,25 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.contains("HomeHiveX")) {
-            this.homeHiveX = this.namedTag.getInt("HomeHiveX");
-            this.homeHiveY = this.namedTag.getInt("HomeHiveY");
-            this.homeHiveZ = this.namedTag.getInt("HomeHiveZ");
+        if (this.nbt.contains("HomeHiveX")) {
+            final CompoundTag nbtMap = this.getNbt();
+            this.homeHiveX = nbtMap.getInt("HomeHiveX");
+            this.homeHiveY = nbtMap.getInt("HomeHiveY");
+            this.homeHiveZ = nbtMap.getInt("HomeHiveZ");
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-
         if (hasHomeHive()) {
-            this.namedTag.putInt("HomeHiveX", homeHiveX);
-            this.namedTag.putInt("HomeHiveY", homeHiveY);
-            this.namedTag.putInt("HomeHiveZ", homeHiveZ);
+            this.nbt.putInt("HomeHiveX", homeHiveX)
+                    .putInt("HomeHiveY", homeHiveY)
+                    .putInt("HomeHiveZ", homeHiveZ);
         } else {
-            this.namedTag.remove("HomeHiveX");
-            this.namedTag.remove("HomeHiveY");
-            this.namedTag.remove("HomeHiveZ");
+            this.nbt.remove("HomeHiveX");
+            this.nbt.remove("HomeHiveY");
+            this.nbt.remove("HomeHiveZ");
         }
     }
 

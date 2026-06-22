@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Set;
 
 public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite {
-    @Override @NotNull
+    @Override
+    @NotNull
     public String getIdentifier() {
         return BOGGED;
     }

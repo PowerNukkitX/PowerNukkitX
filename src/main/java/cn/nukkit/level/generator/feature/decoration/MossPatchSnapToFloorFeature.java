@@ -17,7 +17,6 @@ import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
 

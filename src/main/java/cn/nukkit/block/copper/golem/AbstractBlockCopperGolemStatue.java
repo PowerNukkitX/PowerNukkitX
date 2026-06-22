@@ -5,7 +5,6 @@ import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.blockentity.BlockEntityCopperGolemStatue;
-import cn.nukkit.blockentity.BlockEntityCopperGolemStatue.CopperPose;
 import cn.nukkit.blockentity.BlockEntityID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;

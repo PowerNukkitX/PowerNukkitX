@@ -3,9 +3,9 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.Natural;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.mob.EntityEnderman;
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -19,7 +19,7 @@ public class EndermanBlockExecutor implements IBehaviorExecutor {
                 if(optionalBlock.isPresent()) {
                     Block block = optionalBlock.get();
                     enderman.setItemInHand(block.toItem());
-                    enderman.setDataProperty(EntityDataTypes.DEPRECATED_CARRY_BLOCK_STATE, block);
+                    enderman.setDataProperty(ActorDataTypes.CARRY_BLOCK_RUNTIME_ID, block);
                     enderman.getLevel().setBlock(block, Block.get(Block.AIR));
                 }
             } else {
@@ -29,7 +29,7 @@ public class EndermanBlockExecutor implements IBehaviorExecutor {
                         Block block = optionalBlock.get();
                         block.getLevel().setBlock(block.up(), enderman.getItemInHand().getBlock());
                         enderman.setItemInHand(Item.AIR);
-                        enderman.setDataProperty(EntityDataTypes.DEPRECATED_CARRY_BLOCK_STATE, Item.AIR.getBlock());
+                        enderman.setDataProperty(ActorDataTypes.CARRY_BLOCK_RUNTIME_ID, Item.AIR.getBlock());
                     }
                 }   
             }

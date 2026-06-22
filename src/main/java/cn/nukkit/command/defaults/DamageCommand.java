@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -10,6 +9,7 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.lang.TranslationContainer;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,16 +26,16 @@ public class DamageCommand extends VanillaCommand {
         this.setPermission("nukkit.command.damage");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("target", false, CommandParamType.TARGET),
+                CommandParameter.newType("target", false, CommandParamType.SELECTION),
                 CommandParameter.newType("amount", false, CommandParamType.INT),
                 CommandParameter.newEnum("cause", true, Arrays.stream(EntityDamageEvent.DamageCause.values()).map(e -> e.name().toLowerCase(Locale.ENGLISH)).toList().toArray(new String[0]))
         });
         this.addCommandParameters("damager", new CommandParameter[]{
-                CommandParameter.newType("target", false, CommandParamType.TARGET),
+                CommandParameter.newType("target", false, CommandParamType.SELECTION),
                 CommandParameter.newType("amount", false, CommandParamType.INT),
                 CommandParameter.newEnum("cause", false, Arrays.stream(EntityDamageEvent.DamageCause.values()).map(e -> e.name().toLowerCase(Locale.ENGLISH)).toList().toArray(new String[0])),
                 CommandParameter.newEnum("entity", false, new String[]{"entity"}),
-                CommandParameter.newType("damager", false, CommandParamType.TARGET)
+                CommandParameter.newType("damager", false, CommandParamType.SELECTION)
         });
         this.enableParamTree();
     }

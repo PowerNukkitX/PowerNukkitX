@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockRedMushroom;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.registry.Registries;

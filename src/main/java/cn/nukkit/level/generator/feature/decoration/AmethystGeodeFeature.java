@@ -7,7 +7,6 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_BLOCK_FACE;
 

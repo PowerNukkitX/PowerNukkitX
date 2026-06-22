@@ -16,9 +16,10 @@ import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddPaintingPacket;
-import cn.nukkit.network.protocol.DataPacket;
 import com.google.common.collect.Sets;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.packet.AddPaintingPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class EntityPainting extends EntityHanging {
 
     private static boolean checkPlacePaint(int x, int z, Level level, BlockFace face, Block block, Block target) {
         if (target.getSide(face.rotateYCCW(), x).up(z).isTransparent() ||
-                    block.getSide(face.rotateYCCW(), x).up(z).isSolid()) {
+                block.getSide(face.rotateYCCW(), x).up(z).isSolid()) {
             return true;
         } else {
             Block side = block.getSide(face.rotateYCCW(), x);
@@ -154,7 +155,7 @@ public class EntityPainting extends EntityHanging {
 
     @Override
     protected void initEntity() {
-        this.motive = getMotive(this.namedTag.getString("Motive"));
+        this.motive = getMotive(this.getNbt().getString("Motive"));
 
         if (this.motive != null) {
             BlockFace face = getHorizontalFacing();
@@ -189,16 +190,14 @@ public class EntityPainting extends EntityHanging {
     }
 
     @Override
-    public DataPacket createAddEntityPacket() {
-        AddPaintingPacket addPainting = new AddPaintingPacket();
-        addPainting.entityUniqueId = this.getId();
-        addPainting.entityRuntimeId = this.getId();
-        addPainting.x = (float) this.x;
-        addPainting.y = (float) this.y;
-        addPainting.z = (float) this.z;
-        addPainting.direction = this.getDirection().getHorizontalIndex();
-        addPainting.title = this.namedTag.getString("Motive");
-        return addPainting;
+    public BedrockPacket createAddEntityPacket() {
+        final AddPaintingPacket packet = new AddPaintingPacket();
+        packet.setTargetActorID(this.getId());
+        packet.setTargetRuntimeID(this.getId());
+        packet.setPosition(Vector3f.from(this.x, this.y, this.z));
+        packet.setDirection(this.getDirection().getHorizontalIndex());
+        packet.setMotif(this.getNbt().getString("Motive"));
+        return packet;
     }
 
     @Override
@@ -220,7 +219,7 @@ public class EntityPainting extends EntityHanging {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putString("Motive", this.motive.title);
+        this.nbt.putString("Motive", this.motive.title);
     }
 
     @Override
@@ -233,7 +232,7 @@ public class EntityPainting extends EntityHanging {
     }
 
     public Motive getMotive() {
-        return Motive.BY_NAME.get(namedTag.getString("Motive"));
+        return Motive.BY_NAME.get(this.getNbt().getString("Motive"));
     }
 
     @Override

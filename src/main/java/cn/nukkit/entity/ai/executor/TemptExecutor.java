@@ -3,9 +3,9 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * one of the configured tempt items.
  *
  * The entity moves toward the player, stops within a configurable distance,
- * and sets {@link EntityFlag#TEMPTED} while active. Optional mechanics include
+ * and sets {@link ActorFlags#TEMPTED} while active. Optional mechanics include
  * vertical temptation, rider checks, scare reactions to sudden player movement,
  * and periodic tempt sounds.
  * 
@@ -260,7 +260,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         scaredFleeTargetFloor = scaredFleeTarget.floor();
 
         removeLookTarget(entity);
-        entity.setDataFlag(EntityFlag.TEMPTED, true);
+        entity.setDataFlag(ActorFlags.TEMPTED, true);
         entity.getBehaviorGroup().setForceUpdateRoute(true);
 
         float scaredSpeed = entity.getMovementSpeedDefault() * 1.8f;
@@ -274,7 +274,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         if (scaredWaitUntilTick != -1 && tick < scaredWaitUntilTick && tick >= scaredFleeUntilTick) {
             removeRouteTarget(entity);
             removeLookTarget(entity);
-            entity.setDataFlag(EntityFlag.TEMPTED, true);
+            entity.setDataFlag(ActorFlags.TEMPTED, true);
             return true;
         }
 
@@ -291,7 +291,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
                 setLookTarget(entity, fleeLoc);
             }
 
-            entity.setDataFlag(EntityFlag.TEMPTED, true);
+            entity.setDataFlag(ActorFlags.TEMPTED, true);
             return true;
         }
 
@@ -408,7 +408,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         if (bestD2 <= stopDistanceSquared) {
             removeRouteTarget(entity);
             setLookTarget(entity, target);
-            entity.setDataFlag(EntityFlag.TEMPTED, true);
+            entity.setDataFlag(ActorFlags.TEMPTED, true);
 
             maybePlayTemptSound(entity);
 
@@ -420,7 +420,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         Vector3 floor = target.floor();
         if (oldTarget != null && floor.equals(oldTarget) && lastTarget == best) {
             setLookTarget(entity, target);
-            entity.setDataFlag(EntityFlag.TEMPTED, true);
+            entity.setDataFlag(ActorFlags.TEMPTED, true);
 
             maybePlayTemptSound(entity);
 
@@ -429,7 +429,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
 
         setRouteTarget(entity, target);
         setLookTarget(entity, target);
-        entity.setDataFlag(EntityFlag.TEMPTED, true);
+        entity.setDataFlag(ActorFlags.TEMPTED, true);
 
         maybePlayTemptSound(entity);
 
@@ -451,7 +451,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
     protected void clearTempt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setDataFlag(EntityFlag.TEMPTED, false);
+        entity.setDataFlag(ActorFlags.TEMPTED, false);
 
         if (enabledPitch) {
             entity.setEnablePitch(false);

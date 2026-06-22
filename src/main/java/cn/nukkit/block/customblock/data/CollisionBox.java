@@ -4,8 +4,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 
-public record CollisionBox(double originX, double originY, double originZ, double sizeX, double sizeY,
-                           double sizeZ) implements NBTData {
+public record CollisionBox(double originX, double originY, double originZ, double sizeX, double sizeY, double sizeZ) implements NBTData {
+
     public CompoundTag toCompoundTag() {
         float minX = (float) (originX + 8f);
         float minY = (float) originY;

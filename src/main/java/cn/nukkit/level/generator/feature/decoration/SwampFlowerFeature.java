@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.BlockBlueOrchid;
-import cn.nukkit.block.BlockDeadbush;
 import cn.nukkit.block.BlockState;
 
 public class SwampFlowerFeature extends GroupedDiscFeature {

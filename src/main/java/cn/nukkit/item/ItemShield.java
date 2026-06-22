@@ -34,21 +34,21 @@ public class ItemShield extends ItemTool {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hasBannerPattern() {
-        return this.hasCompoundTag() && (this.getNamedTag().containsInt("Base") ||
-                this.getNamedTag().containsInt("Type") || this.getNamedTag().containsList("Patterns"));
+        return this.hasNbt() && (this.getNbt().containsInt("Base") ||
+                this.getNbt().containsInt("Type") || this.getNbt().containsList("Patterns"));
     }
 
     public @Nullable ItemBanner getBannerPattern() {
         if (!this.hasBannerPattern()) {
             return null;
         }
-        var tag = this.getNamedTag();
+        var tag = this.getNbt();
         var item = new ItemBanner();
-        for (var e : item.getNamedTag().getEntrySet()) {
+        for (var e : item.getNbt().getEntrySet()) {
             tag.put(e.getKey(), e.getValue());
         }
-        if (this.getNamedTag().containsInt("Base")) {
-            item.setBaseColor(DyeColor.getByDyeData(this.getNamedTag().getInt("Base")));
+        if (this.getNbt().containsInt("Base")) {
+            item.setBaseColor(DyeColor.getByDyeData(this.getNbt().getInt("Base")));
         }
         return item;
     }
@@ -62,13 +62,13 @@ public class ItemShield extends ItemTool {
         if (!hasBannerPattern()) {
             tag = new CompoundTag();
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
-        for (var e : banner.getNamedTag().getEntrySet()) {
+        for (var e : banner.getNbt().getEntrySet()) {
             tag.put(e.getKey(), e.getValue());
         }
         tag.putInt("Base", banner.getBaseColor());
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     @Override

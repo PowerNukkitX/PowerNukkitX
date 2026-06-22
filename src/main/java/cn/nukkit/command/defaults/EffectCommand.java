@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -10,6 +9,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.InstantEffect;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -24,21 +24,21 @@ public class EffectCommand extends VanillaCommand {
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("effect", CommandEnum.ENUM_EFFECT),
                 CommandParameter.newType("seconds", true, CommandParamType.INT),
                 CommandParameter.newType("amplifier", true, CommandParamType.INT),
                 CommandParameter.newEnum("hideParticle", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("infinite", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("effect", CommandEnum.ENUM_EFFECT),
                 CommandParameter.newEnum("infinite", new CommandEnum("AddInfiniteEffect", "infinite")),
                 CommandParameter.newType("amplifier", true, CommandParamType.INT),
                 CommandParameter.newEnum("hideParticle", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("clear", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("player", CommandParamType.SELECTION),
                 CommandParameter.newEnum("clear", new CommandEnum("ClearEffects", "clear")),
                 CommandParameter.newEnum("effect", true, CommandEnum.ENUM_EFFECT)
         });

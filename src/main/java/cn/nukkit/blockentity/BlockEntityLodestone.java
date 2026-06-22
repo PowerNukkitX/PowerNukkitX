@@ -30,14 +30,15 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (namedTag.containsInt("trackingHandler")) {
-            namedTag.put("trackingHandle", namedTag.removeAndGet("trackingHandler"));
+        if (nbt.contains("trackingHandler")) {
+            this.nbt.put("trackingHandle", this.nbt.removeAndGet("trackingHandler"));
         }
     }
 
-    @NotNull public OptionalInt getTrackingHandler() {
-        if (namedTag.containsInt("trackingHandle")) {
-            return OptionalInt.of(namedTag.getInt("trackingHandle"));
+    @NotNull
+    public OptionalInt getTrackingHandler() {
+        if (nbt.contains("trackingHandle")) {
+            return OptionalInt.of(getNbt().getInt("trackingHandle"));
         }
         return OptionalInt.empty();
     }
@@ -55,7 +56,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         }
 
         int handler = positionTrackingService.addOrReusePosition(floor);
-        namedTag.putInt("trackingHandle", handler);
+        this.nbt.putInt("trackingHandle", handler);
         return handler;
     }
 
@@ -77,7 +78,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
             log.error("Failed to remove the tracking position handler for {}", getLocation());
             return;
         }
-        
+
         int size = handlers.size();
         for (int i = 0; i < size; i++) {
             int handler = handlers.getInt(i);

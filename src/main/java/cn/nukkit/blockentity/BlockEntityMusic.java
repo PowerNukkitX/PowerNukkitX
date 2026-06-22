@@ -13,11 +13,11 @@ public class BlockEntityMusic extends BlockEntity {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.contains("note")) {
-            this.namedTag.putByte("note", 0);
+        if (!this.nbt.contains("note")) {
+            this.nbt.putByte("note", (byte) 0);
         }
-        if (!this.namedTag.contains("powered")) {
-            this.namedTag.putBoolean("powered", false);
+        if (!this.nbt.contains("powered")) {
+            this.nbt.putBoolean("powered", false);
         }
     }
 
@@ -27,18 +27,18 @@ public class BlockEntityMusic extends BlockEntity {
     }
 
     public void changePitch() {
-        this.namedTag.putByte("note", (this.namedTag.getByte("note") + 1) % 25);
+        this.nbt.putByte("note", (byte) ((this.getNbt().getByte("note") + 1) % 25));
     }
 
     public int getPitch() {
-        return this.namedTag.getByte("note");
+        return this.getNbt().getByte("note");
     }
 
     public void setPowered(boolean powered) {
-        this.namedTag.putBoolean("powered", powered);
+        this.nbt.putBoolean("powered", powered);
     }
 
     public boolean isPowered() {
-        return this.namedTag.getBoolean("powered");
+        return this.getNbt().getBoolean("powered");
     }
 }

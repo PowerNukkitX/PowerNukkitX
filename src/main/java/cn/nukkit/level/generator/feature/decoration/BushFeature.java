@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.BlockBush;
-import cn.nukkit.block.BlockShortGrass;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.object.BlockManager;
 

@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamOption;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
@@ -13,20 +11,28 @@ import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.WildcardIntNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.scoreboard.data.DisplaySlot;
-import cn.nukkit.scoreboard.data.SortOrder;
-import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.ScoreboardLine;
+import cn.nukkit.scoreboard.data.DisplaySlot;
+import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.ObjectiveSortOrder;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamOption;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 
@@ -40,7 +46,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardAddAction", List.of("add"), false)),
                 GenericParameter.OBJECTIVES.get(false),
                 CommandParameter.newEnum("criteria", false, new CommandEnum("ScoreboardCriteria", List.of("dummy"), false)),
-                CommandParameter.newType("displayName", true, CommandParamType.STRING)
+                CommandParameter.newType("displayName", true, CommandParamType.ID)
         });
         this.commandParameters.put("objectives-list", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
@@ -67,28 +73,28 @@ public class ScoreboardCommand extends VanillaCommand {
         this.commandParameters.put("players-add-remove-set", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardPlayersNumAction", List.of("add", "remove", "set"), false)),
-                CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
+                CommandParameter.newType("player", false, CommandParamType.WILDCARD_SELECTION),//allow *
                 GenericParameter.TARGET_OBJECTIVES.get(false),
                 CommandParameter.newType("count", CommandParamType.INT)
         });
         this.commandParameters.put("players-list", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardListAction", List.of("list"), false)),
-                CommandParameter.newType("playername", true, CommandParamType.WILDCARD_TARGET)//allow *
+                CommandParameter.newType("playername", true, CommandParamType.WILDCARD_SELECTION)//allow *
         });
         this.commandParameters.put("players-operation", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardOperationAction", List.of("operation"), false)),
-                CommandParameter.newType("targetName", CommandParamType.WILDCARD_TARGET),//allow *
+                CommandParameter.newType("targetName", CommandParamType.WILDCARD_SELECTION),//allow *
                 GenericParameter.TARGET_OBJECTIVES.get(false),
                 CommandParameter.newType("operation", CommandParamType.OPERATOR),
-                CommandParameter.newType("selector", CommandParamType.WILDCARD_TARGET),
+                CommandParameter.newType("selector", CommandParamType.WILDCARD_SELECTION),
                 GenericParameter.OBJECTIVES.get(false),
         });
         this.commandParameters.put("players-random", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardRandomAction", List.of("random"), false)),
-                CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
+                CommandParameter.newType("player", false, CommandParamType.WILDCARD_SELECTION),//allow *
                 GenericParameter.OBJECTIVES.get(false),
                 CommandParameter.newType("min", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MIN_VALUE)),
                 CommandParameter.newType("max", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MAX_VALUE))
@@ -96,13 +102,13 @@ public class ScoreboardCommand extends VanillaCommand {
         this.commandParameters.put("players-reset", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardResetAction", List.of("reset"), false)),
-                CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
+                CommandParameter.newType("player", false, CommandParamType.WILDCARD_SELECTION),//allow *
                 GenericParameter.OBJECTIVES.get(true),
         });
         this.commandParameters.put("players-test", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardTestAction", List.of("test"), false)),
-                CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
+                CommandParameter.newType("player", false, CommandParamType.WILDCARD_SELECTION),//allow *
                 GenericParameter.OBJECTIVES.get(false),
                 CommandParameter.newType("min", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MIN_VALUE)),
                 CommandParameter.newType("max", true, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MAX_VALUE))
@@ -124,9 +130,9 @@ public class ScoreboardCommand extends VanillaCommand {
                     }
                     String criteriaName = list.getResult(3);
                     if (list.hasResult(4)) {
-                        manager.addScoreboard(new Scoreboard(objectiveName, list.getResult(4), criteriaName, SortOrder.ASCENDING));
+                        manager.addScoreboard(new Scoreboard(objectiveName, list.getResult(4), criteriaName, ObjectiveSortOrder.ASCENDING));
                     } else {
-                        manager.addScoreboard(new Scoreboard(objectiveName, objectiveName, criteriaName, SortOrder.ASCENDING));
+                        manager.addScoreboard(new Scoreboard(objectiveName, objectiveName, criteriaName, ObjectiveSortOrder.ASCENDING));
                     }
                     log.addSuccess("commands.scoreboard.objectives.add.success", objectiveName).output();
                     return 1;
@@ -169,11 +175,11 @@ public class ScoreboardCommand extends VanillaCommand {
                         }
                         var scoreboard = manager.getScoreboards().get(objectiveName);
                         String orderName = list.getResult(4);
-                        SortOrder order = list.hasResult(4) ? switch (orderName) {
-                            case "ascending" -> SortOrder.ASCENDING;
-                            case "descending" -> SortOrder.DESCENDING;
-                            default -> SortOrder.ASCENDING;
-                        } : SortOrder.ASCENDING;
+                        ObjectiveSortOrder order = list.hasResult(4) ? switch (orderName) {
+                            case "ascending" -> ObjectiveSortOrder.ASCENDING;
+                            case "descending" -> ObjectiveSortOrder.DESCENDING;
+                            default -> ObjectiveSortOrder.ASCENDING;
+                        } : ObjectiveSortOrder.ASCENDING;
                         scoreboard.setSortOrder(order);
                         manager.setDisplay(slot, scoreboard);
                         log.addSuccess("commands.scoreboard.objectives.setdisplay.successSet", slot.getSlotName(), objectiveName).output();
