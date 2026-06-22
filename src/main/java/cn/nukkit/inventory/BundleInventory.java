@@ -56,7 +56,7 @@ public class BundleInventory extends BaseInventory {
 
     @Override
     public boolean clear(int index) {
-        return super.clear(index, true);
+        return this.clear(index, true);
     }
 
     @Override
