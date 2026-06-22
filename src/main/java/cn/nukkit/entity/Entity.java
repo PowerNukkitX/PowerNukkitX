@@ -2146,9 +2146,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 if (enabled) {
                     this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, true);
                     this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, true);
+                    this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
+                    this.setDataFlag(ActorFlags.USES_LEGACY_FRICTION, false);
                 } else {
                     this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
                     this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                    this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, false);
+                    this.setDataFlag(ActorFlags.USES_LEGACY_FRICTION, true);
                 }
                 return true;
             }
@@ -2156,6 +2160,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 this.setDataFlag(ActorFlags.WASD_FREE_CAMERA_CONTROLLED, enabled);
                 this.setDataFlag(ActorFlags.WASD_CONTROLLED, false);
                 this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, enabled);
                 this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
                 return true;
             }
@@ -2359,7 +2364,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (ev.isCancelled()) return false;
 
         entity.riding = this;
-        entity.setDataFlag(ActorFlags.RIDING, true);
+        entity.setDataFlag(ActorFlags.RIDING, true, false);
         passengers.add(entity);
 
         if (!this.isPlayer && !(entity instanceof Player)) {
@@ -2506,38 +2511,44 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         for (int i = 0; i < passengers.size(); i++) {
             Entity p = passengers.get(i);
 
-            p.setSeatPosition(getSeatOffsetFor(i, p));
-
             RideableComponent.Seat sm = getRideSeatFor(i);
-            if (sm == null) continue;
+            Vector3f seatOffset = getSeatOffsetFor(i, p);
 
-            Vector3f raw = sm.position();
-            if (raw == null) raw = new Vector3f(0f, 0f, 0f);
-            p.seatRawOffset = raw;
+            p.setSeatPosition(seatOffset, false);
 
-            Float tpc = sm.thirdPersonCameraRadius();
-            if (tpc != null) p.setSeatThirdPersonCameraRadius(tpc);
+            if (sm != null) {
+                Vector3f raw = sm.position();
+                if (raw == null) raw = new Vector3f(0f, 0f, 0f);
+                p.seatRawOffset = raw;
 
-            Float relax = sm.cameraRelaxDistanceSmoothing();
-            if (relax != null) p.setSeatCameraRelaxDistanceSmoothing(relax);
+                Float tpc = sm.thirdPersonCameraRadius();
+                if (tpc != null) {
+                    p.setSeatThirdPersonCameraRadius(tpc, false);
+                }
 
-            Float lock = sm.lockRiderRotationDegrees();
-            if (lock != null) {
-                p.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, true);
-                p.setSeatLockRiderRotationDegrees(lock);
-            } else {
-                p.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, false);
-                p.setSeatLockRiderRotationDegrees(0.0f);
+                Float relax = sm.cameraRelaxDistanceSmoothing();
+                if (relax != null) {
+                    p.setSeatCameraRelaxDistanceSmoothing(relax, false);
+                }
+
+                Float lock = sm.lockRiderRotationDegrees();
+                if (lock != null) {
+                    p.setSeatLockRiderRotationDegrees(lock, false);
+                } else {
+                    p.setSeatLockRiderRotationDegrees(0.0f, false);
+                }
+
+                Float rot = sm.rotateRiderByDegrees();
+                if (rot != null) {
+                    p.setSeatRotationOffset(true, false);
+                    p.setSeatRotateRiderByDegrees(rot, false);
+                } else {
+                    p.setSeatRotationOffset(false, false);
+                    p.setSeatRotateRiderByDegrees(0.0f, false);
+                }
             }
 
-            Float rot = sm.rotateRiderByDegrees();
-            if (rot != null) {
-                p.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET, true);
-                p.setSeatRotateRiderByDegrees(rot);
-            } else {
-                p.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET, false);
-                p.setSeatRotateRiderByDegrees(0.0f);
-            }
+            p.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), p.getSeatDataMap());
         }
     }
 
@@ -2556,6 +2567,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public boolean dismountEntity(Entity entity, boolean sendLinks, boolean riderInitiated) {
         int seatIndex = passengers.indexOf(entity);
+        Location lookLocation = entity.getLocation();
 
         EntityVehicleExitEvent ev = new EntityVehicleExitEvent(entity, this);
         server.getPluginManager().callEvent(ev);
@@ -2576,16 +2588,20 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         entity.riding = null;
         entity.setDataFlag(ActorFlags.RIDING, false);
-        entity.setSeatPosition(new Vector3f());
+        entity.setSeatPosition(new Vector3f(), false);
         entity.seatRawOffset = null;
         passengers.remove(entity);
 
         Vector3 dismount = resolveDismountPosition(entity);
+        lookLocation.setComponents(dismount.x, dismount.y, dismount.z);
+
         if (entity instanceof Player p) {
-            p.teleport(dismount);
+            p.teleport(lookLocation);
             p.resetFallDistance();
         } else {
             entity.setPosition(dismount);
+            entity.setRotation((float) lookLocation.yaw, (float) lookLocation.pitch);
+            entity.updateMovement();
         }
 
         updatePassengers(sendLinks, false);
@@ -2667,13 +2683,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void clearSeatData(Player passenger) {
-        passenger.setDataProperty(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, 0.0f, false);
-        passenger.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, false, false);
-        passenger.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 0.0f, false);
-        passenger.setDataProperty(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, 0.0f, false);
-        passenger.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, 0.0f, false);
-        passenger.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET, false, true);
-        passenger.sendData(passenger);
+        passenger.setSeatCameraRelaxDistanceSmoothing(0.0f, false);
+        passenger.setSeatLockRiderRotationDegrees(0.0f, false);
+        passenger.setSeatThirdPersonCameraRadius(0.0f, false);
+        passenger.setSeatRotationOffset(false, false);
+        passenger.setSeatRotateRiderByDegrees(0.0f, false);
+
+        passenger.sendData(passenger, passenger.getSeatDataMap());
     }
 
 
@@ -2686,7 +2702,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setSeatPosition(Vector3f pos) {
-        this.setDataProperty(ActorDataTypes.SEAT_OFFSET, pos.toNetwork());
+        this.setSeatPosition(pos, true);
+    }
+
+    public void setSeatPosition(Vector3f pos, boolean send) {
+        if (pos == null) return;
+        this.setDataProperty(ActorDataTypes.SEAT_OFFSET, pos.toNetwork(), send);
     }
 
     public @Nullable Float getSeatThirdPersonCameraRadius() {
@@ -2694,8 +2715,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setSeatThirdPersonCameraRadius(@Nullable Float v) {
+        this.setSeatThirdPersonCameraRadius(v, true);
+    }
+
+    public void setSeatThirdPersonCameraRadius(@Nullable Float v, boolean send) {
         if (v == null) return;
-        this.setDataProperty(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, v);
+        this.setDataProperty(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, v, send);
     }
 
     public @Nullable Float getSeatCameraRelaxDistanceSmoothing() {
@@ -2703,8 +2728,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setSeatCameraRelaxDistanceSmoothing(@Nullable Float v) {
+        this.setSeatCameraRelaxDistanceSmoothing(v, true);
+    }
+
+    public void setSeatCameraRelaxDistanceSmoothing(@Nullable Float v, boolean send) {
         if (v == null) return;
-        this.setDataProperty(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, v);
+        this.setDataProperty(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, v, send);
     }
 
     public @Nullable Float getSeatLockRiderRotationDegrees() {
@@ -2712,8 +2741,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setSeatLockRiderRotationDegrees(@Nullable Float v) {
+        this.setSeatLockRiderRotationDegrees(v, true);
+    }
+
+    public void setSeatLockRiderRotationDegrees(@Nullable Float v, boolean send) {
         if (v == null) return;
-        this.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, v);
+        this.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, v, send);
     }
 
     public @Nullable Float getSeatRotateRiderByDegrees() {
@@ -2721,10 +2754,59 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setSeatRotateRiderByDegrees(@Nullable Float v) {
-        if (v == null) return;
-        this.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, v);
+        this.setSeatRotateRiderByDegrees(v, true);
     }
 
+    public void setSeatRotateRiderByDegrees(@Nullable Float v, boolean send) {
+        if (v == null) return;
+        this.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, v, send);
+    }
+
+    public void setSeatLockPassengerRotation(boolean value) {
+        this.setSeatLockPassengerRotation(value, true);
+    }
+
+    public void setSeatLockPassengerRotation(boolean value, boolean send) {
+        this.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, value, send);
+    }
+
+    public void setSeatRotationOffset(boolean value) {
+        this.setSeatRotationOffset(value, true);
+    }
+
+    public void setSeatRotationOffset(boolean value, boolean send) {
+        this.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET, value, send);
+    }
+
+    protected ActorDataMap getSeatDataMap() {
+        ActorDataMap data = new ActorDataMap();
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_OFFSET)) {
+            data.put(ActorDataTypes.SEAT_OFFSET, this.actorDataMap.get(ActorDataTypes.SEAT_OFFSET));
+        }
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS)) {
+            data.put(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, this.actorDataMap.get(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS));
+        }
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING)) {
+            data.put(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, this.actorDataMap.get(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING));
+        }
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES)) {
+            data.put(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, this.actorDataMap.get(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES));
+        }
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_ROTATION_OFFSET)) {
+            data.put(ActorDataTypes.SEAT_ROTATION_OFFSET, this.actorDataMap.get(ActorDataTypes.SEAT_ROTATION_OFFSET));
+        }
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES)) {
+            data.put(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, this.actorDataMap.get(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES));
+        }
+
+        return data;
+    }
 
     /// ///////////////////////////////////////////
     /// //////// UPDATE LINK PACKETS //////////////
