@@ -11,7 +11,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.network.protocol.AnimatePacket;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -119,9 +119,9 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
 
         if (downId.equals(BAMBOO_SAPLING)) {
             if (player != null) {
-                AnimatePacket animatePacket = new AnimatePacket();
-                animatePacket.action = AnimatePacket.Action.SWING_ARM;
-                animatePacket.eid = player.getId();
+                final AnimatePacket animatePacket = new AnimatePacket();
+                animatePacket.setAction(AnimatePacket.Action.SWING);
+                animatePacket.setTargetRuntimeID(player.getId());
                 this.getLevel().addChunkPacket(player.getChunkX(), player.getChunkZ(), animatePacket);
             }
             setBambooLeafSize(BambooLeafSize.SMALL_LEAVES);
@@ -211,7 +211,8 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
 
     private boolean isSupportInvalid() {
         return switch (down().getId()) {
-            case BAMBOO, DIRT, GRASS_BLOCK, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK, MUD, MUDDY_MANGROVE_ROOTS -> false;
+            case BAMBOO, DIRT, GRASS_BLOCK, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK, MUD,
+                 MUDDY_MANGROVE_ROOTS -> false;
             default -> true;
         };
     }

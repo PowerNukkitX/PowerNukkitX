@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -19,8 +18,9 @@ import cn.nukkit.level.generator.populator.normal.*;
 import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.math.ChunkVector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
+import it.unimi.dsi.fastutil.Pair;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 
@@ -43,7 +43,7 @@ public class LocateCommand extends VanillaCommand {
         });
         this.commandParameters.put("biome", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeBiome", "biome")),
-                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinition::getName).toArray(String[]::new)),
+                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(Pair::first).map(Registries.BIOME::getFromBiomeStringList).toArray(String[]::new)),
                 CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN),
                 CommandParameter.newType("radius", true, CommandParamType.INT),
                 CommandParameter.newEnum("search", true, new String[]{"spiral", "xaxis"})

@@ -139,8 +139,8 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     }
 
     @Override
-    public Item setNamedTag(CompoundTag tag) {
-        Item out = super.setNamedTag(tag);
+    public Item setNbt(CompoundTag tag) {
+        Item out = super.setNbt(tag);
         selfHealIdentifierFromNamedTag();
         return out;
     }
@@ -157,7 +157,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
 
     // ---------- helpers ----------
     private void selfHealIdentifierFromNamedTag() {
-        CompoundTag tag = this.getNamedTag();
+        CompoundTag tag = this.getNbt();
         if (tag == null) return;
         CompoundTag pnxExtra = tag.getCompound(ROOT_PNX_EXTRA);
         if (pnxExtra == null) return;
@@ -213,7 +213,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     public void resolveSpawnEgg(String resolvedId) {
         setItemIdReflect(this, resolvedId);
 
-        CompoundTag root = this.getOrCreateNamedTag();
+        CompoundTag root = this.getOrCreateNbt();
         CompoundTag pnx  = root.getCompound(ROOT_PNX_EXTRA);
         if (pnx == null) {
             pnx = new CompoundTag();

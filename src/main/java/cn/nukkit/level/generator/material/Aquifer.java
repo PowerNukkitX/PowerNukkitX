@@ -10,7 +10,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.densityfunction.DensityCommon;
 import cn.nukkit.level.generator.densityfunction.DensityFunction;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 

@@ -1098,4 +1098,8 @@ public interface ItemID {
     String COPPER_SHOVEL = "minecraft:copper_shovel";
     String COPPER_SPEAR = "minecraft:copper_spear";
     String COPPER_SWORD = "minecraft:copper_sword";
+
+    String SULFUR_CUBE_SPAWN_EGG = "minecraft:sulfur_cube_spawn_egg";
+    String MUSIC_DISC_BOUNCE = "minecraft:music_disc_bounce";
+    String SULFUR_CUBE_BUCKET = "minecraft:sulfur_cube_bucket";
 }

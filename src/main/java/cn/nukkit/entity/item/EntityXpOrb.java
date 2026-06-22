@@ -8,6 +8,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -19,7 +20,8 @@ import java.util.Set;
  */
 public class EntityXpOrb extends Entity {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return XP_ORB;
     }
 
@@ -65,7 +67,6 @@ public class EntityXpOrb extends Entity {
         return result;
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -115,24 +116,25 @@ public class EntityXpOrb extends Entity {
         setHealthMax(5);
         setHealthCurrent(5);
 
-        if (namedTag.contains("Health")) {
-            this.setHealthCurrent(namedTag.getShort("Health"));
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("Health")) {
+            this.setHealthCurrent(nbtMap.getShort("Health"));
         }
-        if (namedTag.contains("Age")) {
-            this.age = namedTag.getShort("Age");
+        if (nbtMap.contains("Age")) {
+            this.age = nbtMap.getShort("Age");
         }
-        if (namedTag.contains("PickupDelay")) {
-            this.pickupDelay = namedTag.getShort("PickupDelay");
+        if (nbtMap.contains("PickupDelay")) {
+            this.pickupDelay = nbtMap.getShort("PickupDelay");
         }
-        if (namedTag.contains("Value")) {
-            this.exp = namedTag.getShort("Value");
+        if (nbtMap.contains("Value")) {
+            this.exp = nbtMap.getShort("Value");
         }
 
         if (this.exp <= 0) {
             this.exp = 1;
         }
 
-        this.entityDataMap.put(VALUE, this.exp);
+        this.actorDataMap.put(ActorDataTypes.VALUE, this.exp);
 
         //call event item spawn event
     }
@@ -246,10 +248,10 @@ public class EntityXpOrb extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putShort("Health", (int) getHealthCurrent());
-        this.namedTag.putShort("Age", age);
-        this.namedTag.putShort("PickupDelay", pickupDelay);
-        this.namedTag.putShort("Value", exp);
+        this.nbt.putShort("Health", (short) getHealthCurrent())
+                .putShort("Age", (short) age)
+                .putShort("PickupDelay", (short) pickupDelay)
+                .putShort("Value", (short) exp);
     }
 
     public int getExp() {

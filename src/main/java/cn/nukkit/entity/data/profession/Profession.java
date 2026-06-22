@@ -39,7 +39,7 @@ public abstract class Profession {
         return new ListTag<>();
     }
 
-    
+
     public static void init() {
         registerProfession(new ProfessionFarmer());
         registerProfession(new ProfessionFisherman());

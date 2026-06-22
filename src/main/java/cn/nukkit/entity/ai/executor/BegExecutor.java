@@ -2,21 +2,21 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 /**
  * "Beg" behavior: makes the entity look at the nearest nearby player holding
- * one of the configured beg items, and sets {@link EntityFlag#INTERESTED}
+ * one of the configured beg items, and sets {@link org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags#INTERESTED}
  * while the condition is met.
- *
+ * <p>
  * Unlike {@link TemptExecutor}, this does not apply any movement/follow logic;
  * it only locks the look target (optionally considering vertical distance).
- * 
+ *
  * @author Curse
  */
 public class BegExecutor implements EntityControl, IBehaviorExecutor {
@@ -119,7 +119,7 @@ public class BegExecutor implements EntityControl, IBehaviorExecutor {
         Vector3 floor = target.floor();
         if (oldTarget != null && floor.equals(oldTarget) && lastTarget == best) {
             setLookTarget(entity, target);
-            entity.setDataFlag(EntityFlag.INTERESTED, true);
+            entity.setDataFlag(ActorFlags.INTERESTED, true);
             return true;
         }
 
@@ -133,7 +133,7 @@ public class BegExecutor implements EntityControl, IBehaviorExecutor {
 
     protected void clearBeg(EntityIntelligent entity) {
         removeLookTarget(entity);
-        entity.setDataFlag(EntityFlag.INTERESTED, false);
+        entity.setDataFlag(ActorFlags.INTERESTED, false);
 
         if (enabledPitch) {
             entity.setEnablePitch(false);

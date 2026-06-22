@@ -12,10 +12,10 @@ import cn.nukkit.level.particle.SmokeParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -500,7 +500,7 @@ public abstract class BlockLiquid extends BlockTransparent {
 
     protected void triggerLavaMixEffects(Vector3 pos) {
         Random random = ThreadLocalRandom.current();
-        this.getLevel().addLevelEvent(pos.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_FIZZ, (int) ((random.nextFloat() - random.nextFloat()) * 800) + 2600);
+        this.getLevel().addLevelEvent(pos.add(0.5, 0.5, 0.5), LevelEvent.SOUND_FIZZ, (int) ((random.nextFloat() - random.nextFloat()) * 800) + 2600);
 
         for (int i = 0; i < 8; ++i) {
             this.getLevel().addParticle(new SmokeParticle(pos.add(Math.random(), 1.2, Math.random())));

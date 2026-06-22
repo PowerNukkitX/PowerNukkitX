@@ -1,5 +1,8 @@
 package cn.nukkit.nbt.tag;
 
+import org.cloudburstmc.nbt.NbtList;
+import org.cloudburstmc.nbt.NbtType;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -71,6 +74,13 @@ public class ListTag<T extends Tag> extends Tag {
     public ListTag<T> add(T tag) {
         type = tag.getId();
         list.add(tag);
+        return this;
+    }
+
+    public ListTag<T> addAll(Collection<T> tags) {
+        for (T tag : tags) {
+            add(tag);
+        }
         return this;
     }
 
@@ -146,6 +156,22 @@ public class ListTag<T extends Tag> extends Tag {
             }
         }
         return false;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public NbtList toNetwork() {
+        if (list.isEmpty()) {
+            return new NbtList(NbtType.byId(type), List.of());
+        }
+        List<Object> networkValues = new ArrayList<>(list.size());
+        for (var entry : getAll()) {
+            networkValues.add(entry.toNetwork());
+        }
+        // Infer the NbtType from the actual runtime class of the converted value,
+        // not from the Nukkit type byte — avoids any id mapping mismatch.
+        NbtType nbtType = NbtType.byClass(networkValues.get(0).getClass());
+        return new NbtList(nbtType, networkValues);
     }
 
     @Override

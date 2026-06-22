@@ -20,11 +20,11 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.contains("color")) {
-            this.namedTag.putByte("color", 0);
+        if (!this.nbt.contains("color")) {
+            this.nbt.putByte("color", (byte) 0);
         }
 
-        this.color = this.namedTag.getByte("color");
+        this.color = this.getNbt().getByte("color");
     }
 
     @Override
@@ -35,7 +35,7 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte("color", this.color);
+        this.nbt.putByte("color", (byte) this.color);
     }
 
     @Override

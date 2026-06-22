@@ -73,7 +73,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     private <D> void processMemoryStorage(IMemoryStorage storage, MemoryType<D> mem) {
         var codec = mem.getCodec();
-        var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+        var data = Objects.requireNonNull(codec).getDecoder().apply(this.getNbt());
 
         if (data != null) {
             storage.put(mem, data);

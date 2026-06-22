@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockState;
-import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
 /**

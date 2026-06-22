@@ -26,7 +26,6 @@ import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -37,6 +36,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -144,7 +145,7 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
 
     @Override
     public boolean isPreventingSleep(Player player) {
-        return this.getDataFlag(EntityFlag.ANGRY);
+        return this.getDataFlag(ActorFlags.ANGRY);
     }
 
     @Override

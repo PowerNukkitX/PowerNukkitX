@@ -17,9 +17,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -57,25 +57,25 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         super.initEntity();
 
-        if (this.namedTag.contains(TAG_MAINHAND)) {
-            this.equipmentInventory.setItemInHand(NBTIO.getItemHelper(this.namedTag.getCompound(TAG_MAINHAND)), true);
+        final CompoundTag nbtMap = this.getNbt();
+        if (this.nbt.contains(TAG_MAINHAND)) {
+            this.equipmentInventory.setItemInHand(ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND)), true);
         }
 
-        if (this.namedTag.contains(TAG_OFFHAND)) {
-            this.equipmentInventory.setItemInOffhand(NBTIO.getItemHelper(this.namedTag.getCompound(TAG_OFFHAND)), true);
+        if (this.nbt.contains(TAG_OFFHAND)) {
+            this.equipmentInventory.setItemInOffhand(ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND)), true);
         }
 
-        if (this.namedTag.contains(TAG_ARMOR)) {
-            ListTag<CompoundTag> armorList = this.namedTag.getList(TAG_ARMOR, CompoundTag.class);
+        if (this.nbt.containsList(TAG_ARMOR)) {
+            ListTag<CompoundTag> armorList = nbtMap.getList(TAG_ARMOR, CompoundTag.class);
             for (CompoundTag armorTag : armorList.getAll()) {
-                this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
+                this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
         }
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
-        //怪物不能在和平模式下生存
         if (this.getServer().getDifficulty() == 0) {
             this.close();
             return true;
@@ -101,15 +101,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.put(TAG_MAINHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInHand()));
-        this.namedTag.put(TAG_OFFHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInOffhand()));
+        this.nbt.putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null))
+                .putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
 
         if (this.armorInventory != null) {
             ListTag<CompoundTag> armorTag = new ListTag<>();
             for (int i = 0; i < 4; i++) {
-                armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(TAG_ARMOR,armorTag);
+            this.nbt.putList(TAG_ARMOR, armorTag);
         }
     }
 

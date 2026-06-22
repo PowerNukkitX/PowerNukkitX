@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.effect.PotionApplicationMode;

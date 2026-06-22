@@ -24,8 +24,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ItemSpawnEgg extends Item implements SpawnEggPickable {
 
-    private CompoundTag entityNBT;
-
     public ItemSpawnEgg() {
         this(0, 1);
     }
@@ -42,6 +40,8 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     public ItemSpawnEgg(String id) {
         super(id, 0, 1);
     }
+
+    protected CompoundTag entityNBT;
 
     @Override
     public void setDamage(int meta) {
@@ -79,6 +79,7 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());
         }
+
         if (this.entityNBT != null) {
             this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
             this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
@@ -115,7 +116,11 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
 
     public @Nullable String getEntityName() {
         String entityIdentifier = Registries.ENTITY.getEntityIdentifier(getEntityNetworkId());
-        var path = entityIdentifier.split(":")[1];
+        if (entityIdentifier == null) {
+            return null;
+        }
+        String[] split = entityIdentifier.split(":");
+        var path = split.length > 1 ? split[1] : split[0];
         StringBuilder result = new StringBuilder();
         String[] parts = path.split("_");
         for (String part : parts) {
@@ -128,6 +133,5 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
 
     @Override
     public void setEntityNBT(CompoundTag entityNBT) {
-        this.entityNBT = entityNBT;
     }
 }

@@ -24,7 +24,7 @@ public class OfflinePlayer implements IPlayer {
      * Initializes the object {@code OfflinePlayer}.
      *
      * @param server The server this player is in, as a {@code Server} object.
-     * @param uuid  UUID of this player.
+     * @param uuid   UUID of this player.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     public OfflinePlayer(Server server, UUID uuid) {
@@ -45,8 +45,8 @@ public class OfflinePlayer implements IPlayer {
 
             if (tag == null) tag = new CompoundTag();
 
-            tag.putLong("UUIDMost", uuid.getMostSignificantBits());
-            tag.putLong("UUIDLeast", uuid.getLeastSignificantBits());
+            tag.putLong("UUIDMost", uuid.getMostSignificantBits())
+                    .putLong("UUIDLeast", uuid.getLeastSignificantBits());
         } else if (name != null) {
             tag = this.server.getOfflinePlayerData(name, false);
 

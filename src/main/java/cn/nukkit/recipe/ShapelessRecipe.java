@@ -1,10 +1,11 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.CraftingDataEntryType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,24 +13,24 @@ import java.util.List;
 import java.util.UUID;
 
 public class ShapelessRecipe extends CraftingRecipe {
-    public ShapelessRecipe(Item result, Collection<Item> ingredients) {
-        this(null, 10, result, ingredients);
+    public ShapelessRecipe(Item result, int netId, Collection<Item> ingredients) {
+        this(null, netId, 10, result, ingredients);
     }
 
-    public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
-        this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
+    public ShapelessRecipe(String recipeId, int netId, int priority, Item result, Collection<Item> ingredients) {
+        this(recipeId, netId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
     }
 
-    public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
-        this(recipeId, null, priority, result, ingredients);
+    public ShapelessRecipe(String recipeId, int netId, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, null, netId, priority, result, ingredients);
     }
 
-    public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
-        this(recipeId, uuid, priority, result, ingredients, null);
+    public ShapelessRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, uuid, netId, priority, result, ingredients, null);
     }
 
-    public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority, recipeUnlockingRequirement);
+    public ShapelessRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, netId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredients.size() > 9) {
@@ -66,5 +67,23 @@ public class ShapelessRecipe extends CraftingRecipe {
             return false;
         }
         return true;
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe toNetwork() {
+        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe.of(
+                CraftingDataEntryType.SHAPELESS_RECIPE,
+                this.getRecipeId(),
+                this.getIngredients().stream().map(ItemDescriptor::toNetwork).toList(),
+                this.getResults().stream().map(Item::toNetwork).toList(),
+                this.getUUID(),
+                this.getRecipeIdTag(),
+                this.getPriority(),
+                this.getNetId(),
+                this.getRequirement()
+        );
+    }
+
+    public String getRecipeIdTag() {
+        return "crafting_table";
     }
 }

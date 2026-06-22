@@ -1,25 +1,28 @@
 package cn.nukkit.command.data;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandData;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a container for multiple versions of {@link CommandData} used in command registration and management.
+ * Represents a container for multiple versions of {@link NukkitCommandData} used in command registration and management.
  * <p>
  * This class is typically used to store different versions of command metadata, allowing for compatibility
  * with various protocol versions or command structures. The {@link #versions} list usually contains a single
- * {@link CommandData} instance, but can be extended to support multiple versions if needed.
+ * {@link NukkitCommandData} instance, but can be extended to support multiple versions if needed.
  * <p>
  * Features:
  * <ul>
- *   <li>Stores a list of {@link CommandData} objects representing different command versions.</li>
+ *   <li>Stores a list of {@link NukkitCommandData} objects representing different command versions.</li>
  *   <li>Supports extensibility for future protocol or command changes.</li>
  *   <li>Used in command registration, packet serialization, and command management systems.</li>
  * </ul>
  * <p>
  * Usage:
  * <ul>
- *   <li>Instantiate and add {@link CommandData} objects to the {@link #versions} list.</li>
+ *   <li>Instantiate and add {@link NukkitCommandData} objects to the {@link #versions} list.</li>
  *   <li>Use in command registration and packet handling to provide versioned command metadata.</li>
  * </ul>
  * <p>
@@ -30,11 +33,18 @@ import java.util.List;
  * </pre>
  *
  * @author PowerNukkitX Project Team
- * @see CommandData
+ * @see NukkitCommandData
  */
 public class CommandDataVersions {
 
     //size 1
-    public List<CommandData> versions = new ArrayList<>();
+    public List<NukkitCommandData> versions = new ArrayList<>();
 
+    public List<CommandData> toNetwork() {
+        final List<CommandData> list = new ObjectArrayList<>();
+        for (NukkitCommandData version : this.versions) {
+            list.add(version.toNetwork());
+        }
+        return list;
+    }
 }

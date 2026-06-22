@@ -31,7 +31,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -86,12 +86,9 @@ public class EntityHusk extends EntityZombie {
     protected void initEntity() {
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
-        this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL, 8);
-        this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL_RANGE, 16);
-        this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
-        if (this.isBaby()) {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY.getId());
-        }
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL, 8f);
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL_RANGE, 16f);
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
     }
 
     @Override
@@ -116,7 +113,7 @@ public class EntityHusk extends EntityZombie {
 
     @Override
     public Set<String> typeFamily() {
-        if (this.namedTag == null || !this.namedTag.getBoolean(NBT_HUSK_RIDER)) return Set.of("husk", "zombie", "undead", "monster", "mob");
+        if (this.nbt == null || !this.getNbt().getBoolean(NBT_HUSK_RIDER)) return Set.of("husk", "zombie", "undead", "monster", "mob");
         return Set.of("husk_rider", "husk", "zombie", "undead", "monster", "mob");
     }
 
@@ -138,7 +135,7 @@ public class EntityHusk extends EntityZombie {
     @Override
     protected void transform() {
         this.close();
-        EntityZombie drowned = new EntityZombie(this.getChunk(), this.namedTag);
+        EntityZombie drowned = new EntityZombie(this.getChunk(), this.getNbt());
         drowned.setPosition(this);
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();

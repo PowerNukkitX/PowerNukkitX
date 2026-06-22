@@ -12,12 +12,10 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 public class BlockEnderChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
 
@@ -113,16 +111,15 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag();
+        final CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
 
@@ -131,15 +128,15 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
 
         if (!this.hasFreeSpaceAbove()) {
             return false;
         }
 
         BlockEntityEnderChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
-                && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
+        if (chest.getNbt().contains("Lock") && chest.getNbt().get("Lock") instanceof StringTag
+                && !chest.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 

@@ -1,6 +1,7 @@
 package cn.nukkit.math;
 
 import lombok.SneakyThrows;
+import org.cloudburstmc.math.vector.Vector3i;
 
 public class BlockVector3 implements Cloneable {
     public int x;
@@ -272,5 +273,13 @@ public class BlockVector3 implements Cloneable {
 
     public Vector3f asVector3f() {
         return new Vector3f(this.x, this.y, this.z);
+    }
+
+    public Vector3i toNetwork() {
+        return Vector3i.from(this.x, this.y, this.z);
+    }
+
+    public static BlockVector3 fromNetwork(Vector3i vector3i) {
+        return new BlockVector3(vector3i.getX(), vector3i.getY(), vector3i.getZ());
     }
 }

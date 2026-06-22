@@ -9,7 +9,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     public static final String LAST_INTERACTED_SLOT = "LastInteractedSlot";
@@ -28,7 +27,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        addBookshelfNbt(namedTag);
+        this.nbt = addBookshelfNbt(nbt);
     }
 
     public Item removeBook(int index) {
@@ -68,8 +67,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag compoundTag = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
-        addBookshelfNbt(compoundTag);
-        return compoundTag;
+        return addBookshelfNbt(compoundTag);
     }
 
     @Override
@@ -82,15 +80,14 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         items = new Item[]{Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR};
-        if (namedTag.containsInt(LAST_INTERACTED_SLOT)) {
-            this.lastInteractedSlot = namedTag.getInt(LAST_INTERACTED_SLOT);
+        if (nbt.contains(LAST_INTERACTED_SLOT)) {
+            this.lastInteractedSlot = getNbt().getInt(LAST_INTERACTED_SLOT);
         }
-        if (namedTag.containsList("Items")) {
-            ListTag<CompoundTag> items = namedTag.getList("Items", CompoundTag.class);
+        if (nbt.containsList("Items")) {
+            ListTag<CompoundTag> items = getNbt().getList("Items", CompoundTag.class);
             if (items.size() > 6) return;
-            List<CompoundTag> all = items.getAll();
-            for (int i = 0; i < all.size(); i++) {
-                CompoundTag compoundTag = all.get(i);
+            for (int i = 0; i < items.size(); i++) {
+                CompoundTag compoundTag = items.get(i);
                 String name = compoundTag.getString("Name");
                 if (name.equals("")) {
                     this.items[i] = null;
@@ -100,14 +97,14 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                 item.setDamage(compoundTag.getByte("Damage"));
                 item.setCount(compoundTag.getByte("Count"));
                 if (compoundTag.containsCompound("tag")) {
-                    item.setNamedTag(compoundTag.getCompound("tag"));
+                    item.setNbt(compoundTag.getCompound("tag"));
                 }
                 this.items[i] = item;
             }
         }
     }
 
-    private void addBookshelfNbt(CompoundTag namedTag) {
+    private CompoundTag addBookshelfNbt(CompoundTag namedTag) {
         if (lastInteractedSlot != null) {
             namedTag.putInt(LAST_INTERACTED_SLOT, lastInteractedSlot);
         }
@@ -115,24 +112,24 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
         for (var item : items) {
             if (item == null || item.isNull()) {
                 compoundTagListTag.add(new CompoundTag()
-                        .putByte("Count", 0)
+                        .putByte("Count", (byte) 0)
                         .putString("Name", "")
-                        .putByte("Damage", 0)
+                        .putByte("Damage", (byte) 0)
                         .putBoolean("WasPickedUp", false)
                 );
             } else {
                 CompoundTag compoundTag = new CompoundTag()
-                        .putByte("Count", item.getCount())
+                        .putByte("Count", (byte) item.getCount())
                         .putString("Name", item.getId())
-                        .putByte("Damage", item.getDamage())
+                        .putByte("Damage", (byte) item.getDamage())
                         .putBoolean("WasPickedUp", false);
-                if (item.hasCompoundTag()) {
-                    compoundTag.putCompound("tag", item.getNamedTag());
+                if (item.hasNbt()) {
+                    compoundTag.putCompound("tag", item.getNbt().copy());
                 }
                 compoundTagListTag.add(compoundTag);
             }
 
         }
-        namedTag.putList("Items", compoundTagListTag);
+        return namedTag.putList("Items", compoundTagListTag);
     }
 }
