@@ -194,7 +194,6 @@ public class Server {
     private float maxTick = 20;
     private float maxUse = 0;
     private int sendUsageTicker = 0;
-    private volatile double cachedCpuLoad = -1;
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
@@ -1158,12 +1157,6 @@ public class Server {
             this.titleTick();
             this.maxTick = 20;
             this.maxUse = 0;
-            if (ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean osBean) {
-                double load = osBean.getProcessCpuLoad();
-                if (load >= 0) {
-                    this.cachedCpuLoad = load;
-                }
-            }
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
@@ -1242,7 +1235,7 @@ public class Server {
     }
 
     public float getTicksPerSecond() {
-        return this.tickAverage[this.tickAverage.length - 1];
+        return getTicksPerSecondAverage();
     }
 
     public float getMaxTicksPerSecond() {
