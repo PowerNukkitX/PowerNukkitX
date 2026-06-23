@@ -8,7 +8,6 @@ import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
-import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -291,10 +290,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
                 int originalCount = item.getCount();
 
-                InventoryPickupItemEvent ev = new InventoryPickupItemEvent(hopperInv, itemEntity);
-                Server.getInstance().getPluginManager().callEvent(ev);
-
-                if (ev.isCancelled())
+                if (!hopperInv.callPickupItemEvent(itemEntity))
                     continue;
 
                 Item[] items = hopperInv.addItem(item);

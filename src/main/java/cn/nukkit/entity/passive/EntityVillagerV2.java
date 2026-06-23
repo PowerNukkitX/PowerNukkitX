@@ -939,6 +939,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                     }) {
                         InventorySlice slice = new InventorySlice(getInventory(), 1, getInventory().getSize());
                         if (slice.canAddItem(item)) {
+                            if (!slice.callPickupItemEvent(entityItem)) {
+                                continue;
+                            }
                             final TakeItemActorPacket pk = new TakeItemActorPacket();
                             pk.setActorRuntimeID(this.getId());
                             pk.setItemRuntimeID(i.getId());
