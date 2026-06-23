@@ -157,14 +157,16 @@ public class EntityAllay extends EntityMob implements EntityFlyable {
                     Item item = nearestItem.getItem();
                     Item currentItem = getInventory().getItem(0).clone();
                     if(getInventory().canAddItem(item)) {
-                        if(currentItem.isNull()) {
-                            getInventory().setItem(0, item);
-                        } else {
-                            item.setCount(item.getCount() + currentItem.getCount());
-                            getInventory().setItem(0, item);
+                        if(getInventory().callPickupItemEvent(nearestItem)) {
+                            if(currentItem.isNull()) {
+                                getInventory().setItem(0, item);
+                            } else {
+                                item.setCount(item.getCount() + currentItem.getCount());
+                                getInventory().setItem(0, item);
+                            }
+                            this.level.addSound(this, Sound.RANDOM_POP);
+                            nearestItem.close();
                         }
-                        this.level.addSound(this, Sound.RANDOM_POP);
-                        nearestItem.close();
                     }
                 }
             } else {
