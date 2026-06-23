@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * Compile-time processor for the PNX plugin annotations.
  * <ol>
- *     <li>{@link PluginMeta} on the main class produces a {@code plugin.yml}
+ *     <li>{@link PluginMeta} on the main class produces a {@code powernukkitx.yml}
  *     descriptor in the plugin jar.</li>
  *     <li>{@link EventListener} types are registered with the plugin manager.</li>
  *     <li>{@link ScheduleTask} classes and methods are scheduled with the server
@@ -356,12 +356,12 @@ public class PluginAnnotationProcessor extends AbstractProcessor {
         }
 
         try {
-            FileObject yml = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "plugin.yml", main);
+            FileObject yml = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "powernukkitx.yml", main);
             try (Writer w = yml.openWriter()) {
                 w.write(y.toString());
             }
         } catch (IOException ex) {
-            error(main, "Failed to generate plugin.yml: " + ex.getMessage());
+            error(main, "Failed to generate powernukkitx.yml: " + ex.getMessage());
         }
     }
 
