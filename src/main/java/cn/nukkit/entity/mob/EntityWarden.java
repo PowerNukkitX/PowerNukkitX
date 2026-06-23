@@ -104,10 +104,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         }, (entity) -> true, 1, 1, 20),
                         new Behavior((entity) -> {
                             // Apply Darkness to nearby players
-                            final Effect effect = Effect.get(EffectType.DARKNESS).setDuration(DARKNESS_DURATION_TICKS);
                             for (var player : entity.level.getPlayers().values()) {
                                 if (!player.isIgnoredByEntities() && entity.distanceSquared(player) <= DARKNESS_RANGE * DARKNESS_RANGE) {
-                                    player.addEffect(effect);
+                                    player.addEffect(Effect.get(EffectType.DARKNESS).setDuration(DARKNESS_DURATION_TICKS));
                                 }
                             }
                             return false;

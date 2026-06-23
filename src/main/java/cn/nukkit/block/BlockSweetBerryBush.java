@@ -17,12 +17,11 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockSweetBerryBush extends BlockFlowable {
+public class BlockSweetBerryBush extends BlockFlowable implements Supportable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SWEET_BERRY_BUSH, CommonBlockProperties.GROWTH);
 
@@ -125,7 +124,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!isSupportValid(down())) {
+            if (!isSupportDirt(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -147,15 +146,11 @@ public class BlockSweetBerryBush extends BlockFlowable {
         if (target.getId().equals(SWEET_BERRY_BUSH) || !block.isAir()) {
             return false;
         }
-        if (isSupportValid(down())) {
+        if (isSupportDirt(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }
         return false;
-    }
-
-    public static boolean isSupportValid(Block block) {
-        return block.hasTag(BlockTags.DIRT);
     }
 
     @Override

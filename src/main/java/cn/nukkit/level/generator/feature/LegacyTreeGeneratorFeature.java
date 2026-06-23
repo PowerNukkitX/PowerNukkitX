@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.feature;
 
+import cn.nukkit.block.Supportable;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSweetBerryBush;
 import cn.nukkit.level.Level;
@@ -14,7 +15,7 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
-public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
+public abstract class LegacyTreeGeneratorFeature extends GenerateFeature implements Supportable {
 
     public abstract TreeGenerator getGenerator(RandomSourceProvider random);
 
@@ -28,10 +29,6 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
 
     public String getRequiredTag() {
         return BiomeTags.OVERWORLD;
-    }
-
-    public boolean isSupportValid(Block block) {
-        return BlockSweetBerryBush.isSupportValid(block);
     }
 
     @Override
@@ -54,7 +51,7 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
             BlockManager object = new BlockManager(level);
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if (!Registries.BIOME.containsTag(getRequiredTag(), level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ()))) continue;
-            if(isSupportValid(level.getBlock(v))) {
+            if(isSupportDirt(level.getBlock(v))) {
                 TreeGenerator generator = getGenerator(random);
                 if(generator == null) return;
                 generator.generate(object, random, new Vector3(v.getFloorX(), v.getFloorY() + 1, v.getFloorZ()));

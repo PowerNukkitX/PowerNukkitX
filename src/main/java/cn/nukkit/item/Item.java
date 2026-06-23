@@ -2711,6 +2711,31 @@ public abstract class Item implements Cloneable, ItemID {
                 .build();
     }
 
+    public ItemData toCreativeNetwork() {
+        final boolean hasNbt = this.getNbt() != null;
+        final boolean clearCreativeTag = this.isCreativeTagEmpty();
+
+        return ItemData.builder()
+                .definition(this.getItemDefinition())
+                .damage(this.getDamage())
+                .count(this.getCount())
+                .tag(clearCreativeTag || this.getNbt() == null ? null : this.getNbt().toNetwork())
+                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
+                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanDestroy()))
+                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : (this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId())))
+                .usingNetId(false)
+                .netId(0)
+                .build();
+    }
+
+    protected boolean isCreativeTagEmpty() {
+        return false;
+    }
+
+    protected boolean isCreativeBlockDefinitionEmpty() {
+        return false;
+    }
+
     public static Item fromNetwork(ItemData itemData) {
         if (itemData.getDefinition() == null) {
             return Item.AIR;

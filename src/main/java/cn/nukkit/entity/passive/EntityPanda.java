@@ -217,6 +217,9 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                 if (entity instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
                     if (item.getId().equals(Block.BAMBOO)) {
+                        if (!getInventory().callPickupItemEvent(entityItem)) {
+                            continue;
+                        }
                         getInventory().addItem(item);
                         final TakeItemActorPacket pk = new TakeItemActorPacket();
                         pk.setActorRuntimeID(this.getId());
