@@ -1,7 +1,10 @@
 package cn.nukkit.level.generator.feature.decoration;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFireflyBush;
+import cn.nukkit.block.BlockReeds;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.tags.BlockTags;
 
 public class FireflyBushClusterFeature extends GroupedDiscFeature {
 
@@ -37,6 +40,11 @@ public class FireflyBushClusterFeature extends GroupedDiscFeature {
     @Override
     public int getRandom() {
         return 12;
+    }
+
+    @Override
+    public boolean isSupportValid(Block block) {
+        return block.hasTag(BlockTags.DIRT) && BlockReeds.isSupportValid(block);
     }
 
     @Override

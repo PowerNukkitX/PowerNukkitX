@@ -56,6 +56,7 @@ public class PluginDescription {
     private final List<String> authors = new ArrayList<>();
     private String website;
     private String prefix;
+    private String bootstrap;
     private PluginLoadOrder order = PluginLoadOrder.POSTWORLD;
 
     private List<Permission> permissions = new ArrayList<>();
@@ -133,6 +134,10 @@ public class PluginDescription {
 
         if (plugin.containsKey("prefix")) {
             this.prefix = (String) plugin.get("prefix");
+        }
+
+        if (plugin.containsKey("bootstrap")) {
+            this.bootstrap = (String) plugin.get("bootstrap");
         }
 
         if (plugin.containsKey("load")) {
@@ -276,6 +281,20 @@ public class PluginDescription {
      */
     public List<String> getSoftDepend() {
         return softDepend;
+    }
+
+    /**
+     * Gets the fully qualified name of the generated bootstrap class, if any.
+     * <p>
+     * Emitted by the PNX annotation processor (see
+     * {@code cn.nukkit.plugin.annotation}). When present, the plugin loader
+     * invokes its {@code init(Plugin)} method on enable to wire up annotated
+     * listeners and scheduled tasks, so the plugin author does not call it.
+     *
+     * @return the bootstrap class name, or null if the plugin does not use one
+     */
+    public String getBootstrap() {
+        return bootstrap;
     }
 
     /**
