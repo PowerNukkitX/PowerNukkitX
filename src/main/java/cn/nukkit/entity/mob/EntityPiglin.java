@@ -282,25 +282,23 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     public void pickupItems(Entity entity) {
         if (!isAngry() && entity instanceof EntityInventoryHolder holder) {
             for (Entity i : entity.level.getNearbyEntities(entity.getBoundingBox().grow(1, 0.5, 1))) {
-                boolean pickup = false;
                 if (i instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
-                    boolean wants = ((item.isArmor() || item.isTool()) && item.getTier() == ItemTool.TIER_GOLD)
-                            || item instanceof ItemPorkchop
-                            || (likesItem(item) && getItemInOffhand().isNull());
-                    if (!wants) {
+                    boolean gear = (item.isArmor() || item.isTool()) && item.getTier() == ItemTool.TIER_GOLD;
+                    boolean food = item instanceof ItemPorkchop;
+                    boolean offhand = likesItem(item) && getItemInOffhand().isNull();
+                    if (!gear && !food && !offhand) {
                         continue;
                     }
                     if (!holder.getInventory().callPickupItemEvent(entityItem)) {
                         continue;
                     }
-                    if ((item.isArmor() || item.isTool()) && item.getTier() == ItemTool.TIER_GOLD) {
-                        if (holder.equip(item)) {
-                            pickup = true;
-                        }
-                    } else if (item instanceof ItemPorkchop) {
+                    boolean pickup;
+                    if (gear) {
+                        pickup = holder.equip(item);
+                    } else if (food) {
                         pickup = true;
-                    } else if (likesItem(item) && getItemInOffhand().isNull()) {
+                    } else {
                         setItemInOffhand(item);
                         pickup = true;
                     }
