@@ -24,7 +24,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.AGE_BIT;
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public abstract class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public abstract class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Supportable {
     public BlockSapling(BlockState blockstate) {
         super(blockstate);
     }
@@ -46,7 +46,7 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockFlower.isSupportValid(down())) {
+        if (isSupportDirt(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -62,7 +62,7 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!isSupportDirt(down())) {
                 return false;
             }
 
@@ -85,12 +85,12 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!isSupportDirt(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!isSupportDirt(down())) {
                 return Level.BLOCK_UPDATE_RANDOM;
             }
 

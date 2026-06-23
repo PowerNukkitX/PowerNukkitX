@@ -40,13 +40,9 @@ public class BlockWildflowers extends BlockFlower {
         return "Wildflowers";
     }
 
-    public static boolean isSupportValid(Block block) {
-        return BlockSweetBerryBush.isSupportValid(block);
-    }
-
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!isSupportValid(block.down())) {
+        if (!isSupportDirt(block.down())) {
             return false;
         }
 
