@@ -285,6 +285,15 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                 boolean pickup = false;
                 if (i instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
+                    boolean wants = ((item.isArmor() || item.isTool()) && item.getTier() == ItemTool.TIER_GOLD)
+                            || item instanceof ItemPorkchop
+                            || (likesItem(item) && getItemInOffhand().isNull());
+                    if (!wants) {
+                        continue;
+                    }
+                    if (!holder.getInventory().callPickupItemEvent(entityItem)) {
+                        continue;
+                    }
                     if ((item.isArmor() || item.isTool()) && item.getTier() == ItemTool.TIER_GOLD) {
                         if (holder.equip(item)) {
                             pickup = true;

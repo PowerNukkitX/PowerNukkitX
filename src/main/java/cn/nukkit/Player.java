@@ -48,7 +48,6 @@ import cn.nukkit.event.entity.EntityPortalEnterEvent;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
-import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
@@ -5158,9 +5157,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                             return false;
                         }
 
-                        InventoryPickupItemEvent ev;
-                        this.server.getPluginManager().callEvent(ev = new InventoryPickupItemEvent(inventory, entityItem));
-                        if (ev.isCancelled()) {
+                        if (!inventory.callPickupItemEvent(entityItem)) {
                             return false;
                         }
 

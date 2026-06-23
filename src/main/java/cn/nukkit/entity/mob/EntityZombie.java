@@ -203,6 +203,9 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                 if (i instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
                     if (item.isArmor() || item.isTool()) {
+                        if (!holder.getInventory().callPickupItemEvent(entityItem)) {
+                            continue;
+                        }
                         if (holder.equip(item)) {
                             final TakeItemActorPacket pk = new TakeItemActorPacket();
                             pk.setActorRuntimeID(entity.getId());

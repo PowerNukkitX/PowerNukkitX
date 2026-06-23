@@ -1,7 +1,10 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.DoNotModify;
+import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.item.Item;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -235,6 +238,23 @@ public interface Inventory {
     void onClose(Player who);
 
     void close(Player who);
+
+    /**
+     * Fires an {@link InventoryPickupItemEvent} for this inventory picking up the given item entity.
+     * <p>
+     * Callers should invoke this right before consuming the {@link EntityItem} (and after deciding the
+     * item is wanted) so plugins can cancel the pickup. This only handles the event; the actual logic of
+     * adding the item to the inventory stays with the caller, since that differs between inventories
+     * (e.g. equipping armor, filling the offhand, or a plain {@code addItem}).
+     *
+     * @param item the item entity being picked up
+     * @return {@code true} if the pickup may proceed, {@code false} if a plugin cancelled it
+     */
+    default boolean callPickupItemEvent(EntityItem item) {
+        InventoryPickupItemEvent ev = new InventoryPickupItemEvent(this, item);
+        Server.getInstance().getPluginManager().callEvent(ev);
+        return !ev.isCancelled();
+    }
 
     /**
      * 当执行{@link #setItem(int, Item)}时该方法会被调用，此时物品已经put进slots
