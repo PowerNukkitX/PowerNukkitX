@@ -10,10 +10,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
-import lombok.extern.slf4j.Slf4j;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,7 +21,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Pub4Game
  * @since 03.07.2016
  */
-@Slf4j
 public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     public BlockEntityItemFrame(IChunk chunk, CompoundTag nbt) {
@@ -32,24 +30,14 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("Item")) {
-            // [ITEM_DEBUG] Log when a frame loads without an Item tag (new or corrupted)
-            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: no 'Item' tag present, initializing to AIR. namedTag keys: {}",
-                    (int) x, (int) y, (int) z, namedTag.getTags().keySet());
-            namedTag.putCompound("Item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
-        } else {
-            // [ITEM_DEBUG] Log what item is loaded from NBT
-            Item loaded = NBTIO.getItemHelper(namedTag.getCompound("Item"));
-            if (loaded != null && !loaded.isNull()) {
-                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: loaded item {} x{}",
-                        (int) x, (int) y, (int) z, loaded.getId(), loaded.getCount());
-            }
+        if (!nbt.contains("Item")) {
+            this.nbt.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
-        if (!namedTag.contains("ItemRotation")) {
-            namedTag.putByte("ItemRotation", 0);
+        if (!nbt.contains("ItemRotation")) {
+            this.nbt.putByte("ItemRotation", (byte) 0);
         }
-        if (!namedTag.contains("ItemDropChance")) {
-            namedTag.putFloat("ItemDropChance", 1.0f);
+        if (!nbt.contains("ItemDropChance")) {
+            this.nbt.putFloat("ItemDropChance", 1.0f);
         }
         this.level.updateComparatorOutputLevel(this);
     }
@@ -65,18 +53,17 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public int getItemRotation() {
-        return this.namedTag.getByte("ItemRotation");
+        return this.getNbt().getByte("ItemRotation");
     }
 
     public void setItemRotation(int itemRotation) {
-        this.namedTag.putByte("ItemRotation", itemRotation);
+        this.nbt.putByte("ItemRotation", (byte) itemRotation);
         this.level.updateComparatorOutputLevel(this);
         this.setDirty();
     }
 
     public Item getItem() {
-        CompoundTag NBTTag = this.namedTag.getCompound("Item");
-        return NBTIO.getItemHelper(NBTTag);
+        return ItemHelper.read(this.getNbt().getCompound("Item"));
     }
 
     public void setItem(Item item) {
@@ -84,46 +71,18 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
-        // [ITEM_DEBUG] Log every item change with caller info
-        Item oldItem = getItem();
-        boolean wasNonEmpty = oldItem != null && !oldItem.isNull();
-        boolean isNowEmpty = item == null || item.isNull();
-        if (wasNonEmpty || !isNowEmpty) {
-            String caller = getCallerInfo();
-            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} setItem: {} x{} -> {} x{}, setChanged={}, caller: {}",
-                    (int) x, (int) y, (int) z,
-                    wasNonEmpty ? oldItem.getId() : "AIR", wasNonEmpty ? oldItem.getCount() : 0,
-                    isNowEmpty ? "AIR" : item.getId(), isNowEmpty ? 0 : item.getCount(),
-                    setChanged, caller);
-        }
-
-        this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
+        this.nbt.putCompound("Item", ItemHelper.write(item));
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);
     }
 
-    /**
-     * [ITEM_DEBUG] Helper to get a meaningful caller from the stack trace
-     */
-    private static String getCallerInfo() {
-        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-        // skip getStackTrace, getCallerInfo, setItem (possibly 2 overloads)
-        for (int i = 3; i < Math.min(stack.length, 8); i++) {
-            String cls = stack[i].getClassName();
-            if (!cls.contains("BlockEntityItemFrame")) {
-                return stack[i].toString();
-            }
-        }
-        return stack.length > 3 ? stack[3].toString() : "unknown";
-    }
-
     public float getItemDropChance() {
-        return this.namedTag.getFloat("ItemDropChance");
+        return getNbt().getFloat("ItemDropChance");
     }
 
     public void setItemDropChance(float chance) {
-        this.namedTag.putFloat("ItemDropChance", chance);
+        this.nbt.putFloat("ItemDropChance", chance);
     }
 
     @Override
@@ -133,48 +92,27 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
-    public void close() {
-        // [ITEM_DEBUG] Log when a frame is closed while still holding an item — this is the key diagnostic
-        if (!this.closed) {
-            Item item = null;
-            try {
-                item = getItem();
-            } catch (Exception ignored) {
-            }
-            if (item != null && !item.isNull()) {
-                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} CLOSE with item still present: {} x{}. Stack trace:",
-                        (int) x, (int) y, (int) z, item.getId(), item.getCount(),
-                        new Throwable("ItemFrame close trace"));
-            }
-        }
-        super.close();
-    }
-
-    @Override
     public CompoundTag getSpawnCompound() {
-        if (!this.namedTag.contains("Item")) {
-            // [ITEM_DEBUG] This should not normally happen — log it
-            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getSpawnCompound: 'Item' tag missing from namedTag, resetting to AIR",
-                    (int) x, (int) y, (int) z);
+        if (!this.nbt.contains("Item")) {
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();
         CompoundTag tag = super.getSpawnCompound();
 
         if (!item.isNull()) {
-            CompoundTag itemTag = NBTIO.putItemHelper(item);
+            CompoundTag builder = ItemHelper.write(item, null);
             int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
-                itemTag.remove("id");
-                itemTag.putShort("Damage", networkDamage);
-                itemTag.putString("Name", namespacedId);
+                builder.remove("id");
+                builder.putShort("Damage", (short) networkDamage);
+                builder.putString("Name", namespacedId);
             }
             if (item instanceof ItemBlock) {
-                itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+                builder.putCompound("Block", CompoundTag.fromNetwork(item.getBlockUnsafe().getBlockState().getBlockStateTag()));
             }
-            tag.putCompound("Item", itemTag)
-                    .putByte("ItemRotation", this.getItemRotation());
+            tag.putCompound("Item", builder)
+                    .putByte("ItemRotation", (byte) this.getItemRotation());
         }
         return tag;
     }
@@ -216,24 +154,17 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {
             itemEntity = level.dropAndGetItem(add(0.5, 0.25, 0.5), drop);
             if (itemEntity == null) {
-                // [ITEM_DEBUG] dropAndGetItem returned null — item was NOT spawned
-                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} dropItemAndGetEntity: dropAndGetItem returned null for {} x{}, item NOT removed from frame",
-                        (int) x, (int) y, (int) z, drop.getId(), drop.getCount());
                 if (player != null) {
                     spawnTo(player);
                 }
                 return null;
             }
-        } else {
-            // [ITEM_DEBUG] Drop chance failed
-            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} dropItemAndGetEntity: drop chance failed (chance={}), item {} x{} destroyed",
-                    (int) x, (int) y, (int) z, this.getItemDropChance(), drop.getId(), drop.getCount());
         }
 
         setItem(Item.get(BlockID.AIR, 0, 1), true);
         setItemRotation(0);
         spawnToAll();
-        level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_BREAK);
+        level.addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_BREAK);
 
         return itemEntity;
     }

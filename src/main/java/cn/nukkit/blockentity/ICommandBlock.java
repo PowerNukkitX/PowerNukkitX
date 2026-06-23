@@ -1,13 +1,12 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.Level;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.plugin.InternalPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public interface ICommandBlock extends CommandSender, InventoryHolder {
 
@@ -121,7 +120,7 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
     void setLastOutputRedstoneMode(boolean redstoneMode);
 
-    void setLastOutputParams(ListTag<StringTag> params);
+    void setLastOutputParams(List<String> params);
 
     int getTickDelay();
 

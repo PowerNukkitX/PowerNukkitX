@@ -12,7 +12,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.tags.ItemTags;
+import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -101,8 +101,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = down();
-            if (!ItemTags.getItemSet(ItemTags.SAND).contains(down.getId())
-                    && !(down instanceof BlockCactus)) {
+            if (!down.hasTag(BlockTags.SAND) && !(down instanceof BlockCactus)) {
                 this.getLevel().useBreakOn(this);
                 return 0;
             }
@@ -110,6 +109,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
                 Block block = getSide(BlockFace.fromIndex(side));
                 if (!block.canBeFlowedInto()) {
                     this.getLevel().useBreakOn(this);
+                    return 0;
                 }
             }
             return 0;
@@ -159,8 +159,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block down = this.down();
-        if (!ItemTags.getItemSet(ItemTags.SAND).contains(down.getId())
-                && !(down instanceof BlockCactus)) {
+        if (!down.hasTag(BlockTags.SAND) && !(down instanceof BlockCactus)) {
             return false;
         }
         Block block0 = north();

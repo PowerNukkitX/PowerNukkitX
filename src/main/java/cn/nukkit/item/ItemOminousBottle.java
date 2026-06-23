@@ -7,8 +7,8 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.CompletedUsingItemPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 
 public class ItemOminousBottle extends Item {
 
@@ -56,8 +56,8 @@ public class ItemOminousBottle extends Item {
         }
 
         int amplifier = this.getDamage();
-        if (this.hasCompoundTag() && this.getNamedTag().contains(TAG_OMINOUS_BOTTLE_AMPLIFIER)) {
-            amplifier = this.getNamedTag().getInt(TAG_OMINOUS_BOTTLE_AMPLIFIER);
+        if (this.hasNbt() && this.getNbt().containsInt(TAG_OMINOUS_BOTTLE_AMPLIFIER)) {
+            amplifier = this.getNbt().getInt(TAG_OMINOUS_BOTTLE_AMPLIFIER);
         }
         amplifier = Math.clamp(amplifier, 0, 4);
 
@@ -66,9 +66,9 @@ public class ItemOminousBottle extends Item {
                 .setDuration(BAD_OMEN_DURATION)
                 .setVisible(true));
 
-        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_CONSUME);
-        player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.OMINOUS_BOTTLE_END_USE);
-        player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.APPLY_EFFECT_BAD_OMEN);
+        player.completeUsingItem(this.getRuntimeId(), ItemUseMethod.CONSUME);
+        player.getLevel().addLevelSoundEvent(player, SoundEvent.OMINOUS_BOTTLE_END_USE);
+        player.getLevel().addLevelSoundEvent(player, SoundEvent.APPLY_EFFECT_BAD_OMEN);
         player.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(
                 player,
                 player.add(0, player.getEyeHeight(), 0),

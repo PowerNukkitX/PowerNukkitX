@@ -1,22 +1,25 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.TreeMapCompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.TreeMap;
 
 public class HashUtilsTest {
     @Test
     void hashBlockState() {
-        CompoundTag compoundTag = new CompoundTag();
+        NbtMapBuilder compoundTag = NbtMap.builder();
 
-        TreeMapCompoundTag state = new TreeMapCompoundTag();
-        state.putBoolean("button_pressed_bit", false)
-                .putInt("facing_direction", 5);
+        final NbtMap state = NbtMap.builder()
+                .putBoolean("button_pressed_bit", false)
+                .putInt("facing_direction", 5)
+                .build();
 
         compoundTag.putString("name", "minecraft:warped_button")
-                .putCompound("states", state);
-        int i = HashUtils.fnv1a_32_nbt(compoundTag);
+                .putCompound("states", NbtMap.fromMap(new TreeMap<>(state)));
+        int i = HashUtils.fnv1a_32_nbt(compoundTag.build());
         Assertions.assertEquals(1204504330,i);
     }
 }

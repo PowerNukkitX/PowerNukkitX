@@ -1,6 +1,5 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.nbt.tag.CompoundTag;

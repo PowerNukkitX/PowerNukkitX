@@ -3,10 +3,10 @@ package cn.nukkit.level.generator.feature.tree;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectDarkOakTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class RoofedForestTreeFeature extends ObjectGeneratorFeature {
 
@@ -30,8 +30,8 @@ public class RoofedForestTreeFeature extends ObjectGeneratorFeature {
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.ROOFED);
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
+        return Registries.BIOME.containsTag(BiomeTags.ROOFED, definition);
     }
 
     @Override

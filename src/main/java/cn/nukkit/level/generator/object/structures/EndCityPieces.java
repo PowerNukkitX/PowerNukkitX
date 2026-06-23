@@ -24,16 +24,16 @@ import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.network.protocol.types.Rotation;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemPotion;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -302,7 +302,7 @@ public final class EndCityPieces {
                     shulkerPos.getY(),
                     shulkerPos.getZ() + 0.5,
                     level
-            )); 
+            ));
             if (shulker != null) {
                 shulker.setPersistent(true);
                 shulker.spawnToAll();

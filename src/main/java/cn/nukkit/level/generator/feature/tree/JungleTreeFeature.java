@@ -7,9 +7,10 @@ import cn.nukkit.level.generator.object.ObjectFancyOakTree;
 import cn.nukkit.level.generator.object.ObjectJungleTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectJungleBigTree;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class JungleTreeFeature extends GriddedFeature {
 
@@ -27,8 +28,8 @@ public class JungleTreeFeature extends GriddedFeature {
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
-        return definition.getTags().contains(BiomeTags.JUNGLE);
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
+        return Registries.BIOME.containsTag(BiomeTags.JUNGLE, definition);
     }
 
 

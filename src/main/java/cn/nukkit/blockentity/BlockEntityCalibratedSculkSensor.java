@@ -1,9 +1,7 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockCalibratedSculkSensor;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockSculkSensor;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -119,4 +117,3 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
         power = Math.max(1, 15 - (int) Math.floor(event.source().distance(this.add(0.5, 0.5, 0.5)) * 1.875));
     }
 }
-

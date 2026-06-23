@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -14,6 +13,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.DestroyBlockParticle;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.Map;
 
@@ -24,13 +24,13 @@ public class SetBlockCommand extends VanillaCommand {
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.addCommandParameters("setblock-with-states", new CommandParameter[]{
-                CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("position", false, CommandParamType.POSITION),
                 CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("blockStates", false, CommandParamType.BLOCK_STATES),
+                CommandParameter.newType("blockStates", false, CommandParamType.BLOCK_STATE),
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"}),
         });
         this.addCommandParameters("setblock-no-states", new CommandParameter[]{
-                CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("position", false, CommandParamType.POSITION),
                 CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"}),
         });

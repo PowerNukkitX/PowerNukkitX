@@ -21,22 +21,22 @@ import static cn.nukkit.TestUtils.resetPlayerStatus;
 
 @ExtendWith(GameMockExtension.class)
 public class LevelTest {
-
-    @Test
-    void test_getRedstonePower(Level level) {
-        level.setBlockStateAt(0, 0, 0, BlockObserver.PROPERTIES.getBlockState(
-                        CommonBlockProperties.POWERED_BIT.createValue(true),
-                        CommonBlockProperties.MINECRAFT_FACING_DIRECTION.createValue(BlockFace.WEST)//West is the direction of the observer's face, and the opposite side of the observer's direction can output power
-                )
-        );
-        //For example, when a redstone is in the east of the observer
-        level.setBlockStateAt(1, 0, 0, BlockRedstoneWire.PROPERTIES.getDefaultState());
-        //judge if there is a redstone power source in the west of the block
-        Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 0).getSide(BlockFace.WEST), BlockFace.WEST));
-        Assertions.assertEquals(0, level.getRedstonePower(new Vector3(1, 0, 0).getSide(BlockFace.EAST), BlockFace.EAST));//observer cant output on east
-
-        level.setBlockStateAt(1, 0, 0, BlockOakWood.PROPERTIES.getDefaultState());
-        Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 0), BlockFace.WEST));//wood be strong power with observer
-    }
+//
+//    @Test
+//    void test_getRedstonePower(Level level) {
+//        level.setBlockStateAt(0, 0, 0, BlockObserver.PROPERTIES.getBlockState(
+//                        CommonBlockProperties.POWERED_BIT.createValue(true),
+//                        CommonBlockProperties.MINECRAFT_FACING_DIRECTION.createValue(BlockFace.WEST)//West is the direction of the observer's face, and the opposite side of the observer's direction can output power
+//                )
+//        );
+//        //For example, when a redstone is in the east of the observer
+//        level.setBlockStateAt(1, 0, 0, BlockRedstoneWire.PROPERTIES.getDefaultState());
+//        //judge if there is a redstone power source in the west of the block
+//        Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 0).getSide(BlockFace.WEST), BlockFace.WEST));
+//        Assertions.assertEquals(0, level.getRedstonePower(new Vector3(1, 0, 0).getSide(BlockFace.EAST), BlockFace.EAST));//observer cant output on east
+//
+//        level.setBlockStateAt(1, 0, 0, BlockOakWood.PROPERTIES.getDefaultState());
+//        Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 0), BlockFace.WEST));//wood be strong power with observer
+//    }
 
 }

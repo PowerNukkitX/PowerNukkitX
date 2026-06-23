@@ -27,29 +27,32 @@ import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.HomeComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemHarness;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemShears;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
-import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -59,10 +62,13 @@ import org.jetbrains.annotations.Nullable;
 public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, InventoryHolder {
     private static final String PROP_CAN_MOVE = "minecraft:can_move";
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new BooleanEntityProperty(PROP_CAN_MOVE, true, true)
+            new BooleanEntityProperty(PROP_CAN_MOVE, true, true)
     };
-    public EntityProperty[] getEntityProperties() { return PROPERTIES; }
-    
+
+    public EntityProperty[] getEntityProperties() {
+        return PROPERTIES;
+    }
+
 
     @Override
     @NotNull
@@ -76,9 +82,12 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
     private EntityArmorInventory armorInventory;
     private volatile boolean playerOnTopCached;
-    private volatile boolean hasPassengers;
-    private Vector3 frozenAnchorPos;
     private int dismountUnlockDelayTicks = 0;
+    private boolean topRotationLocked = false;
+    private boolean wasPlatformLocked = false;
+    private Vector3 forcedPlatformLockPosition;
+    private float forcedPlatformLockYaw = 0f;
+    private volatile int forcedPlatformLockTicks = 0;
 
     @Override
     public String getOriginalName() {
@@ -96,7 +105,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(ItemID.SNOWBALL)
+                        new AgeableComponent.FeedItem(ItemID.SNOWBALL)
                 ),
                 null,
                 null,
@@ -107,21 +116,21 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     @Override
     public @Nullable HomeComponent getComponentHome() {
         return new HomeComponent(
-                    32,
-                    HomeComponent.RestrictionType.RANDOM_MOVEMENT
-                );
+                32,
+                HomeComponent.RestrictionType.RANDOM_MOVEMENT
+        );
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
-        setDataFlag(EntityFlag.COLLIDABLE, true); //allow standing on them
+        setDataFlag(ActorFlags.COLLIDABLE, true); //allow standing on them
         this.armorInventory = new EntityArmorInventory(this);
-        if (this.namedTag.contains("Armor")) {
-            ListTag<CompoundTag> armorList = this.namedTag.getList("Armor", CompoundTag.class);
+        if (this.nbt.contains("Armor")) {
+            ListTag<CompoundTag> armorList = this.getNbt().getList("Armor", CompoundTag.class);
             for (CompoundTag armorTag : armorList.getAll()) {
                 int slot = armorTag.getByte("Slot");
-                var item = NBTIO.getItemHelper(armorTag);
+                var item = ItemHelper.read(armorTag);
 
                 this.armorInventory.setItem(slot, item);
                 if (!item.isNull()) this.setInputControls(true);
@@ -129,7 +138,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         }
 
         // Init home memory
-        if (this.namedTag.contains("HomeX")) {
+        if (this.nbt.contains("HomeX")) {
             this.initHome();
         } else {
             this.setHomePosition();
@@ -140,11 +149,11 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     public void saveNBT() {
         super.saveNBT();
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>();
+            ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
             for (int i = 0; i < 5; i++) {
-                armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList("Armor", armorTag);
+            this.nbt.putList("Armor", armorTag);
         }
     }
 
@@ -166,6 +175,11 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
+    protected boolean shouldLockBodyRotationWhenStoodOn() {
+        return true;
+    }
+
+    @Override
     public RideableComponent getComponentRideable() {
         if (!this.isHarnessed() || this.isBaby()) return null;
 
@@ -181,40 +195,40 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 4,
                 List.of(
                         new RideableComponent.Seat(
-                            0,
-                            4,
-                            new Vector3f( 0.0f, 3.8f,  1.7f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                0,
+                                4,
+                                new Vector3f(0.0f, 3.8f, 1.7f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         ),
                         new RideableComponent.Seat(
-                            1,
-                            4,
-                            new Vector3f(-1.7f, 3.8f,  0.0f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                1,
+                                4,
+                                new Vector3f(-1.7f, 3.8f, 0.0f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         ),
                         new RideableComponent.Seat(
-                            2,
-                            4,
-                            new Vector3f( 0.0f, 3.8f, -1.7f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                2,
+                                4,
+                                new Vector3f(0.0f, 3.8f, -1.7f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         ),
                         new RideableComponent.Seat(
-                            3,
-                            4,
-                            new Vector3f( 1.7f, 3.8f,  0.0f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                3,
+                                4,
+                                new Vector3f(1.7f, 3.8f, 0.0f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         )
                 )
         );
@@ -233,6 +247,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
     @Override
     public boolean canBePushedByEntities() {
+        if (this.isLockedAsPlatform()) return false;
         return this.canMove();
     }
 
@@ -251,7 +266,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         return isBaby() ? 0.95f : 4f;
     }
 
-     @Override
+    @Override
     public boolean hasGravity() {
         return false;
     }
@@ -297,13 +312,20 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 armorInventory.sendContents(player);
                 this.setInputControls(false);
                 this.setHomePosition();
+
+                this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+                this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+                this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, false);
                 return true;
             }
         }
 
-        if (this.isHarnessed() && mountEntity(player, true)) {
-            this.hasPassengers = true;
-            return false;
+        if (this.isHarnessed()) {
+            this.clearTopRotationLockForRiding();
+
+            if (mountEntity(player, true)) {
+                return false;
+            }
         }
 
         return false;
@@ -315,8 +337,10 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
         if (result && this.passengers.isEmpty()) {
             this.setHomePosition();
-            this.hasPassengers = false;
             this.dismountUnlockDelayTicks = 10;
+            this.forcedPlatformLockTicks = 3;
+
+            this.forceImmediatePlatformLockAfterDismount();
         }
         return result;
     }
@@ -325,6 +349,37 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     public void spawnTo(Player player) {
         super.spawnTo(player);
         armorInventory.sendContents(player);
+    }
+
+    private boolean isLockedAsPlatform() {
+        return !this.isBaby()
+                && this.playerOnTopCached
+                && (this.passengers == null || this.passengers.isEmpty());
+    }
+
+    private boolean hasMountedPassengers() {
+        return this.passengers != null && !this.passengers.isEmpty();
+    }
+
+    private boolean refreshPlatformLockStateForAi() {
+        boolean controlled = this.hasControllingPassenger();
+        boolean mounted = this.hasMountedPassengers();
+
+        if (controlled || mounted || this.isBaby()) {
+            this.playerOnTopCached = false;
+            this.forcedPlatformLockTicks = 0;
+            this.forcedPlatformLockPosition = null;
+            return false;
+        }
+
+        if (this.forcedPlatformLockTicks > 0) {
+            this.playerOnTopCached = true;
+            return true;
+        }
+
+        boolean standingOnTop = this.isPlayerStandingOnTop();
+        this.playerOnTopCached = standingOnTop;
+        return standingOnTop;
     }
 
     public boolean isHarnessed() {
@@ -349,51 +404,62 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         this.setBooleanEntityProperty(PROP_CAN_MOVE, value);
     }
 
-    private static float snapYawToCardinal(double yaw) {
-        double y = yaw % 360f;
-        if (y < 0f) y += 360f;
-        return Math.round(y / 90f) * 90f;
-    }
+    private void applyBodyRotationFlagsFromTopPresence(boolean playerOnTop) {
+        boolean mounted = this.hasMountedPassengers();
 
-    private void applyMobilityFromTopPresence(boolean playerOnTop) {
-        boolean mounted = this.hasPassengers;
-        boolean shouldMove = mounted || !playerOnTop;
+        if (mounted) {
+            this.topRotationLocked = false;
 
-        if (!shouldMove) {
-            if (this.frozenAnchorPos == null) {
-                this.frozenAnchorPos = new Vector3(this.getX(), this.getY(), this.getZ());
-            }
-
-            // Snap yaw to cardinal
-            float snapped = snapYawToCardinal(this.getYaw());
-            this.setRotation(snapped, 0f);
-            this.setHeadYaw(snapped);
-            this.setPitch(0f);
-
-            // Clear AI intentions
-            this.setMoveTarget(null);
-            this.setLookTarget(null);
-
-            // Kill direction vectors used by controllers
-            this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_START);
-            this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_END);
-            this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, false);
-
-            // Hard pin to anchor
-            this.setMotion(new Vector3(0, 0, 0));
-            this.setMovementSpeed(0f);
-            this.setPosition(this.frozenAnchorPos);
-
-            this.getBehaviorGroup().setForceUpdateRoute(true);
-            this.setCanMove(false);
+            this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+            this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+            this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
             return;
         }
 
-        // Mobile again
-        if (this.canMove()) return;
+        if (playerOnTop) {
+            this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
+            this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, true);
 
-        this.frozenAnchorPos = null;
-        this.setCanMove(true);
+            if (!this.topRotationLocked) {
+                this.snapBodyToClosestCardinal();
+                this.topRotationLocked = true;
+            }
+
+            this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, true);
+            return;
+        }
+
+        this.topRotationLocked = false;
+
+        this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+        this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+        this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, false);
+    }
+
+    private void clearTopRotationLockForRiding() {
+        this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+        this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+        this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
+    }
+
+    private void enterPlatformLock() {
+        this.setMoveTarget(null);
+        this.setLookTarget(null);
+
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_START);
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_END);
+        this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, false);
+
+        this.getBehaviorGroup().setForceUpdateRoute(true);
+
+        this.setMotion(new Vector3(0, 0, 0));
+        this.setMovementSpeed(0f);
+        this.updateMovement();
+    }
+
+    private void exitPlatformLock() {
+        this.forcedPlatformLockTicks = 0;
+        this.forcedPlatformLockPosition = null;
 
         this.setMoveTarget(null);
         this.setLookTarget(null);
@@ -403,72 +469,152 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, true);
 
         this.getBehaviorGroup().setForceUpdateRoute(true);
+
+        this.setMotion(new Vector3(0, 0, 0));
         this.setMovementSpeed(this.getMovementSpeedDefault());
     }
 
+    private void forceImmediatePlatformLockAfterDismount() {
+        this.forcedPlatformLockYaw = snapYawToCardinal(this.getYaw());
+        this.forcedPlatformLockPosition = new Vector3(this.getX(), this.getY(), this.getZ());
+        this.forcedPlatformLockTicks = 6;
 
-    @Override
-    public boolean onUpdate(int currentTick) {
-        boolean updated = super.onUpdate(currentTick);
-        boolean mounted = this.passengers != null && !this.passengers.isEmpty();
-        this.hasPassengers = mounted;
-        boolean standingOnTop = false;
+        this.applyForcedDismountLock();
+    }
 
-        if (!mounted) {
-            final double topY = this.getY() + this.getHeight();
+    private void applyForcedDismountLock() {
+        this.playerOnTopCached = true;
+        this.wasPlatformLocked = true;
+        this.topRotationLocked = true;
 
-            final double half = this.getWidth() * 0.5;
-            final double pad = 0.10;
+        this.setMoveTarget(null);
+        this.setLookTarget(null);
 
-            final double minY = topY - 0.35;
-            final double maxY = topY + 2.20;
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_START);
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_END);
+        this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, false);
 
-            AxisAlignedBB box = new SimpleAxisAlignedBB(
+        this.getBehaviorGroup().setForceUpdateRoute(true);
+
+        this.setMotion(new Vector3(0, 0, 0));
+        this.setMovementSpeed(0f);
+
+        if (this.forcedPlatformLockPosition != null) {
+            this.setPosition(this.forcedPlatformLockPosition);
+        }
+
+        this.setRotation(this.forcedPlatformLockYaw, 0f);
+        this.setHeadYaw(this.forcedPlatformLockYaw);
+        this.setPitch(0f);
+
+        this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
+        this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, true);
+        this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, true);
+
+        this.updateMovement();
+    }
+
+    private boolean isPlayerStandingOnTop() {
+        if (this.isBaby()) return false;
+        if (this.passengers != null && !this.passengers.isEmpty()) return false;
+
+        final double topY = this.getY() + this.getHeight();
+
+        final double half = this.getWidth() * 0.5;
+        final double pad = 0.10;
+
+        final double minY = topY - 0.35;
+        final double maxY = topY + 2.20;
+
+        AxisAlignedBB box = new SimpleAxisAlignedBB(
                 this.getX() - half + pad,
                 minY,
                 this.getZ() - half + pad,
                 this.getX() + half - pad,
                 maxY,
                 this.getZ() + half - pad
-            );
+        );
 
-            for (Entity e : this.level.getNearbyEntitiesSafe(box, this)) {
-                if (!(e instanceof Player p) || !p.isAlive()) continue;
+        for (Entity e : this.level.getNearbyEntitiesSafe(box, this)) {
+            if (!(e instanceof Player p) || !p.isAlive()) continue;
+            if (this.isPassenger(p)) continue;
 
-                AxisAlignedBB pbb = p.getBoundingBox();
-                if (pbb == null) continue;
+            AxisAlignedBB pbb = p.getBoundingBox();
+            if (pbb == null) continue;
 
-                double feetY = pbb.getMinY();
+            double feetY = pbb.getMinY();
 
-                if (feetY >= topY - 0.45 && feetY <= topY + 2.00) {
-                    standingOnTop = true;
-                    break;
-                }
+            if (feetY >= topY - 0.45 && feetY <= topY + 2.00) {
+                return true;
             }
         }
 
-        this.playerOnTopCached = mounted || standingOnTop;
+        return false;
+    }
+
+    private static float snapYawToCardinal(double yaw) {
+        double y = yaw % 360f;
+        if (y < 0f) y += 360f;
+
+        float snapped = (float) (Math.round(y / 90f) * 90f);
+        if (snapped >= 360f) snapped -= 360f;
+
+        return snapped;
+    }
+
+    private void snapBodyToClosestCardinal() {
+        float snapped = snapYawToCardinal(this.getYaw());
+
+        this.setRotation(snapped, 0f);
+        this.setHeadYaw(snapped);
+        this.setPitch(0f);
+
+        this.updateMovement();
+    }
+
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        boolean updated = super.onUpdate(currentTick);
+
+        boolean mounted = this.hasMountedPassengers();
+
+        if (this.dismountUnlockDelayTicks > 0 && !mounted) {
+            this.dismountUnlockDelayTicks--;
+        }
+
+        if (this.forcedPlatformLockTicks > 0) {
+            this.playerOnTopCached = true;
+            this.applyForcedDismountLock();
+            return updated;
+        }
+
+        boolean standingOnTop = !mounted && this.isPlayerStandingOnTop();
+        this.playerOnTopCached = standingOnTop;
+
+        this.applyBodyRotationFlagsFromTopPresence(standingOnTop);
+
         return updated;
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.SNOWBALL,
-        ItemID.HARNESS_BLACK,
-        ItemID.HARNESS_BLUE,
-        ItemID.HARNESS_BROWN,
-        ItemID.HARNESS_CYAN,
-        ItemID.HARNESS_GRAY,
-        ItemID.HARNESS_GREEN,
-        ItemID.HARNESS_LIGHT_BLUE,
-        ItemID.HARNESS_LIGHT_GRAY,
-        ItemID.HARNESS_LIME,
-        ItemID.HARNESS_MAGENTA,
-        ItemID.HARNESS_ORANGE,
-        ItemID.HARNESS_PINK,
-        ItemID.HARNESS_PURPLE,
-        ItemID.HARNESS_RED,
-        ItemID.HARNESS_WHITE,
-        ItemID.HARNESS_YELLOW
+            ItemID.SNOWBALL,
+            ItemID.HARNESS_BLACK,
+            ItemID.HARNESS_BLUE,
+            ItemID.HARNESS_BROWN,
+            ItemID.HARNESS_CYAN,
+            ItemID.HARNESS_GRAY,
+            ItemID.HARNESS_GREEN,
+            ItemID.HARNESS_LIGHT_BLUE,
+            ItemID.HARNESS_LIGHT_GRAY,
+            ItemID.HARNESS_LIME,
+            ItemID.HARNESS_MAGENTA,
+            ItemID.HARNESS_ORANGE,
+            ItemID.HARNESS_PINK,
+            ItemID.HARNESS_PURPLE,
+            ItemID.HARNESS_RED,
+            ItemID.HARNESS_WHITE,
+            ItemID.HARNESS_YELLOW
     );
 
     @Override
@@ -477,27 +623,26 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 this.tickSpread,
                 Set.of(
                     new Behavior(
-                        new AnimalGrowExecutor(),
+                            new AnimalGrowExecutor(),
                             all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
+                                    e -> e.isAgeable(),
+                                    e -> e.isBaby(),
+                                    e -> !e.isGrowthPaused(),
+                                    e -> e.getTicksGrowLeft() > 0
                             ),
-                        1, 1, 1200
+                            1, 1, 1200
                     )
                 ),
                 Set.of(
                     new Behavior( // Return home if too far
-                        new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultFlyingSpeed() * 8f, true),
-                        entity -> {
-                            EntityHappyGhast g = (EntityHappyGhast) entity;
+                            new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultFlyingSpeed() * 8f, true),
+                            entity -> {
+                                EntityHappyGhast g = (EntityHappyGhast) entity;
+                                if (!g.canMove()) return false;
+                                if (g.hasMountedPassengers()) return false;
 
-                            if (!g.canMove()) return false;
-                            if (g.hasPassengers) return false;
-
-                            Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
-                            if (home == null) return false;
+                                Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
+                                if (home == null) return false;
 
                             double max = g.roamDistance();
                             return entity.distanceSquared(home) > (max * max);
@@ -509,15 +654,15 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                             entity -> {
                                 EntityHappyGhast g = (EntityHappyGhast) entity;
                                 if (!g.canMove()) return false;
-                                if (g.hasPassengers) return false;
+                                if (g.hasMountedPassengers()) return false;
                                 if (g.dismountUnlockDelayTicks > 0) return false;
                                 return TemptExecutor.hasTemptingPlayer(entity, true, 16, TEMPT_ITEMS);
                             },
-                        3, 1
+                            3, 1
                     ),
                     new Behavior( // Hover roam near home
                         new HoverRandomRoamExecutor(
-                            this.getDefaultFlyingSpeed(),
+                            1.0f,
                             roamDistance(),
                             10, // TODO: Supposed to be 16, as we dont have leashable reduced a bit to not lost it
                             (this.isBaby()) ? -1 : 0,
@@ -528,7 +673,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                         entity -> {
                             EntityHappyGhast g = (EntityHappyGhast) entity;
                             if (!g.canMove()) return false;
-                            if (g.hasPassengers) return false;
+                            if (g.hasMountedPassengers()) return false;
                             return true;
                         },
                         2, 1
@@ -545,7 +690,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                                 },
                                 e -> {
                                     EntityHappyGhast g = (EntityHappyGhast) e;
-                                    return !g.hasPassengers && g.dismountUnlockDelayTicks <= 0;
+                                    return !g.hasMountedPassengers() && !g.isLockedAsPlatform() && g.dismountUnlockDelayTicks <= 0;
                                 }
                             ),
                         1, 1, 100
@@ -558,38 +703,101 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                         @Override
                         public void sense(EntityIntelligent entity) {
                             EntityHappyGhast g = (EntityHappyGhast) entity;
-                            if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK)) g.setHomePosition();
+                            if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK))
+                                g.setHomePosition();
                         }
 
                         @Override
                         public int getPeriod() {
                             return 60;
                         }
-                    },
-                    new ISensor() {
-                        @Override
-                        public void sense(EntityIntelligent entity) {
-                            EntityHappyGhast g = (EntityHappyGhast) entity;
-                            if (g.dismountUnlockDelayTicks > 0 && !g.hasPassengers) g.dismountUnlockDelayTicks--;
-                            g.applyMobilityFromTopPresence(g.playerOnTopCached);
-                        }
-
-                        @Override
-                        public int getPeriod() {
-                            return 1;
-                        }
                     }
                 ),
                 Set.of(
                     new SpaceMoveController(),
                     new LookController(
-                        () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0,
-                        () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0
+                            () -> this.canMove(),
+                            () -> this.canMove()
                     ),
                     new LiftController()
                 ),
                 new SimpleSpaceAStarRouteFinder(new HoveringPosEvaluator(), this),
                 this
         );
+    }
+
+    @Override
+    public void asyncPrepare(int currentTick) {
+        if (this.forcedPlatformLockTicks > 0) {
+            this.applyForcedDismountLock();
+
+            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+            this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+            this.calculateOffsetBoundingBox();
+
+            this.forcedPlatformLockTicks--;
+            return;
+        }
+
+        boolean controlled = this.hasControllingPassenger();
+        boolean platformLocked = this.refreshPlatformLockStateForAi();
+
+        if (controlled) {
+            this.wasPlatformLocked = false;
+            return;
+        }
+
+        if (platformLocked) {
+            if (!this.wasPlatformLocked) {
+                this.enterPlatformLock();
+                this.wasPlatformLocked = true;
+            }
+
+            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+            this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+            this.calculateOffsetBoundingBox();
+
+            this.setMotion(new Vector3(0, 0, 0));
+            this.setMovementSpeed(0f);
+
+            if (this.forcedPlatformLockTicks > 0) {
+                this.forcedPlatformLockTicks--;
+            }
+
+            return;
+        }
+
+        if (this.wasPlatformLocked) {
+            this.exitPlatformLock();
+            this.wasPlatformLocked = false;
+        }
+
+        isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+
+        if (!this.isImmobile()) {
+            var behaviorGroup = getBehaviorGroup();
+            if (behaviorGroup == null) return;
+
+            behaviorGroup.collectSensorData(this);
+            behaviorGroup.evaluateCoreBehaviors(this);
+            behaviorGroup.evaluateBehaviors(this);
+            behaviorGroup.tickRunningCoreBehaviors(this);
+            behaviorGroup.tickRunningBehaviors(this);
+            behaviorGroup.updateRoute(this);
+            behaviorGroup.applyController(this);
+        }
+
+        this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+        this.calculateOffsetBoundingBox();
+
+        if (!this.isImmobile()) {
+            if (needsRecalcMovement) {
+                handleCollideMovement(currentTick);
+            }
+
+            addTmpMoveMotionXZ(previousCollideMotion);
+            handleFloatingMovement();
+            handlePassableBlockFrictionMovement();
+        }
     }
 }

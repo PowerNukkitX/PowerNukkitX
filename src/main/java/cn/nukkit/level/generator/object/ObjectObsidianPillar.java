@@ -89,7 +89,7 @@ public class ObjectObsidianPillar extends ObjectGenerator {
                     .putList("Rotation", new ListTag<FloatTag>()
                             .add(new FloatTag(new Random().nextFloat() * 360))
                             .add(new FloatTag(0)));
-            
+
             Entity entity = Entity.createEntity(Entity.ENDER_CRYSTAL, level.getChunk(position.getChunkX(), position.getChunkZ()), nbt);
             entity.spawnToAll();
         });

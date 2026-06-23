@@ -1,9 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.Player;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-
-import javax.annotation.Nullable;
 
 /**
  * @deprecated Since 2.0.0 (2026-02-19).

@@ -3,11 +3,9 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntitySnowball;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.level.Location;
@@ -37,7 +35,6 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
     private int tick2;//control the pullBowTick
 
     /**
-     *
      * @param memory            <br>Used to read the memory of the attack target
      * @param speed             <br>The speed of movement towards the attacking target
      * @param maxShootDistance  <br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
@@ -130,6 +127,7 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
         Location snowballLocation = entity.getLocation();
         Vector3 directionVector = entity.getDirectionVector().multiply(1 + ThreadLocalRandom.current().nextFloat(0.2f)).normalize();
         snowballLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY() + 1.0f);
+
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(snowballLocation.x))

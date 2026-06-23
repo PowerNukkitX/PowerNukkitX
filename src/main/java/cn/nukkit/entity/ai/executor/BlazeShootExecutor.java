@@ -7,8 +7,6 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
@@ -18,7 +16,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -45,7 +45,6 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
     private int fireballsShot;
 
     /**
-     *
      * @param memory            <br>Used to read the memory of the attack target
      * @param speed             <br>The speed of movement towards the attacking target
      * @param maxShootDistance  <br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
@@ -181,7 +180,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         Location fireballLocation = entity.getLocation();
         Vector3 directionVector = entity.getDirectionVector().multiply(1 + ThreadLocalRandom.current().nextFloat(0.2f));
         fireballLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY());
-        CompoundTag nbt = new CompoundTag()
+        final CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(fireballLocation.x))
                         .add(new DoubleTag(fireballLocation.y))
@@ -194,7 +193,6 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag((float) -entity.pitch)))
                 .putDouble("damage", 2);
-
         double p = 1;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
 
@@ -203,7 +201,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         if (projectile == null) {
             return;
         }
-        if(projectile instanceof EntitySmallFireball fireball) {
+        if (projectile instanceof EntitySmallFireball fireball) {
             fireball.shootingEntity = entity;
         }
 
@@ -213,17 +211,17 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
             projectile.kill();
         } else {
             projectile.spawnToAll();
-            entity.level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_BLAZE_FIREBALL);
+            entity.level.addLevelEvent(entity, LevelEvent.SOUND_BLAZE_FIREBALL);
         }
     }
 
     private void startOnFire(Entity entity) {
-        entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-        entity.setDataFlag(EntityFlag.CHARGED, true);
+        entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
+        entity.setDataFlag(ActorFlags.CHARGED, true);
     }
 
     private void stopOnFire(Entity entity) {
-        entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
-        entity.setDataFlag(EntityFlag.CHARGED, false);
+        entity.setDataProperty(ActorDataTypes.TARGET, 0L);
+        entity.setDataFlag(ActorFlags.CHARGED, false);
     }
 }

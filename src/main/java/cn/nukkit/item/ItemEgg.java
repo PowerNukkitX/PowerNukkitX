@@ -35,7 +35,9 @@ public class ItemEgg extends ProjectileItem {
     }
 
     @Override
-    public int getMaxStackSize() { return 16; }
+    public int getMaxStackSize() {
+        return 16;
+    }
 
     @Override
     protected void correctNBT(CompoundTag nbt) {

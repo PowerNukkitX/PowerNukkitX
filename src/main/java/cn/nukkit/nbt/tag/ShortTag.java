@@ -1,6 +1,6 @@
 package cn.nukkit.nbt.tag;
 
-public class ShortTag extends NumberTag<Integer> {
+public class ShortTag extends NumberTag<Short> {
     public short data;
     public ShortTag() {
     }
@@ -10,18 +10,18 @@ public class ShortTag extends NumberTag<Integer> {
     }
 
     @Override
-    public Integer getData() {
-        return (int)  data;
+    public Short getData() {
+        return data;
     }
 
     @Override
-    public void setData(Integer data) {
-        this.data = (short) (data == null ? 0 : data);
+    public void setData(Short data) {
+        this.data = data == null ? 0 : data;
     }
 
     @Override
-    public Integer parseValue() {
-        return (int) this.data;
+    public Short parseValue() {
+        return this.data;
     }
 
     @Override

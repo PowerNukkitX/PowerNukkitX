@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-   <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
+   <img alt="Version" src="https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000" />
    <a href="https://feedback.minecraft.net/hc/en-us/articles/45400537384333-Minecraft-Bedrock-Edition-26-20-Changelog">
       <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v26.20%20(Bedrock)-56383E" />
    </a>
