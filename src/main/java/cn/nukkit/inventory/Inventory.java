@@ -257,13 +257,11 @@ public interface Inventory {
     }
 
     /**
-     * 当执行{@link #setItem(int, Item)}时该方法会被调用，此时物品已经put进slots
-     * <p>
      * This method is called when {@link #setItem(int, Item)} is executed, and the item has been put into slots
      *
-     * @param index  物品变动的格子索引<br>The grid index of the item's changes
-     * @param before 变动前的物品<br>Items before the change
-     * @param send   是否发送{@link org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket}到客户端<br>Whether to send {@link org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket} to the client
+     * @param index  The grid index of the item's changes
+     * @param before Items before the change
+     * @param send   Whether to send {@link org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket} to the client
      */
     void onSlotChange(int index, Item before, boolean send);
 
