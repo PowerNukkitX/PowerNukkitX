@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -589,5 +590,19 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             ITEM_DATA.add(new CreativeItemData(item.toNetwork(), index, groupId));
             MAP.put(index, item);
         }
+    }
+
+    public int getGroupIndexByName(String groupName) {
+        int index = 0;
+
+        for (var group : this.getCreativeGroups()) {
+            if (groupName.equals(group.getName())) {
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
     }
 }

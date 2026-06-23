@@ -194,7 +194,6 @@ public class Server {
     private float maxTick = 20;
     private float maxUse = 0;
     private int sendUsageTicker = 0;
-    private volatile double cachedCpuLoad = -1;
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
@@ -1161,12 +1160,6 @@ public class Server {
             this.titleTick();
             this.maxTick = 20;
             this.maxUse = 0;
-            if (ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean osBean) {
-                double load = osBean.getProcessCpuLoad();
-                if (load >= 0) {
-                    this.cachedCpuLoad = load;
-                }
-            }
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
@@ -1231,6 +1224,10 @@ public class Server {
     }
 
     public float getTicksPerSecond() {
+        return getTicksPerSecondAverage();
+    }
+
+    public float getMaxTicksPerSecond() {
         return ((float) Math.round(this.maxTick * 100)) / 100;
     }
 
@@ -1257,10 +1254,13 @@ public class Server {
     }
 
     public String getCPULoad() {
-        if (this.cachedCpuLoad < 0) {
-            return "N/A";
+        if (ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean osBean) {
+            double load = osBean.getProcessCpuLoad();
+            if (load >= 0) {
+                return String.format("%.1f%%", load * 100);
+            }
         }
-        return String.format("%.1f%%", this.cachedCpuLoad * 100);
+        return "N/A";
     }
 
     // TODO: Fix title tick

@@ -34,7 +34,7 @@ public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature {
         for (int x = sourceX - radius; x <= sourceX + radius; x++) {
             for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                 if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
-                    if(random.nextFloat() < 0.2f) {
+                    if(random.nextFloat() < 0.3f) {
                         int height = level.getHeightMap(x, z);
                         BlockState topBlockState = level.getBlockStateAt(x, height, z);
 
@@ -56,7 +56,7 @@ public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature {
 
     @Override
     public int getRandom() {
-        return 8;
+        return 3;
     }
 
     public boolean isSupportValid(Block support) {

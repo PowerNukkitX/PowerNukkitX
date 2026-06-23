@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotBlock {
+public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotBlock, Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA);
 
     @Override
@@ -81,7 +81,7 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
         double chance = ThreadLocalRandom.current().nextDouble(1);
         boolean aged = chance > 0.8;
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!isSupportDirt(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -102,7 +102,7 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockFlower.isSupportValid(down())) {
+        if (isSupportDirt(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
