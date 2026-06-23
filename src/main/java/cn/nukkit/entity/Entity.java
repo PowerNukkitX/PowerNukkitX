@@ -6101,21 +6101,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public PropertySyncData getClientSyncProperties() {
         List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
 
-        List<Integer> intIndices = new ArrayList<>();
-        List<Integer> intValues = new ArrayList<>();
-        List<Integer> floatIndices = new ArrayList<>();
-        List<Float> floatValues = new ArrayList<>();
+        PropertySyncData syncData = new PropertySyncData();
 
         int schemaIndex = 0;
         for (EntityProperty prop : propertyDefs) {
-            if (!prop.isClientSync()) continue;
+            if (!prop.isClientSync()) {
+                schemaIndex++;
+                continue;
+            }
 
             if (shouldSyncIntProperty(prop)) {
                 Integer value = getIntPropertyValue(prop);
                 if (value != null) {
-                    intIndices.add(schemaIndex);
-                    intValues.add(value);
+                    syncData.getIntProperties().add(new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(schemaIndex, value));
                 }
+
                 schemaIndex++;
                 continue;
             }
@@ -6123,22 +6123,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             if (shouldSyncFloatProperty(prop)) {
                 Float value = getFloatPropertyValue(prop);
                 if (value != null) {
-                    floatIndices.add(schemaIndex);
-                    floatValues.add(value);
+                    syncData.getFloatProperties().add(new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(schemaIndex, value));
                 }
             }
+
             schemaIndex++;
         }
 
-        int[] intIndexArray = intIndices.stream().mapToInt(Integer::intValue).toArray();
-        int[] intArray = intValues.stream().mapToInt(Integer::intValue).toArray();
-        int[] floatIndexArray = floatIndices.stream().mapToInt(Integer::intValue).toArray();
-        float[] floatArray = new float[floatValues.size()];
-        for (int i = 0; i < floatValues.size(); i++) {
-            floatArray[i] = floatValues.get(i);
-        }
-
-        return new PropertySyncData(intIndexArray, intArray, floatIndexArray, floatArray);
+        return syncData;
     }
 
     private boolean shouldSyncIntProperty(EntityProperty prop) {
