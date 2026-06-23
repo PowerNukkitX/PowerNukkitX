@@ -150,6 +150,9 @@ public class CreativeGroupsRegistry {
             int originalGroupId = data.getGroupIndex();
             int newGroupId = CreativeItemRegistry.LAST_ITEMS_INDEX;
 
+            String originalId = data.getItemInstance().getDefinition().getIdentifier();
+            String rebuiltId = item.getItemDefinition().getIdentifier();
+
             // Vanilla item: remap based on old group index
             if (!isCategoryFallbackIndex(originalGroupId)) {
                 Integer mapped = groupIndexMap.get(originalGroupId);
@@ -158,7 +161,7 @@ public class CreativeGroupsRegistry {
                 }
             } else {
                 // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
-                String key = item.getIdentifier().toString();
+                String key = originalId;
                 String groupName = CreativeItemRegistry.ITEM_GROUP_MAP.get(key);
                 CreativeCategory fallbackCategory = getCategoryFromFallbackIndex(originalGroupId);
                 boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
@@ -188,12 +191,22 @@ public class CreativeGroupsRegistry {
                     // No group set at all, fallback to last index of original category
                     int fallbackIndex = CreativeItemRegistry.getLastGroupIndexFrom(fallbackCategory.name());
                     log.debug("Group name not saved for item '{}'; falling back to last index {}",
-                             item.getName(), fallbackIndex);
+                             originalId, fallbackIndex);
                     newGroupId = fallbackIndex;
                 }
             }
-            rebuilt.add(new CreativeItemData(item.toNetwork(), data.getCreativeNetId(), newGroupId));
+
+            CreativeItemData rebuiltData;
+
+            if (originalId.endsWith("_spawn_egg")) {
+                rebuiltData = new CreativeItemData(item.toCreativeNetwork(), data.getCreativeNetId(), newGroupId);
+            } else {
+                rebuiltData = new CreativeItemData(data.getItemInstance(), data.getCreativeNetId(), newGroupId);
+            }
+
+            rebuilt.add(rebuiltData);
         }
+
         current.clear();
         current.addAll(rebuilt);
         CreativeItemRegistry.ITEM_GROUP_MAP.clear();
