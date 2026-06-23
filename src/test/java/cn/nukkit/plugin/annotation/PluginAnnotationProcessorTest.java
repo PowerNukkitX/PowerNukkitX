@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 /**
  * Compiles real source through {@link PluginAnnotationProcessor} in-process (JDK
  * {@link JavaCompiler} + an in-memory file manager) and asserts on diagnostics
- * and on the generated {@code plugin.yml} / {@code PNXPluginBootstrap} sources.
+ * and on the generated {@code powernukkitx.yml} / {@code PNXPluginBootstrap} sources.
  * <p>
  * The compilation runs on the test classpath, so the real {@code cn.nukkit}
  * types ({@code PluginBase}, {@code Listener}, {@code Task}, {@code Command},
@@ -67,11 +67,11 @@ public class PluginAnnotationProcessorTest {
             """);
 
     // ------------------------------------------------------------------
-    // @PluginMeta -> plugin.yml
+    // @PluginMeta -> powernukkitx.yml
     // ------------------------------------------------------------------
 
     @Nested
-    @DisplayName("@PluginMeta / plugin.yml")
+    @DisplayName("@PluginMeta / powernukkitx.yml")
     class Meta {
 
         @Test
@@ -79,7 +79,7 @@ public class PluginAnnotationProcessorTest {
             Result r = compile(MAIN);
             r.assertSuccess();
             String yml = r.pluginYml();
-            assertNotNull(yml, "plugin.yml should be generated");
+            assertNotNull(yml, "powernukkitx.yml should be generated");
             assertContains(yml, "name: \"Demo\"");
             assertContains(yml, "main: \"demo.DemoPlugin\"");
             assertContains(yml, "version: \"1.0.0\"");
@@ -712,7 +712,7 @@ public class PluginAnnotationProcessorTest {
         }
 
         String pluginYml() {
-            MemoryFileObject o = fm.resources.get("plugin.yml");
+            MemoryFileObject o = fm.resources.get("powernukkitx.yml");
             return o == null ? null : o.content();
         }
 
