@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -218,7 +219,7 @@ public class JavaPluginLoader implements PluginLoader {
         try {
             Class<?> clazz = Class.forName(bootstrap, true, plugin.getPluginClassLoader());
             clazz.getMethod("init", Plugin.class).invoke(null, plugin);
-        } catch (java.lang.reflect.InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             log.error("Generated bootstrap {} failed while wiring plugin {}",
                     bootstrap, plugin.getDescription().getName(), e.getCause());
         } catch (ReflectiveOperationException e) {
