@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  */
 public abstract class Command {
 
-    private final String name;
+    private String name;
 
     private String nextLabel;
 
@@ -86,6 +86,16 @@ public abstract class Command {
     @Getter
     @Setter
     private boolean isUnregistered = false;
+
+    /**
+     * Creates a command with no name yet. Intended for frameworks that build a
+     * command reflectively and then assign its name via {@link #setName(String)}
+     * (for example the PNX {@code @Command} annotation processor). Subclasses
+     * written by hand should prefer {@link #Command(String)}.
+     */
+    protected Command() {
+        this("");
+    }
 
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
@@ -501,6 +511,30 @@ public abstract class Command {
      */
     public void setUsage(String usageMessage) {
         this.usageMessage = usageMessage;
+    }
+
+    /**
+     * Assigns the name of this command and the name-derived fields (label and
+     * command data). Intended to be called once, right after construction via
+     * the no-argument {@link #Command()} constructor, before the command is
+     * registered; for example by the PNX {@code @Command} annotation processor.
+     * Renaming an already registered command is not supported.
+     *
+     * @param name the command name
+     * @throws IllegalStateException if the command is already registered, since
+     *                               renaming it would desync the command map key
+     */
+    public void setName(String name) {
+        if (this.isRegistered()) {
+            throw new IllegalStateException("Cannot rename command '" + this.name + "' after it has been registered");
+        }
+        this.name = name.toLowerCase(Locale.ENGLISH);
+        this.nextLabel = name;
+        this.label = name;
+        this.commandData = new NukkitCommandData(name);
+        if (this.usageMessage == null || this.usageMessage.isEmpty() || this.usageMessage.equals("/")) {
+            this.usageMessage = "/" + name;
+        }
     }
 
     /**
