@@ -153,6 +153,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(DripstoneClusterFeature.NAME, DripstoneClusterFeature.class);
             this.register(SulfurSpikeFeature.NAME, SulfurSpikeFeature.class);
             this.register(SulfurSpikeClusterFeature.NAME, SulfurSpikeClusterFeature.class);
+            this.register(SulfurPoolWithPotentSulfurSnapToSurfaceFeature.NAME, SulfurPoolWithPotentSulfurSnapToSurfaceFeature.class);
             this.register(SculkPatchFeature.NAME, SculkPatchFeature.class);
             this.register(GlowLichenFeature.NAME, GlowLichenFeature.class);
         } catch (RegisterException e) {
