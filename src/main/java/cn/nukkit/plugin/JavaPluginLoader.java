@@ -174,6 +174,7 @@ public class JavaPluginLoader implements PluginLoader {
         if (plugin instanceof PluginBase && !plugin.isEnabled()) {
             log.info(this.server.getLanguage().tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
             ((PluginBase) plugin).setEnabled(true);
+            runBootstrap((PluginBase) plugin);
             this.server.getPluginManager().callEvent(new PluginEnableEvent(plugin));
         }
     }
@@ -193,6 +194,36 @@ public class JavaPluginLoader implements PluginLoader {
             this.server.getServiceManager().cancel(plugin);
             this.server.getPluginManager().callEvent(new PluginDisableEvent(plugin));
             ((PluginBase) plugin).setEnabled(false);
+        }
+    }
+
+    /**
+     * Invokes the generated {@code init(Plugin)} of the plugin's bootstrap class,
+     * if the descriptor declares one.
+     * <p>
+     * The bootstrap class is produced by the PNX annotation processor (see
+     * {@code cn.nukkit.plugin.annotation}) and contains the listener
+     * registrations, task schedules and command registrations derived from the
+     * plugin's annotations. It runs right after the plugin is enabled, because
+     * {@code registerEvents} and the scheduler reject registrations from a plugin
+     * that is not yet enabled.
+     *
+     * @param plugin the plugin being enabled
+     */
+    private void runBootstrap(PluginBase plugin) {
+        String bootstrap = plugin.getDescription().getBootstrap();
+        if (bootstrap == null || bootstrap.isBlank()) {
+            return;
+        }
+        try {
+            Class<?> clazz = Class.forName(bootstrap, true, plugin.getPluginClassLoader());
+            clazz.getMethod("init", Plugin.class).invoke(null, plugin);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            log.error("Generated bootstrap {} failed while wiring plugin {}",
+                    bootstrap, plugin.getDescription().getName(), e.getCause());
+        } catch (ReflectiveOperationException e) {
+            log.error("Failed to invoke generated bootstrap {} for plugin {}",
+                    bootstrap, plugin.getDescription().getName(), e);
         }
     }
 
