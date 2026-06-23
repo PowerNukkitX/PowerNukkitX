@@ -15,6 +15,7 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -182,7 +183,7 @@ public class BlockEntityPotentSulfur extends BlockEntity {
     }
 
     private int nextWaitingCountdown(PotentSulfurState state, int waterBlocks) {
-        int positional = positionalRandom(15);
+        int positional = NukkitMath.positionalRandom(this, 15);
         int waterOffset = Math.max(0, waterBlocks - 1);
         if (state == PotentSulfurState.DORMANT) {
             return 10 * waterOffset + 15 + positional;
@@ -276,11 +277,6 @@ public class BlockEntityPotentSulfur extends BlockEntity {
             }
         }
         return max;
-    }
-
-    private int positionalRandom(int bound) {
-        long mixed = this.level.getSeed() ^ ((long) this.getFloorX() * 341873128712L) ^ ((long) this.getFloorY() * 132897987541L) ^ ((long) this.getFloorZ() * 42317861L);
-        return Math.floorMod((int) (mixed ^ (mixed >>> 32)), bound + 1);
     }
 
     private static boolean isSourceWater(Block block) {
