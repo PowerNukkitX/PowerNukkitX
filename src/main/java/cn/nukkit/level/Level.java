@@ -287,6 +287,7 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.WEEPING_VINES);
         randomTickBlocks.add(BlockID.WATER);
         randomTickBlocks.add(BlockID.MANGROVE_PROPAGULE);
+        randomTickBlocks.add(BlockID.SULFUR_SPIKE);
     }
 
     @NonComputationAtomic

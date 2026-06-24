@@ -6,6 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 import static cn.nukkit.level.biome.BiomeID.DEEP_DARK;
 import static cn.nukkit.level.biome.BiomeID.DRIPSTONE_CAVES;
 import static cn.nukkit.level.biome.BiomeID.LUSH_CAVES;
+import static cn.nukkit.level.biome.BiomeID.SULFUR_CAVES;
 
 @Getter
 public class OverworldBiomeResult extends BiomeResult {
@@ -41,6 +42,8 @@ public class OverworldBiomeResult extends BiomeResult {
             if (depth < 0.99f) {
                 if (continental > 0.8f && continental < 1f) {
                     biomeId = DRIPSTONE_CAVES;
+                } else if (temperature > 0.55f && humidity < -0.1f) {
+                    biomeId = SULFUR_CAVES;
                 } else if (humidity > 0.3f) {
                     biomeId = LUSH_CAVES;
                 }
