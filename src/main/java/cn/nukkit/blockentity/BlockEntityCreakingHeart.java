@@ -1,10 +1,14 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCreakingHeart;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.CreakingHeartState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityCreaking;
 import cn.nukkit.event.entity.CreatureSpawnEvent;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
@@ -16,11 +20,18 @@ import lombok.Getter;
 
 public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
+    private static final int PLAYER_RANGE = 32;
+    private static final int CREAKING_MAX_DISTANCE = 34;
+    private static final int UPDATE_TICKS = 20;
+    private static final int RANDOM_UPDATE_TICKS_VARIANCE = 5;
+    private static final int SPAWN_ATTEMPTS = 5;
+
     @Getter
     private EntityCreaking linkedCreaking;
 
-    public double spawnRangeHorizontal = 16.5d;
-    public double spawnRangeVertical = 8.5d;
+    public double spawnRangeHorizontal = 16;
+    public double spawnRangeVertical = 8;
+    private int nextUpdateTick;
 
     public BlockEntityCreakingHeart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -66,46 +77,132 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
     @Override
     public boolean onUpdate() {
         if(!isValid() || closed) return false;
+
         if(getLevel().getTick() % 40 == 0 && isBlockEntityValid() && getHeart().isActive()) {
             getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_AMBIENT);
         }
-        if((getLinkedCreaking() == null || !getLinkedCreaking().isAlive()) && isBlockEntityValid() && getHeart().isActive() && (!getLevel().isDay() || getLevel().isRaining() || getLevel().isThundering())) {
-            Position pos = new Position(
-                            this.x + Utils.rand(-this.spawnRangeHorizontal, this.spawnRangeHorizontal),
-                            this.y,
-                            this.z + Utils.rand(-this.spawnRangeHorizontal, this.spawnRangeHorizontal),
-                            this.level
-                    );
 
-            height:
-            for(double i = -spawnRangeVertical; i < spawnRangeVertical; i++) {
-                Position newPos = pos.add(0, i, 0);
-                if(!newPos.getLevelBlock().isAir()) {
-                    for(int j = 1; j < 3; j++) {
-                        if(!getSide(BlockFace.UP, j).getLevelBlock().isAir()) continue height;
-                    }
-                    pos.y = i;
+        if (getLevel().getTick() < nextUpdateTick || !isBlockEntityValid()) {
+            return true;
+        }
+        nextUpdateTick = getLevel().getTick() + UPDATE_TICKS + Utils.rand(0, RANDOM_UPDATE_TICKS_VARIANCE);
+
+        this.updateHeartState();
+
+        EntityCreaking creaking = getLinkedCreaking();
+        if (creaking != null && (!creaking.isAlive() || creaking.isClosed())) {
+            setLinkedCreaking(null);
+            creaking = null;
+        }
+
+        if (creaking != null) {
+            if (!isCreakingActive() || distance(creaking) > CREAKING_MAX_DISTANCE) {
+                creaking.kill();
+                setLinkedCreaking(null);
+            }
+            return true;
+        }
+
+        if (getHeart().isActive()
+                && isCreakingActive()
+                && getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)
+                && getLevel().getServer().getDifficulty() != 0
+                && hasNearbyPlayer()) {
+            for (int attempt = 0; attempt < SPAWN_ATTEMPTS; attempt++) {
+                Position spawnPos = findSpawnPosition();
+                if (spawnPos != null && spawnCreaking(spawnPos)) {
                     break;
                 }
             }
+        }
+        return true;
+    }
 
-            if(!pos.getLevelBlock().isAir()) return true;
+    private boolean isCreakingActive() {
+        return !getLevel().isDay() || getLevel().isRaining() || getLevel().isThundering();
+    }
 
-            if(isValid()) {
-                Entity ent = Entity.createEntity(Entity.CREAKING, pos);
-                if(ent != null) {
-                    CreatureSpawnEvent ev = new CreatureSpawnEvent(ent.getNetworkId(), pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.CREAKING_HEART);
-                    level.getServer().getPluginManager().callEvent(ev);
-                    if(ev.isCancelled()) {
-                        ent.close();
-                    } else {
-                        setLinkedCreaking((EntityCreaking) ent);
-                        this.getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_MOB_SPAWN, 1, 1);
-                        ent.spawnToAll();
-                    }
-                }
+    private boolean hasNearbyPlayer() {
+        double rangeSq = PLAYER_RANGE * PLAYER_RANGE;
+        for (Player player : getLevel().getPlayers().values()) {
+            if (player.isAlive() && player.distanceSquared(this) <= rangeSq) {
+                return true;
             }
         }
+        return false;
+    }
+
+    private void updateHeartState() {
+        CreakingHeartState state;
+        if (!hasRequiredLogs() && getLinkedCreaking() == null) {
+            state = CreakingHeartState.UPROOTED;
+        } else {
+            state = isCreakingActive() ? CreakingHeartState.AWAKE : CreakingHeartState.DORMANT;
+        }
+
+        BlockCreakingHeart heart = getHeart();
+        if (heart.getState() != state) {
+            heart.setPropertyValue(CommonBlockProperties.CREAKING_HEART_STATE, state);
+            getLevel().setBlock(this, heart);
+            heart.updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
+        }
+    }
+
+    private boolean hasRequiredLogs() {
+        for (BlockFace face : BlockFace.values()) {
+            if (!getHeart().getPillarAxis().test(face)) {
+                continue;
+            }
+
+            Block block = getSide(face).getLevelBlock();
+            if (!(block instanceof cn.nukkit.block.BlockPaleOakLog log) || log.getPillarAxis() != getHeart().getPillarAxis()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Position findSpawnPosition() {
+        Position base = new Position(
+                this.x + Utils.rand(-this.spawnRangeHorizontal, this.spawnRangeHorizontal),
+                this.y,
+                this.z + Utils.rand(-this.spawnRangeHorizontal, this.spawnRangeHorizontal),
+                this.level
+        );
+
+        for (int yOffset = (int) -spawnRangeVertical; yOffset <= spawnRangeVertical; yOffset++) {
+            Position ground = base.add(0, yOffset, 0);
+            if (ground.getLevelBlock().isAir()) {
+                continue;
+            }
+
+            Position feet = ground.add(0, 1, 0);
+            Position head = ground.add(0, 2, 0);
+            if (feet.getLevelBlock().isAir() && head.getLevelBlock().isAir()) {
+                return feet;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean spawnCreaking(Position pos) {
+        if (!isValid() || pos.getChunk() == null) {
+            return false;
+        }
+
+        EntityCreaking creaking = (EntityCreaking) Entity.createEntity(Entity.CREAKING, pos);
+
+        CreatureSpawnEvent ev = new CreatureSpawnEvent(creaking.getNetworkId(), pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.CREAKING_HEART);
+        level.getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            creaking.close();
+            return false;
+        }
+
+        setLinkedCreaking(creaking);
+        this.getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_MOB_SPAWN, 1, 1);
+        creaking.spawnToAll();
         return true;
     }
 
