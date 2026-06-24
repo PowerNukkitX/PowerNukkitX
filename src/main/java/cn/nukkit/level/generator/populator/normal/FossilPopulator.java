@@ -16,8 +16,10 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
+@Slf4j
 public class FossilPopulator extends Populator {
 
     public static final String NAME = "normal_fossil";
@@ -47,6 +49,10 @@ public class FossilPopulator extends Populator {
             BlockVector3 vec = new BlockVector3(chunkX << 4, Math.max(10, y - 15 - random.nextBoundedInt(10)), chunkZ << 4);
             String structure = "fossil/" + (random.nextBoolean() ? "skull" : "spine") + "_" + (random.nextInt(4) + 1);
             AbstractStructure structure1 = Registries.STRUCTURE.get(structure);
+            if (structure1 == null) {
+                log.warn("Fossil structure '{}' is not registered, skipping placement", structure);
+                return;
+            }
             structure1.preparePlace(new Position(vec.getX(), vec.getY(), vec.getZ(), level), object);
             if (countEmptyCorners(level, object) > MAX_EMPTY_CORNERS_ALLOWED) {
                 return;
