@@ -44,14 +44,6 @@ public abstract class SmeltingInventory extends ContainerInventory {
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
-        if (index == 2 && (before.isNull() || before.getCount() > 0)) {
-            var holder = getHolder();
-            short xp = holder.calculateXpDrop();
-            if (xp > 0) {
-                holder.setStoredXP(0);
-                holder.level.dropExpOrb(holder, xp);
-            }
-        }
         this.getHolder().scheduleUpdate();
     }
 }

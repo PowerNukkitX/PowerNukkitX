@@ -134,6 +134,14 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         this.nbt.putString("CustomName", name);
     }
 
+    public void dropXp() {
+        var xp = calculateXpDrop();
+        if (xp > 0) {
+            setStoredXP(0);
+            level.dropExpOrb(this, xp);
+        }
+    }
+
     @Override
     public void close() {
         if (!closed) {
@@ -150,11 +158,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             level.dropItem(this, content);
         }
         this.inventory.clearAll();
-        var xp = calculateXpDrop();
-        if (xp > 0) {
-            setStoredXP(0);
-            level.dropExpOrb(this, xp);
-        }
+        dropXp();
     }
 
     @Override
