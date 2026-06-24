@@ -52,6 +52,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EntitySniffer extends EntityAnimal {
     private static final int DIG_COOLDOWN_TICKS = 20 * 60 * 8;
+    private static final int START_SEARCH = 35;
     private static final int DIGGING_START_TICK = 70;
     private static final int DIGGING_PARTICLES_DELAY_TICKS = 34;
     private static final int DIGGING_DROP_SEED_OFFSET_TICKS = 120;
@@ -279,13 +280,7 @@ public class EntitySniffer extends EntityAnimal {
     }
 
     private boolean canStartDigging() {
-        if (isBaby() || isDigging() || !onGround || isInsideOfWater()) {
-            return false;
-        }
-        if (getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) {
-            return false;
-        }
-        if (level.getTick() < nextDigTick) {
+        if (isBaby() || isDigging() || !onGround || isInsideOfWater() || getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE) || level.getTick() < nextDigTick) {
             return false;
         }
         BlockVector3 pos = getDigPosition();
@@ -360,6 +355,8 @@ public class EntitySniffer extends EntityAnimal {
         private BlockVector3 digPosition;
         private boolean droppedSeed;
         private boolean startedDigging;
+        private boolean startedSearching;
+        private boolean startedRising;
 
         @Override
         public void onStart(EntityIntelligent entity) {
@@ -368,6 +365,8 @@ public class EntitySniffer extends EntityAnimal {
             this.digPosition = sniffer.getDigPosition();
             this.droppedSeed = false;
             this.startedDigging = false;
+            this.startedSearching = false;
+            this.startedRising = false;
             sniffer.setMovementSpeed(0);
             sniffer.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, true);
             sniffer.setSnifferState(SnifferState.SNIFFING);
@@ -379,21 +378,30 @@ public class EntitySniffer extends EntityAnimal {
             EntitySniffer sniffer = (EntitySniffer) entity;
             int elapsed = sniffer.getLevel().getTick() - this.startTick;
             int diggingElapsed = elapsed - DIGGING_START_TICK;
-            if (elapsed == 35) {
+
+            if (!this.startedSearching && elapsed >= START_SEARCH) {
+                this.startedSearching = true;
                 sniffer.setSnifferState(SnifferState.SEARCHING);
                 sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_SEARCHING);
-            } else if (elapsed == DIGGING_START_TICK) {
+            }
+
+            if (!this.startedDigging && elapsed >= DIGGING_START_TICK) {
                 this.startedDigging = true;
                 sniffer.setDataFlag(ActorFlags.DIGGING, true);
                 sniffer.setSnifferState(SnifferState.DIGGING);
                 sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_DIGGING);
-            } else if (elapsed == DIGGING_START_TICK + DIGGING_DROP_SEED_OFFSET_TICKS && !this.droppedSeed) {
+            }
+
+            if (this.startedDigging && !this.droppedSeed && elapsed >= DIGGING_START_TICK + DIGGING_DROP_SEED_OFFSET_TICKS) {
                 if (sniffer.isDiggable(sniffer.getLevel().getBlock(this.digPosition.asVector3()))) {
                     sniffer.dropAncientSeed();
                     sniffer.rememberDigPosition(this.digPosition);
                 }
                 this.droppedSeed = true;
-            } else if (elapsed == RISING_START_TICK) {
+            }
+
+            if (!this.startedRising && elapsed >= RISING_START_TICK) {
+                this.startedRising = true;
                 sniffer.setSnifferState(SnifferState.RISING);
                 sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_STAND_UP);
             }
