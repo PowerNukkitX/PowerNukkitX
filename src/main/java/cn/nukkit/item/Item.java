@@ -2752,7 +2752,10 @@ public abstract class Item implements Cloneable, ItemID {
             item.setCanDestroyOn(canDestroyOn);
         }
         if (itemData.getBlockDefinition() != null) {
-            item.setBlockUnsafe(Block.get(Registries.BLOCKSTATE.get(itemData.getBlockDefinition().getRuntimeId())));
+            int runtimeId = itemData.getBlockDefinition().getRuntimeId();
+            if(runtimeId != 0) {
+                item.setBlockUnsafe(Block.get(Registries.BLOCKSTATE.get(runtimeId)));
+            }
         }
         item.setNetId(itemData.getNetId());
         item.identifier = Identifier.tryParse(itemData.getDefinition().getIdentifier());
