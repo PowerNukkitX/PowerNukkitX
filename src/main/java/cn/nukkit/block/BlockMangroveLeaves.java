@@ -5,6 +5,7 @@ import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,8 @@ import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 public class BlockMangroveLeaves extends BlockLeaves {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
+
+    private static final int PROPAGULE_GROWTH_CHANCE = 50;
 
     @Override
     @NotNull
@@ -71,6 +74,19 @@ public class BlockMangroveLeaves extends BlockLeaves {
             drops.add(Item.get(ItemID.STICK));
         }
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_RANDOM && !isCheckDecay() && down().isAir()
+                && ThreadLocalRandom.current().nextInt(PROPAGULE_GROWTH_CHANCE) == 0) {
+            BlockState propagule = BlockMangrovePropagule.PROPERTIES.getBlockState(
+                    HANGING.createValue(true),
+                    PROPAGULE_STAGE.createValue(0)
+            );
+            this.level.setBlock(down(), Block.get(propagule), true, true);
+        }
+        return super.onUpdate(type);
     }
 
     @Override
