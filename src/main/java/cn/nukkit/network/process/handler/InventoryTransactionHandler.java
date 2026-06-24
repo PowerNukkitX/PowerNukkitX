@@ -68,7 +68,10 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
         if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_USE)) {
-            handleUseItem(playerHandle, (ItemUseInventoryTransaction) packet.getTransaction());
+            // Run block placement/use on the main thread so it is serialized with the server-auth
+            // break tick instead of racing it on the network thread.
+            final ItemUseInventoryTransaction itemUse = (ItemUseInventoryTransaction) packet.getTransaction();
+            player.scheduleInbound(() -> handleUseItem(playerHandle, itemUse));
         } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_USE_ON_ACTOR)) {
             handleUseItemOnEntity(playerHandle, (ItemUseOnActorInventoryTransaction) packet.getTransaction());
         } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_RELEASE)) {

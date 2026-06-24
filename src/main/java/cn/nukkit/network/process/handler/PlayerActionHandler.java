@@ -55,14 +55,14 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                     return;
                 }
 
-                playerHandle.onBlockBreakStart(pos, face);
+                player.scheduleInbound(() -> playerHandle.onBlockBreakStart(pos, face));
             }
             case PlayerActionType.ABORT_DESTROY_BLOCK, PlayerActionType.STOP_DESTROY_BLOCK -> {
                 if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
                     return;
                 }
 
-                playerHandle.onBlockBreakAbort(pos);
+                player.scheduleInbound(() -> playerHandle.onBlockBreakAbort(pos));
             }
             case PlayerActionType.CREATIVE_DESTROY_BLOCK -> {
                 // Used by client to get book from lecterns and items from item frame in creative mode since 1.20.70
@@ -74,14 +74,15 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                     blockFrame.getBlockEntity().dropItem(playerHandle.player);
                 }
                 if (player.getServer().getServerAuthoritativeMovement() > 0) break;//ServerAuthorInput not use player
-                playerHandle.onBlockBreakComplete(BlockVector3.fromNetwork(packet.getBlockPosition()), face);
+                final BlockVector3 completePos = BlockVector3.fromNetwork(packet.getBlockPosition());
+                player.scheduleInbound(() -> playerHandle.onBlockBreakComplete(completePos, face));
             }
             case PlayerActionType.CONTINUE_DESTROY_BLOCK -> {
                 if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
                     return;
                 }
 
-                playerHandle.onBlockBreakContinue(pos, face);
+                player.scheduleInbound(() -> playerHandle.onBlockBreakContinue(pos, face));
             }
             case PlayerActionType.GET_UPDATED_BLOCK -> {
                 //TODO
