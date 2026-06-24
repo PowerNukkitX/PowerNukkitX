@@ -1042,6 +1042,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.fastMove(diffX, diffY, diffZ);
     }
 
+    public void broadcastMountedMovement() {
+        if (this.riding == null) return;
+
+        MovePlayerPacket pk = new MovePlayerPacket();
+        pk.setPlayerRuntimeID(this.getId());
+        pk.setPosition(Vector3f.from(
+                (float) this.x,
+                (float) this.y,
+                (float) this.z
+        ));
+        pk.setRotation(Vector3f.from(
+                (float) this.pitch,
+                (float) this.yaw,
+                (float) this.headYaw
+        ));
+        pk.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
+        pk.setOnGround(false);
+        pk.setRidingRuntimeID(this.riding.getId());
+        pk.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
+        pk.setSourceActorType(0);
+        pk.setTick(this.getLevel().getCurrentTick());
+
+        Server.broadcastPacket(this.hasSpawned.values(), pk);
+    }
+
     /**
      * Offers a new movement task to the player, considering distance and rotation thresholds.
      * Also handles the special case where an erroneous position may be received right after teleportation.
