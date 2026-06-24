@@ -262,6 +262,7 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private SimplexF mossSnapToCeiling;
         private SimplexF sculkPatch;
         private SimplexNoise kelp;
+        private SimplexNoise sulfurCaveGradient;
 
         public FeatureHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
@@ -271,6 +272,7 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
             this.mossSnapToCeiling = new SimplexF(randomSourceProvider.identical(), 2f, 2 / 4f, 1 / 30f);
             this.sculkPatch = new SimplexF(randomSourceProvider.identical(), 20f, 1 / 99f, 1 / 100f);
             this.kelp = new SimplexNoise(randomSourceProvider.identical(), -7, new float[]{ 1 });
+            this.sulfurCaveGradient = new SimplexNoise(randomSourceProvider.fork(), -5, new float[]{1f, 0f, 1f});
         }
     }
 
