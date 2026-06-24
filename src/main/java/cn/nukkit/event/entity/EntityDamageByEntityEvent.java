@@ -1,5 +1,6 @@
 package cn.nukkit.event.entity;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -64,6 +65,10 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
     public void setKnockBack(float knockBack) {
         this.knockBack = knockBack;
+    }
+
+    public boolean isCriticalHit() {
+        return this.isApplicable(DamageModifier.CRITICAL);
     }
 
     public @Nullable Enchantment[] getWeaponEnchantments() {
