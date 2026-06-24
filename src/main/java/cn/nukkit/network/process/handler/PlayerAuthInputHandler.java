@@ -48,50 +48,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             log.debug("Player {} sent invalid movement values (NaN or Infinite)", player.getName());
             return;
         }
-        if (!packet.getPlayerActions().isEmpty() && !server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
-            for (PlayerBlockActionData action : packet.getPlayerActions()) {
-                //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
-                if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
-                    continue;
-                }
-                Vector3i blockPos = action.getBlockPosition();
-                BlockFace blockFace = BlockFace.fromIndex(action.getFace());
-                PlayerHandle playerHandle = new PlayerHandle(player);
-                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
-                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
-                    playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
-                }
 
-                PlayerBlockActionData lastAction = playerHandle.getLastBlockAction();
-                BlockVector3 lastBreakPos = lastAction == null ? null : BlockVector3.fromNetwork(lastAction.getBlockPosition());
-                if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
-                    //When a block is broken instantaneous, the client sometimes just sends a START_DESTROY_BLOCK, but never completes or aborts it. On the client side, the block is also broken.
-                    double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTime(player.getInventory().getItemInMainHand(), player);
-                    boolean canCompleteBreak = Long.sum(player.lastBreak, (long) (breakTime * 1000)) <= System.currentTimeMillis() + 50;
-                    if(canCompleteBreak && lastAction.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
-                        player.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
-                    } else {
-                        playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
-                    }
-                    player.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
-                }
-
-                switch (action.getAction()) {
-                    case START_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
-                    case ABORT_DESTROY_BLOCK -> playerHandle.onBlockBreakAbort(Vector3.fromNetwork(blockPos.toFloat()));
-                    case PREDICT_DESTROY_BLOCK -> playerHandle.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
-
-                }
-                player.setLastBlockAction(action);
-            }
-        }
-
-        // As of 1.18 this is now used for sending item stack requests such as when mining a block.
-        if (packet.getItemStackRequest() != null) {
-            final ItemStackRequestPacket itemStackRequestPacket = new ItemStackRequestPacket();
-            itemStackRequestPacket.getRequests().add(packet.getItemStackRequest());
-            PacketHandlerRegistry.getPacketHandler(ItemStackRequestPacket.class).handle(itemStackRequestPacket, holder, server);
-        }
+        // Block-break completion and the bundled inventory request are run on the main thread
+        // (see Player#scheduleInbound) so they do not race the server-auth break tick.
+        player.scheduleInbound(() -> handleBlockActionsAndItemStackRequest(packet, holder, server, player));
 
         if (packet.getInputData().contains(PlayerAuthInputData.START_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
@@ -247,6 +207,58 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         }
 
         player.offerMovementTask(clientLoc);
+    }
+
+    /**
+     * Processes the packet's block-break actions and bundled item stack request. Runs on the main
+     * thread (scheduled via {@link Player#scheduleInbound}) so it is serialized with the
+     * server-auth break tick instead of racing it on the network thread.
+     */
+    private static void handleBlockActionsAndItemStackRequest(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server, Player player) {
+        if (!packet.getPlayerActions().isEmpty() && !server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
+            for (PlayerBlockActionData action : packet.getPlayerActions()) {
+                //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
+                if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                    continue;
+                }
+                Vector3i blockPos = action.getBlockPosition();
+                BlockFace blockFace = BlockFace.fromIndex(action.getFace());
+                PlayerHandle playerHandle = new PlayerHandle(player);
+                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
+                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
+                    playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
+                }
+
+                PlayerBlockActionData lastAction = playerHandle.getLastBlockAction();
+                BlockVector3 lastBreakPos = lastAction == null ? null : BlockVector3.fromNetwork(lastAction.getBlockPosition());
+                if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
+                    //When a block is broken instantaneous, the client sometimes just sends a START_DESTROY_BLOCK, but never completes or aborts it. On the client side, the block is also broken.
+                    double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTime(player.getInventory().getItemInMainHand(), player);
+                    boolean canCompleteBreak = Long.sum(player.lastBreak, (long) (breakTime * 1000)) <= System.currentTimeMillis() + 50;
+                    if(canCompleteBreak && lastAction.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                        player.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
+                    } else {
+                        playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
+                    }
+                    player.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
+                }
+
+                switch (action.getAction()) {
+                    case START_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
+                    case ABORT_DESTROY_BLOCK -> playerHandle.onBlockBreakAbort(Vector3.fromNetwork(blockPos.toFloat()));
+                    case PREDICT_DESTROY_BLOCK -> playerHandle.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
+
+                }
+                player.setLastBlockAction(action);
+            }
+        }
+
+        // As of 1.18 this is now used for sending item stack requests such as when mining a block.
+        if (packet.getItemStackRequest() != null) {
+            final ItemStackRequestPacket itemStackRequestPacket = new ItemStackRequestPacket();
+            itemStackRequestPacket.getRequests().add(packet.getItemStackRequest());
+            PacketHandlerRegistry.getPacketHandler(ItemStackRequestPacket.class).handle(itemStackRequestPacket, holder, server);
+        }
     }
 
     private static void syncVehiclePositionFromRiderInput(Player player, Entity vehicle, PlayerAuthInputPacket pk) {

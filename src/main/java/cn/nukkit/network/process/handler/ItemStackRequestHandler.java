@@ -78,6 +78,12 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             return;
         }
 
+        // Run on the main thread so inventory mutations are serialized with the server-auth
+        // break tick instead of racing it on the network thread.
+        player.scheduleInbound(() -> handleRequests(packet, player));
+    }
+
+    private void handleRequests(ItemStackRequestPacket packet, Player player) {
         List<ItemStackResponseInfo> responses = new ObjectArrayList<>();
 
         for (var request : packet.getRequests()) {

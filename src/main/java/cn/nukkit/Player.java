@@ -280,6 +280,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private final float rotationUpdateThreshold;
     private final float movementDistanceThreshold;
     protected final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
+    /**
+     * Actions handed off from the network thread to be executed on the main tick thread, drained
+     * at the start of {@link #onUpdate}. Block-break completion and inventory transactions are
+     * routed through here so they run serially with the server-auth break tick
+     * (onBlockBreakContinue) instead of racing it on the network thread.
+     */
+    protected final Queue<Runnable> inboundActions = PlatformDependent.newMpscQueue(8);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     protected int timeSinceRest;
     private String buttonText = "Button";
@@ -1065,6 +1072,34 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.setTick(this.getLevel().getCurrentTick());
 
         Server.broadcastPacket(this.hasSpawned.values(), pk);
+    }
+
+    /**
+     * Hands off an action from the network thread to be run on the main tick thread.
+     * <p>
+     * Packet handlers run on the network (netty) thread, while the server-auth block-break tick
+     * ({@code onBlockBreakContinue}) runs on the main thread. Routing block-break completion and
+     * inventory transactions through this queue makes them run serially with the break tick
+     * instead of racing it, which is what allowed instamine break/place to duplicate items.
+     * The action is drained at the start of the next {@link #onUpdate}.
+     *
+     * @param action the action to run on the main thread
+     */
+    public void scheduleInbound(Runnable action) {
+        if (!this.inboundActions.offer(action)) {
+            log.warn("Failed to enqueue inbound action for player {}", this.getName());
+        }
+    }
+
+    protected void drainInboundActions() {
+        Runnable action;
+        while ((action = this.inboundActions.poll()) != null) {
+            try {
+                action.run();
+            } catch (Exception e) {
+                log.error("Error while running inbound action for player {}", this.getName(), e);
+            }
+        }
     }
 
     /**
@@ -2763,6 +2798,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.spawned) {
+            this.drainInboundActions();
+
             if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
                 this.setMotion(new Vector3(motionX, motionY, motionZ));
                 motionX = motionY = motionZ = 0;
