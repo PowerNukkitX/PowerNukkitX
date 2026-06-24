@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.property.enums.CauldronLiquid;
 import cn.nukkit.block.property.enums.DripstoneThickness;
+import cn.nukkit.blockentity.BlockEntityCauldron;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
@@ -385,16 +386,19 @@ public class BlockPointedDripstone extends BlockFallable {
                 }
             }
             case FLOWING_WATER -> {
-                nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 45.0 / 256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
-                    Server.getInstance().getPluginManager().callEvent(event);
-                    if (event.isCancelled())
-                        return;
-                    cauldron.setCauldronLiquid(event.getLiquid());
-                    cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron, cauldron, true, true);
-                    this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
+                BlockEntityCauldron blockEntity = cauldron.getBlockEntity();
+                if (blockEntity != null && !blockEntity.hasPotion()) {
+                    nextDouble = rand.nextDouble();
+                    if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 45.0 / 256.0) {
+                        CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
+                        Server.getInstance().getPluginManager().callEvent(event);
+                        if (event.isCancelled())
+                            return;
+                        cauldron.setCauldronLiquid(event.getLiquid());
+                        cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
+                        cauldron.level.setBlock(cauldron, cauldron, true, true);
+                        this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
+                    }
                 }
             }
         }
