@@ -68,7 +68,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setPotionId(int potionId, boolean send) {
-        this.setDataProperty(ActorDataTypes.AUX_VALUE_DATA, potionId & 0xFFFF, send);
+        this.setDataProperty(ActorDataTypes.AUX_VALUE_DATA, (short) (potionId & 0xFFFF), send);
     }
 
     public void recalculatePotionColor() {
@@ -165,18 +165,6 @@ public class EntityAreaEffectCloud extends Entity {
         this.setDataProperty(ActorDataTypes.DATA_CHANGE_RATE, radiusPerTick, send);
     }
 
-    public long getSpawnTime() {
-        return this.getDataProperty(ActorDataTypes.DATA_SPAWN_TIME_DEPRECATED);
-    }
-
-    public void setSpawnTime(long spawnTime) {
-        setSpawnTime(spawnTime, true);
-    }
-
-    public void setSpawnTime(long spawnTime, boolean send) {
-        this.setDataProperty(ActorDataTypes.DATA_SPAWN_TIME_DEPRECATED, spawnTime, send);
-    }
-
     public int getDuration() {
         return this.getDataProperty(ActorDataTypes.DATA_DURATION, 600);
     }
@@ -215,7 +203,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setParticleId(int particleId, boolean send) {
-        this.setDataProperty(ActorDataTypes.DATA_PARTICLE, particleId, send);
+        this.setDataProperty(ActorDataTypes.DATA_PARTICLE, ParticleType.values()[particleId], send);
     }
 
     @Override
@@ -224,7 +212,6 @@ public class EntityAreaEffectCloud extends Entity {
         this.invulnerable = true;
         this.setDataFlag(ActorFlags.FIRE_IMMUNE, true);
         this.setDataFlag(ActorFlags.NO_AI, true);
-        this.setSpawnTime(this.level.getCurrentTick(), false);
         this.setPickupCount(0, false);
 
         final CompoundTag nbtMap = this.getNbt();
