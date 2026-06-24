@@ -3,16 +3,28 @@ package cn.nukkit.registry;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.customitem.data.CreativeCategory;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.utils.BlockColor;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CraftingCatalogGroup;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
 
-import java.io.*;
-
-import java.nio.file.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Manages a binary on-disk cache of parsed registry state so subsequent server
@@ -70,9 +82,9 @@ public final class RegistryCache {
                 return null;
             }
             String cachedMcVersion = in.readUTF();
-            if (!cachedMcVersion.equals(ProtocolInfo.MINECRAFT_VERSION_NETWORK)) {
+            if (!cachedMcVersion.equals(NetworkConstants.CODEC.getMinecraftVersion())) {
                 log.info("Registry cache: MC version changed ({} → {}), rebuilding",
-                        cachedMcVersion, ProtocolInfo.MINECRAFT_VERSION_NETWORK);
+                        cachedMcVersion, NetworkConstants.CODEC.getMinecraftVersion());
                 return null;
             }
 
@@ -164,7 +176,7 @@ public final class RegistryCache {
 
             out.write(MAGIC);
             out.writeByte(SCHEMA_VERSION);
-            out.writeUTF(ProtocolInfo.MINECRAFT_VERSION_NETWORK);
+            out.writeUTF(NetworkConstants.CODEC.getMinecraftVersion());
 
             writeSection(out, SECTION_ITEM_RUNTIMEID,     Registries.ITEM_RUNTIMEID::writeCache);
             writeSection(out, SECTION_BLOCK_STATE_COLORS, BlockStateRegistry::writeColorsToCache);
@@ -250,30 +262,30 @@ public final class RegistryCache {
     // ======== creative item helpers (used by CreativeItemRegistry) ========
 
     static void writeCreativeGroups(DataOutputStream out,
-            Iterable<CreativeItemGroup> groups) throws IOException {
-        List<CreativeItemGroup> list = new ArrayList<>();
+            Iterable<CraftingCatalogGroup> groups) throws IOException {
+        List<CraftingCatalogGroup> list = new ArrayList<>();
         groups.forEach(list::add);
         out.writeInt(list.size());
-        for (CreativeItemGroup g : list) {
-            out.writeByte(g.getCategory().ordinal());
+        for (CraftingCatalogGroup g : list) {
+            out.writeByte(g.getCreativeCategory().ordinal());
             out.writeUTF(g.getName());
-            Item icon = g.getIcon();
+            Item icon = Item.fromNetwork(g.getGroupIconItem());
             out.writeUTF(icon == null || icon.isNull() ? "" : icon.getId());
             out.writeInt(icon == null || icon.isNull() ? 0  : icon.getDamage());
         }
     }
 
-    static List<CreativeItemGroup> readCreativeGroups(DataInputStream in) throws IOException {
+    static List<CraftingCatalogGroup> readCreativeGroups(DataInputStream in) throws IOException {
         int size = in.readInt();
-        List<CreativeItemGroup> result = new ArrayList<>(size);
-        CreativeItemCategory[] cats = CreativeItemCategory.VALUES;
+        List<CraftingCatalogGroup> result = new ArrayList<>(size);
+        CreativeItemCategory[] cats = CreativeItemCategory.values();
         for (int i = 0; i < size; i++) {
             int    catOrd  = in.readByte() & 0xFF;
             String name    = in.readUTF();
             String iconId  = in.readUTF();
             int    iconDmg = in.readInt();
             Item   icon    = iconId.isEmpty() ? Item.AIR : Item.get(iconId, iconDmg);
-            result.add(new CreativeItemGroup(cats[catOrd], name, icon));
+            result.add(new CraftingCatalogGroup(cats[catOrd], name, icon.toNetwork()));
         }
         return result;
     }

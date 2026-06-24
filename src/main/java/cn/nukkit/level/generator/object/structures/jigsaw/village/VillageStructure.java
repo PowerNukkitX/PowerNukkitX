@@ -13,12 +13,12 @@ import cn.nukkit.block.BlockSnowLayer;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.structures.StructureHelper;
@@ -27,14 +27,12 @@ import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -80,17 +78,37 @@ public abstract class VillageStructure extends JigsawStructure {
                 .filter(BlockUnknown.class::isInstance)
                 .forEach(block -> level.setBlock(block, BlockAir.STATE.toBlock(block), true, true));
 
+        int jigsawCount = 0;
+        double jigsawSumX = 0, jigsawSumZ = 0;
         for (Block block : placedBlocks) {
-            if (!(level.getBlock(block) instanceof BlockJigsaw)) {
+            if (!(block instanceof BlockJigsaw)) {
                 continue;
             }
             level.setBlock(block, BlockAir.STATE.toBlock(block), true, true);
+            int spawnX = block.getFloorX();
+            int spawnZ = block.getFloorZ();
+            int safeY = findSafeSpawnY(level, spawnX, block.getFloorY(), spawnZ, 2);
             Entity villager = Entity.createEntity(
                     Entity.VILLAGER_V2,
-                    new Position(block.getFloorX() + 0.5, block.getFloorY(), block.getFloorZ() + 0.5, level)
+                    new Position(spawnX + 0.5, safeY, spawnZ + 0.5, level)
             );
             if (villager != null) {
                 villager.spawnToAll();
+            }
+            jigsawSumX += spawnX;
+            jigsawSumZ += spawnZ;
+            jigsawCount++;
+        }
+
+        if (jigsawCount > 0) {
+            int centerX = (int) (jigsawSumX / jigsawCount);
+            int centerZ = (int) (jigsawSumZ / jigsawCount);
+            int baseY = level.getHighestBlockAt(centerX, centerZ) + 1;
+            int golemY = findSafeSpawnY(level, centerX, baseY, centerZ, 3);
+            Entity golem = Entity.createEntity(EntityID.IRON_GOLEM,
+                    new Position(centerX + 0.5, golemY, centerZ + 0.5, level));
+            if (golem != null) {
+                golem.spawnToAll();
             }
         }
     }
@@ -241,10 +259,7 @@ public abstract class VillageStructure extends JigsawStructure {
         for (long columnKey : lowestColumns.keySet()) {
             int x = (int) (columnKey >> 32);
             int z = (int) columnKey;
-            IChunk chunk = level.getChunk(x >> 4, z >> 4);
-            if (!chunk.isGenerated()) {
-                level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-            }
+            level.getOrGenerateChunk(x >> 4, z >> 4);
 
             int height = level.getHeightMap(x, z);
             Block topBlock = level.getBlock(x, height, z);
@@ -343,10 +358,7 @@ public abstract class VillageStructure extends JigsawStructure {
                 blockManager.unsetBlockStateAt(block);
                 continue;
             }
-            IChunk chunk = level.getChunk(block.getChunkX(), block.getChunkZ());
-            if (!chunk.isGenerated()) {
-                level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-            }
+            level.getOrGenerateChunk(block.getChunkX(), block.getChunkZ());
             int height = getPlacementY(level, block.getFloorX(), block.getFloorZ()) - 1;
             columnHeights.put(columnKey(block.getFloorX(), block.getFloorZ()), height);
             blockManager.unsetBlockStateAt(block);
@@ -362,10 +374,7 @@ public abstract class VillageStructure extends JigsawStructure {
         for (PNXStructure.Jigsaw jigsaw : jigsaws) {
             Integer height = columnHeights.get(columnKey(jigsaw.x, jigsaw.z));
             if (height == null) {
-                IChunk chunk = level.getChunk(jigsaw.x >> 4, jigsaw.z >> 4);
-                if (!chunk.isGenerated()) {
-                    level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-                }
+                level.getOrGenerateChunk(jigsaw.x >> 4, jigsaw.z >> 4);
                 height = getPlacementY(level, jigsaw.x, jigsaw.z) - 1;
             }
             jigsaw.y = height + 1;
@@ -409,10 +418,7 @@ public abstract class VillageStructure extends JigsawStructure {
         for (long columnKey : supportedColumns.keySet()) {
             int x = (int) (columnKey >> 32);
             int z = (int) columnKey;
-            IChunk chunk = level.getChunk(x >> 4, z >> 4);
-            if (!chunk.isGenerated()) {
-                level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-            }
+            level.getOrGenerateChunk(x >> 4, z >> 4);
 
             for (int y = supportY - 1; y >= level.getMinHeight(); y--) {
                 Block worldBlock = blockManager.getBlockIfCachedOrLoaded(x, y, z);
@@ -451,6 +457,17 @@ public abstract class VillageStructure extends JigsawStructure {
             return height + 1;
         }
         return getTerrainY(level, x, z) + 1;
+    }
+
+    private int findSafeSpawnY(Level level, int x, int startY, int z, int entityHeight) {
+        outer:
+        for (int y = startY; y <= startY + 16; y++) {
+            for (int dy = 0; dy < entityHeight; dy++) {
+                if (level.getBlock(x, y + dy, z).isSolid()) continue outer;
+            }
+            return y;
+        }
+        return startY;
     }
 
     protected boolean isReplaceableTerrainCover(Block block) {

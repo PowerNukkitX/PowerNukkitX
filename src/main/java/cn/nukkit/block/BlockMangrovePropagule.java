@@ -10,7 +10,6 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.tags.BlockTags;
-import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
 import static cn.nukkit.block.property.CommonBlockProperties.PROPAGULE_STAGE;
 
-public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Pollinable {
+public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Pollinable, Supportable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_PROPAGULE, HANGING, PROPAGULE_STAGE);
     private static final int FULLY_GROWN_HANGING_STAGE = 4;
@@ -171,9 +170,9 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         return isHanging() ? up() instanceof BlockMangroveLeaves : isSupportValid(down());
     }
 
-    public static boolean isSupportValid(Block block) {
+    boolean isSupportValid(Block block) {
         String id = block.getId();
-        return block.hasTag(BlockTags.DIRT)
+        return isSupportDirt(block)
                 || BlockID.MOSS_BLOCK.equals(id)
                 || BlockID.MUD.equals(id)
                 || BlockID.CLAY.equals(id);

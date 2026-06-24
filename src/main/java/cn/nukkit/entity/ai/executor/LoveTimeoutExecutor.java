@@ -3,12 +3,13 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 
 /**
  * Handles the duration of the "in love" breeding state for entities.
- *
+ * <p>
  * Tracks how long the entity remains in love, periodically emits love
  * particles, and clears the love state and spouse memory when the
  * configured timeout expires.
@@ -53,7 +54,7 @@ public class LoveTimeoutExecutor implements IBehaviorExecutor {
         if (elapsed >= loveTicks) {
             e.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, false);
             e.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
-            e.setDataFlag(EntityFlag.IN_LOVE, false);
+            e.setDataFlag(ActorFlags.IN_LOVE, false);
             return false;
         }
 
@@ -68,9 +69,9 @@ public class LoveTimeoutExecutor implements IBehaviorExecutor {
     }
 
     protected void sendLoveParticle(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.LOVE_PARTICLES;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(entity.getId());
+        pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

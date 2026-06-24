@@ -5,14 +5,12 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
 public class BlockMaterialReducer extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(MATERIAL_REDUCER, CommonBlockProperties.DIRECTION);

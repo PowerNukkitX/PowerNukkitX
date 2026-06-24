@@ -6,10 +6,8 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
-import static cn.nukkit.block.BlockID.AIR;
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_6;
 
 /**

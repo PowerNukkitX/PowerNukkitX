@@ -2,6 +2,7 @@ package cn.nukkit.recipe.descriptor;
 
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 import java.util.Objects;
 
@@ -28,6 +29,14 @@ public class ItemTagDescriptor implements ItemDescriptor {
     @Override
     public boolean match(Item item) {
         return item.getCount() >= count && ItemTags.getTagSet(item.getId()).contains(itemTag);
+    }
+
+    @Override
+    public ItemDescriptorWithCount toNetwork() {
+        return new ItemDescriptorWithCount(
+                new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemTagDescriptor(this.itemTag),
+                this.count
+        );
     }
 
     @Override

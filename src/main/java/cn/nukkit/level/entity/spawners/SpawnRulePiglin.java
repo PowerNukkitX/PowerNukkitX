@@ -2,7 +2,6 @@ package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.mob.EntityPiglin;
 import cn.nukkit.level.entity.condition.Condition;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionInAir;

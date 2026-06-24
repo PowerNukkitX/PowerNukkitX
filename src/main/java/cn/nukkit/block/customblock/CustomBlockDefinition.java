@@ -27,6 +27,7 @@ import cn.nukkit.nbt.tag.Tag;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.BlockPropertyData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,8 +118,11 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             } else {
                 block_id = INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
             }
-            nbt.putCompound("vanilla_block_data", new CompoundTag().putInt("block_id", block_id)
-                    /*.putString("material", "")*/); //todo Figure what is dirt, maybe that corresponds to https://wiki.bedrock.dev/documentation/materials.html
+            nbt.putCompound("vanilla_block_data",
+                    new CompoundTag()
+                            .putInt("block_id", block_id)
+                            .putString("material", "dirt") // No one knows what its for, but it's required for making the blocks work
+            );
         }
 
         public Builder name(String name) {
@@ -151,8 +155,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          */
         public Builder destructibleByExplosion(int resistance) {
             this.nbt.getCompound("components")
-                .putCompound("minecraft:destructible_by_explosion",
-                    new CompoundTag().putInt("explosion_resistance", resistance));
+                    .putCompound("minecraft:destructible_by_explosion",
+                            new CompoundTag().putInt("explosion_resistance", resistance));
             return this;
         }
 
@@ -345,7 +349,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
 
         /**
          * Sets whether the item/block should be hidden from commands like /give and /replaceitem.
-         * 
+         *
          * @param hidden true to hide, false to show (default: false)
          * @return this builder
          */
@@ -508,22 +512,22 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         public Builder isPlayerInteractable(boolean value) {
             if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
                 this.nbt.getCompound("components")
-                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+                        .putCompound("minecraft:custom_components", createDefaultCustomComponents());
             }
             this.nbt.getCompound("components")
-                .getCompound("minecraft:custom_components")
-                .putByte("hasPlayerInteract", (byte) (value ? 1 : 0));
+                    .getCompound("minecraft:custom_components")
+                    .putByte("hasPlayerInteract", (byte) (value ? 1 : 0));
             return this;
         }
 
         public Builder hasPlayerPlacingSensor(boolean value) {
             if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
                 this.nbt.getCompound("components")
-                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+                        .putCompound("minecraft:custom_components", createDefaultCustomComponents());
             }
             this.nbt.getCompound("components")
-                .getCompound("minecraft:custom_components")
-                .putByte("hasPlayerPlacing", (byte) (value ? 1 : 0));
+                    .getCompound("minecraft:custom_components")
+                    .putByte("hasPlayerPlacing", (byte) (value ? 1 : 0));
             return this;
         }
 
@@ -569,8 +573,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                     if (each instanceof BooleanPropertyType booleanBlockProperty) {
                         nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
                                 .putList("enum", new ListTag<>()
-                                        .add(new ByteTag(0))
-                                        .add(new ByteTag(1))));
+                                        .add(new ByteTag((byte) 0))
+                                        .add(new ByteTag((byte) 1))));
                     } else if (each instanceof IntPropertyType intBlockProperty) {
                         var enumList = new ListTag<IntTag>();
                         for (int i = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {
@@ -646,9 +650,9 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     // Creates default category
     public static CompoundTag createDefaultMenuCategory() {
         return new CompoundTag(new LinkedHashMap<>())
-            .putString("category", "construction")
-            .putString("group", "")
-            .putByte("is_hidden_in_commands", (byte) 0);
+                .putString("category", "construction")
+                .putString("group", "")
+                .putByte("is_hidden_in_commands", (byte) 0);
     }
 
     // Create default components
@@ -678,9 +682,9 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     // Creates default custom_components
     public static CompoundTag createDefaultCustomComponents() {
         return new CompoundTag(new LinkedHashMap<>())
-            .putByte("hasPlayerInteract", (byte) 0)
-            .putByte("hasPlayerPlacing", (byte) 0)
-            .putByte("isV1Component", (byte) 1);
+                .putByte("hasPlayerInteract", (byte) 0)
+                .putByte("hasPlayerPlacing", (byte) 0)
+                .putByte("isV1Component", (byte) 1);
     }
 
     public CompoundTag getComponents() {
@@ -696,5 +700,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     }
 
     public record BlockTickSettings(int minTicks, int maxTicks, boolean looping) {
+    }
+
+    public BlockPropertyData toNetwork() {
+        return new BlockPropertyData(
+                this.identifier,
+                this.nbt.toNetwork()
+        );
     }
 }

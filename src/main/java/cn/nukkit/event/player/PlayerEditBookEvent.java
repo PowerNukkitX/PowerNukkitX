@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.BookEditPacket;
+import org.cloudburstmc.protocol.bedrock.data.BookEditAction;
 
 public class PlayerEditBookEvent extends PlayerEvent implements Cancellable {
 
@@ -15,17 +15,17 @@ public class PlayerEditBookEvent extends PlayerEvent implements Cancellable {
     }
 
     private final Item oldBook;
-    private final BookEditPacket.Action action;
+    private final BookEditAction action;
     private Item newBook;
 
-    public PlayerEditBookEvent(Player player, Item oldBook, Item newBook, BookEditPacket.Action action) {
+    public PlayerEditBookEvent(Player player, Item oldBook, Item newBook, BookEditAction action) {
         this.player = player;
         this.oldBook = oldBook;
         this.newBook = newBook;
         this.action = action;
     }
 
-    public BookEditPacket.Action getAction() {
+    public BookEditAction getAction() {
         return this.action;
     }
 

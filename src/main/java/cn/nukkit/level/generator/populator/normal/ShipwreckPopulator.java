@@ -16,10 +16,10 @@ import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import com.google.common.collect.Sets;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import java.util.Set;
 
@@ -94,8 +94,7 @@ public class ShipwreckPopulator extends Populator {
             .minDistance(4)
             .maxDistance(24)
             .isBiomeValid(biome -> {
-                BiomeDefinition definition = Registries.BIOME.get(biome);
-                return definition.getTags().contains(BiomeTags.OCEAN) || definition.getTags().contains(BiomeTags.BEACH);
+                return Registries.BIOME.getTags(biome).contains(BiomeTags.OCEAN) || Registries.BIOME.getTags(biome).contains(BiomeTags.BEACH);
             })
             .build());
 
@@ -108,10 +107,10 @@ public class ShipwreckPopulator extends Populator {
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(5, chunk.getHeightMap(5, 5), 5);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         if (PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             PNXStructure template;
-            boolean beach = definition.getTags().contains(BiomeTags.BEACH);
+            boolean beach = Registries.BIOME.containsTag(BiomeTags.BEACH, definition);
             if (beach) {
                 template = STRUCTURE_LOCATION_BEACHED[random.nextInt(STRUCTURE_LOCATION_BEACHED.length)];
             } else {
@@ -142,18 +141,14 @@ public class ShipwreckPopulator extends Populator {
             Set<Long> indexes = Sets.newConcurrentHashSet();
 
             if (size.getX() > 16) {
-                IChunk ck = level.getChunk(chunkX + 1, chunkZ);
-                if (!ck.isGenerated()) {
-                    chunks.add(ck);
-                    indexes.add(Level.chunkHash(ck.getX(), chunkZ));
-                }
+                IChunk ck = level.getOrGenerateChunk(chunkX + 1, chunkZ);
+                chunks.add(ck);
+                indexes.add(Level.chunkHash(ck.getX(), chunkZ));
             }
             if (size.getZ() > 16) {
-                IChunk ck = level.getChunk(chunkX, chunkZ + 1);
-                if (!ck.isGenerated()) {
-                    chunks.add(ck);
-                    indexes.add(Level.chunkHash(chunkX, ck.getZ()));
-                }
+                IChunk ck = level.getOrGenerateChunk(chunkX, chunkZ + 1);
+                chunks.add(ck);
+                indexes.add(Level.chunkHash(chunkX, ck.getZ()));
             }
 
 

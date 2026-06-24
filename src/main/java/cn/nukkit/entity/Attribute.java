@@ -3,8 +3,10 @@ package cn.nukkit.entity;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
+import org.cloudburstmc.protocol.bedrock.data.payload.attribute.AttributeData;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +36,9 @@ public class Attribute implements Cloneable {
     public static final int EXHAUSTION = 2;
     public static final int KNOCKBACK_RESISTANCE = 3;
     public static final int HEALTH = 4;
-    /** @deprecated Use {@link #HEALTH}. Planned removal: after 6 months (>= 2026-08-19). */
+    /**
+     * @deprecated Use {@link #HEALTH}. Planned removal: after 6 months (>= 2026-08-19).
+     */
     @Deprecated(since = "2.0.0", forRemoval = true)
     public static final int MAX_HEALTH = HEALTH;
     public static final int MOVEMENT_SPEED = 5;
@@ -326,6 +330,19 @@ public class Attribute implements Cloneable {
 
     public float getDefaultMaximum() {
         return defaultMaximum;
+    }
+
+    public AttributeData toNetwork() {
+        return new AttributeData(
+                this.name,
+                this.minValue,
+                this.maxValue,
+                this.currentValue,
+                this.defaultMinimum,
+                this.defaultMaximum,
+                this.defaultValue,
+                Collections.emptyList()
+        );
     }
 
     @Override

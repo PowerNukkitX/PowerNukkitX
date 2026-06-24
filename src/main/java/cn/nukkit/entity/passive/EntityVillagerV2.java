@@ -33,15 +33,14 @@ import cn.nukkit.entity.ai.executor.villager.WillingnessExecutor;
 import cn.nukkit.entity.ai.executor.villager.WorkExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
-import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.DoorCapableWalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.mob.EntityIronGolem;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -57,21 +56,25 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.TakeItemEntityPacket;
-import cn.nukkit.network.protocol.UpdateTradePacket;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TakeItemActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateTradePacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,8 +103,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return tradeNetId;
     }
 
-    public ListTag<CompoundTag> getRecipes() {
-        return new ListTag<>(Tag.TAG_Compound, TradeRecipeBuildUtils.RECIPE_MAP.entrySet().stream().filter(t -> getTradeNetIds().contains(t.getKey())).toList().stream().map(Map.Entry::getValue).toList());
+    public List<CompoundTag> getRecipes() {
+        return new ObjectArrayList<>(TradeRecipeBuildUtils.RECIPE_MAP.entrySet().stream().filter(t -> getTradeNetIds().contains(t.getKey())).toList().stream().map(Map.Entry::getValue).toList());
     }
 
     public int[] tierExpRequirement;
@@ -224,9 +227,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 entity -> !isBaby()
                         ), 3, 1),
                         new Behavior(
-                            new VillagerBreedingExecutor(16, 100, 0.5f),
+                                new VillagerBreedingExecutor(16, 100, 0.5f),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE),
-                            2, 1
+                                2, 1
                         ),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
@@ -251,7 +254,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                     }
                                     if (block != null && !block.isOccupied()) setBed(block);
                                 } else if (!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
-                                    this.namedTag.remove("bed");
+                                    this.nbt.remove("bed");
                                     getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                                 }
                             }
@@ -289,6 +292,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 Block siteBlock = getMemoryStorage().get(CoreMemoryTypes.SITE_BLOCK);
                                 if (siteBlock != null && !siteBlock.getLevelBlock().getId().equals(siteBlock.getId())) {
                                     getMemoryStorage().clear(CoreMemoryTypes.SITE_BLOCK);
+                                    if (getTradeExp() == 0) {
+                                        setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
+                                    }
                                 }
 
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.SITE_BLOCK)) {
@@ -328,7 +334,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
                 ),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this),
                 this
         );
     }
@@ -437,7 +443,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public boolean isSleeping() {
-        return getDataFlag(EntityFlag.SLEEPING);
+        return getDataFlag(ActorFlags.SLEEPING);
     }
 
     @Override
@@ -470,85 +476,87 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void initEntity() {
         super.initEntity();
         setTradingPlayer(0L);
-        if (!this.namedTag.contains("tradeSeed")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (!nbtMap.contains("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
         } else {
-            this.tradeSeed = this.namedTag.getInt("tradeSeed");
+            this.tradeSeed =nbtMap.getInt("tradeSeed");
         }
-        if (!this.namedTag.contains("canTrade")) {
+        if (!nbtMap.contains("canTrade")) {
             this.setCanTrade(!(profession == 0 || profession == 14));
         } else {
-            this.canTrade = this.namedTag.getBoolean("canTrade");
+            this.canTrade =nbtMap.getBoolean("canTrade");
         }
-        if (!this.namedTag.contains("displayName") && profession != 0) {
+        if (!nbtMap.contains("displayName") && profession != 0) {
             this.setDisplayName(getProfessionName(profession));
         } else {
-            this.displayName = this.namedTag.getString("displayName");
+            this.displayName = nbtMap.getString("displayName");
         }
-        if (!this.namedTag.contains("tradeTier")) {
+        if (!nbtMap.contains("tradeTier")) {
             this.setTradeTier(1);
         } else {
-            this.tradeTier = this.namedTag.getInt("tradeTier");
+            this.tradeTier = nbtMap.getInt("tradeTier");
         }
-        if (!this.namedTag.contains("maxTradeTier")) {
+        if (!nbtMap.contains("maxTradeTier")) {
             this.setMaxTradeTier(5);
         } else {
-            var maxTradeTier = this.namedTag.getInt("maxTradeTier");
+            var maxTradeTier = nbtMap.getInt("maxTradeTier");
             this.maxTradeTier = maxTradeTier;
-            this.setDataProperty(MAX_TRADE_TIER, maxTradeTier);
+            this.setDataProperty(ActorDataTypes.MAX_TRADE_TIER, maxTradeTier);
         }
-        if (!this.namedTag.contains("tradeExp")) {
+        if (!nbtMap.contains("tradeExp")) {
             this.setTradeExp(0);
         } else {
-            var tradeExp = this.namedTag.getInt("tradeExp");
+            var tradeExp = nbtMap.getInt("tradeExp");
             this.tradeExp = tradeExp;
-            this.setDataProperty(TRADE_EXPERIENCE, tradeExp);
+            this.setDataProperty(ActorDataTypes.TRADE_EXPERIENCE, tradeExp);
         }
-        if (this.namedTag.containsInt("clothing")) {
-            this.setDataProperty(EntityDataTypes.MARK_VARIANT, this.namedTag.getInt("clothing"));
+        if (nbtMap.contains("clothing")) {
+            this.setDataProperty(ActorDataTypes.MARK_VARIANT, nbtMap.getInt("clothing"));
         } else {
             BlockVector3 bv = asBlockVector3();
-            this.setDataProperty(EntityDataTypes.MARK_VARIANT, Clothing.getClothing(getLevel().getBiomeId(bv.x, bv.y, bv.z)).ordinal());
+            this.setDataProperty(ActorDataTypes.MARK_VARIANT, Clothing.getClothing(getLevel().getBiomeId(bv.x, bv.y, bv.z)).ordinal());
         }
-        if (this.namedTag.containsCompound("bed")) {
-            CompoundTag compound = this.namedTag.getCompound("bed");
+        if (nbtMap.contains("bed")) {
+            CompoundTag compound = nbtMap.getCompound("bed");
             Vector3 vector = new Vector3(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
             if (getLevel().getBlock(vector) instanceof BlockBed bed) {
                 setBed(bed);
             }
         }
         getMemoryStorage().put(CoreMemoryTypes.GOSSIP, new Object2ObjectArrayMap<>());
-        if (this.namedTag.containsCompound("gossip")) {
+        if (nbtMap.contains("gossip")) {
             var gossipMap = getMemoryStorage().get(CoreMemoryTypes.GOSSIP);
-            CompoundTag gossipTag = this.namedTag.getCompound("gossip");
+            CompoundTag gossipTag = nbtMap.getCompound("gossip");
             for (String key : gossipTag.getTags().keySet()) {
                 ListTag<IntTag> gossipValues = gossipTag.getList(key, IntTag.class);
                 IntArrayList valueMap = new IntArrayList();
-                gossipValues.getAll().forEach(intTag -> valueMap.addLast(intTag.getData()));
+                gossipValues.getAll().forEach(value -> valueMap.addLast(value.data));
                 gossipMap.put(key, valueMap);
             }
         }
-        if (this.namedTag.containsString("purifyPlayer")) {
-            String xuid = this.namedTag.removeAndGet("purifyPlayer").parseValue();
+        if (nbtMap.contains("purifyPlayer")) {
+            String xuid = this.nbt.getString("purifyPlayer");
+            this.nbt.remove("purifyPlayer");
             this.addGossip(xuid, Gossip.MAJOR_POSITIVE, 20);
             this.addGossip(xuid, Gossip.MINOR_POSITIVE, 25);
         }
-        if (this.namedTag.containsCompound("siteBlock")) {
-            CompoundTag tag = this.namedTag.getCompound("siteBlock");
+        if (nbtMap.contains("siteBlock")) {
+            CompoundTag tag = nbtMap.getCompound("siteBlock");
             Vector3 vector3 = new Vector3(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
             Block block = getLevel().getBlock(vector3);
             setProfessionBlock(block);
         }
-        if (this.namedTag.containsInt("profession")) {
-            setProfession(this.namedTag.getInt("profession"), false);
+        if (nbtMap.contains("profession")) {
+            setProfession(nbtMap.getInt("profession"), false);
         }
         this.inventory = new EntityEquipmentInventory(this);
-        if (this.namedTag.contains("Inventory") && this.namedTag.get("Inventory") instanceof ListTag) {
+        if (nbtMap.contains("Inventory") && nbtMap.get("Inventory") instanceof ListTag<?>) {
             var inventory = this.getInventory();
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Inventory", CompoundTag.class);
+            ListTag<CompoundTag> inventoryList = nbtMap.getList("Inventory", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
                 int slot = item.getByte("Slot");
-                inventory.setItem(slot, NBTIO.getItemHelper(item));//inventory 0-39
+                inventory.setItem(slot, ItemHelper.read(item));//inventory 0-39
             }
         }
         if (canTrade) {
@@ -561,11 +569,16 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         if (super.attack(source)
                 && source instanceof EntityDamageByEntityEvent event
                 && event.getDamager() instanceof Player player) {
-            addGossip(player.getLoginChainData().getXUID(), Gossip.MINOR_NEGATIVE, 25);
-            EntityEventPacket pk = new EntityEventPacket();
-            pk.eid = getId();
-            pk.event = EntityEventPacket.VILLAGER_ANGRY;
+            addGossip(player.getXUID(), Gossip.MINOR_NEGATIVE, 25);
+            final ActorEventPacket pk = new ActorEventPacket();
+            pk.setTargetRuntimeID(this.getId());
+            pk.setType(ActorEvent.VILLAGER_ANGRY);
             Server.broadcastPacket(getViewers().values(), pk);
+            for (Entity e : getLevel().getCollidingEntities(getBoundingBox().grow(48, 8, 48))) {
+                if (e instanceof EntityIronGolem golem && golem.isAlive() && !golem.hasOwner(false)) {
+                    golem.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, player);
+                }
+            }
             return true;
         }
 
@@ -577,7 +590,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         if (getLastDamageCause() instanceof EntityDamageByEntityEvent event && event.getEntity() instanceof Player player) {
             Arrays.stream(this.getLevel().getCollidingEntities(this.getBoundingBox().grow(16, 16, 16)))
                     .filter(entity -> entity instanceof EntityVillagerV2)
-                    .forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getLoginChainData().getXUID(), Gossip.MAJOR_NEGATIVE, 25));
+                    .forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getXUID(), Gossip.MAJOR_NEGATIVE, 25));
         }
         super.kill();
     }
@@ -590,7 +603,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         int ordinal = gossip.ordinal();
         values.set(ordinal, Math.min(gossip.max, values.getInt(ordinal) + value));
         getLevel().getPlayers().values().stream()
-                .filter(player -> player.getLoginChainData().getXUID().equals(xuid))
+                .filter(player -> player.getXUID().equals(xuid))
                 .findFirst()
                 .ifPresent(this::updateTrades);
     }
@@ -623,7 +636,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     public int getReputation(Player player) {
         int reputation = 0;
-        IntArrayList values = getMemoryStorage().get(CoreMemoryTypes.GOSSIP).get(player.getLoginChainData().getXUID());
+        IntArrayList values = getMemoryStorage().get(CoreMemoryTypes.GOSSIP).get(player.getXUID());
         if (values != null) {
             for (Gossip gossip : Gossip.VALUES) {
                 reputation += (values.getInt(gossip.ordinal()) * gossip.multiplier);
@@ -635,38 +648,43 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putInt("profession", this.getProfession());
-        this.namedTag.putBoolean("isTrade", this.canTrade());
-        this.namedTag.putString("displayName", this.getDisplayName());
-        this.namedTag.putInt("tradeTier", this.getTradeTier());
-        this.namedTag.putInt("maxTradeTier", this.getMaxTradeTier());
-        this.namedTag.putInt("tradeExp", this.getTradeExp());
-        this.namedTag.putInt("tradeSeed", this.getTradeSeed());
-        this.namedTag.putInt("clothing", this.getDataProperty(EntityDataTypes.MARK_VARIANT));
+        this.nbt.putInt("profession", this.getProfession())
+                .putBoolean("isTrade", this.canTrade())
+                .putString("displayName", this.getDisplayName())
+                .putInt("tradeTier", this.getTradeTier())
+                .putInt("maxTradeTier", this.getMaxTradeTier())
+                .putInt("tradeExp", this.getTradeExp())
+                .putInt("tradeSeed", this.getTradeSeed())
+                .putInt("clothing", this.getDataProperty(ActorDataTypes.MARK_VARIANT));
         CompoundTag gossipTag = new CompoundTag();
         for (var v : getMemoryStorage().get(CoreMemoryTypes.GOSSIP).object2ObjectEntrySet()) {
             ListTag<IntTag> gossipValues = new ListTag<>();
-            for (int v2 : v.getValue()) {
-                gossipValues.add(new IntTag(v2));
+            for (int value : v.getValue()) {
+                gossipValues.add(new IntTag(value));
             }
             gossipTag.putList(v.getKey(), gossipValues);
         }
-        this.namedTag.putCompound("gossip", gossipTag);
+        this.nbt.putCompound("gossip", gossipTag);
         if (getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
             BlockBed bed = getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED);
-            this.namedTag.putCompound("bed", new CompoundTag().putInt("x", bed.getFloorX()).putInt("y", bed.getFloorY()).putInt("z", bed.getFloorZ()));
+            this.nbt.putCompound("bed", new CompoundTag()
+                    .putInt("x", bed.getFloorX())
+                    .putInt("y", bed.getFloorY())
+                    .putInt("z", bed.getFloorZ()));
         }
         if (getMemoryStorage().notEmpty(CoreMemoryTypes.SITE_BLOCK)) {
             Block site = getMemoryStorage().get(CoreMemoryTypes.SITE_BLOCK);
-            this.namedTag.putCompound("siteBlock", new CompoundTag().putInt("x", site.getFloorX()).putInt("y", site.getFloorY()).putInt("z", site.getFloorZ()));
+            this.nbt.putCompound("siteBlock", new CompoundTag()
+                    .putInt("x", site.getFloorX())
+                    .putInt("y", site.getFloorY())
+                    .putInt("z", site.getFloorZ()));
         }
-        ListTag<CompoundTag> inventoryTag = null;
         if (this.getInventory() != null) {
-            inventoryTag = new ListTag<>();
-            this.namedTag.putList("Inventory", inventoryTag);
+            final ListTag<CompoundTag> inventoryTag = new ListTag<>();
             for (var entry : getInventory().getContents().entrySet()) {
-                inventoryTag.add(NBTIO.putItemHelper(entry.getValue(), entry.getKey()));
+                inventoryTag.add(ItemHelper.write(entry.getValue(), entry.getKey()));
             }
+            this.nbt.putList("Inventory", inventoryTag);
         }
     }
 
@@ -703,7 +721,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     public void setProfession(int profession, boolean apply) {
         this.profession = profession;
-        this.setDataProperty(VARIANT, profession);
+        this.setDataProperty(ActorDataTypes.VARIANT, profession);
         if (apply) applyProfession();
     }
 
@@ -723,7 +741,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      * 这个方法插件一般不用
      */
     public void setTradingPlayer(Long eid) {
-        this.setDataProperty(TRADE_TARGET_EID, eid);
+        this.setDataProperty(ActorDataTypes.TRADE_TARGET, eid);
     }
 
     /**
@@ -740,7 +758,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setCanTrade(boolean canTrade) {
         this.canTrade = canTrade;
-        this.namedTag.putBoolean("canTrade", canTrade);
+        this.nbt.putBoolean("canTrade", canTrade);
     }
 
     /**
@@ -755,7 +773,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-        this.namedTag.putString("displayName", displayName);
+        this.nbt.putString("displayName", displayName);
     }
 
     /**
@@ -770,43 +788,50 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
-        this.namedTag.putInt("tradeTier", this.tradeTier);
+        this.nbt.putInt("tradeTier", this.tradeTier);
     }
 
     public void updateTrades(Player player) {
         if (player.getTopWindow().isEmpty() || player.getTopWindow().get() != getTradeInventory()) return;
-        var pk1 = new UpdateTradePacket();
-        pk1.containerId = (byte) player.getWindowId(getTradeInventory());
-        pk1.tradeTier = getTradeTier();
-        pk1.traderUniqueEntityId = getId();
-        pk1.playerUniqueEntityId = player.getId();
-        pk1.displayName = getDisplayName();
-        var tierExpRequirements = new ListTag<CompoundTag>();
+        var updateTradePacket = new UpdateTradePacket();
+        updateTradePacket.setContainerId((byte) player.getWindowId(getTradeInventory()));
+        updateTradePacket.setTradeTier(this.getTradeTier());
+        updateTradePacket.setEntityUniqueId(this.getId());
+        updateTradePacket.setLastTradingPlayer(player.getId());
+        updateTradePacket.setDisplayName(this.getDisplayName());
+
+        final List<NbtMap> tierExpRequirements = new ObjectArrayList<>();
         for (int i = 0, len = tierExpRequirement.length; i < len; ++i) {
-            tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), tierExpRequirement[i]));
+            tierExpRequirements.add(i, NbtMap.builder().putInt(String.valueOf(i), tierExpRequirement[i]).build());
         }
-        ListTag<CompoundTag> recipes = (ListTag<CompoundTag>) getRecipes().copy();
-        int reputation = getReputation(player);
-        for (CompoundTag tag : recipes.getAll()) {
-            if (tag.containsCompound("buyA")) {
-                CompoundTag buyA = tag.getCompound("buyA");
+        final List<CompoundTag> recipes = this.getRecipes();
+        final int reputation = this.getReputation(player);
+        final List<NbtMap> updatedRecipes = new ObjectArrayList<>();
+        for (CompoundTag recipe : recipes) {
+            CompoundTag tag = recipe.copy();
+            if (tag.contains("buyA")) {
+                CompoundTag buyA = tag.getCompound("buyA").copy();
                 float multiplier = 0;
-                if (tag.containsFloat("priceMultiplierA")) multiplier = tag.getFloat("priceMultiplierA");
+                if (tag.contains("priceMultiplierA")) multiplier = tag.getFloat("priceMultiplierA");
                 buyA.putByte("Count", Math.max(buyA.getByte("Count") - (int) (reputation * multiplier), 1));
+                tag.putCompound("buyA", buyA);
             }
-            if (tag.containsCompound("buyB")) {
-                CompoundTag buyB = tag.getCompound("buyB");
+            if (tag.contains("buyB")) {
+                CompoundTag buyB = tag.getCompound("buyB").copy();
                 float multiplier = 0;
-                if (tag.containsFloat("priceMultiplierB")) multiplier = tag.getFloat("priceMultiplierB");
+                if (tag.contains("priceMultiplierB")) multiplier = tag.getFloat("priceMultiplierB");
                 buyB.putByte("Count", Math.max(buyB.getByte("Count") - (int) (reputation * multiplier), 1));
+                tag.putCompound("buyB", buyB);
             }
+            updatedRecipes.add(tag.toNetwork());
         }
-        pk1.offers = new CompoundTag()
-                .putList("Recipes", recipes)
-                .putList("TierExpRequirements", tierExpRequirements);
-        pk1.newTradingUi = true;
-        pk1.usingEconomyTrade = true;
-        player.dataPacket(pk1);
+        updateTradePacket.setOffers(NbtMap.builder()
+                .putList("Recipes", NbtType.COMPOUND, updatedRecipes)
+                .putList("TierExpRequirements", NbtType.COMPOUND, tierExpRequirements)
+                .build());
+        updateTradePacket.setUseNewTradeScreen(true);
+        updateTradePacket.setUsingEconomyTrade(true);
+        player.sendPacket(updateTradePacket);
     }
 
     /**
@@ -821,8 +846,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setMaxTradeTier(int maxTradeTier) {
         this.maxTradeTier = maxTradeTier;
-        this.setDataProperty(MAX_TRADE_TIER, 5);
-        this.namedTag.putInt("maxTradeTier", this.tradeTier);
+        this.setDataProperty(ActorDataTypes.MAX_TRADE_TIER, 5);
+        this.nbt.putInt("maxTradeTier", this.tradeTier);
     }
 
     @Override
@@ -843,8 +868,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setTradeExp(int tradeExp) {
         this.tradeExp = tradeExp;
-        this.setDataProperty(TRADE_EXPERIENCE, 10);
-        this.namedTag.putInt("tradeExp", this.tradeTier);
+        this.setDataProperty(ActorDataTypes.TRADE_EXPERIENCE, 10);
+        this.nbt.putInt("tradeExp", this.tradeTier);
     }
 
 
@@ -871,12 +896,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     protected void setTradeSeed(int tradeSeed) {
         this.tradeSeed = tradeSeed;
-        this.namedTag.putInt("tradeSeed", tradeSeed);
+        this.nbt.putInt("tradeSeed", tradeSeed);
     }
 
     public void addExperience(int xp) {
         this.tradeExp += xp;
-        this.setDataProperty(TRADE_EXPERIENCE, this.tradeExp);
+        this.setDataProperty(ActorDataTypes.TRADE_EXPERIENCE, this.tradeExp);
         int next = getTradeTier() + 1;
         if (next < this.tierExpRequirement.length && tradeExp >= this.tierExpRequirement[next]) {
             setTradeTier(next + 1);
@@ -914,9 +939,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                     }) {
                         InventorySlice slice = new InventorySlice(getInventory(), 1, getInventory().getSize());
                         if (slice.canAddItem(item)) {
-                            TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                            pk.entityId = this.getId();
-                            pk.target = i.getId();
+                            if (!slice.callPickupItemEvent(entityItem)) {
+                                continue;
+                            }
+                            final TakeItemActorPacket pk = new TakeItemActorPacket();
+                            pk.setActorRuntimeID(this.getId());
+                            pk.setItemRuntimeID(i.getId());
                             Server.broadcastPacket(getViewers().values(), pk);
                             slice.addItem(item);
                             i.close();
@@ -960,8 +988,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         TAIGA;
 
         public static Clothing getClothing(int biomeId) {
-            BiomeDefinition definition = Registries.BIOME.get(biomeId);
-            Set<String> tags = definition.getTags();
+            List<String> tags = Registries.BIOME.getTags(biomeId);
             if (tags.contains("desert") || tags.contains("mesa")) return DESERT;
             if (tags.contains("jungle")) return JUNGLE;
             if (tags.contains("savanna")) return SAVANNA;

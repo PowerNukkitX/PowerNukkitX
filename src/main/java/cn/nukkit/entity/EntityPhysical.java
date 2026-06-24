@@ -11,9 +11,9 @@ import cn.nukkit.entity.components.DashActionComponent;
 import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -21,10 +21,11 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.PlayerAuthInputPacket;
-import cn.nukkit.network.protocol.types.AuthInputAction;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,16 +33,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public abstract class EntityPhysical extends EntityCreature implements EntityAsyncPrepare {
-    /** Movement accuracy threshold. Movements with an absolute value less than this threshold are considered as no movement. */
+    /**
+     * Movement accuracy threshold. Movements with an absolute value less than this threshold are considered as no movement.
+     */
     public static final float PRECISION = 0.00001f;
     public static final AtomicInteger globalCycleTickSpread = new AtomicInteger();
-    /** Time flooding delay is used to alleviate the situation where a large number of tasks are submitted at the same time and occupy the CPU. */
+    /**
+     * Time flooding delay is used to alleviate the situation where a large number of tasks are submitted at the same time and occupy the CPU.
+     */
     public final int tickSpread;
-    /** Provide real-time latest collision box position */
+    /**
+     * Provide real-time latest collision box position
+     */
     protected final AxisAlignedBB offsetBoundingBox;
     protected Vector3 previousCollideMotion;
     protected Vector3 previousCurrentMotion;
-    /** The time of free fall of an object */
+    /**
+     * The time of free fall of an object
+     */
     protected int fallingTick = 0;
     protected boolean needsRecalcMovement = true;
     private boolean needsCollisionDamage = false;
@@ -56,6 +65,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     private boolean wasOnSlipperyGround = false;
     private int slipperyEntryGraceTicks = 0;
     private double slipperyEntrySpeed = 0.0d;
+    private boolean airRideRotationInitialized = false;
+    private float airRideTargetYaw = 0f;
+    private int airRideRotationDelayTicks = 0;
 
 
     public EntityPhysical(IChunk chunk, CompoundTag nbt) {
@@ -187,7 +199,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
     }
 
-    /** Calculating ground friction */
+    /**
+     * Calculating ground friction
+     */
     protected void handleGroundFrictionMovement() {
         // No ground resistance
         if (!this.onGround) return;
@@ -212,7 +226,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
     }
 
-    /** Calculate fluid resistance (air/liquid) */
+    /**
+     * Calculate fluid resistance (air/liquid)
+     */
     protected void handlePassableBlockFrictionMovement() {
         // Less than precision
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION && Math.abs(this.motionY) < PRECISION)
@@ -229,6 +245,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     /**
      * Calculate the ground friction factor at the current location
+     *
      * @return The ground friction factor at the current location
      */
     public double getGroundFrictionFactor() {
@@ -238,6 +255,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     /**
      * Calculate the fluid resistance factor (air/water) at the current location
+     *
      * @return The fluid resistance factor at the current location
      */
     public double getPassableBlockFrictionFactor() {
@@ -246,7 +264,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return Block.DEFAULT_AIR_FLUID_FRICTION;
     }
 
-    /** By default, the built-in implementation of nk is used, which is just a fallback algorithm. */
+    /**
+     * By default, the built-in implementation of nk is used, which is just a fallback algorithm.
+     */
     protected void handleLiquidMovement() {
         final var tmp = new Vector3();
         BlockLiquid blockLiquid = null;
@@ -271,7 +291,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     protected void addPreviousLiquidMovement() {
         this.ensurePhysicalMotionState();
-
         addTmpMoveMotion(previousCurrentMotion);
     }
 
@@ -303,8 +322,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     /**
      * Get the height of the entity to float to, 0 is the bottom of the entity {@link Entity#getCurrentHeight()} For the top of the entity<br>
-     * Example: <br>When the value is 0, the entity's feet touch the horizontal plane<br>When the value is getCurrentHeight/2, the entity's middle 
+     * Example: <br>When the value is 0, the entity's feet touch the horizontal plane<br>When the value is getCurrentHeight/2, the entity's middle
      * part touches the horizontal plane<br>When the value is getCurrentHeight, the entity's head touches the horizontal plane
+     *
      * @return the float
      */
     public float getFloatingHeight() {
@@ -378,9 +398,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         });
 
         double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0)
-                       - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
+                - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
         double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0)
-                       - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
+                - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
 
         double finalX = -(resultX / len * 0.2 * 0.32);
@@ -464,25 +484,40 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return false;
         }
 
+        this.syncRiderLocationFromInput(rider, pk);
+        rider.broadcastMountedMovement();
+
         if ((type == RideableComponent.InputType.GROUND || type == RideableComponent.InputType.WATER) && handleRideJumpOrDash(pk, type)) {
             return true;
         }
 
         return switch (type) {
             case GROUND -> onRiderInputGroundControlled(rider, pk);
-            case AIR    -> onRiderInputAirControlled(rider, pk);
-            case WATER  -> onRiderInputWaterControlled(rider, pk);
+            case AIR -> onRiderInputAirControlled(rider, pk);
+            case WATER -> onRiderInputWaterControlled(rider, pk);
         };
     }
 
-    /** Ground Input Controls */
-    public boolean onRiderInputGroundControlled(Player rider, PlayerAuthInputPacket pk) {
-        int controlSeat = getControllingSeatIndex();
-        if (controlSeat < 0 || controlSeat >= passengers.size() || passengers.get(controlSeat) != rider) return false;
+    protected void syncRiderLocationFromInput(Player rider, PlayerAuthInputPacket pk) {
+        org.cloudburstmc.math.vector.Vector3f pos = pk.getPosition();
 
-        if (!(this instanceof EntityControlUtils me)) return false;
-        me.setMoveTarget(null);
-        me.setLookTarget(null);
+        rider.applyClientLocationFromAuthInput(new Location(
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                pk.getInteractRotation().getY(),
+                pk.getInteractRotation().getX(),
+                pk.getInteractRotation().getY(),
+                rider.getLevel()
+        ));
+    }
+
+    /**
+     * Ground Input Controls
+     */
+    public boolean onRiderInputGroundControlled(Player rider, PlayerAuthInputPacket pk) {
+        if (!isControllingRider(rider)) return false;
+        if (!prepareManualRiderControl()) return false;
 
         // INPUT KNOBS
         final double DEADZONE = 0.08;        // stick drift tolerance
@@ -496,7 +531,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         updateSlipperyGroundTransition(slipperyGround);
 
         if (isOnGround() || level.getTick() - getRideJumping().get() <= 5) {
-            Vector2 raw = pk.motion;
+            Vector2 raw = Vector2.fromNetwork(pk.getMoveVector());
             final double GROUND_BACKWARDS_MOVEMENT_MODIFIER = 0.5d;
             double inX = raw.x;
             double inY = raw.y;
@@ -525,7 +560,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
             } else {
                 Vector2 dir = adjusted.normalize();
-                double yawRad = Math.toRadians(pk.yaw);
+                double yawRad = Math.toRadians(pk.getInteractRotation().getY());
                 double wishX = -Math.sin(yawRad) * dir.y + Math.cos(yawRad) * dir.x;
                 double wishZ =  Math.cos(yawRad) * dir.y + Math.sin(yawRad) * dir.x;
 
@@ -536,7 +571,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 strength = Math.pow(strength, CURVE_EXP);
 
                 double maxSpeed = this.getMovementSpeedDefault();
-                if (pk.inputData.contains(AuthInputAction.SPRINTING)) {
+                if (pk.getInputData().contains(PlayerAuthInputData.SPRINTING)) {
                     maxSpeed *= this.getSprintMultiplier();
                     rideSprintingTicks++;
                 } else {
@@ -575,12 +610,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             }
         }
 
-        this.yaw = pk.yaw;
-        this.headYaw = pk.yaw;
+        this.yaw = pk.getInteractRotation().getY();
+        this.headYaw = pk.getInteractRotation().getY();
         return true;
     }
 
-    private boolean isRideEffectivelyOnSlipperyGround() {
+    protected boolean isRideEffectivelyOnSlipperyGround() {
         if (this.hasWaterAt(0)) {
             return false;
         }
@@ -588,7 +623,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return isRideGroundSlipperyBlock();
     }
 
-    private void updateSlipperyGroundTransition(boolean slipperyGround) {
+    protected void updateSlipperyGroundTransition(boolean slipperyGround) {
         if (slipperyGround) {
             if (!wasOnSlipperyGround) {
                 double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
@@ -607,7 +642,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         slipperyEntrySpeed = 0.0d;
     }
 
-    private void applySlipperyGroundLookInput(double wishX, double wishZ, double strength, double cap) {
+    protected void applySlipperyGroundLookInput(double wishX, double wishZ, double strength, double cap) {
         double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
         if (speedSq < 0.000025d) {
@@ -665,11 +700,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         applySlipperyGroundImpulse(mergedX, mergedZ, strength, cap, controlScale);
     }
 
-    private void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap) {
+    protected void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap) {
         applySlipperyGroundImpulse(wishX, wishZ, strength, cap, 1.0d);
     }
 
-    private void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap, double controlScale) {
+    protected void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap, double controlScale) {
         double slipperiness = getRideGroundSlipperiness();
 
         double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
@@ -733,7 +768,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.motionZ = newZ;
     }
 
-    private double getRideGroundSlipperiness() {
+    protected double getRideGroundSlipperiness() {
         double friction = getRideGroundBlockFriction();
         double normal = Block.DEFAULT_FRICTION_FACTOR;
 
@@ -745,7 +780,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return slipperiness;
     }
 
-    private double getRideGroundSurfaceSpeedFactor() {
+    protected double getRideGroundSurfaceSpeedFactor() {
         Block under = getRideGroundBlock();
         if (under == null) return 1.0d;
 
@@ -763,7 +798,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return 1.0d + (slipperiness * 0.85d);
     }
 
-    private Block getRideGroundBlock() {
+    protected Block getRideGroundBlock() {
         if (this.level == null || this.getBoundingBox() == null) {
             return null;
         }
@@ -801,7 +836,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return bestBlock;
     }
 
-    private double getRideGroundBlockFriction() {
+    protected double getRideGroundBlockFriction() {
         Block under = getRideGroundBlock();
         if (under == null) {
             return Block.DEFAULT_FRICTION_FACTOR;
@@ -815,11 +850,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return friction;
     }
 
-    private boolean isRideGroundSlipperyBlock() {
+    protected boolean isRideGroundSlipperyBlock() {
         return getRideGroundBlockFriction() > Block.DEFAULT_FRICTION_FACTOR + 0.05d;
     }
 
-    private double getRideGroundBrakeFactor(double baseBrake) {
+    protected double getRideGroundBrakeFactor(double baseBrake) {
         Block under = getRideGroundBlock();
         if (under == null) return baseBrake;
 
@@ -846,23 +881,20 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     /** Air Input Controls */
     public boolean onRiderInputAirControlled(Player rider, PlayerAuthInputPacket pk) {
-        int controlSeat = getControllingSeatIndex();
-        if (controlSeat < 0 || controlSeat >= passengers.size() || passengers.get(controlSeat) != rider) return false;
-
-        if (!(this instanceof EntityControlUtils me)) return false;
-        me.setMoveTarget(null);
-        me.setLookTarget(null);
+        if (!isControllingRider(rider)) {
+            resetAirRideRotation();
+            return false;
+        }
+        if (!prepareManualRiderControl()) return false;
 
         // INPUT KNOBS
         final double HORIZONTAL_TUNE = 0.97d;   // Horizontal movement speed
-        final double VERTICAL_TUNE   = 0.60d;   // Vertical movement speed
+        final double VERTICAL_TUNE = 0.60d;   // Vertical movement speed
         final double FRICTION_KNOB = 7.0d;      // Knob to parity with BDS speed
 
-        setYaw(pk.interactRotation.y);
-        setHeadYaw(pk.interactRotation.y);
-        setPitch(pk.interactRotation.x);
+        applyAirRideRotation(pk.getInteractRotation().getY());
 
-        Vector2f input = pk.rawMoveVector;
+        Vector2f input = Vector2f.fromNetwork(pk.getRawMoveVector());
         float forward = input.y;
         float strafe = input.x;
 
@@ -872,14 +904,14 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         strafe *= strafeSpeedModifier;
         if (forward < 0f) forward *= backwardsMovementModifier;
 
-        boolean rushing = pk.inputData.contains(AuthInputAction.SPRINT_DOWN)
-                || pk.inputData.contains(AuthInputAction.SPRINTING)
-                || pk.inputData.contains(AuthInputAction.START_SPRINTING);
+        boolean rushing = pk.getInputData().contains(PlayerAuthInputData.SPRINT_DOWN)
+                || pk.getInputData().contains(PlayerAuthInputData.SPRINTING)
+                || pk.getInputData().contains(PlayerAuthInputData.START_SPRINTING);
 
-        boolean upPressed = pk.inputData.contains(AuthInputAction.WANT_UP)
-                || pk.inputData.contains(AuthInputAction.JUMP_DOWN)
-                || pk.inputData.contains(AuthInputAction.JUMPING)
-                || pk.inputData.contains(AuthInputAction.START_JUMPING);
+        boolean upPressed = pk.getInputData().contains(PlayerAuthInputData.WANT_UP)
+                || pk.getInputData().contains(PlayerAuthInputData.JUMP_DOWN)
+                || pk.getInputData().contains(PlayerAuthInputData.JUMPING)
+                || pk.getInputData().contains(PlayerAuthInputData.START_JUMPING);
 
         double speed = this.getDefaultFlyingSpeed() * FRICTION_KNOB;
         if (rushing) speed *= this.getSprintMultiplier();
@@ -895,8 +927,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         double yawRad = Math.toRadians(this.yaw);
         double dx = (-Math.sin(yawRad) * forward + Math.cos(yawRad) * strafe) * speed * HORIZONTAL_TUNE;
-        double dz = ( Math.cos(yawRad) * forward + Math.sin(yawRad) * strafe) * speed * HORIZONTAL_TUNE;
-        double pitch = Math.max(-80, Math.min(80, pk.interactRotation.x));
+        double dz = (Math.cos(yawRad) * forward + Math.sin(yawRad) * strafe) * speed * HORIZONTAL_TUNE;
+        double pitch = Math.max(-80, Math.min(80, pk.getInteractRotation().getX()));
         double pitchRad = Math.toRadians(pitch);
         double dy = -Math.sin(pitchRad) * speed * VERTICAL_TUNE;
         if (upPressed) dy = speed * VERTICAL_TUNE;
@@ -910,26 +942,24 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return true;
     }
 
-    /** Water Input Controls */
+    /**
+     * Water Input Controls
+     */
     public boolean onRiderInputWaterControlled(Player rider, PlayerAuthInputPacket pk) {
-        int controlSeat = getControllingSeatIndex();
-        if (controlSeat < 0 || controlSeat >= passengers.size() || passengers.get(controlSeat) != rider) return false;
-
-        if (!(this instanceof EntityControlUtils me)) return false;
-        me.setMoveTarget(null);
-        me.setLookTarget(null);
+        if (!isControllingRider(rider)) return false;
+        if (!prepareManualRiderControl()) return false;
 
         // INPUT KNOBS
         final double HORIZONTAL_TUNE = 0.97d;
-        final double VERTICAL_TUNE   = 0.60d;
+        final double VERTICAL_TUNE = 0.60d;
         final double SPEED_KNOB = 2.40d; // Knob to parity with BDS speed
         final double WATER_DASH_DRAG = 0.88d;
         final double OUT_OF_WATER_EXTRA_GRAVITY = 0.05d;
         final double MAX_UPWARD_WHILE_OUT = 0.35d;
 
-        setYaw(pk.interactRotation.y);
-        setHeadYaw(pk.interactRotation.y);
-        setPitch(pk.interactRotation.x);
+        setYaw(pk.getInteractRotation().getY());
+        setHeadYaw(pk.getInteractRotation().getY());
+        setPitch(pk.getInteractRotation().getX());
 
         // Water surface detection on our X/Z column.
         final int bx = (int) Math.floor(this.x);
@@ -965,9 +995,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
 
         // Movement input
-        Vector2f input = pk.rawMoveVector;
+        Vector2f input = Vector2f.fromNetwork(pk.getRawMoveVector());
         float forward = input.y;
-        float strafe  = input.x;
+        float strafe = input.x;
 
         float strafeSpeedModifier = getAirStrafeSpeedModifier();
         float backwardsMovementModifier = getAirBackwardsMovementModifier();
@@ -975,9 +1005,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (forward < 0f) forward *= backwardsMovementModifier;
 
         boolean rushing =
-                pk.inputData.contains(AuthInputAction.SPRINT_DOWN) ||
-                pk.inputData.contains(AuthInputAction.SPRINTING) ||
-                pk.inputData.contains(AuthInputAction.START_SPRINTING);
+                pk.getInputData().contains(PlayerAuthInputData.SPRINT_DOWN) ||
+                        pk.getInputData().contains(PlayerAuthInputData.SPRINTING) ||
+                        pk.getInputData().contains(PlayerAuthInputData.START_SPRINTING);
 
         double speed = getDefaultUnderWaterSpeed() * SPEED_KNOB;
         if (rushing) speed *= getSprintMultiplier();
@@ -986,7 +1016,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         final double DASH_EPS2 = 0.02d * 0.02d;
         boolean isDashing =
                 (powerDashingTicks != -1) ||
-                (this.hasDashCooldown() && (this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) > DASH_EPS2);
+                        (this.hasDashCooldown() && (this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) > DASH_EPS2);
 
         if (!moving && inWaterColumn && !isDashing) {
             motionX = 0;
@@ -1012,8 +1042,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         double yawRad = Math.toRadians(this.yaw);
         double desiredX = (-Math.sin(yawRad) * forward + Math.cos(yawRad) * strafe) * speed * HORIZONTAL_TUNE;
-        double desiredZ = ( Math.cos(yawRad) * forward + Math.sin(yawRad) * strafe) * speed * HORIZONTAL_TUNE;
-        double pitch = Math.max(-80, Math.min(80, pk.interactRotation.x));
+        double desiredZ = (Math.cos(yawRad) * forward + Math.sin(yawRad) * strafe) * speed * HORIZONTAL_TUNE;
+        double pitch = Math.max(-80, Math.min(80, pk.getInteractRotation().getX()));
         double desiredY = -Math.sin(Math.toRadians(pitch)) * speed * VERTICAL_TUNE;
         final double DRIVE_GRAVITY_BIAS_IN_WATER = 0.01d;
         desiredY -= DRIVE_GRAVITY_BIAS_IN_WATER;
@@ -1068,10 +1098,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     protected boolean handleRideJumpOrDash(PlayerAuthInputPacket pk, RideableComponent.InputType type) {
         final boolean dashHeld =
-                pk.inputData.contains(AuthInputAction.WANT_UP) ||
-                pk.inputData.contains(AuthInputAction.JUMP_DOWN) ||
-                pk.inputData.contains(AuthInputAction.JUMPING) ||
-                pk.inputData.contains(AuthInputAction.START_JUMPING);
+                pk.getInputData().contains(PlayerAuthInputData.WANT_UP) ||
+                        pk.getInputData().contains(PlayerAuthInputData.JUMP_DOWN) ||
+                        pk.getInputData().contains(PlayerAuthInputData.JUMPING) ||
+                        pk.getInputData().contains(PlayerAuthInputData.START_JUMPING);
 
         // POWER JUMP
         if (this.canPowerJump()) {
@@ -1097,7 +1127,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                     this.getRideJumping().set(this.getLevel().getTick());
                     this.motionY = 0;
                     this.addTmpMoveMotion(new Vector3(0, motion, 0));
-                    this.setDataFlag(EntityFlag.STANDING, true);
+                    this.setDataFlag(ActorFlags.STANDING, true);
 
                     rideJumpingTicks = -1;
                     return true;
@@ -1152,42 +1182,44 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (dash == null) return false;
         if (this.isTouchingWater() && !dash.resolvedCanDashUnderwater()) return false;
 
-        final float  MIN_CHARGE = 0.05f;
-        final float  CHARGE_EXP = 1.40f;
-        final double CURVE_EXP  = 1.10d;
-        final double H_SCALE    = 0.026d;
-        final double V_SCALE    = 0.61355d;
+        final float MIN_CHARGE = 0.05f;
+        final float CHARGE_EXP = 1.40f;
+        final double CURVE_EXP = 1.10d;
+        final double H_SCALE = 0.026d;
+        final double V_SCALE = 0.61355d;
         final double WATER_DASH_HORIZONTAL_SCALE = 0.40d;
         final double WATER_DASH_VERTICAL_SCALE = 0.08d;
 
         final DashActionComponent.Direction dirMode = dash.resolvedDirection();
-        final double yaw   = (dirMode == DashActionComponent.Direction.ENTITY) ? this.yaw : pk.interactRotation.y;
-        final float  pitch = (dirMode == DashActionComponent.Direction.PASSENGER) ? pk.interactRotation.x : 0.0f;
+        final double yaw = (dirMode == DashActionComponent.Direction.ENTITY) ? this.yaw : pk.getInteractRotation().getY();
+        final float pitch = (dirMode == DashActionComponent.Direction.PASSENGER) ? pk.getInteractRotation().getX() : 0.0f;
 
-        final double yawRad   = Math.toRadians(yaw);
+        final double yawRad = Math.toRadians(yaw);
         final double pitchRad = Math.toRadians(pitch);
 
         double x, y, z;
         if (dirMode == DashActionComponent.Direction.ENTITY) {
             x = -Math.sin(yawRad);
             y = 0.0d;
-            z =  Math.cos(yawRad);
+            z = Math.cos(yawRad);
         } else {
             final double cosPitch = Math.cos(pitchRad);
             x = -Math.sin(yawRad) * cosPitch;
             y = -Math.sin(pitchRad);
-            z =  Math.cos(yawRad) * cosPitch;
+            z = Math.cos(yawRad) * cosPitch;
         }
 
         final double len = Math.sqrt(x * x + y * y + z * z);
         if (len < 1.0e-9) return false;
-        x /= len; y /= len; z /= len;
+        x /= len;
+        y /= len;
+        z /= len;
 
         if (charge < 0f) charge = 0f;
         if (charge > 1f) charge = 1f;
         if (charge < MIN_CHARGE) return false;
 
-        final double c  = Math.pow(charge, CHARGE_EXP);
+        final double c = Math.pow(charge, CHARGE_EXP);
         final double hc = Math.pow(c, CURVE_EXP);
         final double hMomentum = dash.resolvedHorizontalMomentum();
         final double vMomentum = dash.resolvedVerticalMomentum();
@@ -1239,7 +1271,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
     }
 
-    private boolean isInWaterForDash() {
+    protected boolean isInWaterForDash() {
         if (this.isTouchingWater()) return true;
 
         final int bx = (int) Math.floor(this.x);
@@ -1325,5 +1357,156 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return maxY;
     }
 
+    protected int getAirRideRotationDelayTicks() {
+        return 2;
+    }
+
+    protected float getAirRideYawTurnSpeed() {
+        return 4.21875f;
+    }
+
+    protected float getAirRideYawInputThreshold() {
+        return 2.0f;
+    }
+
+    protected float getAirRideYawStopDistance() {
+        return 1.25f;
+    }
+
+    protected float wrapDegrees(float angle) {
+        return angle - 360f * (float) Math.floor((angle + 180f) / 360f);
+    }
+
+    protected float approachDegrees(float current, float target, float maxStep) {
+        float delta = wrapDegrees(target - current);
+
+        if (delta > maxStep) {
+            delta = maxStep;
+        } else if (delta < -maxStep) {
+            delta = -maxStep;
+        }
+
+        return current + delta;
+    }
+
+    protected void applyAirRideRotation(float targetYaw) {
+        float currentYaw = (float) this.getYaw();
+
+        if (!this.airRideRotationInitialized) {
+            this.airRideRotationInitialized = true;
+            this.airRideTargetYaw = currentYaw;
+            this.airRideRotationDelayTicks = 0;
+        }
+
+        float distanceToCurrentTarget = Math.abs(wrapDegrees(this.airRideTargetYaw - currentYaw));
+        boolean targetReached = distanceToCurrentTarget <= getAirRideYawStopDistance();
+
+        if (targetReached) {
+            float yawDelta = Math.abs(wrapDegrees(targetYaw - this.airRideTargetYaw));
+
+            if (yawDelta > getAirRideYawInputThreshold()) {
+                this.airRideTargetYaw = targetYaw;
+                this.airRideRotationDelayTicks = getAirRideRotationDelayTicks();
+            }
+        }
+
+        if (this.airRideRotationDelayTicks > 0) {
+            this.airRideRotationDelayTicks--;
+            return;
+        }
+
+        float newYaw = approachDegrees(currentYaw, this.airRideTargetYaw, getAirRideYawTurnSpeed());
+
+        if (Math.abs(wrapDegrees(newYaw - currentYaw)) > 0.01f) {
+            this.setYaw(newYaw);
+            this.setHeadYaw(newYaw);
+        }
+
+        if (Math.abs(this.getPitch()) > 0.01f) {
+            this.setPitch(0f);
+        }
+    }
+
+    protected void resetAirRideRotation() {
+        this.airRideRotationInitialized = false;
+        this.airRideTargetYaw = 0f;
+        this.airRideRotationDelayTicks = 0;
+    }
+
+    protected boolean shouldLockBodyRotationWhenStoodOn() {
+        return false;
+    }
+
+    protected boolean hasEntityStandingOnTop() {
+        if (this.passengers != null && !this.passengers.isEmpty()) return false;
+        if (this.level == null || this.getBoundingBox() == null) return false;
+
+        AxisAlignedBB bb = this.getBoundingBox();
+
+        double topY = bb.getMaxY();
+        double pad = 0.10d;
+
+        AxisAlignedBB area = new SimpleAxisAlignedBB(
+                bb.getMinX() + pad,
+                topY - 0.35d,
+                bb.getMinZ() + pad,
+                bb.getMaxX() - pad,
+                topY + 2.20d,
+                bb.getMaxZ() - pad
+        );
+
+        for (Entity e : this.level.getNearbyEntitiesSafe(area, this)) {
+            if (!(e instanceof Player p)) continue;
+            if (!p.isAlive()) continue;
+            if (this.isPassenger(p)) continue;
+
+            AxisAlignedBB pbb = p.getBoundingBox();
+            if (pbb == null) continue;
+
+            double feetY = pbb.getMinY();
+
+            if (feetY >= topY - 0.45d && feetY <= topY + 2.00d) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected boolean isControllingRider(Player rider) {
+        int controlSeat = getControllingSeatIndex();
+        return controlSeat >= 0 && controlSeat < passengers.size() && passengers.get(controlSeat) == rider;
+    }
+
+    protected boolean prepareManualRiderControl() {
+        if (!(this instanceof EntityControlUtils me)) return false;
+
+        me.setMoveTarget(null);
+        me.setLookTarget(null);
+        return true;
+    }
+
+
+    @Override
+    public boolean mountEntity(Entity entity, boolean riderInitiated) {
+        boolean result = super.mountEntity(entity, riderInitiated);
+
+        if (result && this.getInputControlType() == RideableComponent.InputType.AIR) {
+            this.resetAirRideRotation();
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean dismountEntity(Entity entity, boolean sendLinks, boolean riderInitiated) {
+        boolean result = super.dismountEntity(entity, sendLinks, riderInitiated);
+
+        if (result && this.getInputControlType() == RideableComponent.InputType.AIR && this.passengers.isEmpty()) {
+            this.resetAirRideRotation();
+        }
+
+        return result;
+    }
     // INPUT CONTROLS HELPERS END
 }

@@ -3,8 +3,6 @@ package cn.nukkit.level;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockOakLog;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockWoodenButton;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.format.palette.Palette;

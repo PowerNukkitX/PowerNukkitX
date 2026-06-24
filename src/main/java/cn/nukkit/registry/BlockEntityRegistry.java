@@ -5,6 +5,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -26,6 +27,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(ENDER_CHEST, BlockEntityEnderChest.class);
         register0(BEACON, BlockEntityBeacon.class);
         register0(PISTON_ARM, BlockEntityPistonArm.class);
+        register0(POTENT_SULFUR, BlockEntityPotentSulfur.class);
         register0(COMPARATOR, BlockEntityComparator.class);
         register0(HOPPER, BlockEntityHopper.class);
         register0(BED, BlockEntityBed.class);
@@ -72,7 +74,17 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
 
     @Override
     public Class<? extends BlockEntity> get(String key) {
-        return knownBlockEntities.get(key);
+        Class<? extends BlockEntity> blockEntity = knownBlockEntities.get(key);
+        if (blockEntity != null || key == null) {
+            return blockEntity;
+        }
+
+        blockEntity = getLegacyAlias(key);
+        if (blockEntity != null) {
+            return blockEntity;
+        }
+
+        return knownBlockEntities.get(normalizeKey(key));
     }
 
     public String getSaveId(Class<? extends BlockEntity> c) {
@@ -104,5 +116,37 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         } catch (RegisterException e) {
             log.error("Failed to register BlockEntity: {}", key, e);
         }
+    }
+
+    private Class<? extends BlockEntity> getLegacyAlias(String key) {
+        return switch (stripNamespace(key).toLowerCase(Locale.ROOT)) {
+            case "lit_furnace" -> knownBlockEntities.get(FURNACE);
+            case "lit_blast_furnace" -> knownBlockEntities.get(BLAST_FURNACE);
+            case "lit_smoker" -> knownBlockEntities.get(SMOKER);
+            case "trapped_chest" -> knownBlockEntities.get(CHEST);
+            default -> null;
+        };
+    }
+
+    private static String normalizeKey(String key) {
+        String id = stripNamespace(key).toLowerCase(Locale.ROOT);
+        StringBuilder builder = new StringBuilder(id.length());
+        boolean upperNext = true;
+        for (int i = 0; i < id.length(); i++) {
+            char character = id.charAt(i);
+            if (character == '_' || character == '-' || character == ' ') {
+                upperNext = true;
+                continue;
+            }
+
+            builder.append(upperNext ? Character.toUpperCase(character) : character);
+            upperNext = false;
+        }
+        return builder.toString();
+    }
+
+    private static String stripNamespace(String key) {
+        int namespaceIndex = key.indexOf(':');
+        return namespaceIndex >= 0 ? key.substring(namespaceIndex + 1) : key;
     }
 }

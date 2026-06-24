@@ -2,7 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.StructBlockInventory;
 import cn.nukkit.level.Position;
@@ -11,18 +10,19 @@ import cn.nukkit.level.structure.Structure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
-import cn.nukkit.network.protocol.types.StructureAnimationMode;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
-import cn.nukkit.network.protocol.types.Rotation;
 import com.google.common.base.Strings;
+import org.cloudburstmc.protocol.bedrock.data.structure.AnimationMode;
+import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureBlockType;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRedstoneSaveMode;
+import org.cloudburstmc.protocol.bedrock.packet.StructureBlockUpdatePacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
 public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStructBlock, BlockEntityInventoryHolder {
-    private StructureAnimationMode animationMode;
+    private AnimationMode animationMode;
     private float animationSeconds;
     private StructureBlockType data;
     private String dataField;
@@ -30,7 +30,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private boolean includePlayers;
     private float integrity;
     private boolean isPowered;
-    private StructureMirror mirror;
+    private Mirror mirror;
     private StructureRedstoneSaveMode redstoneSaveMode;
     private boolean removeBlocks;
     private Rotation rotation;
@@ -50,88 +50,89 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.namedTag.contains(TAG_ANIMATION_MODE)) {
-            this.animationMode = StructureAnimationMode.from(this.namedTag.getByte(TAG_ANIMATION_MODE));
+        final CompoundTag nbtMap = getNbt();
+        if (this.nbt.contains(TAG_ANIMATION_MODE)) {
+            this.animationMode = AnimationMode.from(nbtMap.getByte(TAG_ANIMATION_MODE));
         } else {
-            this.animationMode = StructureAnimationMode.from(0);
+            this.animationMode = AnimationMode.from(0);
         }
-        if (this.namedTag.contains(TAG_ANIMATION_SECONDS)) {
-            this.animationSeconds = this.namedTag.getFloat(TAG_ANIMATION_SECONDS);
+        if (this.nbt.contains(TAG_ANIMATION_SECONDS)) {
+            this.animationSeconds = nbtMap.getFloat(TAG_ANIMATION_SECONDS);
         } else {
             this.animationSeconds = 0f;
         }
-        if (this.namedTag.contains(TAG_DATA)) {
-            this.data = StructureBlockType.from(this.namedTag.getByte(TAG_DATA));
+        if (this.nbt.contains(TAG_DATA)) {
+            this.data = StructureBlockType.from(nbtMap.getByte(TAG_DATA));
         } else {
             this.data = StructureBlockType.from(1);
         }
-        if (this.namedTag.contains(TAG_DATA_FIELD)) {
-            this.dataField = this.namedTag.getString(TAG_DATA_FIELD);
+        if (this.nbt.contains(TAG_DATA_FIELD)) {
+            this.dataField = nbtMap.getString(TAG_DATA_FIELD);
         } else {
             this.dataField = "";
         }
-        if (this.namedTag.contains(TAG_IGNORE_ENTITIES)) {
-            this.ignoreEntities = this.namedTag.getBoolean(TAG_IGNORE_ENTITIES);
+        if (this.nbt.contains(TAG_IGNORE_ENTITIES)) {
+            this.ignoreEntities = nbtMap.getBoolean(TAG_IGNORE_ENTITIES);
         } else {
             this.ignoreEntities = false;
         }
-        if (this.namedTag.contains(TAG_INCLUDE_PLAYERS)) {
-            this.includePlayers = this.namedTag.getBoolean(TAG_INCLUDE_PLAYERS);
+        if (this.nbt.contains(TAG_INCLUDE_PLAYERS)) {
+            this.includePlayers = nbtMap.getBoolean(TAG_INCLUDE_PLAYERS);
         } else {
             this.includePlayers = false;
         }
-        if (this.namedTag.contains(TAG_INTEGRITY)) {
-            this.integrity = this.namedTag.getFloat(TAG_INTEGRITY);
+        if (this.nbt.contains(TAG_INTEGRITY)) {
+            this.integrity = nbtMap.getFloat(TAG_INTEGRITY);
         } else {
             this.integrity = 100f;
         }
-        if (this.namedTag.contains(TAG_IS_POWERED)) {
-            this.isPowered = this.namedTag.getBoolean(TAG_IS_POWERED);
+        if (this.nbt.contains(TAG_IS_POWERED)) {
+            this.isPowered = nbtMap.getBoolean(TAG_IS_POWERED);
         } else {
             this.isPowered = false;
         }
-        if (this.namedTag.contains(TAG_MIRROR)) {
-            this.mirror = StructureMirror.from(this.namedTag.getByte(TAG_MIRROR));
+        if (this.nbt.contains(TAG_MIRROR)) {
+            this.mirror = Mirror.from(nbtMap.getByte(TAG_MIRROR));
         } else {
-            this.mirror = StructureMirror.from(0);
+            this.mirror = Mirror.from(0);
         }
-        if (this.namedTag.contains(TAG_REDSTONE_SAVEMODE)) {
-            this.redstoneSaveMode = StructureRedstoneSaveMode.from(this.namedTag.getByte(TAG_REDSTONE_SAVEMODE));
+        if (this.nbt.contains(TAG_REDSTONE_SAVEMODE)) {
+            this.redstoneSaveMode = StructureRedstoneSaveMode.from(nbtMap.getByte(TAG_REDSTONE_SAVEMODE));
         } else {
             this.redstoneSaveMode = StructureRedstoneSaveMode.from(0);
         }
-        if (this.namedTag.contains(TAG_REMOVE_BLOCKS)) {
-            this.removeBlocks = this.namedTag.getBoolean(TAG_REMOVE_BLOCKS);
+        if (this.nbt.contains(TAG_REMOVE_BLOCKS)) {
+            this.removeBlocks = nbtMap.getBoolean(TAG_REMOVE_BLOCKS);
         } else {
             this.removeBlocks = false;
         }
-        if (this.namedTag.contains(TAG_ROTATION)) {
-            this.rotation = Rotation.from(this.namedTag.getByte(TAG_ROTATION));
+        if (this.nbt.contains(TAG_ROTATION)) {
+            this.rotation = Rotation.from(nbtMap.getByte(TAG_ROTATION));
         } else {
             this.rotation = Rotation.from(0);
         }
-        if (this.namedTag.contains(TAG_SEED)) {
-            this.seed = this.namedTag.getLong(TAG_SEED);
+        if (this.nbt.contains(TAG_SEED)) {
+            this.seed = nbtMap.getLong(TAG_SEED);
         } else {
             this.seed = 0L;
         }
-        if (this.namedTag.contains(TAG_SHOW_BOUNDING_BOX)) {
-            this.showBoundingBox = this.namedTag.getBoolean(TAG_SHOW_BOUNDING_BOX);
+        if (this.nbt.contains(TAG_SHOW_BOUNDING_BOX)) {
+            this.showBoundingBox = nbtMap.getBoolean(TAG_SHOW_BOUNDING_BOX);
         } else {
             this.showBoundingBox = true;
         }
-        if (this.namedTag.contains(TAG_STRUCTURE_NAME)) {
-            this.structureName = this.namedTag.getString(TAG_STRUCTURE_NAME);
+        if (this.nbt.contains(TAG_STRUCTURE_NAME)) {
+            this.structureName = nbtMap.getString(TAG_STRUCTURE_NAME);
         } else {
             this.structureName = "";
         }
-        if (this.namedTag.contains(TAG_X_STRUCTURE_OFFSET) && this.namedTag.contains(TAG_Y_STRUCTURE_OFFSET) && this.namedTag.contains(TAG_Z_STRUCTURE_OFFSET)) {
-            this.offset = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Y_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Z_STRUCTURE_OFFSET));
+        if (this.nbt.contains(TAG_X_STRUCTURE_OFFSET) && this.nbt.contains(TAG_Y_STRUCTURE_OFFSET) && this.nbt.contains(TAG_Z_STRUCTURE_OFFSET)) {
+            this.offset = new BlockVector3(nbtMap.getInt(TAG_X_STRUCTURE_OFFSET), nbtMap.getInt(TAG_Y_STRUCTURE_OFFSET), nbtMap.getInt(TAG_Z_STRUCTURE_OFFSET));
         } else {
             this.offset = new BlockVector3(0, -1, 0);
         }
-        if (this.namedTag.contains(TAG_X_STRUCTURE_SIZE) && this.namedTag.contains(TAG_Y_STRUCTURE_SIZE) && this.namedTag.contains(TAG_Z_STRUCTURE_SIZE)) {
-            this.size = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Y_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Z_STRUCTURE_SIZE));
+        if (this.nbt.contains(TAG_X_STRUCTURE_SIZE) && this.nbt.contains(TAG_Y_STRUCTURE_SIZE) && this.nbt.contains(TAG_Z_STRUCTURE_SIZE)) {
+            this.size = new BlockVector3(nbtMap.getInt(TAG_X_STRUCTURE_SIZE), nbtMap.getInt(TAG_Y_STRUCTURE_SIZE), nbtMap.getInt(TAG_Z_STRUCTURE_SIZE));
         } else {
             this.size = new BlockVector3(5, 5, 5);
         }
@@ -140,7 +141,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putByte(TAG_ANIMATION_MODE, this.animationMode.ordinal())
+                .putByte(TAG_ANIMATION_MODE, (byte) this.animationMode.ordinal())
                 .putFloat(TAG_ANIMATION_SECONDS, this.animationSeconds)
                 .putInt(TAG_DATA, this.data.ordinal())
                 .putString(TAG_DATA_FIELD, this.dataField)
@@ -148,10 +149,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
                 .putBoolean(TAG_INCLUDE_PLAYERS, includePlayers)
                 .putFloat(TAG_INTEGRITY, integrity)
                 .putBoolean(TAG_IS_POWERED, isPowered)
-                .putByte(TAG_MIRROR, mirror.ordinal())
-                .putByte(TAG_REDSTONE_SAVEMODE, redstoneSaveMode.ordinal())
+                .putByte(TAG_MIRROR, (byte) mirror.ordinal())
+                .putByte(TAG_REDSTONE_SAVEMODE, (byte) redstoneSaveMode.ordinal())
                 .putBoolean(TAG_REMOVE_BLOCKS, removeBlocks)
-                .putByte(TAG_ROTATION, rotation.ordinal())
+                .putByte(TAG_ROTATION, (byte) rotation.ordinal())
                 .putLong(TAG_SEED, seed)
                 .putBoolean(TAG_SHOW_BOUNDING_BOX, showBoundingBox)
                 .putString(TAG_STRUCTURE_NAME, structureName)
@@ -166,7 +167,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte(TAG_ANIMATION_MODE, this.animationMode.ordinal())
+        this.nbt.putByte(TAG_ANIMATION_MODE, (byte) this.animationMode.ordinal())
                 .putFloat(TAG_ANIMATION_SECONDS, this.animationSeconds)
                 .putInt(TAG_DATA, this.data.ordinal())
                 .putString(TAG_DATA_FIELD, this.dataField)
@@ -174,10 +175,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
                 .putBoolean(TAG_INCLUDE_PLAYERS, includePlayers)
                 .putFloat(TAG_INTEGRITY, integrity)
                 .putBoolean(TAG_IS_POWERED, isPowered)
-                .putByte(TAG_MIRROR, mirror.ordinal())
-                .putByte(TAG_REDSTONE_SAVEMODE, redstoneSaveMode.ordinal())
+                .putByte(TAG_MIRROR, (byte) mirror.ordinal())
+                .putByte(TAG_REDSTONE_SAVEMODE, (byte) redstoneSaveMode.ordinal())
                 .putBoolean(TAG_REMOVE_BLOCKS, removeBlocks)
-                .putByte(TAG_ROTATION, rotation.ordinal())
+                .putByte(TAG_ROTATION, (byte) rotation.ordinal())
                 .putLong(TAG_SEED, seed)
                 .putBoolean(TAG_SHOW_BOUNDING_BOX, showBoundingBox)
                 .putString(TAG_STRUCTURE_NAME, structureName)
@@ -198,20 +199,20 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @NotNull
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : STRUCTURE_BLOCK;
+        return this.hasName() ? getNbt().getString(TAG_CUSTOM_NAME) : STRUCTURE_BLOCK;
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains(TAG_CUSTOM_NAME);
+        return this.nbt.contains(TAG_CUSTOM_NAME);
     }
 
     @Override
     public void setName(String name) {
         if (Strings.isNullOrEmpty(name)) {
-            this.namedTag.remove(TAG_CUSTOM_NAME);
+            this.nbt.remove(TAG_CUSTOM_NAME);
         } else {
-            this.namedTag.putString(TAG_CUSTOM_NAME, name);
+            this.nbt.putString(TAG_CUSTOM_NAME, name);
         }
     }
 
@@ -231,30 +232,30 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     }
 
     public void updateSetting(StructureBlockUpdatePacket packet) {
-        var editorData = packet.editorData;
-        this.animationMode = editorData.getSettings().getAnimationMode();
-        this.animationSeconds = editorData.getSettings().getAnimationSeconds();
-        this.data = editorData.getType();
+        var editorData = packet.getStructureData();
+        this.animationMode = editorData.getStructureSettings().getAnimationMode();
+        this.animationSeconds = editorData.getStructureSettings().getAnimationSeconds();
+        this.data = editorData.getStructureBlockType();
         this.dataField = editorData.getDataField();
-        this.ignoreEntities = editorData.getSettings().isIgnoringEntities();
-        this.includePlayers = editorData.isIncludingPlayers();
-        this.integrity = editorData.getSettings().getIntegrityValue();
-        this.mirror = editorData.getSettings().getMirror();
+        this.ignoreEntities = editorData.getStructureSettings().isShouldIgnoreEntities();
+        this.includePlayers = editorData.isShouldPlayersBeIncluded();
+        this.integrity = editorData.getStructureSettings().getIntegrityValue();
+        this.mirror = editorData.getStructureSettings().getMirror();
         this.redstoneSaveMode = editorData.getRedstoneSaveMode();
-        this.removeBlocks = editorData.getSettings().isIgnoringBlocks();
-        this.rotation = editorData.getSettings().getRotation();
-        this.seed = editorData.getSettings().getIntegritySeed();
-        this.showBoundingBox = editorData.isBoundingBoxVisible();
-        this.structureName = editorData.getName();
-        this.offset = editorData.getSettings().getOffset();
-        this.size = editorData.getSettings().getSize();
+        this.removeBlocks = editorData.getStructureSettings().isShouldIgnoreBlocks();
+        this.rotation = editorData.getStructureSettings().getRotation();
+        this.seed = editorData.getStructureSettings().getIntegritySeed();
+        this.showBoundingBox = editorData.isShouldShowBoundingBox();
+        this.structureName = editorData.getStructureName();
+        this.offset = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureOffset());
+        this.size = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureSize());
 
-        if(packet.powered) onPower();
+        if (packet.isTrigger()) onPower();
     }
 
     public void onPower() {
-        if(data == StructureBlockType.LOAD) placeStructure();
-        else if(data == StructureBlockType.SAVE) saveStructure();
+        if (data == StructureBlockType.LOAD) placeStructure();
+        else if (data == StructureBlockType.SAVE) saveStructure();
     }
 
     public void placeStructure() {
@@ -263,10 +264,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
         if (structure == null) return;
 
-        if(rotation != Rotation.NONE)
+        if (rotation != Rotation.NONE)
             structure = structure.rotate(rotation);
 
-        if(mirror != StructureMirror.NONE)
+        if (mirror != Mirror.NONE)
             structure = structure.mirror(mirror);
 
         BlockVector3 pos = this.getBlock().asBlockVector3().add(offset);

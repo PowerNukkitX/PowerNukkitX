@@ -93,9 +93,9 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
                         .add(new DoubleTag(0.2))
                         .add(new DoubleTag(-Math.cos(mot) * 0.02)))
                 .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(0))
-                        .add(new FloatTag(0)))
-                .putShort("Fuse", fuse);
+                        .add(new FloatTag(0f))
+                        .add(new FloatTag(0f)))
+                .putShort("Fuse", (short) fuse);
         Entity tnt = Entity.createEntity(Entity.TNT,
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source

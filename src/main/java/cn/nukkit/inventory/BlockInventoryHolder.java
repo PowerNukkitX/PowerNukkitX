@@ -1,9 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.metadata.FixedMetadataValue;
-import cn.nukkit.metadata.MetadataValue;
-import cn.nukkit.plugin.InternalPlugin;
 
 import java.util.function.Supplier;
 

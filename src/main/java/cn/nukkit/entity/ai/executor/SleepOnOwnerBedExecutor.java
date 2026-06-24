@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.data.EntityFlag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 /**
  * Allows a creature with an owner to sleep in the owner's bed while the owner sleeps. <p>
@@ -40,7 +40,6 @@ public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     }
 
     protected void setSleeping(EntityIntelligent entity, boolean sleeping) {
-        entity.setDataFlag(EntityFlag.RESTING, sleeping);
-        entity.setDataFlagExtend(EntityFlag.RESTING, sleeping);
+        entity.setDataFlag(ActorFlags.RESTING, sleeping);
     }
 }

@@ -16,6 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.Identifier;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -139,8 +140,8 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     }
 
     @Override
-    public Item setNamedTag(CompoundTag tag) {
-        Item out = super.setNamedTag(tag);
+    public Item setNbt(CompoundTag tag) {
+        Item out = super.setNbt(tag);
         selfHealIdentifierFromNamedTag();
         return out;
     }
@@ -154,27 +155,34 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
         return c;
     }
 
+    @Override
+    protected boolean isCreativeTagEmpty() {
+        return true;
+    }
+
+    @Override
+    protected boolean isCreativeBlockDefinitionEmpty() {
+        return true;
+    }
+
 
     // ---------- helpers ----------
     private void selfHealIdentifierFromNamedTag() {
-        CompoundTag tag = this.getNamedTag();
+        CompoundTag tag = this.getNbt();
         if (tag == null) return;
+
         CompoundTag pnxExtra = tag.getCompound(ROOT_PNX_EXTRA);
         if (pnxExtra == null) return;
+
         CompoundTag customEgg = pnxExtra.getCompound(COMP_CUSTOM_EGG);
         if (customEgg == null) return;
+
         String eggId = customEgg.getString(KEY_EGG_ID);
         if (eggId != null && !eggId.isEmpty() && !eggId.equals(super.getId())) {
-            setItemIdReflect(this, eggId);
+            this.id = eggId.intern();
+            this.identifier = new Identifier(eggId);
+            this.name = null;
         }
-    }
-
-    private static void setItemIdReflect(Item item, String id) {
-        try {
-            Field f = Item.class.getDeclaredField("id");
-            f.setAccessible(true);
-            f.set(item, id);
-        } catch (Throwable ignored) { }
     }
 
     public static @Nullable String entityIdFromEggId(String eggId) {
@@ -211,25 +219,40 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
 
     /** Bind the resolved item id to this egg and seed PNX extra data. */
     public void resolveSpawnEgg(String resolvedId) {
-        setItemIdReflect(this, resolvedId);
+        if (resolvedId == null || resolvedId.isBlank()) {
+            return;
+        }
 
-        CompoundTag root = this.getOrCreateNamedTag();
-        CompoundTag pnx  = root.getCompound(ROOT_PNX_EXTRA);
-        if (pnx == null) {
-            pnx = new CompoundTag();
-            root.putCompound(ROOT_PNX_EXTRA, pnx);
-        }
-        CompoundTag ce = pnx.getCompound(COMP_CUSTOM_EGG);
-        if (ce == null) {
-            ce = new CompoundTag();
-            pnx.putCompound(COMP_CUSTOM_EGG, ce);
-        }
-        ce.putString(KEY_EGG_ID, resolvedId);
+        String entityId = entityIdFromEggId(resolvedId);
 
-        String ent = entityIdFromEggId(resolvedId);
-        if (ent != null) {
-            ce.putString(KEY_ENTITY_ID, ent);
+        this.id = resolvedId.intern();
+        this.identifier = new Identifier(resolvedId);
+        this.name = null;
+
+        CompoundTag tag = this.getNbt();
+        if (tag == null) {
+            tag = new CompoundTag();
         }
+
+        CompoundTag pnxExtra = tag.getCompound(ROOT_PNX_EXTRA);
+        if (pnxExtra == null) {
+            pnxExtra = new CompoundTag();
+        }
+
+        CompoundTag customEgg = pnxExtra.getCompound(COMP_CUSTOM_EGG);
+        if (customEgg == null) {
+            customEgg = new CompoundTag();
+        }
+
+        customEgg.putString(KEY_EGG_ID, resolvedId);
+        if (entityId != null && !entityId.isEmpty()) {
+            customEgg.putString(KEY_ENTITY_ID, entityId);
+        }
+
+        pnxExtra.putCompound(COMP_CUSTOM_EGG, customEgg);
+        tag.putCompound(ROOT_PNX_EXTRA, pnxExtra);
+
+        super.setNbt(tag);
     }
 
     @Override

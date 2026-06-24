@@ -1,20 +1,17 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.CompoundTagView;
-import cn.nukkit.nbt.tag.LinkedCompoundTag;
-import cn.nukkit.nbt.tag.TreeMapCompoundTag;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.utils.HashUtils;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
-
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * @author Cool_Loong (Allay Project)
@@ -22,24 +19,27 @@ import java.util.List;
  */
 @Slf4j
 public record BlockStateImpl(String identifier,
-                      int blockhash,
-                      short specialValue,
-                      BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues,
-                      CompoundTagView blockStateTag
+                             int blockhash,
+                             short specialValue,
+                             BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues,
+                             NbtMap blockStateTag
 ) implements BlockState {
     static Int2ObjectOpenHashMap<BlockStateImpl> UNKNOWN_BLOCK_STATE_CACHE = new Int2ObjectOpenHashMap<>();
 
-    static BlockStateImpl makeUnknownBlockState(int hash, CompoundTag blockTag) {
-        return UNKNOWN_BLOCK_STATE_CACHE.computeIfAbsent(hash, h -> new BlockStateImpl(BlockID.UNKNOWN, -2, (short) 0, new BlockPropertyType.BlockPropertyValue[0], new CompoundTagView(new LinkedCompoundTag()
-                .putString("name", BlockID.UNKNOWN)
-                .putCompound("states", new CompoundTag())
-                .putCompound("Block", blockTag)
-                .putInt("version", ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION))));
+    static BlockStateImpl makeUnknownBlockState(int hash, NbtMap blockTag) {
+        return UNKNOWN_BLOCK_STATE_CACHE.computeIfAbsent(hash, h -> new BlockStateImpl(BlockID.UNKNOWN, -2, (short) 0, new BlockPropertyType.BlockPropertyValue[0], NbtMap.builder()
+                        .putString("name", BlockID.UNKNOWN)
+                        .putCompound("states", NbtMap.EMPTY)
+                        .putCompound("Block", blockTag)
+                        .putInt("version", NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION)
+                        .build()
+                )
+        );
     }
 
-    private static CompoundTagView buildBlockStateTag(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+    private static NbtMap buildBlockStateTag(String identifier, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
         //build block state tag
-        var states = new TreeMapCompoundTag();
+        var states = NbtMap.builder();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -47,10 +47,11 @@ public record BlockStateImpl(String identifier,
                 case BOOLEAN -> states.putByte(value.getPropertyType().getName(), (byte) value.getSerializedValue());
             }
         }
-        return new CompoundTagView(new LinkedCompoundTag()
+        return NbtMap.builder()
                 .putString("name", identifier)
-                .putCompound("states", states)
-                .putInt("version", ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION));
+                .putCompound("states", NbtMap.fromMap(new TreeMap<>(states.build())))
+                .putInt("version", NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION)
+                .build();
     }
 
     public BlockStateImpl(String identifier, int blockStateHash, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
@@ -88,7 +89,7 @@ public record BlockStateImpl(String identifier,
     }
 
     @Override
-    public CompoundTagView getBlockStateTag() {
+    public NbtMap getBlockStateTag() {
         return blockStateTag;
     }
 
@@ -101,7 +102,7 @@ public record BlockStateImpl(String identifier,
             }
         }
 
-        log.debug("Property {} is not supported by this block {}", p, this.identifier);
+        //log.debug("Property {} is not supported by this block {}", p, this.identifier);
         return null;
     }
 

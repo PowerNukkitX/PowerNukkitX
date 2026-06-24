@@ -47,12 +47,7 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public Item setCompoundTag(byte[] tags) {
-        return this;
-    }
-
-    @Override
-    public Item setCompoundTag(CompoundTag tag) {
+    public Item setNbtBytes(byte[] tags) {
         return this;
     }
 
@@ -72,7 +67,7 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public Item setNamedTag(CompoundTag tag) {
+    public Item setNbt(CompoundTag tag) {
         return this;
     }
 

@@ -23,12 +23,13 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -121,7 +122,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
 
         InventoryHolder blockEntity = getBlockEntity();
 
@@ -151,16 +152,15 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             }
         }
 
-        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
             }
         }
 
@@ -217,14 +217,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             }
         }
 
-        LevelEventPacket pk = new LevelEventPacket();
-
-        BlockFace facing = getBlockFace();
-
-        pk.x = 0.5f + facing.getXOffset() * 0.7f;
-        pk.y = 0.5f + facing.getYOffset() * 0.7f;
-        pk.z = 0.5f + facing.getZOffset() * 0.7f;
-
         if (target == null) {
             this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.2f);
             getBlockEntity().setDirty();
@@ -235,9 +227,17 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
                 this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.0f);
         }
 
-        pk.evid = LevelEventPacket.EVENT_PARTICLE_SHOOT;
-        pk.data = 7;
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), pk);
+        final BlockFace facing = getBlockFace();
+        final LevelEventPacket levelEventPacket = new LevelEventPacket();
+        levelEventPacket.setType(LevelEvent.PARTICLE_SHOOT);
+        levelEventPacket.setPosition(Vector3f.from(
+                        0.5f + facing.getXOffset() * 0.7f,
+                        0.5f + facing.getYOffset() * 0.7f,
+                        0.5f + facing.getZOffset() * 0.7f
+                )
+        );
+
+        this.level.addChunkPacket(getChunkX(), getChunkZ(), levelEventPacket);
 
         Item origin = target;
         target = target.clone();

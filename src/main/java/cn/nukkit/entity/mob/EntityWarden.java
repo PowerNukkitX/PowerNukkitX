@@ -37,8 +37,11 @@ import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,6 +54,10 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     protected int lastDetectTime = getLevel().getTick();
     protected int lastCollideTime = getLevel().getTick();
     protected boolean waitForVibration = false;
+
+    private static final int DARKNESS_DURATION_TICKS = 260;
+    private static final int DARKNESS_RANGE = 20;
+
     public EntityWarden(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -67,7 +74,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                 this.tickSpread,
                 Set.of(
                         new Behavior((entity) -> {
-                            //刷新随机播放音效
+                            // Refresh and play sound
                             if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
                                 this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
                             else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.WARDEN_ANGER_VALUE))
@@ -77,7 +84,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             return false;
                         }, (entity) -> true, 1, 1, 20),
                         new Behavior((entity) -> {
-                            //刷新anger数值
+                            // Refresh Anger Value
                             var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
                             var iterator = angerValueMap.entrySet().iterator();
                             while (iterator.hasNext()) {
@@ -96,26 +103,17 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             return false;
                         }, (entity) -> true, 1, 1, 20),
                         new Behavior((entity) -> {
-                            //为玩家附加黑暗效果
+                            // Apply Darkness to nearby players
                             for (var player : entity.level.getPlayers().values()) {
-                                if (!player.isIgnoredByEntities()
-                                        && entity.distanceSquared(player) <= 400) {
-                                    var effect = player.getEffect(EffectType.DARKNESS);
-                                    if (effect == null) {
-                                        effect = Effect.get(EffectType.DARKNESS);
-                                        effect.setDuration(260);
-                                        player.addEffect(effect);
-                                        continue;
-                                    }
-                                    effect.setDuration(effect.getDuration() + 260);
-                                    player.addEffect(effect);
+                                if (!player.isIgnoredByEntities() && entity.distanceSquared(player) <= DARKNESS_RANGE * DARKNESS_RANGE) {
+                                    player.addEffect(Effect.get(EffectType.DARKNESS).setDuration(DARKNESS_DURATION_TICKS));
                                 }
                             }
                             return false;
                         }, (entity) -> true, 1, 1, 120),
                         new Behavior((entity) -> {
-                            //计算心跳间隔
-                            this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
+                            // Calculate Heartbeat Interval
+                            this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
                             return false;
                         }, (entity) -> true, 1, 1, 20)),
                 Set.of(
@@ -191,9 +189,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, 40);
-        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEvent.HEARTBEAT.getId());
-        //空闲声音
+        this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, 40);
+        this.setDataProperty(ActorDataTypes.HEARTBEAT_SOUND_EVENT, SoundEvent.HEARTBEAT);
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
         this.setAmbientSoundIntervalRange(16.0f);
@@ -235,9 +232,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     public void onVibrationArrive(VibrationEvent event) {
         this.waitForVibration = false;
         this.lastDetectTime = getLevel().getTick();
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = this.getId();
-        pk.event = EntityEventPacket.VIBRATION_DETECTED;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(this.getId());
+        pk.setType(ActorEvent.VIBRATION_DETECTED);
         Server.broadcastPacket(this.getViewers().values(), pk);
 
         //handle anger value
@@ -272,7 +269,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
 
     @Override
     protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
-        if (getLevel().getTick()- this.lastCollideTime > 20) {
+        if (getLevel().getTick() - this.lastCollideTime > 20) {
             for (Entity collidingEntity : collidingEntities) {
                 if (isValidAngerEntity(collidingEntity))
                     addEntityAngerValue(collidingEntity, 35);

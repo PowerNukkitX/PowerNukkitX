@@ -2,7 +2,6 @@ package cn.nukkit.registry;
 
 public final class Registries {
     public static final PotionRegistry POTION = new PotionRegistry();
-    public static final PacketRegistry PACKET = new PacketRegistry();
     public static final EntityRegistry ENTITY = new EntityRegistry();
     public static final BlockEntityRegistry BLOCKENTITY = new BlockEntityRegistry();
     public static final BlockStateRegistry BLOCKSTATE = new BlockStateRegistry();
@@ -20,4 +19,5 @@ public final class Registries {
     public static final EffectRegistry EFFECT = new EffectRegistry();
     public static final RecipeRegistry RECIPE = new RecipeRegistry();
     public static final VoxelShapeRegistry VOXEL_SHAPE = new VoxelShapeRegistry();
+    public static final DisconnectReasonRegistry DISCONNECT_REASON = new DisconnectReasonRegistry();
 }

@@ -1,6 +1,7 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 
 /**
  * @author xtypr
@@ -8,6 +9,6 @@ import cn.nukkit.math.Vector3;
  */
 public class HugeExplodeSeedParticle extends GenericParticle {
     public HugeExplodeSeedParticle(Vector3 pos) {
-        super(pos, Particle.TYPE_HUGE_EXPLOSION);
+        super(pos, ParticleType.HUGE_EXPLOSION);
     }
 }

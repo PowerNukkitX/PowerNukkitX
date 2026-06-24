@@ -11,8 +11,9 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.Rotation;
+import cn.nukkit.utils.StructureRotationUtil;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -62,17 +63,16 @@ public abstract class StructurePiece {
     }
 
     public final CompoundTag createTag() {
-        CompoundTag tag = new CompoundTag();
-        tag.putString("id", this.getType());
-        tag.put("BB", this.boundingBox.createTag());
         BlockFace orientation = this.getOrientation();
-        tag.putInt("O", orientation == null ? -1 : orientation.getHorizontalIndex());
-        tag.putInt("GD", this.genDepth);
-        this.addAdditionalSaveData(tag);
-        return tag;
+        CompoundTag tag = new CompoundTag()
+                .putString("id", this.getType())
+                .putIntArray("BB", this.boundingBox.createTag())
+                .putInt("O", orientation == null ? -1 : orientation.getHorizontalIndex())
+                .putInt("GD", this.genDepth);
+        return this.addAdditionalSaveData(tag);
     }
 
-    protected abstract void addAdditionalSaveData(CompoundTag tag);
+    protected abstract CompoundTag addAdditionalSaveData(CompoundTag tag);
 
     public void addChildren(StructurePiece piece, List<StructurePiece> pieces, RandomSourceProvider random) {
         //NOOP
@@ -174,7 +174,7 @@ public abstract class StructurePiece {
                 switch (block.getIdentifier()) {
                     case Block.TORCH:
                         if (this.rotation == Rotation.ROTATE_90) {
-                            block = Rotation.clockwise90(block);
+                            block = StructureRotationUtil.clockwise90(block);
                         } else if (this.rotation == Rotation.ROTATE_180) {
                             switch (block.getPropertyValue(TORCH_FACING_DIRECTION)) {
                                 case TorchFacingDirection.EAST:
@@ -182,25 +182,25 @@ public abstract class StructurePiece {
                                     break;
                                 case TorchFacingDirection.SOUTH:
                                 case TorchFacingDirection.NORTH:
-                                    block = Rotation.clockwise180(block);
+                                    block = StructureRotationUtil.clockwise180(block);
                                     break;
                             }
                         } else if (this.rotation == Rotation.ROTATE_270) {
                             switch (block.getPropertyValue(TORCH_FACING_DIRECTION)) {
                                 case TorchFacingDirection.EAST:
                                 case TorchFacingDirection.WEST:
-                                    block = Rotation.clockwise90(block);
+                                    block = StructureRotationUtil.clockwise90(block);
                                     break;
                                 case TorchFacingDirection.SOUTH:
                                 case TorchFacingDirection.NORTH:
-                                    block = Rotation.counterclockwise90(block);
+                                    block = StructureRotationUtil.counterclockwise90(block);
                                     break;
                             }
                         }
                         break;
                     case Block.LADDER:
                         if (this.rotation == Rotation.ROTATE_90) {
-                            block = Rotation.clockwise90(block);
+                            block = StructureRotationUtil.clockwise90(block);
                         } else if (this.rotation == Rotation.ROTATE_180) {
                             switch (block.getPropertyValue(FACING_DIRECTION)) {
                                 case 5:
@@ -208,18 +208,18 @@ public abstract class StructurePiece {
                                     break;
                                 case 2:
                                 case 3:
-                                    block = Rotation.clockwise90(block);
+                                    block = StructureRotationUtil.clockwise90(block);
                                     break;
                             }
                         } else if (this.rotation == Rotation.ROTATE_270) {
                             switch (block.getPropertyValue(FACING_DIRECTION)) {
                                 case 5:
                                 case 4:
-                                    block = Rotation.clockwise90(block);
+                                    block = StructureRotationUtil.clockwise90(block);
                                     break;
                                 case 2:
                                 case 3:
-                                    block = Rotation.counterclockwise90(block);
+                                    block = StructureRotationUtil.counterclockwise90(block);
                                     break;
                             }
                         }
@@ -230,7 +230,7 @@ public abstract class StructurePiece {
                     case Block.STONE_STAIRS:
                     case Block.SANDSTONE_STAIRS:
                         if (this.rotation == Rotation.ROTATE_90) {
-                            block = Rotation.clockwise90(block);
+                            block = StructureRotationUtil.clockwise90(block);
                         } else if (this.rotation == Rotation.ROTATE_180) {
                             switch (block.getPropertyValue(WEIRDO_DIRECTION)) {
                                 case 0:
@@ -238,27 +238,27 @@ public abstract class StructurePiece {
                                     break;
                                 case 2:
                                 case 3:
-                                    block = Rotation.clockwise90(block);
+                                    block = StructureRotationUtil.clockwise90(block);
                                     break;
                             }
                         } else if (this.rotation == Rotation.ROTATE_270) {
                             switch (block.getPropertyValue(WEIRDO_DIRECTION)) {
                                 case 5:
                                 case 4:
-                                    block = Rotation.clockwise90(block);
+                                    block = StructureRotationUtil.clockwise90(block);
                                     break;
                                 case 2:
                                 case 3:
-                                    block = Rotation.counterclockwise90(block);
+                                    block = StructureRotationUtil.counterclockwise90(block);
                                     break;
                             }
                         }
                         break;
                     default:
                         switch (this.rotation) {
-                            case ROTATE_90 -> block = Rotation.clockwise90(block);
-                            case ROTATE_180 -> block = Rotation.clockwise180(block);
-                            case ROTATE_270 -> block = Rotation.counterclockwise90(block);
+                            case ROTATE_90 -> block = StructureRotationUtil.clockwise90(block);
+                            case ROTATE_180 -> block = StructureRotationUtil.clockwise180(block);
+                            case ROTATE_270 -> block = StructureRotationUtil.counterclockwise90(block);
                         }
                         break;
                 }
@@ -387,10 +387,7 @@ public abstract class StructurePiece {
         int worldY = this.getWorldY(y);
         int worldZ = this.getWorldZ(x, z);
         if (boundingBox.isInside(new BlockVector3(worldX, worldY, worldZ))) {
-            IChunk chunk = level.getChunk(worldX >> 4, worldZ >> 4);
-            int cx = worldX & 0xf;
-            int cz = worldZ & 0xf;
-            String blockId = chunk.getBlockState(cx, worldY, cz).getIdentifier();
+            String blockId = level.getBlockIdAt(worldX, worldY, worldZ);
             while ((blockId == Block.AIR || blockId == Block.WATER || blockId == Block.FLOWING_WATER || blockId == Block.LAVA || blockId == Block.FLOWING_LAVA) && worldY > 1) {
                 level.setBlockStateAt(worldX, worldY, worldZ, block);
                 blockId = level.getBlockIdAt(worldX, --worldY, worldZ);
