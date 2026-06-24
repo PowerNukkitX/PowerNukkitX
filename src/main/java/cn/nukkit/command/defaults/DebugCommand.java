@@ -100,18 +100,17 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         this.commandParameters.put("fakeinv", new CommandParameter[]{
                 CommandParameter.newEnum("fakeinv", new String[]{"fakeinv"})
         });
+        this.commandParameters.put("tps", new CommandParameter[]{
+                CommandParameter.newEnum("tps", new String[]{"tps"}),
+                CommandParameter.newType("value", true, CommandParamType.INT)
+        });
         this.enableParamTree();
     }
 
     @Override
     public int execute(CommandSender sender, String label, Map.Entry<String, ParamList> result, CommandLogger log) {
         return switch (result.getKey()) {
-            case "fakeinv" -> {
-                final FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.CHEST, "Test");
-                fakeInventory.setItem(0, Item.get(Item.DIAMOND));
-                ((Player) sender).addWindow(fakeInventory);
-                yield 0;
-            }
+            case "fakeinv" -> handleFakeInv(sender);
             case "structure" -> handleStructure(sender, result.getValue(), log);
             case "entity" -> handleEntity(result.getValue(), log);
             case "rendermap" -> handleRenderMap(sender, result.getValue(), log);
@@ -122,8 +121,16 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "reload" -> handleReload(sender, result.getValue(), log);
             case "ddui" -> exampleDDUI(sender);
             case "toggle" -> handleToggle(sender, result.getValue(), log);
+            case "tps" -> handleTps(sender, result.getValue(), log);
             default -> 0;
         };
+    }
+
+    private int handleFakeInv(CommandSender sender) {
+        final FakeInventory fakeInventory = new FakeInventory(FakeInventoryType.CHEST, "Test");
+        fakeInventory.setItem(0, Item.get(Item.DIAMOND));
+        ((Player) sender).addWindow(fakeInventory);
+        return 1;
     }
 
     private int handleToggle(CommandSender sender, ParamList value, CommandLogger log) {
@@ -471,6 +478,18 @@ public class DebugCommand extends TestCommand implements CoreCommand {
 
 
         form.show(sender.asPlayer());
+        return 1;
+    }
+
+    private int handleTps(CommandSender sender, ParamList value, CommandLogger log) {
+        if (!sender.isPlayer()) return 0;
+        if(value.hasResult(1)) {
+            if(!sender.getServer().getSettings().levelSettings().levelThread()) {
+                sender.getServer().getSettings().performanceSettings().baseTps(value.get(1).get());
+                log.addSuccess("Set base TPS to " + sender.getServer().getBaseTps());
+            } else log.addError("Cannot modify base TPS when using levelThread.");
+        } else log.addSuccess("Current base TPS: " + sender.getServer().getBaseTps());
+        log.output();
         return 1;
     }
 }
