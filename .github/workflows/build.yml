@@ -7,10 +7,11 @@ on:
       - r/**
       - b/**
     paths:
+      - '.github/**'
       - 'src/**'
+      - 'gradle/**'
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
-      - '.github/**'
 
 jobs:
   build:
