@@ -5,20 +5,24 @@ import cn.nukkit.item.Item;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 public abstract class SmeltingInventory extends ContainerInventory {
+
+    public final static int SLOT_SMELTING = 0;
+    public final static int SLOT_FUEL = 1;
+    public final static int SLOT_RESULT = 2;
     public SmeltingInventory(InventoryHolder holder, ContainerType type, int size) {
         super(holder, type, size);
     }
 
     public Item getResult() {
-        return this.getItem(2);
+        return this.getItem(SLOT_RESULT);
     }
 
     public Item getFuel() {
-        return this.getItem(1);
+        return this.getItem(SLOT_FUEL);
     }
 
     public Item getSmelting() {
-        return this.getItem(0);
+        return this.getItem(SLOT_SMELTING);
     }
 
     public boolean setResult(Item item) {
@@ -29,11 +33,11 @@ public abstract class SmeltingInventory extends ContainerInventory {
     }
 
     public boolean setFuel(Item item) {
-        return this.setItem(1, item);
+        return this.setItem(SLOT_FUEL, item);
     }
 
     public boolean setSmelting(Item item) {
-        return this.setItem(0, item);
+        return this.setItem(SLOT_SMELTING, item);
     }
 
     @Override

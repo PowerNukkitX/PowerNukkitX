@@ -153,7 +153,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
 
         // Drop furnace experience when player takes item out of the result slot
         if(source instanceof SmeltingInventory inventory) {
-            if (sourceSlot == 2 && (sourItem.isNull() || sourItem.getCount() > 0)) {
+            if (sourceSlot == SmeltingInventory.SLOT_RESULT && (sourItem.isNull() || sourItem.getCount() > 0)) {
                 var holder = inventory.getHolder();
                 holder.dropXp();
             }
