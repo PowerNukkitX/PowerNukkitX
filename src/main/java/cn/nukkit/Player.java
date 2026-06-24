@@ -13,7 +13,6 @@ import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWool;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityHangingSign;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
@@ -185,6 +184,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 /**
  * Game player object, representing the controlled character
@@ -281,12 +281,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private final float movementDistanceThreshold;
     protected final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     /**
-     * Actions handed off from the network thread to be executed on the main tick thread, drained
-     * at the start of {@link #onUpdate}. Block-break completion and inventory transactions are
-     * routed through here so they run serially with the server-auth break tick
-     * (onBlockBreakContinue) instead of racing it on the network thread.
+     * Inbound packets handed off from the netty thread to be dispatched on the main tick thread,
+     * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
      */
-    protected final Queue<Runnable> inboundActions = PlatformDependent.newMpscQueue(8);
+    protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue(8);
+    private Consumer<BedrockPacket> inboundProcessor;
+    private volatile String pendingClose;
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     protected int timeSinceRest;
     private String buttonText = "Button";
@@ -1075,31 +1075,54 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Hands off an action from the network thread to be run on the main tick thread.
-     * <p>
-     * Packet handlers run on the network (netty) thread, while the server-auth block-break tick
-     * ({@code onBlockBreakContinue}) runs on the main thread. Routing block-break completion and
-     * inventory transactions through this queue makes them run serially with the break tick
-     * instead of racing it, which is what allowed instamine break/place to duplicate items.
-     * The action is drained at the start of the next {@link #onUpdate}.
-     *
-     * @param action the action to run on the main thread
+     * Installs the dispatcher used to handle this player's inbound packets. Set once by the network
+     * layer; lets {@link #drainInboundPackets} run a packet through the full handle path without the
+     * player owning that logic.
      */
-    public void scheduleInbound(Runnable action) {
-        if (!this.inboundActions.offer(action)) {
-            log.warn("Failed to enqueue inbound action for player {}", this.getName());
+    public void setInboundProcessor(Consumer<BedrockPacket> processor) {
+        this.inboundProcessor = processor;
+    }
+
+    /**
+     * Queues an inbound packet to be handled on the main tick thread, drained in arrival order at
+     * the start of the next {@link #onUpdate}. Receive-side counterpart of {@link #sendPacket}.
+     * <p>
+     * Packets are decoded on the netty thread but their handlers mutate world, entity and inventory
+     * state that is otherwise only touched by the tick. {@code NetworkPacketHandler} routes every
+     * gameplay packet of a spawned player through here so handling is serialized with the tick
+     * instead of racing it; only handlers flagged
+     * {@link cn.nukkit.network.process.PacketHandler#runsOnNetworkThread()} and the pre-spawn login
+     * sequence are dispatched immediately on the netty thread.
+     */
+    protected void handlePacket(BedrockPacket packet) {
+        if (!this.inboundPackets.offer(packet)) {
+            log.warn("Failed to enqueue inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName());
         }
     }
 
-    protected void drainInboundActions() {
-        Runnable action;
-        while ((action = this.inboundActions.poll()) != null) {
+    protected void drainInboundPackets() {
+        final Consumer<BedrockPacket> processor = this.inboundProcessor;
+        if (processor == null) {
+            return;
+        }
+        BedrockPacket packet;
+        while ((packet = this.inboundPackets.poll()) != null) {
             try {
-                action.run();
+                processor.accept(packet);
             } catch (Exception e) {
-                log.error("Error while running inbound action for player {}", this.getName(), e);
+                log.error("Error handling inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName(), e);
             }
         }
+    }
+
+    /**
+     * Requests that this player be closed (disconnected) on its own tick thread, after any already
+     * queued inbound packets have been drained. Called from the netty thread on connection loss so
+     * that the world teardown in {@link #close()} runs serialized with the level tick instead of
+     * racing it. Pre-spawn players are closed directly (see {@code NetworkPacketHandler#onDisconnect}).
+     */
+    public void requestClose(String reason) {
+        this.pendingClose = reason;
     }
 
     /**
@@ -2798,7 +2821,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.spawned) {
-            this.drainInboundActions();
+            this.drainInboundPackets();
+
+            if (this.pendingClose != null) {
+                final String closeReason = this.pendingClose;
+                this.pendingClose = null;
+                this.close(closeReason);
+                return true;
+            }
 
             if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
                 this.setMotion(new Vector3(motionX, motionY, motionZ));
