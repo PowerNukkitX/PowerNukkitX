@@ -1075,7 +1075,7 @@ public class Server {
                     }
 
                     if (getSettings().levelSettings().autoTickRate()) {
-                        if (tickMs < 50 && level.getTickRate() > baseTickRate) {
+                        if (tickMs < getBaseMSPT() && level.getTickRate() > baseTickRate) {
                             int r;
                             level.setTickRate(r = level.getTickRate() - 1);
                             if (r > baseTickRate) {
@@ -1083,13 +1083,13 @@ public class Server {
                             }
                             log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(),
                                     level.getTickRate());
-                        } else if (tickMs >= 50) {
+                        } else if (tickMs >= getBaseMSPT()) {
                             int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
                             if (level.getTickRate() == baseTickRate) {
-                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / getBaseMSPT())));
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
                                         NukkitMath.round(tickMs, 2), level.getTickRate());
-                            } else if ((tickMs / level.getTickRate()) >= 50
+                            } else if ((tickMs / level.getTickRate()) >= getBaseMSPT()
                                     && level.getTickRate() < autoTickRateLimit) {
                                 level.setTickRate(level.getTickRate() + 1);
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
@@ -1129,20 +1129,30 @@ public class Server {
         }
     }
 
+    public int getBaseTps() {
+        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 1000);
+    }
+
+    public int getBaseMSPT() {
+        return 1000 / getBaseTps();
+    }
+
     private void tick() {
         long tickTime = System.currentTimeMillis();
 
         long time = tickTime - this.nextTick;
-        if (time < -25) {
+        long sleepThreshold = getBaseMSPT() / 2L;
+        if (time < -sleepThreshold) {
             try {
-                Thread.sleep(Math.max(5, -time - 25));
+                Thread.sleep(Math.max(0, -time - sleepThreshold));
             } catch (InterruptedException e) {
                 log.debug("The thread {} got interrupted", Thread.currentThread().getName(), e);
+                Thread.currentThread().interrupt();
             }
         }
 
         long tickTimeNano = System.nanoTime();
-        if ((tickTime - this.nextTick) < -25) {
+        if ((tickTime - this.nextTick) < -sleepThreshold) {
             return;
         }
 
@@ -1155,7 +1165,7 @@ public class Server {
 
         if ((this.tickCounter & 0b1111) == 0) {
             this.titleTick();
-            this.maxTick = 20;
+            this.maxTick = getBaseTps();
             this.maxUse = 0;
 
             if ((this.tickCounter & 0b111111111) == 0) {
@@ -1192,14 +1202,14 @@ public class Server {
         }
 
         // Handle freezable array
-        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        int freezableArrayCompressTime = (int) (getBaseMSPT() - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
         long nowNano = System.nanoTime();
-        float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
-        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
+        float tick = (float) Math.min(getBaseTps(), 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
+        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / (getBaseMSPT() * 1000000.0));
 
         if (this.maxTick > tick) {
             this.maxTick = tick;
@@ -1218,7 +1228,7 @@ public class Server {
         if ((this.nextTick - tickTime) < -1000) {
             this.nextTick = tickTime;
         } else {
-            this.nextTick += 50;
+            this.nextTick += getBaseMSPT();
         }
 
     }
