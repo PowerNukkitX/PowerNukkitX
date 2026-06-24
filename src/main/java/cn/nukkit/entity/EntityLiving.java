@@ -388,23 +388,20 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return false;
         }
 
+
         if (super.attack(source)) {
-            if (source instanceof EntityDamageByEntityEvent) {
-                Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
+            if (source instanceof EntityDamageByEntityEvent event) {
+                Entity damager = event.getDamager();
                 if (source instanceof EntityDamageByChildEntityEvent) {
                     damager = ((EntityDamageByChildEntityEvent) source).getChild();
                 }
-
-                //Critical hit
-                if (damager instanceof Player && !damager.onGround) {
+                if (event.isCriticalHit()) {
                     final AnimatePacket animatePacket = new AnimatePacket();
                     animatePacket.setTargetRuntimeID(this.getId());
                     animatePacket.setAction(AnimatePacket.Action.CRITICAL_HIT);
 
                     this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animatePacket);
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
-
-                    source.setDamage(source.getDamage() * 1.5f);
                 }
 
                 if (damager.isOnFire() && !(damager instanceof Player)) {

@@ -1356,6 +1356,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return Whether the attack was successful
      */
     public boolean attack(EntityDamageEvent source) {
+
+        if(source instanceof EntityDamageByEntityEvent event) {
+            if (event.getCause() == DamageCause.ENTITY_ATTACK && event.getDamager() instanceof Player player && this.canCriticalHit(player)) {
+                event.setDamage(event.getFinalDamage() * 0.5f, EntityDamageEvent.DamageModifier.CRITICAL);
+            }
+        }
+        source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), EntityDamageEvent.DamageModifier.ABSORPTION);
+
         // Fire Protection enchantment implemented
         if ((hasEffect(EffectType.FIRE_RESISTANCE)
                 || !this.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE))
@@ -1454,6 +1462,20 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public boolean attack(float damage) {
         return this.attack(new EntityDamageEvent(this, DamageCause.CUSTOM, damage));
+    }
+
+    protected boolean canCriticalHit(Player player) {
+        return player.fallDistance < 0
+                && !player.isOnGround()
+                && !player.isSprinting()
+                && !player.isSwimming()
+                && !player.isGliding()
+                && !player.isTouchingWater()
+                && !player.isInsideOfLava()
+                && !player.isOnLadder()
+                && !player.hasEffect(EffectType.BLINDNESS)
+                && !player.hasEffect(EffectType.LEVITATION)
+                && player.getRiding() == null;
     }
 
     public int getAge() {
