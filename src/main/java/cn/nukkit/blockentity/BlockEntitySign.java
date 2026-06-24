@@ -1,12 +1,18 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockStandingSign;
+import cn.nukkit.event.block.SignChangeEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.StringUtils;
+import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.nbt.NbtMap;
+
+import java.util.Objects;
 
 
 /**
@@ -162,6 +168,47 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         } else {
             return (backText[0] == null || backText[0].isEmpty()) && backText[1] == null && backText[2] == null && backText[3] == null;
         }
+    }
+
+    @Override
+    public boolean updateCompoundTag(NbtMap nbt, Player player) {
+        if (!nbt.getString("id").equals(BlockEntity.SIGN) && !nbt.getString("id").equals(BlockEntity.HANGING_SIGN)) {
+            return false;
+        }
+        if (player.isOpenSignFront() == null) return false;
+        if(!nbt.containsKey(TAG_FRONT_TEXT) || !nbt.containsKey(TAG_BACK_TEXT)) {
+            return false;
+        }
+
+        String[] lines = new String[4];
+        String[] splitLines = player.isOpenSignFront() ? nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4)
+                : nbt.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);
+        System.arraycopy(splitLines, 0, lines, 0, splitLines.length);
+
+        sanitizeText(lines);
+
+        SignChangeEvent signChangeEvent = new SignChangeEvent(this.getBlock(), player, lines);
+
+        if (!this.nbt.contains(TAG_LOCKED_FOR_EDITING_BY) || !Objects.equals(player.getId(), this.getEditorEntityRuntimeId())) {
+            signChangeEvent.setCancelled();
+        }
+
+        if (!player.canUseTextColor()) {
+            for (int i = 0; i < lines.length; i++) {
+                lines[i] = TextFormat.clean(lines[i]);
+            }
+        }
+
+        this.server.getPluginManager().callEvent(signChangeEvent);
+
+        if (!signChangeEvent.isCancelled() && player.isOpenSignFront() != null) {
+            this.setText(player.isOpenSignFront(), signChangeEvent.getLines());
+            this.setEditorEntityRuntimeId(null);
+            player.setOpenSignFront(null);
+            return true;
+        }
+        player.setOpenSignFront(null);
+        return false;
     }
 
     /**
