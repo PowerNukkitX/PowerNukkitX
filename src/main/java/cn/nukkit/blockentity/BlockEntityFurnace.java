@@ -292,8 +292,8 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
         boolean canSmelt = false;
         if (smelt != null) {
-            canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == BlockID.AIR));
-            //检查输入
+            canSmelt = (raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.isNull()));
+            //Check Input
             if (!smelt.getInput().toItem().equals(raw, true, false)) {
                 canSmelt = false;
             }
