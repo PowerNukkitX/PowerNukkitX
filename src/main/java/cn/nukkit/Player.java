@@ -1042,6 +1042,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.fastMove(diffX, diffY, diffZ);
     }
 
+    public void broadcastMountedMovement() {
+        if (this.riding == null) return;
+
+        MovePlayerPacket pk = new MovePlayerPacket();
+        pk.setPlayerRuntimeID(this.getId());
+        pk.setPosition(Vector3f.from(
+                (float) this.x,
+                (float) this.y,
+                (float) this.z
+        ));
+        pk.setRotation(Vector3f.from(
+                (float) this.pitch,
+                (float) this.yaw,
+                (float) this.headYaw
+        ));
+        pk.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
+        pk.setOnGround(false);
+        pk.setRidingRuntimeID(this.riding.getId());
+        pk.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
+        pk.setSourceActorType(0);
+        pk.setTick(this.getLevel().getCurrentTick());
+
+        Server.broadcastPacket(this.hasSpawned.values(), pk);
+    }
+
     /**
      * Offers a new movement task to the player, considering distance and rotation thresholds.
      * Also handles the special case where an erroneous position may be received right after teleportation.
@@ -2399,7 +2424,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sleeping = pos.clone();
         this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
 
-        this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3((int) pos.x, (int) pos.y, (int) pos.z));
+        this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.from((int) pos.x, (int) pos.y, (int) pos.z));
         this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
         this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
         this.level.sleepTicks = 75;
@@ -2414,9 +2439,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
 
             this.sleeping = null;
-            this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0, 0));
+            this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
             this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
-
 
             this.level.sleepTicks = 0;
 

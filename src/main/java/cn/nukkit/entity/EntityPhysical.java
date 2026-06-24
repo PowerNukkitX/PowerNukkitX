@@ -485,6 +485,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
 
         this.syncRiderLocationFromInput(rider, pk);
+        rider.broadcastMountedMovement();
 
         if ((type == RideableComponent.InputType.GROUND || type == RideableComponent.InputType.WATER) && handleRideJumpOrDash(pk, type)) {
             return true;
