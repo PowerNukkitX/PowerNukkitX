@@ -10,7 +10,7 @@
  *     automatically.</li>
  *     <li>{@link cn.nukkit.plugin.annotation.ScheduleTask} schedules tasks
  *     automatically.</li>
- *     <li>{@link cn.nukkit.plugin.annotation.Command} registers commands
+ *     <li>{@link cn.nukkit.plugin.annotation.CommandDefinition} registers commands
  *     automatically, with the name and metadata supplied on the annotation so the
  *     command class needs no constructor.</li>
  * </ul>

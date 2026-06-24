@@ -46,7 +46,7 @@ import java.util.Set;
         "cn.nukkit.plugin.annotation.PluginMeta",
         "cn.nukkit.plugin.annotation.EventListener",
         "cn.nukkit.plugin.annotation.ScheduleTask",
-        "cn.nukkit.plugin.annotation.Command"
+        "cn.nukkit.plugin.annotation.CommandDefinition"
 })
 public class PluginAnnotationProcessor extends AbstractProcessor {
     private static final String BOOTSTRAP_CLASS = "PNXPluginBootstrap";
@@ -90,7 +90,7 @@ public class PluginAnnotationProcessor extends AbstractProcessor {
         for (Element e : roundEnv.getElementsAnnotatedWith(ScheduleTask.class)) {
             collectTask(e, classTasks, methodTasks);
         }
-        for (Element e : roundEnv.getElementsAnnotatedWith(Command.class)) {
+        for (Element e : roundEnv.getElementsAnnotatedWith(CommandDefinition.class)) {
             collectCommand(e, commands);
         }
 
@@ -164,18 +164,18 @@ public class PluginAnnotationProcessor extends AbstractProcessor {
 
     private void collectCommand(Element e, List<CommandEntry> out) {
         if (e.getKind() != ElementKind.CLASS) {
-            error(e, "@Command may only be placed on a class.");
+            error(e, "@CommandDefinition may only be placed on a class.");
             return;
         }
         TypeElement type = (TypeElement) e;
-        if (!isConcreteInstantiable(type, "@Command")) {
+        if (!isConcreteInstantiable(type, "@CommandDefinition")) {
             return;
         }
         if (!isAssignableTo(type, "cn.nukkit.command.Command")) {
-            error(e, "@Command class must extend cn.nukkit.command.Command.");
+            error(e, "@CommandDefinition class must extend cn.nukkit.command.Command.");
             return;
         }
-        out.add(new CommandEntry(type.getQualifiedName().toString(), e.getAnnotation(Command.class)));
+        out.add(new CommandEntry(type.getQualifiedName().toString(), e.getAnnotation(CommandDefinition.class)));
     }
 
     private boolean validateMain(TypeElement main) {
@@ -273,7 +273,7 @@ public class PluginAnnotationProcessor extends AbstractProcessor {
             sb.append("        cn.nukkit.command.CommandMap __cmap = plugin.getServer().getCommandMap();\n");
             sb.append("        String __prefix = plugin.getDescription().getName();\n");
             for (CommandEntry cmd : commands) {
-                Command cfg = cmd.cfg;
+                CommandDefinition cfg = cmd.cfg;
                 sb.append("        {\n");
                 sb.append("            ").append(cmd.fqn).append(" __cmd = new ").append(cmd.fqn).append("();\n");
                 sb.append("            __cmd.setName(").append(javaString(cfg.name())).append(");\n");
@@ -408,6 +408,6 @@ public class PluginAnnotationProcessor extends AbstractProcessor {
     private record MethodTask(String owner, String method, ScheduleTask cfg) {
     }
 
-    private record CommandEntry(String fqn, Command cfg) {
+    private record CommandEntry(String fqn, CommandDefinition cfg) {
     }
 }
