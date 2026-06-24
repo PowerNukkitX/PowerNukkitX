@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * <p>
  * Example:
  * <pre>
- * &#64;Command(name = "heal", aliases = {"h"}, permission = "myplugin.heal",
+ * &#64;CommandDefinition(name = "heal", aliases = {"h"}, permission = "myplugin.heal",
  *          description = "Heals a player")
  * public class HealCommand extends Command {
  *     &#64;Override
@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
-public @interface Command {
+public @interface CommandDefinition {
 
     /**
      * The command name (the label players type). Required.

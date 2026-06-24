@@ -90,7 +90,7 @@ public abstract class Command {
     /**
      * Creates a command with no name yet. Intended for frameworks that build a
      * command reflectively and then assign its name via {@link #setName(String)}
-     * (for example the PNX {@code @Command} annotation processor). Subclasses
+     * (for example the PNX {@code @CommandDefinition} annotation processor). Subclasses
      * written by hand should prefer {@link #Command(String)}.
      */
     protected Command() {
@@ -517,7 +517,7 @@ public abstract class Command {
      * Assigns the name of this command and the name-derived fields (label and
      * command data). Intended to be called once, right after construction via
      * the no-argument {@link #Command()} constructor, before the command is
-     * registered; for example by the PNX {@code @Command} annotation processor.
+     * registered; for example by the PNX {@code @CommandDefinition} annotation processor.
      * Renaming an already registered command is not supported.
      *
      * @param name the command name

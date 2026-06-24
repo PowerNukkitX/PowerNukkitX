@@ -1,6 +1,7 @@
 package cn.nukkit.plugin.annotation;
 
 import cn.nukkit.Server;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.Plugin;
@@ -403,21 +404,23 @@ public class PluginAnnotationProcessorTest {
     }
 
     // ------------------------------------------------------------------
-    // @Command
+    // @CommandDefinition
     // ------------------------------------------------------------------
 
     @Nested
-    @DisplayName("@Command")
+    @DisplayName("@CommandDefinition")
     class Commands {
 
         @Test
         void commandIsRegisteredWithAllMetadata() {
             Result r = compile(MAIN, new JavaSource("demo.HealCommand", """
                     package demo;
+                    import cn.nukkit.command.Command;
                     import cn.nukkit.command.CommandSender;
-                    @cn.nukkit.plugin.annotation.Command(name = "heal", aliases = {"h", "hp"},
+                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    @CommandDefinition(name = "heal", aliases = {"h", "hp"},
                             permission = "demo.heal", description = "Heals", usage = "/heal <p>")
-                    public class HealCommand extends cn.nukkit.command.Command {
+                    public class HealCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
                     }
                     """));
@@ -436,9 +439,11 @@ public class PluginAnnotationProcessorTest {
         void optionalCommandMetadataIsOmitted() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
+                    import cn.nukkit.command.Command;
                     import cn.nukkit.command.CommandSender;
-                    @cn.nukkit.plugin.annotation.Command(name = "ping")
-                    public class PingCommand extends cn.nukkit.command.Command {
+                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    @CommandDefinition(name = "ping")
+                    public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
                     }
                     """));
@@ -455,9 +460,11 @@ public class PluginAnnotationProcessorTest {
         void paramTreeIsEnabledByDefault() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
+                    import cn.nukkit.command.Command;
                     import cn.nukkit.command.CommandSender;
-                    @cn.nukkit.plugin.annotation.Command(name = "ping")
-                    public class PingCommand extends cn.nukkit.command.Command {
+                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    @CommandDefinition(name = "ping")
+                    public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
                     }
                     """));
@@ -469,9 +476,11 @@ public class PluginAnnotationProcessorTest {
         void paramTreeCanBeDisabled() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
+                    import cn.nukkit.command.Command;
                     import cn.nukkit.command.CommandSender;
-                    @cn.nukkit.plugin.annotation.Command(name = "ping", enableParamTree = false)
-                    public class PingCommand extends cn.nukkit.command.Command {
+                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    @CommandDefinition(name = "ping", enableParamTree = false)
+                    public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
                     }
                     """));
@@ -484,7 +493,8 @@ public class PluginAnnotationProcessorTest {
         void notExtendingCommandIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.NotCmd", """
                     package demo;
-                    @cn.nukkit.plugin.annotation.Command(name = "x")
+                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    @CommandDefinition(name = "x")
                     public class NotCmd {}
                     """));
             r.assertFailureContains("must extend cn.nukkit.command.Command");
@@ -544,9 +554,11 @@ public class PluginAnnotationProcessorTest {
                             """),
                     new JavaSource("demo.C1", """
                             package demo;
+                            import cn.nukkit.command.Command;
                             import cn.nukkit.command.CommandSender;
-                            @cn.nukkit.plugin.annotation.Command(name = "c1")
-                            public class C1 extends cn.nukkit.command.Command {
+                            import cn.nukkit.plugin.annotation.CommandDefinition;
+                            @CommandDefinition(name = "c1")
+                            public class C1 extends Command {
                                 @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
                             }
                             """));
@@ -599,9 +611,11 @@ public class PluginAnnotationProcessorTest {
                             """),
                     new JavaSource("demo.RtCommand", """
                             package demo;
+                            import cn.nukkit.command.Command;
                             import cn.nukkit.command.CommandSender;
-                            @cn.nukkit.plugin.annotation.Command(name = "rt", aliases = {"r"}, permission = "demo.rt")
-                            public class RtCommand extends cn.nukkit.command.Command {
+                            import cn.nukkit.plugin.annotation.CommandDefinition;
+                            @CommandDefinition(name = "rt", aliases = {"r"}, permission = "demo.rt")
+                            public class RtCommand extends Command {
                                 @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
                             }
                             """));
@@ -642,11 +656,11 @@ public class PluginAnnotationProcessorTest {
                     "scheduled method-task Runnable should invoke the annotated static method");
 
             // Command registered under the plugin name, fully configured.
-            ArgumentCaptor<cn.nukkit.command.Command> commandCaptor =
-                    ArgumentCaptor.forClass(cn.nukkit.command.Command.class);
+            ArgumentCaptor<Command> commandCaptor =
+                    ArgumentCaptor.forClass(Command.class);
             verify(commandMap).register(eq("Demo"), commandCaptor.capture());
-            cn.nukkit.command.Command command = commandCaptor.getValue();
-            assertInstanceOf(cn.nukkit.command.Command.class, command);
+            Command command = commandCaptor.getValue();
+            assertInstanceOf(Command.class, command);
             assertEquals("rt", command.getName());
             assertTrue(java.util.Arrays.asList(command.getAliases()).contains("r"));
             assertEquals("demo.rt", command.getPermission());
