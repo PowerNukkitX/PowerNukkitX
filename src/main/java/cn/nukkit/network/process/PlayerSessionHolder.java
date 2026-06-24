@@ -373,6 +373,9 @@ public class PlayerSessionHolder {
         }
         this.playerHandle = new PlayerHandle(this.player);
         this.player.setPlayerHandle(this.playerHandle);
+        if (this.session.getPacketHandler() instanceof NetworkPacketHandler networkPacketHandler) {
+            this.player.setInboundProcessor(networkPacketHandler::processInbound);
+        }
         Server.getInstance().onPlayerLogin((InetSocketAddress) this.session.getSocketAddress(), player);
         this.playerHandle.processLogin();
         // The reason why teleport player to their position is for gracefully client-side spawn,

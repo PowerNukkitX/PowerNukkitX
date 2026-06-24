@@ -49,9 +49,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             return;
         }
 
-        // Block-break completion and the bundled inventory request are run on the main thread
-        // (see Player#scheduleInbound) so they do not race the server-auth break tick.
-        player.scheduleInbound(() -> handleBlockActionsAndItemStackRequest(packet, holder, server, player));
+        handleBlockActionsAndItemStackRequest(packet, holder, server, player);
 
         if (packet.getInputData().contains(PlayerAuthInputData.START_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
@@ -209,11 +207,6 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         player.offerMovementTask(clientLoc);
     }
 
-    /**
-     * Processes the packet's block-break actions and bundled item stack request. Runs on the main
-     * thread (scheduled via {@link Player#scheduleInbound}) so it is serialized with the
-     * server-auth break tick instead of racing it on the network thread.
-     */
     private static void handleBlockActionsAndItemStackRequest(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server, Player player) {
         if (!packet.getPlayerActions().isEmpty() && !server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
             for (PlayerBlockActionData action : packet.getPlayerActions()) {

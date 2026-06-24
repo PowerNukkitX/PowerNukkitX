@@ -14,6 +14,11 @@ public class NetworkStackLatencyHandler implements PacketHandler<NetworkStackLat
     private static final long MAX_PLAUSIBLE_PING_MS = 60_000L;
 
     @Override
+    public boolean runsOnNetworkThread() {
+        return true; // deferring to the tick would skew the RTT measurement
+    }
+
+    @Override
     public void handle(NetworkStackLatencyPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
 

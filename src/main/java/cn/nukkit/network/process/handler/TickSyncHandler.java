@@ -11,6 +11,11 @@ import org.cloudburstmc.protocol.bedrock.packet.TickSyncPacket;
 public class TickSyncHandler implements PacketHandler<TickSyncPacket> {
 
     @Override
+    public boolean runsOnNetworkThread() {
+        return true;
+    }
+
+    @Override
     public void handle(TickSyncPacket packet, PlayerSessionHolder holder, Server server) {
         final TickSyncPacket responsePacket = new TickSyncPacket();
         responsePacket.setRequestTimestamp(packet.getRequestTimestamp());
