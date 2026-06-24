@@ -16,6 +16,7 @@ import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.tags.BlockTags;
 
 import java.util.ArrayList;
 
@@ -137,7 +138,7 @@ public class SulfurSpikeFeature extends GenerateFeature {
     }
 
     private boolean isAirOrWater(Block block) {
-        return block.isAir() || isWater(block);
+        return block.isAir() || block.hasTag(BlockTags.WATER);
     }
 
     private void tryPlaceFromFloorScan(BlockManager manager, SimplexNoise gradient, int x, int y, int z) {
@@ -211,8 +212,8 @@ public class SulfurSpikeFeature extends GenerateFeature {
     }
 
     private void setSulfurSpikeStateAt(BlockManager manager, int x, int y, int z, BlockState state) {
-        boolean waterlogged = isWater(manager.getBlockIfCachedOrLoaded(x, y, z))
-                || isWater(manager.getLevel().getBlock(x, y, z, 1));
+        boolean waterlogged = manager.getBlockIfCachedOrLoaded(x, y, z).hasTag(BlockTags.WATER)
+                || manager.getLevel().getBlock(x, y, z, 1).hasTag(BlockTags.WATER);
         manager.setBlockStateAt(x, y, z, state);
         if (waterlogged) {
             manager.setBlockStateAt(x, y, z, 1, WATER);
@@ -237,10 +238,6 @@ public class SulfurSpikeFeature extends GenerateFeature {
                 HANGING.createValue(hanging),
                 DRIPSTONE_THICKNESS.createValue(thickness)
         );
-    }
-
-    private boolean isWater(Block block) {
-        return block instanceof BlockWater;
     }
 
     private int clampedNormal(float deviation, int max) {

@@ -12,6 +12,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.tags.BlockTags;
 
 import java.util.ArrayList;
 
@@ -106,7 +107,7 @@ public class SulfurSpikeClusterFeature extends GenerateFeature {
     }
 
     private boolean isAirOrWater(Block block) {
-        return block.isAir() || isWater(block) || BlockID.SULFUR_SPIKE.equals(block.getId());
+        return block.isAir() || block.hasTag(BlockTags.WATER) || BlockID.SULFUR_SPIKE.equals(block.getId());
     }
 
     private void placeSulfurSpike(BlockManager manager, int x, int y, int z, boolean hanging, int maxLength) {
@@ -145,8 +146,8 @@ public class SulfurSpikeClusterFeature extends GenerateFeature {
     }
 
     private void setSulfurSpikeStateAt(BlockManager manager, int x, int y, int z, BlockState state) {
-        boolean waterlogged = isWater(manager.getBlockIfCachedOrLoaded(x, y, z))
-                || isWater(manager.getLevel().getBlock(x, y, z, 1));
+        boolean waterlogged = manager.getBlockIfCachedOrLoaded(x, y, z).hasTag(BlockTags.WATER)
+                || manager.getLevel().getBlock(x, y, z, 1).hasTag(BlockTags.WATER);
         manager.setBlockStateAt(x, y, z, state);
         if (waterlogged) {
             manager.setBlockStateAt(x, y, z, 1, WATER);
@@ -171,10 +172,6 @@ public class SulfurSpikeClusterFeature extends GenerateFeature {
                 HANGING.createValue(hanging),
                 DRIPSTONE_THICKNESS.createValue(thickness)
         );
-    }
-
-    private boolean isWater(Block block) {
-        return block instanceof BlockWater;
     }
 
     private int nextRangeSafe(int min, int max) {
