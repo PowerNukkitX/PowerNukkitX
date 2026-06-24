@@ -1868,7 +1868,7 @@ public class Server {
      * @param info the player info
      */
     void updateName(Player.PlayerInfo info) {
-        var uniqueId = info.getIdentityClaims().extraData.identity;
+        var uniqueId = uuidFromXUID(info.getIdentityClaims().extraData.xuid);
         var name = info.getIdentityClaims().extraData.displayName;
 
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
@@ -1885,6 +1885,21 @@ public class Server {
         if (!xboxAuthEnabled) {
             playerDataDB.put(nameBytes, array);
         }
+    }
+
+    /**
+     * Derives a stable {@link UUID} from a player's XUID (Xbox User ID).
+     * <p>
+     * The XUID is namespaced with the {@code "pocket-auth-1-xuid:"} prefix and hashed
+     * using {@link UUID#nameUUIDFromBytes(byte[])} (a type 3, name-based UUID). Because
+     * the derivation is deterministic, the same XUID always yields the same UUID, while
+     * different XUIDs yield different UUIDs.
+     *
+     * @param xuid the player's XUID, as provided by Xbox Live authentication
+     * @return a deterministic, name-based {@link UUID} derived from the given XUID
+     */
+    public static UUID uuidFromXUID(String xuid) {
+        return UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8));
     }
 
     public IPlayer getOfflinePlayer(final String name) {

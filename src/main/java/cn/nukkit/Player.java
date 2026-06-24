@@ -412,7 +412,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.creationTime = System.currentTimeMillis();
         this.displayName = info.getIdentityClaims().extraData.displayName;
         this.clientChainData = info.getClientChainData();
-        this.uuid = UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + this.getXUID()).getBytes(StandardCharsets.UTF_8));
+        this.uuid = Server.uuidFromXUID(this.getXUID());
         final ByteBuffer buffer = ByteBuffer.allocate(16);
         buffer.putLong(this.uuid.getMostSignificantBits());
         buffer.putLong(this.uuid.getLeastSignificantBits());
