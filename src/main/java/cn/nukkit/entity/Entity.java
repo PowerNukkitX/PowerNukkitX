@@ -6099,42 +6099,37 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public PropertySyncData getClientSyncProperties() {
-        final List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
-        final List<Integer> ints = new IntArrayList();
-        final List<Float> floats = new FloatArrayList();
-        for (final EntityProperty property : propertyDefs) {
-            Object value;
-            if (this.shouldSyncIntProperty(property) && (value = this.getIntPropertyValue(property)) != null) {
-                ints.add((int) value);
+        List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
+
+        PropertySyncData syncData = new PropertySyncData();
+
+        int schemaIndex = 0;
+        for (EntityProperty prop : propertyDefs) {
+            if (!prop.isClientSync()) {
+                schemaIndex++;
                 continue;
             }
-            if (this.shouldSyncFloatProperty(property) && (value = this.getFloatPropertyValue(property)) != null) {
-                floats.add((float) value);
+
+            if (shouldSyncIntProperty(prop)) {
+                Integer value = getIntPropertyValue(prop);
+                if (value != null) {
+                    syncData.getIntProperties().add(new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(schemaIndex, value));
+                }
+
+                schemaIndex++;
+                continue;
             }
+
+            if (shouldSyncFloatProperty(prop)) {
+                Float value = getFloatPropertyValue(prop);
+                if (value != null) {
+                    syncData.getFloatProperties().add(new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(schemaIndex, value));
+                }
+            }
+
+            schemaIndex++;
         }
-        final List<org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty> intProperties = new ObjectArrayList<>();
-        int intIndex = 0;
-        for (Integer anInt : ints) {
-            intProperties.add(
-                    new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(
-                            intIndex++,
-                            anInt
-                    )
-            );
-        }
-        final List<org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty> floatProperties = new ObjectArrayList<>();
-        int floatIndex = 0;
-        for (Float aFloat : floats) {
-            floatProperties.add(
-                    new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(
-                            floatIndex++,
-                            aFloat
-                    )
-            );
-        }
-        final PropertySyncData syncData = new PropertySyncData();
-        syncData.getIntProperties().addAll(intProperties);
-        syncData.getFloatProperties().addAll(floatProperties);
+
         return syncData;
     }
 
@@ -6233,32 +6228,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     private PropertySyncData propertySyncData() {
-        final List<Integer> ints = new IntArrayList(intProperties.values());
-        final List<Float> floats = new FloatArrayList(floatProperties.values());
-        final List<org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty> intProperties = new ObjectArrayList<>();
-        int intIndex = 0;
-        for (Integer anInt : ints) {
-            intProperties.add(
-                    new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(
-                            intIndex++,
-                            anInt
-                    )
-            );
-        }
-        final List<org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty> floatProperties = new ObjectArrayList<>();
-        int floatIndex = 0;
-        for (Float aFloat : floats) {
-            floatProperties.add(
-                    new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(
-                            floatIndex++,
-                            aFloat
-                    )
-            );
-        }
-        final PropertySyncData syncData = new PropertySyncData();
-        syncData.getIntProperties().addAll(intProperties);
-        syncData.getFloatProperties().addAll(floatProperties);
-        return syncData;
+        return getClientSyncProperties();
     }
 
     public Map<Integer, Attribute> getAttributes() {
