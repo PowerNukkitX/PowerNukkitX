@@ -2399,7 +2399,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sleeping = pos.clone();
         this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
 
-        this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3((int) pos.x, (int) pos.y, (int) pos.z));
+        this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.from((int) pos.x, (int) pos.y, (int) pos.z));
         this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
         this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
         this.level.sleepTicks = 75;
@@ -2414,9 +2414,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
 
             this.sleeping = null;
-            this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0, 0));
+            this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
             this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
-
 
             this.level.sleepTicks = 0;
 
