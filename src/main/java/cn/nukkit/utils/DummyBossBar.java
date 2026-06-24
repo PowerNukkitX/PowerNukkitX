@@ -25,10 +25,7 @@ import lombok.Getter;
  */
 @Getter
 public class DummyBossBar {
-
-    private static final org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor DEFAULT_NETWORK_COLOR =
-            org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.PINK;
-
+    private static final BossBarColor DEFAULT_NETWORK_COLOR = BossBarColor.PINK;
     private static final BossBarOverlay DEFAULT_OVERLAY = BossBarOverlay.PROGRESS;
     private static final float ENTITY_Y = -74f;
 
@@ -281,7 +278,7 @@ public class DummyBossBar {
 
     /** Resolve the current color to its network representation, never null. */
     private org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor networkColor() {
-        return color != null ? color.toNetwork() : DEFAULT_NETWORK_COLOR;
+        return color != null ? color.toNetwork() : DEFAULT_NETWORK_COLOR.toNetwork();
     }
 
     /** Entity position: same X/Z as the player but far below so it stays invisible. */
