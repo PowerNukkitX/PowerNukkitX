@@ -3,29 +3,32 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
+import lombok.Getter;
+import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * @author MagicDroidX (Nukkit Project)
- */
 public class PlayerCreationEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
-
+    @Getter
+    @Setter
     private Class<? extends Player> playerClass;
 
+    @Getter
+    @Nullable
+    private final Player.PlayerInfo playerInfo;
+
     public PlayerCreationEvent(Class<? extends Player> playerClass) {
-        this.playerClass = playerClass;
+        this(playerClass, null);
     }
 
-    public Class<? extends Player> getPlayerClass() {
-        return playerClass;
+    public PlayerCreationEvent(Class<? extends Player> playerClass, @Nullable Player.PlayerInfo playerInfo) {
+        this.playerClass = playerClass;
+        this.playerInfo = playerInfo;
     }
 
-    public void setPlayerClass(Class<? extends Player> playerClass) {
-        this.playerClass = playerClass;
+    public static HandlerList getHandlers() {
+        return handlers;
     }
 }
