@@ -74,4 +74,6 @@ public @interface CommandDefinition {
      * parsing and overloads. Enabled by default.
      */
     boolean enableParamTree() default true;
+
+    boolean enableCommandTree() default false;
 }
