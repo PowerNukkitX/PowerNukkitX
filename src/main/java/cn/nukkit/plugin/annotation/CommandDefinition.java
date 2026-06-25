@@ -68,12 +68,11 @@ public @interface CommandDefinition {
      */
     String usage() default "";
 
-    /**
-     * Whether to enable the command parameter tree
-     * ({@link cn.nukkit.command.Command#enableParamTree()}) for advanced argument
-     * parsing and overloads. Enabled by default.
-     */
-    boolean enableParamTree() default true;
+    CommandMode commandMode() default CommandMode.COMMAND_TREE;
 
-    boolean enableCommandTree() default false;
+    enum CommandMode {
+        COMMAND_TREE,
+        PARAM_TREE,
+        RAW
+    }
 }
