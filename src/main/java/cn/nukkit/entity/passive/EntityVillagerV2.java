@@ -42,8 +42,10 @@ import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityIronGolem;
 import cn.nukkit.entity.mob.EntityZombie;
+import cn.nukkit.entity.mob.EntityZombieVillagerV2;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityTransformEvent;
 import cn.nukkit.inventory.EntityEquipmentInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
@@ -72,6 +74,7 @@ import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.TakeItemActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateTradePacket;
@@ -84,6 +87,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 // TODO: Rework villagers, it seems to be broken, movement stucked in walls, breeding logic not reliable, professions not changing when breaking blocks, etc...
@@ -475,7 +479,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public void initEntity() {
         super.initEntity();
-        setTradingPlayer(0L);
+        this.setPersistent(true);
+        this.setTradingPlayer(0L);
         final CompoundTag nbtMap = this.getNbt();
         if (!nbtMap.contains("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
@@ -587,12 +592,22 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void kill() {
-        if (getLastDamageCause() instanceof EntityDamageByEntityEvent event && event.getEntity() instanceof Player player) {
-            Arrays.stream(this.getLevel().getCollidingEntities(this.getBoundingBox().grow(16, 16, 16)))
-                    .filter(entity -> entity instanceof EntityVillagerV2)
-                    .forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getXUID(), Gossip.MAJOR_NEGATIVE, 25));
+        if (getLastDamageCause() instanceof EntityDamageByEntityEvent source) {
+            if(source.getDamager() instanceof Player player) {
+                Arrays.stream(this.getLevel().getCollidingEntities(this.getBoundingBox().grow(16, 16, 16)))
+                        .filter(entity -> entity instanceof EntityVillagerV2)
+                        .forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getXUID(), Gossip.MAJOR_NEGATIVE, 25));
+            } else if (source.getDamager() instanceof EntityZombie && shouldTransformToZombieVillager() && transformZombie()) return;
         }
         super.kill();
+    }
+
+    private boolean shouldTransformToZombieVillager() {
+        return switch (Server.getInstance().getDifficulty()) {
+            case 2 -> ThreadLocalRandom.current().nextBoolean();
+            case 3 -> true;
+            default -> false;
+        };
     }
 
     public void addGossip(String xuid, Gossip gossip, int value) {
@@ -799,6 +814,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         updateTradePacket.setEntityUniqueId(this.getId());
         updateTradePacket.setLastTradingPlayer(player.getId());
         updateTradePacket.setDisplayName(this.getDisplayName());
+        updateTradePacket.setType(ContainerType.TRADE);
 
         final List<NbtMap> tierExpRequirements = new ObjectArrayList<>();
         for (int i = 0, len = tierExpRequirement.length; i < len; ++i) {
@@ -976,6 +992,22 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public Integer getExperienceDrops() {
         return 0;
+    }
+
+    protected boolean transformZombie() {
+        this.saveNBT();
+        Entity zombie = new EntityZombieVillagerV2(this.getChunk(), this.getNbt().copy().remove("Health"));
+        EntityTransformEvent event = new EntityTransformEvent(this, zombie);
+        server.getPluginManager().callEvent(event);
+        if(event.isCancelled()) {
+            zombie.close();
+            return false;
+        } else {
+            this.close();
+            zombie.spawnToAll();
+            this.level.addSound(this, Sound.MOB_VILLAGER_DEATH);
+            return true;
+        }
     }
 
     public enum Clothing {

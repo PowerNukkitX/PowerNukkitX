@@ -78,6 +78,10 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             return;
         }
 
+        handleRequests(packet, player);
+    }
+
+    private void handleRequests(ItemStackRequestPacket packet, Player player) {
         List<ItemStackResponseInfo> responses = new ObjectArrayList<>();
 
         for (var request : packet.getRequests()) {

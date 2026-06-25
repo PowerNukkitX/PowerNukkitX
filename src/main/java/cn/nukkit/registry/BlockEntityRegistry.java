@@ -27,6 +27,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(ENDER_CHEST, BlockEntityEnderChest.class);
         register0(BEACON, BlockEntityBeacon.class);
         register0(PISTON_ARM, BlockEntityPistonArm.class);
+        register0(POTENT_SULFUR, BlockEntityPotentSulfur.class);
         register0(COMPARATOR, BlockEntityComparator.class);
         register0(HOPPER, BlockEntityHopper.class);
         register0(BED, BlockEntityBed.class);

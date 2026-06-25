@@ -37,7 +37,7 @@ public final class GameLoop {
         this.onTick = onTick;
         this.onStop = onStop;
         this.loopCountPerSec = loopCountPerSec;
-        Arrays.fill(tickSummary, 20f);
+        Arrays.fill(tickSummary, loopCountPerSec);
         Arrays.fill(MSPTSummary, 0f);
     }
 
@@ -120,7 +120,7 @@ public final class GameLoop {
     }
 
     private void updateTPS(long timeTakenToTick) {
-        float tick = Math.max(0, Math.min(20, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
+        float tick = Math.max(0, Math.min(loopCountPerSec, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
         System.arraycopy(tickSummary, 1, tickSummary, 0, tickSummary.length - 1);
         tickSummary[tickSummary.length - 1] = tick;
     }

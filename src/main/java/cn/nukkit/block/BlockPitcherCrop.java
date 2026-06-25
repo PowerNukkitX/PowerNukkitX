@@ -56,11 +56,16 @@ public class BlockPitcherCrop extends BlockCrops {
                 if (stage < 4) {
                     if (ThreadLocalRandom.current().nextInt(5) == 0) {
                         int newStage = stage + 1;
+                        if (newStage >= 4) {
+                            growIntoPlant();
+                            return type;
+                        }
+
                         setLogicalAge(newStage);
                         setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, false);
                         level.setBlock(getPosition(), this, true, true);
 
-                        if (newStage >= 3) {
+                        if (newStage >= 2) {
                             updateUpperBlock(newStage);
                         }
                     }
@@ -127,6 +132,17 @@ public class BlockPitcherCrop extends BlockCrops {
         }
 
         int newStage = stage + 1;
+        if (newStage >= 4) {
+            lower.growIntoPlant();
+
+            if (player != null && !player.isCreative()) {
+                item.count--;
+            }
+
+            this.level.addParticle(new BoneMealParticle(lower));
+            return true;
+        }
+
         lower.setLogicalAge(newStage);
         lower.setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, false);
         level.setBlock(lower.getPosition(), lower, true, true);
@@ -165,5 +181,15 @@ public class BlockPitcherCrop extends BlockCrops {
             upper.setLogicalAge(newStage);
             level.setBlock(above.getPosition(), upper, true, true);
         }
+    }
+
+    private void growIntoPlant() {
+        BlockPitcherPlant lower = new BlockPitcherPlant();
+        lower.setTopHalf(false);
+        level.setBlock(getPosition(), lower, true, false);
+
+        BlockPitcherPlant upper = new BlockPitcherPlant();
+        upper.setTopHalf(true);
+        level.setBlock(up().getPosition(), upper, true, true);
     }
 }

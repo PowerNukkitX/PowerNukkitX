@@ -20,6 +20,7 @@ import com.google.common.collect.BiMap;
 import lombok.Getter;
 import lombok.Setter;
 import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -404,5 +405,9 @@ public final class PlayerHandle {
 
     public void onAckReceive(long creationTime) {
         this.player.onAckReceive(creationTime);
+    }
+
+    public void handlePacket(BedrockPacket packet) {
+        this.player.handlePacket(packet);
     }
 }

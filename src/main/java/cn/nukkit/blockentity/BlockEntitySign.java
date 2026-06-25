@@ -1,12 +1,18 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockStandingSign;
+import cn.nukkit.event.block.SignChangeEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.StringUtils;
+import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.nbt.NbtMap;
+
+import java.util.Objects;
 
 
 /**
@@ -113,7 +119,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     /**
-     * 设置lines文本数组到Sign对象，同时更新NBT
+     * Sets the line text array on the sign and updates the NBT.
      *
      * @param front the front
      * @param lines the lines
@@ -164,9 +170,48 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         }
     }
 
+    @Override
+    public boolean updateCompoundTag(NbtMap nbt, Player player) {
+        if (!nbt.getString("id").equals(BlockEntity.SIGN) && !nbt.getString("id").equals(BlockEntity.HANGING_SIGN)) {
+            return false;
+        }
+        if (player.isOpenSignFront() == null) return false;
+        if(!nbt.containsKey(TAG_FRONT_TEXT) || !nbt.containsKey(TAG_BACK_TEXT)) {
+            return false;
+        }
+
+        String[] lines = new String[4];
+        String[] splitLines = player.isOpenSignFront() ? nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4)
+                : nbt.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);
+        System.arraycopy(splitLines, 0, lines, 0, splitLines.length);
+
+        sanitizeText(lines);
+
+        SignChangeEvent signChangeEvent = new SignChangeEvent(this.getBlock(), player, lines);
+
+        if (!this.nbt.contains(TAG_LOCKED_FOR_EDITING_BY) || !Objects.equals(player.getId(), this.getEditorEntityRuntimeId())) {
+            signChangeEvent.setCancelled();
+        }
+
+        if (!player.canUseTextColor()) {
+            for (int i = 0; i < lines.length; i++) {
+                lines[i] = TextFormat.clean(lines[i]);
+            }
+        }
+
+        this.server.getPluginManager().callEvent(signChangeEvent);
+
+        if (!signChangeEvent.isCancelled() && player.isOpenSignFront() != null) {
+            this.setText(player.isOpenSignFront(), signChangeEvent.getLines());
+            this.setEditorEntityRuntimeId(null);
+            player.setOpenSignFront(null);
+            return true;
+        }
+        player.setOpenSignFront(null);
+        return false;
+    }
+
     /**
-     * 设置编辑此告示牌的玩家的运行时实体 ID。只有此玩家才能编辑告示牌。这用于防止多个玩家同时编辑同一告示牌，并防止玩家编辑他们未放置的告示牌。
-     * <p>
      * Sets the runtime entity ID of the player editing this sign. Only this player will be able to edit the sign.
      * This is used to prevent multiple players from editing the same sign at the same time, and to prevent players
      * from editing signs they didn't place.
@@ -252,7 +297,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
     }
 
-    //读取指定面的NBT到Sign对象字段
+    // Reads the NBT for the specified side into the sign fields.
     private void getLines(boolean front) {
         if (front) {
             String[] lines = this.nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);
@@ -273,7 +318,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         }
     }
 
-    //在1.19.80以后,sign变成了双面显示，NBT结构也有所改变，这个方法将1.19.70以前的NBT更新至最新NBT结构
+    // Since 1.19.80 signs have text on both sides and the NBT structure changed. This updates pre-1.19.70 NBT to the latest structure.
     private void updateLegacyCompoundTag() {
         if (this.nbt.contains(TAG_TEXT_BLOB)) {
             String[] lines = nbt.getString(TAG_TEXT_BLOB).split("\n", 4);
@@ -311,7 +356,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         this.nbt.remove("Creator");
     }
 
-    //验证Line Text是否符合要求
+    // Validates whether the line text meets the requirements.
     private static void sanitizeText(String[] lines) {
         for (int i = 0; i < lines.length; i++) {
             // Don't allow excessive text per line.

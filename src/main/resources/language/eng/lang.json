@@ -178,6 +178,7 @@
   "pnx.settings.performance.registrycache.path": "Path to the registry cache file",
   "pnx.settings.performance.forcegcpercentage": "When should the level GC force all chunks to be checked.",
   "pnx.settings.performance.asyncworkers": "Number of threads used by the server scheduler, 'auto' means automatic allocation",
+  "pnx.settings.performance.basetps": "How many ticks per second should be targeted",
   "pnx.settings.performance.freezearray.enable": "Whether to enable the freeze array",
   "pnx.settings.performance.maxNbtDepth": "Maximum allowed recursion depth for NBT reading and writing. Increase if loading worlds with deeply nested containers.",
   "chat.type.achievement": "{%0} has just earned the achievement {%1}",

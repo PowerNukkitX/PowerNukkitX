@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.property.enums.CauldronLiquid;
 import cn.nukkit.block.property.enums.DripstoneThickness;
+import cn.nukkit.blockentity.BlockEntityCauldron;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
@@ -131,7 +132,7 @@ public class BlockPointedDripstone extends BlockFallable {
         if (!hanging) return;
         boolean AirUp = false;
         Block blockUp = this.clone();
-        while (blockUp.getSide(BlockFace.UP).getId().equals(POINTED_DRIPSTONE)) {
+        while (blockUp.getSide(BlockFace.UP).getId().equals(this.getId())) {
             blockUp = blockUp.getSide(BlockFace.UP);
         }
         if (!blockUp.getSide(BlockFace.UP).isSolid())
@@ -144,7 +145,7 @@ public class BlockPointedDripstone extends BlockFallable {
             }
             BlockPointedDripstone block = (BlockPointedDripstone) blockUp;
             block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
-            while (block.getSide(BlockFace.DOWN).getId().equals(POINTED_DRIPSTONE)) {
+            while (block.getSide(BlockFace.DOWN).getId().equals(this.getId())) {
                 block = (BlockPointedDripstone) block.getSide(BlockFace.DOWN);
                 block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
             }
@@ -166,9 +167,9 @@ public class BlockPointedDripstone extends BlockFallable {
           3   no    no
           4   no    yes
         */
-        int state = (Objects.equals(upBlockID, POINTED_DRIPSTONE)) ?
-                (Objects.equals(downBlockID, POINTED_DRIPSTONE) ? 1 : 2) :
-                (!Objects.equals(downBlockID, POINTED_DRIPSTONE) ? 3 : 4
+        int state = (Objects.equals(upBlockID, this.getId())) ?
+                (Objects.equals(downBlockID, this.getId()) ? 1 : 2) :
+                (!Objects.equals(downBlockID, this.getId()) ? 3 : 4
                 );
         boolean hanging = false;
         switch (state) {
@@ -293,14 +294,14 @@ public class BlockPointedDripstone extends BlockFallable {
         if (hanging) {
             for (int j = y + 1; j < getLevel().getDimensionData().getMaxHeight(); ++j) {
                 String blockId = level.getBlockIdAt(x, j, z);
-                if (!Objects.equals(blockId, POINTED_DRIPSTONE)) {
+                if (!Objects.equals(blockId, this.getId())) {
                     return j - y - 1;
                 }
             }
         } else {
             for (int j = y - 1; j > getLevel().getDimensionData().getMinHeight(); --j) {
                 String blockId = level.getBlockIdAt(x, j, z);
-                if (!Objects.equals(blockId, POINTED_DRIPSTONE)) {
+                if (!Objects.equals(blockId, this.getId())) {
                     return y - j - 1;
                 }
             }
@@ -385,16 +386,19 @@ public class BlockPointedDripstone extends BlockFallable {
                 }
             }
             case FLOWING_WATER -> {
-                nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 45.0 / 256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
-                    Server.getInstance().getPluginManager().callEvent(event);
-                    if (event.isCancelled())
-                        return;
-                    cauldron.setCauldronLiquid(event.getLiquid());
-                    cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron, cauldron, true, true);
-                    this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
+                BlockEntityCauldron blockEntity = cauldron.getBlockEntity();
+                if (blockEntity != null && !blockEntity.hasPotion()) {
+                    nextDouble = rand.nextDouble();
+                    if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 45.0 / 256.0) {
+                        CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
+                        Server.getInstance().getPluginManager().callEvent(event);
+                        if (event.isCancelled())
+                            return;
+                        cauldron.setCauldronLiquid(event.getLiquid());
+                        cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
+                        cauldron.level.setBlock(cauldron, cauldron, true, true);
+                        this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
+                    }
                 }
             }
         }

@@ -2,10 +2,12 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.DoublePlantType;
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-//todo complete
-public class BlockPitcherPlant extends BlockDoublePlant {
+public class BlockPitcherPlant extends BlockDoublePlant implements Pollinable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PITCHER_PLANT, CommonBlockProperties.UPPER_BLOCK_BIT);
 
     @Override
@@ -28,5 +30,20 @@ public class BlockPitcherPlant extends BlockDoublePlant {
 
     public String getName() {
         return "Pitcher Plant";
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return false;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        return false;
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return false;
     }
 }

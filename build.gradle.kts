@@ -84,7 +84,8 @@ configurations.all {
 
 tasks.withType<JavaCompile>().configureEach {
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
-    options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000"))
+    options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000", "-nowarn"))
+    options.isWarnings = false
 }
 
 java {
@@ -158,9 +159,7 @@ tasks.compileJava {
     options.compilerArgs.addAll(listOf(
         "-Xpkginfo:always",
         "-parameters",
-        "-Xlint:-options",
-        "-Xlint:deprecation",
-        "-Xlint:unchecked"
+        "-Xlint:-options"
     ))
     options.isIncremental = true
     options.isFork = true
