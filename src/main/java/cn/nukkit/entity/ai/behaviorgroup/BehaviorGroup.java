@@ -134,14 +134,28 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Override
     public void tickRunningBehaviors(EntityIntelligent entity) {
+        boolean stoppedBehavior = false;
         var iterator = runningBehaviors.iterator();
         while (iterator.hasNext()) {
             IBehavior behavior = iterator.next();
+            if (behavior instanceof Behavior normalBehavior) {
+                if (normalBehavior.isReevaluate() && !normalBehavior.evaluate(entity)) {
+                    behavior.onInterrupt(entity);
+                    behavior.setBehaviorState(BehaviorState.STOP);
+                    iterator.remove();
+                    stoppedBehavior = true;
+                    continue;
+                }
+            }
             if (!behavior.execute(entity)) {
                 behavior.onStop(entity);
                 behavior.setBehaviorState(BehaviorState.STOP);
                 iterator.remove();
+                stoppedBehavior = true;
             }
+        }
+        if (stoppedBehavior) {
+            evaluateBehaviors(entity);
         }
     }
 
