@@ -52,7 +52,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EntitySniffer extends EntityAnimal {
     private static final int DIG_COOLDOWN_TICKS = 20 * 60 * 8;
-    private static final int START_SEARCH = 35;
+    private static final int SEARCH_START_TICK = 35;
     private static final int DIGGING_START_TICK = 70;
     private static final int DIGGING_PARTICLES_DELAY_TICKS = 34;
     private static final int DIGGING_DROP_SEED_OFFSET_TICKS = 120;
@@ -379,7 +379,7 @@ public class EntitySniffer extends EntityAnimal {
             int elapsed = sniffer.getLevel().getTick() - this.startTick;
             int diggingElapsed = elapsed - DIGGING_START_TICK;
 
-            if (!this.startedSearching && elapsed >= START_SEARCH) {
+            if (!this.startedSearching && elapsed >= SEARCH_START_TICK) {
                 this.startedSearching = true;
                 sniffer.setSnifferState(SnifferState.SEARCHING);
                 sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_SEARCHING);
