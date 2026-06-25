@@ -28,6 +28,7 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityTransformEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -133,13 +134,20 @@ public class EntityHusk extends EntityZombie {
     }
 
     @Override
-    protected void transform() {
-        this.close();
-        EntityZombie drowned = new EntityZombie(this.getChunk(), this.getNbt());
-        drowned.setPosition(this);
-        drowned.setRotation(this.yaw, this.pitch);
-        drowned.spawnToAll();
-        drowned.level.addSound(drowned, Sound.MOB_HUSK_CONVERT_TO_ZOMBIE);
+    protected boolean transform() {
+        this.saveNBT();
+        Entity zombie = new EntityZombie(this.getChunk(), this.getNbt().copy().remove("Health"));
+        EntityTransformEvent event = new EntityTransformEvent(this, zombie);
+        server.getPluginManager().callEvent(event);
+        if(event.isCancelled()) {
+            zombie.close();
+            return false;
+        } else {
+            this.close();
+            zombie.spawnToAll();
+            zombie.level.addSound(zombie, Sound.MOB_HUSK_CONVERT_TO_ZOMBIE);
+            return true;
+        }
     }
 
     @Override

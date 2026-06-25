@@ -1,9 +1,11 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.mob.EntityZoglin;
+import cn.nukkit.event.entity.EntityTransformEvent;
 import cn.nukkit.level.Sound;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
@@ -42,14 +44,17 @@ public class HoglinTransformExecutor implements EntityControl, IBehaviorExecutor
 
     private void transform(EntityIntelligent entity) {
         entity.saveNBT();
-        entity.close();
         EntityZoglin zoglin = new EntityZoglin(entity.getChunk(), entity.getNbt());
-        zoglin.setPosition(entity);
-        zoglin.setRotation(entity.yaw, entity.pitch);
-        zoglin.setBaby(entity.isBaby());
-        zoglin.spawnToAll();
-        zoglin.level.addSound(zoglin, Sound.MOB_HOGLIN_CONVERTED_TO_ZOMBIFIED);
-        zoglin.addEffect(Effect.get(EffectType.NAUSEA).setDuration(15));
+        EntityTransformEvent event = new EntityTransformEvent(entity, zoglin);
+        Server.getInstance().getPluginManager().callEvent(event);
+        if(event.isCancelled()) {
+            zoglin.close();
+        } else {
+            entity.close();
+            zoglin.spawnToAll();
+            zoglin.level.addSound(zoglin, Sound.MOB_HOGLIN_CONVERTED_TO_ZOMBIFIED);
+            zoglin.addEffect(Effect.get(EffectType.NAUSEA).setDuration(15));
+        }
     }
 
 }

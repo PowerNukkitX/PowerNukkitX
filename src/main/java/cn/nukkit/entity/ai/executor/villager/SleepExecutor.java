@@ -8,8 +8,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.BVector3;
-import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
@@ -45,7 +45,7 @@ public class SleepExecutor implements EntityControl, IBehaviorExecutor {
                 entity.teleport(sleepingLocation);
                 entity.respawnToAll();
                 entity.setDataFlag(ActorFlags.SLEEPING);
-                entity.setDataProperty(ActorDataTypes.BED_POSITION, head.asBlockVector3());
+                entity.setDataProperty(ActorDataTypes.BED_POSITION, head.asBlockVector3().toNetwork());
                 entity.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED);
             }
         }
@@ -55,7 +55,7 @@ public class SleepExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         entity.setDataFlag(ActorFlags.SLEEPING, false);
         entity.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
-        entity.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0 ,0));
+        entity.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
         if(!entity.getLevel().isNight()) {
             if(entity instanceof EntityVillagerV2 villager) {
                 villager.heal(villager.getHealthMax());

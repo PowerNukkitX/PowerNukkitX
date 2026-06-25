@@ -7,7 +7,7 @@ public class ItemZombieVillagerSpawnEgg extends ItemSpawnEgg {
 
     @Override
     public int getEntityNetworkId() {
-        return 44;
+        return 116;
     }
 
     @Override

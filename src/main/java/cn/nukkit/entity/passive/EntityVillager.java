@@ -19,8 +19,8 @@ import java.util.Set;
 /**
  * @author Pub4Game
  * @since 21.06.2016
+ * @deprecated Villagers were replaced by {@link EntityVillagerV2} in 1.14
  */
-
 @Deprecated
 public class EntityVillager extends EntityCreature implements IEntityNPC {
     @Override
