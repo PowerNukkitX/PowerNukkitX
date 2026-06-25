@@ -83,9 +83,9 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        log.addError("commands.clear.failure.no.items", target.getName()).output();
+                        log.addError("commands.clear.failure.no.items", target.getViewableName(sender)).output();
                     } else {
-                        log.addSuccess("commands.clear.success", target.getName(), String.valueOf(count)).output();
+                        log.addSuccess("commands.clear.success", target.getViewableName(sender), String.valueOf(count)).output();
                     }
                 } else if (maxCount == 0) {
                     int count = 0;
@@ -104,10 +104,10 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        log.addError("commands.clear.failure.no.items", target.getName()).output();
+                        log.addError("commands.clear.failure.no.items", target.getViewableName(sender)).output();
                         return 0;
                     } else {
-                        log.addSuccess("commands.clear.testing", target.getName(), String.valueOf(count)).output();
+                        log.addSuccess("commands.clear.testing", target.getViewableName(sender), String.valueOf(count)).output();
                     }
                 } else if (maxCount == -1) {
                     int count = 0;
@@ -128,10 +128,10 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        log.addError("commands.clear.failure.no.items", target.getName()).output();
+                        log.addError("commands.clear.failure.no.items", target.getViewableName(sender)).output();
                         return 0;
                     } else {
-                        log.addSuccess("commands.clear.success", target.getName(), String.valueOf(count)).output();
+                        log.addSuccess("commands.clear.success", target.getViewableName(sender), String.valueOf(count)).output();
                     }
                 } else {
                     int remaining = maxCount;
@@ -165,10 +165,10 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (remaining == maxCount) {
-                        log.addError("commands.clear.failure.no.items", target.getName()).output();
+                        log.addError("commands.clear.failure.no.items", target.getViewableName(sender)).output();
                         return 0;
                     } else {
-                        log.addSuccess("commands.clear.success", target.getName(), String.valueOf(maxCount - remaining)).output();
+                        log.addSuccess("commands.clear.success", target.getViewableName(sender), String.valueOf(maxCount - remaining)).output();
                     }
                 }
             }

@@ -3,6 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
+import cn.nukkit.command.CommandSender;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBubbleColumn;
 import cn.nukkit.block.BlockEndPortal;
@@ -1214,6 +1215,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         } else {
             return this.getOriginalName();
         }
+    }
+
+    /**
+     * Returns this entity's name as it should be shown to {@code viewer} in command output.
+     * <p>
+     * The base implementation ignores {@code viewer} and returns {@link #getName()}. {@link Player}
+     * overrides this to honor nick display names and the real-name reveal permission.
+     *
+     * @param viewer the sender the name is being shown to (may be null)
+     * @return the viewer-aware name for this entity
+     */
+    public String getViewableName(CommandSender viewer) {
+        return this.getName();
     }
 
     /**

@@ -36,7 +36,7 @@ public class NukkitConsoleCompleter implements Completer {
         } else if (parsedLine.wordIndex() > 0 && !parsedLine.word().isEmpty()) {
             String word = parsedLine.word();
             SortedSet<String> names = new TreeSet<>();
-            server.getOnlinePlayers().values().forEach((p) -> names.add(p.getName()));
+            server.getOnlinePlayers().values().forEach((p) -> names.add(p.getDisplayName()));
             for (String match : names) {
                 if (!match.toLowerCase(Locale.ENGLISH).startsWith(word.toLowerCase(Locale.ENGLISH))) {
                     continue;

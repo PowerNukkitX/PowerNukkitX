@@ -29,7 +29,7 @@ public class ListCommand extends VanillaCommand {
         int onlineCount = 0;
         for (Player player : sender.getServer().getOnlinePlayers().values()) {
             if (player.isOnline() && (!(sender instanceof Player) || ((Player) sender).canSee(player))) {
-                online.append(player.getDisplayName()).append(", ");
+                online.append(player.getViewableName(sender)).append(", ");
                 ++onlineCount;
             }
         }

@@ -87,6 +87,20 @@ public interface CommandSender extends Permissible {
     String getName();
 
     /**
+     * Returns this sender's name as it should be shown to {@code viewer} in command output.
+     * <p>
+     * The default returns {@link #getName()}. {@link cn.nukkit.Player} overrides this to honor nick
+     * display names and the real-name reveal permission. Pass {@code null} as {@code viewer} when the
+     * output is broadcast to no specific recipient (yielding the display name for players).
+     *
+     * @param viewer the sender the name is being shown to (may be null)
+     * @return the viewer-aware name for this sender
+     */
+    default String getViewableName(CommandSender viewer) {
+        return this.getName();
+    }
+
+    /**
      * Checks if the sender is a player.
      *
      * @return true if the sender is a player, false otherwise

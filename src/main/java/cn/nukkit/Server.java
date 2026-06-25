@@ -139,6 +139,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -2125,6 +2126,56 @@ public class Server {
         tag.remove("Colors", "PieceTintColors", "Skin");
     }
 
+    private Player findPlayerByString(Function<Player, String> extractor, String name, boolean exact) {
+        if (name == null) return null;
+        String q = name.toLowerCase(Locale.ENGLISH);
+        if (exact) {
+            for (Player player : this.getOnlinePlayers().values()) {
+                String value = extractor.apply(player);
+                if (value != null && value.toLowerCase(Locale.ENGLISH).equals(q)) {
+                    return player;
+                }
+            }
+            return null;
+        } else {
+            Player found = null;
+            int delta = Integer.MAX_VALUE;
+            for (Player player : this.getOnlinePlayers().values()) {
+                String value = extractor.apply(player);
+                if (value == null) continue;
+                String lower = value.toLowerCase(Locale.ENGLISH);
+                if (lower.startsWith(q)) {
+                    int curDelta = value.length() - q.length();
+                    if (curDelta < delta) {
+                        found = player;
+                        delta = curDelta;
+                    }
+                    if (curDelta == 0) {
+                        break;
+                    }
+                }
+            }
+            return found;
+        }
+    }
+
+    private Player[] matchPlayersByString(Function<Player, String> extractor, String partialName) {
+        if (partialName == null) return Player.EMPTY_ARRAY;
+        String q = partialName.toLowerCase(Locale.ENGLISH);
+        List<Player> matched = new ArrayList<>();
+        for (Player player : this.getOnlinePlayers().values()) {
+            String value = extractor.apply(player);
+            if (value == null) continue;
+            String lower = value.toLowerCase(Locale.ENGLISH);
+            if (lower.equals(q)) {
+                return new Player[] { player };
+            } else if (lower.contains(q)) {
+                matched.add(player);
+            }
+        }
+        return matched.toArray(Player.EMPTY_ARRAY);
+    }
+
     /**
      * Get an online player from the player name, this method is a fuzzy match and
      * will be returned as long as the player name has the name prefix.
@@ -2133,23 +2184,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayer(String name) {
-        Player found = null;
-        name = name.toLowerCase(Locale.ENGLISH);
-        int delta = Integer.MAX_VALUE;
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase(Locale.ENGLISH).startsWith(name)) {
-                int curDelta = player.getName().length() - name.length();
-                if (curDelta < delta) {
-                    found = player;
-                    delta = curDelta;
-                }
-                if (curDelta == 0) {
-                    break;
-                }
-            }
-        }
-
-        return found;
+        return findPlayerByString(Player::getName, name, false);
     }
 
     /**
@@ -2160,14 +2195,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayerExact(String name) {
-        name = name.toLowerCase(Locale.ENGLISH);
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase(Locale.ENGLISH).equals(name)) {
-                return player;
-            }
-        }
-
-        return null;
+        return findPlayerByString(Player::getName, name, true);
     }
 
     /**
@@ -2178,17 +2206,40 @@ public class Server {
      * @return All players matched, if not matched then an empty array
      */
     public Player[] matchPlayer(String partialName) {
-        partialName = partialName.toLowerCase(Locale.ENGLISH);
-        List<Player> matchedPlayer = new ArrayList<>();
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase(Locale.ENGLISH).equals(partialName)) {
-                return new Player[] { player };
-            } else if (player.getName().toLowerCase(Locale.ENGLISH).contains(partialName)) {
-                matchedPlayer.add(player);
-            }
-        }
+        return matchPlayersByString(Player::getName, partialName);
+    }
 
-        return matchedPlayer.toArray(Player.EMPTY_ARRAY);
+    /**
+     * Get an online player from the display name, this method is a fuzzy match and
+     * will be returned as long as the player name has the name prefix.
+     *
+     * @param name display name
+     * @return Player instance object, failed to get null
+     */
+    public Player getPlayerByDisplayName(String name) {
+        return findPlayerByString(Player::getDisplayName, name, false);
+    }
+
+    /**
+     * Get an online player from a display name, this method is an exact match and
+     * returns when the player name string is identical.
+     *
+     * @param name display name
+     * @return Player instance object, failed to get null
+     */
+    public Player getPlayerExactByDisplayName(String name) {
+        return findPlayerByString(Player::getDisplayName, name, true);
+    }
+
+    /**
+     * Specify a partial display name and return all players with or equal to that
+     * name.
+     *
+     * @param partialName partial name
+     * @return All players matched, if not matched then an empty array
+     */
+    public Player[] matchPlayerByDisplayName(String partialName) {
+        return matchPlayersByString(Player::getDisplayName, partialName);
     }
 
     @ApiStatus.Internal
