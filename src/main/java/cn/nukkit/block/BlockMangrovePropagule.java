@@ -9,20 +9,25 @@ import cn.nukkit.level.generator.object.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.tags.BlockTags;
+import cn.nukkit.utils.random.Xoroshiro128;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
 import static cn.nukkit.block.property.CommonBlockProperties.PROPAGULE_STAGE;
 
-public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Pollinable, Supportable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_PROPAGULE, HANGING, PROPAGULE_STAGE);
+    private static final int FULLY_GROWN_HANGING_STAGE = 4;
+    private static final int SAPLING_TREE_STAGE = 1;
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -36,22 +41,32 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
 
     @Override
     public String getName() {
-        return "Mangrove Propaugle";
+        return "Mangrove Propagule";
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        //todo: 实现红树树苗放置逻辑
-        if (BlockFlower.isSupportValid(down())) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
-
         return false;
     }
 
     public boolean isHanging() {
         return getPropertyValue(HANGING);
+    }
+
+    public void setHanging(boolean hanging) {
+        setPropertyValue(HANGING, hanging);
+    }
+
+    public int getStage() {
+        return getPropertyValue(PROPAGULE_STAGE);
+    }
+
+    public void setStage(int stage) {
+        setPropertyValue(PROPAGULE_STAGE, Math.max(0, Math.min(FULLY_GROWN_HANGING_STAGE, stage)));
     }
 
     @Override
@@ -60,60 +75,121 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     @Override
-    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (item.isFertilizer()) { // BoneMeal
-            if (player != null && !player.isCreative()) {
-                item.count--;
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (!item.isFertilizer() || !canStay()) {
+            return false;
+        }
+
+        if (player != null && !player.isCreative()) {
+            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+        }
+
+        this.level.addParticle(new BoneMealParticle(this));
+        if (isHanging()) {
+            if (getStage() < FULLY_GROWN_HANGING_STAGE) {
+                setStage(getStage() + 1);
+                this.level.setBlock(this, this, true, true);
             }
-
-            this.level.addParticle(new BoneMealParticle(this));
-            if (ThreadLocalRandom.current().nextFloat() >= 0.45) {
-                return true;
-            }
-
-            this.grow();
-
             return true;
         }
-        return false;
+
+        if (ThreadLocalRandom.current().nextFloat() < 0.45F) {
+            advanceSaplingGrowth();
+        }
+        return true;
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!canStay()) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
-            this.grow();
+            return Level.BLOCK_UPDATE_NORMAL;
         }
+
+        if (type == Level.BLOCK_UPDATE_RANDOM) {
+            if (!canStay()) {
+                return Level.BLOCK_UPDATE_RANDOM;
+            }
+
+            if (isHanging()) {
+                if (getStage() < FULLY_GROWN_HANGING_STAGE && ThreadLocalRandom.current().nextInt(7) == 0) {
+                    setStage(getStage() + 1);
+                    this.level.setBlock(this, this, true, true);
+                }
+                return Level.BLOCK_UPDATE_RANDOM;
+            }
+
+            if (ThreadLocalRandom.current().nextInt(7) == 0 && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
+                advanceSaplingGrowth();
+            }
+            return Level.BLOCK_UPDATE_RANDOM;
+        }
+
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
-    protected void grow() {
-        BlockManager chunkManager = new BlockManager(this.level);
-        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
-        var objectMangroveTree = new ObjectMangroveTree();
-        objectMangroveTree.generate(chunkManager, new NukkitRandom(), this);
-        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-        this.level.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+    private void advanceSaplingGrowth() {
+        if (getStage() >= SAPLING_TREE_STAGE) {
+            grow();
             return;
         }
+
+        setStage(SAPLING_TREE_STAGE);
+        this.level.setBlock(this, this, true, true);
+    }
+
+    protected void grow() {
+        if (isHanging() || !canStay()) {
+            return;
+        }
+
+        Block original = this.clone();
+        BlockManager chunkManager = new BlockManager(this.level);
+        Vector3 groundPos = new Vector3(this.x, this.y - 1, this.z);
+        ObjectMangroveTree tree = new ObjectMangroveTree(ThreadLocalRandom.current().nextFloat() > 0.15F);
+        tree.setWithBeenest(ThreadLocalRandom.current().nextFloat() < 0.01F);
+
+        this.level.setBlock(this, Block.get(BlockID.AIR), true, false);
+        boolean success = tree.generate(chunkManager, new Xoroshiro128(), this);
+        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
+        this.level.getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled() || !success) {
+            this.level.setBlock(this, original, true, false);
+            return;
+        }
+
         chunkManager.applySubChunkUpdate(ev.getBlockList());
-        this.level.setBlock(this, Block.get(BlockID.AIR));
-        if (this.level.getBlock(vector3).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
-            this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+        if (this.level.getBlock(groundPos).getId().equals(BlockID.DIRT_WITH_ROOTS)) {
+            this.level.setBlock(groundPos, Block.get(BlockID.DIRT));
         }
-        for (Block block : ev.getBlockList()) {
-            if (block.isAir()) continue;
-            this.level.setBlock(block, block);
-        }
+    }
+
+    private boolean canStay() {
+        return isHanging() ? up() instanceof BlockMangroveLeaves : isSupportValid(down());
+    }
+
+    boolean isSupportValid(Block block) {
+        String id = block.getId();
+        return isSupportDirt(block)
+                || BlockID.MOSS_BLOCK.equals(id)
+                || BlockID.MUD.equals(id)
+                || BlockID.CLAY.equals(id);
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return !isHanging() || getStage() >= FULLY_GROWN_HANGING_STAGE ? super.getDrops(item) : Item.EMPTY_ARRAY;
     }
 
     @Override
     public int getWaterloggingLevel() {
         return 1;
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
     }
 }

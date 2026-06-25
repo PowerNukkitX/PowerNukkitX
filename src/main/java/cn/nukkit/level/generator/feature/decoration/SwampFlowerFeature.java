@@ -1,8 +1,11 @@
 package cn.nukkit.level.generator.feature.decoration;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBlueOrchid;
 import cn.nukkit.block.BlockDeadbush;
+import cn.nukkit.block.BlockReeds;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.tags.BlockTags;
 
 public class SwampFlowerFeature extends GroupedDiscFeature {
 
@@ -38,6 +41,11 @@ public class SwampFlowerFeature extends GroupedDiscFeature {
     @Override
     public int getRandom() {
         return 12;
+    }
+
+    @Override
+    public boolean isSupportValid(Block block) {
+        return block.hasTag(BlockTags.DIRT) && BlockReeds.isSupportValid(block);
     }
 
     @Override

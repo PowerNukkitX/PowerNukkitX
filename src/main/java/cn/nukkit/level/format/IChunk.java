@@ -8,6 +8,7 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.scheduler.BlockUpdateScheduler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
 
@@ -203,6 +204,8 @@ public interface IChunk {
 
     void doMobSpawning();
 
+    BlockUpdateScheduler getBlockUpdateScheduler();
+
     Map<Long, BlockEntity> getBlockEntities();
 
     BlockEntity getTile(int x, int y, int z);
@@ -232,6 +235,8 @@ public interface IChunk {
     short[] getHeightMapArray();
 
     CompoundTag getExtraData();
+
+    void setExtraData(CompoundTag extraData);
 
     boolean hasChanged();
 
@@ -286,4 +291,18 @@ public interface IChunk {
     default void setPopulated() {
         setChunkState(ChunkState.POPULATED);
     }
+
+    boolean areBorderBlockColumnsInitialized();
+
+    void rebuildBorderBlockColumns();
+
+    void invalidateBorderBlockColumns();
+
+    long getBorderColumnsLow();
+
+    long getBorderColumnsMidLow();
+
+    long getBorderColumnsMidHigh();
+
+    long getBorderColumnsHigh();
 }

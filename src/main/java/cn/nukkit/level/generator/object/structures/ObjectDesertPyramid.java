@@ -5,8 +5,6 @@ import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.block.property.enums.MinecraftVerticalHalf;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
@@ -14,10 +12,6 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.Registries;
-import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 
@@ -59,7 +53,7 @@ public class ObjectDesertPyramid extends ObjectGenerator {
         for (int x2 = 0; x2 < 21; x2++) {
             for (int z2 = 0; z2 < 21; z2++) {
                 AxisAlignedBB b = this.getBoundingBox();
-                BlockVector3 vec =  new BlockVector3((int) b.getMinX(), (int) b.getMinY(), (int) b.getMinZ()).add(new BlockVector3(x2, 13, z2));
+                BlockVector3 vec = new BlockVector3((int) b.getMinX(), (int) b.getMinY(), (int) b.getMinZ()).add(new BlockVector3(x2, 13, z2));
                 int y2 = vec.y;
                 while (!builder.getBlockAt(vec.x, y2, vec.z).isSolid() && y2 > 1) {
                     builder.setBlockStateAt(vec.x, y2, vec.z, SANDSTONE);

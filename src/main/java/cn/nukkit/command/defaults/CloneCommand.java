@@ -3,7 +3,6 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -12,6 +11,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.Locale;
 import java.util.Map;
@@ -26,15 +26,15 @@ public class CloneCommand extends VanillaCommand {
         this.setPermission("nukkit.command.clone");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("begin", false, CommandParamType.POSITION),
+                CommandParameter.newType("end", false, CommandParamType.POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.POSITION),
                 CommandParameter.newEnum("maskMode", true, new String[]{"masked", "replace"}),
                 CommandParameter.newEnum("cloneMode", true, new String[]{"force", "move", "normal"})});
         this.addCommandParameters("filtered", new CommandParameter[]{
-                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("begin", false, CommandParamType.POSITION),
+                CommandParameter.newType("end", false, CommandParamType.POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.POSITION),
                 CommandParameter.newEnum("maskMode", false, new String[]{"filtered"}),
                 CommandParameter.newEnum("cloneMode", false, new String[]{"force", "move", "normal"}),
                 CommandParameter.newType("tileId", false, CommandParamType.INT),

@@ -7,10 +7,10 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
 import cn.nukkit.inventory.EntityHandItem;
-import cn.nukkit.inventory.HumanOffHandInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.HumanOffHandInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
@@ -93,14 +93,13 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
             source.setDamage(-source.getFinalDamage() * Math.min(Math.min(NukkitMath.ceilFloat(Math.min(epf, 25)), 20) * 0.04f, 0.8f),
                     DamageModifier.ARMOR_ENCHANTMENTS);
 
-            source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
         }
 
         if (super.attack(source)) {
             Entity damager = null;
 
-            if (source instanceof EntityDamageByEntityEvent) {
-                damager = ((EntityDamageByEntityEvent) source).getDamager();
+            if (source instanceof EntityDamageByEntityEvent event) {
+                damager = event.getDamager();
             }
 
             for (int slot = 0; slot < 4; slot++) {

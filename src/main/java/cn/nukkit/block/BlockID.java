@@ -1084,6 +1084,8 @@ public interface BlockID {
 
     String GOLD_ORE = "minecraft:gold_ore";
 
+    String GOLDEN_DANDELION = "minecraft:golden_dandelion";
+
     String GOLDEN_RAIL = "minecraft:golden_rail";
 
     String GRANITE = "minecraft:granite";
@@ -2612,4 +2614,39 @@ public interface BlockID {
     String BAMBOO_SHELF = "minecraft:bamboo_shelf";
     String CRIMSON_SHELF = "minecraft:crimson_shelf";
     String WARPED_SHELF = "minecraft:warped_shelf";
+
+    String SULFUR = "minecraft:sulfur";
+    String SULFUR_BRICKS = "minecraft:sulfur_bricks";
+    String SULFUR_SPIKE = "minecraft:sulfur_spike";
+    String POTENT_SULFUR = "minecraft:potent_sulfur";
+    String POLISHED_SULFUR = "minecraft:polished_sulfur";
+    String CHISELED_SULFUR = "minecraft:chiseled_sulfur";
+    String SULFUR_WALL = "minecraft:sulfur_wall";
+    String SULFUR_BRICK_WALL = "minecraft:sulfur_brick_wall";
+    String POLISHED_SULFUR_WALL = "minecraft:polished_sulfur_wall";
+    String SULFUR_SLAB = "minecraft:sulfur_slab";
+    String SULFUR_DOUBLE_SLAB = "minecraft:sulfur_double_slab";
+    String SULFUR_BRICK_SLAB = "minecraft:sulfur_brick_slab";
+    String SULFUR_BRICK_DOUBLE_SLAB = "minecraft:sulfur_brick_double_slab";
+    String POLISHED_SULFUR_SLAB = "minecraft:polished_sulfur_slab";
+    String POLISHED_SULFUR_DOUBLE_SLAB = "minecraft:polished_sulfur_double_slab";
+    String SULFUR_STAIRS = "minecraft:sulfur_stairs";
+    String SULFUR_BRICK_STAIRS = "minecraft:sulfur_brick_stairs";
+    String POLISHED_SULFUR_STAIRS = "minecraft:polished_sulfur_stairs";
+    String CINNABAR = "minecraft:cinnabar";
+    String CINNABAR_BRICKS = "minecraft:cinnabar_bricks";
+    String POLISHED_CINNABAR = "minecraft:polished_cinnabar";
+    String CHISELED_CINNABAR = "minecraft:chiseled_cinnabar";
+    String CINNABAR_WALL = "minecraft:cinnabar_wall";
+    String CINNABAR_BRICK_WALL = "minecraft:cinnabar_brick_wall";
+    String POLISHED_CINNABAR_WALL = "minecraft:polished_cinnabar_wall";
+    String CINNABAR_SLAB = "minecraft:cinnabar_slab";
+    String CINNABAR_DOUBLE_SLAB = "minecraft:cinnabar_double_slab";
+    String CINNABAR_BRICK_SLAB = "minecraft:cinnabar_brick_slab";
+    String CINNABAR_BRICK_DOUBLE_SLAB = "minecraft:cinnabar_brick_double_slab";
+    String POLISHED_CINNABAR_SLAB = "minecraft:polished_cinnabar_slab";
+    String POLISHED_CINNABAR_DOUBLE_SLAB = "minecraft:polished_cinnabar_double_slab";
+    String CINNABAR_STAIRS = "minecraft:cinnabar_stairs";
+    String CINNABAR_BRICK_STAIRS = "minecraft:cinnabar_brick_stairs";
+    String POLISHED_CINNABAR_STAIRS = "minecraft:polished_cinnabar_stairs";
 }

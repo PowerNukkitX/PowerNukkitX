@@ -2,11 +2,11 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.IPlayer;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.IPlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -17,12 +17,12 @@ import java.util.Map;
 public class PardonCommand extends VanillaCommand {
 
     public PardonCommand(String name) {
-        super(name, "unban a player");
+        super(name, "Unban a player");
         this.setPermission("nukkit.command.unban.player");
         this.setAliases(new String[]{"unban"});
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new IPlayersNode())
+                CommandParameter.newType("player", CommandParamType.SELECTION, new IPlayersNode())
         });
         this.enableParamTree();
     }

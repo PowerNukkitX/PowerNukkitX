@@ -8,20 +8,23 @@ import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionDifficultyFilter;
 import cn.nukkit.level.entity.condition.ConditionInAir;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnSurface;
 import cn.nukkit.tags.BiomeTags;
 
 public class SpawnRulePhantom extends SpawnRule {
 
     public SpawnRulePhantom() {
-        super(Entity.PHANTOM,
+        super(Entity.PHANTOM, 100,
                 new ConditionDifficultyFilter(),
                 new ConditionNoSleep(),
                 new ConditionInAir(),
                 new ConditionSpawnOnSurface(),
                 new ConditionBrightnessFilter(0, 7),
                 new ConditionBiomeFilter(BiomeTags.MONSTER),
-                new ConditionDensityLimit(Entity.PHANTOM, 1, 128));
+                new ConditionDensityLimit(Entity.PHANTOM, 1, 128),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
+        );
     }
 
     private static class ConditionNoSleep extends Condition {

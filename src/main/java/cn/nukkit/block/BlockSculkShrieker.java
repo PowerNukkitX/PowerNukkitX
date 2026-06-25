@@ -1,11 +1,18 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkShrieker;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.property.CommonBlockProperties.ACTIVE;
 
 
 public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHolder<BlockEntitySculkShrieker> {
@@ -56,6 +63,19 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
     }
 
     @Override
+    public Item[] getDrops(Item item) {
+        if (item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
+            return new Item[]{Block.get(SCULK_SHRIEKER).toItem()};
+        }
+        return Item.EMPTY_ARRAY;
+    }
+
+    @Override
+    public int getDropExp() {
+        return 5;
+    }
+
+    @Override
     @NotNull public Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
         return BlockEntitySculkShrieker.class;
     }
@@ -68,6 +88,25 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
     @Override
     public boolean canPassThrough() {
         return false;
+    }
+
+    @Override
+    public void onEntityStepOn(Entity entity) {
+        if (entity instanceof Player player) {
+            getOrCreateBlockEntity().tryShriek(player);
+        }
+    }
+
+    public boolean isShrieking() {
+        return getPropertyValue(ACTIVE);
+    }
+
+    public void setShrieking(boolean shrieking) {
+        this.setPropertyValue(ACTIVE, shrieking);
+        this.level.setBlock(this, this, true, false);
+        if (shrieking) {
+            this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.SHRIEK_SCULK_SHRIEKER);
+        }
     }
 
     @Override

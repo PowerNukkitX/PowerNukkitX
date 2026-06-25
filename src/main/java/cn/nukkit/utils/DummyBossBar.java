@@ -2,24 +2,32 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.data.EntityDataMap;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.BossEventPacket;
-import cn.nukkit.network.protocol.MoveEntityAbsolutePacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityDataPacket;
-import cn.nukkit.network.protocol.UpdateAttributesPacket;
-import cn.nukkit.registry.Registries;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.MoveActorAbsoluteData;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarOverlay;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
+import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MoveActorAbsolutePacket;
+import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetActorDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateAttributesPacket;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.Getter;
 
 /**
  * @author boybook (Nukkit Project)
  */
+@Getter
 public class DummyBossBar {
+    private static final BossBarColor DEFAULT_NETWORK_COLOR = BossBarColor.PINK;
+    private static final BossBarOverlay DEFAULT_OVERLAY = BossBarOverlay.PROGRESS;
+    private static final float ENTITY_Y = -74f;
 
     private final Player player;
     private final long bossBarId;
@@ -41,25 +49,29 @@ public class DummyBossBar {
         private final long bossBarId;
 
         private String text = "";
-        private float length = 100;
+        private float length = 100f;
         private BossBarColor color = null;
 
         public Builder(Player player) {
             this.player = player;
+            // Unique ID in a safe runtime-ID range
             this.bossBarId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
         }
 
         public Builder text(String text) {
-            this.text = text;
+            this.text = text != null ? text : "";
             return this;
         }
 
+        /**
+         * @param length value in [0, 100]
+         */
         public Builder length(float length) {
-            if (length >= 0 && length <= 100) this.length = length;
+            if (length >= 0f && length <= 100f) this.length = length;
             return this;
         }
 
-        public Builder color(BossBarColor color) {
+        public Builder color(@Nullable BossBarColor color) {
             this.color = color;
             return this;
         }
@@ -69,175 +81,208 @@ public class DummyBossBar {
         }
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public long getBossBarId() {
-        return bossBarId;
-    }
-
-    public String getText() {
-        return text;
-    }
-
+    /**
+     * Update the boss-bar title. No-ops if the text is unchanged.
+     */
     public void setText(String text) {
-        if (!this.text.equals(text)) {
-            this.text = text;
-            this.updateBossEntityNameTag();
-            this.sendSetBossBarTitle();
+        final String safe = text != null ? text : "";
+        if (!this.text.equals(safe)) {
+            this.text = safe;
+            updateBossEntityNameTag();
+            sendSetBossBarTitle();
         }
     }
 
-    public float getLength() {
-        return length;
-    }
-
+    /**
+     * Update the boss-bar fill percentage. No-ops if the value is unchanged.
+     *
+     * @param length value in [0, 100]
+     */
     public void setLength(float length) {
-        if (this.length != length) {
+        if (Float.compare(this.length, length) != 0) {
             this.length = length;
-            this.sendAttributes();
-            this.sendSetBossBarLength();
+            sendAttributes();
+            sendSetBossBarLength();
         }
     }
 
     public void setColor(@Nullable BossBarColor color) {
-        final BossBarColor currentColor = this.color;
-        if (currentColor == null || !currentColor.equals(color)) {
+        final BossBarColor current = this.color;
+        if (current != color && (current == null || !current.equals(color))) {
             this.color = color;
-            this.sendSetBossBarTexture();
+            sendSetBossBarTexture();
         }
     }
 
-    public @Nullable BossBarColor getColor() {
-        return this.color;
-    }
-
-    private void createBossEntity() {
-        AddEntityPacket pkAdd = new AddEntityPacket();
-
-        pkAdd.type = Registries.ENTITY.getEntityNetworkId(EntityID.CREEPER);
-        pkAdd.entityUniqueId = bossBarId;
-        pkAdd.entityRuntimeId = bossBarId;
-        pkAdd.x = (float) player.x;
-        pkAdd.y = (float) -74; // Below the bedrock
-        pkAdd.z = (float) player.z;
-        pkAdd.speedX = 0;
-        pkAdd.speedY = 0;
-        pkAdd.speedZ = 0;
-        EntityDataMap entityDataMap = new EntityDataMap();
-        entityDataMap.getOrCreateFlags();
-        entityDataMap.put(Entity.AIR_SUPPLY, 400);
-        entityDataMap.put(Entity.AIR_SUPPLY_MAX, 400);
-        entityDataMap.put(Entity.LEASH_HOLDER, -1);
-        entityDataMap.put(Entity.NAME, text);
-        entityDataMap.put(Entity.SCALE, 0);
-        pkAdd.entityData = entityDataMap;
-        player.dataPacket(pkAdd);
-    }
-
-    private void sendAttributes() {
-        UpdateAttributesPacket pkAttributes = new UpdateAttributesPacket();
-        pkAttributes.entityId = bossBarId;
-        Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
-        attr.setMaxValue(100); // Max value - We need to change the max value first, or else the "setValue" will return a IllegalArgumentException
-        attr.setValue(length); // Entity health
-        pkAttributes.entries = new Attribute[]{attr};
-        player.dataPacket(pkAttributes);
-    }
-
-    private void sendShowBossBar() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_SHOW;
-        pkBoss.title = text;
-        pkBoss.healthPercent = this.length / 100;
-        player.dataPacket(pkBoss);
-    }
-
-    private void sendHideBossBar() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_HIDE;
-        player.dataPacket(pkBoss);
-    }
-
-    private void sendSetBossBarTexture() {
-        BossEventPacket pk = new BossEventPacket();
-        pk.bossEid = this.bossBarId;
-        pk.type = BossEventPacket.TYPE_TEXTURE;
-        pk.color = color != null ? color.ordinal() : 0;
-        player.dataPacket(pk);
-    }
-
-    private void sendSetBossBarTitle() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_TITLE;
-        pkBoss.title = text;
-        pkBoss.healthPercent = this.length / 100;
-        player.dataPacket(pkBoss);
-    }
-
-    private void sendSetBossBarLength() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_HEALTH_PERCENT;
-        pkBoss.healthPercent = this.length / 100;
-        player.dataPacket(pkBoss);
+    @Nullable
+    public BossBarColor getColor() {
+        return color;
     }
 
     /**
-     * Don't let the entity go too far from the player, or the BossBar will disappear.
-     * Update boss entity's position when teleport and each 5s.
+     * Spawn the boss bar for the player. Call once after constructing.
      */
-    public void updateBossEntityPosition() {
-        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
-        pk.eid = this.bossBarId;
-        pk.x = this.player.x;
-        pk.y = -74;
-        pk.z = this.player.z;
-        pk.headYaw = 0;
-        pk.yaw = 0;
-        pk.pitch = 0;
-        player.dataPacket(pk);
-    }
-
-    private void updateBossEntityNameTag() {
-        SetEntityDataPacket pk = new SetEntityDataPacket();
-        pk.eid = this.bossBarId;
-        EntityDataMap entityDataMap = new EntityDataMap();
-        entityDataMap.put(Entity.NAME, text);
-        pk.entityData = entityDataMap;
-        player.dataPacket(pk);
-    }
-
-    private void removeBossEntity() {
-        RemoveEntityPacket pkRemove = new RemoveEntityPacket();
-        pkRemove.eid = bossBarId;
-        player.dataPacket(pkRemove);
-    }
-
     public void create() {
         createBossEntity();
         sendAttributes();
         sendShowBossBar();
         sendSetBossBarLength();
-        if (color != null) this.sendSetBossBarTexture();
+        sendSetBossBarTexture();
     }
 
     /**
-     * Once the player has teleported, resend Show BossBar
+     * Re-display the boss bar after the player has teleported.
+     * The dummy entity must stay close to the player or the bar disappears.
      */
     public void reshow() {
         updateBossEntityPosition();
         sendShowBossBar();
         sendSetBossBarLength();
+        sendSetBossBarTexture();
     }
 
+    /**
+     * Remove the boss bar and the underlying dummy entity.
+     */
     public void destroy() {
         sendHideBossBar();
         removeBossEntity();
     }
 
+    /**
+     * Keep the dummy entity near the player.
+     * Call this on teleport and periodically (e.g. every 5 s).
+     */
+    public void updateBossEntityPosition() {
+        final MoveActorAbsoluteData moveData = new MoveActorAbsoluteData();
+        moveData.setActorRuntimeID(this.bossBarId);
+        moveData.setPos(entityPos());
+        moveData.setRotation(Vector3f.ZERO);
+        moveData.setOnGround(false);
+        moveData.setTeleported(false);
+        moveData.setForceMove(false);
+
+        final MoveActorAbsolutePacket packet = new MoveActorAbsolutePacket();
+        packet.setMoveData(moveData);
+        player.sendPacket(packet);
+    }
+
+    private void createBossEntity() {
+        final ActorDataMap actorDataMap = new ActorDataMap();
+        actorDataMap.put(ActorDataTypes.AIR_SUPPLY, (short) 400);
+        actorDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
+        actorDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
+        actorDataMap.put(ActorDataTypes.NAME, this.text);
+        actorDataMap.put(ActorDataTypes.NAMETAG_ALWAYS_SHOW, (byte) 0);
+        actorDataMap.put(ActorDataTypes.SCALE, 0f);
+
+        final AddActorPacket packet = new AddActorPacket();
+        packet.setActorData(actorDataMap);
+        packet.setTargetActorID(this.bossBarId);
+        packet.setTargetRuntimeID(this.bossBarId);
+        packet.setPosition(entityPos());
+        packet.setActorType("minecraft:creeper");
+        packet.setVelocity(Vector3f.ZERO);
+        packet.setRotation(Vector2f.ZERO);
+        player.sendPacket(packet);
+    }
+
+    private void sendAttributes() {
+        final Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
+        attr.setMaxValue(100f);
+        attr.setValue(Math.max(0f, Math.min(100f, this.length)));
+
+        final UpdateAttributesPacket packet = new UpdateAttributesPacket();
+        packet.setRuntimeID(this.bossBarId);
+        packet.getAttributeList().add(attr.toNetwork());
+        player.sendPacket(packet);
+    }
+
+    private void sendShowBossBar() {
+        final BossEventPacket packet = new BossEventPacket();
+        packet.setTargetActorID(this.bossBarId);
+        packet.setEventType(BossEventUpdateType.ADD);
+        packet.setName(this.text);
+        packet.setHealthPercent(this.length / 100f);
+        packet.setOverlay(DEFAULT_OVERLAY);
+        packet.setColor(networkColor());
+        packet.setDarkenScreen(0);
+        packet.setPlayerID(this.player.getId());
+        player.sendPacket(packet);
+    }
+
+    private void sendHideBossBar() {
+        final BossEventPacket packet = new BossEventPacket();
+        packet.setTargetActorID(this.bossBarId);
+        packet.setEventType(BossEventUpdateType.REMOVE);
+        packet.setName("");
+        packet.setHealthPercent(0f);
+        packet.setOverlay(DEFAULT_OVERLAY);
+        packet.setColor(networkColor());
+        packet.setDarkenScreen(0);
+        packet.setPlayerID(this.player.getId());
+        player.sendPacket(packet);
+    }
+
+    private void sendSetBossBarTexture() {
+        final BossEventPacket packet = new BossEventPacket();
+        packet.setTargetActorID(this.bossBarId);
+        packet.setEventType(BossEventUpdateType.UPDATE_STYLE);
+        packet.setName(this.text);
+        packet.setHealthPercent(this.length / 100f);
+        packet.setOverlay(DEFAULT_OVERLAY);
+        packet.setColor(networkColor());
+        packet.setDarkenScreen(0);
+        packet.setPlayerID(this.player.getId());
+        player.sendPacket(packet);
+    }
+
+    private void sendSetBossBarTitle() {
+        final BossEventPacket packet = new BossEventPacket();
+        packet.setTargetActorID(this.bossBarId);
+        packet.setEventType(BossEventUpdateType.UPDATE_NAME);
+        packet.setName(this.text);
+        packet.setHealthPercent(this.length / 100f);
+        packet.setOverlay(DEFAULT_OVERLAY);
+        packet.setColor(networkColor());
+        packet.setDarkenScreen(0);
+        packet.setPlayerID(this.player.getId());
+        player.sendPacket(packet);
+    }
+
+    private void sendSetBossBarLength() {
+        final BossEventPacket packet = new BossEventPacket();
+        packet.setTargetActorID(this.bossBarId);
+        packet.setEventType(BossEventUpdateType.UPDATE_PERCENT);
+        packet.setName(this.text);
+        packet.setHealthPercent(this.length / 100f);
+        packet.setOverlay(DEFAULT_OVERLAY);
+        packet.setColor(networkColor());
+        packet.setDarkenScreen(0);
+        packet.setPlayerID(this.player.getId());
+        player.sendPacket(packet);
+    }
+
+    private void updateBossEntityNameTag() {
+        final SetActorDataPacket packet = new SetActorDataPacket();
+        packet.getActorData().put(ActorDataTypes.NAME, this.text);
+        packet.setTargetRuntimeID(this.bossBarId);
+        player.sendPacket(packet);
+    }
+
+    private void removeBossEntity() {
+        final RemoveActorPacket packet = new RemoveActorPacket();
+        packet.setTargetActorID(this.bossBarId);
+        player.sendPacket(packet);
+    }
+
+    /** Resolve the current color to its network representation, never null. */
+    private org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor networkColor() {
+        return color != null ? color.toNetwork() : DEFAULT_NETWORK_COLOR.toNetwork();
+    }
+
+    /** Entity position: same X/Z as the player but far below so it stays invisible. */
+    private Vector3f entityPos() {
+        return Vector3f.from(this.player.getX(), ENTITY_Y, this.player.getZ());
+    }
 }

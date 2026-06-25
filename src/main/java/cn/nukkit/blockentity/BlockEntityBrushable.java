@@ -5,8 +5,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.ItemHelper;
 
 /**
  * @author Buddelbubi
@@ -25,24 +25,23 @@ public class BlockEntityBrushable extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("item")) {
-            namedTag.putCompound("item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
+        if (!nbt.contains("item")) {
+            this.nbt.putCompound("item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
     }
 
     public Item getItem() {
-        CompoundTag NBTTag = this.namedTag.getCompound("item");
-        return NBTIO.getItemHelper(NBTTag);
+        CompoundTag tag = this.getNbt().getCompound("item");
+        return ItemHelper.read(tag);
     }
 
     public void setItem(Item item) {
-        this.namedTag.putCompound("item", NBTIO.putItemHelper(item));
+        this.nbt.putCompound("item", ItemHelper.write(item, null));
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag tag = super.getSpawnCompound();
-        tag.putCompound("item", this.namedTag.getCompound("item"));
-        return tag;
+        return super.getSpawnCompound()
+                .putCompound("item", this.getNbt().getCompound("item").copy());
     }
 }

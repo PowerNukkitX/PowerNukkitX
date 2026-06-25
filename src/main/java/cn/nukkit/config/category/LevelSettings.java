@@ -28,4 +28,6 @@ public class LevelSettings extends OkaeriConfig {
     int entitySpawnCap = 512;
     @Comment("pnx.settings.level.fieldofview")
     int fieldOfView = 100;
+    @Comment("pnx.settings.level.levelworkerthreads")
+    int levelWorkerThreads = -1;
 }

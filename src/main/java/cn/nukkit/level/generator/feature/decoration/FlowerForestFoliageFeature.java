@@ -8,7 +8,6 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class FlowerForestFoliageFeature extends CountGenerateFeature {
@@ -35,7 +34,7 @@ public class FlowerForestFoliageFeature extends CountGenerateFeature {
             for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                 if(!level.isChunkGenerated( x >> 4, z >> 4)) return;
                 if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
-                    if(random.nextFloat() < 0.7f) {
+                    if(random.nextFloat() < 0.3f) {
                         int depth = 0;
                         int height = level.getHeightMap(x, z);
                         BlockState topBlockState = level.getBlockStateAt(x, height, z);
@@ -43,7 +42,7 @@ public class FlowerForestFoliageFeature extends CountGenerateFeature {
                             topBlockState = level.getBlockStateAt(x, height - (++depth), z);
                         }
                         if(isSupportValid(topBlockState.toBlock())) {
-                            populateFlower(flower, object, x, (height - depth) + 1, z);
+                            populateFlower(flower, object, x, (height - depth) + 1, z, random);
                         }
                     }
                 }
@@ -53,7 +52,7 @@ public class FlowerForestFoliageFeature extends CountGenerateFeature {
 
     }
 
-    private void populateFlower(int flower, BlockManager level, int x, int y, int z) {
+    private void populateFlower(int flower, BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         switch (flower) {
             case 1 -> level.setBlockStateAt(x, y, z, BlockAllium.PROPERTIES.getDefaultState());
             case 2 -> level.setBlockStateAt(x, y, z, BlockAzureBluet.PROPERTIES.getDefaultState());
@@ -67,16 +66,22 @@ public class FlowerForestFoliageFeature extends CountGenerateFeature {
             case 10 -> level.setBlockStateAt(x, y, z, BlockRedTulip.PROPERTIES.getDefaultState());
             case 11 -> level.setBlockStateAt(x, y, z, BlockWhiteTulip.PROPERTIES.getDefaultState());
             case 12 -> {
-                level.setBlockStateAt(x, y, z, BlockLilac.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y+1, z, BlockLilac.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                if(random.nextBoolean()) {
+                    level.setBlockStateAt(x, y, z, BlockLilac.PROPERTIES.getDefaultState());
+                    level.setBlockStateAt(x, y+1, z, BlockLilac.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                }
             }
             case 13 -> {
-                level.setBlockStateAt(x, y, z, BlockPeony.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y+1, z, BlockPeony.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                if(random.nextBoolean()) {
+                    level.setBlockStateAt(x, y, z, BlockPeony.PROPERTIES.getDefaultState());
+                    level.setBlockStateAt(x, y+1, z, BlockPeony.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                }
             }
             case 14 -> {
-                level.setBlockStateAt(x, y, z, BlockRoseBush.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y+1, z, BlockRoseBush.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                if(random.nextBoolean()) {
+                    level.setBlockStateAt(x, y, z, BlockRoseBush.PROPERTIES.getDefaultState());
+                    level.setBlockStateAt(x, y+1, z, BlockRoseBush.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                }
             }
         }
     }

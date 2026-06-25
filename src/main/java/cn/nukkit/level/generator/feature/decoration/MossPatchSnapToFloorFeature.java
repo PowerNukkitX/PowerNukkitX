@@ -17,7 +17,6 @@ import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
 
@@ -26,6 +25,8 @@ import static cn.nukkit.block.BlockID.STONE;
 
 public class MossPatchSnapToFloorFeature extends GenerateFeature {
 
+    public static final String NAME = "minecraft:moss_patch_snap_to_floor_feature";
+
     private static final BlockState MOSS = BlockMossBlock.PROPERTIES.getDefaultState();
     private static final BlockState SHORT_GRASS = BlockShortGrass.PROPERTIES.getDefaultState();
     private static final BlockState LOWER_TALL_GRASS = BlockTallGrass.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(false));
@@ -33,7 +34,6 @@ public class MossPatchSnapToFloorFeature extends GenerateFeature {
     private static final BlockState MOSS_CARPET = BlockMossCarpet.PROPERTIES.getDefaultState();
     private static final BlockState AZALEE = BlockAzalea.PROPERTIES.getDefaultState();
     private static final BlockState AZALEE_FLOWER = BlockFloweringAzalea.PROPERTIES.getDefaultState();
-    public static final String NAME = "minecraft:moss_patch_snap_to_floor_feature";
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -48,7 +48,7 @@ public class MossPatchSnapToFloorFeature extends GenerateFeature {
             int baseX = ((chunk.getX() << 4) + x);
             for(int z = 0; z < 16; z++) {
                 int baseZ = ((chunk.getZ() << 4) + z);
-                if(noise.noise2D(baseX * 0.25f, baseZ * 0.25f, true) > 0.5) {
+                if(noise.noise2D(baseX, baseZ, true) > 0) {
                     for(int y : getHighestWorkableBlocks(chunk, x, z)) {
                         manager.setBlockStateAt(baseX, y, baseZ, MOSS);
                         int rnd = random.nextInt(20);

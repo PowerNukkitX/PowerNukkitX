@@ -9,6 +9,7 @@ import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import lombok.extern.slf4j.Slf4j;
 
+
 @Slf4j
 public abstract class PopulatorStage extends GenerateStage {
 
@@ -25,7 +26,10 @@ public abstract class PopulatorStage extends GenerateStage {
                 log.error("Error while applying populator {}", name, e);
             }
         }
-        root.applySubChunkUpdate();
+        if (!root.getBlocks().isEmpty()) {
+            root.applySubChunkUpdate();
+            root.getBlocks().forEach(block -> block.getChunk().setChanged());
+        }
     }
 
     public abstract ObjectArraySet<String> populators();

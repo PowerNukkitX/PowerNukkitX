@@ -25,7 +25,7 @@ public final class DensitySlopedCheese {
         DensityFunction jaggedSample = DensityCommon.noise(jaggedNoise, JAGGED_XZ_SCALE, JAGGED_Y_SCALE).halfNegative();
         DensityFunction combinedDepth = DensityCommon.add(
                 depth,
-                DensityCommon.mul(jaggedness, jaggedSample)
+                DensityCommon.flatCache(DensityCommon.mul(jaggedness, jaggedSample))
         );
 
         return DensityCommon.add(

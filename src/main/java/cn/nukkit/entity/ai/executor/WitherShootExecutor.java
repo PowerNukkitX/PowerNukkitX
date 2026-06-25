@@ -28,7 +28,7 @@ public class WitherShootExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         Entity target = entity.getMemoryStorage().get(targetMemory);
-        if(target == null) return false;
+        if (target == null) return false;
         tick++;
         if (tick <= 40) {
             if (tick % 10 == 0) {
@@ -71,7 +71,7 @@ public class WitherShootExecutor implements EntityControl, IBehaviorExecutor {
         if (projectile == null) {
             return;
         }
-        if(projectile instanceof EntitySmallFireball fireball) {
+        if (projectile instanceof EntitySmallFireball fireball) {
             fireball.shootingEntity = entity;
         }
 

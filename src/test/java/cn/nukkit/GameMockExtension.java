@@ -4,9 +4,8 @@ import cn.nukkit.block.BlockComposter;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
-import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.block.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.inventory.HumanEnderChestInventory;
@@ -22,21 +21,26 @@ import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.Network;
-import cn.nukkit.network.connection.BedrockSession;
-import cn.nukkit.network.process.DataPacketManager;
-import cn.nukkit.network.protocol.types.PlayerInfo;
+import cn.nukkit.network.process.NetworkPacketHandler;
+import cn.nukkit.network.process.PlayerSessionHolder;
+import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.ServerScheduler;
-import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import eu.okaeri.configs.ConfigManager;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -47,8 +51,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -65,6 +73,7 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 public class GameMockExtension extends MockitoExtension {
+  /*
     static BanList banList = mock(BanList.class);
     static TestPluginManager pluginManager;
     static SimpleCommandMap simpleCommandMap = mock(SimpleCommandMap.class);
@@ -322,4 +331,22 @@ public class GameMockExtension extends MockitoExtension {
         t.start();
         LockSupport.park();
     }
+
+    @BeforeEach
+    void cleanupBefore() throws IOException {
+        deleteLevel();
+    }
+
+    @AfterEach
+    void cleanupAfter() throws IOException {
+        deleteLevel();
+    }
+
+    private void deleteLevel() throws IOException {
+        Path path = Paths.get("src/test/resources/newlevel");
+        if (Files.exists(path)) {
+            FileUtils.deleteDirectory(path.toFile());
+        }
+    }
+    */
 }

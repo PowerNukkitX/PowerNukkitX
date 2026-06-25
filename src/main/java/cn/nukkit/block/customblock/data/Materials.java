@@ -15,6 +15,7 @@ import java.util.Locale;
  * face dimming, isotropic UV behavior and packed boolean flags used by the client.
  */
 public class Materials implements NBTData {
+
     private final CompoundTag tag;
 
     private Materials() {
@@ -821,12 +822,12 @@ public class Materials implements NBTData {
      * @param tintMethod optional tint method
      */
     public void process(
-        @NotNull String face,
-        boolean ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull String renderMethodName,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            boolean ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull String renderMethodName,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
         this.process(face, ambientOcclusion ? 1.0f : 0.0f, packedBools, renderMethodName, texture, tintMethod);
     }
@@ -842,12 +843,12 @@ public class Materials implements NBTData {
      * @param tintMethod optional tint method
      */
     public void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull String renderMethodName,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull String renderMethodName,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
         this.process(face, ambientOcclusion, packedBools, renderMethodName, texture, tintMethod, null);
     }
@@ -864,19 +865,19 @@ public class Materials implements NBTData {
      * @param settings optional material settings
      */
     public void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull String renderMethodName,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod,
-        @Nullable Settings settings
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull String renderMethodName,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod,
+            @Nullable Settings settings
     ) {
         CompoundTag faceTag = this.getOrCreateFaceTag(face)
-            .putFloat("ambient_occlusion", ambientOcclusion)
-            .putByte("packed_bools", packedBools.toByte())
-            .putString("render_method", renderMethodName)
-            .putString("texture", texture);
+                .putFloat("ambient_occlusion", ambientOcclusion)
+                .putByte("packed_bools", packedBools.toByte())
+                .putString("render_method", renderMethodName)
+                .putString("texture", texture);
 
         if (settings != null) {
             settings.apply(faceTag);
@@ -890,47 +891,47 @@ public class Materials implements NBTData {
     }
 
     private void process(
-        @NotNull String face,
-        boolean ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            boolean ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
         this.process(face, ambientOcclusion ? 1.0f : 0.0f, packedBools, renderMethod, texture, tintMethod);
     }
 
     private void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
         this.process(face, ambientOcclusion, packedBools, renderMethod.name().toLowerCase(Locale.ENGLISH), texture, tintMethod);
     }
 
     private void process(
-        @NotNull String face,
-        boolean ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod,
-        @Nullable Settings settings
+            @NotNull String face,
+            boolean ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod,
+            @Nullable Settings settings
     ) {
         this.process(face, ambientOcclusion ? 1.0f : 0.0f, packedBools, renderMethod, texture, tintMethod, settings);
     }
 
     private void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod,
-        @Nullable Settings settings
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod,
+            @Nullable Settings settings
     ) {
         this.process(face, ambientOcclusion, packedBools, renderMethod.name().toLowerCase(Locale.ENGLISH), texture, tintMethod, settings);
     }

@@ -1,5 +1,6 @@
 package cn.nukkit.math;
 
+import cn.nukkit.level.Position;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import java.math.BigInteger;
 
@@ -53,6 +54,14 @@ public class NukkitMath {
         int heightDiffHalf = heightDiff / 2;
         int heightDiffHalf2 = heightDiff - heightDiffHalf;
         return Math.min(start, end) + NukkitMath.randomRange(random, 0, heightDiffHalf2) + NukkitMath.randomRange(random, 0, heightDiffHalf);
+    }
+
+    public static int positionalRandom(Position position, int bound) {
+        long mixed = (position.isValid() ? position.level.getSeed() : 0) ^
+                ((long) position.getFloorX() * 341873128712L) ^
+                ((long) position.getFloorY() * 132897987541L) ^
+                ((long) position.getFloorZ() * 42317861L);
+        return Math.floorMod((int) (mixed ^ (mixed >>> 32)), bound + 1);
     }
 
     /** Pre-computed powers of 10 to avoid Math.pow() for common precisions. */

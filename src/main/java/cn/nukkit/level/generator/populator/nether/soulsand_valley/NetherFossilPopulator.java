@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.populator.nether.soulsand_valley;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDriedGhast;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
@@ -13,12 +12,14 @@ import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.registry.Registries;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static cn.nukkit.level.generator.stages.nether.NetherTerrainStage.LAVA_LEVEL;
 
+@Slf4j
 public class NetherFossilPopulator extends Populator {
 
     public static final String NAME = "nether_fossil";
@@ -41,7 +42,12 @@ public class NetherFossilPopulator extends Populator {
             int x = (chunkX << 4) + 3;
             int z = (chunkZ << 4) + 3;
             BlockManager manager = new BlockManager(level);
-            PNXStructure structure = (PNXStructure) Registries.STRUCTURE.get("nether_fossils/fossil_" + (random.nextInt(14) + 1));
+            String structureName = "nether_fossils/fossil_" + (random.nextInt(14) + 1);
+            PNXStructure structure = (PNXStructure) Registries.STRUCTURE.get(structureName);
+            if (structure == null) {
+                log.warn("Nether fossil structure '{}' is not registered, skipping placement", structureName);
+                return;
+            }
             int height = Integer.MAX_VALUE;
             for(int bx = 0; bx < structure.getSizeX(); bx++) {
                 for(int bz = 0; bz < structure.getSizeZ(); bz++) {

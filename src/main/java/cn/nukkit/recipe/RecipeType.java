@@ -3,7 +3,7 @@ package cn.nukkit.recipe;
 public enum RecipeType {
     SHAPELESS(0),
     SHAPED(1),
-    FURNACE(2),
+    FURNACE(0),
     MULTI(4),
     USER_DATA_SHAPELESS_RECIPE(5),
     SHAPELESS_CHEMISTRY(6),
@@ -13,10 +13,10 @@ public enum RecipeType {
      * @since v582
      */
     SMITHING_TRIM(9),
-    BLAST_FURNACE(2),
-    SMOKER(2),
-    CAMPFIRE(2),
-    SOUL_CAMPFIRE(2),
+    BLAST_FURNACE(0),
+    SMOKER(0),
+    CAMPFIRE(0),
+    SOUL_CAMPFIRE(0),
     STONECUTTER(0),
     CARTOGRAPHY(0),
     REPAIR(-1),

@@ -42,7 +42,8 @@ import java.util.Set;
  */
 public class EntitySkeleton extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SKELETON;
     }
 
@@ -107,7 +108,16 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
 
         for (Item equipped : this.getEquipmentInventory().getContents().values()) {
             if (!equipped.isNull() && !equipped.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
-                drops.add(equipped.clone());
+                if (equipped.isBow()) {
+                    int chance = 85 + looting * 10;
+                    if (Utils.rand(0, 999) < chance) {
+                        Item drop = equipped.clone();
+                        drop.setDamage(Utils.rand(193, 384));
+                        drops.add(drop);
+                    }
+                } else {
+                    drops.add(equipped.clone());
+                }
             }
         }
 

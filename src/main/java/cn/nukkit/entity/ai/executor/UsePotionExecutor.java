@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.effect.PotionApplicationMode;
@@ -13,11 +12,11 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemPotion;
-import cn.nukkit.plugin.InternalPlugin;
 
 import java.util.Arrays;
 
 public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
+    private static final int USE_SEQUENCE_END_DELAY = 20;
 
     protected float speed;
     protected final int coolDownTick;
@@ -25,6 +24,7 @@ public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
 
     private int tick1;//control the coolDownTick
     private int tick2;//control the pullBowTick
+    private int useSequenceEndDelay;
 
     /**
      *
@@ -49,14 +49,16 @@ public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
 
         setRouteTarget(entity, null);
 
-        if (tick2 == 0 && tick1 > coolDownTick) {
+        if(tickUseSequenceEnd(entity)) return false;
+
+        if (tick2 == 0 && useSequenceEndDelay == 0 && tick1 > coolDownTick) {
             this.tick1 = 0;
             this.tick2++;
             startShootSequence(entity);
         } else if (tick2 != 0) {
             tick2++;
             if (tick2 > useDelay) {
-                entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> endShootSequence(entity), 20);
+                startUseSequenceEndDelay();
                 tick2 = 0;
                 return true;
             }
@@ -69,6 +71,7 @@ public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         endShootSequence(entity);
+        resetUseState();
     }
 
     @Override
@@ -76,10 +79,34 @@ public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         endShootSequence(entity);
+        resetUseState();
+    }
+
+    private void startUseSequenceEndDelay() {
+        this.useSequenceEndDelay = USE_SEQUENCE_END_DELAY;
+    }
+
+    private boolean tickUseSequenceEnd(Entity entity) {
+        if (this.useSequenceEndDelay == 0) {
+            return false;
+        }
+
+        this.useSequenceEndDelay--;
+        if (this.useSequenceEndDelay == 0) {
+            endShootSequence(entity);
+            return true;
+        }
+        return false;
+    }
+
+    private void resetUseState() {
+        this.tick2 = 0;
+        this.useSequenceEndDelay = 0;
     }
 
 
     private void startShootSequence(Entity entity) {
+        this.useSequenceEndDelay = 0;
         if(entity instanceof EntityMob mob) {
             mob.setItemInHand(getPotion(entity));
         }

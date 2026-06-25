@@ -49,13 +49,14 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         reactorState = NetherReactorState.READY;
-        if (namedTag.containsShort("Progress")) {
-            progress = (short) namedTag.getShort("Progress");
+        final CompoundTag nbtMap = getNbt();
+        if (nbt.contains("Progress")) {
+            progress = (short) nbtMap.getShort("Progress");
         }
 
-        if (namedTag.containsByte("HasFinished") && namedTag.getBoolean("HasFinished")) {
+        if (nbt.contains("HasFinished") && nbtMap.getBoolean("HasFinished")) {
             reactorState = NetherReactorState.FINISHED;
-        } else if (namedTag.containsByte("IsInitialized") && namedTag.getBoolean("IsInitialized")) {
+        } else if (nbt.contains("IsInitialized") && nbtMap.getBoolean("IsInitialized")) {
             reactorState = NetherReactorState.INITIALIZED;
         } else {
             reactorState = NetherReactorState.READY;
@@ -66,16 +67,16 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         NetherReactorState reactorState = getReactorState();
-        namedTag.putShort("Progress", getProgress());
-        namedTag.putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED);
-        namedTag.putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
+        this.nbt.putShort("Progress", (short) getProgress())
+                .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)
+                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
         NetherReactorState reactorState = getReactorState();
         return super.getSpawnCompound()
-                .putShort("Progress", getProgress())
+                .putShort("Progress", (short) getProgress())
                 .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)
                 .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
     }

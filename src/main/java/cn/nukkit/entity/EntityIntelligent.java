@@ -73,7 +73,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     private <D> void processMemoryStorage(IMemoryStorage storage, MemoryType<D> mem) {
         var codec = mem.getCodec();
-        var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+        var data = Objects.requireNonNull(codec).getDecoder().apply(this.getNbt());
 
         if (data != null) {
             storage.put(mem, data);
@@ -85,6 +85,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         if (!isAlive()) return;
         // Calculate whether it is active
         isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+        if (!this.getServer().getSettings().gameplaySettings().enableMobAi()) {
+            super.asyncPrepare(currentTick);
+            return;
+        }
         if (!this.isImmobile()) { // immobile will disable physical AI.
             var behaviorGroup = getBehaviorGroup();
             if (behaviorGroup == null) return;

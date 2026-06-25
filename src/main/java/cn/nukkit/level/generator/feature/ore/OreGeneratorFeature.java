@@ -83,7 +83,8 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
             }
             if(!skip) {
                 for(Block block : object.getBlocks()) {
-                    if(block.getChunk().isGenerated()) {
+                    IChunk blockChunk = level.getChunk(block.getChunkX(), block.getChunkZ());
+                    if(block.isValid() && blockChunk != null && blockChunk.isGenerated()) {
                         manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                 }

@@ -7,7 +7,6 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.projectile.EntityBreezeWindCharge;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
@@ -18,11 +17,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.plugin.InternalPlugin;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
+    private static final int SHOOT_SEQUENCE_END_DELAY = 20;
+
     protected MemoryType<? extends Entity> memory;
     protected float speed;
     protected int maxShootDistanceSquared;
@@ -37,15 +38,15 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
 
     private int tick1;//control the coolDownTick
     private int tick2;//control the pullBowTick
+    private int shootSequenceEndDelay;
 
     /**
-     *
      * @param memory            <br>Used to read the memory of the attack target
      * @param speed             <br>The speed of movement towards the attacking target
      * @param maxShootDistance  <br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
      * @param clearDataWhenLose <br>Clear your memory when you lose your target
      * @param coolDownTick      <br>Attack cooldown (tick)
-     * @param attackDelay          <br>Attack Animation time(tick)
+     * @param attackDelay       <br>Attack Animation time(tick)
      */
     public BreezeShootExecutor(MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int attackDelay) {
         this.memory = memory;
@@ -87,6 +88,8 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         setLookTarget(entity, clone);
 
+        tickShootSequenceEnd(entity);
+
         if (tick2 == 0 && tick1 > coolDownTick) {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
                 this.tick1 = 0;
@@ -97,7 +100,7 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
             tick2++;
             if (tick2 > attackDelay) {
                 shootWindcharge(entity);
-                entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> endShootSequence(entity), 20);
+                startShootSequenceEndDelay();
                 tick2 = 0;
                 return target.getHealthCurrent() != 0;
             }
@@ -114,6 +117,7 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         entity.setEnablePitch(false);
         endShootSequence(entity);
+        resetShootState();
         this.target = null;
     }
 
@@ -126,7 +130,28 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         entity.setEnablePitch(false);
         endShootSequence(entity);
+        resetShootState();
         this.target = null;
+    }
+
+    private void startShootSequenceEndDelay() {
+        this.shootSequenceEndDelay = SHOOT_SEQUENCE_END_DELAY;
+    }
+
+    private void tickShootSequenceEnd(Entity entity) {
+        if (this.shootSequenceEndDelay == 0) {
+            return;
+        }
+
+        this.shootSequenceEndDelay--;
+        if (this.shootSequenceEndDelay == 0) {
+            endShootSequence(entity);
+        }
+    }
+
+    private void resetShootState() {
+        this.tick2 = 0;
+        this.shootSequenceEndDelay = 0;
     }
 
     protected void shootWindcharge(EntityLiving entity) {
@@ -134,7 +159,7 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         Location fireballLocation = entity.getLocation();
         Vector3 directionVector = entity.getDirectionVector().multiply(1 + ThreadLocalRandom.current().nextFloat(0.2f));
         fireballLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY());
-        CompoundTag nbt = new CompoundTag()
+        final CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(fireballLocation.x))
                         .add(new DoubleTag(fireballLocation.y))
@@ -156,7 +181,7 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         if (projectile == null) {
             return;
         }
-        if(projectile instanceof EntityBreezeWindCharge fireball) {
+        if (projectile instanceof EntityBreezeWindCharge fireball) {
             fireball.shootingEntity = entity;
         }
 
@@ -171,11 +196,12 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     private void startShootSequence(Entity entity) {
-        entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
+        this.shootSequenceEndDelay = 0;
+        entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
         entity.level.addSound(entity, Sound.MOB_BREEZE_CHARGE);
     }
 
     private void endShootSequence(Entity entity) {
-
+        entity.setDataProperty(ActorDataTypes.TARGET, 0L);
     }
 }

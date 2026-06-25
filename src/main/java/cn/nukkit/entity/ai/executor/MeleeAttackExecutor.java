@@ -14,7 +14,8 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -134,13 +135,6 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
 
             float knockBack = 0.3f;
-            if (item.applyEnchantments()) {
-                Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                if (knockBackEnchantment != null) {
-                    knockBack += knockBackEnchantment.getLevel() * 0.1f;
-                }
-            }
-
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, entity.targetEntity, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
 
             ev.setBreakShield(item.canBreakShield());
@@ -191,9 +185,9 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     protected void playAttackAnimation(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.ARM_SWING;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(entity.getId());
+        pk.setType(ActorEvent.START_ATTACKING);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

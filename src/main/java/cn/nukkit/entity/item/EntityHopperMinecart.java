@@ -18,11 +18,12 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.MinecartType;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityHopperMinecart extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
@@ -31,6 +32,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     public @NotNull String getIdentifier() {
         return HOPPER_MINECART;
     }
+
     private final BlockVector3 temporalVector = new BlockVector3();
     public int transferCooldown;
 
@@ -123,7 +125,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return false;
     }
 
@@ -141,16 +143,16 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     @Override
     public void initEntity() {
         this.inventory = new MinecartHopperInventory(this);
-        if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Items", CompoundTag.class);
+        if (this.nbt.contains("Items") && this.nbt.get("Items") instanceof ListTag) {
+            ListTag<CompoundTag> inventoryList = this.nbt.getList("Items", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
-                this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
+                this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
 
-        this.entityDataMap.put(CONTAINER_TYPE, 11);
-        this.entityDataMap.put(CONTAINER_SIZE, this.inventory.getSize());
-        this.entityDataMap .put(CONTAINER_STRENGTH_MODIFIER, 0);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 11);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
 
         this.updatePickupArea();
 
@@ -182,13 +184,13 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList("Items",new ListTag<CompoundTag>());
+        this.nbt.putList("Items",new ListTag<CompoundTag>());
         if (this.inventory != null) {
             for (int slot = 0; slot < 5; ++slot) {
                 Item item = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
-                    this.namedTag.getList("Items", CompoundTag.class)
-                            .add(NBTIO.putItemHelper(item, slot));
+                    this.nbt.getList("Items", CompoundTag.class)
+                            .add(ItemHelper.write(item, slot));
                 }
             }
         }

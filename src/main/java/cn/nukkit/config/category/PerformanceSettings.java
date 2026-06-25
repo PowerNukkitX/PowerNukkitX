@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 public class PerformanceSettings extends OkaeriConfig {
     @Comment("pnx.settings.performance.asyncworkers")
     String asyncWorkers = "auto";
+    @Comment("pnx.settings.performance.basetps")
+    int baseTps = 20;
     @Comment("pnx.settings.performance.registrycache.enable")
     boolean registryCacheEnabled = false;
     @Comment("pnx.settings.performance.registrycache.path")

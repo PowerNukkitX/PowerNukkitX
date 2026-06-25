@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -15,24 +14,13 @@ import cn.nukkit.level.generator.populator.generic.PopulatorRuinedPortal;
 import cn.nukkit.level.generator.populator.nether.BastionRemnantPopulator;
 import cn.nukkit.level.generator.populator.nether.NetherFortressPopulator;
 import cn.nukkit.level.generator.populator.nether.soulsand_valley.NetherFossilPopulator;
-import cn.nukkit.level.generator.populator.normal.DesertPyramidPopulator;
-import cn.nukkit.level.generator.populator.normal.IglooPopulator;
-import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
-import cn.nukkit.level.generator.populator.normal.OceanMonumentPopulator;
-import cn.nukkit.level.generator.populator.normal.OceanRuinPopulator;
-import cn.nukkit.level.generator.populator.normal.PillagerOutpostPopulator;
-import cn.nukkit.level.generator.populator.normal.ShipwreckPopulator;
-import cn.nukkit.level.generator.populator.normal.StrongholdPopulator;
-import cn.nukkit.level.generator.populator.normal.SwampHutPopulator;
-import cn.nukkit.level.generator.populator.normal.TrailRuinsPopulator;
-import cn.nukkit.level.generator.populator.normal.TrialChambersPopulator;
-import cn.nukkit.level.generator.populator.normal.VillagePopulator;
-import cn.nukkit.level.generator.populator.normal.WoodlandMansionPopulator;
+import cn.nukkit.level.generator.populator.normal.*;
 import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.math.ChunkVector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
+import it.unimi.dsi.fastutil.Pair;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 
@@ -49,13 +37,13 @@ public class LocateCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("structure", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeStructure", "structure")),
-                CommandParameter.newEnum("structures", new String[]{"woodland_mansion", "desert_pyramid", "igloo", "jungle_temple", "ocean_monument", "ocean_ruin", "pillager_outpost", "shipwreck", "stronghold", "swamp_hut", "trail_ruins", "trial_chambers", "village", "ruined_portal", "bastion_remnant", "nether_fortress", "nether_fossil"}),
+                CommandParameter.newEnum("structures", new String[]{"woodland_mansion", "desert_pyramid", "igloo", "jungle_temple", "ocean_monument", "ocean_ruin", "pillager_outpost", "shipwreck", "stronghold", "swamp_hut", "trail_ruins", "trial_chambers", "village", "ruined_portal", "ancient_city", "bastion_remnant", "nether_fortress", "nether_fossil"}),
                 CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN),
                 CommandParameter.newType("radius", true, CommandParamType.INT)
         });
         this.commandParameters.put("biome", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeBiome", "biome")),
-                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinition::getName).toArray(String[]::new)),
+                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(Pair::first).map(Registries.BIOME::getFromBiomeStringList).toArray(String[]::new)),
                 CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN),
                 CommandParameter.newType("radius", true, CommandParamType.INT),
                 CommandParameter.newEnum("search", true, new String[]{"spiral", "xaxis"})
@@ -97,6 +85,7 @@ public class LocateCommand extends VanillaCommand {
                     case "bastion_remnant" -> BastionRemnantPopulator.PLACEMENT;
                     case "nether_fortress" -> NetherFortressPopulator.PLACEMENT;
                     case "nether_fossil" -> NetherFossilPopulator.PLACEMENT;
+                    case "ancient_city" -> AncientCityPopulator.PLACEMENT;
                     default -> null;
                 };
                 if (placement == null) {
@@ -110,7 +99,7 @@ public class LocateCommand extends VanillaCommand {
                     String _y = String.valueOf(found.getFloorY());
                     String _z = String.valueOf(found.getFloorZ());
                     String _d = String.valueOf((int) found.distance(pos));
-                    log.addSuccess("commands.locate.structure.success", structure, _x, _y, _z, _d);
+                    log.addSuccess("commands.locate.structure.success", structure, _x, _z, _d);
                     if (list.hasResult(2) && (boolean) list.getResult(2) && sender.isPlayer()) {
                         sender.asPlayer().teleport(found);
                     }

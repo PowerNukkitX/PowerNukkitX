@@ -6,15 +6,15 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.utils.random.Xoroshiro128;
 import lombok.Setter;
 
-import java.util.HashMap;
 
 public abstract class Populator {
 
     @Setter
     protected BlockManager root;
-    protected final Xoroshiro128 random = new Xoroshiro128();
 
-    protected final HashMap<Long, BlockManager> PLACEMENT_QUEUE = new HashMap<>();
+    protected final static ThreadLocal<Xoroshiro128> RANDOMS = ThreadLocal.withInitial(Xoroshiro128::new);
+
+    protected final Xoroshiro128 random = RANDOMS.get();
 
     public abstract String name();
 

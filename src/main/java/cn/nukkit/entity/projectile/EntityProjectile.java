@@ -23,9 +23,14 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import javax.annotation.Nullable;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -47,6 +52,8 @@ public abstract class EntityProjectile extends Entity {
      */
     private boolean noAge;
 
+    protected Enchantment[] enchantments;
+
     public EntityProjectile(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
@@ -55,12 +62,12 @@ public abstract class EntityProjectile extends Entity {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
-            this.setDataProperty(OWNER_EID, shootingEntity.getId());
+            this.setDataProperty(ActorDataTypes.OWNER, shootingEntity.getId());
         }
     }
 
     protected double getDamage() {
-        return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
+        return nbt.contains("damage") ? getNbt().getDouble("damage") : getBaseDamage();
     }
 
     protected double getBaseDamage() {
@@ -73,6 +80,14 @@ public abstract class EntityProjectile extends Entity {
 
     public int getResultDamage() {
         return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
+    }
+
+    public Enchantment[] getEnchantments() {
+        return enchantments;
+    }
+
+    public void setEnchantments(Enchantment[] enchantments) {
+        this.enchantments = enchantments;
     }
 
     @Override
@@ -97,11 +112,16 @@ public abstract class EntityProjectile extends Entity {
 
         float damage = this.getResultDamage(entity);
 
+        Map<EntityDamageEvent.DamageModifier, Float> damageMap = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
+        damageMap.put(EntityDamageEvent.DamageModifier.BASE, damage);
+
+        float knockBack = 0.3f;
+
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);
+            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damageMap, knockBack, enchantments);
         } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
+            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damageMap, knockBack, enchantments);
         }
         if (entity.attack(ev)) {
             addHitEffect();
@@ -132,8 +152,17 @@ public abstract class EntityProjectile extends Entity {
 
         this.setHealthMax(1);
         this.setHealthCurrent(1);
-        if (this.namedTag.contains("Age") && !this.noAge) {
-            this.age = this.namedTag.getShort("Age");
+        if (this.nbt.contains("Age") && !this.noAge) {
+            this.age = this.getNbt().getShort("Age");
+        }
+
+        if (this.nbt.contains("ench")) {
+            ListTag<CompoundTag> enchs = this.getNbt().getList("ench", CompoundTag.class);
+            this.enchantments = new Enchantment[enchs.size()];
+            for (int i = 0; i < enchs.size(); i++) {
+                CompoundTag entry = enchs.get(i);
+                this.enchantments[i] = Enchantment.getEnchantment(entry.getShort("id")).setLevel(entry.getShort("lvl"));
+            }
         }
     }
 
@@ -146,7 +175,18 @@ public abstract class EntityProjectile extends Entity {
     public void saveNBT() {
         super.saveNBT();
         if (!this.noAge) {
-            this.namedTag.putShort("Age", this.age);
+            this.nbt.putShort("Age", this.age);
+        }
+
+        if (this.enchantments != null && this.enchantments.length > 0) {
+            ListTag<CompoundTag> enchs = new ListTag<>();
+            for (Enchantment enchantment : this.enchantments) {
+                enchs.add(new CompoundTag()
+                        .putShort("id", enchantment.getId())
+                        .putShort("lvl", (short) enchantment.getLevel())
+                );
+            }
+            this.nbt.putList("ench", enchs);
         }
     }
 

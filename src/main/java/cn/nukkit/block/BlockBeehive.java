@@ -98,7 +98,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
         // Stagger their exit by giving each occupant a different ticksLeftToStay
         // and let BlockEntityBeehive.onUpdate() handle spawning them over time.
-        if (beehive.namedTag.getByte("ShouldSpawnBees") > 0) {
+        if (beehive.getNbt().getByte("ShouldSpawnBees") > 0) {
             BlockEntityBeehive.Occupant[] occupants = beehive.getOccupants();
             int delayPerBee = 40; // 40 ticks
             int baseDelay = 20;   // small initial delay so they dont pop instantly on place
@@ -110,7 +110,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
                 index++;
             }
 
-            beehive.namedTag.putByte("ShouldSpawnBees", (byte) 0);
+            beehive.getNbt().putByte("ShouldSpawnBees", (byte) 0);
             beehive.scheduleUpdate();
         }
 
@@ -169,7 +169,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             if (beehive != null) {
                 beehive.saveNBT();
                 if (!beehive.isHoneyEmpty() || !beehive.isEmpty()) {
-                    CompoundTag copy = beehive.namedTag.copy();
+                    CompoundTag copy = new CompoundTag();
                     copy.putByte("HoneyLevel", getHoneyLevel());
                     item.setCustomBlockData(copy);
                 }

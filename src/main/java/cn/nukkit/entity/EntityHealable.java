@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.item.Item;
 
 /**
  * The body can be treated by feeding it food.

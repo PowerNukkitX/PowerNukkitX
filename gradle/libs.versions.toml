@@ -4,7 +4,7 @@
 [versions]
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 pnx-terra-binary                                = "6.6.1-BETA"
-fastreflection                                  = "8733a599fa"
+fastreflection                                  = "1.0.3"
 com-github-oshi-oshi-core                       = "6.4.10"
 com-google-code-findbugs-jsr305                 = "3.0.2"
 com-google-code-gson-gson                       = "2.10.1"
@@ -38,12 +38,13 @@ commons-rng                                     = "1.5"
 com-github-stateless4j                          = "2.6.0"
 eu-okaeri-core                                  = "5.0.1"
 disruptor                                       = "4.0.0"
+bedrock-protocol                                = "3.0.0.Beta7-Debug-SNAPSHOT"
 
 [libraries]
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
 terra                = { module = "org.powernukkitx:Terra",                         version.ref = "pnx-terra-binary"                                }
 libdeflate           = { module = "org.powernukkitx:libdeflate-java",               version.ref = "libdeflate-java"                                 }
-fastreflection       = { module = "com.github.AllayMC:fast-reflection",             version.ref = "fastreflection"                                  }
+fastreflection       = { module = "me.sunlan:fast-reflection",                      version.ref = "fastreflection"                                  }
 oshi                 = { module = "com.github.oshi:oshi-core",                      version.ref = "com-github-oshi-oshi-core"                       }
 jsr305               = { module = "com.google.code.findbugs:jsr305",                version.ref = "com-google-code-findbugs-jsr305"                 }
 gson                 = { module = "com.google.code.gson:gson",                      version.ref = "com-google-code-gson-gson"                       }
@@ -65,25 +66,26 @@ jose4j               = { module = "org.bitbucket.b_c:jose4j",                   
 stateless4j          = { module = "com.github.stateless4j:stateless4j",             version.ref = "com-github-stateless4j"                          }
 netty-epoll          = { module = "io.netty:netty-transport-classes-epoll",         version.ref = "io-netty-netty-transport-classes-epoll"          }
 netty-kqueue         = { module = "io.netty:netty-transport-classes-kqueue",        version.ref = "io-netty-netty-transport-classes-kqueue"         }
-netty-raknet         = { module = "org.cloudburstmc.netty:netty-transport-raknet",  version.ref = "org-cloudburstmc-netty-netty-transport-raknet"   }
 consoleappender      = { module = "net.minecrell:terminalconsoleappender",          version.ref = "net-minecrell-terminalconsoleappender"           }
 jline-reader         = { module = "org.jline:jline-reader",                         version.ref = "org-jline-jline-reader"                          }
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
 jline-terminaljna    = { module = "org.jline:jline-terminal-jna",                   version.ref = "org-jline-jline-terminal-jna"                    }
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "org-junit-platform-launcher"                    }
-lz4                  = { module = "at.yawk.lz4:lz4-java",                               version.ref = "org-lz4-lz4-java"                                }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine",         version.ref = "org-junit-jupiter-junit-jupiter"                 }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher",  version.ref = "org-junit-platform-launcher"                     }
+lz4                  = { module = "at.yawk.lz4:lz4-java",                           version.ref = "org-lz4-lz4-java"                                }
 mockito              = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "org-mockito-mockito-junit-jupiter"               }
 jmh-core             = { module = "org.openjdk.jmh:jmh-core",                       version.ref = "org-openjdk-jmh-jmh-core"                        }
 jmh-generator        = { module = "org.openjdk.jmh:jmh-generator-annprocess",       version.ref = "org-openjdk-jmh-jmh-generator-annprocess"        }
 snappy               = { module = "org.xerial.snappy:snappy-java",                  version.ref = "org-xerial-snappy-snappy-java"                   }
 rng-simple           = { module = "org.apache.commons:commons-rng-simple",          version.ref = "commons-rng"                                     }
 rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",        version.ref = "commons-rng"                                     }
+bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection",   version.ref = "bedrock-protocol"                                }
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
-test            = ["junit",             "mockito",          "jmh-core",             "jmh-generator"     ]
-netty           = ["netty-raknet",      "netty-epoll",      "netty-kqueue"                              ]
+test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator"              ]
+netty           = ["netty-epoll",      "netty-kqueue"                                                   ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
 logging         = ["log4j-slf4j2-impl", "log4j-core"                                                    ]

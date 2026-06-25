@@ -2,11 +2,11 @@ package cn.nukkit.registry;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.customitem.data.CreativeCategory;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CraftingCatalogGroup;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @Slf4j
 public class CreativeGroupsRegistry {
-    private static final ObjectLinkedOpenHashSet<CreativeItemGroup> INJECTED_GROUPS = new ObjectLinkedOpenHashSet<>();
+    private static final ObjectLinkedOpenHashSet<CraftingCatalogGroup> INJECTED_GROUPS = new ObjectLinkedOpenHashSet<>();
 
     /**
      * Registers a new custom creative group. If this is the first group being registered,
@@ -30,7 +30,7 @@ public class CreativeGroupsRegistry {
         if (!isValid(def)) return;
 
         Item icon = resolveIcon(def);
-        CreativeItemGroup group = new CreativeItemGroup(def.getCategory(), def.getName(), icon);
+        CraftingCatalogGroup group = new CraftingCatalogGroup(def.getCategory(), def.getName(), icon.toNetwork());
         INJECTED_GROUPS.add(group);
     }
 
@@ -40,7 +40,7 @@ public class CreativeGroupsRegistry {
 
     private static Item resolveIcon(CreativeCustomGroups.CustomGroupDefinition def) {
         for (CreativeItemData data : CreativeItemRegistry.ITEM_DATA) {
-            Item candidate = data.getItem();
+            Item candidate = Item.fromNetwork(data.getItemInstance());
             if (def.getIconId().equals(candidate.getName()) || def.getIconId().equalsIgnoreCase(candidate.getId())) {
                 return candidate;
             }
@@ -54,14 +54,14 @@ public class CreativeGroupsRegistry {
      * Injects all registered custom groups into the group index map and runtime list.
      */
     public static void register() {
-        List<CreativeItemGroup> allOriginalGroups = new ArrayList<>(Registries.CREATIVE.getGroupList());
-        Map<CreativeItemGroup, Integer> originalGroupIndices = extractOriginalGroupIndices(allOriginalGroups);
+        List<CraftingCatalogGroup> allOriginalGroups = new ArrayList<>(Registries.CREATIVE.getGroupList());
+        Map<CraftingCatalogGroup, Integer> originalGroupIndices = extractOriginalGroupIndices(allOriginalGroups);
 
-        Map<CreativeCategory, List<CreativeItemGroup>> groupedVanilla = groupByCategory(allOriginalGroups);
-        Map<CreativeCategory, List<CreativeItemGroup>> groupedCustom = groupByCategory(new ArrayList<>(INJECTED_GROUPS));
+        Map<CreativeCategory, List<CraftingCatalogGroup>> groupedVanilla = groupByCategory(allOriginalGroups);
+        Map<CreativeCategory, List<CraftingCatalogGroup>> groupedCustom = groupByCategory(new ArrayList<>(INJECTED_GROUPS));
 
         Map<Integer, Integer> groupIndexMap = new HashMap<>();
-        List<CreativeItemGroup> rebuilt = rebuildGroupsAndRemap(groupedVanilla, groupedCustom, originalGroupIndices, groupIndexMap);
+        List<CraftingCatalogGroup> rebuilt = rebuildGroupsAndRemap(groupedVanilla, groupedCustom, originalGroupIndices, groupIndexMap);
 
         Registries.CREATIVE.getGroupList().clear();
         Registries.CREATIVE.getGroupList().addAll(rebuilt);
@@ -69,41 +69,41 @@ public class CreativeGroupsRegistry {
         remapCreativeItemGroups(groupIndexMap);
     }
 
-    private static Map<CreativeItemGroup, Integer> extractOriginalGroupIndices(List<CreativeItemGroup> allGroups) {
-        Map<CreativeItemGroup, Integer> indexMap = new HashMap<>();
+    private static Map<CraftingCatalogGroup, Integer> extractOriginalGroupIndices(List<CraftingCatalogGroup> allGroups) {
+        Map<CraftingCatalogGroup, Integer> indexMap = new HashMap<>();
         for (int i = 0; i < allGroups.size(); i++) {
             indexMap.put(allGroups.get(i), i);
         }
         return indexMap;
     }
 
-    private static Map<CreativeCategory, List<CreativeItemGroup>> groupByCategory(List<CreativeItemGroup> groups) {
-        Map<CreativeCategory, List<CreativeItemGroup>> grouped = new EnumMap<>(CreativeCategory.class);
-        for (CreativeItemGroup group : groups) {
-            CreativeCategory category = CreativeCategory.valueOf(group.getCategory().name());
+    private static Map<CreativeCategory, List<CraftingCatalogGroup>> groupByCategory(List<CraftingCatalogGroup> groups) {
+        Map<CreativeCategory, List<CraftingCatalogGroup>> grouped = new EnumMap<>(CreativeCategory.class);
+        for (CraftingCatalogGroup group : groups) {
+            CreativeCategory category = CreativeCategory.valueOf(group.getCreativeCategory().name());
             grouped.computeIfAbsent(category, k -> new ArrayList<>()).add(group);
         }
         return grouped;
     }
 
-    private static List<CreativeItemGroup> rebuildGroupsAndRemap(
-            Map<CreativeCategory, List<CreativeItemGroup>> groupedVanilla,
-            Map<CreativeCategory, List<CreativeItemGroup>> groupedCustom,
-            Map<CreativeItemGroup, Integer> originalGroupIndices,
+    private static List<CraftingCatalogGroup> rebuildGroupsAndRemap(
+            Map<CreativeCategory, List<CraftingCatalogGroup>> groupedVanilla,
+            Map<CreativeCategory, List<CraftingCatalogGroup>> groupedCustom,
+            Map<CraftingCatalogGroup, Integer> originalGroupIndices,
             Map<Integer, Integer> groupIndexMap
     ) {
-        List<CreativeItemGroup> rebuilt = new ArrayList<>();
+        List<CraftingCatalogGroup> rebuilt = new ArrayList<>();
         int newIndex = 0;
 
         for (CreativeCategory category : CreativeCategory.values()) {
-            List<CreativeItemGroup> vanilla = groupedVanilla.getOrDefault(category, Collections.emptyList());
-            List<CreativeItemGroup> custom = groupedCustom.getOrDefault(category, Collections.emptyList());
+            List<CraftingCatalogGroup> vanilla = groupedVanilla.getOrDefault(category, Collections.emptyList());
+            List<CraftingCatalogGroup> custom = groupedCustom.getOrDefault(category, Collections.emptyList());
 
             if (!vanilla.isEmpty()) {
-                List<CreativeItemGroup> vanillaMain = vanilla.subList(0, vanilla.size() - 1);
-                CreativeItemGroup wildcardGroup = vanilla.get(vanilla.size() - 1);
+                List<CraftingCatalogGroup> vanillaMain = vanilla.subList(0, vanilla.size() - 1);
+                CraftingCatalogGroup wildcardGroup = vanilla.get(vanilla.size() - 1);
 
-                for (CreativeItemGroup group : vanillaMain) {
+                for (CraftingCatalogGroup group : vanillaMain) {
                     rebuilt.add(group);
                     int originalIndex = originalGroupIndices.getOrDefault(group, -1);
                     if (originalIndex >= 0) {
@@ -115,7 +115,7 @@ public class CreativeGroupsRegistry {
                     newIndex++;
                 }
 
-                for (CreativeItemGroup group : custom) {
+                for (CraftingCatalogGroup group : custom) {
                     rebuilt.add(group);
                     CreativeItemRegistry.CATEGORY_GROUP_INDEX_MAP
                             .computeIfAbsent(category, k -> new HashMap<>())
@@ -146,9 +146,12 @@ public class CreativeGroupsRegistry {
         ObjectLinkedOpenHashSet<CreativeItemData> rebuilt = new ObjectLinkedOpenHashSet<>();
 
         for (CreativeItemData data : current) {
-            Item item = data.getItem();
-            int originalGroupId = data.getGroupId();
+            Item item = Item.fromNetwork(data.getItemInstance());
+            int originalGroupId = data.getGroupIndex();
             int newGroupId = CreativeItemRegistry.LAST_ITEMS_INDEX;
+
+            String originalId = data.getItemInstance().getDefinition().getIdentifier();
+            String rebuiltId = item.getItemDefinition().getIdentifier();
 
             // Vanilla item: remap based on old group index
             if (!isCategoryFallbackIndex(originalGroupId)) {
@@ -158,7 +161,7 @@ public class CreativeGroupsRegistry {
                 }
             } else {
                 // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
-                String key = item.getIdentifier().toString();
+                String key = originalId;
                 String groupName = CreativeItemRegistry.ITEM_GROUP_MAP.get(key);
                 CreativeCategory fallbackCategory = getCategoryFromFallbackIndex(originalGroupId);
                 boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
@@ -188,12 +191,22 @@ public class CreativeGroupsRegistry {
                     // No group set at all, fallback to last index of original category
                     int fallbackIndex = CreativeItemRegistry.getLastGroupIndexFrom(fallbackCategory.name());
                     log.debug("Group name not saved for item '{}'; falling back to last index {}",
-                             item.getName(), fallbackIndex);
+                             originalId, fallbackIndex);
                     newGroupId = fallbackIndex;
                 }
             }
-            rebuilt.add(new CreativeItemData(item, newGroupId));
+
+            CreativeItemData rebuiltData;
+
+            if (originalId.endsWith("_spawn_egg")) {
+                rebuiltData = new CreativeItemData(item.toCreativeNetwork(), data.getCreativeNetId(), newGroupId);
+            } else {
+                rebuiltData = new CreativeItemData(data.getItemInstance(), data.getCreativeNetId(), newGroupId);
+            }
+
+            rebuilt.add(rebuiltData);
         }
+
         current.clear();
         current.addAll(rebuilt);
         CreativeItemRegistry.ITEM_GROUP_MAP.clear();

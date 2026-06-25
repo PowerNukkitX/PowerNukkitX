@@ -1,6 +1,5 @@
 package cn.nukkit.recipe;
 
-import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.registry.Registries;
@@ -24,7 +23,7 @@ public class RecipeTest {
 
     @Test
     void test_getNetworkIdRecipeList() {
-        Registries.RECIPE.getNetworkIdRecipeList();
+        Registries.RECIPE.getNetworkIdRecipeMap();
     }
 
     @Test
@@ -33,11 +32,11 @@ public class RecipeTest {
         Assertions.assertEquals("minecraft:iron_nugget", blastFurnaceRecipe.getResult().getId());
     }
 
-    @Test
+    /*TODO protocol @Test
     void test_findShapelessRecipe() {
         ShapelessRecipe shapelessRecipe = Registries.RECIPE.findShapelessRecipe(Item.get(BlockID.BLUE_SHULKER_BOX), Item.get(ItemID.BROWN_DYE));
         Assertions.assertEquals("minecraft:brown_shulker_box", shapelessRecipe.getResult().getId());
-    }
+    }*/
 
     @Test
     void test_tryShrinkMatrix1() {

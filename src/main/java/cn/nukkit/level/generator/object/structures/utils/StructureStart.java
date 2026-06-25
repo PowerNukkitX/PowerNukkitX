@@ -3,12 +3,13 @@ package cn.nukkit.level.generator.object.structures.utils;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 import com.google.common.collect.Lists;
 
 import java.util.List;
+
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public abstract class StructureStart {
 
@@ -57,7 +58,7 @@ public abstract class StructureStart {
                 .putString("id", this.getType())
                 .putInt("ChunkX", this.chunkX)
                 .putInt("ChunkZ", this.chunkZ)
-                .put("BB", this.boundingBox.createTag());
+                .putIntArray("BB", this.boundingBox.createTag());
 
         ListTag<CompoundTag> children = new ListTag<>();
         for (StructurePiece piece : this.pieces) {
@@ -68,9 +69,9 @@ public abstract class StructureStart {
         return tag;
     }
 
-    protected void moveBelowSeaLevel(int max, RandomSourceProvider random, int min) {
-        int range = max - min;
-        int y = this.boundingBox.getYSpan() + 1;
+    protected void moveBelowSeaLevel(RandomSourceProvider random, int min) {
+        int range = SEA_LEVEL - min;
+        int y = this.boundingBox.getYSpan() - 64 + 1;
         if (y < range) {
             y += random.nextBoundedInt(range - y);
         }

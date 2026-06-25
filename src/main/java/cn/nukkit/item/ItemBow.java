@@ -81,15 +81,15 @@ public class ItemBow extends ItemTool {
         Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
-        ItemArrow itemArrow = (ItemArrow) (offhandOptional.isPresent() ?  offhandOptional.get().getValue() : inventoryOptional.map(Map.Entry::getValue).orElse(null));
+        ItemArrow itemArrow = (ItemArrow) (offhandOptional.isPresent() ? offhandOptional.get().getValue() : inventoryOptional.map(Map.Entry::getValue).orElse(null));
 
-        if(itemArrow == null) {
-            if(player.isCreative()) {
+        if (itemArrow == null) {
+            if (player.isCreative()) {
                 itemArrow = new ItemArrow();
             } else return false;
         }
 
-        CompoundTag nbt = new CompoundTag()
+        final CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(player.x))
                         .add(new DoubleTag(player.y + player.getEyeHeight()))
@@ -101,7 +101,7 @@ public class ItemBow extends ItemTool {
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag((float) -player.pitch)))
-                .putShort("Fire", flame ? 45 * 60 : 0)
+                .putShort("Fire", (short) (flame ? 45 * 60 : 0))
                 .putDouble("damage", damage);
 
         double p = (double) ticksUsed / 20;
@@ -135,6 +135,8 @@ public class ItemBow extends ItemTool {
                 ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
             }
 
+            arrow.setEnchantments(this.getEnchantments());
+
             for (var enc : this.getEnchantments()) {
                 if (enc instanceof EnchantmentBow enchantmentBow) {
                     enchantmentBow.onBowShoot(player, arrow, this);
@@ -143,7 +145,7 @@ public class ItemBow extends ItemTool {
 
             if (player.isAdventure() || player.isSurvival()) {
                 if (!infinity) {
-                    if(offhandOptional.isPresent()) {
+                    if (offhandOptional.isPresent()) {
                         int index = offhandOptional.get().getKey();
                         player.getOffhandInventory().setItem(index, player.getOffhandInventory().getItem(index).decrement(1));
                     } else {

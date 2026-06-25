@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBamboo;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 
@@ -13,7 +14,7 @@ public class GeneratorRoot extends BlockManager {
     public boolean canReplace(int x, int y, int z) {
         Block cached = getCachedBlock(x, y, z);
         if(cached == null) return true;
-        return cached.canBeReplaced();
+        return (cached.canBeReplaced() || cached.canPassThrough() || cached.diffusesSkyLight()) && !(cached instanceof BlockBamboo);
     }
 
     @Override

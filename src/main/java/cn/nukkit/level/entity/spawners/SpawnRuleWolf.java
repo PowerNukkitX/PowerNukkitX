@@ -2,11 +2,9 @@ package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.level.entity.condition.Condition;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
-import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionInAir;
 import cn.nukkit.level.entity.condition.ConditionNot;
 import cn.nukkit.level.entity.condition.ConditionPopulationControl;
@@ -26,14 +24,14 @@ public class SpawnRuleWolf extends MultiSpawnRule {
                 new ConditionSpawnOnBlockFilter(Utils.concatArray(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new),
                         BlockTags.getBlockSet(BlockTags.DIRT).toArray(String[]::new),
                         new String[] {BlockID.PODZOL})),
-                new ConditionPopulationControl(EntityAnimal.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
         }, new SpawnRuleMagmaCubeLess(), new SpawnRuleMagmaCubeMany());
     }
 
     private static class SpawnRuleMagmaCubeLess extends SpawnRule {
 
         public SpawnRuleMagmaCubeLess() {
-            super(Entity.WOLF, 4 ,4,
+            super(Entity.WOLF, 4 ,4, 8,
                     new ConditionBiomeFilter(BiomeTags.TAIGA));
         }
     }
@@ -41,7 +39,7 @@ public class SpawnRuleWolf extends MultiSpawnRule {
     private static class SpawnRuleMagmaCubeMany extends SpawnRule {
 
         public SpawnRuleMagmaCubeMany() {
-            super(Entity.WOLF, 2, 4,
+            super(Entity.WOLF, 2, 4, 5,
                     new ConditionBiomeFilter(BiomeTags.FOREST),
                     new ConditionNot(new ConditionBiomeFilter(BiomeTags.MUTATED, BiomeTags.BIRCH, BiomeTags.ROOFED, BiomeTags.MOUNTAIN))
             );

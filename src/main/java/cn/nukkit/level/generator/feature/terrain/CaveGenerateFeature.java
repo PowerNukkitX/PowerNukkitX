@@ -9,10 +9,10 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import java.util.Set;
 
@@ -370,8 +370,8 @@ public class CaveGenerateFeature extends GenerateFeature {
             return;
         }
 
-        BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(x, y, z));
-        BlockState topBlock = Registries.BLOCKSTATE.get(definition.data.chunkGenData.get().surfaceMaterial.get().topBlock);
+        BiomeDefinitionData definition = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).second();
+        BlockState topBlock = Registries.BLOCKSTATE.get(definition.getChunkGenData().getSurfaceBuilderData().getSurfaceMaterial().getTopBlock().getRuntimeId());
         chunk.setBlockState(x, y, z, topBlock);
     }
 }

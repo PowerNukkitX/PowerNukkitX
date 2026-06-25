@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBarrel;
 import cn.nukkit.block.BlockChest;
 import cn.nukkit.block.BlockDecoratedPot;
-import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.dispenser.BlockDispenser;
 import cn.nukkit.block.BlockTrialSpawner;
 import cn.nukkit.block.copper.bulb.BlockCopperBulb;
 import cn.nukkit.blockentity.BlockEntityDecoratedPot;
@@ -14,13 +14,12 @@ import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
+import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.level.generator.object.structures.jigsaw.JigsawStructure;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePool;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
-import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
@@ -36,6 +35,7 @@ import java.util.Map;
 
 /**
  * Trial Chamber Structure for PowerNukkitX
+ *
  * @author Buddelbubi
  */
 public class TrialChambersStructure extends JigsawStructure {
@@ -75,6 +75,7 @@ public class TrialChambersStructure extends JigsawStructure {
         TRIAL_SPAWNER_ENTITY_LOOKUP.put("baby_zombie", EntityID.ZOMBIE);
 
     }
+
     private static final IntersectionBarrelPopulator INTERSECTION_BARREL = new IntersectionBarrelPopulator();
 
     private static final DecoratedPotPopulator DECORATED_POT = new DecoratedPotPopulator();
@@ -147,7 +148,7 @@ public class TrialChambersStructure extends JigsawStructure {
             Level level = blockManager.getLevel();
             switch (block) {
                 case BlockChest chest -> {
-                    if(container != null) {
+                    if (container != null) {
                         blockManager.addHook(() -> {
                             container.create(chest.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
                         });
@@ -183,8 +184,10 @@ public class TrialChambersStructure extends JigsawStructure {
                         });
                     }
                 }
-                default -> {}
-            };
+                default -> {
+                }
+            }
+            ;
         }
     }
 
@@ -747,14 +750,15 @@ public class TrialChambersStructure extends JigsawStructure {
                                 Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
                                 applyRandomEnchantment(item, entry.getEnchantments(), random);
                                 blockEntity.setItem(item);
-                                blockEntity.namedTag.putList("sherds", createSherds(random));
+                                blockEntity.getNbt().putList("sherds", createSherds(random));
                                 blockEntity.spawnToAll();
                                 return;
                             }
                         }
                     }
                 });
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         private ListTag<StringTag> createSherds(RandomSourceProvider random) {

@@ -126,6 +126,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(SwampFlowerFeature.NAME, SwampFlowerFeature.class);
             this.register(ScatterRedMushroomFeature.NAME, ScatterRedMushroomFeature.class);
             this.register(ScatterBrownMushroomFeature.NAME, ScatterBrownMushroomFeature.class);
+            this.register(ScatterOverworldFlowerFeature.NAME, ScatterOverworldFlowerFeature.class);
             this.register(ScatterPlainsFlowerFeature.NAME, ScatterPlainsFlowerFeature.class);
             this.register(SunflowerDouplePlantPatchFeature.NAME, SunflowerDouplePlantPatchFeature.class);
             this.register(SavannaMutatedTreeFeature.NAME, SavannaMutatedTreeFeature.class);
@@ -142,14 +143,21 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(CoralMushroomFeature.NAME, CoralMushroomFeature.class);
             this.register(SeaAnemoneFeature.NAME, SeaAnemoneFeature.class);
             this.register(SeaPickleFeature.NAME, SeaPickleFeature.class);
+            this.register(OverworldUnderwaterMagmaFeature.NAME, OverworldUnderwaterMagmaFeature.class);
             this.register(OverworldCaveCarverFeature.NAME, OverworldCaveCarverFeature.class);
+            this.register(OverworldSurfaceSpringsFeature.NAME, OverworldSurfaceSpringsFeature.class);
             this.register(MonsterRoomFeature.NAME, MonsterRoomFeature.class);
             this.register(MossSnapToCeilingFeature.NAME, MossSnapToCeilingFeature.class);
             this.register(AzaleaRootSystemSnapToCeilingFeature.NAME, AzaleaRootSystemSnapToCeilingFeature.class);
             this.register(MossPatchSnapToFloorFeature.NAME, MossPatchSnapToFloorFeature.class);
             this.register(RandomClayWithDripleavesSnapToFloorFeature.NAME, RandomClayWithDripleavesSnapToFloorFeature.class);
             this.register(DripstoneClusterFeature.NAME, DripstoneClusterFeature.class);
+            this.register(SulfurSpikeFeature.NAME, SulfurSpikeFeature.class);
+            this.register(SulfurSpikeClusterFeature.NAME, SulfurSpikeClusterFeature.class);
+            this.register(SulfurPoolWithPotentSulfurSnapToSurfaceFeature.NAME, SulfurPoolWithPotentSulfurSnapToSurfaceFeature.class);
+            this.register(SulfurSpringTrailToSurfaceSnapToCeilingFeature.NAME, SulfurSpringTrailToSurfaceSnapToCeilingFeature.class);
             this.register(SculkPatchFeature.NAME, SculkPatchFeature.class);
+            this.register(GlowLichenFeature.NAME, GlowLichenFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

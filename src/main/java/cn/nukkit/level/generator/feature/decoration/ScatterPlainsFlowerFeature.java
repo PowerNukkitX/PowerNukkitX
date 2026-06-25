@@ -1,14 +1,12 @@
 package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.*;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ScatterPlainsFlowerFeature extends CountGenerateFeature {
@@ -32,11 +30,11 @@ public class ScatterPlainsFlowerFeature extends CountGenerateFeature {
         for (int x = sourceX - radius; x <= sourceX + radius; x++) {
             for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                 if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
-                    if(random.nextFloat() < 0.7f) {
+                    if(random.nextFloat() < 0.1f) {
                         int height = level.getHeightMap(x, z);
                         BlockState topBlockState = level.getBlockStateAt(x, height, z);
                         if(isSupportValid(topBlockState.toBlock())) {
-                            populateFlower(random.nextInt(8), object, x, height + 1, z);
+                            populateFlower(random.nextBoundedInt(8), object, x, height + 1, z);
                         }
                     }
                 }

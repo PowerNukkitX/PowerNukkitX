@@ -10,14 +10,13 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.PlayerAuthInputPacket;
 import cn.nukkit.utils.MinecartType;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Snake1999
@@ -95,7 +94,7 @@ public class EntityMinecart extends EntityMinecartAbstract {
 
     @Override
     public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
-        double inputY = pk.motion.getY();
+        double inputY = pk.getMoveVector().getY();
         if (inputY >= -1.001 && inputY <= 1.001) {
             this.setCurrentSpeed(inputY);
         }

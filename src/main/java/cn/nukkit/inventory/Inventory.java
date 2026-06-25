@@ -1,16 +1,17 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.DoNotModify;
+import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jline.utils.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -221,7 +222,7 @@ public interface Inventory {
 
     Set<Player> getViewers();
 
-    InventoryType getType();
+    ContainerType getType();
 
     InventoryHolder getHolder();
 
@@ -239,13 +240,28 @@ public interface Inventory {
     void close(Player who);
 
     /**
-     * 当执行{@link #setItem(int, Item)}时该方法会被调用，此时物品已经put进slots
+     * Fires an {@link InventoryPickupItemEvent} for this inventory picking up the given item entity.
      * <p>
+     * Callers should invoke this right before consuming the {@link EntityItem} (and after deciding the
+     * item is wanted) so plugins can cancel the pickup. This only handles the event; the actual logic of
+     * adding the item to the inventory stays with the caller, since that differs between inventories
+     * (e.g. equipping armor, filling the offhand, or a plain {@code addItem}).
+     *
+     * @param item the item entity being picked up
+     * @return {@code true} if the pickup may proceed, {@code false} if a plugin cancelled it
+     */
+    default boolean callPickupItemEvent(EntityItem item) {
+        InventoryPickupItemEvent ev = new InventoryPickupItemEvent(this, item);
+        Server.getInstance().getPluginManager().callEvent(ev);
+        return !ev.isCancelled();
+    }
+
+    /**
      * This method is called when {@link #setItem(int, Item)} is executed, and the item has been put into slots
      *
-     * @param index  物品变动的格子索引<br>The grid index of the item's changes
-     * @param before 变动前的物品<br>Items before the change
-     * @param send   是否发送{@link InventorySlotPacket}到客户端<br>Whether to send {@link InventorySlotPacket} to the client
+     * @param index  The grid index of the item's changes
+     * @param before Items before the change
+     * @param send   Whether to send {@link org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket} to the client
      */
     void onSlotChange(int index, Item before, boolean send);
 
@@ -271,7 +287,7 @@ public interface Inventory {
      * slot id -> ContainerSlotType
      */
     @ApiStatus.Internal
-    default Map<Integer, ContainerSlotType> slotTypeMap() {
+    default Map<Integer, ContainerEnumName> slotTypeMap() {
         return new HashMap<>();
     }
 
@@ -286,8 +302,8 @@ public interface Inventory {
     }
 
     @ApiStatus.Internal
-    default ContainerSlotType getSlotType(int nativeSlot) {
-        ContainerSlotType type = slotTypeMap().get(fromNetworkSlot(nativeSlot));
+    default ContainerEnumName getContainerEnumName(int nativeSlot) {
+        ContainerEnumName type = slotTypeMap().get(fromNetworkSlot(nativeSlot));
         if (type == null) {
             throw new IllegalStateException("ContainerSlotType " + nativeSlot + " does not exist!");
         }

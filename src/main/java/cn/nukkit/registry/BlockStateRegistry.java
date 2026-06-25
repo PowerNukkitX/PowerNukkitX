@@ -4,17 +4,16 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.utils.BlockColor;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,28 +27,29 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
 
     @Override
     public void init() {
-        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/endstone/block_states.json")) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            JsonArray blockStateData = JsonParser.parseReader(reader).getAsJsonArray();
-            for(int i = 0; i < blockStateData.size(); i++) {
-                JsonObject entry = blockStateData.get(i).getAsJsonObject();
-                int hash = entry.get("blockStateHash").getAsInt();
-                String name = entry.get("name").getAsString();
-                if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
+        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/kaooot/block_palette.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            final NbtMap nbtMap = (NbtMap) nbtInputStream.readTag();
+            final List<NbtMap> blocks = nbtMap.getList("blocks", NbtType.COMPOUND);
+            for (NbtMap block : blocks) {
+                int hash = block.getInt("network_id");
+                String name = block.getString("name");
+                if (BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
-                if(state == null) {
-                    Server.getInstance().getLogger().alert(name + " (" + hash + ") was not a part of block_states.json.");
+                if (state == null) {
+                    Server.getInstance().getLogger().alert("failed to find block state for " + name + " (" + hash + ")");
                 } else {
-                    if(!state.getIdentifier().equals(name)) {
+                    if (!state.getIdentifier().equals(name)) {
                         Server.getInstance().getLogger().alert("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());
                     }
                 }
-                String hexString = entry.get("mapColor").getAsString().substring(1, 9);
-                int r = Integer.parseInt(hexString.substring(0,2), 16);
-                int g = Integer.parseInt(hexString.substring(2,4), 16);
-                int b = Integer.parseInt(hexString.substring(4,6), 16);
-                int a = Integer.parseInt(hexString.substring(6,8), 16);
-                BlockColor.Tint tint = BlockColor.Tint.get(entry.get("tintMethod").toString().replace("\"", ""));
+                // TODO protocol add replacement
+                String hexString = "#575c5cff".substring(1, 9);
+                int r = Integer.parseInt(hexString.substring(0, 2), 16);
+                int g = Integer.parseInt(hexString.substring(2, 4), 16);
+                int b = Integer.parseInt(hexString.substring(4, 6), 16);
+                int a = Integer.parseInt(hexString.substring(6, 8), 16);
+                BlockColor.Tint tint = BlockColor.Tint.get("None");
                 Block.VANILLA_BLOCK_COLOR_MAP.put(hash, new BlockColor(r, g, b, a, tint));
             }
         } catch (IOException e) {

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockShortGrass extends BlockFlowable {
+public class BlockShortGrass extends BlockFlowable implements Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SHORT_GRASS);
 
     @Override
@@ -57,7 +57,7 @@ public class BlockShortGrass extends BlockFlowable {
         if (this.getLevel().getBlock(this).getId().equals(BlockID.SHORT_GRASS))
             return false;
 
-        if (BlockDeadbush.isSupportValid(down())) {
+        if (isSupportDirt(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }
@@ -67,7 +67,7 @@ public class BlockShortGrass extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockSweetBerryBush.isSupportValid(down(1, 0))) {
+            if (!isSupportDirt(down(1, 0))) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

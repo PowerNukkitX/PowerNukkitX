@@ -1,7 +1,6 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
@@ -10,6 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -33,14 +33,14 @@ public class EntityLingeringPotion extends EntitySplashPotion {
     @Override
     protected void initEntity() {
         super.initEntity();
-        setDataFlag(EntityFlag.LINGERING, true);
+        setDataFlag(ActorFlags.LINGERING, true);
     }
 
     @Override
     protected void splash(Entity collidedWith) {
         super.splash(collidedWith);
         saveNBT();
-        ListTag<?> pos = (ListTag<?>) namedTag.getList("Pos", CompoundTag.class).copy();
+        ListTag<?> pos = (ListTag<?>) nbt.getList("Pos", CompoundTag.class).copy();
         EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
                 new CompoundTag().putList("Pos", pos)
                         .putList("Rotation", new ListTag<>()

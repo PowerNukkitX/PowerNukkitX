@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FERN);
 
     @Override
@@ -58,7 +58,7 @@ public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPot
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockSweetBerryBush.isSupportValid(down())) {
+        if (isSupportDirt(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }
@@ -68,7 +68,7 @@ public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPot
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockSweetBerryBush.isSupportValid(down(1, 0))) {
+            if (!isSupportDirt(down(1, 0))) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

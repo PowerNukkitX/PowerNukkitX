@@ -73,6 +73,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         return entityClass.cast(created);
     }
 
+
     default @NotNull E getOrCreateBlockEntity() {
         E blockEntity = getBlockEntity();
         if (blockEntity != null) {

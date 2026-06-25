@@ -13,12 +13,9 @@ import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.components.TameableComponent;
 import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
-import cn.nukkit.entity.data.EntityDataMap;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.entity.passive.EntityWanderingTrader;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
@@ -43,11 +40,15 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.network.protocol.AnimatePacket;
-import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.TickCachedBlockIterator;
 import cn.nukkit.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,15 +60,13 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.NotNull;
-
 
 @Slf4j
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected int attackTime = 0;
     protected boolean invisible = false;
     protected int turtleTicks = 0;
-    private boolean attackTimeByShieldKb;
+    protected boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
     private static final int SHIELD_TRANSITION_TICKS = 2;
@@ -119,25 +118,25 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.contains("HealF")) {
-            this.namedTag.putFloat("Health", this.namedTag.getShort("HealF"));
-            this.namedTag.remove("HealF");
+        if (this.nbt.contains("HealF")) {
+            this.nbt.putFloat("Health", this.nbt.getShort("HealF"));
+            this.nbt.remove("HealF");
         }
 
-        if (!this.namedTag.contains("Health") || !(this.namedTag.get("Health") instanceof FloatTag)) {
-            this.namedTag.putFloat("Health", this.getHealthMax());
+        if (!this.nbt.contains("Health") || !(this.nbt.get("Health") instanceof FloatTag)) {
+            this.nbt.putFloat("Health", this.getHealthMax());
         }
 
         this.setHealthMax(this.getHealthMax());
-        setHealthCurrent(this.namedTag.getFloat("Health"));
+        setHealthCurrent(this.nbt.getFloat("Health"));
 
         // Load Tame and Chest from NBT
-        if (this.namedTag.contains("Tamed")) {
-            boolean hasTagTamed = this.namedTag.getBoolean("Tamed");
-            if (hasTagTamed || this.isTamed()) this.setDataFlag(EntityFlag.TAMED, true, false);
+        if (this.nbt.contains("Tamed")) {
+            boolean hasTagTamed = this.nbt.getBoolean("Tamed");
+            if (hasTagTamed || this.isTamed()) this.setDataFlag(ActorFlags.TAMED, true, false);
         }
-        if (this.namedTag.contains("Chested")) {
-            this.setDataFlag(EntityFlag.CHESTED, this.namedTag.getBoolean("Chested"), true);
+        if (this.nbt.contains("Chested")) {
+            this.setDataFlag(ActorFlags.CHESTED, this.nbt.getBoolean("Chested"), true);
         }
         updateInventoryFlags();
 
@@ -147,29 +146,30 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (this.canBeSaddled()) {
-            if (this.namedTag.contains("saddled")) {
-                this.setDataFlag(EntityFlag.SADDLED, this.namedTag.getBoolean("saddled"));
+            if (this.nbt.contains("saddled")) {
+                this.setDataFlag(ActorFlags.SADDLED, this.nbt.getBoolean("saddled"));
             } else {
-                this.setDataFlag(EntityFlag.SADDLED, false);
+                this.setDataFlag(ActorFlags.SADDLED, false);
             }
         }
 
         if (this.isBaby()) loadParentFromNBT();
 
-        if (!this.isPlayer && this.namedTag != null && this.namedTag.contains(NBT_RIDING_UUID)) {
+        if (!this.isPlayer && this.nbt != null && this.nbt.contains(NBT_RIDING_UUID)) {
             this.restoreMountTries = 60;
         }
     }
 
 
+
     protected void loadParentFromNBT() {
         if (!(this instanceof EntityIntelligent ei)) return;
-        if (this.namedTag == null) return;
+        if (this.nbt == null) return;
         if (!this.isBaby()) return;
         if (ei.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT)) return;
 
         UUID wanted = null;
-        String parentStr = this.namedTag.getString("Parent");
+        String parentStr = this.getNbt().getString("Parent");
         if (parentStr != null && !parentStr.isEmpty()) {
             try {
                 wanted = UUID.fromString(parentStr);
@@ -221,7 +221,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         var chosenUuid = chosen.getUniqueId();
         if (chosenUuid != null) {
-            this.namedTag.putString("Parent", chosenUuid.toString());
+            this.nbt.putString("Parent", chosenUuid.toString());
         }
     }
 
@@ -230,19 +230,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (restoreMountTries > 0) {
             restoreMountTries--;
             if ((restoreMountTries % 4) == 0) tryRestoreMountLink();
-            if (restoreMountTries == 0 && this.riding == null) this.namedTag.remove(NBT_RIDING_UUID);
+            if (restoreMountTries == 0 && this.riding == null) this.nbt.remove(NBT_RIDING_UUID);
         }
 
         return super.onUpdate(currentTick);
     }
 
     private void tryRestoreMountLink() {
-        String uuidStr = this.namedTag.getString(NBT_RIDING_UUID);
+        String uuidStr = this.getNbt().getString(NBT_RIDING_UUID);
         UUID wanted;
         try {
             wanted = UUID.fromString(uuidStr);
         } catch (IllegalArgumentException ignored) {
-            this.namedTag.remove(NBT_RIDING_UUID);
+            this.nbt.remove(NBT_RIDING_UUID);
             restoreMountTries = 0;
             return;
         }
@@ -265,9 +265,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         boolean wasAlive = this.isAlive();
         super.setHealthCurrent(health);
         if (this.isAlive() && !wasAlive) {
-            EntityEventPacket pk = new EntityEventPacket();
-            pk.eid = this.getId();
-            pk.event = EntityEventPacket.RESPAWN;
+            final ActorEventPacket pk = new ActorEventPacket();
+            pk.setTargetRuntimeID(this.getId());
+            pk.setType(ActorEvent.SPAWN_ALIVE);
             Server.broadcastPacket(this.hasSpawned.values(), pk);
         }
     }
@@ -275,21 +275,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putFloat("Health", this.getHealthCurrent());
+        this.nbt.putFloat("Health", this.getHealthCurrent());
 
         if (!isAgeable()) return;
         if (!isBaby()) {
-            if (namedTag.contains(TAG_ENTITY_GROW_LEFT)) namedTag.remove(TAG_ENTITY_GROW_LEFT);
+            if (this.nbt.contains(TAG_ENTITY_GROW_LEFT)) this.nbt.remove(TAG_ENTITY_GROW_LEFT);
             return;
         }
         ensureGrowLoaded();
         if (growDirty) {
-            namedTag.putInt(TAG_ENTITY_GROW_LEFT, Math.max(0, ticksGrowLeft));
+            this.nbt.putInt(TAG_ENTITY_GROW_LEFT, Math.max(0, ticksGrowLeft));
             growDirty = false;
         }
 
         if (this.canBeSaddled()) {
-            this.namedTag.putBoolean("saddled", isSaddled());
+            this.nbt.putBoolean("saddled", isSaddled());
         }
     }
 
@@ -308,20 +308,20 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         final double selfEye = this.getEyeHeight();
         final double selfChest = this.getHeight() * 0.60;
 
-        Vector3[] fromPoints = new Vector3[] {
-            selfPos.add(0, selfEye + 0.001, 0),
-            selfPos.add(0, selfChest + 0.001, 0),
+        Vector3[] fromPoints = new Vector3[]{
+                selfPos.add(0, selfEye + 0.001, 0),
+                selfPos.add(0, selfChest + 0.001, 0),
         };
 
         final double tH = Math.max(0.0, target.getHeight());
         final double tEye = Math.max(0.0, target.getEyeHeight());
         final Vector3 tBase = target.getPosition();
 
-        Vector3[] toPoints = new Vector3[] {
-            tBase.add(0, Math.max(0.2 * tH, 0.25), 0),
-            tBase.add(0, Math.max(0.5 * tH, 0.5),  0),
-            tBase.add(0, Math.max(0.8 * tH, 0.75), 0),
-            tBase.add(0, Math.max(tEye, 0.9),      0),
+        Vector3[] toPoints = new Vector3[]{
+                tBase.add(0, Math.max(0.2 * tH, 0.25), 0),
+                tBase.add(0, Math.max(0.5 * tH, 0.5), 0),
+                tBase.add(0, Math.max(0.8 * tH, 0.75), 0),
+                tBase.add(0, Math.max(tEye, 0.9), 0),
         };
 
         boolean useCorridor = thickness > 0.0;
@@ -344,9 +344,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                 Vector3 up = new Vector3(0, thickness, 0);
 
-                Vector3[] offsets = new Vector3[] {
-                    right, right.multiply(-1),
-                    up,    up.multiply(-1),
+                Vector3[] offsets = new Vector3[]{
+                        right, right.multiply(-1),
+                        up, up.multiply(-1),
                 };
 
                 boolean allClear = true;
@@ -357,7 +357,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
                     boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
 
-                    if (blocked) { allClear = false; break; }
+                    if (blocked) {
+                        allClear = false;
+                        break;
+                    }
                 }
 
                 if (allClear) return true;
@@ -385,23 +388,20 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return false;
         }
 
+
         if (super.attack(source)) {
-            if (source instanceof EntityDamageByEntityEvent) {
-                Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
+            if (source instanceof EntityDamageByEntityEvent event) {
+                Entity damager = event.getDamager();
                 if (source instanceof EntityDamageByChildEntityEvent) {
                     damager = ((EntityDamageByChildEntityEvent) source).getChild();
                 }
+                if (event.isCriticalHit()) {
+                    final AnimatePacket animatePacket = new AnimatePacket();
+                    animatePacket.setTargetRuntimeID(this.getId());
+                    animatePacket.setAction(AnimatePacket.Action.CRITICAL_HIT);
 
-                //Critical hit
-                if (damager instanceof Player && !damager.onGround) {
-                    AnimatePacket animate = new AnimatePacket();
-                    animate.action = AnimatePacket.Action.CRITICAL_HIT;
-                    animate.eid = getId();
-
-                    this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animate);
+                    this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animatePacket);
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
-
-                    source.setDamage(source.getDamage() * 1.5f);
                 }
 
                 if (damager.isOnFire() && !(damager instanceof Player)) {
@@ -413,10 +413,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 this.knockBack(damager, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
             }
 
-            EntityEventPacket pk = new EntityEventPacket();
-            pk.eid = this.getId();
-            pk.event = this.getHealthCurrent() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
-            Server.broadcastPacket(this.hasSpawned.values(), pk);
+            final ActorEventPacket actorEventPacket = new ActorEventPacket();
+            actorEventPacket.setTargetRuntimeID(this.getId());
+            actorEventPacket.setType(this.getHealthCurrent() <= 0 ? ActorEvent.DEATH : ActorEvent.HURT);
+            Server.broadcastPacket(this.hasSpawned.values(), actorEventPacket);
 
             this.attackTime = source.getAttackCooldown();
             this.attackTimeByShieldKb = false;
@@ -438,13 +438,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
 
-        if(this instanceof Player player) {
+        if (this instanceof Player player) {
             float totalReduction = 0.0f;
 
             InventorySlice armorInventory = player.getInventory().getArmorInventory();
 
-            for (Item item : armorInventory.getContents().values()){
-                if(!item.isNull()){
+            for (Item item : armorInventory.getContents().values()) {
+                if (!item.isNull()) {
                     totalReduction += item.getKnockbackResistance();
                 }
             }
@@ -468,6 +468,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         motion.x += x * f * base;
         motion.y += base;
         motion.z += z * f * base;
+
+        if (motion.y > 0.4) {
+            motion.y = 0.4;
+        }
 
         this.setMotion(motion);
     }
@@ -520,7 +524,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
         }
 
-        this.setDataFlag(EntityFlag.BREATHING, isBreathing);
+        this.setDataFlag(ActorFlags.BREATHING, isBreathing);
 
         boolean hasUpdate = super.entityBaseTick(tickDiff);
 
@@ -592,6 +596,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     /**
      * Defines the drops after the entity's death without looting
+     *
      * @deprecated Use {@link #getDrops(Item)}
      */
     @Deprecated
@@ -601,6 +606,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     /**
      * Defines the drops of the entity adjusted with the enchantments of the item
+     *
      * @param weapon - The weapon that was used to kill the entity.
      * @since 12/12/2025
      */
@@ -679,7 +685,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return null;
     }
 
-    /** The radius of the area blocks the entity will attempt to stay within around a target. */
+    /**
+     * The radius of the area blocks the entity will attempt to stay within around a target.
+     */
     public int getFollowRadius() {
         if (isCustomEntity()) {
             return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).radius();
@@ -687,12 +695,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return 0;
     }
 
-    /** The maximum distance the mob will go from a target. */
+    /**
+     * The maximum distance the mob will go from a target.
+     */
     public int getFollowMax() {
         if (isCustomEntity()) {
             return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).max();
         }
         return 0;
+    }
+
+    public float getWalkSpeed() {
+        return this.getMovementSpeed();
+    }
+
+    public void setWalkSpeed(float speed) {
+        this.setMovementSpeed(speed);
     }
 
     /**
@@ -704,7 +722,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.movementSpeed = (float) NukkitMath.round(speed, 2);
     }
 
-    /** Gets the attack power of the entity. */
+    /**
+     * Gets the attack power of the entity.
+     */
     public int getAttackPower() {
         if (isCustomEntity()) {
             Meta.Attack atk = meta().getAttack(CustomEntityComponents.ATTACK);
@@ -717,11 +737,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public int getAirTicks() {
-        return this.getDataProperty(AIR_SUPPLY);
+        short airTicks = this.getDataProperty(ActorDataTypes.AIR_SUPPLY, (short) 300);
+        if (!this.getActorDataMap().containsKey(ActorDataTypes.AIR_SUPPLY)) {
+            this.setDataProperty(ActorDataTypes.AIR_SUPPLY, airTicks, false);
+        }
+        return airTicks;
     }
 
     public void setAirTicks(int ticks) {
-        this.setDataProperty(AIR_SUPPLY, ticks);
+        this.setDataProperty(ActorDataTypes.AIR_SUPPLY, (short) ticks);
     }
 
     protected boolean blockedByShield(EntityDamageEvent source) {
@@ -769,14 +793,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean isBlocking() {
-        return this.getDataFlag(EntityFlag.BLOCKING) && this.hasShieldReady();
+        return this.getDataFlag(ActorFlags.BLOCKING) && this.hasShieldReady();
     }
 
     public boolean hasShieldReady() {
         if (this instanceof InventoryHolder holder) {
             if (holder.getInventory() instanceof HumanInventory inventory) {
                 return inventory.getItemInMainHand() instanceof ItemShield
-                    || inventory.getItemInOffhand() instanceof ItemShield;
+                        || inventory.getItemInOffhand() instanceof ItemShield;
             }
         }
         return false;
@@ -785,13 +809,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected boolean shouldBlockWithShield() {
         if (!(this instanceof Player)) return false;
         if (!this.hasShieldReady()) return false;
-        if (!this.getDataFlag(EntityFlag.SNEAKING)) return false;
+        if (!this.getDataFlag(ActorFlags.SNEAKING)) return false;
         return this.shieldAttackInterruptTicks <= 0;
     }
 
     public void updateShieldBlockingState() {
         boolean shouldBlock = this.shouldBlockWithShield();
-        boolean isBlocking = this.getDataFlag(EntityFlag.BLOCKING);
+        boolean isBlocking = this.getDataFlag(ActorFlags.BLOCKING);
 
         if (shouldBlock && !isBlocking) {
             this.setBlocking(true);
@@ -803,7 +827,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void interruptShieldBlockingForAttack() {
         if (!(this instanceof Player)) return;
         if (!this.hasShieldReady()) return;
-        if (!this.getDataFlag(EntityFlag.SNEAKING)) return;
+        if (!this.getDataFlag(ActorFlags.SNEAKING)) return;
 
         if (this.shieldAttackInterruptTicks > 0) return;
 
@@ -821,29 +845,27 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     private void setBlockingFlags(boolean blocking, boolean transitionBlocking) {
-        EnumSet<EntityFlag> flags = this.getEntityDataMap().getOrCreateFlags2();
+        EnumSet<ActorFlags> ext = this.getActorDataMap().getOrCreateFlags();
 
         boolean changed = false;
 
         if (blocking) {
-            changed |= flags.add(EntityFlag.BLOCKING);
+            changed |= ext.add(ActorFlags.BLOCKING);
         } else {
-            changed |= flags.remove(EntityFlag.BLOCKING);
+            changed |= ext.remove(ActorFlags.BLOCKING);
         }
 
         if (transitionBlocking) {
-            changed |= flags.add(EntityFlag.TRANSITION_BLOCKING);
+            changed |= ext.add(ActorFlags.TRANSITION_BLOCKING);
         } else {
-            changed |= flags.remove(EntityFlag.TRANSITION_BLOCKING);
+            changed |= ext.remove(ActorFlags.TRANSITION_BLOCKING);
         }
 
         if (!changed) return;
 
-        this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, flags);
+        this.setDataFlags(ext);
 
-        EntityDataMap delta = new EntityDataMap();
-        delta.put(EntityDataTypes.FLAGS_2, flags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.actorDataMap);
     }
 
     private void tickShieldBlockingState(int tickDiff) {
@@ -852,9 +874,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (this.shieldTransitionTicks > 0) {
             this.shieldTransitionTicks -= tickDiff;
 
-            if (this.shieldTransitionTicks <= 0 && this.getDataFlag(EntityFlag.TRANSITION_BLOCKING)) {
+            if (this.shieldTransitionTicks <= 0 && this.getDataFlag(ActorFlags.TRANSITION_BLOCKING)) {
                 this.shieldTransitionTicks = 0;
-                this.setBlockingFlags(this.getDataFlag(EntityFlag.BLOCKING), false);
+                this.setBlockingFlags(this.getDataFlag(ActorFlags.BLOCKING), false);
             }
         }
 
@@ -882,7 +904,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public boolean isPersistent() {
         return (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false))
-            || (this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent"));
+                || (this.nbt.contains("Persistent") && this.getNbt().getBoolean("Persistent"));
     }
 
     public void preAttack(Player player) {
@@ -944,11 +966,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void initHome() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
 
-        if (ei.namedTag.contains("HomeX")) {
+        if (ei.nbt.contains("HomeX")) {
             Vector3 home = new Vector3(
-                ei.namedTag.getDouble("HomeX"),
-                ei.namedTag.getDouble("HomeY"),
-                ei.namedTag.getDouble("HomeZ")
+                    ei.getNbt().getDouble("HomeX"),
+                    ei.getNbt().getDouble("HomeY"),
+                    ei.getNbt().getDouble("HomeZ")
             );
             ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, ei.level.getBlock(home));
         }
@@ -962,21 +984,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         int z = ei.getFloorZ();
         Block home = ei.level.getBlock(x, y, z);
 
-        CompoundTag tag = ei.namedTag;
-        tag.putDouble("HomeX", home.x);
-        tag.putDouble("HomeY", home.y);
-        tag.putDouble("HomeZ", home.z);
+        ei.setNbt(
+                ei.nbt.putDouble("HomeX", home.x)
+                        .putDouble("HomeY", home.y)
+                        .putDouble("HomeZ", home.z)
+        );
         ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
     }
 
     public Block getHomePosition() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return null;
-        if (!this.namedTag.contains("HomeX")) return null;
+        if (!this.nbt.contains("HomeX")) return null;
 
         Vector3 homeLoc = new Vector3(
-            this.namedTag.getDouble("HomeX"),
-            this.namedTag.getDouble("HomeY"),
-            this.namedTag.getDouble("HomeZ")
+                this.getNbt().getDouble("HomeX"),
+                this.getNbt().getDouble("HomeY"),
+                this.getNbt().getDouble("HomeZ")
         );
 
         return ei.level.getBlock(homeLoc);
@@ -1004,7 +1027,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (player == null || item.isNull()) return false;
 
         boolean handled = false;
-        boolean healed  = false;
+        boolean healed = false;
         int currentTick = this.getLevel().getTick();
 
         // PIPELINE ORDER:
@@ -1107,7 +1130,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         ei.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, true);
         ei.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, currentTick);
-        ei.setDataFlag(EntityFlag.IN_LOVE, true);
+        ei.setDataFlag(ActorFlags.IN_LOVE, true);
 
         sendBreedingAnimation(item);
         sendLoveParticles();
@@ -1177,18 +1200,17 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void sendBreedingAnimation(Item item) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.event = EntityEventPacket.EATING_ITEM;
-        pk.eid = this.getId();
-        pk.data =  item.getFullId();
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(this.getId());
+        pk.setType(ActorEvent.FEED);
+        pk.setData(item.getFullId());
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
     public void sendLoveParticles() {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.event = EntityEventPacket.LOVE_PARTICLES;
-        pk.eid = this.getId();
-        pk.data = 0;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(this.getId());
+        pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
@@ -1328,7 +1350,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     protected boolean requiresSneakToNameTag(@NotNull Player player) {
-        if (this instanceof EntityVillager || this instanceof EntityWanderingTrader) return true;
+        if (this instanceof EntityVillagerV2 || this instanceof EntityWanderingTrader) return true;
         if (this.isRideable()) {
             if (!this.requireSaddleToMount()) return true;
             if (this.isSaddled()) return true;

@@ -43,7 +43,8 @@ import java.util.Set;
 public class EntityCaveSpider extends EntityMob implements EntityWalkable, EntityArthropod {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return CAVE_SPIDER;
     }
 
