@@ -5,7 +5,10 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
+import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTntMinecart;
@@ -127,6 +130,53 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
         }
         explosion.explodeB();
         this.close();
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        Entity projectile = getProjectile(source);
+        if (projectile instanceof EntityArrow && projectile.isOnFire()) {
+            if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+                this.explode(projectile.motionX * projectile.motionX + projectile.motionY * projectile.motionY + projectile.motionZ * projectile.motionZ);
+            }
+            this.close();
+            return true;
+        }
+
+        if (source.getCause() == EntityDamageEvent.DamageCause.FIRE
+                || source.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK
+                || source.getCause() == EntityDamageEvent.DamageCause.LAVA
+                || source.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
+                || source.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+            this.primeShortFuse();
+            return true;
+        }
+
+        boolean attacked = super.attack(source);
+        if (!attacked) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private Entity getProjectile(EntityDamageEvent source) {
+        if (source instanceof EntityDamageByChildEntityEvent childEvent) {
+            return childEvent.getChild();
+        }
+        if (source instanceof EntityDamageByEntityEvent entityEvent) {
+            return entityEvent.getDamager();
+        }
+        return null;
+    }
+
+    private void primeShortFuse() {
+        if (this.fuse < 80) {
+            return;
+        }
+        this.fuse = ThreadLocalRandom.current().nextInt(40);
+        this.setDataFlag(ActorFlags.CHARGED, true);
+        this.setDataProperty(ActorDataTypes.FUSE_TIME, this.fuse);
     }
 
     @Override
