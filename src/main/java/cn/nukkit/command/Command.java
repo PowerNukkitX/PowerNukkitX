@@ -563,6 +563,34 @@ public abstract class Command {
     }
 
     /**
+     * Permission that lets a command sender target players by their real login name in addition
+     * to their display name. See {@link Player#VIEW_REAL_NAME_PERMISSION} for the separate
+     * permission that controls seeing real names in command output.
+     *
+     * @see #resolveTargetPlayer(CommandSender, String)
+     */
+    public static final String TARGET_REAL_NAME_PERMISSION = "nukkit.command.targetrealname";
+
+    /**
+     * Resolves an online player from {@code arg} for command targeting, honoring nick privacy.
+     * <p>
+     * Matches against display names first so nicked players are targeted by their visible name.
+     * Only a sender holding {@link #TARGET_REAL_NAME_PERMISSION} may additionally fall back to
+     * matching the real login name, preventing non-admins from deanonymizing nicks.
+     *
+     * @param sender the command sender resolving the target (may be null)
+     * @param arg    the name argument to resolve
+     * @return the matched online player, or null if none matched
+     */
+    public static Player resolveTargetPlayer(CommandSender sender, String arg) {
+        Player player = Server.getInstance().getPlayerByDisplayName(arg);
+        if (player == null && sender != null && sender.hasPermission(TARGET_REAL_NAME_PERMISSION)) {
+            player = Server.getInstance().getPlayer(arg);
+        }
+        return player;
+    }
+
+    /**
      * Broadcasts a command message to all users with administrative permissions.
      *
      * @param source  the sender of the command
@@ -582,9 +610,9 @@ public abstract class Command {
     public static void broadcastCommandMessage(CommandSender source, String message, boolean sendToSource) {
         Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 
-        TranslationContainer result = new TranslationContainer("chat.type.admin", source.getName(), message);
+        TranslationContainer result = new TranslationContainer("chat.type.admin", source.getViewableName(null), message);
 
-        TranslationContainer colored = new TranslationContainer(TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getName(), message);
+        TranslationContainer colored = new TranslationContainer(TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getViewableName(null), message);
 
         if (sendToSource && !(source instanceof ConsoleCommandSender)) {
             source.sendMessage(message);
@@ -625,7 +653,7 @@ public abstract class Command {
         }
 
         TextContainer m = message.clone();
-        String resultStr = "[" + source.getName() + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
+        String resultStr = "[" + (source.getViewableName(null)) + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
 
         Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 

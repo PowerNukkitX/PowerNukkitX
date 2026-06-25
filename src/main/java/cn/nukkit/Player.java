@@ -1249,7 +1249,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Processing execution in LoginPacket
      */
     public void processLogin() {
-
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
         }
@@ -2087,6 +2086,32 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public String getDisplayName() {
         return this.displayName;
+    }
+
+    /**
+     * Permission that lets a command sender see players' real login names in command output
+     * instead of their (possibly nicked) display names.
+     *
+     * @see #getViewableName(CommandSender)
+     */
+    public static final String VIEW_REAL_NAME_PERMISSION = "nukkit.command.viewrealname";
+
+    /**
+     * Returns this player's name as it should be shown to {@code viewer} in command output.
+     * <p>
+     * By default the display name (nick) is returned to preserve nick systems. A viewer holding
+     * {@link #VIEW_REAL_NAME_PERMISSION} sees the real login name instead.
+     * <p>
+     * Note: this resolves against a single viewer. Messages broadcast to multiple recipients are
+     * rendered once using the command issuer's permission, not per recipient.
+     *
+     * @param viewer the sender the name is being shown to (may be null)
+     * @return the real login name if {@code viewer} has {@link #VIEW_REAL_NAME_PERMISSION}, else the display name
+     */
+    @Override
+    public String getViewableName(CommandSender viewer) {
+        return viewer != null && viewer.hasPermission(VIEW_REAL_NAME_PERMISSION)
+                ? this.getName() : this.getDisplayName();
     }
 
     /**
@@ -3836,9 +3861,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         if (e instanceof EntityHandItem entityHandItem) {
                             weapon = entityHandItem.getItemInHand();
                         }
-                        if (e instanceof Player) {
+                        if (e instanceof Player pl) {
                             message = "death.attack.player";
-                            params.add(((Player) e).getDisplayName());
+                            params.add(pl.getDisplayName());
                             break;
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.mob";
@@ -3853,9 +3878,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
-                        if (e instanceof Player) {
+                        if (e instanceof Player pl) {
                             message = "death.attack.arrow";
-                            params.add(((Player) e).getDisplayName());
+                            params.add(pl.getDisplayName());
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.arrow";
                             params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());

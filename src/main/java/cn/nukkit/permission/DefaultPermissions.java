@@ -115,6 +115,9 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.debug.perform", "Allows the user to use debugpaste command", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.inputpermission", "Allows the user to use inputpermission command", Permission.DEFAULT_OP), commands);
 
+        registerPermission(new Permission(ROOT + ".command.viewrealname", "Allows the user to see players' real login names instead of display names in command output", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.targetrealname", "Allows the user to target players by their real login names in addition to display names", Permission.DEFAULT_OP), commands);
+
         registerPermission(new Permission(ROOT + ".textcolor", "Allows the user to write colored text", Permission.DEFAULT_OP), commands);
 
         commands.recalculatePermissibles();
