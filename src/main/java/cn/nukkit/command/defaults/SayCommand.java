@@ -27,7 +27,7 @@ public class SayCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        String senderString = sender.isPlayer() ? sender.asPlayer().getDisplayName() : sender.getName();
+        String senderString = sender.getViewableName(null);
         String message = result.getValue().getResult(0);
         sender.getServer().broadcastMessage(new TranslationContainer("%chat.type.announcement", senderString, message));
         return 1;

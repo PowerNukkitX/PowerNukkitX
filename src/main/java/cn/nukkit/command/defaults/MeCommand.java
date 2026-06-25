@@ -29,7 +29,7 @@ public class MeCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        String name = sender.isPlayer() ? sender.asPlayer().getDisplayName() : sender.getName();
+        String name = sender.getViewableName(null);
         String message = "";
         if (result.getKey().equals("message")) {
             message = result.getValue().getResult(0);
