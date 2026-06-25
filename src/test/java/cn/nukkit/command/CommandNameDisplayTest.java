@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -17,20 +18,20 @@ class CommandNameDisplayTest {
     @Test
     void parseArguments_splitsOnSpaces() {
         ArrayList<String> args = SimpleCommandMap.parseArguments("tp alice bob");
-        assertEquals(java.util.List.of("tp", "alice", "bob"), args);
+        assertEquals(List.of("tp", "alice", "bob"), args);
     }
 
     @Test
     void parseArguments_collapsesRepeatedSpaces() {
         ArrayList<String> args = SimpleCommandMap.parseArguments("say  hi   there");
-        assertEquals(java.util.List.of("say", "hi", "there"), args);
+        assertEquals(List.of("say", "hi", "there"), args);
     }
 
     @Test
     void parseArguments_keepsQuotedNameWithSpacesAsSingleArg() {
         // A nicked display name containing a space can still be targeted when quoted.
         ArrayList<String> args = SimpleCommandMap.parseArguments("kick \"Example Player\" spamming");
-        assertEquals(java.util.List.of("kick", "Example Player", "spamming"), args);
+        assertEquals(List.of("kick", "Example Player", "spamming"), args);
     }
 
     @Test
