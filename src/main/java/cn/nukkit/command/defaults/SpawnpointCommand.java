@@ -59,7 +59,7 @@ public class SpawnpointCommand extends VanillaCommand {
                     for (Player player : players) {
                         player.setSpawn(position, Player.SpawnPointType.PLAYER);
                     }
-                    log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(p -> getViewableName(sender, p)).collect(Collectors.joining(" ")),
+                    log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(p -> p.getViewableName(sender)).collect(Collectors.joining(" ")),
                             round2.format(position.x),
                             round2.format(position.y),
                             round2.format(position.z)).successCount(players.size()).output(true);

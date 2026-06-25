@@ -563,29 +563,13 @@ public abstract class Command {
     }
 
     /**
-     * Permission that lets a command sender both see players' real login names in command output
-     * (instead of their possibly nicked display names) and target players by real login name.
+     * Permission that lets a command sender target players by their real login name in addition
+     * to their display name. See {@link Player#VIEW_REAL_NAME_PERMISSION} for the separate
+     * permission that controls seeing real names in command output.
+     *
+     * @see #resolveTargetPlayer(CommandSender, String)
      */
     public static final String TARGET_REAL_NAME_PERMISSION = "nukkit.command.targetrealname";
-
-    /**
-     * Returns the name of {@code target} as it should be shown to {@code viewer} in command output.
-     * <p>
-     * By default the display name (nick) is returned to preserve nick systems. A viewer holding
-     * {@link #TARGET_REAL_NAME_PERMISSION} sees the real login name instead.
-     * <p>
-     * Note: this resolves against a single viewer. Messages broadcast to multiple admins
-     * (e.g. {@code CommandLogger#output(boolean)} with {@code true}) are rendered once using the
-     * command issuer's permission, not per recipient.
-     *
-     * @param viewer the sender the output is being shown to (may be null)
-     * @param target the player whose name is being displayed
-     * @return the real login name if {@code viewer} has {@link #TARGET_REAL_NAME_PERMISSION}, else the display name
-     */
-    public static String getViewableName(CommandSender viewer, Player target) {
-        return viewer != null && viewer.hasPermission(TARGET_REAL_NAME_PERMISSION)
-                ? target.getName() : target.getDisplayName();
-    }
 
     /**
      * Resolves an online player from {@code arg} for command targeting, honoring nick privacy.

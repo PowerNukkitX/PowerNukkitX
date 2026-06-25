@@ -44,11 +44,12 @@ class CommandNameDisplayTest {
         Player target = mock(Player.class);
         when(target.getDisplayName()).thenReturn("Nick");
         when(target.getName()).thenReturn("RealName");
+        when(target.getViewableName(any())).thenCallRealMethod();
 
         CommandSender viewer = mock(CommandSender.class);
-        when(viewer.hasPermission(Command.TARGET_REAL_NAME_PERMISSION)).thenReturn(false);
+        when(viewer.hasPermission(Player.VIEW_REAL_NAME_PERMISSION)).thenReturn(false);
 
-        assertEquals("Nick", Command.getViewableName(viewer, target));
+        assertEquals("Nick", target.getViewableName(viewer));
     }
 
     @Test
@@ -56,18 +57,20 @@ class CommandNameDisplayTest {
         Player target = mock(Player.class);
         when(target.getDisplayName()).thenReturn("Nick");
         when(target.getName()).thenReturn("RealName");
+        when(target.getViewableName(any())).thenCallRealMethod();
 
         CommandSender viewer = mock(CommandSender.class);
-        when(viewer.hasPermission(Command.TARGET_REAL_NAME_PERMISSION)).thenReturn(true);
+        when(viewer.hasPermission(Player.VIEW_REAL_NAME_PERMISSION)).thenReturn(true);
 
-        assertEquals("RealName", Command.getViewableName(viewer, target));
+        assertEquals("RealName", target.getViewableName(viewer));
     }
 
     @Test
     void getViewableName_nullViewerReturnsDisplayName() {
         Player target = mock(Player.class);
         when(target.getDisplayName()).thenReturn("Nick");
+        when(target.getViewableName(nullable(CommandSender.class))).thenCallRealMethod();
 
-        assertEquals("Nick", Command.getViewableName(null, target));
+        assertEquals("Nick", target.getViewableName(null));
     }
 }

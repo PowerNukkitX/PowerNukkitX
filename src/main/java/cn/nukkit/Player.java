@@ -2089,6 +2089,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
+     * Permission that lets a command sender see players' real login names in command output
+     * instead of their (possibly nicked) display names.
+     *
+     * @see #getViewableName(CommandSender)
+     */
+    public static final String VIEW_REAL_NAME_PERMISSION = "nukkit.command.viewrealname";
+
+    /**
+     * Returns this player's name as it should be shown to {@code viewer} in command output.
+     * <p>
+     * By default the display name (nick) is returned to preserve nick systems. A viewer holding
+     * {@link #VIEW_REAL_NAME_PERMISSION} sees the real login name instead.
+     * <p>
+     * Note: this resolves against a single viewer. Messages broadcast to multiple recipients are
+     * rendered once using the command issuer's permission, not per recipient.
+     *
+     * @param viewer the sender the name is being shown to (may be null)
+     * @return the real login name if {@code viewer} has {@link #VIEW_REAL_NAME_PERMISSION}, else the display name
+     */
+    public String getViewableName(CommandSender viewer) {
+        return viewer != null && viewer.hasPermission(VIEW_REAL_NAME_PERMISSION)
+                ? this.getName() : this.getDisplayName();
+    }
+
+    /**
      * Just change the name displayed during player chat and in the server player list (Does not affect the player parameter name of the command, nor does it affect the player header display name)
      *
      * @param displayName The display name
