@@ -457,7 +457,7 @@ public class PluginAnnotationProcessorTest {
         }
 
         @Test
-        void paramTreeIsEnabledByDefault() {
+        void commandTreeIsEnabledByDefault() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
                     import cn.nukkit.command.Command;
@@ -469,24 +469,46 @@ public class PluginAnnotationProcessorTest {
                     }
                     """));
             r.assertSuccess();
-            assertContains(r.bootstrap(), "__cmd.enableParamTree();");
+            assertContains(r.bootstrap(), "__cmd.enableCommandTree();");
+            assertFalse(r.bootstrap().contains("enableParamTree"),
+                    "param tree call omitted by default");
         }
 
         @Test
-        void paramTreeCanBeDisabled() {
+        void paramTreeModeEnablesParamTree() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
                     import cn.nukkit.command.Command;
                     import cn.nukkit.command.CommandSender;
                     import cn.nukkit.plugin.annotation.CommandDefinition;
-                    @CommandDefinition(name = "ping", enableParamTree = false)
+                    @CommandDefinition(name = "ping", commandMode = CommandDefinition.CommandMode.PARAM_TREE)
+                    public class PingCommand extends Command {
+                        @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
+                    }
+                    """));
+            r.assertSuccess();
+            assertContains(r.bootstrap(), "__cmd.enableParamTree();");
+            assertFalse(r.bootstrap().contains("enableCommandTree"),
+                    "command tree call omitted in PARAM_TREE mode");
+        }
+
+        @Test
+        void rawModeEnablesNeitherTree() {
+            Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
+                    package demo;
+                    import cn.nukkit.command.Command;
+                    import cn.nukkit.command.CommandSender;
+                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    @CommandDefinition(name = "ping", commandMode = CommandDefinition.CommandMode.RAW)
                     public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
                     }
                     """));
             r.assertSuccess();
             assertFalse(r.bootstrap().contains("enableParamTree"),
-                    "param tree call omitted when disabled");
+                    "param tree call omitted in RAW mode");
+            assertFalse(r.bootstrap().contains("enableCommandTree"),
+                    "command tree call omitted in RAW mode");
         }
 
         @Test
@@ -664,7 +686,7 @@ public class PluginAnnotationProcessorTest {
             assertEquals("rt", command.getName());
             assertTrue(java.util.Arrays.asList(command.getAliases()).contains("r"));
             assertEquals("demo.rt", command.getPermission());
-            assertTrue(command.hasParamTree(), "enableParamTree() should have run by default");
+            assertTrue(command.hasCommandTree(), "enableCommandTree() should have run by default");
         }
     }
 

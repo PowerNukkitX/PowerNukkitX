@@ -38,7 +38,6 @@ public class RouteTree {
             Map.entry(MessageStringNode.class, CommandParamType.MESSAGE),
             Map.entry(RemainStringNode.class, CommandParamType.JSON_OBJECT),
             Map.entry(BlockStateNode.class, CommandParamType.BLOCK_STATE),
-            Map.entry(BooleanNode.class, CommandParamType.INT),
             Map.entry(ItemNode.class, CommandParamType.ID),
             Map.entry(BlockNode.class, CommandParamType.ID),
             Map.entry(PlayersNode.class, CommandParamType.SELECTION),
@@ -47,6 +46,8 @@ public class RouteTree {
     );
 
     private final RouteNode root;
+
+    private Command command;
 
     public RouteTree(String rootName) {
         this.root = RouteNode.literal(rootName);
@@ -65,19 +66,14 @@ public class RouteTree {
      */
     public CommandResult dispatch(CommandSender sender, String[] args) {
         CommandContext context = new CommandContext(sender);
-        RouteNode current = root;
 
-        for (String arg : args) {
-            RouteNode next = findNextNode(current, arg, context);
-            if (next == null) {
-                sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", arg, ""));
-                return CommandResult.fail();
-            }
-            current = next;
+        RouteNode current = match(root, args, 0, context);
+        if (current == null) {
+            sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", "", ""));
+            return CommandResult.fail();
         }
 
-        if (!current.isExecutable()) {
-            sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", "", ""));
+        if (command != null && !command.testPermission(sender)) {
             return CommandResult.fail();
         }
 
@@ -98,32 +94,66 @@ public class RouteTree {
         return result;
     }
 
-    private RouteNode findNextNode(RouteNode current, String arg, CommandContext context) {
-        for (RouteNode child : current.getChildren()) {
-            if (child.getType() == NodeType.LITERAL
-                    && child.getName().equalsIgnoreCase(arg)) {
-                return child;
+    /**
+     * Recursively matches {@code args} against the tree starting at {@code node}, with
+     * backtracking: if a child route fails to consume the remaining args, sibling routes
+     * are tried. Literals are preferred over arguments at each level.
+     *
+     * @return the executable terminal node that consumes all args, or {@code null} if none
+     */
+    private RouteNode match(RouteNode node, String[] args, int index, CommandContext context) {
+        if (index == args.length) {
+            return node.isExecutable() ? node : null;
+        }
+
+        String arg = args[index];
+
+        for (RouteNode child : node.getChildren()) {
+            if (child.getType() == NodeType.LITERAL && child.getName().equalsIgnoreCase(arg)) {
+                RouteNode result = match(child, args, index + 1, context);
+                if (result != null) {
+                    return result;
+                }
             }
         }
 
-        for (RouteNode child : current.getChildren()) {
-            if (child.getType() == NodeType.ARGUMENT) {
-                child.getParamNode().fill(arg);
-                if (!child.getParamNode().hasResult()) {
-                    child.getParamNode().reset();
-                    return null;
-                }
-                Object parsed = child.getParamNode().get();
-                context.putArg(child.getName(), parsed);
-                child.getParamNode().reset();
-                return child;
+        for (RouteNode child : node.getChildren()) {
+            if (child.getType() != NodeType.ARGUMENT) {
+                continue;
+            }
+            Object parsed = parseArg(child, arg);
+            if (parsed == null) {
+                continue;
+            }
+            context.putArg(child.getName(), parsed);
+            RouteNode result = match(child, args, index + 1, context);
+            if (result != null) {
+                return result;
             }
         }
 
         return null;
     }
 
+    /**
+     * Parses a single token against the node's param node, returning the parsed value or
+     * {@code null} if it does not match. The fill/get/reset sequence is synchronized on the
+     * (shared, per-node) param node so concurrent dispatches do not corrupt each other.
+     */
+    private Object parseArg(RouteNode child, String arg) {
+        IParamNode<?> paramNode = child.getParamNode();
+        synchronized (paramNode) {
+            paramNode.reset();
+            paramNode.fill(arg);
+            boolean matched = paramNode.hasResult();
+            Object parsed = matched ? paramNode.get() : null;
+            paramNode.reset();
+            return matched ? parsed : null;
+        }
+    }
+
     public void buildCommandParameters(Command command) {
+        this.command = command;
         command.getCommandParameters().clear();
         List<List<RouteNode>> paths = new ArrayList<>();
         collectPaths(root, new ArrayList<>(), paths);
@@ -132,7 +162,7 @@ public class RouteTree {
         for (List<RouteNode> path : paths) {
             List<CommandParameter> params = new ArrayList<>();
             for (RouteNode node : path) {
-                if (node.isSuggestHidden()) continue;
+                if (node.isSuggestHidden()) break;
                 if (node.getType() == NodeType.LITERAL) {
                     params.add(CommandParameter.newEnum(node.getName(), false,
                             new CommandEnum(node.getName(), List.of(node.getName()))));
@@ -141,6 +171,8 @@ public class RouteTree {
                     if (suggestions != null) {
                         params.add(CommandParameter.newEnum(node.getName(), false,
                                 new CommandEnum(node.getName(), suggestions)));
+                    } else if (node.getParamNode() instanceof BooleanNode) {
+                        params.add(CommandParameter.newEnum(node.getName(), false, CommandEnum.ENUM_BOOLEAN));
                     } else {
                         @SuppressWarnings("rawtypes")
                         CommandParamType type = NODE_TYPE_MAP.getOrDefault((Class<? extends ParamNode>) node.getParamNode().getClass(), CommandParamType.RAW_TEXT);
