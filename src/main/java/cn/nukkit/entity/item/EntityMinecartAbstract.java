@@ -29,6 +29,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
+import cn.nukkit.utils.RuntimeBlockDefinition;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -786,14 +787,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 //              Runtimeid
                 int display = blockInside.getRuntimeId();
                 setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 1);
-                setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, display);
+                setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, new RuntimeBlockDefinition(display));
                 setDisplayBlockOffset(6);
             }
         } else {
             // Set block to air (default).
             blockInside = null;
             setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 0);
-            setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, 0);
+            setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, new RuntimeBlockDefinition(0));
             setDisplayBlockOffset(0);
         }
         return true;
