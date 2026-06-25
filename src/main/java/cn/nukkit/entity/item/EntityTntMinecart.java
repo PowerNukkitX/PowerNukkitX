@@ -151,13 +151,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
             this.primeShortFuse();
             return true;
         }
-
-        boolean attacked = super.attack(source);
-        if (!attacked) {
-            return false;
-        }
-
-        return true;
+        return super.attack(source);
     }
 
     private Entity getProjectile(EntityDamageEvent source) {
