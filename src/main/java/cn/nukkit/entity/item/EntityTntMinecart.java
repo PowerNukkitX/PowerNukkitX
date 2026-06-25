@@ -58,7 +58,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
 
     @Override
     public boolean onUpdate(int currentTick) {
-        // 记录最大高度，用于计算坠落伤害
+        // Track the highest position to calculate fall damage.
         if (!this.onGround && this.y > highestPosition) {
             this.highestPosition = this.y;
         }
