@@ -385,7 +385,7 @@ public class PlayerSessionHolder {
 
     private @Nullable Player createPlayer(Player.PlayerInfo playerInfo) {
         try {
-            PlayerCreationEvent event = new PlayerCreationEvent(Player.class);
+            PlayerCreationEvent event = new PlayerCreationEvent(Player.class, playerInfo);
             Server.getInstance().getPluginManager().callEvent(event);
             Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(BedrockServerSession.class, Player.PlayerInfo.class);
             return constructor.newInstance(this.session, playerInfo);
