@@ -1,6 +1,7 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -72,5 +73,18 @@ class CommandNameDisplayTest {
         when(target.getViewableName(nullable(CommandSender.class))).thenCallRealMethod();
 
         assertEquals("Nick", target.getViewableName(null));
+    }
+
+    @Test
+    void getViewableName_entityOverload_delegatesForPlayerElseEntityName() {
+        Player player = mock(Player.class);
+        when(player.getDisplayName()).thenReturn("Nick");
+        when(player.getViewableName(nullable(CommandSender.class))).thenCallRealMethod();
+
+        Entity mob = mock(Entity.class);
+        when(mob.getName()).thenReturn("Zombie");
+
+        assertEquals("Nick", Command.getViewableName(null, player));
+        assertEquals("Zombie", Command.getViewableName(null, mob));
     }
 }

@@ -48,7 +48,7 @@ public class CameraShakeCommand extends VanillaCommand {
         }
         switch (result.getKey()) {
             case "add" -> {
-                String players_str = players.stream().map(p -> p.getViewableName(sender)).collect(Collectors.joining(" "));
+                String players_str = players.stream().map(p -> getViewableName(sender, p)).collect(Collectors.joining(" "));
                 float intensity = list.getResult(2);
                 float second = list.getResult(3);
                 String type = list.getResult(4);
@@ -67,7 +67,7 @@ public class CameraShakeCommand extends VanillaCommand {
                 return 1;
             }
             case "stop" -> {
-                String players_str = players.stream().map(p -> p.getViewableName(sender)).collect(Collectors.joining(" "));
+                String players_str = players.stream().map(p -> getViewableName(sender, p)).collect(Collectors.joining(" "));
                 CameraShakePacket packet = new CameraShakePacket();
                 packet.setIntensity(-1);
                 packet.setSeconds(-1);

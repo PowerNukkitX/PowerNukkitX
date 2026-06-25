@@ -3,6 +3,7 @@ package cn.nukkit.command;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.ICommandBlock;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.command.data.NukkitCommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandEnum;
@@ -588,6 +589,21 @@ public abstract class Command {
             player = Server.getInstance().getPlayer(arg);
         }
         return player;
+    }
+
+    /**
+     * Renders an entity's name for command output as it should be shown to {@code viewer}.
+     * <p>
+     * Players are rendered via {@link Player#getViewableName(CommandSender)} (display name, or real
+     * login name for viewers holding {@link Player#VIEW_REAL_NAME_PERMISSION}); other entities use
+     * their entity name.
+     *
+     * @param viewer the sender the name is being shown to (may be null)
+     * @param entity the entity whose name is being displayed
+     * @return the viewer-aware name for players, otherwise the entity name
+     */
+    public static String getViewableName(CommandSender viewer, Entity entity) {
+        return entity instanceof Player player ? player.getViewableName(viewer) : entity.getName();
     }
 
     /**
