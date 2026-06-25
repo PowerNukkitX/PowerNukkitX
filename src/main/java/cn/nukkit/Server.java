@@ -139,6 +139,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -2125,7 +2126,7 @@ public class Server {
         tag.remove("Colors", "PieceTintColors", "Skin");
     }
 
-    private Player findPlayerByString(java.util.function.Function<Player, String> extractor, String name, boolean exact) {
+    private Player findPlayerByString(Function<Player, String> extractor, String name, boolean exact) {
         if (name == null) return null;
         String q = name.toLowerCase(Locale.ENGLISH);
         if (exact) {
@@ -2158,7 +2159,7 @@ public class Server {
         }
     }
 
-    private Player[] matchPlayersByString(java.util.function.Function<Player, String> extractor, String partialName) {
+    private Player[] matchPlayersByString(Function<Player, String> extractor, String partialName) {
         if (partialName == null) return Player.EMPTY_ARRAY;
         String q = partialName.toLowerCase(Locale.ENGLISH);
         List<Player> matched = new ArrayList<>();
