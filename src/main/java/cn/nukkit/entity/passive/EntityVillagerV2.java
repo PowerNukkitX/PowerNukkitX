@@ -478,7 +478,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public void initEntity() {
         super.initEntity();
-        setTradingPlayer(0L);
+        this.setPersistent(true);
+        this.setTradingPlayer(0L);
         final CompoundTag nbtMap = this.getNbt();
         if (!nbtMap.contains("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));

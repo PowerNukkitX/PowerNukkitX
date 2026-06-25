@@ -1,12 +1,10 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySmite;
-import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.components.HealthComponent;
@@ -20,8 +18,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemGoldenApple;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.NukkitMath;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -51,6 +47,7 @@ public class EntityZombieVillagerV2 extends EntityZombie implements EntityWalkab
     protected void initEntity() {
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
+        this.setPersistent(true);
         this.curingTick = this.nbt.getInt("curing", 0);
         this.setDataProperty(ActorDataTypes.VARIANT, nbt.getInt("profession", 0));
         this.setDataProperty(ActorDataTypes.MARK_VARIANT, nbt.getInt("clothing", EntityVillagerV2.Clothing.getClothing(getLevel().getBiomeId(getFloorX(), getFloorY(), getFloorZ())).ordinal()));
