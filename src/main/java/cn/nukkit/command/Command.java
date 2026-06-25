@@ -563,6 +563,50 @@ public abstract class Command {
     }
 
     /**
+     * Permission that lets a command sender both see players' real login names in command output
+     * (instead of their possibly nicked display names) and target players by real login name.
+     */
+    public static final String TARGET_REAL_NAME_PERMISSION = "nukkit.command.targetrealname";
+
+    /**
+     * Returns the name of {@code target} as it should be shown to {@code viewer} in command output.
+     * <p>
+     * By default the display name (nick) is returned to preserve nick systems. A viewer holding
+     * {@link #TARGET_REAL_NAME_PERMISSION} sees the real login name instead.
+     * <p>
+     * Note: this resolves against a single viewer. Messages broadcast to multiple admins
+     * (e.g. {@code CommandLogger#output(boolean)} with {@code true}) are rendered once using the
+     * command issuer's permission, not per recipient.
+     *
+     * @param viewer the sender the output is being shown to (may be null)
+     * @param target the player whose name is being displayed
+     * @return the real login name if {@code viewer} has {@link #TARGET_REAL_NAME_PERMISSION}, else the display name
+     */
+    public static String getViewableName(CommandSender viewer, Player target) {
+        return viewer != null && viewer.hasPermission(TARGET_REAL_NAME_PERMISSION)
+                ? target.getName() : target.getDisplayName();
+    }
+
+    /**
+     * Resolves an online player from {@code arg} for command targeting, honoring nick privacy.
+     * <p>
+     * Matches against display names first so nicked players are targeted by their visible name.
+     * Only a sender holding {@link #TARGET_REAL_NAME_PERMISSION} may additionally fall back to
+     * matching the real login name, preventing non-admins from deanonymizing nicks.
+     *
+     * @param sender the command sender resolving the target (may be null)
+     * @param arg    the name argument to resolve
+     * @return the matched online player, or null if none matched
+     */
+    public static Player resolveTargetPlayer(CommandSender sender, String arg) {
+        Player player = Server.getInstance().getPlayerByDisplayName(arg);
+        if (player == null && sender != null && sender.hasPermission(TARGET_REAL_NAME_PERMISSION)) {
+            player = Server.getInstance().getPlayer(arg);
+        }
+        return player;
+    }
+
+    /**
      * Broadcasts a command message to all users with administrative permissions.
      *
      * @param source  the sender of the command

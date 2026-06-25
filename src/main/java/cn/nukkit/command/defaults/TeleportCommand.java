@@ -110,12 +110,12 @@ public class TeleportCommand extends VanillaCommand {
                 boolean checkForBlocks = list.hasResult(1) ? list.getResult(1) : false;
 
                 if (isUnsafe(target, checkForBlocks)) {
-                    log.addError("commands.tp.safeTeleportFail", sender.isPlayer() ? sender.asPlayer().getDisplayName() : sender.getName(), first instanceof Player pl ? pl.getDisplayName() : first.getName()).output();
+                    log.addError("commands.tp.safeTeleportFail", sender.isPlayer() ? sender.asPlayer().getDisplayName() : sender.getName(), first instanceof Player pl ? getViewableName(sender, pl) : first.getName()).output();
                     return 0;
                 }
 
                 sender.asEntity().teleport(target);
-                log.addSuccess("commands.tp.successVictim", first instanceof Player pl ? pl.getDisplayName() : first.getName()).output(true);
+                log.addSuccess("commands.tp.successVictim", first instanceof Player pl ? getViewableName(sender, pl) : first.getName()).output(true);
                 return 1;
             }
             case "Entity->Entity" -> {

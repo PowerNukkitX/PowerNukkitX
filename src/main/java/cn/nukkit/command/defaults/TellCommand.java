@@ -45,8 +45,9 @@ public class TellCommand extends VanillaCommand {
                 log.addError("commands.message.sameTarget").output();
                 continue;
             }
-            log.addSuccess("commands.message.display.outgoing", player.getName(), msg);
-            player.sendMessage(new TranslationContainer("commands.message.display.incoming", sender.getName(), msg));
+            log.addSuccess("commands.message.display.outgoing", getViewableName(sender, player), msg);
+            player.sendMessage(new TranslationContainer("commands.message.display.incoming",
+                    sender instanceof Player sp ? getViewableName(player, sp) : sender.getName(), msg));
         }
         log.output();
         return 1;
