@@ -2108,6 +2108,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param viewer the sender the name is being shown to (may be null)
      * @return the real login name if {@code viewer} has {@link #VIEW_REAL_NAME_PERMISSION}, else the display name
      */
+    @Override
     public String getViewableName(CommandSender viewer) {
         return viewer != null && viewer.hasPermission(VIEW_REAL_NAME_PERMISSION)
                 ? this.getName() : this.getDisplayName();

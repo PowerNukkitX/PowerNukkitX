@@ -76,15 +76,11 @@ class CommandNameDisplayTest {
     }
 
     @Test
-    void getViewableName_entityOverload_delegatesForPlayerElseEntityName() {
-        Player player = mock(Player.class);
-        when(player.getDisplayName()).thenReturn("Nick");
-        when(player.getViewableName(nullable(CommandSender.class))).thenCallRealMethod();
-
+    void getViewableName_entityBaseReturnsEntityName() {
         Entity mob = mock(Entity.class);
         when(mob.getName()).thenReturn("Zombie");
+        when(mob.getViewableName(nullable(CommandSender.class))).thenCallRealMethod();
 
-        assertEquals("Nick", Command.getViewableName(null, player));
-        assertEquals("Zombie", Command.getViewableName(null, mob));
+        assertEquals("Zombie", mob.getViewableName(null));
     }
 }

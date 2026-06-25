@@ -110,12 +110,12 @@ public class TeleportCommand extends VanillaCommand {
                 boolean checkForBlocks = list.hasResult(1) ? list.getResult(1) : false;
 
                 if (isUnsafe(target, checkForBlocks)) {
-                    log.addError("commands.tp.safeTeleportFail", getViewableName(sender, sender.asEntity()), getViewableName(sender, first)).output();
+                    log.addError("commands.tp.safeTeleportFail", sender.asEntity().getViewableName(sender), first.getViewableName(sender)).output();
                     return 0;
                 }
 
                 sender.asEntity().teleport(target);
-                log.addSuccess("commands.tp.successVictim", getViewableName(sender, first)).output(true);
+                log.addSuccess("commands.tp.successVictim", first.getViewableName(sender)).output(true);
                 return 1;
             }
             case "Entity->Entity" -> {
@@ -135,17 +135,17 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 Entity target = destination.getFirst();
                 boolean checkForBlocks = list.hasResult(2) ? list.getResult(2) : false;
-                String message = victims.stream().map(v -> getViewableName(sender, v)).collect(Collectors.joining(", "));
+                String message = victims.stream().map(v -> v.getViewableName(sender)).collect(Collectors.joining(", "));
 
                 if (isUnsafe(target, checkForBlocks)) {
-                    log.addError("commands.tp.safeTeleportFail", message, getViewableName(sender, target)).output();
+                    log.addError("commands.tp.safeTeleportFail", message, target.getViewableName(sender)).output();
                     return 0;
                 }
 
                 for (Entity victim : victims) {
                     victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
                 }
-                log.addSuccess("commands.tp.success", message, getViewableName(sender, target)).output(true);
+                log.addSuccess("commands.tp.success", message, target.getViewableName(sender)).output(true);
                 return victims.size();
             }
             case "Entity->Pos" -> {
@@ -159,7 +159,7 @@ public class TeleportCommand extends VanillaCommand {
                 double xRot = list.hasResult(3) ? list.getResult(3) : sender.getLocation().yaw;
                 boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
 
-                String message = victims.stream().map(v -> getViewableName(sender, v)).collect(Collectors.joining(", "));
+                String message = victims.stream().map(v -> v.getViewableName(sender)).collect(Collectors.joining(", "));
                 Location target = Location.fromObject(pos, pos.level, xRot, yRot);
 
                 if (isUnsafe(target, checkForBlocks)) {
@@ -183,7 +183,7 @@ public class TeleportCommand extends VanillaCommand {
                 Position lookAtPosition = list.getResult(3);
                 boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
 
-                String message = victims.stream().map(v -> getViewableName(sender, v)).collect(Collectors.joining(", "));
+                String message = victims.stream().map(v -> v.getViewableName(sender)).collect(Collectors.joining(", "));
                 Location target = getFacingLocation(pos, lookAtPosition);
 
                 if (isUnsafe(target, checkForBlocks)) {
@@ -216,7 +216,7 @@ public class TeleportCommand extends VanillaCommand {
                 Position lookAtPosition = lookAtEntity.getFirst();
                 boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
 
-                String message = victims.stream().map(v -> getViewableName(sender, v)).collect(Collectors.joining(", "));
+                String message = victims.stream().map(v -> v.getViewableName(sender)).collect(Collectors.joining(", "));
                 Location target = getFacingLocation(pos, lookAtPosition);
 
                 if (isUnsafe(target, checkForBlocks)) {
@@ -242,12 +242,12 @@ public class TeleportCommand extends VanillaCommand {
 
                 Location target = Location.fromObject(pos, pos.level, xRot, yRot);
                 if (isUnsafe(target, checkForBlocks)) {
-                    log.addError("commands.tp.safeTeleportFail", getViewableName(sender, sender.asEntity()), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    log.addError("commands.tp.safeTeleportFail", sender.asEntity().getViewableName(sender), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
                     return 0;
                 }
 
                 sender.asEntity().teleport(target);
-                log.addSuccess("commands.tp.success.coordinates", getViewableName(sender, sender.asEntity()), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
+                log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getViewableName(sender), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             case "->Pos(FacingPos)" -> {
@@ -261,12 +261,12 @@ public class TeleportCommand extends VanillaCommand {
 
                 Location target = getFacingLocation(pos, lookAtPosition);
                 if (isUnsafe(target, checkForBlocks)) {
-                    log.addError("commands.tp.safeTeleportFail", getViewableName(sender, sender.asEntity()), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    log.addError("commands.tp.safeTeleportFail", sender.asEntity().getViewableName(sender), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
                     return 0;
                 }
 
                 sender.asEntity().teleport(target);
-                log.addSuccess("commands.tp.success.coordinates", getViewableName(sender, sender.asEntity()), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
+                log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getViewableName(sender), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             case "->Pos(FacingEntity)" -> {
@@ -289,12 +289,12 @@ public class TeleportCommand extends VanillaCommand {
 
                 Location target = getFacingLocation(pos, lookAtPosition);
                 if (isUnsafe(target, checkForBlocks)) {
-                    log.addError("commands.tp.safeTeleportFail", getViewableName(sender, sender.asEntity()), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    log.addError("commands.tp.safeTeleportFail", sender.asEntity().getViewableName(sender), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
                     return 0;
                 }
 
                 sender.asEntity().teleport(target);
-                log.addSuccess("commands.tp.success.coordinates", getViewableName(sender, sender.asEntity()), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
+                log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getViewableName(sender), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             default -> {
