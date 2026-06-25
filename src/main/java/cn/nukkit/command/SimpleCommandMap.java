@@ -418,7 +418,9 @@ public class SimpleCommandMap implements CommandMap {
 
         int output;
         try {
-            if (target.hasParamTree()) {
+            if (target.hasCommandTree()) {
+                output = target.getCommandRouteTree().dispatch(sender, args).isSuccess() ? 1 : 0;
+            } else if (target.hasParamTree()) {
                 var plugin = target instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
                 var result = target.getParamTree().matchAndParse(sender, sentCommandLabel, args);
                 if (result == null) output = 0;

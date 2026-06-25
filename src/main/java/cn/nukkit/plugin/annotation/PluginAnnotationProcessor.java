@@ -289,8 +289,10 @@ public class PluginAnnotationProcessor extends AbstractProcessor {
                 if (!cfg.usage().isEmpty()) {
                     sb.append("            __cmd.setUsage(").append(javaString(cfg.usage())).append(");\n");
                 }
-                if (cfg.enableParamTree()) {
-                    sb.append("            __cmd.enableParamTree();\n");
+                switch (cfg.commandMode()) {
+                    case COMMAND_TREE -> sb.append("            __cmd.enableCommandTree();\n");
+                    case PARAM_TREE -> sb.append("            __cmd.enableParamTree();\n");
+                    case RAW -> {}
                 }
                 sb.append("            __cmap.register(__prefix, __cmd);\n");
                 sb.append("        }\n");

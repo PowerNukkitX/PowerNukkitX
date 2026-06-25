@@ -3,11 +3,12 @@ package cn.nukkit.command;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.ICommandBlock;
-import cn.nukkit.command.data.NukkitCommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandOverload;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.data.NukkitCommandData;
+import cn.nukkit.command.route.RouteTree;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
@@ -21,9 +22,9 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import io.netty.util.internal.EmptyArrays;
-import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +79,8 @@ public abstract class Command {
 
 
     protected ParamTree paramTree;
+
+    protected RouteTree commandRouteTree;
 
     protected NukkitCommandData commandData;
 
@@ -239,6 +242,9 @@ public abstract class Command {
      * @throws UnsupportedOperationException if not implemented
      */
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        if (this.commandRouteTree != null) {
+            return this.commandRouteTree.dispatch(sender, args).isSuccess();
+        }
         throw new UnsupportedOperationException();
     }
 
@@ -563,6 +569,34 @@ public abstract class Command {
     }
 
     /**
+     * Enables the route tree for this command.
+     */
+    public void enableCommandTree() {
+        this.commandRouteTree = new RouteTree(this.getName());
+        this.buildCommandTree(this.commandRouteTree);
+        this.commandRouteTree.buildCommandParameters(this);
+    }
+
+    /**
+     * Returns true if a route tree has been enabled for this command.
+     */
+    public boolean hasCommandTree() {
+        return this.commandRouteTree != null;
+    }
+
+    /**
+     * Returns the route tree for this command.
+     */
+    public RouteTree getCommandRouteTree() {
+        return this.commandRouteTree;
+    }
+
+    protected void buildCommandTree(RouteTree tree) {
+        // Override in subclass
+    }
+      
+     
+    /**  
      * Permission that lets a command sender target players by their real login name in addition
      * to their display name. See {@link Player#VIEW_REAL_NAME_PERMISSION} for the separate
      * permission that controls seeing real names in command output.
