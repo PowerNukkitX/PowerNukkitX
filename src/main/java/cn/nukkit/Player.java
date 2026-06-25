@@ -284,7 +284,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Inbound packets handed off from the netty thread to be dispatched on the main tick thread,
      * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
      */
-    protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue(8);
+    protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
     private Consumer<BedrockPacket> inboundProcessor;
     private volatile String pendingClose;
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
