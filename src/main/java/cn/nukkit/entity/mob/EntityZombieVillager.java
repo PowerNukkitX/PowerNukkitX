@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
+/**
+ * @deprecated Zombie Villagers were replaced by {@link EntityZombieVillagerV2} in 1.14
+ */
 @Deprecated
 public class EntityZombieVillager extends EntityZombie implements EntityWalkable, EntitySmite {
 
