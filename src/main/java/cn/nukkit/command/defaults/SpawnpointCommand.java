@@ -70,9 +70,10 @@ public class SpawnpointCommand extends VanillaCommand {
             return 0;
         }
         if (!players.isEmpty()) {
-            Position pos = players.get(0).getPosition();
-            players.get(0).setSpawn(pos, Player.SpawnPointType.PLAYER);
-            log.addSuccess("commands.spawnpoint.success.single", players.get(0).getViewableName(sender),
+            Player player = players.getFirst();
+            Position pos = player.getPosition();
+            player.setSpawn(pos, Player.SpawnPointType.PLAYER);
+            log.addSuccess("commands.spawnpoint.success.single", player.getViewableName(sender),
                     round2.format(pos.x),
                     round2.format(pos.y),
                     round2.format(pos.z)).output(true);
