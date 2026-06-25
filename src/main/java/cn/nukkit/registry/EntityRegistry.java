@@ -69,7 +69,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(PIG, "", 12, true, true), EntityPig.class);
         registerInternal(new EntityDefinition(SHEEP, "", 13, true, true), EntitySheep.class);
         registerInternal(new EntityDefinition(WOLF, "", 14, true, true), EntityWolf.class);
-        registerInternal(new EntityDefinition(VILLAGER, "", 15, false, true), EntityVillager.class);
+        registerInternal(new EntityDefinition(VILLAGER, "", 15, false, false), EntityVillager.class);
         registerInternal(new EntityDefinition(MOOSHROOM, "", 16, true, true), EntityMooshroom.class);
         registerInternal(new EntityDefinition(SQUID, "", 17, true, true), EntitySquid.class);
         registerInternal(new EntityDefinition(RABBIT, "", 18, true, true), EntityRabbit.class);
@@ -98,7 +98,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(GHAST, "", 41, true, true), EntityGhast.class);
         registerInternal(new EntityDefinition(MAGMA_CUBE, "", 42, true, true), EntityMagmaCube.class);
         registerInternal(new EntityDefinition(BLAZE, "", 43, true, true), EntityBlaze.class);
-        registerInternal(new EntityDefinition(ZOMBIE_VILLAGER, "", 44, false, true), EntityZombieVillager.class);
+        registerInternal(new EntityDefinition(ZOMBIE_VILLAGER, "", 44, false, false), EntityZombieVillager.class);
         registerInternal(new EntityDefinition(WITCH, "", 45, true, true), EntityWitch.class);
         registerInternal(new EntityDefinition(STRAY, "", 46, true, true), EntityStray.class);
         registerInternal(new EntityDefinition(HUSK, "", 47, true, true), EntityHusk.class);
@@ -163,8 +163,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(COD, "", 112, true, true), EntityCod.class);
         registerInternal(new EntityDefinition(PANDA, "", 113, true, true), EntityPanda.class);
         registerInternal(new EntityDefinition(PILLAGER, "", 114, true, true), EntityPillager.class);
-        registerInternal(new EntityDefinition(VILLAGER_V2, "", 115, true, false), EntityVillagerV2.class);
-        registerInternal(new EntityDefinition(ZOMBIE_VILLAGER_V2, "", 116, true, false), EntityZombieVillagerV2.class);
+        registerInternal(new EntityDefinition(VILLAGER_V2, "", 115, true, true), EntityVillagerV2.class);
+        registerInternal(new EntityDefinition(ZOMBIE_VILLAGER_V2, "", 116, true, true), EntityZombieVillagerV2.class);
         registerInternal(new EntityDefinition(WANDERING_TRADER, "", 118, true, true), EntityWanderingTrader.class);
 //        registerInternal(new EntityDefinition(ELDER_GUARDIAN_GHOST, "", 120, false, true), EntityElderGuardianGhost.class);
         registerInternal(new EntityDefinition(FOX, "", 121, true, true), EntityFox.class);
