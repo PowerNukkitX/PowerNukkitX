@@ -48,27 +48,42 @@ public class RouteNode {
         this.type = type;
     }
 
+    /**
+     * A fixed keyword, e.g. {@code /cmd ban}.
+     */
     public static RouteNode literal(String name) {
         return new RouteNode(name, NodeType.LITERAL);
     }
 
+    /**
+     * A typed argument, e.g. {@code /cmd <player>}.
+     */
     public static RouteNode argument(String name, IParamNode<?> paramNode) {
         RouteNode node = new RouteNode(name, NodeType.ARGUMENT);
         node.paramNode = paramNode;
         return node;
     }
 
+    /**
+     * Adds a child node to this node.
+     */
     public RouteNode then(RouteNode child) {
         child.parent = this;
         children.add(child);
         return this;
     }
 
+    /**
+     * Sets the executor for this node. Without this, the route can't stop here.
+     */
     public RouteNode exec(Function<CommandContext, CommandResult> executor) {
         this.executor = executor;
         return this;
     }
 
+    /**
+     * Restricts who can use this node. Defaults to {@link SenderType#ANY}.
+     */
     public RouteNode senderType(SenderType senderType) {
         this.senderType = senderType;
         return this;
@@ -147,7 +162,7 @@ public class RouteNode {
      * and permissions at each level.
      *
      * @return {@link CommandResult#success()} if all checks pass,
-     *         {@link CommandResult#fail(String)} with a message otherwise
+     * {@link CommandResult#fail(String)} with a message otherwise
      */
     public CommandResult check(CommandSender sender) {
         RouteNode current = this;

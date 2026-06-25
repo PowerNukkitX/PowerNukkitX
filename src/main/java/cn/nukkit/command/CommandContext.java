@@ -39,14 +39,23 @@ public class CommandContext {
         return arguments.containsKey(name);
     }
 
+    /**
+     * Command ran successfully.
+     */
     public CommandResult success() {
         return CommandResult.success();
     }
 
+    /**
+     * Command failed with no message.
+     */
     public CommandResult fail() {
         return CommandResult.fail();
     }
 
+    /**
+     * Command failed - message will be sent to the sender.
+     */
     public CommandResult fail(@Nullable String message) {
         return CommandResult.fail(message);
     }

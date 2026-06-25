@@ -21,14 +21,23 @@ public class CommandResult {
         this.message = message;
     }
 
+    /**
+     * Command ran successfully.
+     */
     public static CommandResult success() {
         return SUCCESS;
     }
 
+    /**
+     * Command failed with no message.
+     */
     public static CommandResult fail() {
         return FAIL;
     }
 
+    /**
+     * Command failed - message will be sent to the sender.
+     */
     public static CommandResult fail(@Nullable String message) {
         return new CommandResult(false, message);
     }
@@ -37,6 +46,9 @@ public class CommandResult {
         return success;
     }
 
+    /**
+     * The message to send to the sender on failure, or null.
+     */
     @Nullable
     public String getMessage() {
         return message;
