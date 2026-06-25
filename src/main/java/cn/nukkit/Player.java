@@ -286,7 +286,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
     private Consumer<BedrockPacket> inboundProcessor;
-    private volatile String pendingClose;
+    protected volatile String pendingClose;
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     protected int timeSinceRest;
     private String buttonText = "Button";
