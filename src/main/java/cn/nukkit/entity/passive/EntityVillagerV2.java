@@ -72,6 +72,7 @@ import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.TakeItemActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateTradePacket;
@@ -799,6 +800,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         updateTradePacket.setEntityUniqueId(this.getId());
         updateTradePacket.setLastTradingPlayer(player.getId());
         updateTradePacket.setDisplayName(this.getDisplayName());
+        updateTradePacket.setType(ContainerType.TRADE);
 
         final List<NbtMap> tierExpRequirements = new ObjectArrayList<>();
         for (int i = 0, len = tierExpRequirement.length; i < len; ++i) {
