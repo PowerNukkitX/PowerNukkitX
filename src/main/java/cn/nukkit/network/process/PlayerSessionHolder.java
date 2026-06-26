@@ -83,6 +83,7 @@ public class PlayerSessionHolder {
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
 
+    private final Object rateLimitLock = new Object();
     private boolean disconnected = false;
 
     public InternalPackManager getInternalPackManager() {
@@ -92,8 +93,11 @@ public class PlayerSessionHolder {
         return this.internalPackManager;
     }
 
-    public synchronized boolean checkRateLimits(Server server) {
-        if (this.rateLimitSettings.rateLimitEnabled()) {
+    public boolean checkRateLimits(Server server) {
+        if (!this.rateLimitSettings.rateLimitEnabled()) {
+            return true;
+        }
+        synchronized (this.rateLimitLock) {
             long now = System.currentTimeMillis();
             if (this.packetRateLimitTimeInMS <= now) {
                 this.packetRateLimitTimeInMS = now + 1000L;
