@@ -232,6 +232,11 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     @Override
+    public boolean isFireImmune() {
+        return true;
+    }
+
+    @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(200);
     }
