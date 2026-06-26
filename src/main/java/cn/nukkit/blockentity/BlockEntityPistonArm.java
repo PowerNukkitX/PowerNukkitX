@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
-    public static final float MOVE_STEP = Utils.dynamic(0.25f);
+    public static final float MOVE_STEP = Utils.dynamic(0.5f);
 
     public BlockFace facing;
     public boolean extending;
@@ -129,22 +129,21 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.scheduleUpdate();
     }
 
-    /** The piston extension process lasts 2gt. */
+    /** The piston extension process lasts two ticks. */
     @Override
     public boolean onUpdate() {
 
         // This bool marks whether the next gt needs to continue updating
         var hasUpdate = true;
         // Promotion process
+        this.lastProgress = this.progress;
         if (this.extending) {
             this.progress = Math.min(1, this.progress + MOVE_STEP);
-            this.lastProgress = Math.min(1, this.lastProgress + MOVE_STEP);
         } else {
             this.progress = Math.max(0, this.progress - MOVE_STEP);
-            this.lastProgress = Math.max(0, this.lastProgress - MOVE_STEP);
         }
         moveCollidedEntities();
-        if (this.progress == this.lastProgress) {
+        if ((this.extending && this.progress >= 1) || (!this.extending && this.progress <= 0)) {
             // End Push
             this.state = this.newState = (byte) (extending ? 2 : 0);
             var pushDirection = this.extending ? facing : facing.getOpposite();

@@ -135,7 +135,8 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
-            level.scheduleUpdate(this, 0);
+            level.cancelScheduledUpdate(this, this);
+            level.scheduleUpdate(this, 2);
             return type;
         }
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
