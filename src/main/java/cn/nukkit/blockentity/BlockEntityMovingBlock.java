@@ -22,6 +22,8 @@ import javax.annotation.Nullable;
  */
 @Slf4j
 public class BlockEntityMovingBlock extends BlockEntitySpawnable {
+    private static final double SLIME_PUSH_MOTION = 0.75;
+
     protected Block block;
     protected BlockVector3 piston;
     //true if the piston is extending instead of withdrawing.
@@ -133,6 +135,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         ).addCoord(0, moveDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
         for (Entity entity : this.level.getCollidingEntities(bb)) {
             boolean moved = piston.moveEntity(entity, moveDirection);
+            boolean affected = moved || piston.markEntityAffected(entity);
             //Prevent entity from falling through the block
             if (!(moveDirection.getAxis() == BlockFace.Axis.Y || entity.closed || !entity.canBePushedByPiston())) {
                 double feetY = entity.getBoundingBox().getMinY();
@@ -150,16 +153,27 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
                 }
             }
             //Add motion if pushed by slime block
-            if (moved && piston.extending && block instanceof BlockSlime && !entity.closed && entity.canBePushedByPiston()) {
+            if (affected && piston.extending && block instanceof BlockSlime && !entity.closed && entity.canBePushedByPiston()) {
                 Vector3 motion = entity.getMotion();
                 switch (moveDirection.getAxis()) {
-                    case X -> motion.x = moveDirection.getXOffset();
-                    case Y -> motion.y = moveDirection.getYOffset();
-                    case Z -> motion.z = moveDirection.getZOffset();
+                    case X -> motion.x = getSlimePushMotion(motion.x, moveDirection.getXOffset());
+                    case Y -> motion.y = getSlimePushMotion(motion.y, moveDirection.getYOffset());
+                    case Z -> motion.z = getSlimePushMotion(motion.z, moveDirection.getZOffset());
                 }
                 entity.setMotion(motion);
             }
         }
+    }
+
+    private double getSlimePushMotion(double currentMotion, int axisOffset) {
+        double pushMotion = axisOffset * SLIME_PUSH_MOTION;
+        if (axisOffset > 0) {
+            return Math.max(currentMotion, pushMotion);
+        }
+        if (axisOffset < 0) {
+            return Math.min(currentMotion, pushMotion);
+        }
+        return currentMotion;
     }
 
     private double getMovementOffset(BlockEntityPistonArm piston, int axisOffset, float progress) {

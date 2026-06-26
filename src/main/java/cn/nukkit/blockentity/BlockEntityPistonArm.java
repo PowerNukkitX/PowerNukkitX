@@ -49,6 +49,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public float lastProgress = 1;
 
     private final Set<Long> movedEntitiesThisTick = new HashSet<>();
+    private final Set<Long> affectedEntitiesThisTick = new HashSet<>();
 
     public boolean finished = true;
 
@@ -63,6 +64,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
         var pushDirection = this.extending ? facing : facing.getOpposite();
         this.movedEntitiesThisTick.clear();
+        this.affectedEntitiesThisTick.clear();
         for (var pos : this.attachedBlocks) {
             var blockEntity = this.level.getBlockEntity(pos.getSide(pushDirection));
             if (blockEntity instanceof BlockEntityMovingBlock be)
@@ -86,7 +88,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         // Player clients automatically handle movement
         if (diff == 0 || !entity.canBePushedByPiston() || entity instanceof Player)
             return false;
-        if (this.movedEntitiesThisTick.contains(entity.getId()))
+        if (!this.markEntityAffected(entity) || this.movedEntitiesThisTick.contains(entity.getId()))
             return false;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
         this.level.getServer().getPluginManager().callEvent(event);
@@ -103,6 +105,14 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 diff * moveDirection.getZOffset()
         );
         return true;
+    }
+
+    boolean markEntityAffected(Entity entity) {
+        var diff = Math.abs(this.progress - this.lastProgress);
+        if (diff == 0 || !entity.canBePushedByPiston()) {
+            return false;
+        }
+        return this.affectedEntitiesThisTick.add(entity.getId());
     }
 
     /**
