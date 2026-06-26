@@ -18,7 +18,7 @@ public abstract class BlockStem extends BlockLog {
 
     @Override
     public int getBurnChance() {
-        return -1;
+        return 0;
     }
 
     @Override
