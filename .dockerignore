@@ -1,5 +1,3 @@
-#Jenkinsfile
-circle.yml
 #README.md
 data
 run
@@ -11,8 +9,5 @@ logs
 #.github
 #Dockerfile
 #docker-compose.yml
-/target
-/release-script
+/build
 /worlds
-#.mvn
-dependency-reduced-pom.xml
