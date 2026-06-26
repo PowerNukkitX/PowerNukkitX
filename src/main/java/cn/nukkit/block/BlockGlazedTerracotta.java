@@ -60,8 +60,8 @@ public abstract class BlockGlazedTerracotta extends BlockSolid implements Faceab
         setPropertyValue(FACING_DIRECTION, face.getIndex());
     }
 
-    //带釉陶瓦可以被推动但不能被收回
-    //see: https://zh.minecraft.wiki/w/%E5%B8%A6%E9%87%89%E9%99%B6%E7%93%A6
+    //Glazed clay tiles can be pushed but cannot be pulled back.
+    //see: https://minecraft.wiki/w/Glazed_Terracotta#Usage
     @Override
     public boolean canBePushed() {
         return true;
@@ -69,6 +69,11 @@ public abstract class BlockGlazedTerracotta extends BlockSolid implements Faceab
 
     @Override
     public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
         return false;
     }
 }
