@@ -2,11 +2,13 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockSlime;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
@@ -120,13 +122,58 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         if (bb == null)
             return;
         bb = bb.getOffsetBoundingBox(
-                this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
-                this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
-                this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
-                //带动站在移动方块上的实体
+                getMovementOffset(piston, moveDirection.getXOffset(), piston.lastProgress),
+                getMovementOffset(piston, moveDirection.getYOffset(), piston.lastProgress),
+                getMovementOffset(piston, moveDirection.getZOffset(), piston.lastProgress)
+                //Move the entity standing on the moving block
+        ).addCoord(
+                getMovementDelta(piston, moveDirection.getXOffset()),
+                getMovementDelta(piston, moveDirection.getYOffset()),
+                getMovementDelta(piston, moveDirection.getZOffset())
         ).addCoord(0, moveDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
-        for (Entity entity : this.level.getCollidingEntities(bb))
-            piston.moveEntity(entity, moveDirection);
+        for (Entity entity : this.level.getCollidingEntities(bb)) {
+            boolean moved = piston.moveEntity(entity, moveDirection);
+            //Prevent entity from falling through the block
+            if (!(moveDirection.getAxis() == BlockFace.Axis.Y || entity.closed || !entity.canBePushedByPiston())) {
+                double feetY = entity.getBoundingBox().getMinY();
+                double blockTop = block.getBoundingBox().getMaxY();
+                if (!(feetY < blockTop - 0.125 || feetY > blockTop + 0.5)) {
+                    double lift = blockTop - feetY;
+                    if (lift > 0) {
+                        entity.move(0, lift, 0);
+                    }
+                    if (entity.motionY < 0) {
+                        entity.motionY = 0;
+                    }
+                    entity.onGround = true;
+                    entity.resetFallDistance();
+                }
+            }
+            //Add motion if pushed by slime block
+            if (moved && piston.extending && block instanceof BlockSlime && !entity.closed && entity.canBePushedByPiston()) {
+                Vector3 motion = entity.getMotion();
+                switch (moveDirection.getAxis()) {
+                    case X -> motion.x = moveDirection.getXOffset();
+                    case Y -> motion.y = moveDirection.getYOffset();
+                    case Z -> motion.z = moveDirection.getZOffset();
+                }
+                entity.setMotion(motion);
+            }
+        }
+    }
+
+    private double getMovementOffset(BlockEntityPistonArm piston, int axisOffset, float progress) {
+        if (piston.extending) {
+            return (progress - 1) * axisOffset;
+        }
+        return -progress * axisOffset;
+    }
+
+    private double getMovementDelta(BlockEntityPistonArm piston, int axisOffset) {
+        if (piston.extending) {
+            return (piston.progress - piston.lastProgress) * axisOffset;
+        }
+        return (piston.lastProgress - piston.progress) * axisOffset;
     }
 
     @Override

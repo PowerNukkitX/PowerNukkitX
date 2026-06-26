@@ -23,7 +23,9 @@ import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -46,6 +48,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public float progress;
     public float lastProgress = 1;
 
+    private final Set<Long> movedEntitiesThisTick = new HashSet<>();
 
     public boolean finished = true;
 
@@ -59,6 +62,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
 
         var pushDirection = this.extending ? facing : facing.getOpposite();
+        this.movedEntitiesThisTick.clear();
         for (var pos : this.attachedBlocks) {
             var blockEntity = this.level.getBlockEntity(pos.getSide(pushDirection));
             if (blockEntity instanceof BlockEntityMovingBlock be)
@@ -74,27 +78,31 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             moveEntity(entity, pushDirection);
     }
 
-    void moveEntity(Entity entity, BlockFace moveDirection) {
+    boolean moveEntity(Entity entity, BlockFace moveDirection) {
         // No downward force is required
         if (moveDirection == BlockFace.DOWN)
-            return;
+            return false;
         var diff = Math.abs(this.progress - this.lastProgress);
         // Player clients automatically handle movement
         if (diff == 0 || !entity.canBePushedByPiston() || entity instanceof Player)
-            return;
+            return false;
+        if (this.movedEntitiesThisTick.contains(entity.getId()))
+            return false;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
         this.level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled())
-            return;
+            return false;
         entity.onPushByPiston(this);
         if (entity.closed)
-            return;
+            return false;
+        this.movedEntitiesThisTick.add(entity.getId());
         // Need to counteract gravity
         entity.move(
                 diff * moveDirection.getXOffset(),
                 diff * moveDirection.getYOffset() * (moveDirection == BlockFace.UP ? 2 : 1),
                 diff * moveDirection.getZOffset()
         );
+        return true;
     }
 
     /**
