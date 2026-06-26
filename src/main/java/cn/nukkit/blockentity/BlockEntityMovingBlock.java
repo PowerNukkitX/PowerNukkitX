@@ -78,6 +78,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         } else {
             this.piston = new BlockVector3(0, -1, 0);
         }
+        this.expanding = nbt.getBoolean("expanding");
     }
 
     public @Nullable CompoundTag getMovingBlockEntityCompound() {
@@ -90,6 +91,28 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     public Block getMovingBlock() {
         return this.block;
+    }
+
+    @Override
+    public CompoundTag getSpawnCompound() {
+        CompoundTag tag = super.getSpawnCompound()
+                .putBoolean("expanding", this.expanding)
+                .putInt("pistonPosX", this.piston.x)
+                .putInt("pistonPosY", this.piston.y)
+                .putInt("pistonPosZ", this.piston.z)
+                .putBoolean("isMovable", this.movable);
+
+        if (this.nbt.contains("movingBlock")) {
+            tag.putCompound("movingBlock", this.nbt.getCompound("movingBlock").copy());
+        }
+        if (this.nbt.contains("movingBlockExtra")) {
+            tag.putCompound("movingBlockExtra", this.nbt.getCompound("movingBlockExtra").copy());
+        }
+        if (this.nbt.contains("movingEntity")) {
+            tag.putCompound("movingEntity", this.nbt.getCompound("movingEntity").copy());
+        }
+
+        return tag;
     }
 
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
