@@ -93,7 +93,7 @@ public class PlayerSessionHolder {
         return this.internalPackManager;
     }
 
-    public boolean checkRateLimits(Server server) {
+    public boolean checkRateLimits() {
         if (!this.rateLimitSettings.rateLimitEnabled()) {
             return true;
         }
@@ -103,9 +103,8 @@ public class PlayerSessionHolder {
                 this.packetRateLimitTimeInMS = now + 1000L;
                 this.packetCounter = 0L;
             }
-            long tick = server.getTick();
-            if (this.packetRateLimitTimeInTicks <= tick) {
-                this.packetRateLimitTimeInTicks = tick + 1L;
+            if (this.packetRateLimitTimeInTicks <= now) {
+                this.packetRateLimitTimeInTicks = now + 50L;
                 this.packetCounterForTicks = 0L;
             }
             this.packetCounter++;
