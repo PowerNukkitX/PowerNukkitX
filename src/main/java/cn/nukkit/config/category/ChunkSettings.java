@@ -19,7 +19,7 @@ public class ChunkSettings extends OkaeriConfig {
     @Comment("pnx.settings.chunk.spawnthreshold")
     int spawnThreshold = 56;
     @Comment("pnx.settings.chunk.chunksperticks")
-    int chunksPerTicks = 40;
+    int chunksPerTicks = -1;
     @Comment("pnx.settings.chunk.tickRadius")
     int tickRadius = 4;
     @Comment("pnx.settings.chunk.lightupdates")

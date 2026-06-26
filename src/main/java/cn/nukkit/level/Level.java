@@ -1556,30 +1556,42 @@ public class Level implements Metadatable {
     }
 
     private void tickChunks() {
-        if (this.chunksPerTicks <= 0 || this.loaders.isEmpty()) {
+        if (this.chunksPerTicks == 0 || this.loaders.isEmpty()) {
             this.chunkTickList.clear();
             return;
         }
 
+        boolean shouldTickAll = this.chunksPerTicks < 0;
         int chunksPerLoader = Math.min(200, Math.max(1, (int) (((double) (this.chunksPerTicks - this.loaders.size()) / this.loaders.size() + 0.5))));
-        int randRange = 3 + chunksPerLoader / 30;
-        randRange = Math.min(randRange, this.chunkTickRadius);
-
+        int range = shouldTickAll ? this.chunkTickRadius : Math.min(3 + chunksPerLoader / 30, this.chunkTickRadius);
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        synchronized (this.loaders) {
-            if (!this.loaders.isEmpty()) {
-                for (ChunkLoader loader : this.loaders.values()) {
-                    int chunkX = (int) loader.getX() >> 4;
-                    int chunkZ = (int) loader.getZ() >> 4;
 
-                    long index = Level.chunkHash(chunkX, chunkZ);
-                    int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
-                    this.chunkTickList.put(index, existingLoaders + 1);
+        synchronized (this.loaders) {
+            for (ChunkLoader loader : this.loaders.values()) {
+                int chunkX = (int) loader.getX() >> 4;
+                int chunkZ = (int) loader.getZ() >> 4;
+
+                long index = Level.chunkHash(chunkX, chunkZ);
+                int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
+                this.chunkTickList.put(index, existingLoaders + 1);
+
+                if (shouldTickAll) {
+                    for (int dx = -range; dx <= range; dx++) {
+                        for (int dz = -range; dz <= range; dz++) {
+                            long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
+                            if (requireProvider().isChunkLoaded(hash)) {
+                                this.chunkTickList.put(hash, -1);
+                            }
+                        }
+                    }
+                } else {
                     for (int chunk = 0; chunk < chunksPerLoader; ++chunk) {
-                        int dx = random.nextInt(2 * randRange) - randRange;
-                        int dz = random.nextInt(2 * randRange) - randRange;
+                        int dx = random.nextInt(2 * range) - range;
+                        int dz = random.nextInt(2 * range) - range;
                         long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
-                        if (!this.chunkTickList.containsKey(hash) && requireProvider().isChunkLoaded(hash)) {
+                        if (this.chunkTickList.containsKey(hash)) {
+                            chunk--;
+                        } else if (requireProvider().isChunkLoaded(hash)) {
                             this.chunkTickList.put(hash, -1);
                         }
                     }
