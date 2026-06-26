@@ -27,7 +27,7 @@ public class BlockWarpedTrapdoor extends BlockTrapdoor {
 
     @Override
     public int getBurnChance() {
-        return 0;
+        return -1;
     }
 
     @Override

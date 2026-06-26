@@ -39,4 +39,14 @@ public class BlockWarpedPlanks extends BlockPlanks {
         return ItemTool.TYPE_AXE;
     }
 
+    @Override
+    public int getBurnChance() {
+        return -1;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
+    }
+
 }
