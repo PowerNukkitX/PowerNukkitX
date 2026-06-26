@@ -11,7 +11,7 @@ public class TradeRecipeBuildUtils {
     private final CompoundTag recipe;
     private final int size;
 
-    public static final int TRADE_RECIPEID = 10000;
+    public static final int TRADE_RECIPEID = 50000;
     public static final ConcurrentHashMap<Integer, CompoundTag> RECIPE_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger TRADE_RECIPE_NETID = new AtomicInteger(TRADE_RECIPEID);
 
