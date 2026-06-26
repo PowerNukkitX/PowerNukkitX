@@ -50,4 +50,13 @@ public class BlockCrimsonSlab extends BlockSlab {
         return 3.5;
     }
 
+    @Override
+    public int getBurnChance() {
+        return -1;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
+    }
 }

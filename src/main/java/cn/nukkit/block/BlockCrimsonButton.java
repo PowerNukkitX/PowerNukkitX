@@ -23,4 +23,14 @@ public class BlockCrimsonButton extends BlockWoodenButton {
     public String getName() {
         return "Crimson Button";
     }
+
+    @Override
+    public int getBurnChance() {
+        return -1;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
+    }
 }

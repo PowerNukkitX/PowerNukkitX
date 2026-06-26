@@ -26,7 +26,7 @@ public class BlockWarpedPressurePlate extends BlockWoodenPressurePlate {
 
     @Override
     public int getBurnChance() {
-        return 0;
+        return -1;
     }
 
     @Override
