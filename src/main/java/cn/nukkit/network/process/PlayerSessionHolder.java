@@ -83,6 +83,7 @@ public class PlayerSessionHolder {
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
 
+    private final Object rateLimitLock = new Object();
     private boolean disconnected = false;
 
     public InternalPackManager getInternalPackManager() {
@@ -92,42 +93,44 @@ public class PlayerSessionHolder {
         return this.internalPackManager;
     }
 
-    public boolean checkRateLimits(Server server) {
-        if (this.getRateLimitSettings().rateLimitEnabled()) {
-            this.setPacketCounter(this.getPacketCounter() + 1L);
-            this.setPacketCounterForTicks(this.getPacketCounterForTicks() + 1L);
-            if (this.getPacketCounter() > this.getRateLimitSettings().maxInboundPacketsPerSecond() &&
-                    !this.disconnected) {
+    public boolean checkRateLimits() {
+        if (!this.rateLimitSettings.rateLimitEnabled()) {
+            return true;
+        }
+        synchronized (this.rateLimitLock) {
+            long now = System.currentTimeMillis();
+            if (this.packetRateLimitTimeInMS <= now) {
+                this.packetRateLimitTimeInMS = now + 1000L;
+                this.packetCounter = 0L;
+            }
+            if (this.packetRateLimitTimeInTicks <= now) {
+                this.packetRateLimitTimeInTicks = now + 50L;
+                this.packetCounterForTicks = 0L;
+            }
+            this.packetCounter++;
+            this.packetCounterForTicks++;
+            if (this.packetCounter > this.rateLimitSettings.maxInboundPacketsPerSecond() && !this.disconnected) {
                 log.warn(
                         "{}: exceeded the limit for the maximum packets per second (limit: {}, received: {}) ",
-                        this.getPlayer() != null ? this.getPlayer().getName() : this.getSession().getSocketAddress(),
-                        this.getRateLimitSettings().maxInboundPacketsPerSecond(),
-                        this.getPacketCounter()
+                        this.player != null ? this.player.getName() : this.session.getSocketAddress(),
+                        this.rateLimitSettings.maxInboundPacketsPerSecond(),
+                        this.packetCounter
                 );
                 this.disconnect(DisconnectFailReason.UNKNOWN); // flooding
                 return false;
             }
-            if (this.getPacketCounterForTicks() > this.getRateLimitSettings().maxPacketsPerTick()) {
-                if (System.currentTimeMillis() - this.lastWarnTime >= WARN_TIME_INTERVAL_IN_MS) {
+            if (this.packetCounterForTicks > this.rateLimitSettings.maxPacketsPerTick()) {
+                if (now - this.lastWarnTime >= WARN_TIME_INTERVAL_IN_MS) {
                     log.warn(
                             "{}: exceeded the limit for the maximum packets per tick (limit: {}, received: {}, excess: {}) ",
-                            this.getPlayer() != null ? this.getPlayer().getName() : this.getSession().getSocketAddress(),
-                            this.getRateLimitSettings().maxPacketsPerTick(),
-                            this.getPacketCounterForTicks(),
+                            this.player != null ? this.player.getName() : this.session.getSocketAddress(),
+                            this.rateLimitSettings.maxPacketsPerTick(),
+                            this.packetCounterForTicks,
                             this.packetCounterForTicks - this.rateLimitSettings.maxPacketsPerTick()
                     );
-                    this.lastWarnTime = System.currentTimeMillis();
+                    this.lastWarnTime = now;
                 }
                 return false; // excess is dropped
-            }
-            // reset counters
-            if (this.getPacketRateLimitTimeInMS() <= System.currentTimeMillis()) {
-                this.setPacketRateLimitTimeInMS(System.currentTimeMillis() + 1000L);
-                this.setPacketCounter(0L);
-            }
-            if (this.getPacketRateLimitTimeInTicks() <= server.getTick()) {
-                this.setPacketRateLimitTimeInTicks(server.getTick() + 1L);
-                this.setPacketCounterForTicks(0L);
             }
         }
         return true;
