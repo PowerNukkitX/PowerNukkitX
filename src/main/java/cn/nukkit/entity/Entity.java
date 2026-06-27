@@ -6142,7 +6142,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         int schemaIndex = 0;
         for (EntityProperty prop : propertyDefs) {
             if (!prop.isClientSync()) {
-                schemaIndex++;
                 continue;
             }
 
