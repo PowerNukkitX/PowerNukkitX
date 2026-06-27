@@ -1585,15 +1585,24 @@ public class Level implements Metadatable {
                         }
                     }
                 } else {
-                    for (int chunk = 0; chunk < chunksPerLoader; ++chunk) {
-                        int dx = random.nextInt(2 * range) - range;
-                        int dz = random.nextInt(2 * range) - range;
+                    int attempts = 0;
+                    int added = 0;
+                    int maxAttempts = Math.max(chunksPerLoader * 4, (range * 2 + 1) * (range * 2 + 1));
+
+                    while (added < chunksPerLoader && attempts++ < maxAttempts) {
+                        int dx = random.nextInt((range * 2) + 1) - range;
+                        int dz = random.nextInt((range * 2) + 1) - range;
                         long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
+
                         if (this.chunkTickList.containsKey(hash)) {
-                            chunk--;
-                        } else if (requireProvider().isChunkLoaded(hash)) {
+                            continue;
+                        }
+
+                        if (requireProvider().isChunkLoaded(hash)) {
                             this.chunkTickList.put(hash, -1);
                         }
+
+                        added++;
                     }
                 }
             }
