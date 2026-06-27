@@ -8,7 +8,8 @@ import java.util.List;
 @Slf4j
 public class ConfigUpdater {
     public static List<Updater> updaters = List.of(
-            new ConfigUpdaterLegacy()
+            new ConfigUpdaterLegacy(),
+            new ConfigUpdater_3_0_0()
     );
 
     public static boolean canUpdate(String version) {

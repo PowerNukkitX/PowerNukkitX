@@ -9,6 +9,6 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 public class ConfigSettings extends OkaeriConfig {
-    String version = "2.0.0";
+    String version = "3.0.0";
 
 }
