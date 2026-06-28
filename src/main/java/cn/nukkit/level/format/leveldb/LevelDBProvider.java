@@ -17,6 +17,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockUpdateEntry;
@@ -225,21 +226,12 @@ public class LevelDBProvider implements LevelProvider {
     private static void restoreNormalTicks(Level level, List<LevelDBChunkSerializer.NormalTickInfo> normalList) {
         if (normalList == null || normalList.isEmpty()) return;
 
-        int batchSize = 32;
-        int total = normalList.size();
-        for (int i = 0; i < total; i += batchSize) {
-            int from = i;
-            int to = Math.min(i + batchSize, total);
-            List<LevelDBChunkSerializer.NormalTickInfo> sub = normalList.subList(from, to);
-
-            level.getScheduler().scheduleDelayedTask(() -> {
-                for (LevelDBChunkSerializer.NormalTickInfo info : sub) {
-                    Block block = level.getBlock(info.x, info.y, info.z);
-                    if (block.getId().equals(info.id)) {
-                        block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                    }
-                }
-            }, 1 + (from / batchSize));
+        for (LevelDBChunkSerializer.NormalTickInfo info : normalList) {
+            Block block = level.getBlock(info.x, info.y, info.z, info.layer);
+            if (block.getId().equals(info.id)) {
+                BlockFace neighbor = info.neighbor >= 0 ? BlockFace.fromIndex(info.neighbor) : null;
+                level.getNormalUpdateQueue().add(new Level.QueuedUpdate(block, neighbor));
+            }
         }
     }
 

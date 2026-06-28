@@ -102,6 +102,7 @@ import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.Item
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUseTriggerType;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.data.ItemUseInventoryTransaction;
 import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1750,6 +1751,11 @@ public class Level implements Metadatable {
             normalUpdateQueue.add(new QueuedUpdate(side, face));
             normalUpdateQueue.add(new QueuedUpdate(side.getLevelBlockAtLayer(1), face));
         }
+    }
+
+    @ApiStatus.Internal
+    public Queue<QueuedUpdate> getNormalUpdateQueue() {
+        return normalUpdateQueue;
     }
 
     public void neighborChangeAroundImmediately(int x, int y, int z) {
@@ -5504,7 +5510,7 @@ public class Level implements Metadatable {
 
     @AllArgsConstructor
     @Data
-    private static class QueuedUpdate {
+    public static class QueuedUpdate {
         @NotNull
         private Block block;
         private BlockFace neighbor;
