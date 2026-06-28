@@ -45,6 +45,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public List<BlockVector3> attachedBlocks;
     public boolean powered;
+    public boolean hasPendingPower;
+    public boolean pendingPowered;
     public float progress;
     public float lastProgress = 1;
 
@@ -162,56 +164,63 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
         moveCollidedEntities();
         if ((this.extending && this.progress >= 1) || (!this.extending && this.progress <= 0)) {
-            // End Push
-            this.state = this.newState = (byte) (extending ? 2 : 0);
-            var pushDirection = this.extending ? facing : facing.getOpposite();
-            var redstoneUpdateList = new ArrayList<BlockVector3>();
-            for (var pos : this.attachedBlocks) {
-                redstoneUpdateList.add(pos);
-                redstoneUpdateList.add(pos.getSide(pushDirection));
-                var movingBlock = this.level.getBlockEntity(pos.getSide(pushDirection));
-                if (movingBlock instanceof BlockEntityMovingBlock movingBlockBlockEntity) {
-                    movingBlock.close();
-                    var moved = movingBlockBlockEntity.getMovingBlock();
-                    moved.position(movingBlock);
-                    moved.setLevel(this.level);
-                    this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
-                    // Common Block Updates
-                    var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
-                    if (moved instanceof BlockEntityHolder<?> holder && movedBlockEntity != null) {
-                        movedBlockEntity.putInt("x", movingBlock.getFloorX());
-                        movedBlockEntity.putInt("y", movingBlock.getFloorY());
-                        movedBlockEntity.putInt("z", movingBlock.getFloorZ());
-                        BlockEntityHolder.setBlockAndCreateEntity(holder, false, true, movedBlockEntity);
-                    } else this.level.setBlock(movingBlock, moved, true, true);
-                    // Piston Update
-                    moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
-                }
-            }
-            for (var update : redstoneUpdateList) {
-                // Redstone Update
-                RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
-            }
-            var pos = getSide(facing);
-            if (!extending) {
-                // The unextended piston can be pushed
-                this.movable = true;
-                if (this.level.getBlock(pos) instanceof BlockPistonArmCollision) {
-                    this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
-                    // Block Updates
-                    this.level.setBlock(pos, Block.get(Block.AIR), true);
-                }
-            }
-            // Updates observers that are in direct contact with the piston
-            this.level.updateAroundObserver(this);
-            // Check again at the next moment to prevent mistakes
-            this.level.scheduleUpdate(this.getLevelBlock(), 1);
-            this.attachedBlocks.clear();
-            this.finished = true;
+            finishMove();
             hasUpdate = false;
-            updateMovingData(false);
         }
         return super.onUpdate() || hasUpdate;
+    }
+
+    public void finishMove() {
+        if (this.closed || this.level == null || this.finished) {
+            return;
+        }
+
+        this.state = this.newState = (byte) (extending ? 2 : 0);
+        var pushDirection = this.extending ? facing : facing.getOpposite();
+        var redstoneUpdateList = new ArrayList<BlockVector3>();
+        for (var pos : this.attachedBlocks) {
+            redstoneUpdateList.add(pos);
+            redstoneUpdateList.add(pos.getSide(pushDirection));
+            var movingBlock = this.level.getBlockEntity(pos.getSide(pushDirection));
+            if (movingBlock instanceof BlockEntityMovingBlock movingBlockBlockEntity) {
+                movingBlock.close();
+                var moved = movingBlockBlockEntity.getMovingBlock();
+                moved.position(movingBlock);
+                moved.setLevel(this.level);
+                this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
+                // Common Block Updates
+                var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
+                if (moved instanceof BlockEntityHolder<?> holder && movedBlockEntity != null) {
+                    movedBlockEntity.putInt("x", movingBlock.getFloorX());
+                    movedBlockEntity.putInt("y", movingBlock.getFloorY());
+                    movedBlockEntity.putInt("z", movingBlock.getFloorZ());
+                    BlockEntityHolder.setBlockAndCreateEntity(holder, false, true, movedBlockEntity);
+                } else this.level.setBlock(movingBlock, moved, true, true);
+                // Piston Update
+                moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
+            }
+        }
+        for (var update : redstoneUpdateList) {
+            // Redstone Update
+            RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
+        }
+        var pos = getSide(facing);
+        if (!extending) {
+            // The unextended piston can be pushed
+            this.movable = true;
+            if (this.level.getBlock(pos) instanceof BlockPistonArmCollision) {
+                this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
+                // Block Updates
+                this.level.setBlock(pos, Block.get(Block.AIR), true);
+            }
+        }
+        // Updates observers that are in direct contact with the piston
+        this.level.updateAroundObserver(this);
+        // Check again at the next moment to prevent mistakes
+        this.level.scheduleUpdate(this.getLevelBlock(), 1);
+        this.attachedBlocks.clear();
+        this.finished = true;
+        updateMovingData(false);
     }
 
     @Override
@@ -226,6 +235,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.sticky = nbt.getBoolean("Sticky");
         this.extending = nbt.getBoolean("Extending");
         this.powered = nbt.getBoolean("powered");
+        this.hasPendingPower = nbt.getBoolean("hasPendingPower");
+        this.pendingPowered = nbt.getBoolean("pendingPowered");
         if (nbt.contains("facing")) {
             this.facing = BlockFace.fromIndex(nbt.getInt("facing"));
         } else {
@@ -262,6 +273,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.nbt.putFloat("Progress", this.progress);
         this.nbt.putFloat("LastProgress", this.lastProgress);
         this.nbt.putBoolean("powered", this.powered);
+        this.nbt.putBoolean("hasPendingPower", this.hasPendingPower);
+        this.nbt.putBoolean("pendingPowered", this.pendingPowered);
         this.nbt.putList("AttachedBlocks", getAttachedBlocks());
         this.nbt.putInt("facing", this.facing.getIndex());
         this.nbt.putBoolean("Sticky", this.sticky);

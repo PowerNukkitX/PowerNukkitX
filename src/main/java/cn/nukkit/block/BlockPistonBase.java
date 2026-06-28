@@ -118,6 +118,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
     @Override
     public boolean onBreak(Item item) {
+        var arm = this.getBlockEntity();
+        if (arm != null && !arm.finished) {
+            arm.finishMove();
+        }
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
         var block = this.getSide(getBlockFace());
         if (block instanceof BlockPistonArmCollision b && b.getBlockFace() == this.getBlockFace())
@@ -135,8 +139,21 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
-            level.cancelScheduledUpdate(this, this);
-            level.scheduleUpdate(this, 2);
+            var arm = this.getBlockEntity();
+            if (arm == null) {
+                if (!level.isUpdateScheduled(this, this)) {
+                    level.scheduleUpdate(this, 2);
+                }
+                return type;
+            }
+            if (arm.state % 2 == 0 && !level.isUpdateScheduled(this, this)) {
+                boolean powered = this.isGettingPower();
+                if (arm.powered != powered) {
+                    arm.hasPendingPower = true;
+                    arm.pendingPowered = powered;
+                    level.scheduleUpdate(this, 2);
+                }
+            }
             return type;
         }
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
@@ -147,9 +164,25 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             // it would create two BlockEntities.
             var arm = this.getBlockEntity();
             if (arm == null) return 0;
-            boolean powered = this.isGettingPower();
+            if (arm.state % 2 != 0) {
+                return type;
+            }
+
+            if (!arm.hasPendingPower) {
+                boolean powered = this.isGettingPower();
+                this.updateAroundRedstoneTorches(powered);
+                if (arm.powered != powered) {
+                    arm.hasPendingPower = true;
+                    arm.pendingPowered = powered;
+                    level.scheduleUpdate(this, 2);
+                }
+                return type;
+            }
+
+            boolean powered = arm.pendingPowered;
+            arm.hasPendingPower = false;
             this.updateAroundRedstoneTorches(powered);
-            if (arm.state % 2 == 0 && arm.powered != powered && checkState(powered)) {
+            if (arm.powered != powered && checkState(powered)) {
                 arm.powered = powered;
                 if (arm.chunk != null)
                     arm.chunk.setChanged();
