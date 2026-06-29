@@ -82,6 +82,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -2407,10 +2408,11 @@ public class Level implements Metadatable {
         }
 
         try {
-            Queue<Long> lightPropagationQueue = new ConcurrentLinkedQueue<>();
-            Queue<Object[]> lightRemovalQueue = new ConcurrentLinkedQueue<>();
-            Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
-            Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
+            LongArrayFIFOQueue lightPropagationQueue = new LongArrayFIFOQueue();
+            LongArrayFIFOQueue lightRemovalQueue = new LongArrayFIFOQueue();
+            IntArrayFIFOQueue lightRemovalLevel = new IntArrayFIFOQueue();
+            LongOpenHashSet visited = new LongOpenHashSet();
+            LongOpenHashSet removalVisited = new LongOpenHashSet();
 
             var iter = pendingBlockLight.long2ObjectEntrySet().iterator();
             while (iter.hasNext()) {
@@ -2435,16 +2437,17 @@ public class Level implements Metadatable {
                         int lcx = x & 0xF;
                         int lcz = z & 0xF;
                         int oldLevel = chunk.getBlockLight(lcx, y, lcz);
-                        int newLevel = Registries.BLOCK.get(chunk.getBlockState(lcx, y, lcz), x, y, z, this).getLightLevel();
+                        int newLevel = BlockLightProperties.lightLevel(BlockLightProperties.packed(chunk.getBlockState(lcx, y, lcz)));
                         if (oldLevel != newLevel) {
                             this.setBlockLightAt(x, y, z, newLevel);
                             long blockPosHash = Hash.hashBlock(x, y, z);
                             if (newLevel < oldLevel) {
-                                removalVisited.put(blockPosHash, changeBlocksPresent);
-                                lightRemovalQueue.add(new Object[]{blockPosHash, oldLevel});
+                                removalVisited.add(blockPosHash);
+                                lightRemovalQueue.enqueue(blockPosHash);
+                                lightRemovalLevel.enqueue(oldLevel);
                             } else {
-                                visited.put(blockPosHash, changeBlocksPresent);
-                                lightPropagationQueue.add(blockPosHash);
+                                visited.add(blockPosHash);
+                                lightPropagationQueue.enqueue(blockPosHash);
                             }
                         }
                     }
@@ -2452,29 +2455,27 @@ public class Level implements Metadatable {
             }
 
             while (!lightRemovalQueue.isEmpty()) {
-                Object[] val = lightRemovalQueue.poll();
-                long node = (long) val[0];
+                long node = lightRemovalQueue.dequeueLong();
+                int lightLevel = lightRemovalLevel.dequeueInt();
                 int x = Hash.hashBlockX(node);
                 int y = Hash.hashBlockY(node);
                 int z = Hash.hashBlockZ(node);
 
-                int lightLevel = (int) val[1];
-
-                this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
             }
 
             while (!lightPropagationQueue.isEmpty()) {
-                long node = lightPropagationQueue.poll();
+                long node = lightPropagationQueue.dequeueLong();
 
                 int x = Hash.hashBlockX(node);
                 int y = Hash.hashBlockY(node);
                 int z = Hash.hashBlockZ(node);
-                int lightLevel = this.getBlockLightAt(x, y, z) - getBlock(x, y, z).getLightFilter();
+                int lightLevel = this.getBlockLightAt(x, y, z) - BlockLightProperties.lightFilter(BlockLightProperties.packed(getBlockStateAt(x, y, z)));
 
                 if (lightLevel >= 1) {
                     this.computeSpreadBlockLight(x - 1, y, z, lightLevel, lightPropagationQueue, visited);
@@ -2491,38 +2492,37 @@ public class Level implements Metadatable {
         }
     }
 
-    private void computeRemoveBlockLight(int x, int y, int z, int currentLight, Queue<Object[]> queue,
-                                         Queue<Long> spreadQueue, Map<Long, Object> visited, Map<Long, Object> spreadVisited) {
+    private void computeRemoveBlockLight(int x, int y, int z, int currentLight, LongArrayFIFOQueue queue,
+                                         IntArrayFIFOQueue levelQueue, LongArrayFIFOQueue spreadQueue,
+                                         LongOpenHashSet visited, LongOpenHashSet spreadVisited) {
         int current = this.getBlockLightAt(x, y, z);
         long index = Hash.hashBlock(x, y, z);
         if (current != 0 && current < currentLight) {
             this.setBlockLightAt(x, y, z, 0);
             if (current > 1) {
-                if (!visited.containsKey(index)) {
-                    visited.put(index, changeBlocksPresent);
-                    queue.add(new Object[]{Hash.hashBlock(x, y, z), current});
+                if (visited.add(index)) {
+                    queue.enqueue(index);
+                    levelQueue.enqueue(current);
                 }
             }
         } else if (current >= currentLight) {
-            if (!spreadVisited.containsKey(index)) {
-                spreadVisited.put(index, changeBlocksPresent);
-                spreadQueue.add(Hash.hashBlock(x, y, z));
+            if (spreadVisited.add(index)) {
+                spreadQueue.enqueue(index);
             }
         }
     }
 
-    private void computeSpreadBlockLight(int x, int y, int z, int currentLight, Queue<Long> queue,
-                                         Map<Long, Object> visited) {
+    private void computeSpreadBlockLight(int x, int y, int z, int currentLight, LongArrayFIFOQueue queue,
+                                         LongOpenHashSet visited) {
         int current = this.getBlockLightAt(x, y, z);
         long index = Hash.hashBlock(x, y, z);
 
         if (current < currentLight - 1) {
             this.setBlockLightAt(x, y, z, currentLight);
 
-            if (!visited.containsKey(index)) {
-                visited.put(index, changeBlocksPresent);
+            if (visited.add(index)) {
                 if (currentLight > 1) {
-                    queue.add(Hash.hashBlock(x, y, z));
+                    queue.enqueue(index);
                 }
             }
         }
