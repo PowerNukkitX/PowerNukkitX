@@ -193,7 +193,7 @@ public class ExecuteCommand extends VanillaCommand {
                         }
                         Collections.reverse(names);
                         for (var name : names) {
-                            log.addError("commands.execute.failed", name, executor.getName());
+                            log.addError("commands.execute.failed", name, executor.getViewableName(sender));
                         }
                     } else num += n;
                 }

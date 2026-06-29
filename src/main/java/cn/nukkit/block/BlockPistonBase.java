@@ -135,7 +135,8 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
-            level.scheduleUpdate(this, 0);
+            level.cancelScheduledUpdate(this, this);
+            level.scheduleUpdate(this, 2);
             return type;
         }
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
@@ -432,12 +433,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 return false;
             }
 
-            for (Block b : this.toMove) {
-                if (b.canSticksBlock() && !this.addBranchingBlocks(b)) {
-                    return false;
-                }
-            }
-            return true;
+            return this.expandStickyBranches();
         }
 
         protected boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
@@ -446,7 +442,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 return true;
             }
 
-            if (!mainBlockLine && block.canSticksBlock() && from.canSticksBlock() && !block.getId().equals(from.getId())) {
+            if (!mainBlockLine && !this.canStickTogether(from, block)) {
                 return true;
             }
 
@@ -473,7 +469,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             while (block.canSticksBlock()) {
                 Block oldBlock = block.clone();
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
-                if ((!extending || !mainBlockLine) && block.canSticksBlock() && oldBlock.canSticksBlock() && !block.getId().equals(oldBlock.getId())) {
+                if (!this.canStickTogether(oldBlock, block)) {
                     break;
                 }
 
@@ -505,13 +501,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 int index = this.toMove.indexOf(nextBlock);
                 if (index > -1) {
                     this.reorderListAtCollision(beStuckCount, index);
-                    for (int i = 0; i <= index + beStuckCount; ++i) {
-                        var b = this.toMove.get(i);
-                        if ((b.canSticksBlock()) && !this.addBranchingBlocks(b)) {
-                            return false;
-                        }
-                    }
-                    return true;
+                    return this.expandStickyBranches();
                 }
 
                 if (nextBlock.isAir() || nextBlock.equals(armPos)) {
@@ -537,6 +527,16 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             }
         }
 
+        private boolean expandStickyBranches() {
+            for (int i = 0; i < this.toMove.size(); i++) {
+                var block = this.toMove.get(i);
+                if (block.canSticksBlock() && !this.addBranchingBlocks(block)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private void reorderListAtCollision(int count, int index) {
             List<Block> list = new ArrayList<>(this.toMove.subList(0, index));
             List<Block> list1 = new ArrayList<>(this.toMove.subList(this.toMove.size() - count, this.toMove.size()));
@@ -553,6 +553,14 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                     return false;
             }
             return true;
+        }
+
+        private boolean canStickTogether(Block stickyBlock, Block adjacentBlock) {
+            if (!stickyBlock.canSticksBlock() || !adjacentBlock.sticksToPiston()) {
+                return false;
+            }
+            return !(stickyBlock instanceof BlockSlime && adjacentBlock instanceof BlockHoneyBlock)
+                    && !(stickyBlock instanceof BlockHoneyBlock && adjacentBlock instanceof BlockSlime);
         }
 
         public List<Block> getBlocksToMove() {

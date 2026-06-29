@@ -31,6 +31,7 @@ import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.passive.EntityTurtle;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityTransformEvent;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -91,8 +92,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     public boolean attack(EntityDamageEvent source) {
         if (getHealthCurrent() - source.getFinalDamage() <= 1) {
             if (source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
-                transform();
-                return true;
+                if(transform()) return true;
             }
         }
         return super.attack(source);
@@ -203,6 +203,9 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                 if (i instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
                     if (item.isArmor() || item.isTool()) {
+                        if (!holder.getInventory().callPickupItemEvent(entityItem)) {
+                            continue;
+                        }
                         if (holder.equip(item)) {
                             final TakeItemActorPacket pk = new TakeItemActorPacket();
                             pk.setActorRuntimeID(entity.getId());
@@ -216,15 +219,22 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         }
     }
 
-    protected void transform() {
-        this.close();
-        getArmorInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
-        getEquipmentInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
-        EntityDrowned drowned = new EntityDrowned(this.getChunk(), this.getNbt());
-        drowned.setPosition(this);
-        drowned.setRotation(this.yaw, this.pitch);
-        drowned.spawnToAll();
-        drowned.getNbt().putBoolean("Transformed", true);
-        drowned.level.addSound(drowned, Sound.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED);
+    protected boolean transform() {
+        this.saveNBT();
+        Entity drowned = new EntityDrowned(this.getChunk(), this.getNbt().copy().remove("Health"));
+        EntityTransformEvent event = new EntityTransformEvent(this, drowned);
+        server.getPluginManager().callEvent(event);
+        if(event.isCancelled()) {
+            drowned.close();
+            return false;
+        } else {
+            this.close();
+            getArmorInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
+            getEquipmentInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
+            drowned.spawnToAll();
+            drowned.getNbt().putBoolean("Transformed", true);
+            drowned.level.addSound(drowned, Sound.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED);
+            return true;
+        }
     }
 }

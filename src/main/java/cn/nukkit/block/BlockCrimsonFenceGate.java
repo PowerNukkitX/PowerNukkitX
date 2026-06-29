@@ -30,7 +30,7 @@ public class BlockCrimsonFenceGate extends BlockFenceGate {
 
     @Override
     public int getBurnChance() {
-        return 0;
+        return -1;
     }
 
     @Override

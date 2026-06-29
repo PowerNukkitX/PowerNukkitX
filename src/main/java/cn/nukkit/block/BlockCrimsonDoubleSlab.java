@@ -48,7 +48,7 @@ public class BlockCrimsonDoubleSlab extends BlockDoubleSlabBase {
 
     @Override
     public int getBurnChance() {
-        return 0;
+        return -1;
     }
 
     @Override

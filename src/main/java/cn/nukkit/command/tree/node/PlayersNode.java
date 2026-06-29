@@ -1,7 +1,7 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
@@ -58,7 +58,8 @@ public class PlayersNode extends TargetNode<Player> {
             result = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
             this.value = result;
         } else {
-            this.value = Collections.singletonList(Server.getInstance().getPlayer(arg));
+            Player player = Command.resolveTargetPlayer(paramList.getParamTree().getSender(), arg);
+            this.value = player != null ? Collections.singletonList(player) : Collections.emptyList();
         }
     }
 }

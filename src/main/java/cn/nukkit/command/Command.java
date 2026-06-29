@@ -3,11 +3,12 @@ package cn.nukkit.command;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.ICommandBlock;
-import cn.nukkit.command.data.NukkitCommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandOverload;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.data.NukkitCommandData;
+import cn.nukkit.command.route.RouteTree;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
@@ -21,9 +22,9 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import io.netty.util.internal.EmptyArrays;
-import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ import java.util.stream.Collectors;
  */
 public abstract class Command {
 
-    private final String name;
+    private String name;
 
     private String nextLabel;
 
@@ -79,6 +80,8 @@ public abstract class Command {
 
     protected ParamTree paramTree;
 
+    protected RouteTree commandRouteTree;
+
     protected NukkitCommandData commandData;
 
     protected boolean serverSideOnly;
@@ -86,6 +89,16 @@ public abstract class Command {
     @Getter
     @Setter
     private boolean isUnregistered = false;
+
+    /**
+     * Creates a command with no name yet. Intended for frameworks that build a
+     * command reflectively and then assign its name via {@link #setName(String)}
+     * (for example the PNX {@code @CommandDefinition} annotation processor). Subclasses
+     * written by hand should prefer {@link #Command(String)}.
+     */
+    protected Command() {
+        this("");
+    }
 
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
@@ -229,6 +242,9 @@ public abstract class Command {
      * @throws UnsupportedOperationException if not implemented
      */
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        if (this.commandRouteTree != null) {
+            return this.commandRouteTree.dispatch(sender, args).isSuccess();
+        }
         throw new UnsupportedOperationException();
     }
 
@@ -504,6 +520,30 @@ public abstract class Command {
     }
 
     /**
+     * Assigns the name of this command and the name-derived fields (label and
+     * command data). Intended to be called once, right after construction via
+     * the no-argument {@link #Command()} constructor, before the command is
+     * registered; for example by the PNX {@code @CommandDefinition} annotation processor.
+     * Renaming an already registered command is not supported.
+     *
+     * @param name the command name
+     * @throws IllegalStateException if the command is already registered, since
+     *                               renaming it would desync the command map key
+     */
+    public void setName(String name) {
+        if (this.isRegistered()) {
+            throw new IllegalStateException("Cannot rename command '" + this.name + "' after it has been registered");
+        }
+        this.name = name.toLowerCase(Locale.ENGLISH);
+        this.nextLabel = name;
+        this.label = name;
+        this.commandData = new NukkitCommandData(name);
+        if (this.usageMessage == null || this.usageMessage.isEmpty() || this.usageMessage.equals("/")) {
+            this.usageMessage = "/" + name;
+        }
+    }
+
+    /**
      * Checks if this command has a parameter tree for advanced parsing.
      *
      * @return true if a parameter tree is present, false otherwise
@@ -529,6 +569,62 @@ public abstract class Command {
     }
 
     /**
+     * Enables the route tree for this command.
+     */
+    public void enableCommandTree() {
+        this.commandRouteTree = new RouteTree(this.getName());
+        this.buildCommandTree(this.commandRouteTree);
+        this.commandRouteTree.buildCommandParameters(this);
+    }
+
+    /**
+     * Returns true if a route tree has been enabled for this command.
+     */
+    public boolean hasCommandTree() {
+        return this.commandRouteTree != null;
+    }
+
+    /**
+     * Returns the route tree for this command.
+     */
+    public RouteTree getCommandRouteTree() {
+        return this.commandRouteTree;
+    }
+
+    protected void buildCommandTree(RouteTree tree) {
+        // Override in subclass
+    }
+      
+     
+    /**  
+     * Permission that lets a command sender target players by their real login name in addition
+     * to their display name. See {@link Player#VIEW_REAL_NAME_PERMISSION} for the separate
+     * permission that controls seeing real names in command output.
+     *
+     * @see #resolveTargetPlayer(CommandSender, String)
+     */
+    public static final String TARGET_REAL_NAME_PERMISSION = "nukkit.command.targetrealname";
+
+    /**
+     * Resolves an online player from {@code arg} for command targeting, honoring nick privacy.
+     * <p>
+     * Matches against display names first so nicked players are targeted by their visible name.
+     * Only a sender holding {@link #TARGET_REAL_NAME_PERMISSION} may additionally fall back to
+     * matching the real login name, preventing non-admins from deanonymizing nicks.
+     *
+     * @param sender the command sender resolving the target (may be null)
+     * @param arg    the name argument to resolve
+     * @return the matched online player, or null if none matched
+     */
+    public static Player resolveTargetPlayer(CommandSender sender, String arg) {
+        Player player = Server.getInstance().getPlayerByDisplayName(arg);
+        if (player == null && sender != null && sender.hasPermission(TARGET_REAL_NAME_PERMISSION)) {
+            player = Server.getInstance().getPlayer(arg);
+        }
+        return player;
+    }
+
+    /**
      * Broadcasts a command message to all users with administrative permissions.
      *
      * @param source  the sender of the command
@@ -548,9 +644,9 @@ public abstract class Command {
     public static void broadcastCommandMessage(CommandSender source, String message, boolean sendToSource) {
         Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 
-        TranslationContainer result = new TranslationContainer("chat.type.admin", source.getName(), message);
+        TranslationContainer result = new TranslationContainer("chat.type.admin", source.getViewableName(null), message);
 
-        TranslationContainer colored = new TranslationContainer(TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getName(), message);
+        TranslationContainer colored = new TranslationContainer(TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getViewableName(null), message);
 
         if (sendToSource && !(source instanceof ConsoleCommandSender)) {
             source.sendMessage(message);
@@ -591,7 +687,7 @@ public abstract class Command {
         }
 
         TextContainer m = message.clone();
-        String resultStr = "[" + source.getName() + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
+        String resultStr = "[" + (source.getViewableName(null)) + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
 
         Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 

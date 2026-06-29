@@ -370,7 +370,7 @@ public record CommandLogger(Command command,
 
     private TranslationContainer broadcastMessage(String key, String[] value, CommandSender target) {
         var message = new TranslationContainer(TextFormat.clean(key), value);
-        String resultStr = "[" + target.getName() + ": " + (!message.getText().equals(target.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
+        String resultStr = "[" + target.getViewableName(null) + ": " + (!message.getText().equals(target.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
         String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
         message.setText(coloredStr);
         return message;

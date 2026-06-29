@@ -10,7 +10,7 @@ on:
       - 'src/**'
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
-      - '.github/workflows/build.yml'
+      - '.github/**'
 
 jobs:
   build:

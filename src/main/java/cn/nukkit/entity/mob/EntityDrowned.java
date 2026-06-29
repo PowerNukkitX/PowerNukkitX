@@ -199,7 +199,7 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
     }
 
     @Override
-    protected void transform() {
+    protected boolean transform() {
         throw new UnsupportedOperationException("Drowned cannot transform");
     }
 }

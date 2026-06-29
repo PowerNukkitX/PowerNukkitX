@@ -103,6 +103,7 @@ import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.Item
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUseTriggerType;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.data.ItemUseInventoryTransaction;
 import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -288,6 +289,7 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.WEEPING_VINES);
         randomTickBlocks.add(BlockID.WATER);
         randomTickBlocks.add(BlockID.MANGROVE_PROPAGULE);
+        randomTickBlocks.add(BlockID.SULFUR_SPIKE);
     }
 
     @NonComputationAtomic
@@ -466,7 +468,7 @@ public class Level implements Metadatable {
         baseTickGameLoop = GameLoop.builder()
                 .onTick(this::doTick)
                 .onStop(this::remove)
-                .loopCountPerSec(20)
+                .loopCountPerSec(server.getBaseTps())
                 .build();
         subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
@@ -599,7 +601,6 @@ public class Level implements Metadatable {
         if (!getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getChunkState().canSend()) {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
         }
-        long period = 1000 / 20;
         subTickGameLoop.setRunning(true);
         this.subTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
             try {
@@ -608,7 +609,7 @@ public class Level implements Metadatable {
             } catch (Throwable t) {
                 log.error("Error in sub-tick for level {}", this.getName(), t);
             }
-        }, 0, period, TimeUnit.MILLISECONDS);
+        }, 0, 50, TimeUnit.MILLISECONDS);
         if (getServer().getSettings().levelSettings().levelThread()) {
             baseTickGameLoop.setRunning(true);
             this.baseTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
@@ -618,7 +619,7 @@ public class Level implements Metadatable {
                 } catch (Throwable t) {
                     log.error("Error in base-tick for level {}", this.getName(), t);
                 }
-            }, 0, period, TimeUnit.MILLISECONDS);
+            }, 0, server.getBaseMSPT(), TimeUnit.MILLISECONDS);
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
@@ -1561,32 +1562,53 @@ public class Level implements Metadatable {
     }
 
     private void tickChunks() {
-        if (this.chunksPerTicks <= 0 || this.loaders.isEmpty()) {
+        if (this.chunksPerTicks == 0 || this.loaders.isEmpty()) {
             this.chunkTickList.clear();
             return;
         }
 
+        boolean shouldTickAll = this.chunksPerTicks < 0;
         int chunksPerLoader = Math.min(200, Math.max(1, (int) (((double) (this.chunksPerTicks - this.loaders.size()) / this.loaders.size() + 0.5))));
-        int randRange = 3 + chunksPerLoader / 30;
-        randRange = Math.min(randRange, this.chunkTickRadius);
-
+        int range = shouldTickAll ? this.chunkTickRadius : Math.min(3 + chunksPerLoader / 30, this.chunkTickRadius);
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        synchronized (this.loaders) {
-            if (!this.loaders.isEmpty()) {
-                for (ChunkLoader loader : this.loaders.values()) {
-                    int chunkX = (int) loader.getX() >> 4;
-                    int chunkZ = (int) loader.getZ() >> 4;
 
-                    long index = Level.chunkHash(chunkX, chunkZ);
-                    int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
-                    this.chunkTickList.put(index, existingLoaders + 1);
-                    for (int chunk = 0; chunk < chunksPerLoader; ++chunk) {
-                        int dx = random.nextInt(2 * randRange) - randRange;
-                        int dz = random.nextInt(2 * randRange) - randRange;
+        synchronized (this.loaders) {
+            for (ChunkLoader loader : this.loaders.values()) {
+                int chunkX = (int) loader.getX() >> 4;
+                int chunkZ = (int) loader.getZ() >> 4;
+
+                long index = Level.chunkHash(chunkX, chunkZ);
+                int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
+                this.chunkTickList.put(index, existingLoaders + 1);
+
+                if (shouldTickAll) {
+                    for (int dx = -range; dx <= range; dx++) {
+                        for (int dz = -range; dz <= range; dz++) {
+                            long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
+                            if (requireProvider().isChunkLoaded(hash)) {
+                                this.chunkTickList.put(hash, -1);
+                            }
+                        }
+                    }
+                } else {
+                    int attempts = 0;
+                    int added = 0;
+                    int maxAttempts = Math.max(chunksPerLoader * 4, (range * 2 + 1) * (range * 2 + 1));
+
+                    while (added < chunksPerLoader && attempts++ < maxAttempts) {
+                        int dx = random.nextInt((range * 2) + 1) - range;
+                        int dz = random.nextInt((range * 2) + 1) - range;
                         long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
-                        if (!this.chunkTickList.containsKey(hash) && requireProvider().isChunkLoaded(hash)) {
+
+                        if (this.chunkTickList.containsKey(hash)) {
+                            continue;
+                        }
+
+                        if (requireProvider().isChunkLoaded(hash)) {
                             this.chunkTickList.put(hash, -1);
                         }
+
+                        added++;
                     }
                 }
             }
@@ -1734,6 +1756,11 @@ public class Level implements Metadatable {
             normalUpdateQueue.add(new QueuedUpdate(side, face));
             normalUpdateQueue.add(new QueuedUpdate(side.getLevelBlockAtLayer(1), face));
         }
+    }
+
+    @ApiStatus.Internal
+    public Queue<QueuedUpdate> getNormalUpdateQueue() {
+        return normalUpdateQueue;
     }
 
     public void neighborChangeAroundImmediately(int x, int y, int z) {
@@ -5488,7 +5515,7 @@ public class Level implements Metadatable {
 
     @AllArgsConstructor
     @Data
-    private static class QueuedUpdate {
+    public static class QueuedUpdate {
         @NotNull
         private Block block;
         private BlockFace neighbor;

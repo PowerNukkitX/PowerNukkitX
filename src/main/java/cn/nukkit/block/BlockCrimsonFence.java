@@ -25,7 +25,7 @@ public class BlockCrimsonFence extends BlockFence {
 
     @Override
     public int getBurnChance() {
-        return 0;
+        return -1;
     }
 
     @Override

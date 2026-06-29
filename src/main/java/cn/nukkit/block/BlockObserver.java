@@ -126,7 +126,8 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
             return;
         }
 
-        level.scheduleUpdate(this, 1);
+        level.cancelScheduledUpdate(this, this);
+        level.scheduleUpdate(this, 2);
     }
 
     @Override

@@ -43,6 +43,16 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
+    }
+
+    @Override
     public int getLightLevel() {
         return 15;
     }

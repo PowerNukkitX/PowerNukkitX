@@ -13,7 +13,6 @@ import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWool;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityHangingSign;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
@@ -48,7 +47,6 @@ import cn.nukkit.event.entity.EntityPortalEnterEvent;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
-import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
@@ -186,6 +184,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 /**
  * Game player object, representing the controlled character
@@ -281,6 +280,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private final float rotationUpdateThreshold;
     private final float movementDistanceThreshold;
     protected final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
+    /**
+     * Inbound packets handed off from the netty thread to be dispatched on the main tick thread,
+     * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
+     */
+    protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
+    private Consumer<BedrockPacket> inboundProcessor;
+    protected volatile String pendingClose;
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     protected int timeSinceRest;
     private String buttonText = "Button";
@@ -406,7 +412,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.creationTime = System.currentTimeMillis();
         this.displayName = info.getIdentityClaims().extraData.displayName;
         this.clientChainData = info.getClientChainData();
-        this.uuid = UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + this.getXUID()).getBytes(StandardCharsets.UTF_8));
+        this.uuid = Server.uuidFromXUID(this.getXUID());
         final ByteBuffer buffer = ByteBuffer.allocate(16);
         buffer.putLong(this.uuid.getMostSignificantBits());
         buffer.putLong(this.uuid.getLeastSignificantBits());
@@ -943,11 +949,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         //update server-side position and rotation and aabb
-        double diffX = clientPos.getX() - this.x;
-        double diffY = clientPos.getY() - this.y;
-        double diffZ = clientPos.getZ() - this.z;
-        this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
-        this.fastMove(diffX, diffY, diffZ);
+        this.applyClientLocationFromAuthInput(clientPos);
 
         //update server-side position and rotation and aabb
         Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
@@ -1036,6 +1038,91 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.nextChunkOrderRun = 20;
             }
         }
+    }
+
+    public void applyClientLocationFromAuthInput(Location clientPos) {
+        double diffX = clientPos.getX() - this.x;
+        double diffY = clientPos.getY() - this.y;
+        double diffZ = clientPos.getZ() - this.z;
+
+        this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
+        this.fastMove(diffX, diffY, diffZ);
+    }
+
+    public void broadcastMountedMovement() {
+        if (this.riding == null) return;
+
+        MovePlayerPacket pk = new MovePlayerPacket();
+        pk.setPlayerRuntimeID(this.getId());
+        pk.setPosition(Vector3f.from(
+                (float) this.x,
+                (float) this.y,
+                (float) this.z
+        ));
+        pk.setRotation(Vector3f.from(
+                (float) this.pitch,
+                (float) this.yaw,
+                (float) this.headYaw
+        ));
+        pk.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
+        pk.setOnGround(false);
+        pk.setRidingRuntimeID(this.riding.getId());
+        pk.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
+        pk.setSourceActorType(0);
+        pk.setTick(this.getLevel().getCurrentTick());
+
+        Server.broadcastPacket(this.hasSpawned.values(), pk);
+    }
+
+    /**
+     * Installs the dispatcher used to handle this player's inbound packets. Set once by the network
+     * layer; lets {@link #drainInboundPackets} run a packet through the full handle path without the
+     * player owning that logic.
+     */
+    public void setInboundProcessor(Consumer<BedrockPacket> processor) {
+        this.inboundProcessor = processor;
+    }
+
+    /**
+     * Queues an inbound packet to be handled on the main tick thread, drained in arrival order at
+     * the start of the next {@link #onUpdate}. Receive-side counterpart of {@link #sendPacket}.
+     * <p>
+     * Packets are decoded on the netty thread but their handlers mutate world, entity and inventory
+     * state that is otherwise only touched by the tick. {@code NetworkPacketHandler} routes every
+     * gameplay packet of a spawned player through here so handling is serialized with the tick
+     * instead of racing it; only handlers flagged
+     * {@link cn.nukkit.network.process.PacketHandler#runsOnNetworkThread()} and the pre-spawn login
+     * sequence are dispatched immediately on the netty thread.
+     */
+    protected void handlePacket(BedrockPacket packet) {
+        if (!this.inboundPackets.offer(packet)) {
+            log.warn("Failed to enqueue inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName());
+        }
+    }
+
+    protected void drainInboundPackets() {
+        final Consumer<BedrockPacket> processor = this.inboundProcessor;
+        if (processor == null) {
+            return;
+        }
+        BedrockPacket packet;
+        while ((packet = this.inboundPackets.poll()) != null) {
+            try {
+                processor.accept(packet);
+            } catch (Exception e) {
+                log.error("Error handling inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName(), e);
+            }
+        }
+    }
+
+    /**
+     * Requests that this player be closed (disconnected) on its own tick thread, after any already
+     * queued inbound packets have been drained. Called from the netty thread on connection loss so
+     * that the world teardown in {@link #close()} runs serialized with the level tick instead of
+     * racing it. Pre-spawn players are closed directly (see {@code NetworkPacketHandler#onDisconnect}).
+     */
+    public void requestClose(String reason) {
+        this.pendingClose = reason;
     }
 
     /**
@@ -1162,7 +1249,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Processing execution in LoginPacket
      */
     public void processLogin() {
-
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
         }
@@ -2003,6 +2089,32 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
+     * Permission that lets a command sender see players' real login names in command output
+     * instead of their (possibly nicked) display names.
+     *
+     * @see #getViewableName(CommandSender)
+     */
+    public static final String VIEW_REAL_NAME_PERMISSION = "nukkit.command.viewrealname";
+
+    /**
+     * Returns this player's name as it should be shown to {@code viewer} in command output.
+     * <p>
+     * By default the display name (nick) is returned to preserve nick systems. A viewer holding
+     * {@link #VIEW_REAL_NAME_PERMISSION} sees the real login name instead.
+     * <p>
+     * Note: this resolves against a single viewer. Messages broadcast to multiple recipients are
+     * rendered once using the command issuer's permission, not per recipient.
+     *
+     * @param viewer the sender the name is being shown to (may be null)
+     * @return the real login name if {@code viewer} has {@link #VIEW_REAL_NAME_PERMISSION}, else the display name
+     */
+    @Override
+    public String getViewableName(CommandSender viewer) {
+        return viewer != null && viewer.hasPermission(VIEW_REAL_NAME_PERMISSION)
+                ? this.getName() : this.getDisplayName();
+    }
+
+    /**
      * Just change the name displayed during player chat and in the server player list (Does not affect the player parameter name of the command, nor does it affect the player header display name)
      *
      * @param displayName The display name
@@ -2395,7 +2507,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sleeping = pos.clone();
         this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
 
-        this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3((int) pos.x, (int) pos.y, (int) pos.z));
+        this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.from((int) pos.x, (int) pos.y, (int) pos.z));
         this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
         this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
         this.level.sleepTicks = 75;
@@ -2410,9 +2522,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
 
             this.sleeping = null;
-            this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0, 0));
+            this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
             this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
-
 
             this.level.sleepTicks = 0;
 
@@ -2735,6 +2846,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.spawned) {
+            this.drainInboundPackets();
+
+            if (this.pendingClose != null) {
+                final String closeReason = this.pendingClose;
+                this.pendingClose = null;
+                this.close(closeReason);
+                return true;
+            }
+
             if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
                 this.setMotion(new Vector3(motionX, motionY, motionZ));
                 motionX = motionY = motionZ = 0;
@@ -3763,9 +3883,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         if (e instanceof EntityHandItem entityHandItem) {
                             weapon = entityHandItem.getItemInHand();
                         }
-                        if (e instanceof Player) {
+                        if (e instanceof Player pl) {
                             message = "death.attack.player";
-                            params.add(((Player) e).getDisplayName());
+                            params.add(pl.getDisplayName());
                             break;
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.mob";
@@ -3780,9 +3900,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
-                        if (e instanceof Player) {
+                        if (e instanceof Player pl) {
                             message = "death.attack.arrow";
-                            params.add(((Player) e).getDisplayName());
+                            params.add(pl.getDisplayName());
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.arrow";
                             params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());
@@ -5175,9 +5295,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                             return false;
                         }
 
-                        InventoryPickupItemEvent ev;
-                        this.server.getPluginManager().callEvent(ev = new InventoryPickupItemEvent(inventory, entityItem));
-                        if (ev.isCancelled()) {
+                        if (!inventory.callPickupItemEvent(entityItem)) {
                             return false;
                         }
 

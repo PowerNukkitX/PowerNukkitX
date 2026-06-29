@@ -82,9 +82,12 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
     private EntityArmorInventory armorInventory;
     private volatile boolean playerOnTopCached;
-    private volatile boolean hasPassengers;
-    private Vector3 frozenAnchorPos;
     private int dismountUnlockDelayTicks = 0;
+    private boolean topRotationLocked = false;
+    private boolean wasPlatformLocked = false;
+    private Vector3 forcedPlatformLockPosition;
+    private float forcedPlatformLockYaw = 0f;
+    private volatile int forcedPlatformLockTicks = 0;
 
     @Override
     public String getOriginalName() {
@@ -172,6 +175,11 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
+    protected boolean shouldLockBodyRotationWhenStoodOn() {
+        return true;
+    }
+
+    @Override
     public RideableComponent getComponentRideable() {
         if (!this.isHarnessed() || this.isBaby()) return null;
 
@@ -239,6 +247,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
     @Override
     public boolean canBePushedByEntities() {
+        if (this.isLockedAsPlatform()) return false;
         return this.canMove();
     }
 
@@ -303,13 +312,20 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 armorInventory.sendContents(player);
                 this.setInputControls(false);
                 this.setHomePosition();
+
+                this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+                this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+                this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, false);
                 return true;
             }
         }
 
-        if (this.isHarnessed() && mountEntity(player, true)) {
-            this.hasPassengers = true;
-            return false;
+        if (this.isHarnessed()) {
+            this.clearTopRotationLockForRiding();
+
+            if (mountEntity(player, true)) {
+                return false;
+            }
         }
 
         return false;
@@ -321,8 +337,10 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
         if (result && this.passengers.isEmpty()) {
             this.setHomePosition();
-            this.hasPassengers = false;
             this.dismountUnlockDelayTicks = 10;
+            this.forcedPlatformLockTicks = 3;
+
+            this.forceImmediatePlatformLockAfterDismount();
         }
         return result;
     }
@@ -331,6 +349,37 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     public void spawnTo(Player player) {
         super.spawnTo(player);
         armorInventory.sendContents(player);
+    }
+
+    private boolean isLockedAsPlatform() {
+        return !this.isBaby()
+                && this.playerOnTopCached
+                && (this.passengers == null || this.passengers.isEmpty());
+    }
+
+    private boolean hasMountedPassengers() {
+        return this.passengers != null && !this.passengers.isEmpty();
+    }
+
+    private boolean refreshPlatformLockStateForAi() {
+        boolean controlled = this.hasControllingPassenger();
+        boolean mounted = this.hasMountedPassengers();
+
+        if (controlled || mounted || this.isBaby()) {
+            this.playerOnTopCached = false;
+            this.forcedPlatformLockTicks = 0;
+            this.forcedPlatformLockPosition = null;
+            return false;
+        }
+
+        if (this.forcedPlatformLockTicks > 0) {
+            this.playerOnTopCached = true;
+            return true;
+        }
+
+        boolean standingOnTop = this.isPlayerStandingOnTop();
+        this.playerOnTopCached = standingOnTop;
+        return standingOnTop;
     }
 
     public boolean isHarnessed() {
@@ -355,51 +404,62 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         this.setBooleanEntityProperty(PROP_CAN_MOVE, value);
     }
 
-    private static float snapYawToCardinal(double yaw) {
-        double y = yaw % 360f;
-        if (y < 0f) y += 360f;
-        return Math.round(y / 90f) * 90f;
-    }
+    private void applyBodyRotationFlagsFromTopPresence(boolean playerOnTop) {
+        boolean mounted = this.hasMountedPassengers();
 
-    private void applyMobilityFromTopPresence(boolean playerOnTop) {
-        boolean mounted = this.hasPassengers;
-        boolean shouldMove = mounted || !playerOnTop;
+        if (mounted) {
+            this.topRotationLocked = false;
 
-        if (!shouldMove) {
-            if (this.frozenAnchorPos == null) {
-                this.frozenAnchorPos = new Vector3(this.getX(), this.getY(), this.getZ());
-            }
-
-            // Snap yaw to cardinal
-            float snapped = snapYawToCardinal(this.getYaw());
-            this.setRotation(snapped, 0f);
-            this.setHeadYaw(snapped);
-            this.setPitch(0f);
-
-            // Clear AI intentions
-            this.setMoveTarget(null);
-            this.setLookTarget(null);
-
-            // Kill direction vectors used by controllers
-            this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_START);
-            this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_END);
-            this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, false);
-
-            // Hard pin to anchor
-            this.setMotion(new Vector3(0, 0, 0));
-            this.setMovementSpeed(0f);
-            this.setPosition(this.frozenAnchorPos);
-
-            this.getBehaviorGroup().setForceUpdateRoute(true);
-            this.setCanMove(false);
+            this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+            this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+            this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
             return;
         }
 
-        // Mobile again
-        if (this.canMove()) return;
+        if (playerOnTop) {
+            this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
+            this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, true);
 
-        this.frozenAnchorPos = null;
-        this.setCanMove(true);
+            if (!this.topRotationLocked) {
+                this.snapBodyToClosestCardinal();
+                this.topRotationLocked = true;
+            }
+
+            this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, true);
+            return;
+        }
+
+        this.topRotationLocked = false;
+
+        this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+        this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+        this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, false);
+    }
+
+    private void clearTopRotationLockForRiding() {
+        this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+        this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, false);
+        this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
+    }
+
+    private void enterPlatformLock() {
+        this.setMoveTarget(null);
+        this.setLookTarget(null);
+
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_START);
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_END);
+        this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, false);
+
+        this.getBehaviorGroup().setForceUpdateRoute(true);
+
+        this.setMotion(new Vector3(0, 0, 0));
+        this.setMovementSpeed(0f);
+        this.updateMovement();
+    }
+
+    private void exitPlatformLock() {
+        this.forcedPlatformLockTicks = 0;
+        this.forcedPlatformLockPosition = null;
 
         this.setMoveTarget(null);
         this.setLookTarget(null);
@@ -409,51 +469,131 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, true);
 
         this.getBehaviorGroup().setForceUpdateRoute(true);
+
+        this.setMotion(new Vector3(0, 0, 0));
         this.setMovementSpeed(this.getMovementSpeedDefault());
+    }
+
+    private void forceImmediatePlatformLockAfterDismount() {
+        this.forcedPlatformLockYaw = snapYawToCardinal(this.getYaw());
+        this.forcedPlatformLockPosition = new Vector3(this.getX(), this.getY(), this.getZ());
+        this.forcedPlatformLockTicks = 6;
+
+        this.applyForcedDismountLock();
+    }
+
+    private void applyForcedDismountLock() {
+        this.playerOnTopCached = true;
+        this.wasPlatformLocked = true;
+        this.topRotationLocked = true;
+
+        this.setMoveTarget(null);
+        this.setLookTarget(null);
+
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_START);
+        this.getMemoryStorage().clear(CoreMemoryTypes.MOVE_DIRECTION_END);
+        this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, false);
+
+        this.getBehaviorGroup().setForceUpdateRoute(true);
+
+        this.setMotion(new Vector3(0, 0, 0));
+        this.setMovementSpeed(0f);
+
+        if (this.forcedPlatformLockPosition != null) {
+            this.setPosition(this.forcedPlatformLockPosition);
+        }
+
+        this.setRotation(this.forcedPlatformLockYaw, 0f);
+        this.setHeadYaw(this.forcedPlatformLockYaw);
+        this.setPitch(0f);
+
+        this.setDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD, true);
+        this.setDataFlag(ActorFlags.ROTATION_AXIS_ALIGNED, true);
+        this.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, true);
+
+        this.updateMovement();
+    }
+
+    private boolean isPlayerStandingOnTop() {
+        if (this.isBaby()) return false;
+        if (this.passengers != null && !this.passengers.isEmpty()) return false;
+
+        final double topY = this.getY() + this.getHeight();
+
+        final double half = this.getWidth() * 0.5;
+        final double pad = 0.10;
+
+        final double minY = topY - 0.35;
+        final double maxY = topY + 2.20;
+
+        AxisAlignedBB box = new SimpleAxisAlignedBB(
+                this.getX() - half + pad,
+                minY,
+                this.getZ() - half + pad,
+                this.getX() + half - pad,
+                maxY,
+                this.getZ() + half - pad
+        );
+
+        for (Entity e : this.level.getNearbyEntitiesSafe(box, this)) {
+            if (!(e instanceof Player p) || !p.isAlive()) continue;
+            if (this.isPassenger(p)) continue;
+
+            AxisAlignedBB pbb = p.getBoundingBox();
+            if (pbb == null) continue;
+
+            double feetY = pbb.getMinY();
+
+            if (feetY >= topY - 0.45 && feetY <= topY + 2.00) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static float snapYawToCardinal(double yaw) {
+        double y = yaw % 360f;
+        if (y < 0f) y += 360f;
+
+        float snapped = (float) (Math.round(y / 90f) * 90f);
+        if (snapped >= 360f) snapped -= 360f;
+
+        return snapped;
+    }
+
+    private void snapBodyToClosestCardinal() {
+        float snapped = snapYawToCardinal(this.getYaw());
+
+        this.setRotation(snapped, 0f);
+        this.setHeadYaw(snapped);
+        this.setPitch(0f);
+
+        this.updateMovement();
     }
 
 
     @Override
     public boolean onUpdate(int currentTick) {
         boolean updated = super.onUpdate(currentTick);
-        boolean mounted = this.passengers != null && !this.passengers.isEmpty();
-        this.hasPassengers = mounted;
-        boolean standingOnTop = false;
 
-        if (!mounted) {
-            final double topY = this.getY() + this.getHeight();
+        boolean mounted = this.hasMountedPassengers();
 
-            final double half = this.getWidth() * 0.5;
-            final double pad = 0.10;
-
-            final double minY = topY - 0.35;
-            final double maxY = topY + 2.20;
-
-            AxisAlignedBB box = new SimpleAxisAlignedBB(
-                    this.getX() - half + pad,
-                    minY,
-                    this.getZ() - half + pad,
-                    this.getX() + half - pad,
-                    maxY,
-                    this.getZ() + half - pad
-            );
-
-            for (Entity e : this.level.getNearbyEntitiesSafe(box, this)) {
-                if (!(e instanceof Player p) || !p.isAlive()) continue;
-
-                AxisAlignedBB pbb = p.getBoundingBox();
-                if (pbb == null) continue;
-
-                double feetY = pbb.getMinY();
-
-                if (feetY >= topY - 0.45 && feetY <= topY + 2.00) {
-                    standingOnTop = true;
-                    break;
-                }
-            }
+        if (this.dismountUnlockDelayTicks > 0 && !mounted) {
+            this.dismountUnlockDelayTicks--;
         }
 
-        this.playerOnTopCached = mounted || standingOnTop;
+        if (this.forcedPlatformLockTicks > 0) {
+            this.playerOnTopCached = true;
+            this.applyForcedDismountLock();
+            return updated;
+        }
+
+        boolean standingOnTop = !mounted && this.isPlayerStandingOnTop();
+        this.playerOnTopCached = standingOnTop;
+
+        this.applyBodyRotationFlagsFromTopPresence(standingOnTop);
+
         return updated;
     }
 
@@ -482,28 +622,27 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
+                    new Behavior(
+                            new AnimalGrowExecutor(),
+                            all(
+                                    e -> e.isAgeable(),
+                                    e -> e.isBaby(),
+                                    e -> !e.isGrowthPaused(),
+                                    e -> e.getTicksGrowLeft() > 0
+                            ),
+                            1, 1, 1200
+                    )
                 ),
                 Set.of(
-                        new Behavior( // Return home if too far
-                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultFlyingSpeed() * 8f, true),
-                                entity -> {
-                                    EntityHappyGhast g = (EntityHappyGhast) entity;
+                    new Behavior( // Return home if too far
+                            new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultFlyingSpeed() * 8f, true),
+                            entity -> {
+                                EntityHappyGhast g = (EntityHappyGhast) entity;
+                                if (!g.canMove()) return false;
+                                if (g.hasMountedPassengers()) return false;
 
-                                    if (!g.canMove()) return false;
-                                    if (g.hasPassengers) return false;
-
-                                    Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
-                                    if (home == null) return false;
+                                Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
+                                if (home == null) return false;
 
                             double max = g.roamDistance();
                             return entity.distanceSquared(home) > (max * max);
@@ -558,45 +697,107 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                     )
                 ),
                 Set.of(
-                        new NearestPlayerSensor(56, 0, 20),
-                        // Ensure HOME memory exists + stays valid
-                        new ISensor() {
-                            @Override
-                            public void sense(EntityIntelligent entity) {
-                                EntityHappyGhast g = (EntityHappyGhast) entity;
-                                if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK))
-                                    g.setHomePosition();
-                            }
-
-                            @Override
-                            public int getPeriod() {
-                                return 60;
-                            }
-                        },
-                        new ISensor() {
-                            @Override
-                            public void sense(EntityIntelligent entity) {
-                                EntityHappyGhast g = (EntityHappyGhast) entity;
-                                if (g.dismountUnlockDelayTicks > 0 && !g.hasPassengers) g.dismountUnlockDelayTicks--;
-                                g.applyMobilityFromTopPresence(g.playerOnTopCached);
-                            }
-
-                            @Override
-                            public int getPeriod() {
-                                return 1;
-                            }
+                    new NearestPlayerSensor(56, 0, 20),
+                    // Ensure HOME memory exists + stays valid
+                    new ISensor() {
+                        @Override
+                        public void sense(EntityIntelligent entity) {
+                            EntityHappyGhast g = (EntityHappyGhast) entity;
+                            if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK))
+                                g.setHomePosition();
                         }
+
+                        @Override
+                        public int getPeriod() {
+                            return 60;
+                        }
+                    }
                 ),
                 Set.of(
-                        new SpaceMoveController(),
-                        new LookController(
-                                () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0,
-                                () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0
-                        ),
-                        new LiftController()
+                    new SpaceMoveController(),
+                    new LookController(
+                            () -> this.canMove(),
+                            () -> this.canMove()
+                    ),
+                    new LiftController()
                 ),
                 new SimpleSpaceAStarRouteFinder(new HoveringPosEvaluator(), this),
                 this
         );
+    }
+
+    @Override
+    public void asyncPrepare(int currentTick) {
+        if (this.forcedPlatformLockTicks > 0) {
+            this.applyForcedDismountLock();
+
+            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+            this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+            this.calculateOffsetBoundingBox();
+
+            this.forcedPlatformLockTicks--;
+            return;
+        }
+
+        boolean controlled = this.hasControllingPassenger();
+        boolean platformLocked = this.refreshPlatformLockStateForAi();
+
+        if (controlled) {
+            this.wasPlatformLocked = false;
+            return;
+        }
+
+        if (platformLocked) {
+            if (!this.wasPlatformLocked) {
+                this.enterPlatformLock();
+                this.wasPlatformLocked = true;
+            }
+
+            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+            this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+            this.calculateOffsetBoundingBox();
+
+            this.setMotion(new Vector3(0, 0, 0));
+            this.setMovementSpeed(0f);
+
+            if (this.forcedPlatformLockTicks > 0) {
+                this.forcedPlatformLockTicks--;
+            }
+
+            return;
+        }
+
+        if (this.wasPlatformLocked) {
+            this.exitPlatformLock();
+            this.wasPlatformLocked = false;
+        }
+
+        isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+
+        if (!this.isImmobile()) {
+            var behaviorGroup = getBehaviorGroup();
+            if (behaviorGroup == null) return;
+
+            behaviorGroup.collectSensorData(this);
+            behaviorGroup.evaluateCoreBehaviors(this);
+            behaviorGroup.evaluateBehaviors(this);
+            behaviorGroup.tickRunningCoreBehaviors(this);
+            behaviorGroup.tickRunningBehaviors(this);
+            behaviorGroup.updateRoute(this);
+            behaviorGroup.applyController(this);
+        }
+
+        this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+        this.calculateOffsetBoundingBox();
+
+        if (!this.isImmobile()) {
+            if (needsRecalcMovement) {
+                handleCollideMovement(currentTick);
+            }
+
+            addTmpMoveMotionXZ(previousCollideMotion);
+            handleFloatingMovement();
+            handlePassableBlockFrictionMovement();
+        }
     }
 }

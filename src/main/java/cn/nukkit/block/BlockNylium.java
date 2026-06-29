@@ -74,6 +74,16 @@ public abstract class BlockNylium extends BlockSolid implements Natural {
     }
 
     @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 0;
+    }
+
+    @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{Item.get(NETHERRACK)};

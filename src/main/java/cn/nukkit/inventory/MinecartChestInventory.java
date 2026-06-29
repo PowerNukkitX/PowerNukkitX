@@ -9,7 +9,7 @@ import java.util.Map;
 public class MinecartChestInventory extends ContainerInventory {
 
     public MinecartChestInventory(EntityChestMinecart minecart) {
-        super(minecart, ContainerType.MINECART_CHEST, 27);
+        super(minecart, ContainerType.CONTAINER, 27);
     }
 
     @Override

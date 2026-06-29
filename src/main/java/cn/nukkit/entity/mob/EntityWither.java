@@ -52,6 +52,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarOverlay;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
@@ -294,10 +295,13 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     @Override
     public void addBossbar(Player player) {
         final BossEventPacket bossEventPacket = new BossEventPacket();
-        bossEventPacket.setTargetActorID(this.id);
+        bossEventPacket.setTargetActorID(this.getId());
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.getName());
         bossEventPacket.setHealthPercent(0f);
+        bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
+        bossEventPacket.setColor(BossBarColor.PURPLE);
+        bossEventPacket.setPlayerID(player.getId());
         bossEventPacket.setDarkenScreen(1);
         bossEventPacket.setColor(BossBarColor.REBECCA_PURPLE);
         player.sendPacket(bossEventPacket);

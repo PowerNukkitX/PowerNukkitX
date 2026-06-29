@@ -85,8 +85,7 @@ public abstract class EntityProperty {
         final List<NbtMap> listProperty = new ObjectArrayList<>();
         for (EntityProperty entityProperty : properties) {
             // Filter out properties not meant to sync to client
-            if (entityProperty instanceof BooleanEntityProperty boolProp && !boolProp.isClientSync()) continue;
-            if (entityProperty instanceof EnumEntityProperty enumProp && !enumProp.isClientSync()) continue;
+            if (!entityProperty.isClientSync()) continue;
 
             NbtMap propertyTag = NbtMap.builder()
                     .putString("name", entityProperty.getIdentifier())

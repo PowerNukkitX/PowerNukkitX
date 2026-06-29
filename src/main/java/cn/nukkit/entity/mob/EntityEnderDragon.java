@@ -49,6 +49,7 @@ import cn.nukkit.plugin.InternalPlugin;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor;
+import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarOverlay;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
@@ -232,6 +233,11 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     @Override
+    public boolean isFireImmune() {
+        return true;
+    }
+
+    @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(200);
     }
@@ -287,7 +293,9 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.getName());
         bossEventPacket.setHealthPercent(health / getHealthMax());
+        bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
         bossEventPacket.setColor(BossBarColor.PURPLE);
+        bossEventPacket.setPlayerID(player.getId());
         player.sendPacket(bossEventPacket);
     }
 

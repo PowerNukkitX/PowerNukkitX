@@ -110,7 +110,12 @@ public final class OverworldCavesDensity {
                 spaghetti2d,
                 DensityCommon.WeirdScaledSampler.RarityValueMapper.TYPE2
         );
-        DensityFunction elevation = DensityCommon.mappedNoise(spaghetti2dElevation, 1.0, 0.0, -8.0, 8.0);
+        DensityFunction elevation = DensityCommon.flatCache(
+                DensityCommon.mul(
+                        DensityCommon.constant(8.0),
+                        DensityCommon.noise(spaghetti2dElevation, 1.0, 0.0)
+                )
+        );
         DensityFunction elevationGradient = DensityCommon.add(
                 DensityCommon.add(elevation, DensityCommon.yClampedGradient(-64, 320, 8.0, -40.0)).abs(),
                 spaghetti2dThicknessModulator

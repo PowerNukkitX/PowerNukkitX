@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.inventory.SoleInventory;
 import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
@@ -149,6 +150,15 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
 
             resultDestItem = destination.getItem(destinationSlot);
         }
+
+        // Drop furnace experience when player takes item out of the result slot
+        if(source instanceof SmeltingInventory inventory) {
+            if (sourceSlot == SmeltingInventory.SLOT_RESULT && (sourItem.isNull() || sourItem.getCount() > 0)) {
+                var holder = inventory.getHolder();
+                holder.dropXp();
+            }
+        }
+
         var destItemStackResponseSlot =
                 new ItemStackResponseContainerInfo(
                         destination.getContainerEnumName(destinationSlot),

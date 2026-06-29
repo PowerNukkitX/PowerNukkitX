@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.feature;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLiquid;
-import cn.nukkit.block.BlockSweetBerryBush;
+import cn.nukkit.block.Supportable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -17,7 +17,7 @@ import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
-public abstract class ObjectGeneratorFeature extends GenerateFeature {
+public abstract class ObjectGeneratorFeature extends GenerateFeature implements Supportable {
 
     public abstract ObjectGenerator getGenerator(RandomSourceProvider random);
 
@@ -27,10 +27,6 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
 
     public int getMax() {
         return 6;
-    }
-
-    public boolean isSupportValid(Block block) {
-        return BlockSweetBerryBush.isSupportValid(block);
     }
 
     public boolean canSpawnHere(BiomeDefinitionData definition) {
@@ -59,7 +55,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
             while(checkBlock(level.getBlock(v))) {
                 v.y--;
             }
-            if(isSupportValid(level.getBlock(v))) {
+            if(isSupportDirt(level.getBlock(v))) {
                 getGenerator(random).generate(object, random, v.add(0, 1, 0));
             }
         }

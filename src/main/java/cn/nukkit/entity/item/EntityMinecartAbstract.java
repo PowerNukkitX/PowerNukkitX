@@ -17,6 +17,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
@@ -29,13 +30,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
+import cn.nukkit.utils.RuntimeBlockDefinition;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author larryTheCoder (Nukkit Project, Minecart and Riding Project)
@@ -277,6 +281,27 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             }
         }
         level.dropItem(this, new ItemMinecart());
+    }
+
+    @Override
+    protected void checkBlockCollision() {
+        super.checkBlockCollision();
+
+        Set<Long> handledBlocks = new HashSet<>();
+        for (Block block : this.getTickCachedCollisionBlocks()) {
+            handledBlocks.add(collisionBlockHash(block));
+        }
+
+        for (Block block : this.level.getCollisionBlocks(this.getBoundingBox(), false, true, Block::hasEntityCollision)) {
+            if (handledBlocks.add(collisionBlockHash(block))) {
+                block.onEntityCollide(this);
+                block.getTickCachedLevelBlockAtLayer(1).onEntityCollide(this);
+            }
+        }
+    }
+
+    private long collisionBlockHash(Block block) {
+        return Level.blockHash(block.getFloorX(), block.getFloorY(), block.getFloorZ(), this.level);
     }
 
     @Override
@@ -786,14 +811,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 //              Runtimeid
                 int display = blockInside.getRuntimeId();
                 setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 1);
-                setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, display);
+                setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, new RuntimeBlockDefinition(display));
                 setDisplayBlockOffset(6);
             }
         } else {
             // Set block to air (default).
             blockInside = null;
             setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 0);
-            setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, 0);
+            setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, new RuntimeBlockDefinition(0));
             setDisplayBlockOffset(0);
         }
         return true;

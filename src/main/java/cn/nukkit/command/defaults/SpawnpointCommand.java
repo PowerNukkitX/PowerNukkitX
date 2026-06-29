@@ -59,7 +59,7 @@ public class SpawnpointCommand extends VanillaCommand {
                     for (Player player : players) {
                         player.setSpawn(position, Player.SpawnPointType.PLAYER);
                     }
-                    log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(Player::getName).collect(Collectors.joining(" ")),
+                    log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(p -> p.getViewableName(sender)).collect(Collectors.joining(" ")),
                             round2.format(position.x),
                             round2.format(position.y),
                             round2.format(position.z)).successCount(players.size()).output(true);
@@ -70,9 +70,10 @@ public class SpawnpointCommand extends VanillaCommand {
             return 0;
         }
         if (!players.isEmpty()) {
-            Position pos = players.get(0).getPosition();
-            players.get(0).setSpawn(pos, Player.SpawnPointType.PLAYER);
-            log.addSuccess("commands.spawnpoint.success.single", sender.getName(),
+            Player player = players.getFirst();
+            Position pos = player.getPosition();
+            player.setSpawn(pos, Player.SpawnPointType.PLAYER);
+            log.addSuccess("commands.spawnpoint.success.single", player.getViewableName(sender),
                     round2.format(pos.x),
                     round2.format(pos.y),
                     round2.format(pos.z)).output(true);

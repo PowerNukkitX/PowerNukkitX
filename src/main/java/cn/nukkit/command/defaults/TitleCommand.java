@@ -59,7 +59,7 @@ public class TitleCommand extends VanillaCommand {
             case "clear" -> {
                 for (Player player : players) {
                     player.clearTitle();
-                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.clear", player.getName());
+                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.clear", player.getViewableName(sender));
                 }
                 log.output();
                 return 1;
@@ -67,7 +67,7 @@ public class TitleCommand extends VanillaCommand {
             case "reset" -> {
                 for (Player player : players) {
                     player.resetTitleSettings();
-                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.reset", player.getName());
+                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.reset", player.getViewableName(sender));
                 }
                 log.output();
                 return 1;
@@ -79,21 +79,21 @@ public class TitleCommand extends VanillaCommand {
                     case "title" -> {
                         for (Player player : players) {
                             player.sendTitle(titleText);
-                            log.addMessage(TextFormat.WHITE + "%nukkit.command.title.title", TextFormat.clean(titleText), player.getName());
+                            log.addMessage(TextFormat.WHITE + "%nukkit.command.title.title", TextFormat.clean(titleText), player.getViewableName(sender));
                         }
                         log.output();
                     }
                     case "subtitle" -> {
                         for (Player player : players) {
                             player.setSubtitle(titleText);
-                            log.addMessage(TextFormat.WHITE + "%nukkit.command.title.subtitle", TextFormat.clean(titleText), player.getName());
+                            log.addMessage(TextFormat.WHITE + "%nukkit.command.title.subtitle", TextFormat.clean(titleText), player.getViewableName(sender));
                         }
                         log.output();
                     }
                     case "actionbar" -> {
                         for (Player player : players) {
                             player.sendActionBar(titleText);
-                            log.addMessage(TextFormat.WHITE + "%nukkit.command.title.actionbar", TextFormat.clean(titleText), player.getName());
+                            log.addMessage(TextFormat.WHITE + "%nukkit.command.title.actionbar", TextFormat.clean(titleText), player.getViewableName(sender));
                         }
                         log.output();
                     }
@@ -109,7 +109,7 @@ public class TitleCommand extends VanillaCommand {
                 int stay = list.getResult(3);
                 int fadeOut = list.getResult(4);
                 for (var player : players) {
-                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.times.success", String.valueOf(fadeIn), String.valueOf(stay), String.valueOf(fadeOut), player.getName());
+                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.times.success", String.valueOf(fadeIn), String.valueOf(stay), String.valueOf(fadeOut), player.getViewableName(sender));
                 }
                 log.output();
                 return 1;

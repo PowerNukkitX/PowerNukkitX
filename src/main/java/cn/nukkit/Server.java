@@ -139,6 +139,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -194,7 +195,6 @@ public class Server {
     private float maxTick = 20;
     private float maxUse = 0;
     private int sendUsageTicker = 0;
-    private volatile double cachedCpuLoad = -1;
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
@@ -1076,7 +1076,7 @@ public class Server {
                     }
 
                     if (getSettings().levelSettings().autoTickRate()) {
-                        if (tickMs < 50 && level.getTickRate() > baseTickRate) {
+                        if (tickMs < getBaseMSPT() && level.getTickRate() > baseTickRate) {
                             int r;
                             level.setTickRate(r = level.getTickRate() - 1);
                             if (r > baseTickRate) {
@@ -1084,13 +1084,13 @@ public class Server {
                             }
                             log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(),
                                     level.getTickRate());
-                        } else if (tickMs >= 50) {
+                        } else if (tickMs >= getBaseMSPT()) {
                             int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
                             if (level.getTickRate() == baseTickRate) {
-                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / getBaseMSPT())));
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
                                         NukkitMath.round(tickMs, 2), level.getTickRate());
-                            } else if ((tickMs / level.getTickRate()) >= 50
+                            } else if ((tickMs / level.getTickRate()) >= getBaseMSPT()
                                     && level.getTickRate() < autoTickRateLimit) {
                                 level.setTickRate(level.getTickRate() + 1);
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
@@ -1130,20 +1130,30 @@ public class Server {
         }
     }
 
+    public int getBaseTps() {
+        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 1000);
+    }
+
+    public int getBaseMSPT() {
+        return 1000 / getBaseTps();
+    }
+
     private void tick() {
         long tickTime = System.currentTimeMillis();
 
         long time = tickTime - this.nextTick;
-        if (time < -25) {
+        long sleepThreshold = getBaseMSPT() / 2L;
+        if (time < -sleepThreshold) {
             try {
-                Thread.sleep(Math.max(5, -time - 25));
+                Thread.sleep(Math.max(0, -time - sleepThreshold));
             } catch (InterruptedException e) {
                 log.debug("The thread {} got interrupted", Thread.currentThread().getName(), e);
+                Thread.currentThread().interrupt();
             }
         }
 
         long tickTimeNano = System.nanoTime();
-        if ((tickTime - this.nextTick) < -25) {
+        if ((tickTime - this.nextTick) < -sleepThreshold) {
             return;
         }
 
@@ -1156,14 +1166,8 @@ public class Server {
 
         if ((this.tickCounter & 0b1111) == 0) {
             this.titleTick();
-            this.maxTick = 20;
+            this.maxTick = getBaseTps();
             this.maxUse = 0;
-            if (ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean osBean) {
-                double load = osBean.getProcessCpuLoad();
-                if (load >= 0) {
-                    this.cachedCpuLoad = load;
-                }
-            }
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
@@ -1199,14 +1203,14 @@ public class Server {
         }
 
         // Handle freezable array
-        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        int freezableArrayCompressTime = (int) (getBaseMSPT() - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
         long nowNano = System.nanoTime();
-        float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
-        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
+        float tick = (float) Math.min(getBaseTps(), 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
+        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / (getBaseMSPT() * 1000000.0));
 
         if (this.maxTick > tick) {
             this.maxTick = tick;
@@ -1225,7 +1229,7 @@ public class Server {
         if ((this.nextTick - tickTime) < -1000) {
             this.nextTick = tickTime;
         } else {
-            this.nextTick += 50;
+            this.nextTick += getBaseMSPT();
         }
 
     }
@@ -1242,6 +1246,10 @@ public class Server {
     }
 
     public float getTicksPerSecond() {
+        return getTicksPerSecondAverage();
+    }
+
+    public float getMaxTicksPerSecond() {
         return ((float) Math.round(this.maxTick * 100)) / 100;
     }
 
@@ -1268,10 +1276,13 @@ public class Server {
     }
 
     public String getCPULoad() {
-        if (this.cachedCpuLoad < 0) {
-            return "N/A";
+        if (ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean osBean) {
+            double load = osBean.getProcessCpuLoad();
+            if (load >= 0) {
+                return String.format("%.1f%%", load * 100);
+            }
         }
-        return String.format("%.1f%%", this.cachedCpuLoad * 100);
+        return "N/A";
     }
 
     // TODO: Fix title tick
@@ -1858,7 +1869,7 @@ public class Server {
      * @param info the player info
      */
     void updateName(Player.PlayerInfo info) {
-        var uniqueId = info.getIdentityClaims().extraData.identity;
+        var uniqueId = uuidFromXUID(info.getIdentityClaims().extraData.xuid);
         var name = info.getIdentityClaims().extraData.displayName;
 
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
@@ -1875,6 +1886,21 @@ public class Server {
         if (!xboxAuthEnabled) {
             playerDataDB.put(nameBytes, array);
         }
+    }
+
+    /**
+     * Derives a stable {@link UUID} from a player's XUID (Xbox User ID).
+     * <p>
+     * The XUID is namespaced with the {@code "pocket-auth-1-xuid:"} prefix and hashed
+     * using {@link UUID#nameUUIDFromBytes(byte[])} (a type 3, name-based UUID). Because
+     * the derivation is deterministic, the same XUID always yields the same UUID, while
+     * different XUIDs yield different UUIDs.
+     *
+     * @param xuid the player's XUID, as provided by Xbox Live authentication
+     * @return a deterministic, name-based {@link UUID} derived from the given XUID
+     */
+    public static UUID uuidFromXUID(String xuid) {
+        return UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8));
     }
 
     public IPlayer getOfflinePlayer(final String name) {
@@ -2100,6 +2126,56 @@ public class Server {
         tag.remove("Colors", "PieceTintColors", "Skin");
     }
 
+    private Player findPlayerByString(Function<Player, String> extractor, String name, boolean exact) {
+        if (name == null) return null;
+        String q = name.toLowerCase(Locale.ENGLISH);
+        if (exact) {
+            for (Player player : this.getOnlinePlayers().values()) {
+                String value = extractor.apply(player);
+                if (value != null && value.toLowerCase(Locale.ENGLISH).equals(q)) {
+                    return player;
+                }
+            }
+            return null;
+        } else {
+            Player found = null;
+            int delta = Integer.MAX_VALUE;
+            for (Player player : this.getOnlinePlayers().values()) {
+                String value = extractor.apply(player);
+                if (value == null) continue;
+                String lower = value.toLowerCase(Locale.ENGLISH);
+                if (lower.startsWith(q)) {
+                    int curDelta = value.length() - q.length();
+                    if (curDelta < delta) {
+                        found = player;
+                        delta = curDelta;
+                    }
+                    if (curDelta == 0) {
+                        break;
+                    }
+                }
+            }
+            return found;
+        }
+    }
+
+    private Player[] matchPlayersByString(Function<Player, String> extractor, String partialName) {
+        if (partialName == null) return Player.EMPTY_ARRAY;
+        String q = partialName.toLowerCase(Locale.ENGLISH);
+        List<Player> matched = new ArrayList<>();
+        for (Player player : this.getOnlinePlayers().values()) {
+            String value = extractor.apply(player);
+            if (value == null) continue;
+            String lower = value.toLowerCase(Locale.ENGLISH);
+            if (lower.equals(q)) {
+                return new Player[] { player };
+            } else if (lower.contains(q)) {
+                matched.add(player);
+            }
+        }
+        return matched.toArray(Player.EMPTY_ARRAY);
+    }
+
     /**
      * Get an online player from the player name, this method is a fuzzy match and
      * will be returned as long as the player name has the name prefix.
@@ -2108,23 +2184,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayer(String name) {
-        Player found = null;
-        name = name.toLowerCase(Locale.ENGLISH);
-        int delta = Integer.MAX_VALUE;
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase(Locale.ENGLISH).startsWith(name)) {
-                int curDelta = player.getName().length() - name.length();
-                if (curDelta < delta) {
-                    found = player;
-                    delta = curDelta;
-                }
-                if (curDelta == 0) {
-                    break;
-                }
-            }
-        }
-
-        return found;
+        return findPlayerByString(Player::getName, name, false);
     }
 
     /**
@@ -2135,14 +2195,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayerExact(String name) {
-        name = name.toLowerCase(Locale.ENGLISH);
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase(Locale.ENGLISH).equals(name)) {
-                return player;
-            }
-        }
-
-        return null;
+        return findPlayerByString(Player::getName, name, true);
     }
 
     /**
@@ -2153,17 +2206,40 @@ public class Server {
      * @return All players matched, if not matched then an empty array
      */
     public Player[] matchPlayer(String partialName) {
-        partialName = partialName.toLowerCase(Locale.ENGLISH);
-        List<Player> matchedPlayer = new ArrayList<>();
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase(Locale.ENGLISH).equals(partialName)) {
-                return new Player[] { player };
-            } else if (player.getName().toLowerCase(Locale.ENGLISH).contains(partialName)) {
-                matchedPlayer.add(player);
-            }
-        }
+        return matchPlayersByString(Player::getName, partialName);
+    }
 
-        return matchedPlayer.toArray(Player.EMPTY_ARRAY);
+    /**
+     * Get an online player from the display name, this method is a fuzzy match and
+     * will be returned as long as the player name has the name prefix.
+     *
+     * @param name display name
+     * @return Player instance object, failed to get null
+     */
+    public Player getPlayerByDisplayName(String name) {
+        return findPlayerByString(Player::getDisplayName, name, false);
+    }
+
+    /**
+     * Get an online player from a display name, this method is an exact match and
+     * returns when the player name string is identical.
+     *
+     * @param name display name
+     * @return Player instance object, failed to get null
+     */
+    public Player getPlayerExactByDisplayName(String name) {
+        return findPlayerByString(Player::getDisplayName, name, true);
+    }
+
+    /**
+     * Specify a partial display name and return all players with or equal to that
+     * name.
+     *
+     * @param partialName partial name
+     * @return All players matched, if not matched then an empty array
+     */
+    public Player[] matchPlayerByDisplayName(String partialName) {
+        return matchPlayersByString(Player::getDisplayName, partialName);
     }
 
     @ApiStatus.Internal
