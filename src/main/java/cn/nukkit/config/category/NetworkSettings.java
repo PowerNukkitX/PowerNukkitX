@@ -33,12 +33,14 @@ public class NetworkSettings extends OkaeriConfig {
     boolean networkEncryption = true;
     @Comment("pnx.settings.network.logintime")
     boolean checkLoginTime = false;
-    @Comment("pnx.settings.network.pacing.enabled")
-    boolean pacingEnabled = true;
-    @Comment("pnx.settings.network.pacing.flushintervalmillis")
-    int pacingFlushIntervalMillis = 3;
-    @Comment("pnx.settings.network.pacing.maxbytespersecond")
-    int pacingMaxBytesPerSecond = 8388608;
+    @Comment("pnx.settings.network.autoflush")
+    boolean autoFlush = true;
+    @Comment("pnx.settings.network.flushinterval")
+    int flushInterval = 10;
+    @Comment("pnx.settings.network.maxqueuedbytes")
+    int maxQueuedBytes = 67108864;
+    @Comment("pnx.settings.network.cookiemode")
+    String cookieMode = "ACTIVE";
 
     @Comment("pnx.settings.network.ratelimit")
     @CustomKey("rate-limit")

@@ -2,6 +2,7 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.config.category.NetworkSettings;
 import cn.nukkit.event.server.ServerBotnetAttackEvent;
 import cn.nukkit.network.process.NetworkPacketHandler;
 import cn.nukkit.network.process.NetworkState;
@@ -33,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
+import org.cloudburstmc.netty.channel.raknet.config.RakServerCookieMode;
 import org.cloudburstmc.protocol.bedrock.BedrockPong;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
@@ -120,11 +122,16 @@ public class Network implements NetworkInterface {
                 .ipv4Port(server.getPort())
                 .ipv6Port(server.getPort());
 
+        final NetworkSettings net = server.getSettings().networkSettings();
         this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
                 .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[]{codec.getRaknetProtocolVersion()})
-                .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
+                .option(RakChannelOption.RAK_PACKET_LIMIT, net.packetLimit())
+                .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, parseCookieMode(net.cookieMode()))
+                .childOption(RakChannelOption.RAK_AUTO_FLUSH, net.autoFlush())
+                .childOption(RakChannelOption.RAK_FLUSH_INTERVAL, net.flushInterval())
+                .childOption(RakChannelOption.RAK_MAX_QUEUED_BYTES, net.maxQueuedBytes())
                 .group(eventloopgroup)
                 .childHandler(new BedrockServerInitializer() {
                     @Override
@@ -159,6 +166,22 @@ public class Network implements NetworkInterface {
                 .bind(bindAddress)
                 .awaitUninterruptibly()
                 .channel();
+    }
+
+    /**
+     * Resolves the configured RakNet connection-cookie mode, falling back to {@link RakServerCookieMode#ACTIVE}
+     * (the RakNet default) for unknown or invalid values.
+     */
+    private RakServerCookieMode parseCookieMode(String mode) {
+        try {
+            RakServerCookieMode parsed = RakServerCookieMode.valueOf(mode.trim().toUpperCase(java.util.Locale.ROOT));
+            if (parsed != RakServerCookieMode.INVALID) {
+                return parsed;
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+        log.warn("Invalid network cookie-mode '{}', falling back to ACTIVE. Valid values: ACTIVE, OFFLOADED, OFFLOADED_PSK, OFF", mode);
+        return RakServerCookieMode.ACTIVE;
     }
 
     record NetWorkStatisticData(long upload, long download) {
