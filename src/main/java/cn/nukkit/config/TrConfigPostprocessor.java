@@ -70,7 +70,7 @@ public class TrConfigPostprocessor {
 
         List<String> newLines = new ArrayList<>();
         for (String line : strings) {
-            String trLine = Server.getInstance().getLanguage().tr(line);
+            String trLine = wrap(Server.getInstance().getLanguage().tr(line), 80);
             String prefix = trLine.startsWith(commentPrefix.trim()) ? "" : commentPrefix;
             String result = (trLine.isEmpty() ? "" : prefix) + trLine;
 
@@ -86,6 +86,38 @@ public class TrConfigPostprocessor {
         }
 
         return String.join("\n", newLines) + "\n";
+    }
+
+    /**
+     * Word-wraps text to the given width, breaking only on spaces and preserving any explicit line breaks
+     * already present. Words longer than the width are left intact rather than split.
+     *
+     * @param text  the text to wrap
+     * @param width the soft maximum line length in characters
+     * @return the wrapped text, with wrap points represented as {@code \n}
+     */
+    public static String wrap(String text, int width) {
+        if (text == null || text.isEmpty()) return text;
+
+        List<String> result = new ArrayList<>();
+        for (String paragraph : text.split("\n", -1)) {
+            if (paragraph.isEmpty()) {
+                result.add("");
+                continue;
+            }
+            StringBuilder current = new StringBuilder();
+            for (String word : paragraph.split(" ")) {
+                if (!current.isEmpty() && (current.length() + 1 + word.length()) > width) {
+                    result.add(current.toString());
+                    current.setLength(0);
+                }
+                if (!current.isEmpty()) current.append(' ');
+                current.append(word);
+            }
+            if (!current.isEmpty()) result.add(current.toString());
+        }
+
+        return String.join("\n", result);
     }
 
     private static String readInput(InputStream inputStream) {
