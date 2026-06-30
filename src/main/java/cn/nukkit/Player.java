@@ -2837,6 +2837,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (!this.isAlive() && this.spawned) {
+            this.drainInboundPackets();
             if (this.getLevel().getGameRules().getBoolean(GameRule.DO_IMMEDIATE_RESPAWN)) {
                 this.despawnFromAll();
                 return true;
