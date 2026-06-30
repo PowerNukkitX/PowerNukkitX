@@ -145,6 +145,8 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
+import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -338,6 +340,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     // lastUseItem System and item cooldown
     protected final HashMap<String, Integer> cooldownTickMap = new HashMap<>();
     protected final HashMap<String, Integer> lastUseItemMap = new HashMap<>(1);
+    private static final int FERTILIZER_USE_COOLDOWN = 4;
+    private int lastFertilizerUseTick = Integer.MIN_VALUE;
     @Getter
     @Setter
     protected Item lastUsedItem = null;
@@ -2283,6 +2287,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(pk);
     }
 
+    public boolean isFertilizerCoolDownEnd() {
+        return this.lastFertilizerUseTick == Integer.MIN_VALUE
+                || this.getLevel().getTick() - this.lastFertilizerUseTick >= FERTILIZER_USE_COOLDOWN;
+    }
+
+    public void resetFertilizerCoolDown() {
+        this.lastFertilizerUseTick = this.getLevel().getTick();
+    }
+
     /**
      * Start last use tick for an item (right-click).
      *
@@ -2482,7 +2495,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return long
      */
     public long getPing() {
-        return this.playerHandle.getLatencyTimeInMS();
+        var rakServerChannel = (RakServerChannel) this.session.getPeer().getChannel().parent();
+        var childChannel = rakServerChannel.getChildChannel(getSocketAddress());
+        var rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
+        return rakSessionCodec.getPing();
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -6124,7 +6140,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (runnable != null) {
             this.ackRunnables.put(creationTime, runnable);
         }
-        this.playerHandle.addInflightPingTime(creationTime / 1_000_000L);
         final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
         packet.setCreationTime(creationTime);
         packet.setFromServer(true);
