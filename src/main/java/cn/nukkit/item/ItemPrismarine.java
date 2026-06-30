@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemPrismarine extends Item {
+import cn.nukkit.block.BlockPrismarine;
+
+public class ItemPrismarine extends ItemBlock {
     public ItemPrismarine() {
-        super(PRISMARINE);
+        super(new BlockPrismarine());
     }
 }
