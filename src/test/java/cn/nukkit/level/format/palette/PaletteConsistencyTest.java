@@ -45,8 +45,14 @@ public class PaletteConsistencyTest {
         }
     }
 
-    /** The index map must agree with a fresh List.indexOf for every palette value. */
+    /**
+     * When the index map is present (large palettes), it must agree with a fresh List.indexOf for every value.
+     * Small palettes keep paletteIndex == null and rely on linear indexOf, which is trivially correct.
+     */
     private static <V> void assertIndexConsistent(Palette<V> palette) {
+        if (palette.paletteIndex == null) {
+            return;
+        }
         for (V value : palette.palette) {
             Assertions.assertEquals(palette.palette.indexOf(value), palette.paletteIndex.getInt(value),
                     "paletteIndex disagrees with List.indexOf for value " + value);

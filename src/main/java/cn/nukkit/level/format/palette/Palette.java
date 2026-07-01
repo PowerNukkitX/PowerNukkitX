@@ -35,8 +35,10 @@ import java.util.TreeMap;
 @Slf4j
 public class Palette<V> {
     protected static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
+    private static final int INDEX_MAP_THRESHOLD = 16;
+
     protected final List<V> palette;
-    protected final Object2IntOpenHashMap<V> paletteIndex;
+    protected Object2IntOpenHashMap<V> paletteIndex;
     protected BitArray bitArray;
 
     public Palette(V first) {
@@ -46,42 +48,51 @@ public class Palette<V> {
     public Palette(V first, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = new ArrayList<>(16);
-        this.paletteIndex = newPaletteIndex();
         this.addToPalette(first);
     }
 
     public Palette(V first, List<V> palette, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = palette;
-        this.paletteIndex = newPaletteIndex();
         this.addToPalette(first);
     }
 
-    private static <V> Object2IntOpenHashMap<V> newPaletteIndex() {
-        final Object2IntOpenHashMap<V> map = new Object2IntOpenHashMap<>();
-        map.defaultReturnValue(-1);
-        return map;
-    }
-
     protected void addToPalette(V value) {
-        if (!this.paletteIndex.containsKey(value)) {
-            this.paletteIndex.put(value, this.palette.size());
+        if (this.paletteIndex != null) {
+            if (!this.paletteIndex.containsKey(value)) {
+                this.paletteIndex.put(value, this.palette.size());
+            }
+            this.palette.add(value);
+        } else {
+            this.palette.add(value);
+            if (this.palette.size() > INDEX_MAP_THRESHOLD) {
+                buildPaletteIndex();
+            }
         }
-        this.palette.add(value);
     }
 
     protected void clearPalette() {
         this.palette.clear();
-        this.paletteIndex.clear();
+        this.paletteIndex = null;
+    }
+
+    private void buildPaletteIndex() {
+        final Object2IntOpenHashMap<V> map = new Object2IntOpenHashMap<>(this.palette.size() * 2);
+        map.defaultReturnValue(-1);
+        for (int i = 0; i < this.palette.size(); i++) {
+            final V v = this.palette.get(i);
+            if (!map.containsKey(v)) {
+                map.put(v, i);
+            }
+        }
+        this.paletteIndex = map;
     }
 
     protected void rebuildPaletteIndex() {
-        this.paletteIndex.clear();
-        for (int i = 0; i < this.palette.size(); i++) {
-            final V v = this.palette.get(i);
-            if (!this.paletteIndex.containsKey(v)) {
-                this.paletteIndex.put(v, i);
-            }
+        if (this.palette.size() > INDEX_MAP_THRESHOLD) {
+            buildPaletteIndex();
+        } else {
+            this.paletteIndex = null;
         }
     }
 
@@ -214,12 +225,16 @@ public class Palette<V> {
     }
 
     public int paletteIndexFor(V value) {
-        int index = this.paletteIndex.getInt(value);
+        int index = this.paletteIndex != null ? this.paletteIndex.getInt(value) : this.palette.indexOf(value);
         if (index != -1) return index;
 
         index = this.palette.size();
         this.palette.add(value);
-        this.paletteIndex.put(value, index);
+        if (this.paletteIndex != null) {
+            this.paletteIndex.put(value, index);
+        } else if (this.palette.size() > INDEX_MAP_THRESHOLD) {
+            buildPaletteIndex();
+        }
 
         final BitArrayVersion version = this.bitArray.version();
         if (index > version.maxEntryValue) {

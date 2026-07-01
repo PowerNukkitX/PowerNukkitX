@@ -121,6 +121,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -303,6 +304,11 @@ public class Level implements Metadatable {
     private final ConcurrentLinkedQueue<BlockEntity> updateBlockEntities = new ConcurrentLinkedQueue<>();
     private final ConcurrentHashMap<Long, Boolean> chunkGenerationQueue = new ConcurrentHashMap<>();
     private int chunkGenerationQueueSize = 8;
+    /**
+     * Server-wide count of chunks that have finished generating, across all levels. Incremented once per completed
+     * generation (async and sync paths). Used by {@code /debug genrate} to report chunk generation throughput.
+     */
+    public static final AtomicLong GENERATED_CHUNK_COUNT = new AtomicLong();
     private final Server server;
     private final int levelId;
     // Loaders still remain single-threaded
@@ -1158,8 +1164,8 @@ public class Level implements Metadatable {
             this.levelCurrentTick++;
 
             if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-                if (Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
-                    getChunks().values().forEach(IChunk::doMobSpawning);
+                if (countDespawnableEntities() < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                    doMobSpawningNearPlayers();
                 }
             }
 
@@ -1283,6 +1289,41 @@ public class Level implements Metadatable {
             getPlayers().values().forEach(Player::checkNetwork);
             releaseTickCachedBlocks();
         }
+    }
+
+    /**
+     * Chunk radius around each player to attempt mob spawning in. Mob spawning only happens within ~54 blocks of a
+     * player (see {@code Chunk.doMobSpawning}); 5 chunks covers that with margin. Previously {@code doMobSpawning} ran
+     * on EVERY loaded chunk each tick, which at high view distance is thousands of wasted calls (plus per-chunk entity
+     * stream allocations) on the main thread for chunks nowhere near a player.
+     */
+    private static final int MOB_SPAWN_CHUNK_RADIUS = 5;
+
+    private void doMobSpawningNearPlayers() {
+        if (this.players.isEmpty()) return;
+        final LongOpenHashSet visited = new LongOpenHashSet();
+        for (Player player : this.players.values()) {
+            if (!player.isOnline()) continue;
+            final int pcx = player.getChunkX();
+            final int pcz = player.getChunkZ();
+            for (int dx = -MOB_SPAWN_CHUNK_RADIUS; dx <= MOB_SPAWN_CHUNK_RADIUS; dx++) {
+                for (int dz = -MOB_SPAWN_CHUNK_RADIUS; dz <= MOB_SPAWN_CHUNK_RADIUS; dz++) {
+                    final int cx = pcx + dx;
+                    final int cz = pcz + dz;
+                    if (!visited.add(chunkHash(cx, cz))) continue;
+                    final IChunk chunk = getChunkIfLoaded(cx, cz);
+                    if (chunk != null) chunk.doMobSpawning();
+                }
+            }
+        }
+    }
+
+    private int countDespawnableEntities() {
+        int count = 0;
+        for (Entity entity : this.entities.values()) {
+            if (entity.despawnable) count++;
+        }
+        return count;
     }
 
     private void checkWeather() {
@@ -4635,7 +4676,10 @@ public class Level implements Metadatable {
                         x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("generateChunk guard triggered"));
                 return;
             }
-            this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
+            this.generator.asyncGenerate(chunk, (c) -> {
+                GENERATED_CHUNK_COUNT.incrementAndGet();
+                chunkGenerationQueue.remove(c.getChunk().getIndex());
+            });
         }
     }
 
@@ -4652,6 +4696,7 @@ public class Level implements Metadatable {
                 return;
             }
             this.generator.syncGenerate(chunk);
+            GENERATED_CHUNK_COUNT.incrementAndGet();
             chunkGenerationQueue.remove(index);
         }
         while (isChunkGenerating(x, z));

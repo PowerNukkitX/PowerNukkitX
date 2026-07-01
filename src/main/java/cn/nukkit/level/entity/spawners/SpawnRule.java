@@ -36,7 +36,14 @@ public abstract class SpawnRule {
     }
 
     public boolean evaluate(Block block) {
-        return conditions.stream().allMatch(condition -> condition.evaluate(block));
+        // Plain loop instead of conditions.stream().allMatch(...): this runs per-Y per-rule inside the mob-spawn
+        // column scan, so the per-call Stream allocation was pure garbage on a level-tick hot path.
+        for (Condition condition : conditions) {
+            if (!condition.evaluate(block)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
