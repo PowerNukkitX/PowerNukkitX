@@ -32,6 +32,8 @@ public class BlockCreeperHead extends BlockHead {
 
     @Override
     public Item toItem() {
-        return new ItemCreeperHead();
+        Item item = new ItemCreeperHead();
+        item.setBlockUnsafe(this.getProperties().getDefaultState().toBlock());
+        return item;
     }
 }

@@ -32,6 +32,8 @@ public class BlockDragonHead extends BlockHead {
 
     @Override
     public Item toItem() {
-        return new ItemDragonHead();
+        Item item = new ItemDragonHead();
+        item.setBlockUnsafe(this.getProperties().getDefaultState().toBlock());
+        return item;
     }
 }
