@@ -31,7 +31,4 @@ public class PerformanceSettings extends OkaeriConfig {
     int melting = 16;
     int singleOperation = 1;
     int batchOperation = 32;
-    @Comment("Maximum allowed recursion depth for NBT reading and writing. Increase if loading worlds with deeply nested containers.")
-    @CustomKey("nbt-max-depth")
-    private int nbtMaxDepth = 16;
 }
