@@ -530,6 +530,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         // https://github.com/Kaooot/bedrock-network-data
         // We can use the original reader again, once endstone generates data again
 
+        // Register special recipes first so their (potentially reused) UUIDs are known while
+        // loading the vanilla recipe data below and can be skipped there to avoid duplicates.
+        this.registerSpecial();
+
         var recipeConfig = new Config(Config.JSON);
         try (var r = Server.class.getClassLoader().getResourceAsStream("gamedata/kaooot/recipes.json")) {
             recipeConfig.load(r);
@@ -581,8 +585,22 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
                 String block = (String) recipe.get("block");
 
-                if (block == null)
+                if (block == null) {
+                    // Multi recipes (type 4) have no crafting block. They are client-side
+                    // special recipes such as applying a banner pattern to a shield, cloning
+                    // maps, crafting fireworks, etc. They must still be registered so the client
+                    // is told about them and so the server can resolve them by network id
+                    Object typeObj = recipe.get("type");
+                    if (typeObj != null && ((Number) typeObj).intValue() == RecipeType.MULTI.networkType) {
+                        UUID uuid = UUID.fromString((String) recipe.get("uuid"));
+                        int netId = (int) ((double) recipe.get("netId"));
+                        // Skip already handled implementations, registered via registerSpecial()
+                        if (!allRecipeMaps.containsKey(uuid.toString())) {
+                            this.register(new MultiRecipe(uuid, netId));
+                        }
+                    }
                     continue;
+                }
 
                 switch (block) {     // the block defines the type of recipe
                     case "smithing_table" -> {
@@ -838,9 +856,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false),
                 10007,
                 Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false))));
-
-        //Registering special recipes
-        this.registerSpecial();
     }
 
     private void registerFurnaceRecipe(String block, Item outputItem, List<ItemDescriptor> ingredients, Config furnaceXpConfig) {
