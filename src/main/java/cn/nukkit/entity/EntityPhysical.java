@@ -166,6 +166,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (this.hasGravity() && isFalling()) {
             this.fallingTick++;
         }
+        if (!this.isAlive() && !this.isImmobile()) {
+            handleGravity();
+            handleGroundFrictionMovement();
+            handlePassableBlockFrictionMovement();
+        }
         super.updateMovement();
         this.move(this.motionX, this.motionY, this.motionZ);
     }
