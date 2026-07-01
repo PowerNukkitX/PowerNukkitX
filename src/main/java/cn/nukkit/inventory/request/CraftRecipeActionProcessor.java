@@ -15,6 +15,7 @@ import cn.nukkit.item.enchantment.EnchantmentHelper;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.TrimData;
 import cn.nukkit.recipe.Input;
+import cn.nukkit.recipe.MultiRecipe;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.SmithingTransformRecipe;
 import cn.nukkit.recipe.UserDataShapelessRecipe;
@@ -211,7 +212,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 log.warn("Mismatched consume action count! Expected: {}, Actual: {} on inventory {}", consumeActionCountNeeded, consumeActions.size(), craft.getClass().getSimpleName());
                 return context.error();
             }
-            if (recipe.getResults().size() == 1) {
+            if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
+                context.put(RECIPE_DATA_KEY, recipe);
+            } else if (recipe.getResults().size() == 1) {
                 // If the recipe has a single output item, the client will not send a CreateAction; in this case, we will output the item directly to CREATED_OUTPUT in CraftRecipeAction
                 // If the recipe has multiple output items, the client will send a CreateAction; in this case, we will output the items to CREATED_OUTPUT within the CreateActionProcessor
                 var output = recipe.getResults().getFirst().clone();
