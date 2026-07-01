@@ -631,7 +631,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.isFireImmune()) {
             this.setFireImmune(true);
         }
-        this.setDataFlags(EnumSet.of(
+        this.addDataFlags(EnumSet.of(
                 ActorFlags.CAN_WALK,
                 ActorFlags.CAN_CLIMB,
                 ActorFlags.BREATHING,
@@ -5803,8 +5803,27 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
     }
 
+    /**
+     * Replaces this entity's entire actor flag set with the given flags.
+     * <p>
+     * Any flag not present in {@code entityFlags} is cleared, including flags applied
+     * elsewhere. If you only want to enable the given flags while keeping the existing ones,
+     * use {@link #addDataFlags(EnumSet)} instead.
+     *
+     * @param entityFlags the complete set of flags the entity should have
+     */
     public void setDataFlags(EnumSet<ActorFlags> entityFlags) {
         this.getActorDataMap().putFlags(entityFlags);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
+    }
+
+    /**
+     * Enables the given actor flags without disturbing the flags already set on this entity.
+     *
+     * @param entityFlags the flags to enable
+     */
+    public void addDataFlags(EnumSet<ActorFlags> entityFlags) {
+        this.getActorDataMap().getOrCreateFlags().addAll(entityFlags);
         sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
     }
 
