@@ -32,6 +32,8 @@ public class BlockPlayerHead extends BlockHead {
 
     @Override
     public Item toItem() {
-        return new ItemPlayerHead();
+        Item item = new ItemPlayerHead();
+        item.setBlockUnsafe(this.getProperties().getDefaultState().toBlock());
+        return item;
     }
 }

@@ -32,6 +32,8 @@ public class BlockZombieHead extends BlockHead {
 
     @Override
     public Item toItem() {
-        return new ItemZombieHead();
+        Item item = new ItemZombieHead();
+        item.setBlockUnsafe(this.getProperties().getDefaultState().toBlock());
+        return item;
     }
 }
