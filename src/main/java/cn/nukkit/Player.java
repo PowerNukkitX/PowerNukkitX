@@ -5698,7 +5698,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         final SetDisplayObjectivePacket setDisplayObjectivePacket = new SetDisplayObjectivePacket();
         setDisplayObjectivePacket.setDisplaySlotName(slot.getSlotName());
         setDisplayObjectivePacket.setObjectiveName("");
-        setDisplayObjectivePacket.setDisplaySlotName("");
         setDisplayObjectivePacket.setObjectiveDisplayName("");
         setDisplayObjectivePacket.setCriteriaName("");
         setDisplayObjectivePacket.setSortOrder(ObjectiveSortOrder.ASCENDING);
