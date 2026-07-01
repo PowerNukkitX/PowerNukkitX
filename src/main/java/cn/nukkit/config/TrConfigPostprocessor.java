@@ -99,25 +99,21 @@ public class TrConfigPostprocessor {
     public static String wrap(String text, int width) {
         if (text == null || text.isEmpty()) return text;
 
-        List<String> result = new ArrayList<>();
+        StringBuilder result = new StringBuilder();
         for (String paragraph : text.split("\n", -1)) {
-            if (paragraph.isEmpty()) {
-                result.add("");
-                continue;
-            }
+            if (!result.isEmpty()) result.append("\n");
             StringBuilder current = new StringBuilder();
             for (String word : paragraph.split(" ")) {
                 if (!current.isEmpty() && (current.length() + 1 + word.length()) > width) {
-                    result.add(current.toString());
+                    result.append(current).append("\n");
                     current.setLength(0);
                 }
                 if (!current.isEmpty()) current.append(' ');
                 current.append(word);
             }
-            if (!current.isEmpty()) result.add(current.toString());
+            result.append(current);
         }
-
-        return String.join("\n", result);
+        return result.toString();
     }
 
     private static String readInput(InputStream inputStream) {
