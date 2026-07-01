@@ -2656,6 +2656,35 @@ public abstract class Item implements Cloneable, ItemID {
         return durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100);
     }
 
+    public boolean isBroken() {
+        return canTakeDamage() && !isUnbreakable() && getMaxDurability() > 0
+                && getDamage() >= getMaxDurability();
+    }
+
+    public void breakItem(Player player) {
+        if (!isBroken()) {
+            return;
+        }
+
+        Level level = player.getLevel();
+        if (level != null) {
+            level.addSound(player, Sound.RANDOM_BREAK);
+        }
+
+        HumanInventory inv = player.getInventory();
+        if (this.isWearable()) {
+            switch (this.getWearableType()) {
+                case HEAD  -> inv.setHelmet(Item.AIR);
+                case CHEST -> inv.setChestplate(Item.AIR);
+                case LEGS  -> inv.setLeggings(Item.AIR);
+                case FEET  -> inv.setBoots(Item.AIR);
+                case NONE  -> {}
+            }
+        } else {
+            inv.setItemInMainHand(Item.AIR);
+        }
+    }
+
     public void incDamage(int v) {
         setDamage(this.meta += v);
     }
@@ -2682,6 +2711,21 @@ public abstract class Item implements Cloneable, ItemID {
             return comps.getCompound(key);
         }
         return null;
+    }
+
+    public static void applyDamage(Player player, ItemTool item, int amount) {
+        if (!item.canTakeDamage() || item.isUnbreakable()) return;
+
+        item.setDamage(item.getDamage() + amount);
+
+        if (item.getDamage() >= item.getMaxDurability()) {
+            item.breakItem(player);
+        } else {
+            player.getInventory().setItemInMainHand(item);
+        }
+    }
+    public static void applyDamage(Player player, ItemTool item) {
+        applyDamage(player, item, 1);
     }
 
     @Nullable
