@@ -33,6 +33,8 @@ public class BlockPiglinHead extends BlockHead implements ItemHead {
 
     @Override
     public Item toItem() {
-        return new ItemPiglinHead();
+        Item item = new ItemPiglinHead();
+        item.setBlockUnsafe(this.getProperties().getDefaultState().toBlock());
+        return item;
     }
 }

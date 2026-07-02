@@ -32,6 +32,8 @@ public class BlockSkeletonSkull extends BlockHead {
 
     @Override
     public Item toItem() {
-        return new ItemSkeletonSkull();
+        Item item = new ItemSkeletonSkull();
+        item.setBlockUnsafe(this.getProperties().getDefaultState().toBlock());
+        return item;
     }
 }
