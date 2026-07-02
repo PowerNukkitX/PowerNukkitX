@@ -14,10 +14,12 @@ import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.DoNothingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.NearbyFlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.evocation.ColorConversionExecutor;
 import cn.nukkit.entity.ai.executor.evocation.FangCircleExecutor;
@@ -147,7 +149,8 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                                 entity -> !entity.getDataFlag(ActorFlags.CASTING)
                         ), 3, 1),
                         new Behavior(new DoNothingExecutor(), entity -> entity.getDataFlag(ActorFlags.CASTING), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
+                        new Behavior(new NearbyFlatRandomRoamExecutor(CoreMemoryTypes.STAY_NEARBY, 0.3f, 24, 100, false, -1, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY), 1, 1),
+                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 0, 1)
                 ),
                 Set.of(
                         new NearestTargetEntitySensor<>(0, 16, 20,

@@ -654,11 +654,11 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                             entity -> {
                                 EntityHappyGhast g = (EntityHappyGhast) entity;
                                 if (!g.canMove()) return false;
-                                if (g.hasMountedPassengers()) return false;
+                                if (g.hasPassengers) return false;
                                 if (g.dismountUnlockDelayTicks > 0) return false;
                                 return TemptExecutor.hasTemptingPlayer(entity, true, 16, TEMPT_ITEMS);
                             },
-                            3, 1
+                        3, 1
                     ),
                     new Behavior( // Hover roam near home
                         new HoverRandomRoamExecutor(
@@ -673,7 +673,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                         entity -> {
                             EntityHappyGhast g = (EntityHappyGhast) entity;
                             if (!g.canMove()) return false;
-                            if (g.hasMountedPassengers()) return false;
+                            if (g.hasPassengers) return false;
                             return true;
                         },
                         2, 1
@@ -690,7 +690,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                                 },
                                 e -> {
                                     EntityHappyGhast g = (EntityHappyGhast) e;
-                                    return !g.hasMountedPassengers() && !g.isLockedAsPlatform() && g.dismountUnlockDelayTicks <= 0;
+                                    return !g.hasPassengers && g.dismountUnlockDelayTicks <= 0;
                                 }
                             ),
                         1, 1, 100

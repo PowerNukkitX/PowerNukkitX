@@ -3532,8 +3532,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!Strings.isNullOrEmpty(subtitle)) {
             this.setSubtitle(subtitle);
         }
-        // title won't send it if an empty string is used.
         this.setTitle(Strings.isNullOrEmpty(title) ? " " : title);
+    }
+
+    /**
+     * Sends a translated title using a vanilla translation key (e.g. {@code "raid.victory"}).
+     *
+     * @param key     the translation key
+     * @param fadeIn  fade-in duration in ticks
+     * @param stay    stay duration in ticks
+     * @param fadeOut fade-out duration in ticks
+     */
+    public void sendTranslatedTitle(String key, int fadeIn, int stay, int fadeOut) {
+        this.setTitleAnimationTimes(fadeIn, stay, fadeOut);
+        this.setRawTextTitle(RawText.fromRawText("{\"rawtext\":[{\"translate\":\"" + key + "\"}]}"));
+    }
+
+    /**
+     * Sends the on-screen omen texture animation (effect id 1) to this player.
+     * Used at the start of a village raid.
+     */
+    public void playOmenScreenAnimation() {
+        OnScreenTextureAnimationPacket pk = new OnScreenTextureAnimationPacket();
+        pk.setEffectId(1);
+        this.sendPacket(pk);
     }
 
 
