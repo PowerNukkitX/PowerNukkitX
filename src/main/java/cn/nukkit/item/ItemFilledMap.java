@@ -141,7 +141,6 @@ public class ItemFilledMap extends Item {
         packet.setPixels(pixels.stream().mapToInt(Integer::intValue).toArray());
 
         player.sendPacketImmediately(packet);
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.sendPacketImmediately(packet), 20);
     }
 
     public boolean trySendImage(Player p) {
