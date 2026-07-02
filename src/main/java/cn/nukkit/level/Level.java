@@ -1205,6 +1205,12 @@ public class Level implements Metadatable {
                         this.updateEntities.remove(id);
                         continue;
                     }
+                    if (entity.getLevel() != this) {
+                        // The entity switched level (e.g. cross-level teleport racing this tick);
+                        // it must only be ticked by its new level's thread, with that level's clock.
+                        this.updateEntities.remove(id);
+                        continue;
+                    }
                     if (entity.closed || !entity.onUpdate(currentTick)) {
                         this.updateEntities.remove(id);
                     }
