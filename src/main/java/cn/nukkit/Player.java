@@ -2838,8 +2838,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         int tickDiff = currentTick - this.lastUpdate;
 
-        if (tickDiff <= 0) {
+        if (tickDiff == 0) {
             return true;
+        }
+
+        if (tickDiff < 0) {
+            // Every level thread keeps its own tick counter, so after a cross-level teleport a
+            // stale tick from the previous level can leave lastUpdate ahead of this level's
+            // counter. Without resyncing, this player would never be ticked again (no inbound
+            // packet draining, no movement, no chat/commands).
+            tickDiff = 1;
         }
 
         this.messageLimitCounter = 2;
