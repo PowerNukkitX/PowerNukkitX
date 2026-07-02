@@ -16,6 +16,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NBTInputStream;
 import org.cloudburstmc.nbt.NBTOutputStream;
@@ -34,7 +35,10 @@ import java.util.TreeMap;
 @Slf4j
 public class Palette<V> {
     protected static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
+    private static final int INDEX_MAP_THRESHOLD = 16;
+
     protected final List<V> palette;
+    protected Object2IntOpenHashMap<V> paletteIndex;
     protected BitArray bitArray;
 
     public Palette(V first) {
@@ -44,13 +48,52 @@ public class Palette<V> {
     public Palette(V first, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = new ArrayList<>(16);
-        this.palette.add(first);
+        this.addToPalette(first);
     }
 
     public Palette(V first, List<V> palette, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = palette;
-        this.palette.add(first);
+        this.addToPalette(first);
+    }
+
+    protected void addToPalette(V value) {
+        if (this.paletteIndex != null) {
+            if (!this.paletteIndex.containsKey(value)) {
+                this.paletteIndex.put(value, this.palette.size());
+            }
+            this.palette.add(value);
+        } else {
+            this.palette.add(value);
+            if (this.palette.size() > INDEX_MAP_THRESHOLD) {
+                buildPaletteIndex();
+            }
+        }
+    }
+
+    protected void clearPalette() {
+        this.palette.clear();
+        this.paletteIndex = null;
+    }
+
+    private void buildPaletteIndex() {
+        final Object2IntOpenHashMap<V> map = new Object2IntOpenHashMap<>(this.palette.size() * 2);
+        map.defaultReturnValue(-1);
+        for (int i = 0; i < this.palette.size(); i++) {
+            final V v = this.palette.get(i);
+            if (!map.containsKey(v)) {
+                map.put(v, i);
+            }
+        }
+        this.paletteIndex = map;
+    }
+
+    protected void rebuildPaletteIndex() {
+        if (this.palette.size() > INDEX_MAP_THRESHOLD) {
+            buildPaletteIndex();
+        } else {
+            this.paletteIndex = null;
+        }
     }
 
     public V get(int index) {
@@ -76,7 +119,7 @@ public class Palette<V> {
     public void readFromNetwork(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
         readWords(byteBuf, readBitArrayVersion(byteBuf));
         final int size = this.bitArray.readSizeFromNetwork(byteBuf);
-        for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(VarInts.readInt(byteBuf)));
+        for (int i = 0; i < size; i++) this.addToPalette(deserializer.deserialize(VarInts.readInt(byteBuf)));
     }
 
     protected boolean writeEmpty(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
@@ -132,7 +175,7 @@ public class Palette<V> {
             final BitArrayVersion bversion = readBitArrayVersion(byteBuf);
             if (bversion == BitArrayVersion.V0) {
                 this.bitArray = bversion.createArray(ChunkSection.SIZE, null);
-                this.palette.clear();
+                this.clearPalette();
                 addBlockPalette(byteBuf, deserializer);
                 this.onResize(BitArrayVersion.V2);
                 return;
@@ -168,8 +211,8 @@ public class Palette<V> {
         final BitArrayVersion version = Palette.getVersionFromPaletteHeader(header);
         if (version == BitArrayVersion.V0) {
             this.bitArray = version.createArray(ChunkSection.SIZE, null);
-            this.palette.clear();
-            this.palette.add(deserializer.deserialize(byteBuf.readIntLE()));
+            this.clearPalette();
+            this.addToPalette(deserializer.deserialize(byteBuf.readIntLE()));
 
             this.onResize(BitArrayVersion.V2);
             return;
@@ -178,15 +221,20 @@ public class Palette<V> {
         readWords(byteBuf, version);
 
         final int paletteSize = byteBuf.readIntLE();
-        for (int i = 0; i < paletteSize; i++) this.palette.add(deserializer.deserialize(byteBuf.readIntLE()));
+        for (int i = 0; i < paletteSize; i++) this.addToPalette(deserializer.deserialize(byteBuf.readIntLE()));
     }
 
     public int paletteIndexFor(V value) {
-        int index = this.palette.indexOf(value);
+        int index = this.paletteIndex != null ? this.paletteIndex.getInt(value) : this.palette.indexOf(value);
         if (index != -1) return index;
 
         index = this.palette.size();
         this.palette.add(value);
+        if (this.paletteIndex != null) {
+            this.paletteIndex.put(value, index);
+        } else if (this.palette.size() > INDEX_MAP_THRESHOLD) {
+            buildPaletteIndex();
+        }
 
         final BitArrayVersion version = this.bitArray.version();
         if (index > version.maxEntryValue) {
@@ -222,7 +270,7 @@ public class Palette<V> {
             final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
 
             if (p == null) {
-                this.palette.add(unknownState);
+                this.addToPalette(unknownState);
                 return;
             }
 
@@ -277,10 +325,10 @@ public class Palette<V> {
             if (Objects.equals(resultingBlockState, unknownState)) {
                 boolean replaceWithUnknown = Server.getInstance().getSettings().baseSettings().saveUnknownBlock();
                 if (replaceWithUnknown) {
-                    this.palette.add(resultingBlockState);
+                    this.addToPalette(resultingBlockState);
                 }
             } else if (resultingBlockState != null) {
-                this.palette.add(resultingBlockState);
+                this.addToPalette(resultingBlockState);
             }
         }
     }
@@ -297,7 +345,7 @@ public class Palette<V> {
         for (int i = 0; i < wordCount; i++) words[i] = byteBuf.readIntLE();
 
         this.bitArray = version.createArray(ChunkSection.SIZE, words);
-        this.palette.clear();
+        this.clearPalette();
     }
 
     protected void onResize(BitArrayVersion version) {
@@ -312,6 +360,7 @@ public class Palette<V> {
         palette.bitArray = this.bitArray.copy();
         palette.palette.clear();
         palette.palette.addAll(this.palette);
+        palette.rebuildPaletteIndex();
     }
 
     protected static boolean hasCopyLastFlag(short header) {

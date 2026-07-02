@@ -75,8 +75,11 @@ public class BlockManager {
     }
 
     public String getBlockIdAt(int x, int y, int z, int layer) {
-        Block block = this.caches.computeIfAbsent(hashXYZ(x, y, z, layer), k -> level.getBlock(x, y, z, layer));
-        return block.getId();
+        Block cached = this.caches.get(hashXYZ(x, y, z, layer));
+        if (cached != null) {
+            return cached.getId();
+        }
+        return level.getBlockStateAt(x, y, z, layer).getIdentifier();
     }
 
     public Block getBlockIfCachedOrLoaded(Vector3 vector3) {
@@ -235,7 +238,7 @@ public class BlockManager {
         int maxY = Integer.MIN_VALUE;
         int maxZ = Integer.MIN_VALUE;
 
-        for (Block block : this.getBlocks()) {
+        for (Block block : this.places.values()) {
             minX = Math.min(minX, block.getFloorX());
             minY = Math.min(minY, block.getFloorY());
             minZ = Math.min(minZ, block.getFloorZ());

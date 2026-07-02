@@ -108,7 +108,8 @@ public class UnsafeChunk {
     public ChunkSection getOrCreateSection(int sectionY) {
         int minSectionY = getDimensionData().getMinSectionY();
         int offsetY = sectionY - minSectionY;
-        if(offsetY < 0) return null;
+        // sectionY outside the dimension's vertical range (below the floor or above the roof): no section exists.
+        if (offsetY < 0 || offsetY >= chunk.sections.length) return null;
         if(chunk.sections[offsetY] == null) {
             chunk.sections[offsetY] = new ChunkSection((byte) (offsetY + minSectionY));
         }
@@ -137,11 +138,15 @@ public class UnsafeChunk {
     }
 
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        return getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
+        ChunkSection section = getOrCreateSection(y >> 4);
+        if (section == null) return BlockAir.STATE; // y outside world height; nothing to set/return
+        return section.getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
     }
 
     public void setBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        getOrCreateSection(y >> 4).setBlockState(x, y & 0x0f, z, blockstate, layer);
+        ChunkSection section = getOrCreateSection(y >> 4);
+        if (section == null) return; // y outside world height; ignore the write instead of crashing
+        section.setBlockState(x, y & 0x0f, z, blockstate, layer);
     }
 
     public int getBlockSkyLight(int x, int y, int z) {
@@ -164,7 +169,9 @@ public class UnsafeChunk {
     }
 
     public void setBlockLight(int x, int y, int z, int level) {
-        getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
+        ChunkSection section = getOrCreateSection(y >> 4);
+        if (section == null) return; // y outside world height
+        section.setBlockLight(x, y & 0x0f, z, (byte) level);
     }
 
     /**
@@ -224,7 +231,9 @@ public class UnsafeChunk {
 
     public void setBiomeId(int x, int y, int z, int biomeId) {
         setChanged();
-        getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biomeId);
+        ChunkSection section = getOrCreateSection(y >> 4);
+        if (section == null) return; // y outside world height
+        section.setBiomeId(x, y & 0x0f, z, biomeId);
     }
 
     public short[] getHeightMapArray() {

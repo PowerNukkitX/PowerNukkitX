@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockLightProperties;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
@@ -25,7 +26,6 @@ import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.slf4j.Slf4j;
@@ -380,7 +380,6 @@ public class Chunk implements IChunk {
 
     @Override
     public void setHeightMap(int x, int z, int value) {
-        //基岩版3d-data保存heightMap是以0为索引保存的，所以这里需要减去世界最小值，详情查看
         //Bedrock Edition 3d-data saves the height map start from index of 0, so need to subtract the world minimum height here, see for details:
         //https://github.com/bedrock-dev/bedrock-level/blob/main/src/include/data_3d.h#L115
         long stamp = heightAndBiomeLock.writeLock();
@@ -406,8 +405,8 @@ public class Chunk implements IChunk {
             int y;
             for (y = max; y >= getDimensionData().getMinHeight(); --y) {
                 BlockState blockState = unsafeChunk.getBlockState(x, y, z);
-                Block block = Block.get(blockState);
-                if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
+                int packed = BlockLightProperties.packed(blockState);
+                if (BlockLightProperties.lightFilter(packed) > 1 || BlockLightProperties.diffusesSkyLight(packed)) {
                     break;
                 }
             }
@@ -422,20 +421,19 @@ public class Chunk implements IChunk {
     @Override
     public void populateSkyLight() {
         batchProcess(unsafe -> {
-            // basic light calculation
-            Int2ObjectOpenHashMap<Block> CACHE = new Int2ObjectOpenHashMap<>();
+            // basic light calculation; properties are read from the shared precomputed table (no per-cell Block alloc)
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
                     int level = 15;
                     for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
                         BlockState state = unsafe.getBlockState(x, y, z);
-                        Block block = CACHE.computeIfAbsent(state.blockStateHash(), key -> state.toBlock());
-                        if (!block.isTransparent()) {
+                        int packed = BlockLightProperties.packed(state);
+                        if (!BlockLightProperties.isTransparent(packed)) {
                             level = 0;
-                        } else if (block.diffusesSkyLight()) {
+                        } else if (BlockLightProperties.diffusesSkyLight(packed)) {
                             level--;
                         } else {
-                            level -= block.getLightLevel();
+                            level -= BlockLightProperties.lightLevel(packed);
                         }
                         if (level <= 0) break;
                         unsafe.setBlockSkyLight(x, y, z, level);

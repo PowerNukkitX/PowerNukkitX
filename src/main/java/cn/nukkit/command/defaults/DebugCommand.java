@@ -33,6 +33,7 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.TextFormat;
 import it.unimi.dsi.fastutil.Pair;
@@ -104,6 +105,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("tps", new String[]{"tps"}),
                 CommandParameter.newType("value", true, CommandParamType.INT)
         });
+        this.commandParameters.put("genrate", new CommandParameter[]{
+                CommandParameter.newEnum("genrate", new String[]{"genrate"})
+        });
         this.enableParamTree();
     }
 
@@ -122,6 +126,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "ddui" -> exampleDDUI(sender);
             case "toggle" -> handleToggle(sender, result.getValue(), log);
             case "tps" -> handleTps(sender, result.getValue(), log);
+            case "genrate" -> handleGenRate(sender);
             default -> 0;
         };
     }
@@ -275,6 +280,41 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         if (!sender.isPlayer()) return 0;
         Location loc = sender.getLocation();
         sender.sendMessage("light level: " + loc.getLevel().getFullLight(loc));
+        return 1;
+    }
+
+    private static TaskHandler genRateTask;
+    private static long genRateLastCount;
+    private static long genRateLastNanos;
+
+    private int handleGenRate(CommandSender sender) {
+        if (genRateTask != null) {
+            genRateTask.cancel();
+            genRateTask = null;
+            sender.sendMessage("§eChunk generation rate monitor stopped.");
+            return 1;
+        }
+        genRateLastCount = Level.GENERATED_CHUNK_COUNT.get();
+        genRateLastNanos = System.nanoTime();
+        final CommandSender target = sender;
+        genRateTask = sender.getServer().getScheduler().scheduleRepeatingTask(() -> {
+            if (target instanceof Player p && !p.isOnline()) {
+                if (genRateTask != null) {
+                    genRateTask.cancel();
+                    genRateTask = null;
+                }
+                return;
+            }
+            long now = System.nanoTime();
+            long count = Level.GENERATED_CHUNK_COUNT.get();
+            double seconds = (now - genRateLastNanos) / 1_000_000_000.0;
+            long delta = count - genRateLastCount;
+            double rate = seconds > 0 ? delta / seconds : 0.0;
+            genRateLastCount = count;
+            genRateLastNanos = now;
+            target.sendMessage(String.format("§aChunk gen: %.1f/s §7(%d in %.2fs, %d total)", rate, delta, seconds, count));
+        }, 20);
+        sender.sendMessage("§eChunk generation rate monitor started (~1s interval). Run /debug genrate again to stop.");
         return 1;
     }
 
