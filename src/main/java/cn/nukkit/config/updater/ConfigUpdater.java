@@ -28,6 +28,7 @@ public class ConfigUpdater {
             ver = updater.getVersion();
         }
         server.getSettings().configSettings().version(String.format("%d.%d.%d", ver / 100, (ver / 10) % 10, ver % 10));
+        server.getSettings().save();
     }
 
     public interface Updater {
