@@ -9,6 +9,7 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
@@ -83,6 +84,7 @@ configurations.all {
 }
 
 tasks.withType<JavaCompile>().configureEach {
+    options.encoding = ENCODING
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
     options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000"))
 }
@@ -126,19 +128,19 @@ tasks.processTestResources {
 
 tasks.register<DefaultTask>("buildFast") {
     group = ALPHA_BUILD
-    description = "Fast build without documentation and tests - for rapid development"
+    description = "Compile resources and create the plain jar without tests, docs, or shadow packaging"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar)
 }
 
 tasks.register<DefaultTask>("buildSkipChores") {
     group = ALPHA_BUILD
-    description = "Build without documentation and tests"
+    description = "Build the runnable jar without tests or documentation"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
 tasks.register<DefaultTask>("buildForGithubAction") {
     group = GH_BUILD
-    description = "Optimized build for CI/CD pipelines (without tests)"
+    description = "CI packaging build used by GitHub Actions; tests are covered by checkFast"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
@@ -207,6 +209,18 @@ tasks.test {
 
 tasks.withType<Test>().configureEach {
     onlyIf { !project.hasProperty("skipTests") }
+}
+
+tasks.register<DefaultTask>("testFast") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Run the unit test suite without documentation or packaging tasks"
+    dependsOn(tasks.test)
+}
+
+tasks.register<DefaultTask>("checkFast") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Compile main/test sources and run fast unit checks"
+    dependsOn(tasks.compileJava, tasks.compileTestJava, tasks.test)
 }
 
 tasks.named<JacocoReport>("jacocoTestReport") {
@@ -339,14 +353,6 @@ publishing {
             }
         }
     }
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = ENCODING
-}
-
-tasks.withType<Javadoc> {
-    options.encoding = ENCODING
 }
 
 // Task optimization - disable unnecessary tasks for faster builds

@@ -49,7 +49,7 @@ jobs:
           path: build/libs/*.jar
 
   check:
-    name: Static checks (format, lint)
+    name: Fast checks (compile, unit tests)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -73,4 +73,4 @@ jobs:
 
       - run: chmod +x gradlew
 
-      - run: ./gradlew check -PskipTests --no-configuration-cache --no-daemon --parallel --max-workers=2 --stacktrace
+      - run: ./gradlew checkFast --no-configuration-cache --no-daemon --parallel --max-workers=2 --stacktrace
