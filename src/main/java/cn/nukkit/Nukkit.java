@@ -175,6 +175,10 @@ public class Nukkit {
             log.info("First-time setup detected. Running setup wizard...");
             try (SetupWizard wizard = new SetupWizard()) {
                 wizardConfig = wizard.run(language, false, autoAcceptLicense, serverName, port);
+                if (wizardConfig != null && !wizardConfig.isLicenseAccepted()) {
+                    log.error("Setup wizard did not accept the license. Startup cancelled.");
+                    return;
+                }
                 if (wizardConfig != null && wizardConfig.getLanguage() != null) {
                     language = wizardConfig.getLanguage();
                 }
@@ -193,12 +197,12 @@ public class Nukkit {
                     boolean accepted = wizard.acceptLicense(false);
                     if (!accepted) {
                         System.out.println("License not accepted. Exiting.");
-                        System.exit(1);
+                        return;
                     }
                 }
             } catch (Exception e) {
                 log.error("Failed to display license acceptance dialog", e);
-                System.exit(1);
+                return;
             }
             wizardConfig = new WizardConfig();
             if (serverName != null && !serverName.isEmpty()) {
