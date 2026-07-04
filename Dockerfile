@@ -2,28 +2,32 @@
 # See https://docs.docker.com/engine/userguide/eng-image/multistage-build/
 # Requires Docker v17.05
 
-# Use OpenJDK JDK image for intermiediate build
-FROM openjdk:21-slim AS build
+# Use Temurin JDK image for intermediate build
+FROM eclipse-temurin:21-jdk AS build
 
 # Build from source and create artifact
 WORKDIR /src
 
-COPY gradlew *.gradle.kts .gitmodules /src/
+COPY gradlew gradlew.bat *.gradle.kts gradle.properties .gitmodules /src/
 COPY src /src/src
+# generateGitProperties and git submodule setup need git metadata during image builds.
 COPY .git /src/.git
 COPY gradle /src/gradle
 
-RUN apt-get clean \
-    && apt-get update \
-    && apt install git -y
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 RUN git submodule update --init
-RUN ./gradlew shadowJar
+RUN ./gradlew shadowJar --no-daemon --no-configuration-cache
 
-# Use OpenJDK JRE image for runtime
-FROM openjdk:21-slim AS run
+# Use Temurin JRE image for runtime
+FROM eclipse-temurin:21-jre AS run
 
 # Copy artifact from build image
-COPY --from=build /src/build/powernukkitx-2.0.0-SNAPSHOT-all.jar /app/powernukkitx.jar
+COPY --from=build /src/build/powernukkitx.jar /app/powernukkitx.jar
+
+# Docker starts without an interactive terminal, so setup must not block.
+ENV PNX_SETUP_NON_INTERACTIVE=true
 
 # Create minecraft user
 RUN useradd --user-group \
@@ -41,7 +45,9 @@ RUN chown -R minecraft:minecraft /app /data /home/minecraft
 # User and group to run as
 USER minecraft:minecraft
 
-# Volumes
+# Volumes:
+# /data stores server configuration, worlds, plugins, and logs.
+# /home/minecraft stores per-user Java/JLine cache files.
 VOLUME /data /home/minecraft
 
 # Set runtime workdir
