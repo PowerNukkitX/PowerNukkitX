@@ -12,6 +12,7 @@ import org.cloudburstmc.protocol.bedrock.data.skin.PersonaPieceTintData;
 import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 import org.jose4j.jwt.JwtClaims;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,10 @@ public class ClientSkinData {
         try {
             if (map.containsKey("AnimatedImageData")) {
                 final List<AnimationData> animations = new ObjectArrayList<>();
-                final List<Map<String, Object>> animatedImageData = (List<Map<String, Object>>) map.get("AnimatedImageData");
+                final List<Map<String, Object>> animatedImageData = readMapList(map.get("AnimatedImageData"));
+                if (animatedImageData == null) {
+                    return null;
+                }
 
                 for (Map<String, Object> animationDataObject : animatedImageData) {
                     final ImageData imageData = readImageData(animationDataObject);
@@ -92,16 +96,27 @@ public class ClientSkinData {
                 builder.overridingPlayerAppearance(overrideSkin);
             }
             if (map.containsKey("PersonaPieces")) {
-                final List<Map<String, Object>> personaPieces = (List<Map<String, Object>>) map.get("PersonaPieces");
+                final List<Map<String, Object>> personaPieces = readMapList(map.get("PersonaPieces"));
+                if (personaPieces == null) {
+                    return null;
+                }
                 final List<PersonaPieceData> personaPieceDataList = new ObjectArrayList<>();
                 for (Map<String, Object> personaPiece : personaPieces) {
+                    final String pieceId = stringValue(personaPiece, "PieceId");
+                    final String pieceType = stringValue(personaPiece, "PieceType");
+                    final String packId = stringValue(personaPiece, "PackId");
+                    final String isDefault = stringValue(personaPiece, "IsDefault");
+                    final String productId = stringValue(personaPiece, "ProductId");
+                    if (pieceId == null || pieceType == null || packId == null || isDefault == null || productId == null) {
+                        return null;
+                    }
                     personaPieceDataList.add(
                             new PersonaPieceData(
-                                    personaPiece.get("PieceId").toString(),
-                                    personaPiece.get("PieceType").toString(),
-                                    personaPiece.get("PackId").toString(),
-                                    Boolean.parseBoolean(personaPiece.get("IsDefault").toString()),
-                                    personaPiece.get("ProductId").toString()
+                                    pieceId,
+                                    pieceType,
+                                    packId,
+                                    Boolean.parseBoolean(isDefault),
+                                    productId
                             )
                     );
                 }
@@ -114,13 +129,21 @@ public class ClientSkinData {
                 builder.persona(personaSkin);
             }
             if (map.containsKey("PieceTintColors")) {
-                final List<Map<String, Object>> pieceTintColors = (List<Map<String, Object>>) map.get("PieceTintColors");
+                final List<Map<String, Object>> pieceTintColors = readMapList(map.get("PieceTintColors"));
+                if (pieceTintColors == null) {
+                    return null;
+                }
                 final List<PersonaPieceTintData> tintColors = new ObjectArrayList<>();
                 for (Map<String, Object> pieceTintColor : pieceTintColors) {
+                    final String pieceType = stringValue(pieceTintColor, "PieceType");
+                    final List<String> colors = readStringList(pieceTintColor.get("Colors"));
+                    if (pieceType == null || colors == null) {
+                        return null;
+                    }
                     tintColors.add(
                             new PersonaPieceTintData(
-                                    pieceTintColor.get("PieceType").toString(),
-                                    (List<String>) pieceTintColor.get("Colors")
+                                    pieceType,
+                                    colors
                             )
                     );
                 }
@@ -133,7 +156,7 @@ public class ClientSkinData {
                 builder.premium(premiumSkin);
             }
             if (map.containsKey("SkinAnimationData")) {
-                builder.animationData(new String(DECODER.decode(map.get("SkinAnimationData").toString())));
+                builder.animationData(new String(DECODER.decode(map.get("SkinAnimationData").toString()), StandardCharsets.UTF_8));
             }
             if (map.containsKey("SkinColor")) {
                 builder.skinColor(map.get("SkinColor").toString());
@@ -153,13 +176,13 @@ public class ClientSkinData {
                 if (!(map.get("SkinGeometryData") instanceof String skinGeometryData)) {
                     return null;
                 }
-                builder.geometryData(new String(DECODER.decode(skinGeometryData)));
+                builder.geometryData(new String(DECODER.decode(skinGeometryData), StandardCharsets.UTF_8));
             }
             if (map.containsKey("SkinGeometryDataEngineVersion")) {
                 if (!(map.get("SkinGeometryDataEngineVersion") instanceof String skinGeometryDataEngineVersion)) {
                     return null;
                 }
-                builder.geometryDataEngineVersion(new String(DECODER.decode(skinGeometryDataEngineVersion)));
+                builder.geometryDataEngineVersion(new String(DECODER.decode(skinGeometryDataEngineVersion), StandardCharsets.UTF_8));
             }
             if (map.containsKey("SkinId")) {
                 builder.skinId(map.get("SkinId").toString());
@@ -168,12 +191,52 @@ public class ClientSkinData {
                 if (!(map.get("SkinResourcePatch") instanceof String skinResourcePatch)) {
                     return null;
                 }
-                builder.skinResourcePatch(new String(DECODER.decode(skinResourcePatch)));
+                builder.skinResourcePatch(new String(DECODER.decode(skinResourcePatch), StandardCharsets.UTF_8));
             }
         } catch (Exception e) {
             return null;
         }
         return builder.build();
+    }
+
+    private List<Map<String, Object>> readMapList(Object value) {
+        if (!(value instanceof List<?> values)) {
+            return null;
+        }
+        final List<Map<String, Object>> result = new ObjectArrayList<>();
+        for (Object entry : values) {
+            if (!(entry instanceof Map<?, ?> rawMap)) {
+                return null;
+            }
+            final Map<String, Object> typedMap = new Object2ObjectOpenHashMap<>();
+            for (Map.Entry<?, ?> rawEntry : rawMap.entrySet()) {
+                if (!(rawEntry.getKey() instanceof String key)) {
+                    return null;
+                }
+                typedMap.put(key, rawEntry.getValue());
+            }
+            result.add(typedMap);
+        }
+        return result;
+    }
+
+    private List<String> readStringList(Object value) {
+        if (!(value instanceof List<?> values)) {
+            return null;
+        }
+        final List<String> result = new ObjectArrayList<>();
+        for (Object entry : values) {
+            if (!(entry instanceof String item)) {
+                return null;
+            }
+            result.add(item);
+        }
+        return result;
+    }
+
+    private String stringValue(Map<String, Object> map, String key) {
+        final Object value = map.get(key);
+        return value == null ? null : value.toString();
     }
 
     private ImageData readImageData(Map<String, Object> map) {
