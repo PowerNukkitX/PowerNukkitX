@@ -20,8 +20,8 @@ RUN apt-get update \
 RUN git submodule update --init
 RUN ./gradlew shadowJar --no-daemon --no-configuration-cache
 
-# Use Temurin JRE image for runtime
-FROM eclipse-temurin:21-jre AS run
+# Use Temurin JDK image for runtime. Some server/plugin paths expect JDK tooling.
+FROM eclipse-temurin:21-jdk AS run
 
 # Copy artifact from build image
 COPY --from=build /src/build/powernukkitx.jar /app/powernukkitx.jar
