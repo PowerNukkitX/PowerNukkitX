@@ -18,9 +18,9 @@ plugins {
     java
     idea
     jacoco
-    id("io.github.goooler.shadow") version "8.1.7"
-    id("io.freefair.lombok") version "8.4"
-    id("com.gorylenko.gradle-git-properties") version "2.5.5"
+    id("io.github.goooler.shadow") version "8.1.8"
+    id("io.freefair.lombok") version "9.5.0"
+    id("com.gorylenko.gradle-git-properties") version "4.0.1"
 }
 
 group = "org.powernukkitx"
