@@ -416,6 +416,10 @@ public class SimpleCommandMap implements CommandMap {
             return -1;
         }
 
+        if(!target.testPermission(sender)) {
+            return -1;
+        }
+
         int output;
         try {
             if (target.hasCommandTree()) {
