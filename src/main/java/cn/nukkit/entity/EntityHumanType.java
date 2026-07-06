@@ -136,11 +136,6 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
 
     @Override
     public void setOnFire(int seconds) {
-        if (this.inventory == null) {
-            super.setOnFire(seconds);
-            return;
-        }
-
         int fireProtectionLevel = 0;
 
         for (Item armor : this.inventory.getArmorContents()) {
@@ -155,7 +150,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
             return;
         }
 
-        double reduction = fireProtectionLevel * 0.15;
+        double reduction = Math.min(1.0, fireProtectionLevel * 0.15);
         seconds = (int) Math.ceil(seconds * (1.0 - reduction));
 
         if (seconds <= 0) {
