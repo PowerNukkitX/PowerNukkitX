@@ -136,17 +136,31 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
 
     @Override
     public void setOnFire(int seconds) {
-        int level = 0;
+        if (this.inventory == null) {
+            super.setOnFire(seconds);
+            return;
+        }
+
+        int fireProtectionLevel = 0;
 
         for (Item armor : this.inventory.getArmorContents()) {
             Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
 
             if (fireProtection != null && fireProtection.getLevel() > 0) {
-                level = Math.max(level, fireProtection.getLevel());
+                fireProtectionLevel += fireProtection.getLevel();
             }
         }
 
-        seconds = (int) (seconds * (1 - level * 0.15));
+        if (fireProtectionLevel >= 7) {
+            return;
+        }
+
+        double reduction = fireProtectionLevel * 0.15;
+        seconds = (int) Math.ceil(seconds * (1.0 - reduction));
+
+        if (seconds <= 0) {
+            return;
+        }
 
         super.setOnFire(seconds);
     }
