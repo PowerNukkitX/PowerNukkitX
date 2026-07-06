@@ -181,7 +181,7 @@ public class PlayerSessionHolder {
     public void sendBeforeSpawn(Server server) {
         this.doPlayerCreation();
         this.setState(SessionState.BEFORE_SPAWN);
-        this.session.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
+        this.player.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
         this.sendStartGame(server);
         this.sendItemRegistry();
 
