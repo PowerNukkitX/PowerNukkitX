@@ -15,19 +15,23 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     private boolean mouthMoving;
-
     private int mouthTickCount;
-
+    private int skullType;
+    private int rotation;
 
     @Override
     public void loadNBT() {
         super.loadNBT();
+
         if (!nbt.contains("SkullType")) {
             nbt.putByte("SkullType", (byte) 0);
         }
         if (!nbt.contains("Rot")) {
             nbt.putByte("Rot", (byte) 0);
         }
+
+        this.skullType = this.nbt.getByte("SkullType") & 0xff;
+        this.rotation = this.nbt.getByte("Rot") & 0x0f;
 
         if (nbt.contains("MouthMoving")) {
             mouthMoving = getNbt().getBoolean("MouthMoving");
@@ -87,13 +91,18 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         }
         this.mouthTickCount = mouthTickCount;
         spawnToAll();
+        setDirty();
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putBoolean("MouthMoving", this.mouthMoving)
-                .putInt("MouthTickCount", mouthTickCount);
+
+        this.nbt.putByte("SkullType", (byte) this.skullType)
+                .putByte("Rot", (byte) this.rotation)
+                .putBoolean("MouthMoving", this.mouthMoving)
+                .putInt("MouthTickCount", this.mouthTickCount);
+
         this.nbt.remove("Creator");
     }
 
@@ -105,9 +114,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putByte("SkullType", this.nbt.getByte("SkullType"))
-                .putByte("Rot", this.nbt.getByte("Rot"))
+                .putByte("SkullType", (byte) this.skullType)
+                .putByte("Rot", (byte) this.rotation)
                 .putBoolean("MouthMoving", this.mouthMoving)
-                .putInt("MouthTickCount", mouthTickCount);
+                .putInt("MouthTickCount", this.mouthTickCount);
     }
 }
