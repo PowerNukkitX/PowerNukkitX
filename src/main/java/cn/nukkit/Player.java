@@ -175,7 +175,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.awt.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
@@ -212,6 +211,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_OPERATOR = 2;
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
+    private static final byte PLAYER_FLAG_SLEEP = 0x2;
     /// static fields
     public boolean playedBefore;
     public boolean spawned = false;
@@ -2507,15 +2507,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         for (Entity p : this.level.getNearbyEntities(this.boundingBox.grow(2, 1, 2), this)) {
-            if (p instanceof Player) {
-                if (((Player) p).sleeping != null && pos.distance(((Player) p).sleeping) <= 0.1) {
-                    return false;
-                }
+            if (p instanceof Player player && player.sleeping != null && pos.distance(player.sleeping) <= 0.1) {
+                return false;
             }
         }
 
-        PlayerBedEnterEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerBedEnterEvent(this, this.level.getBlock(pos)));
+        PlayerBedEnterEvent ev = new PlayerBedEnterEvent(this, this.level.getBlock(pos));
+        this.server.getPluginManager().callEvent(ev);
+
         if (ev.isCancelled()) {
             return false;
         }
@@ -2524,30 +2523,43 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
 
         this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.from((int) pos.x, (int) pos.y, (int) pos.z));
-        this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
+        this.setPlayerSleepFlag(true);
+
         this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
         this.level.sleepTicks = 75;
-
         this.timeSinceRest = 0;
 
         return true;
     }
 
     public void stopSleep() {
-        if (this.sleeping != null) {
-            this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
-
-            this.sleeping = null;
-            this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
-            this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
-
-            this.level.sleepTicks = 0;
-
-            final AnimatePacket pk = new AnimatePacket();
-            pk.setTargetRuntimeID(this.getId());
-            pk.setAction(AnimatePacket.Action.WAKE_UP);
-            this.sendPacket(pk);
+        if (this.sleeping == null) {
+            return;
         }
+
+        this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
+
+        this.sleeping = null;
+        this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
+        this.setPlayerSleepFlag(false);
+
+        this.level.sleepTicks = 0;
+
+        final AnimatePacket pk = new AnimatePacket();
+        pk.setTargetRuntimeID(this.getId());
+        pk.setAction(AnimatePacket.Action.WAKE_UP);
+        this.sendPacket(pk);
+    }
+
+    private void setPlayerSleepFlag(boolean sleeping) {
+        byte flags = this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0);
+
+        this.setDataProperty(
+                ActorDataTypes.PLAYER_FLAGS,
+                sleeping ? (byte) (flags | PLAYER_FLAG_SLEEP) : (byte) (flags & ~PLAYER_FLAG_SLEEP)
+        );
+
+        this.setDataFlag(ActorFlags.SLEEPING, sleeping, true);
     }
 
     public boolean awardAchievement(String achievementId) {
