@@ -1,0 +1,253 @@
+package org.powernukkitx.inventory;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.blockentity.BlockEntityStructBlock;
+import org.powernukkitx.event.inventory.InventoryCloseEvent;
+import org.powernukkitx.event.inventory.InventoryOpenEvent;
+import org.powernukkitx.item.Item;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class StructBlockInventory implements Inventory {
+    protected final BlockEntityStructBlock holder;
+    protected final Set<Player> viewers;
+    private List<InventoryListener> listeners;
+
+    public StructBlockInventory(BlockEntityStructBlock holder) {
+        this.holder = holder;
+        this.viewers = new HashSet<>();
+    }
+
+    @Override
+    public int getSize() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 0;
+    }
+
+    @Override
+    public void setMaxStackSize(int size) {
+
+    }
+
+    @NotNull
+    @Override
+    public Item getItem(int index) {
+        return Item.AIR;
+    }
+
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        return false;
+    }
+
+    @Override
+    public Item[] addItem(Item... slots) {
+        return Item.EMPTY_ARRAY;
+    }
+
+    @Override
+    public boolean canAddItem(Item item) {
+        return false;
+    }
+
+    @Override
+    public Item[] removeItem(Item... slots) {
+        return Item.EMPTY_ARRAY;
+    }
+
+    @Override
+    public Map<Integer, Item> getContents() {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public void setContents(Map<Integer, Item> items) {
+
+    }
+
+    @Override
+    public void sendContents(Player player) {
+
+    }
+
+    @Override
+    public void sendContents(Player... players) {
+
+    }
+
+    @Override
+    public void sendContents(Collection<Player> players) {
+
+    }
+
+    @Override
+    public void sendSlot(int index, Player player) {
+
+    }
+
+    @Override
+    public void sendSlot(int index, Player... players) {
+
+    }
+
+    @Override
+    public void sendSlot(int index, Collection<Player> players) {
+
+    }
+
+    @Override
+    public int getFreeSpace(Item item) {
+        return 0;
+    }
+
+    @Override
+    public boolean contains(Item item) {
+        return false;
+    }
+
+    @Override
+    public Map<Integer, Item> all(Item item) {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public int first(Item item, boolean exact) {
+        return 0;
+    }
+
+    @Override
+    public int firstEmpty(Item item) {
+        return 0;
+    }
+
+    @Override
+    public void decreaseCount(int slot) {
+
+    }
+
+    @Override
+    public void remove(Item item) {
+
+    }
+
+    @Override
+    public boolean clear(int index, boolean send) {
+        return false;
+    }
+
+    @Override
+    public void clearAll() {
+
+    }
+
+    @Override
+    public boolean isFull() {
+        return true;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
+    public Set<Player> getViewers() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public ContainerType getType() {
+        return ContainerType.STRUCTURE_EDITOR;
+    }
+
+    @Override
+    public BlockEntityStructBlock getHolder() {
+        return this.holder;
+    }
+
+    @Override
+    public void onOpen(Player who) {
+        if (who.isOp() && who.isCreative()) {
+            this.viewers.add(who);
+            final InventoryHolder holder = this.getHolder();
+            final ContainerOpenPacket pk = new ContainerOpenPacket();
+            pk.setContainerID((byte) who.getWindowId(this));
+            pk.setContainerType(this.getType());
+            pk.setPosition(holder != null ? Vector3i.from(
+                            holder.getVector3().getFloorX(),
+                            holder.getVector3().getFloorY(),
+                            holder.getVector3().getFloorZ()
+                    )
+                            : Vector3i.ZERO
+            );
+            who.sendPacket(pk);
+        }
+    }
+
+    @Override
+    public boolean open(Player who) {
+        if (who.getWindowId(this) != -1) {//todo hack, ContainerClosePacket no longer triggers for command block and struct block, finding the correct way to close them
+            who.removeWindow(this);
+        }
+
+        InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
+        who.getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return false;
+        }
+        this.onOpen(who);
+        return true;
+    }
+
+    @Override
+    public void close(Player who) {
+        InventoryCloseEvent ev = new InventoryCloseEvent(this, who);
+        who.getServer().getPluginManager().callEvent(ev);
+        this.onClose(who);
+    }
+
+    @Override
+    public void onClose(Player who) {
+        final ContainerClosePacket pk = new ContainerClosePacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
+        pk.setContainerType(this.getType());
+        who.sendPacket(pk);
+        this.viewers.remove(who);
+    }
+
+    @Override
+    public void onSlotChange(int index, Item before, boolean send) {
+    }
+
+    @Override
+    public void addListener(InventoryListener listener) {
+        if (this.listeners == null) {
+            this.listeners = new ArrayList<>();
+        }
+
+        this.listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(InventoryListener listener) {
+        if (this.listeners != null) {
+            this.listeners.remove(listener);
+        }
+    }
+}

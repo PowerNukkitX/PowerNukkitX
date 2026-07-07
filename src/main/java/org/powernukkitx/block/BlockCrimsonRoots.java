@@ -1,0 +1,35 @@
+package org.powernukkitx.block;
+
+import org.jetbrains.annotations.NotNull;
+
+public class BlockCrimsonRoots extends BlockHanging implements BlockFlowerPot.FlowerPotBlock, Natural {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_ROOTS);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockCrimsonRoots() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockCrimsonRoots(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    public boolean canBeReplaced() {
+        return true;
+    }
+
+    @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
+
+    @Override
+    public String getName() {
+        return "Crimson Roots";
+    }
+}

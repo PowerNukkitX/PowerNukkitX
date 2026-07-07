@@ -1,0 +1,159 @@
+package org.powernukkitx.entity.item;
+
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntityExplosive;
+import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
+import org.powernukkitx.entity.components.NameableComponent;
+import org.powernukkitx.entity.mob.EntityEnderDragon;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
+import org.powernukkitx.event.entity.EntityDamageEvent;
+import org.powernukkitx.level.Explosion;
+import org.powernukkitx.level.GameRule;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * @author PetteriM1
+ */
+public class EntityEnderCrystal extends Entity implements EntityExplosive {
+    @Override
+    @NotNull
+    public String getIdentifier() {
+        return ENDER_CRYSTAL;
+    }
+
+
+    /**
+     * @since 1.2.1.0-PN
+     */
+    protected boolean detonated = false;
+
+    public EntityEnderCrystal(IChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("ShowBottom")) {
+            this.setShowBase(nbtMap.getBoolean("ShowBottom"));
+        }
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        this.nbt.putBoolean("ShowBottom", this.showBase());
+    }
+
+    @Override
+    public float getHeight() {
+        return 0.98f;
+    }
+
+    @Override
+    public float getWidth() {
+        return 0.98f;
+    }
+
+    @Override
+    public boolean isFireImmune() {
+        return true;
+    }
+
+    @Override
+    public NameableComponent getComponentNameable() {
+        return DEFAULT_NOT_NAMEABLE;
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (isClosed()) {
+            return false;
+        }
+
+        if (source.getCause() == EntityDamageEvent.DamageCause.FIRE || source.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK || source.getCause() == EntityDamageEvent.DamageCause.LAVA) {
+            return false;
+        }
+
+        if (!super.attack(source)) {
+            return false;
+        }
+
+        if (source instanceof EntityDamageByEntityEvent) {
+            if (((EntityDamageByEntityEvent) source).getDamager() instanceof EntityEnderDragon) {
+                return false;
+            }
+        }
+        explode();
+
+        return true;
+    }
+
+    @Override
+    public void explode() {
+        if (!this.detonated) {
+            this.detonated = true;
+
+            Position pos = this.getPosition();
+            Explosion explode = new Explosion(pos, 6, this);
+
+            this.close();
+
+            if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+                explode.explodeA();
+                explode.explodeB();
+            } else {
+                explode.explodeB();
+            }
+        }
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        for (Entity entity : this.getLevel().getEntities()) {
+            if (entity instanceof EntityEnderDragon dragon) {
+                if (entity.distance(this) <= 28) {
+                    entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, 10));
+                }
+                dragon.getMemoryStorage().put(CoreMemoryTypes.LAST_ENDER_CRYSTAL_DESTROY, this.asBlockVector3());
+            }
+        }
+    }
+
+    @Override
+    public boolean canCollideWith(Entity entity) {
+        return false;
+    }
+
+    public boolean showBase() {
+        return this.getDataFlag(ActorFlags.SHOW_BOTTOM);
+    }
+
+    public void setShowBase(boolean value) {
+        this.setDataFlag(ActorFlags.SHOW_BOTTOM, value);
+    }
+
+    public BlockVector3 getBeamTarget() {
+        return BlockVector3.fromNetwork(this.getDataProperty(ActorDataTypes.BLOCK_TARGET));
+    }
+
+    public void setBeamTarget(BlockVector3 beamTarget) {
+        this.setDataProperty(ActorDataTypes.BLOCK_TARGET, beamTarget.toNetwork());
+    }
+
+    @Override
+    public String getOriginalName() {
+        return "Ender Crystal";
+    }
+}
