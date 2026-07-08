@@ -1,6 +1,6 @@
-package cn.nukkit.block;
+package org.powernukkitx.block;
 
-import cn.nukkit.registry.Registries;
+import org.powernukkitx.registry.Registries;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 /**
@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
  */
 public final class BlockLightProperties {
 
-    // Packed layout (int): bits 0-7 lightLevel, bits 8-15 lightFilter, bit 16 diffusesSkyLight, bit 17 isTransparent.
+    // Packed layout (int): bits 0-7 light Level, bits 8-15 lightFilter, bit 16 diffusesSkyLight, bit 17 isTransparent.
     private static final int FILTER_SHIFT = 8;
     private static final int DIFFUSES_BIT = 1 << 16;
     private static final int TRANSPARENT_BIT = 1 << 17;
