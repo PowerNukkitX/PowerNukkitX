@@ -1,11 +1,11 @@
-package cn.nukkit.inventory.request;
+package org.powernukkitx.inventory.request;
 
-import cn.nukkit.Player;
-import cn.nukkit.blockentity.BlockEntityBeacon;
-import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.inventory.BeaconInventory;
-import cn.nukkit.inventory.Inventory;
-import cn.nukkit.item.Item;
+import org.powernukkitx.Player;
+import org.powernukkitx.blockentity.BlockEntityBeacon;
+import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.inventory.BeaconInventory;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.item.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.BeaconPaymentAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;

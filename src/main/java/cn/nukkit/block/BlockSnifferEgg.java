@@ -1,16 +1,16 @@
-package cn.nukkit.block;
+package org.powernukkitx.block;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.CrackedState;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityID;
-import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.level.Sound;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
+import org.powernukkitx.Player;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.enums.CrackedState;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

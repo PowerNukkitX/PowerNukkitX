@@ -1,9 +1,9 @@
-package cn.nukkit.entity.mob;
+package org.powernukkitx.entity.mob;
 
-import cn.nukkit.entity.EntitySmite;
-import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.powernukkitx.entity.EntitySmite;
+import org.powernukkitx.entity.EntityWalkable;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.nbt.tag.CompoundTag;
 
 import org.jetbrains.annotations.NotNull;
 

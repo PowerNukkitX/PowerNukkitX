@@ -1,13 +1,13 @@
-package cn.nukkit.entity.ai.executor;
+package org.powernukkitx.entity.ai.executor;
 
-import cn.nukkit.Server;
-import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.effect.Effect;
-import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.entity.mob.EntityZombiePigman;
-import cn.nukkit.event.entity.EntityTransformEvent;
-import cn.nukkit.inventory.Inventory;
-import cn.nukkit.level.Sound;
+import org.powernukkitx.Server;
+import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.effect.Effect;
+import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.entity.mob.EntityZombiePigman;
+import org.powernukkitx.event.entity.EntityTransformEvent;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.level.Sound;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 public class PiglinTransformExecutor implements EntityControl, IBehaviorExecutor {

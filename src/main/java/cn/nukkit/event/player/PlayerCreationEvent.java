@@ -1,8 +1,8 @@
-package cn.nukkit.event.player;
+package org.powernukkitx.event.player;
 
-import cn.nukkit.Player;
-import cn.nukkit.event.Event;
-import cn.nukkit.event.HandlerList;
+import org.powernukkitx.Player;
+import org.powernukkitx.event.Event;
+import org.powernukkitx.event.HandlerList;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;

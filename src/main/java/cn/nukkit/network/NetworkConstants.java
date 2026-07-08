@@ -1,6 +1,6 @@
-package cn.nukkit.network;
+package org.powernukkitx.network;
 
-import cn.nukkit.utils.SemVersion;
+import org.powernukkitx.utils.SemVersion;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.codec.v1001.Bedrock_v1001;

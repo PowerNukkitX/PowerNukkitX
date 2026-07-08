@@ -1,4 +1,4 @@
-package cn.nukkit.plugin.annotation;
+package org.powernukkitx.plugin.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * <p>
  * Constraints (enforced by the processor, each violation is a compile error):
  * <ul>
- *     <li>The annotated type must implement {@link cn.nukkit.event.Listener}.</li>
+ *     <li>The annotated type must implement {@link org.powernukkitx.event.Listener}.</li>
  *     <li>The annotated type must be a concrete (non-abstract) class with an
  *     accessible no-argument constructor.</li>
  * </ul>

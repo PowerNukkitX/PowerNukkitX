@@ -1,10 +1,10 @@
-package cn.nukkit.block;
+package org.powernukkitx.block;
 
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.DoublePlantType;
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.math.BlockFace;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.enums.DoublePlantType;
+import org.powernukkitx.Player;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPitcherPlant extends BlockDoublePlant implements Pollinable {

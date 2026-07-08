@@ -1,14 +1,14 @@
-package cn.nukkit.block;
+package org.powernukkitx.block;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.blockentity.BlockEntityID;
-import cn.nukkit.blockentity.BlockEntityPotentSulfur;
-import cn.nukkit.item.Item;
-import cn.nukkit.math.BlockFace;
+import org.powernukkitx.Player;
+import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.blockentity.BlockEntityID;
+import org.powernukkitx.blockentity.BlockEntityPotentSulfur;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.POTENT_SULFUR_STATE;
+import static org.powernukkitx.block.property.CommonBlockProperties.POTENT_SULFUR_STATE;
 
 public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<BlockEntityPotentSulfur> {
     public static final BlockProperties PROPERTIES = new BlockProperties(POTENT_SULFUR, POTENT_SULFUR_STATE);

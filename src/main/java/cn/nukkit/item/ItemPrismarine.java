@@ -1,6 +1,6 @@
-package cn.nukkit.item;
+package org.powernukkitx.item;
 
-import cn.nukkit.block.BlockPrismarine;
+import org.powernukkitx.block.BlockPrismarine;
 
 public class ItemPrismarine extends ItemBlock {
     public ItemPrismarine() {

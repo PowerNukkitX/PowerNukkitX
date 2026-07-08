@@ -1,4 +1,4 @@
-package cn.nukkit.plugin.annotation;
+package org.powernukkitx.plugin.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * May be placed on either:
  * <ul>
  *     <li>a <b>class</b> implementing {@link Runnable} (for example a subclass of
- *     {@link cn.nukkit.scheduler.Task}) with an accessible no-argument
+ *     {@link org.powernukkitx.scheduler.Task}) with an accessible no-argument
  *     constructor — the processor schedules a fresh instance; or</li>
  *     <li>a <b>public static method</b> taking no arguments — the processor
  *     schedules a call to it.</li>

@@ -1,21 +1,21 @@
-package cn.nukkit.blockentity;
+package org.powernukkitx.blockentity;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockCreakingHeart;
-import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.block.property.enums.CreakingHeartState;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.mob.EntityCreaking;
-import cn.nukkit.event.entity.CreatureSpawnEvent;
-import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
-import cn.nukkit.level.Sound;
-import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.Utils;
+import org.powernukkitx.Player;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockCreakingHeart;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.enums.CreakingHeartState;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.mob.EntityCreaking;
+import org.powernukkitx.event.entity.CreatureSpawnEvent;
+import org.powernukkitx.level.GameRule;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.Utils;
 import lombok.Getter;
 
 public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
@@ -155,7 +155,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
             }
 
             Block block = getSide(face).getLevelBlock();
-            if (!(block instanceof cn.nukkit.block.BlockPaleOakLog log) || log.getPillarAxis() != getHeart().getPillarAxis()) {
+            if (!(block instanceof org.powernukkitx.block.BlockPaleOakLog log) || log.getPillarAxis() != getHeart().getPillarAxis()) {
                 return false;
             }
         }

@@ -1,9 +1,9 @@
-package cn.nukkit.network.process;
+package org.powernukkitx.network.process;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.event.server.PacketHandleEvent;
-import cn.nukkit.event.server.PacketReceiveEvent;
+import org.powernukkitx.Player;
+import org.powernukkitx.Server;
+import org.powernukkitx.event.server.PacketHandleEvent;
+import org.powernukkitx.event.server.PacketReceiveEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;

@@ -1,11 +1,11 @@
-package cn.nukkit.level.format.palette;
+package org.powernukkitx.level.format.palette;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockState;
-import cn.nukkit.level.format.ChunkSection;
-import cn.nukkit.level.format.bitarray.BitArrayVersion;
-import cn.nukkit.registry.Registries;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockState;
+import org.powernukkitx.level.format.ChunkSection;
+import org.powernukkitx.level.format.bitarray.BitArrayVersion;
+import org.powernukkitx.registry.Registries;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.Assertions;

@@ -1,6 +1,6 @@
-package cn.nukkit.network.process;
+package org.powernukkitx.network.process;
 
-import cn.nukkit.Server;
+import org.powernukkitx.Server;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 
 /**
@@ -14,7 +14,7 @@ public interface PacketHandler<T extends BedrockPacket> {
      * When {@code true} the handler always runs on the Netty thread and is never deferred to the
      * main tick thread. Reserve for protocol/latency packets that must stay prompt (e.g. ping,
      * tick-sync). Gameplay handlers should leave this {@code false} so they run on the main thread
-     * via {@link cn.nukkit.Player#scheduleInbound}, serialized with the tick.
+     * via {@link org.powernukkitx.Player#scheduleInbound}, serialized with the tick.
      */
     default boolean runsOnNetworkThread() {
         return false;

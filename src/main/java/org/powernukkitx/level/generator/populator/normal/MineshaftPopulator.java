@@ -65,7 +65,7 @@ public class MineshaftPopulator extends Populator {
     }
 
     /** Resolve the biome's sea-floor block at this position, or null if the biome lacks surface-material data. */
-    private static cn.nukkit.block.BlockState seaFloorBlockFor(Level level, Block block) {
+    private static org.powernukkitx.block.BlockState seaFloorBlockFor(Level level, Block block) {
         var biome = Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).second();
         var genData = biome == null ? null : biome.getChunkGenData();
         var surfaceBuilder = genData == null ? null : genData.getSurfaceBuilderData();

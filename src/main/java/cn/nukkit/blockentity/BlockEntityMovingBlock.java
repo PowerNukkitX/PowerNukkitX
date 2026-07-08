@@ -1,17 +1,17 @@
-package cn.nukkit.blockentity;
+package org.powernukkitx.blockentity;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockSlime;
-import cn.nukkit.block.BlockState;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.HashUtils;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockSlime;
+import org.powernukkitx.block.BlockState;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.math.Vector3;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.HashUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;

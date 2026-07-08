@@ -1,6 +1,6 @@
-package cn.nukkit.block;
+package org.powernukkitx.block;
 
-import cn.nukkit.registry.Registries;
+import org.powernukkitx.registry.Registries;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 /**

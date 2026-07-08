@@ -1,13 +1,13 @@
-package cn.nukkit.plugin.annotation;
+package org.powernukkitx.plugin.annotation;
 
-import cn.nukkit.Server;
-import cn.nukkit.command.Command;
-import cn.nukkit.command.SimpleCommandMap;
-import cn.nukkit.event.Listener;
-import cn.nukkit.plugin.Plugin;
-import cn.nukkit.plugin.PluginDescription;
-import cn.nukkit.plugin.PluginManager;
-import cn.nukkit.scheduler.ServerScheduler;
+import org.powernukkitx.Server;
+import org.powernukkitx.command.Command;
+import org.powernukkitx.command.SimpleCommandMap;
+import org.powernukkitx.event.Listener;
+import org.powernukkitx.plugin.Plugin;
+import org.powernukkitx.plugin.PluginDescription;
+import org.powernukkitx.plugin.PluginManager;
+import org.powernukkitx.scheduler.ServerScheduler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
  * {@link JavaCompiler} + an in-memory file manager) and asserts on diagnostics
  * and on the generated {@code powernukkitx.yml} / {@code PNXPluginBootstrap} sources.
  * <p>
- * The compilation runs on the test classpath, so the real {@code cn.nukkit}
+ * The compilation runs on the test classpath, so the real {@code org.powernukkitx}
  * types ({@code PluginBase}, {@code Listener}, {@code Task}, {@code Command},
  * ...) are resolved exactly as a plugin build would resolve them.
  */
@@ -61,8 +61,8 @@ public class PluginAnnotationProcessorTest {
     // other annotations.
     private static final JavaSource MAIN = new JavaSource("demo.DemoPlugin", """
             package demo;
-            import cn.nukkit.plugin.PluginBase;
-            import cn.nukkit.plugin.annotation.PluginMeta;
+            import org.powernukkitx.plugin.PluginBase;
+            import org.powernukkitx.plugin.annotation.PluginMeta;
             @PluginMeta(name = "Demo", version = "1.0.0", api = {"1.0.0"})
             public class DemoPlugin extends PluginBase {}
             """);
@@ -99,9 +99,9 @@ public class PluginAnnotationProcessorTest {
         void optionalFieldsAreEmittedAndStartupOrderIsWritten() {
             Result r = compile(new JavaSource("demo.DemoPlugin", """
                     package demo;
-                    import cn.nukkit.plugin.PluginBase;
-                    import cn.nukkit.plugin.PluginLoadOrder;
-                    import cn.nukkit.plugin.annotation.PluginMeta;
+                    import org.powernukkitx.plugin.PluginBase;
+                    import org.powernukkitx.plugin.PluginLoadOrder;
+                    import org.powernukkitx.plugin.annotation.PluginMeta;
                     @PluginMeta(
                         name = "Demo",
                         version = "2.0",
@@ -151,8 +151,8 @@ public class PluginAnnotationProcessorTest {
             // Annotation value is a\b (single backslash); yml must escape to a\\b.
             Result r = compile(new JavaSource("demo.DemoPlugin", """
                     package demo;
-                    import cn.nukkit.plugin.PluginBase;
-                    import cn.nukkit.plugin.annotation.PluginMeta;
+                    import org.powernukkitx.plugin.PluginBase;
+                    import org.powernukkitx.plugin.annotation.PluginMeta;
                     @PluginMeta(name = "Demo", version = "1", api = {"1"}, description = "a\\\\b")
                     public class DemoPlugin extends PluginBase {}
                     """));
@@ -164,11 +164,11 @@ public class PluginAnnotationProcessorTest {
         void mainNotExtendingPluginBaseIsAnError() {
             Result r = compile(new JavaSource("demo.DemoPlugin", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.PluginMeta;
+                    import org.powernukkitx.plugin.annotation.PluginMeta;
                     @PluginMeta(name = "Demo", version = "1", api = {"1"})
                     public class DemoPlugin {}
                     """));
-            r.assertFailureContains("must extend cn.nukkit.plugin.PluginBase");
+            r.assertFailureContains("must extend org.powernukkitx.plugin.PluginBase");
             assertNull(r.pluginYml(), "no descriptor on validation failure");
         }
 
@@ -177,15 +177,15 @@ public class PluginAnnotationProcessorTest {
             Result r = compile(
                     new JavaSource("demo.A", """
                             package demo;
-                            import cn.nukkit.plugin.PluginBase;
-                            import cn.nukkit.plugin.annotation.PluginMeta;
+                            import org.powernukkitx.plugin.PluginBase;
+                            import org.powernukkitx.plugin.annotation.PluginMeta;
                             @PluginMeta(name = "A", version = "1", api = {"1"})
                             public class A extends PluginBase {}
                             """),
                     new JavaSource("demo.B", """
                             package demo;
-                            import cn.nukkit.plugin.PluginBase;
-                            import cn.nukkit.plugin.annotation.PluginMeta;
+                            import org.powernukkitx.plugin.PluginBase;
+                            import org.powernukkitx.plugin.annotation.PluginMeta;
                             @PluginMeta(name = "B", version = "1", api = {"1"})
                             public class B extends PluginBase {}
                             """));
@@ -198,8 +198,8 @@ public class PluginAnnotationProcessorTest {
             // generated, but it must not be an error (keeps incremental builds sane).
             Result r = compile(new JavaSource("demo.L", """
                     package demo;
-                    import cn.nukkit.event.Listener;
-                    import cn.nukkit.plugin.annotation.EventListener;
+                    import org.powernukkitx.event.Listener;
+                    import org.powernukkitx.plugin.annotation.EventListener;
                     @EventListener
                     public class L implements Listener {}
                     """));
@@ -221,8 +221,8 @@ public class PluginAnnotationProcessorTest {
         void validListenerIsRegistered() {
             Result r = compile(MAIN, new JavaSource("demo.MyListener", """
                     package demo;
-                    import cn.nukkit.event.Listener;
-                    import cn.nukkit.plugin.annotation.EventListener;
+                    import org.powernukkitx.event.Listener;
+                    import org.powernukkitx.plugin.annotation.EventListener;
                     @EventListener
                     public class MyListener implements Listener {}
                     """));
@@ -234,8 +234,8 @@ public class PluginAnnotationProcessorTest {
         void listenerThroughIndirectInterfaceIsAccepted() {
             Result r = compile(MAIN, new JavaSource("demo.MyListener", """
                     package demo;
-                    import cn.nukkit.event.Listener;
-                    import cn.nukkit.plugin.annotation.EventListener;
+                    import org.powernukkitx.event.Listener;
+                    import org.powernukkitx.plugin.annotation.EventListener;
                     interface Mid extends Listener {}
                     @EventListener
                     public class MyListener implements Mid {}
@@ -248,19 +248,19 @@ public class PluginAnnotationProcessorTest {
         void notImplementingListenerIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.MyListener", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.EventListener;
+                    import org.powernukkitx.plugin.annotation.EventListener;
                     @EventListener
                     public class MyListener {}
                     """));
-            r.assertFailureContains("must implement cn.nukkit.event.Listener");
+            r.assertFailureContains("must implement org.powernukkitx.event.Listener");
         }
 
         @Test
         void abstractListenerIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.MyListener", """
                     package demo;
-                    import cn.nukkit.event.Listener;
-                    import cn.nukkit.plugin.annotation.EventListener;
+                    import org.powernukkitx.event.Listener;
+                    import org.powernukkitx.plugin.annotation.EventListener;
                     @EventListener
                     public abstract class MyListener implements Listener {}
                     """));
@@ -271,8 +271,8 @@ public class PluginAnnotationProcessorTest {
         void privateNoArgConstructorIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.MyListener", """
                     package demo;
-                    import cn.nukkit.event.Listener;
-                    import cn.nukkit.plugin.annotation.EventListener;
+                    import org.powernukkitx.event.Listener;
+                    import org.powernukkitx.plugin.annotation.EventListener;
                     @EventListener
                     public class MyListener implements Listener {
                         private MyListener() {}
@@ -285,8 +285,8 @@ public class PluginAnnotationProcessorTest {
         void onlyParameterizedConstructorIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.MyListener", """
                     package demo;
-                    import cn.nukkit.event.Listener;
-                    import cn.nukkit.plugin.annotation.EventListener;
+                    import org.powernukkitx.event.Listener;
+                    import org.powernukkitx.plugin.annotation.EventListener;
                     @EventListener
                     public class MyListener implements Listener {
                         public MyListener(int x) {}
@@ -308,8 +308,8 @@ public class PluginAnnotationProcessorTest {
         void repeatingClassTaskUsesRepeatingSchedule() {
             Result r = compile(MAIN, new JavaSource("demo.MyTask", """
                     package demo;
-                    import cn.nukkit.scheduler.Task;
-                    import cn.nukkit.plugin.annotation.ScheduleTask;
+                    import org.powernukkitx.scheduler.Task;
+                    import org.powernukkitx.plugin.annotation.ScheduleTask;
                     @ScheduleTask(delay = 5, period = 20, async = true)
                     public class MyTask extends Task {
                         @Override public void onRun(int t) {}
@@ -324,8 +324,8 @@ public class PluginAnnotationProcessorTest {
         void oneShotClassTaskUsesDelayedSchedule() {
             Result r = compile(MAIN, new JavaSource("demo.MyTask", """
                     package demo;
-                    import cn.nukkit.scheduler.Task;
-                    import cn.nukkit.plugin.annotation.ScheduleTask;
+                    import org.powernukkitx.scheduler.Task;
+                    import org.powernukkitx.plugin.annotation.ScheduleTask;
                     @ScheduleTask(delay = 40)
                     public class MyTask extends Task {
                         @Override public void onRun(int t) {}
@@ -340,7 +340,7 @@ public class PluginAnnotationProcessorTest {
         void plainRunnableClassIsAccepted() {
             Result r = compile(MAIN, new JavaSource("demo.MyTask", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.ScheduleTask;
+                    import org.powernukkitx.plugin.annotation.ScheduleTask;
                     @ScheduleTask(period = 10)
                     public class MyTask implements Runnable {
                         @Override public void run() {}
@@ -354,7 +354,7 @@ public class PluginAnnotationProcessorTest {
         void staticMethodTaskSchedulesLambda() {
             Result r = compile(MAIN, new JavaSource("demo.Jobs", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.ScheduleTask;
+                    import org.powernukkitx.plugin.annotation.ScheduleTask;
                     public class Jobs {
                         @ScheduleTask(delay = 100, period = 200, async = true)
                         public static void tick() {}
@@ -369,7 +369,7 @@ public class PluginAnnotationProcessorTest {
         void nonRunnableClassIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.MyTask", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.ScheduleTask;
+                    import org.powernukkitx.plugin.annotation.ScheduleTask;
                     @ScheduleTask
                     public class MyTask {}
                     """));
@@ -380,7 +380,7 @@ public class PluginAnnotationProcessorTest {
         void nonStaticMethodIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.Jobs", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.ScheduleTask;
+                    import org.powernukkitx.plugin.annotation.ScheduleTask;
                     public class Jobs {
                         @ScheduleTask
                         public void tick() {}
@@ -393,7 +393,7 @@ public class PluginAnnotationProcessorTest {
         void methodWithParametersIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.Jobs", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.ScheduleTask;
+                    import org.powernukkitx.plugin.annotation.ScheduleTask;
                     public class Jobs {
                         @ScheduleTask
                         public static void tick(int x) {}
@@ -415,9 +415,9 @@ public class PluginAnnotationProcessorTest {
         void commandIsRegisteredWithAllMetadata() {
             Result r = compile(MAIN, new JavaSource("demo.HealCommand", """
                     package demo;
-                    import cn.nukkit.command.Command;
-                    import cn.nukkit.command.CommandSender;
-                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    import org.powernukkitx.command.Command;
+                    import org.powernukkitx.command.CommandSender;
+                    import org.powernukkitx.plugin.annotation.CommandDefinition;
                     @CommandDefinition(name = "heal", aliases = {"h", "hp"},
                             permission = "demo.heal", description = "Heals", usage = "/heal <p>")
                     public class HealCommand extends Command {
@@ -439,9 +439,9 @@ public class PluginAnnotationProcessorTest {
         void optionalCommandMetadataIsOmitted() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
-                    import cn.nukkit.command.Command;
-                    import cn.nukkit.command.CommandSender;
-                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    import org.powernukkitx.command.Command;
+                    import org.powernukkitx.command.CommandSender;
+                    import org.powernukkitx.plugin.annotation.CommandDefinition;
                     @CommandDefinition(name = "ping")
                     public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
@@ -460,9 +460,9 @@ public class PluginAnnotationProcessorTest {
         void commandTreeIsEnabledByDefault() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
-                    import cn.nukkit.command.Command;
-                    import cn.nukkit.command.CommandSender;
-                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    import org.powernukkitx.command.Command;
+                    import org.powernukkitx.command.CommandSender;
+                    import org.powernukkitx.plugin.annotation.CommandDefinition;
                     @CommandDefinition(name = "ping")
                     public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
@@ -478,9 +478,9 @@ public class PluginAnnotationProcessorTest {
         void paramTreeModeEnablesParamTree() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
-                    import cn.nukkit.command.Command;
-                    import cn.nukkit.command.CommandSender;
-                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    import org.powernukkitx.command.Command;
+                    import org.powernukkitx.command.CommandSender;
+                    import org.powernukkitx.plugin.annotation.CommandDefinition;
                     @CommandDefinition(name = "ping", commandMode = CommandDefinition.CommandMode.PARAM_TREE)
                     public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
@@ -496,9 +496,9 @@ public class PluginAnnotationProcessorTest {
         void rawModeEnablesNeitherTree() {
             Result r = compile(MAIN, new JavaSource("demo.PingCommand", """
                     package demo;
-                    import cn.nukkit.command.Command;
-                    import cn.nukkit.command.CommandSender;
-                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    import org.powernukkitx.command.Command;
+                    import org.powernukkitx.command.CommandSender;
+                    import org.powernukkitx.plugin.annotation.CommandDefinition;
                     @CommandDefinition(name = "ping", commandMode = CommandDefinition.CommandMode.RAW)
                     public class PingCommand extends Command {
                         @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
@@ -515,11 +515,11 @@ public class PluginAnnotationProcessorTest {
         void notExtendingCommandIsAnError() {
             Result r = compile(MAIN, new JavaSource("demo.NotCmd", """
                     package demo;
-                    import cn.nukkit.plugin.annotation.CommandDefinition;
+                    import org.powernukkitx.plugin.annotation.CommandDefinition;
                     @CommandDefinition(name = "x")
                     public class NotCmd {}
                     """));
-            r.assertFailureContains("must extend cn.nukkit.command.Command");
+            r.assertFailureContains("must extend org.powernukkitx.command.Command");
         }
     }
 
@@ -537,7 +537,7 @@ public class PluginAnnotationProcessorTest {
             r.assertSuccess();
             String b = r.bootstrap();
             assertNotNull(b);
-            assertContains(b, "public static void init(cn.nukkit.plugin.Plugin plugin)");
+            assertContains(b, "public static void init(org.powernukkitx.plugin.Plugin plugin)");
             assertFalse(b.contains("registerEvents"));
             assertFalse(b.contains("scheduleDelayed"));
             assertFalse(b.contains("__cmap"));
@@ -549,36 +549,36 @@ public class PluginAnnotationProcessorTest {
                     MAIN,
                     new JavaSource("demo.L1", """
                             package demo;
-                            import cn.nukkit.event.Listener;
-                            import cn.nukkit.plugin.annotation.EventListener;
+                            import org.powernukkitx.event.Listener;
+                            import org.powernukkitx.plugin.annotation.EventListener;
                             @EventListener public class L1 implements Listener {}
                             """),
                     new JavaSource("demo.L2", """
                             package demo;
-                            import cn.nukkit.event.Listener;
-                            import cn.nukkit.plugin.annotation.EventListener;
+                            import org.powernukkitx.event.Listener;
+                            import org.powernukkitx.plugin.annotation.EventListener;
                             @EventListener public class L2 implements Listener {}
                             """),
                     new JavaSource("demo.T1", """
                             package demo;
-                            import cn.nukkit.scheduler.Task;
-                            import cn.nukkit.plugin.annotation.ScheduleTask;
+                            import org.powernukkitx.scheduler.Task;
+                            import org.powernukkitx.plugin.annotation.ScheduleTask;
                             @ScheduleTask(period = 20) public class T1 extends Task {
                                 @Override public void onRun(int t) {}
                             }
                             """),
                     new JavaSource("demo.Jobs", """
                             package demo;
-                            import cn.nukkit.plugin.annotation.ScheduleTask;
+                            import org.powernukkitx.plugin.annotation.ScheduleTask;
                             public class Jobs {
                                 @ScheduleTask(delay = 1) public static void run() {}
                             }
                             """),
                     new JavaSource("demo.C1", """
                             package demo;
-                            import cn.nukkit.command.Command;
-                            import cn.nukkit.command.CommandSender;
-                            import cn.nukkit.plugin.annotation.CommandDefinition;
+                            import org.powernukkitx.command.Command;
+                            import org.powernukkitx.command.CommandSender;
+                            import org.powernukkitx.plugin.annotation.CommandDefinition;
                             @CommandDefinition(name = "c1")
                             public class C1 extends Command {
                                 @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
@@ -611,21 +611,21 @@ public class PluginAnnotationProcessorTest {
                     MAIN,
                     new JavaSource("demo.RuntimeListener", """
                             package demo;
-                            import cn.nukkit.event.Listener;
-                            import cn.nukkit.plugin.annotation.EventListener;
+                            import org.powernukkitx.event.Listener;
+                            import org.powernukkitx.plugin.annotation.EventListener;
                             @EventListener public class RuntimeListener implements Listener {}
                             """),
                     new JavaSource("demo.RuntimeTask", """
                             package demo;
-                            import cn.nukkit.scheduler.Task;
-                            import cn.nukkit.plugin.annotation.ScheduleTask;
+                            import org.powernukkitx.scheduler.Task;
+                            import org.powernukkitx.plugin.annotation.ScheduleTask;
                             @ScheduleTask(period = 20) public class RuntimeTask extends Task {
                                 @Override public void onRun(int t) {}
                             }
                             """),
                     new JavaSource("demo.Jobs", """
                             package demo;
-                            import cn.nukkit.plugin.annotation.ScheduleTask;
+                            import org.powernukkitx.plugin.annotation.ScheduleTask;
                             public class Jobs {
                                 public static boolean ran = false;
                                 @ScheduleTask(delay = 1) public static void run() { ran = true; }
@@ -633,9 +633,9 @@ public class PluginAnnotationProcessorTest {
                             """),
                     new JavaSource("demo.RtCommand", """
                             package demo;
-                            import cn.nukkit.command.Command;
-                            import cn.nukkit.command.CommandSender;
-                            import cn.nukkit.plugin.annotation.CommandDefinition;
+                            import org.powernukkitx.command.Command;
+                            import org.powernukkitx.command.CommandSender;
+                            import org.powernukkitx.plugin.annotation.CommandDefinition;
                             @CommandDefinition(name = "rt", aliases = {"r"}, permission = "demo.rt")
                             public class RtCommand extends Command {
                                 @Override public boolean execute(CommandSender s, String l, String[] a) { return true; }
@@ -706,7 +706,7 @@ public class PluginAnnotationProcessorTest {
             units.add(s.toFileObject());
         }
 
-        // Resolve cn.nukkit.* against this test JVM's classpath explicitly, so it
+        // Resolve org.powernukkitx.* against this test JVM's classpath explicitly, so it
         // does not depend on how the test runner seeds the default class path.
         List<String> options = List.of("-classpath", System.getProperty("java.class.path"));
         JavaCompiler.CompilationTask task =
@@ -860,7 +860,7 @@ public class PluginAnnotationProcessorTest {
         }
     }
 
-    /** Loads classes from in-memory bytes (parent-first, so cn.nukkit resolves). */
+    /** Loads classes from in-memory bytes (parent-first, so org.powernukkitx resolves). */
     private static final class BytesClassLoader extends ClassLoader {
         private final Map<String, byte[]> byName;
 

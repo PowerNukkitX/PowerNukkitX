@@ -1,9 +1,9 @@
-package cn.nukkit.network.process.handler;
+package org.powernukkitx.network.process.handler;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.network.process.PacketHandler;
-import cn.nukkit.network.process.PlayerSessionHolder;
+import org.powernukkitx.Player;
+import org.powernukkitx.Server;
+import org.powernukkitx.network.process.PacketHandler;
+import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.cloudburstmc.protocol.bedrock.data.PlayerRespawnState;
 import org.cloudburstmc.protocol.bedrock.packet.RespawnPacket;
 

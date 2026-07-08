@@ -1,7 +1,7 @@
-package cn.nukkit.utils;
+package org.powernukkitx.utils;
 
-import cn.nukkit.Player;
-import cn.nukkit.entity.Attribute;
+import org.powernukkitx.Player;
+import org.powernukkitx.entity.Attribute;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataMap;
