@@ -14,8 +14,7 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.powernukkitx.utils.random.Xoroshiro128;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 
 public final class Aquifer {
     public static final double FLOWING_UPDATE_SIMILARITY = similarity(100, 144);
@@ -54,7 +53,8 @@ public final class Aquifer {
     private final int preliminarySurfaceLowerBound;
     private final int preliminarySurfaceCellHeight;
     private final CachedPointContext cachedPointContext;
-    private final Map<Long, Integer> preliminarySurfaceLevelCache;
+    private static final int PRELIMINARY_SURFACE_CACHE_CAP = 64;
+    private final Long2IntLinkedOpenHashMap preliminarySurfaceLevelCache;
     private double cachedBarrierNoise;
     private boolean shouldScheduleFluidUpdate;
 
@@ -97,12 +97,8 @@ public final class Aquifer {
         this.globalFluidPicker = globalFluidPicker;
         this.randomSeed = level.getSeed() ^ 0x4f9939f508L;
         this.cachedPointContext = new CachedPointContext(chunkCache);
-        this.preliminarySurfaceLevelCache = new LinkedHashMap<>(64, 0.75f, true) {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<Long, Integer> eldest) {
-                return size() > 64;
-            }
-        };
+        this.preliminarySurfaceLevelCache = new Long2IntLinkedOpenHashMap(PRELIMINARY_SURFACE_CACHE_CAP);
+        this.preliminarySurfaceLevelCache.defaultReturnValue(Integer.MIN_VALUE);
         this.minY = minBlockY;
         this.maxY = minBlockY + yBlockSize - 1;
 
@@ -483,8 +479,8 @@ public final class Aquifer {
 
     private int preliminarySurfaceLevel(int worldX, int worldZ) {
         long key = (((long) worldX) << 32) ^ (worldZ & 0xFFFFFFFFL);
-        Integer cached = this.preliminarySurfaceLevelCache.get(key);
-        if (cached != null) {
+        int cached = this.preliminarySurfaceLevelCache.getAndMoveToLast(key);
+        if (cached != Integer.MIN_VALUE) {
             return cached;
         }
 
@@ -501,7 +497,10 @@ public final class Aquifer {
                 }
             }
         }
-        this.preliminarySurfaceLevelCache.put(key, result);
+        this.preliminarySurfaceLevelCache.putAndMoveToLast(key, result);
+        if (this.preliminarySurfaceLevelCache.size() > PRELIMINARY_SURFACE_CACHE_CAP) {
+            this.preliminarySurfaceLevelCache.removeFirstInt();
+        }
         return result;
     }
 
