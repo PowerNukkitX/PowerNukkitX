@@ -1,0 +1,85 @@
+package org.powernukkitx.level.generator.populator.nether.soulsand_valley;
+
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockDriedGhast;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.level.biome.BiomeID;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.generator.ChunkGenerateContext;
+import org.powernukkitx.level.generator.object.BlockManager;
+import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
+import org.powernukkitx.level.structure.PNXStructure;
+import org.powernukkitx.registry.Registries;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.Objects;
+
+import static org.powernukkitx.level.generator.stages.nether.NetherTerrainStage.LAVA_LEVEL;
+
+@Slf4j
+public class NetherFossilPopulator extends Populator {
+
+    public static final String NAME = "nether_fossil";
+
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .minDistance(2)
+            .maxDistance(32)
+            .isBiomeValid(biome -> biome == BiomeID.SOULSAND_VALLEY)
+            .build());
+
+    @Override
+    public void apply(ChunkGenerateContext context) {
+        IChunk chunk = context.getChunk();
+        int chunkX = chunk.getX();
+        int chunkZ = chunk.getZ();
+        Level level = chunk.getLevel();
+        int biome = chunk.getBiomeId(3, LAVA_LEVEL, 3);
+        if(PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
+            random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+            int x = (chunkX << 4) + 3;
+            int z = (chunkZ << 4) + 3;
+            BlockManager manager = new BlockManager(level);
+            String structureName = "nether_fossils/fossil_" + (random.nextInt(14) + 1);
+            PNXStructure structure = (PNXStructure) Registries.STRUCTURE.get(structureName);
+            if (structure == null) {
+                log.warn("Nether fossil structure '{}' is not registered, skipping placement", structureName);
+                return;
+            }
+            int height = Integer.MAX_VALUE;
+            for(int bx = 0; bx < structure.getSizeX(); bx++) {
+                for(int bz = 0; bz < structure.getSizeZ(); bz++) {
+                    for(int i : getHighestWorkableBlocks(manager, x+ bx, z + bz)) {
+                        if(i < height) height = i;
+                    }
+                }
+            }
+            if(height != Integer.MAX_VALUE) {
+                Position pos = new Position(x, height, z);
+                structure.preparePlace(pos, manager);
+                if(random.nextInt(3) == 0) manager.setBlockStateAt(pos.subtract(1, 0, 1), BlockDriedGhast.PROPERTIES.getDefaultState());
+                for(Block block : manager.getBlocks()) if(block.isAir()) manager.unsetBlockStateAt(block);
+                queueObject(chunk, manager);
+            }
+        }
+    }
+
+    private ArrayList<Integer> getHighestWorkableBlocks(BlockManager level, int x, int z) {
+        int y;
+        ArrayList<Integer> blockYs = new ArrayList<>();
+        for (y = 128; y > 0; --y) {
+            String b = level.getBlockIdAt(x, y, z);
+            if ((Objects.equals(b, Block.SOUL_SAND) || Objects.equals(b, Block.SOUL_SOIL)) && level.getBlockAt(x, y + 1, z).canBeReplaced()) {
+                blockYs.add(y + 1);
+            }
+        }
+        return blockYs;
+    }
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+}

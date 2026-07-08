@@ -1,0 +1,37 @@
+package org.powernukkitx.utils;
+
+import io.netty.util.internal.EmptyArrays;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.skin.ImageData;
+
+import java.util.Objects;
+
+@ToString(exclude = {"data"})
+@EqualsAndHashCode
+@Slf4j
+public class SerializedImage {
+    public static final SerializedImage EMPTY = new SerializedImage(0, 0, EmptyArrays.EMPTY_BYTES);
+
+    public final int width;
+    public final int height;
+    public final byte[] data;
+
+    public SerializedImage(int width, int height, byte[] data) {
+        this.width = width;
+        this.height = height;
+        this.data = data;
+    }
+
+    public static SerializedImage fromLegacy(byte[] skinData) {
+        Objects.requireNonNull(skinData, "skinData");
+        return switch (skinData.length) {
+            case ImageData.SINGLE_SKIN_SIZE -> new SerializedImage(64, 32, skinData);
+            case ImageData.DOUBLE_SKIN_SIZE -> new SerializedImage(64, 64, skinData);
+            case ImageData.SKIN_128_64_SIZE -> new SerializedImage(128, 64, skinData);
+            case ImageData.SKIN_128_128_SIZE -> new SerializedImage(128, 128, skinData);
+            default ->  new SerializedImage(32, 32, skinData);
+        };
+    }
+}

@@ -1,9 +1,9 @@
 package jmh;
 
-import cn.nukkit.block.BlockID;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.registry.Registries;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
+import org.powernukkitx.registry.Registries;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;

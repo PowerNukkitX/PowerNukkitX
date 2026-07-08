@@ -1,0 +1,68 @@
+package org.powernukkitx.entity.ai.sensor;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
+import org.powernukkitx.entity.passive.EntityAnimal;
+import org.powernukkitx.entity.ai.executor.FloatTemptExecutor;
+import org.powernukkitx.entity.ai.executor.TemptExecutor;
+
+
+/**
+ * Scans nearby players holding an item considered "food" by this entity and stores the nearest match in
+ * {@link CoreMemoryTypes#NEAREST_FEEDING_PLAYER}.
+ * <p><b>Start using Tempt Behaviors:</b>
+ * Tempt behaviors should be implemented using
+ * {@link TemptExecutor} (ground) or
+ * {@link FloatTemptExecutor} (floating), which handle item checks and target selection
+ * internally (BDS-like) based on the configured tempt item list and settings.
+ * </p>
+ */
+@Deprecated(forRemoval = true, since = "2.0.0")
+public class NearestFeedingPlayerSensor implements ISensor {
+
+    protected double range;
+
+    protected double minRange;
+
+    protected int period;
+
+    public NearestFeedingPlayerSensor(double range, double minRange) {
+        this(range, minRange, 1);
+    }
+
+    public NearestFeedingPlayerSensor(double range, double minRange, int period) {
+        this.range = range;
+        this.minRange = minRange;
+        this.period = period;
+    }
+
+    @Override
+    public void sense(EntityIntelligent entity) {
+        if (entity instanceof EntityAnimal entityAnimal) {
+            Player player = null;
+            double rangeSquared = this.range * this.range;
+            double minRangeSquared = this.minRange * this.minRange;
+            // Find the player within range who most recently meets the begging requirements.
+            for (Player p : entity.getLevel().getPlayers().values()) {
+                if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && entityAnimal.isBreedingItem(p.getInventory().getItemInMainHand())) {
+                    if (player == null) {
+                        player = p;
+                    } else {
+                        if (entity.distanceSquared(p) < entity.distanceSquared(player)) {
+                            player = p;
+                        }
+                    }
+                }
+            }
+            entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, player);
+            return;
+        }
+        entity.getMemoryStorage().clear(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
+    }
+
+    @Override
+    public int getPeriod() {
+        return period;
+    }
+}

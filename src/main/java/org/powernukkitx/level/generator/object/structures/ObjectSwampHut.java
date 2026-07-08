@@ -1,0 +1,110 @@
+package org.powernukkitx.level.generator.object.structures;
+
+import org.powernukkitx.block.*;
+import org.powernukkitx.block.*;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.generator.object.BlockManager;
+import org.powernukkitx.level.generator.object.ObjectGenerator;
+import org.powernukkitx.level.generator.object.RandomizableContainer;
+import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.math.Vector3;
+import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.utils.random.Xoroshiro128;
+
+import static org.powernukkitx.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
+
+
+public class ObjectSwampHut extends ObjectGenerator {
+
+    protected static final BlockState SPRUCE_PLANKS = BlockSprucePlanks.PROPERTIES.getDefaultState();
+    protected static final BlockState FLOWER_POT = BlockFlowerPot.PROPERTIES.getDefaultState();
+    protected static final BlockState OAK_FENCE = BlockOakFence.PROPERTIES.getDefaultState();
+    protected static final BlockState OAK_LOG = BlockOakLog.PROPERTIES.getDefaultState();
+    protected static final BlockState CAULDRON = BlockCauldron.PROPERTIES.getDefaultState();
+    protected static final BlockState CRAFTING_TABLE = BlockCraftingTable.PROPERTIES.getDefaultState();
+    protected static final BlockState STAIRS_N = BlockSpruceStairs.PROPERTIES.getBlockState(WEIRDO_DIRECTION.createValue(2));
+    protected static final BlockState STAIRS_E = BlockSpruceStairs.PROPERTIES.getBlockState(WEIRDO_DIRECTION.createValue(1));
+    protected static final BlockState STAIRS_S = BlockSpruceStairs.PROPERTIES.getBlockState(WEIRDO_DIRECTION.createValue(3));
+    protected static final BlockState STAIRS_W = BlockSpruceStairs.PROPERTIES.getBlockState(WEIRDO_DIRECTION.createValue(0));
+    protected final Xoroshiro128 random = new Xoroshiro128();
+
+    @Override
+    public boolean generate(BlockManager object, RandomSourceProvider rand, Vector3 position) {
+        StructureHelper builder = new StructureHelper(object.getLevel(), position.asBlockVector3());
+        builder.fill(new BlockVector3(1, 1, 2), new BlockVector3(5, 4, 7), SPRUCE_PLANKS, BlockAir.STATE); // hut body
+        builder.fill(new BlockVector3(1, 1, 1), new BlockVector3(5, 1, 1), SPRUCE_PLANKS, BlockAir.STATE); // hut steps
+        builder.fill(new BlockVector3(2, 1, 0), new BlockVector3(4, 1, 0), SPRUCE_PLANKS, BlockAir.STATE); // hut steps
+        builder.fill(new BlockVector3(4, 2, 2), new BlockVector3(4, 3, 2), BlockAir.STATE); // hut door
+        builder.fill(new BlockVector3(5, 3, 4), new BlockVector3(5, 3, 5), BlockAir.STATE); // left window
+        builder.setBlockStateAt(1, 3, 4, Block.AIR);
+
+        builder.setBlockStateAt(1, 3, 5, FLOWER_POT);
+        if(builder.getBlockAt(1, 3, 5) instanceof BlockFlowerPot pot) {
+            pot.setFlower(Item.get(Block.RED_MUSHROOM));
+        }
+
+        builder.setBlockStateAt(new BlockVector3(2, 3, 2), OAK_FENCE);
+        builder.setBlockStateAt(new BlockVector3(3, 3, 7), OAK_FENCE);
+
+        builder.fill(new BlockVector3(0, 4, 1), new BlockVector3(6, 4, 1), STAIRS_N); // N
+        builder.fill(new BlockVector3(6, 4, 2), new BlockVector3(6, 4, 7), STAIRS_E); // E
+        builder.fill(new BlockVector3(0, 4, 8), new BlockVector3(6, 4, 8), STAIRS_S); // S
+        builder.fill(new BlockVector3(0, 4, 2), new BlockVector3(0, 4, 7), STAIRS_W); // W
+
+        builder.fill(new BlockVector3(1, 0, 2), new BlockVector3(1, 3, 2), OAK_LOG);
+        builder.fill(new BlockVector3(5, 0, 2), new BlockVector3(5, 3, 2), OAK_LOG);
+        builder.fill(new BlockVector3(1, 0, 7), new BlockVector3(1, 3, 7), OAK_LOG);
+        builder.fill(new BlockVector3(5, 0, 7), new BlockVector3(5, 3, 7), OAK_LOG);
+
+        builder.setBlockStateAt(new BlockVector3(1, 2, 1), OAK_FENCE);
+        builder.setBlockStateAt(new BlockVector3(5, 2, 1), OAK_FENCE);
+
+        builder.setBlockStateAt(new BlockVector3(4, 2, 6), CAULDRON);
+
+        builder.setBlockStateAt(new BlockVector3(3, 2, 6), CRAFTING_TABLE);
+
+        builder.setBlockDownward(new BlockVector3(1, -1, 2), OAK_LOG);
+        builder.setBlockDownward(new BlockVector3(5, -1, 2), OAK_LOG);
+        builder.setBlockDownward(new BlockVector3(1, -1, 7), OAK_LOG);
+        builder.setBlockDownward(new BlockVector3(5, -1, 7), OAK_LOG);
+        object.merge(builder);
+        return true;
+    }
+    
+    protected static class ChestPopulator extends RandomizableContainer {
+        public ChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.SADDLE, 20))
+                    .register(new ItemEntry(Item.GOLDEN_APPLE, 15))
+                    .register(new ItemEntry(Item.ENCHANTED_GOLDEN_APPLE, 2))
+                    .register(new ItemEntry(Item.MUSIC_DISC_13, 15))
+                    .register(new ItemEntry(Item.MUSIC_DISC_CAT, 15))
+                    .register(new ItemEntry(Item.NAME_TAG, 20))
+                    .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 10))
+                    .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 15))
+                    .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 10, getDefaultEnchantments()));
+            this.pools.put(pool1.build(), new RollEntry(3, 1, pool1.getTotalWeight()));
+
+            PoolBuilder pool2 = new PoolBuilder()
+                    .register(new ItemEntry(Item.IRON_INGOT, 0, 4, 10))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 4, 5))
+                    .register(new ItemEntry(Item.BREAD, 20))
+                    .register(new ItemEntry(Block.WHEAT, 0, 4, 20))
+                    .register(new ItemEntry(Item.BUCKET, 10))
+                    .register(new ItemEntry(Item.REDSTONE, 0, 4, 15))
+                    .register(new ItemEntry(Item.COAL, 0, 4, 15))
+                    .register(new ItemEntry(Item.MELON_SEEDS, 0, 4, 2, 10))
+                    .register(new ItemEntry(Item.PUMPKIN_SEEDS, 0, 4, 2, 10))
+                    .register(new ItemEntry(Item.BEETROOT_SEEDS, 0, 4, 2, 10));
+            this.pools.put(pool2.build(), new RollEntry(4, 1, pool2.getTotalWeight()));
+
+            PoolBuilder pool3 = new PoolBuilder()
+                    .register(new ItemEntry(Item.BONE, 0, 8, 10))
+                    .register(new ItemEntry(Item.GUNPOWDER, 0, 8, 10))
+                    .register(new ItemEntry(Item.ROTTEN_FLESH, 0, 8, 10))
+                    .register(new ItemEntry(Item.STRING, 0, 8, 10));
+            this.pools.put(pool3.build(), new RollEntry(3, pool3.getTotalWeight()));
+        }
+    }
+}

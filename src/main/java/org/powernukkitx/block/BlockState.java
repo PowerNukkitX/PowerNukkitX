@@ -1,0 +1,75 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.block.property.type.BlockPropertyType;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.registry.Registries;
+import org.cloudburstmc.nbt.NbtMap;
+import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.List;
+
+/**
+ * @author daoge_cmd (Allay Project)
+ * @since 2023/4/29
+ */
+@Unmodifiable
+public interface BlockState {
+    static BlockState makeUnknownBlockState(int hash, NbtMap blockTag) {
+        return BlockStateImpl.makeUnknownBlockState(hash, blockTag);
+    }
+
+    static short computeSpecialValue(BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+        byte specialValueBits = 0;
+        for (var value : propertyValues) specialValueBits += value.getPropertyType().getBitSize();
+        return computeSpecialValue(specialValueBits, propertyValues);
+    }
+
+    static short computeSpecialValue(byte specialValueBits, BlockPropertyType.BlockPropertyValue<?, ?, ?>[] propertyValues) {
+        short specialValue = 0;
+        for (var value : propertyValues) {
+            specialValue |= (short) (((short) value.getIndex()) << (specialValueBits - value.getPropertyType().getBitSize()));
+            specialValueBits -= value.getPropertyType().getBitSize();
+        }
+        return specialValue;
+    }
+
+    String getIdentifier();
+
+    int blockStateHash();
+
+    short specialValue();
+
+    long unsignedBlockStateHash();
+
+    @UnmodifiableView
+    List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getBlockPropertyValues();
+
+    @UnmodifiableView
+    NbtMap getBlockStateTag();
+
+    <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p);
+
+    <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> BlockState setPropertyValue(BlockProperties properties, PROPERTY property, DATATYPE value);
+
+    BlockState setPropertyValue(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?> propertyValue);
+
+    BlockState setPropertyValues(BlockProperties properties, BlockPropertyType.BlockPropertyValue<?, ?, ?>... values);
+
+    default boolean isDefaultState() {
+        return Registries.BLOCK.getBlockProperties(getIdentifier()).getDefaultState() == this;
+    }
+
+    default Block toBlock() {
+        return Block.get(this);
+    }
+
+    default Block toBlock(Position position) {
+        return Block.get(this, position);
+    }
+
+    default Item toItem() {
+        return toBlock().toItem();
+    }
+}
