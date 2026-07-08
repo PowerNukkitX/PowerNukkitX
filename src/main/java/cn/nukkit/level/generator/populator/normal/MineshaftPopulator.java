@@ -52,13 +52,28 @@ public class MineshaftPopulator extends Populator {
                         if (level.getBlock(block).getId() == Block.WATER) {
                             manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
                         } else if (block.up().getId() == Block.WATER) {
-                            manager.setBlockStateAt(block, Registries.BLOCKSTATE.get(Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).second().getChunkGenData().getSurfaceBuilderData().getSurfaceMaterial().getSeaFloorBlock().getRuntimeId()));
+                            var seaFloor = seaFloorBlockFor(level, block);
+                            if (seaFloor != null) {
+                                manager.setBlockStateAt(block, seaFloor);
+                            }
                         }
                     }
                 }
                 queueObject(chunk, manager);
             }
         }
+    }
+
+    /** Resolve the biome's sea-floor block at this position, or null if the biome lacks surface-material data. */
+    private static cn.nukkit.block.BlockState seaFloorBlockFor(Level level, Block block) {
+        var biome = Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).second();
+        var genData = biome == null ? null : biome.getChunkGenData();
+        var surfaceBuilder = genData == null ? null : genData.getSurfaceBuilderData();
+        var surfaceMaterial = surfaceBuilder == null ? null : surfaceBuilder.getSurfaceMaterial();
+        if (surfaceMaterial == null || surfaceMaterial.getSeaFloorBlock() == null) {
+            return null;
+        }
+        return Registries.BLOCKSTATE.get(surfaceMaterial.getSeaFloorBlock().getRuntimeId());
     }
 
     @Override

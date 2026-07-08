@@ -82,6 +82,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -120,6 +121,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -302,6 +304,11 @@ public class Level implements Metadatable {
     private final ConcurrentLinkedQueue<BlockEntity> updateBlockEntities = new ConcurrentLinkedQueue<>();
     private final ConcurrentHashMap<Long, Boolean> chunkGenerationQueue = new ConcurrentHashMap<>();
     private int chunkGenerationQueueSize = 8;
+    /**
+     * Server-wide count of chunks that have finished generating, across all levels. Incremented once per completed
+     * generation (async and sync paths). Used by {@code /debug genrate} to report chunk generation throughput.
+     */
+    public static final AtomicLong GENERATED_CHUNK_COUNT = new AtomicLong();
     private final Server server;
     private final int levelId;
     // Loaders still remain single-threaded
@@ -1157,8 +1164,8 @@ public class Level implements Metadatable {
             this.levelCurrentTick++;
 
             if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-                if (Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
-                    getChunks().values().forEach(IChunk::doMobSpawning);
+                if (countDespawnableEntities() < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                    doMobSpawningNearPlayers();
                 }
             }
 
@@ -1288,6 +1295,41 @@ public class Level implements Metadatable {
             getPlayers().values().forEach(Player::checkNetwork);
             releaseTickCachedBlocks();
         }
+    }
+
+    /**
+     * Chunk radius around each player to attempt mob spawning in. Mob spawning only happens within ~54 blocks of a
+     * player (see {@code Chunk.doMobSpawning}); 5 chunks covers that with margin. Previously {@code doMobSpawning} ran
+     * on EVERY loaded chunk each tick, which at high view distance is thousands of wasted calls (plus per-chunk entity
+     * stream allocations) on the main thread for chunks nowhere near a player.
+     */
+    private static final int MOB_SPAWN_CHUNK_RADIUS = 5;
+
+    private void doMobSpawningNearPlayers() {
+        if (this.players.isEmpty()) return;
+        final LongOpenHashSet visited = new LongOpenHashSet();
+        for (Player player : this.players.values()) {
+            if (!player.isOnline()) continue;
+            final int pcx = player.getChunkX();
+            final int pcz = player.getChunkZ();
+            for (int dx = -MOB_SPAWN_CHUNK_RADIUS; dx <= MOB_SPAWN_CHUNK_RADIUS; dx++) {
+                for (int dz = -MOB_SPAWN_CHUNK_RADIUS; dz <= MOB_SPAWN_CHUNK_RADIUS; dz++) {
+                    final int cx = pcx + dx;
+                    final int cz = pcz + dz;
+                    if (!visited.add(chunkHash(cx, cz))) continue;
+                    final IChunk chunk = getChunkIfLoaded(cx, cz);
+                    if (chunk != null) chunk.doMobSpawning();
+                }
+            }
+        }
+    }
+
+    private int countDespawnableEntities() {
+        int count = 0;
+        for (Entity entity : this.entities.values()) {
+            if (entity.despawnable) count++;
+        }
+        return count;
     }
 
     private void checkWeather() {
@@ -2413,10 +2455,11 @@ public class Level implements Metadatable {
         }
 
         try {
-            Queue<Long> lightPropagationQueue = new ConcurrentLinkedQueue<>();
-            Queue<Object[]> lightRemovalQueue = new ConcurrentLinkedQueue<>();
-            Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
-            Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
+            LongArrayFIFOQueue lightPropagationQueue = new LongArrayFIFOQueue();
+            LongArrayFIFOQueue lightRemovalQueue = new LongArrayFIFOQueue();
+            IntArrayFIFOQueue lightRemovalLevel = new IntArrayFIFOQueue();
+            LongOpenHashSet visited = new LongOpenHashSet();
+            LongOpenHashSet removalVisited = new LongOpenHashSet();
 
             var iter = pendingBlockLight.long2ObjectEntrySet().iterator();
             while (iter.hasNext()) {
@@ -2441,16 +2484,17 @@ public class Level implements Metadatable {
                         int lcx = x & 0xF;
                         int lcz = z & 0xF;
                         int oldLevel = chunk.getBlockLight(lcx, y, lcz);
-                        int newLevel = Registries.BLOCK.get(chunk.getBlockState(lcx, y, lcz), x, y, z, this).getLightLevel();
+                        int newLevel = BlockLightProperties.lightLevel(BlockLightProperties.packed(chunk.getBlockState(lcx, y, lcz)));
                         if (oldLevel != newLevel) {
                             this.setBlockLightAt(x, y, z, newLevel);
                             long blockPosHash = Hash.hashBlock(x, y, z);
                             if (newLevel < oldLevel) {
-                                removalVisited.put(blockPosHash, changeBlocksPresent);
-                                lightRemovalQueue.add(new Object[]{blockPosHash, oldLevel});
+                                removalVisited.add(blockPosHash);
+                                lightRemovalQueue.enqueue(blockPosHash);
+                                lightRemovalLevel.enqueue(oldLevel);
                             } else {
-                                visited.put(blockPosHash, changeBlocksPresent);
-                                lightPropagationQueue.add(blockPosHash);
+                                visited.add(blockPosHash);
+                                lightPropagationQueue.enqueue(blockPosHash);
                             }
                         }
                     }
@@ -2458,29 +2502,27 @@ public class Level implements Metadatable {
             }
 
             while (!lightRemovalQueue.isEmpty()) {
-                Object[] val = lightRemovalQueue.poll();
-                long node = (long) val[0];
+                long node = lightRemovalQueue.dequeueLong();
+                int lightLevel = lightRemovalLevel.dequeueInt();
                 int x = Hash.hashBlockX(node);
                 int y = Hash.hashBlockY(node);
                 int z = Hash.hashBlockZ(node);
 
-                int lightLevel = (int) val[1];
-
-                this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
-                this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x - 1, y, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x + 1, y, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y - 1, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y + 1, z, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y, z - 1, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
+                this.computeRemoveBlockLight(x, y, z + 1, lightLevel, lightRemovalQueue, lightRemovalLevel, lightPropagationQueue, removalVisited, visited);
             }
 
             while (!lightPropagationQueue.isEmpty()) {
-                long node = lightPropagationQueue.poll();
+                long node = lightPropagationQueue.dequeueLong();
 
                 int x = Hash.hashBlockX(node);
                 int y = Hash.hashBlockY(node);
                 int z = Hash.hashBlockZ(node);
-                int lightLevel = this.getBlockLightAt(x, y, z) - getBlock(x, y, z).getLightFilter();
+                int lightLevel = this.getBlockLightAt(x, y, z) - BlockLightProperties.lightFilter(BlockLightProperties.packed(getBlockStateAt(x, y, z)));
 
                 if (lightLevel >= 1) {
                     this.computeSpreadBlockLight(x - 1, y, z, lightLevel, lightPropagationQueue, visited);
@@ -2497,38 +2539,37 @@ public class Level implements Metadatable {
         }
     }
 
-    private void computeRemoveBlockLight(int x, int y, int z, int currentLight, Queue<Object[]> queue,
-                                         Queue<Long> spreadQueue, Map<Long, Object> visited, Map<Long, Object> spreadVisited) {
+    private void computeRemoveBlockLight(int x, int y, int z, int currentLight, LongArrayFIFOQueue queue,
+                                         IntArrayFIFOQueue levelQueue, LongArrayFIFOQueue spreadQueue,
+                                         LongOpenHashSet visited, LongOpenHashSet spreadVisited) {
         int current = this.getBlockLightAt(x, y, z);
         long index = Hash.hashBlock(x, y, z);
         if (current != 0 && current < currentLight) {
             this.setBlockLightAt(x, y, z, 0);
             if (current > 1) {
-                if (!visited.containsKey(index)) {
-                    visited.put(index, changeBlocksPresent);
-                    queue.add(new Object[]{Hash.hashBlock(x, y, z), current});
+                if (visited.add(index)) {
+                    queue.enqueue(index);
+                    levelQueue.enqueue(current);
                 }
             }
         } else if (current >= currentLight) {
-            if (!spreadVisited.containsKey(index)) {
-                spreadVisited.put(index, changeBlocksPresent);
-                spreadQueue.add(Hash.hashBlock(x, y, z));
+            if (spreadVisited.add(index)) {
+                spreadQueue.enqueue(index);
             }
         }
     }
 
-    private void computeSpreadBlockLight(int x, int y, int z, int currentLight, Queue<Long> queue,
-                                         Map<Long, Object> visited) {
+    private void computeSpreadBlockLight(int x, int y, int z, int currentLight, LongArrayFIFOQueue queue,
+                                         LongOpenHashSet visited) {
         int current = this.getBlockLightAt(x, y, z);
         long index = Hash.hashBlock(x, y, z);
 
         if (current < currentLight - 1) {
             this.setBlockLightAt(x, y, z, currentLight);
 
-            if (!visited.containsKey(index)) {
-                visited.put(index, changeBlocksPresent);
+            if (visited.add(index)) {
                 if (currentLight > 1) {
-                    queue.add(Hash.hashBlock(x, y, z));
+                    queue.enqueue(index);
                 }
             }
         }
@@ -4645,7 +4686,10 @@ public class Level implements Metadatable {
                         x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("generateChunk guard triggered"));
                 return;
             }
-            this.generator.asyncGenerate(chunk, (c) -> chunkGenerationQueue.remove(c.getChunk().getIndex()));//async
+            this.generator.asyncGenerate(chunk, (c) -> {
+                GENERATED_CHUNK_COUNT.incrementAndGet();
+                chunkGenerationQueue.remove(c.getChunk().getIndex());
+            });
         }
     }
 
@@ -4662,6 +4706,7 @@ public class Level implements Metadatable {
                 return;
             }
             this.generator.syncGenerate(chunk);
+            GENERATED_CHUNK_COUNT.incrementAndGet();
             chunkGenerationQueue.remove(index);
         }
         while (isChunkGenerating(x, z));

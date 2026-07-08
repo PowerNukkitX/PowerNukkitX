@@ -65,6 +65,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
@@ -92,6 +93,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Set<String> KEYSET = new HashSet<>();
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
+    private static final Int2ObjectOpenHashMap<FastConstructor<? extends Block>> CACHE_CONSTRUCTORS_BY_HASH = new Int2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
     private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
@@ -1348,7 +1350,10 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                 } else {
                     KEYSET.add(key);
                     PROPERTIES.put(key, blockProperties);
-                    blockProperties.getSpecialValueMap().values().forEach(Registries.BLOCKSTATE::registerInternal);
+                    blockProperties.getSpecialValueMap().values().forEach(state -> {
+                        Registries.BLOCKSTATE.registerInternal(state);
+                        CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), c);
+                    });
                 }
             } else {
                 throw new RegisterException("There block: %s must define a field `public static final BlockProperties PROPERTIES` in this class!".formatted(key));
@@ -1426,7 +1431,10 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                     }
                     KEYSET.add(key);
                     PROPERTIES.put(key, blockProperties);
-                    blockProperties.getSpecialValueMap().values().forEach(Registries.BLOCKSTATE::registerInternal);
+                    blockProperties.getSpecialValueMap().values().forEach(state -> {
+                        Registries.BLOCKSTATE.registerInternal(state);
+                        CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), c);
+                    });
                 } else {
                     throw new RegisterException("Register Error: Must implement the CustomBlock interface!");
                 }
@@ -1453,6 +1461,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         isLoad.set(false);
         KEYSET.clear();
         CACHE_CONSTRUCTORS.clear();
+        CACHE_CONSTRUCTORS_BY_HASH.clear();
         PROPERTIES.clear();
         CUSTOM_BLOCK_DEFINITIONS.clear();
         init();
@@ -1521,11 +1530,24 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
+    /**
+     * Resolve the {@link FastConstructor} for a block state, preferring the int-keyed
+     * {@link #CACHE_CONSTRUCTORS_BY_HASH} (no String hashing) and falling back to the String-keyed map for
+     * dynamically-created states (e.g. unknown blocks) that were never registered.
+     */
+    private static FastConstructor<? extends Block> constructorFor(BlockState blockState) {
+        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS_BY_HASH.get(blockState.blockStateHash());
+        if (constructor == null) {
+            constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
+        }
+        return constructor;
+    }
+
     public Block get(BlockState blockState) {
         if (blockState == null)
             return null;
 
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
+        FastConstructor<? extends Block> constructor = constructorFor(blockState);
 
         if (constructor == null)
             return null;
@@ -1538,7 +1560,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(BlockState blockState, int x, int y, int z) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
+        FastConstructor<? extends Block> constructor = constructorFor(blockState);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke(blockState);
@@ -1552,7 +1574,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(BlockState blockState, int x, int y, int z, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
+        FastConstructor<? extends Block> constructor = constructorFor(blockState);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke(blockState);
@@ -1567,7 +1589,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
+        FastConstructor<? extends Block> constructor = constructorFor(blockState);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke(blockState);

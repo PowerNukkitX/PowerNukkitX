@@ -37,8 +37,11 @@ public class NormalSurfaceDataStage extends GenerateStage {
                     BiomeDefinitionChunkGenData chunkGenData = biome.getChunkGenData();
                     if (chunkGenData != null) {
                         BiomeSurfaceBuilderData surfaceBuilderData = chunkGenData.getSurfaceBuilderData();
-                        BiomeSurfaceMaterialData surfaceMaterialData = surfaceBuilderData.getSurfaceMaterial();
-                        if (surfaceMaterialData != null) {
+                        BiomeSurfaceMaterialData surfaceMaterialData = surfaceBuilderData == null ? null : surfaceBuilderData.getSurfaceMaterial();
+                        if (surfaceMaterialData != null
+                                && surfaceMaterialData.getTopBlock() != null
+                                && surfaceMaterialData.getMidBlock() != null
+                                && surfaceMaterialData.getSeaFloorBlock() != null) {
                             int topBlock = surfaceMaterialData.getTopBlock().getRuntimeId();
                             int midBlock = surfaceMaterialData.getMidBlock().getRuntimeId();
                             int seaFloorBlock = surfaceMaterialData.getSeaFloorBlock().getRuntimeId();
