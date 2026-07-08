@@ -76,8 +76,20 @@ public record ChunkSection(byte y,
         return result;
     }
 
+    private static final Integer[] BIOME_ID_BOX = new Integer[1024];
+
+    static {
+        for (int i = 0; i < BIOME_ID_BOX.length; i++) {
+            BIOME_ID_BOX[i] = i;
+        }
+    }
+
+    static Integer boxBiomeId(int biomeId) {
+        return biomeId >= 0 && biomeId < BIOME_ID_BOX.length ? BIOME_ID_BOX[biomeId] : Integer.valueOf(biomeId);
+    }
+
     public void setBiomeId(int x, int y, int z, int biomeId) {
-        biomes.set(index(x, y, z), biomeId);
+        biomes.set(index(x, y, z), boxBiomeId(biomeId));
     }
 
     public int getBiomeId(int x, int y, int z) {

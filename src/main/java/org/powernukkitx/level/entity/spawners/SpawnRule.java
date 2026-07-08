@@ -36,7 +36,12 @@ public abstract class SpawnRule {
     }
 
     public boolean evaluate(Block block) {
-        return conditions.stream().allMatch(condition -> condition.evaluate(block));
+        for (Condition condition : conditions) {
+            if (!condition.evaluate(block)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

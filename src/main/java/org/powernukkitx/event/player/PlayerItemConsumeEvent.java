@@ -16,6 +16,7 @@ public class PlayerItemConsumeEvent extends PlayerEvent implements Cancellable {
     }
 
     private final Item item;
+    private boolean bypassInteract;
 
     public PlayerItemConsumeEvent(Player player, Item item) {
         this.player = player;
@@ -24,5 +25,13 @@ public class PlayerItemConsumeEvent extends PlayerEvent implements Cancellable {
 
     public Item getItem() {
         return this.item.clone();
+    }
+
+    public boolean isBypassInteract() {
+        return this.bypassInteract;
+    }
+
+    public void setBypassInteract(boolean bypassInteract) {
+        this.bypassInteract = bypassInteract;
     }
 }

@@ -112,6 +112,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 log.error("Can't find trade recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
             }
+            if (action.getNumberOfRequestedCrafts() < 1) {
+                log.error("Invalid number of requested crafts {}", action.getNumberOfRequestedCrafts());
+                return context.error();
+            }
             Item first = inventory.getUnclonedItem(0);
             Item second = inventory.getUnclonedItem(1);
             Item output = ItemHelper.read(tradeRecipe.getCompound("sell"));
@@ -137,6 +141,8 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 } else {
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first, reductionA)) return context.error();
                     if (checkTrade(tradeRecipe.getCompound("buyB"), second, reductionB)) return context.error();
+                    if (tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses"))
+                        return context.error();
                     player.getCreativeOutputInventory().setItem(output);
                 }
             } else if (ca) {
