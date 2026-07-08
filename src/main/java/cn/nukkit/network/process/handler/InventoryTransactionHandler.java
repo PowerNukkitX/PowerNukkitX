@@ -13,6 +13,7 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.player.FoodEatEvent;
 import cn.nukkit.event.player.PlayerDropItemEvent;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
@@ -355,10 +356,19 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 } else {
                     item = serverItemInHand;
                 }
+                FoodEatEvent foodEatEvent = null;
+                if (item.isEdible()) {
+                    foodEatEvent = new FoodEatEvent(player, item.clone());
+                    player.getServer().getPluginManager().callEvent(foodEatEvent);
+                }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 playerHandle.setInteract();
-                if (interactEvent.isCancelled()) {
+                if (foodEatEvent != null && foodEatEvent.isCancelled()) {
+                    player.getInventory().sendSlot(transaction.getSlot(), player);
+                    return;
+                }
+                if (interactEvent.isCancelled() && (foodEatEvent == null || !foodEatEvent.isBypassInteract())) {
                     if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
                         player.getInventory().sendArmorContents(player);
                     }
