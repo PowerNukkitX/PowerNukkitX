@@ -13,11 +13,11 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.player.FoodEatEvent;
 import cn.nukkit.event.player.PlayerDropItemEvent;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
+import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -356,19 +356,19 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 } else {
                     item = serverItemInHand;
                 }
-                FoodEatEvent foodEatEvent = null;
+                PlayerItemConsumeEvent consumeEvent = null;
                 if (item.isEdible()) {
-                    foodEatEvent = new FoodEatEvent(player, item.clone());
-                    player.getServer().getPluginManager().callEvent(foodEatEvent);
+                    consumeEvent = new PlayerItemConsumeEvent(player, item.clone());
+                    player.getServer().getPluginManager().callEvent(consumeEvent);
                 }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 playerHandle.setInteract();
-                if (foodEatEvent != null && foodEatEvent.isCancelled()) {
+                if (consumeEvent != null && consumeEvent.isCancelled()) {
                     player.getInventory().sendSlot(transaction.getSlot(), player);
                     return;
                 }
-                if (interactEvent.isCancelled() && (foodEatEvent == null || !foodEatEvent.isBypassInteract())) {
+                if (interactEvent.isCancelled() && (consumeEvent == null || !consumeEvent.isBypassInteract())) {
                     if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
                         player.getInventory().sendArmorContents(player);
                     }
