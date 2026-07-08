@@ -2,6 +2,8 @@ package cn.nukkit.inventory.request;
 
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.InputInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.RecipeType;
@@ -28,13 +30,55 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
     @Override
     public ActionResponse handle(CraftResultsDeprecatedAction action, Player player, ItemStackRequestContext context) {
         if (context.has(RECIPE_DATA_KEY) && ((Recipe) context.get(RECIPE_DATA_KEY)).getType() == RecipeType.MULTI) {
-            var createdOutput = player.getCreativeOutputInventory();
+            if (action.getResultItems().length == 0) {
+                log.warn("Multi recipe result is missing!");
+                return context.error();
+            }
             Item resultItem = Item.fromNetwork(action.getResultItems()[0]);
+            if (resultItem.isNull() || resultItem.getCount() <= 0 || resultItem.getCount() > resultItem.getMaxStackSize()) {
+                log.warn("Invalid multi recipe result {}!", resultItem);
+                return context.error();
+            }
+            if (!validateResultAgainstInput(player, resultItem)) {
+                return context.error();
+            }
+            var createdOutput = player.getCreativeOutputInventory();
             resultItem.autoAssignStackNetworkId();
             createdOutput.setItem(0, resultItem, false);
             return null;
         }
         context.put(NO_RESPONSE_DESTROY_KEY, true);
         return null;
+    }
+
+    protected boolean validateResultAgainstInput(Player player, Item resultItem) {
+        if (resultItem.getId().equals(Item.FIREWORK_ROCKET) || resultItem.getId().equals(Item.FIREWORK_STAR)) {
+            return true;
+        }
+        Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
+        InputInventory craft;
+        if (inventory instanceof InputInventory input) {
+            craft = input;
+        } else {
+            craft = player.getCraftingGrid();
+        }
+        int matchingInputCount = 0;
+        int totalInputCount = 0;
+        for (Item ingredient : craft.getInput().getFlatItems()) {
+            if (ingredient.isNull()) continue;
+            totalInputCount += ingredient.getCount();
+            if (ingredient.getId().equals(resultItem.getId())) {
+                matchingInputCount += ingredient.getCount();
+            }
+        }
+        if (matchingInputCount == 0) {
+            log.warn("Multi recipe result {} does not match any crafting input!", resultItem);
+            return false;
+        }
+        if (resultItem.getCount() > totalInputCount) {
+            log.warn("Multi recipe result count {} exceeds crafting input count {}!", resultItem.getCount(), totalInputCount);
+            return false;
+        }
+        return true;
     }
 }
