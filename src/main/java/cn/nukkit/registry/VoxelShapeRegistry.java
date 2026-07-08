@@ -123,6 +123,7 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
         cells.setZSize(resZ);
         cells.getStorage().addAll(bitmask);
         final VoxelShapes.SerializableVoxelShape shape = new VoxelShapes.SerializableVoxelShape();
+        shape.setCells(cells);
         shape.getXCoordinates().addAll(xCoords);
         shape.getYCoordinates().addAll(yCoords);
         shape.getZCoordinates().addAll(zCoords);

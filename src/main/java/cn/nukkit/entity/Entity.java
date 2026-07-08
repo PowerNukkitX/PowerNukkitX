@@ -1941,8 +1941,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
 
         int tickDiff = currentTick - this.lastUpdate;
-        if (tickDiff <= 0) {
+        if (tickDiff == 0) {
             return false;
+        }
+        if (tickDiff < 0) {
+            // Level threads have independent tick counters; a stale tick from the previous level
+            // after a cross-level teleport would otherwise stall this entity permanently.
+            tickDiff = 1;
         }
         this.lastUpdate = currentTick;
 

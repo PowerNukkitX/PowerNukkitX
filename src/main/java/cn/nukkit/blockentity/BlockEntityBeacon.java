@@ -261,7 +261,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
         return true;
     }
 
-    private static boolean isPrimaryAllowed(int primary, int powerLevel) {
+    public static boolean isPrimaryAllowed(int primary, int powerLevel) {
         return ((primary == EffectType.SPEED.id() || primary == EffectType.HASTE.id()) && powerLevel >= 1) ||
                 ((primary == EffectType.RESISTANCE.id() || primary == EffectType.JUMP_BOOST.id()) && powerLevel >= 2) ||
                 (primary == EffectType.STRENGTH.id() && powerLevel >= 3);

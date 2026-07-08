@@ -135,13 +135,12 @@ public class ItemFilledMap extends Item {
         final List<Integer> pixels = new IntArrayList();
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                pixels.add((int) Utils.toABGR(this.image.getRGB(x, y)));
+                pixels.add((int) Utils.toABGR(this.image.getRGB(y, x)));
             }
         }
         packet.setPixels(pixels.stream().mapToInt(Integer::intValue).toArray());
 
         player.sendPacketImmediately(packet);
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.sendPacketImmediately(packet), 20);
     }
 
     public boolean trySendImage(Player p) {
