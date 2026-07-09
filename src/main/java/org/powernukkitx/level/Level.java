@@ -608,7 +608,7 @@ public class Level implements Metadatable {
         subTickGameLoop.setRunning(true);
         this.subTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
             try {
-                if (this.players.isEmpty() && !this.hasTickingAreas()) return;
+                if (this.players.isEmpty() && !this.hasTickingAreas() && this.chunkSendQueue.isEmpty()) return;
                 subTickGameLoop.tick();
             } catch (Throwable t) {
                 log.error("Error in sub-tick for level {}", this.getName(), t);
