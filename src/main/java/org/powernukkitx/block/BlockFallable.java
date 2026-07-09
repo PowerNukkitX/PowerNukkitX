@@ -22,6 +22,9 @@ public abstract class BlockFallable extends BlockSolid {
 
     @Override
     public int onUpdate(int type) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableBlockGravity()) {
+            return 0;
+        }
         Block down = this.down();
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if ((down.isAir() || down instanceof BlockFire || down instanceof BlockLiquid ||

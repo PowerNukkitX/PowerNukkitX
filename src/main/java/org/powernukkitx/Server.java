@@ -474,11 +474,28 @@ public class Server {
             NukkitMetrics.startNow(this);
         }
 
+        final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
+        final boolean recipesEnabled;
+        {
+            boolean recipes = settings.gameplaySettings().enableRecipes();
+            if (recipes && !creativeInventoryEnabled) {
+                log.warn("gameplay-settings: enableRecipes was forced to false because enableCreativeInventory is false (the recipe registry depends on the creative registry)");
+                recipes = false;
+            }
+            recipesEnabled = recipes;
+        }
+
+        final boolean useRegistryCache = settings.performanceSettings().registryCacheEnabled()
+                && creativeInventoryEnabled && recipesEnabled;
+        if (settings.performanceSettings().registryCacheEnabled() && !useRegistryCache) {
+            log.info("Registry cache is bypassed because the creative inventory or recipe registry is disabled by gameplay settings");
+        }
+
         final RegistryCache registryCache;
         Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
         {
             RegistryCache cache = null;
-            if (settings.performanceSettings().registryCacheEnabled()) {
+            if (useRegistryCache) {
                 cache = RegistryCache.tryLoad(registryCachePath);
             }
             registryCache = cache;
@@ -515,23 +532,27 @@ public class Server {
                             : Registries.BLOCKSTATE::init,
                     computeThreadPool);
             CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
-            CompletableFuture<Void> creativeF = CompletableFuture.allOf(itemF, blockStateF)
-                    .thenRunAsync(
+            CompletableFuture<Void> creativeF = creativeInventoryEnabled
+                    ? CompletableFuture.allOf(itemF, blockStateF)
+                            .thenRunAsync(
+                                    registryCache != null
+                                            ? () -> registryCache.restoreCreative(Registries.CREATIVE)
+                                            : Registries.CREATIVE::init,
+                                    computeThreadPool)
+                    : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, computeThreadPool);
+            CompletableFuture<Void> recipeF = recipesEnabled
+                    ? creativeF.thenRunAsync(
                             registryCache != null
-                                    ? () -> registryCache.restoreCreative(Registries.CREATIVE)
-                                    : Registries.CREATIVE::init,
-                            computeThreadPool);
-            CompletableFuture<Void> recipeF = creativeF.thenRunAsync(
-                    registryCache != null
-                            ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
-                            : Registries.RECIPE::init,
-                    computeThreadPool);
+                                    ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
+                                    : Registries.RECIPE::init,
+                            computeThreadPool)
+                    : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
 
             CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
                     fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
                     creativeF, recipeF, voxelF, disconnectF).join();
 
-            if (settings.performanceSettings().registryCacheEnabled() && registryCache == null) {
+            if (useRegistryCache && registryCache == null) {
                 RegistryCache.save(registryCachePath);
             }
 

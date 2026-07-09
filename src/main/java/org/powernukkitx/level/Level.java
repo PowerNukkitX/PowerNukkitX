@@ -11,6 +11,7 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSetting
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
+import org.powernukkitx.config.category.GameplaySettings;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityAsyncPrepare;
 import org.powernukkitx.entity.EntityID;
@@ -387,6 +388,8 @@ public class Level implements Metadatable {
     ServerScheduler scheduler;
     /// antiXray system
     private AntiXraySystem antiXraySystem;
+    private GameplaySettings gameplaySettings;
+
     /// weather system
     private boolean raining = false;
     private int rainTime = 0;
@@ -401,6 +404,7 @@ public class Level implements Metadatable {
         this.dimensionCount = dimSum;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
+        this.gameplaySettings = server.getSettings().gameplaySettings();
         this.autoSave = server.getAutoSave();
         this.generatorClass = Registries.GENERATOR.get(generatorConfig.name());
         if (generatorClass == null) {
@@ -1163,7 +1167,7 @@ public class Level implements Metadatable {
 
             this.levelCurrentTick++;
 
-            if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            if (gameplaySettings.enableEntitySpawning() && getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
                 if (countDespawnableEntities() < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
                     doMobSpawningNearPlayers();
                 }
@@ -1333,6 +1337,15 @@ public class Level implements Metadatable {
     }
 
     private void checkWeather() {
+        if (!gameplaySettings.enableWeather()) {
+            if (isRaining()) {
+                setRaining(false);
+            }
+            if (isThundering()) {
+                setThundering(false);
+            }
+            return;
+        }
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
             for (String key : playerWeatherShowMap.keySet()) {
                 int intValue = playerWeatherShowMap.getInt(key);
@@ -1689,7 +1702,8 @@ public class Level implements Metadatable {
 
                     chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
 
-                    int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
+                    int tickSpeed = gameplaySettings.enableBlockRandomTicking()
+                            ? gameRules.getInteger(GameRule.RANDOM_TICK_SPEED) : 0;
                     if (tickSpeed <= 0) {
                         continue;
                     }
@@ -2448,6 +2462,12 @@ public class Level implements Metadatable {
     }
 
     public void updateBlockLight() {
+        if (!gameplaySettings.enableBlockLightUpdates()) {
+            synchronized (this.blockLightQueue) {
+                this.blockLightQueue.clear();
+            }
+            return;
+        }
         Long2ObjectMap<IntOpenHashSet> pendingBlockLight = new Long2ObjectOpenHashMap<>(8);
         synchronized (this.blockLightQueue) {
             pendingBlockLight.putAll(this.blockLightQueue);
@@ -2756,6 +2776,9 @@ public class Level implements Metadatable {
     }
 
     public void dropItem(Vector3 source, Item item, Vector3 motion, boolean dropAround, int delay) {
+        if (!gameplaySettings.enableItemDrops()) {
+            return;
+        }
         if (motion == null) {
             if (dropAround) {
                 float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
@@ -2798,6 +2821,9 @@ public class Level implements Metadatable {
     }
 
     public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
+        if (!gameplaySettings.enableItemDrops()) {
+            return null;
+        }
         if (item.isNull()) {
             return null;
         }
@@ -3020,6 +3046,9 @@ public class Level implements Metadatable {
     }
 
     public List<EntityXpOrb> dropExpOrbAndGetEntities(Vector3 source, int exp, Vector3 motion, int delay) {
+        if (!gameplaySettings.enableXpOrbs()) {
+            return Collections.emptyList();
+        }
         Random rand = ThreadLocalRandom.current();
         List<Integer> drops = EntityXpOrb.splitIntoOrbSizes(exp);
         List<EntityXpOrb> entities = new ArrayList<>(drops.size());

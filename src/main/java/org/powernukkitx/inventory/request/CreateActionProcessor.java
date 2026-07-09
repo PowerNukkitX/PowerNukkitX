@@ -32,6 +32,10 @@ public class CreateActionProcessor implements ItemStackRequestActionProcessor<Cr
             return context.error();
         }
         Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(((CraftRecipeAction) itemStackRequestAction.get()).getRecipeNetworkId());
+        if (recipe == null) {
+            log.warn("Recipe with network id {} not found! Context: {}", ((CraftRecipeAction) itemStackRequestAction.get()).getRecipeNetworkId(), context);
+            return context.error();
+        }
         var output = recipe.getResults().get(action.getSlot());
         var createdOutput = player.getCreativeOutputInventory();
         createdOutput.setItem(0, output, false);

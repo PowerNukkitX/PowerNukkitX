@@ -32,6 +32,9 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
     @Override
     public ActionResponse handle(AutoCraftRecipeAction action, Player player, ItemStackRequestContext context) {
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
+        if (recipe == null) {
+            return context.error();
+        }
 
         Item[] eventItems = action.getIngredients().stream().map(ItemDescriptorWithCount::toItem).map(Item::fromNetwork).toArray(Item[]::new);
 

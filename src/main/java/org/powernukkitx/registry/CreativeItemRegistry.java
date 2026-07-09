@@ -46,6 +46,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
     static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static volatile boolean enabled = true;
 
     static final ObjectLinkedOpenHashSet<CraftingCatalogGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
     public static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
@@ -360,7 +361,31 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         isLoad.set(false);
         MAP.clear();
         INTERNAL_DIFF_ITEM.clear();
-        init();
+        if (enabled) {
+            init();
+        } else {
+            initDisabled();
+        }
+    }
+
+    /**
+     * Whether the creative inventory registry is enabled. When disabled via
+     * {@code gameplay-settings.enable-creative-inventory}, the registry is empty
+     * and clients receive an empty creative inventory.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Initializes the registry in disabled state: no creative items or groups are
+     * loaded, so clients receive an empty creative inventory. All lookups return
+     * {@code null}/empty results.
+     */
+    public void initDisabled() {
+        if (isLoad.getAndSet(true)) return;
+        enabled = false;
+        log.info("Creative inventory registry disabled by gameplay settings; clients will receive an empty creative inventory");
     }
 
     public int resolveGroupIndexFromBlockDefinition(String identifier, CompoundTag nbt) {
