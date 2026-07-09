@@ -61,8 +61,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InventoryTransactionHandler implements PacketHandler<InventoryTransactionPacket> {
 
-    private final java.util.Map<Long, Integer> lastEntityInteractTick = new java.util.HashMap<>();
-
     @Override
     public void handle(InventoryTransactionPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
@@ -166,7 +164,6 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             if (playerInteractEntityEvent.isCancelled()) {
                 return;
             }
-            lastEntityInteractTick.put(player.getId(), player.getLevel().getTick());
             if (!(target instanceof EntityArmorStand)) {
                 player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target, target.getLocation(), VibrationType.ENTITY_INTERACT));
             } else {
@@ -331,10 +328,6 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC), 1);
             }
             case USE -> {
-                Integer lastTick = lastEntityInteractTick.get(player.getId());
-                int now = player.getLevel().getTick();
-                if (lastTick != null && (now - lastTick) <= 1) return;
-
                 Item item;
                 Item useItemDataItem = Item.fromNetwork(transaction.getItem());
                 Item serverItemInHand = player.getInventory().getItemInMainHand();
