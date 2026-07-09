@@ -59,7 +59,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         super(name, "commands.debug.description");
         this.setPermission("nukkit.command.debug");
         this.commandParameters.clear();
-        //生物AI debug模式开关
+        // Toggle for AI debug mode
         this.commandParameters.put("entity", new CommandParameter[]{
                 CommandParameter.newEnum("entity", new String[]{"entity"}),
                 CommandParameter.newEnum("option", Arrays.stream(EntityAI.DebugOption.values()).map(option -> option.name().toLowerCase(Locale.ENGLISH)).toList().toArray(new String[0])),
