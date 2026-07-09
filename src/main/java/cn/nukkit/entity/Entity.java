@@ -171,6 +171,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public double motionX;
     public double motionY;
     public double motionZ;
+    protected Float gravity;
     public int deadTicks = 0;
     /**
      * temporalVector，its value has no meaning
@@ -510,7 +511,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
-    protected float getGravity() {
+    public float getGravity() {
+        return this.gravity != null ? this.gravity : this.getDefaultGravity();
+    }
+
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
+    }
+
+    public void resetGravity() {
+        this.gravity = null;
+    }
+
+    protected float getDefaultGravity() {
         return 0;
     }
 

@@ -107,7 +107,7 @@ public class EntityBoat extends EntityVehicle {
     @Override public float getHeight() { return 0.5f; }
     @Override public float getWidth()  { return 1.3f; }
     @Override protected float getDrag() { return 0.02f; }
-    @Override protected float getGravity() { return 0.04f; }
+    @Override protected float getDefaultGravity() { return 0.04f; }
     @Override public float getBaseOffset() { return 0.37f; }
 
 

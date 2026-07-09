@@ -84,7 +84,7 @@ public class EntityXpOrb extends Entity {
     }
 
     @Override
-    protected float getGravity() {
+    protected float getDefaultGravity() {
         return 0.04f;
     }
 

@@ -65,7 +65,7 @@ public class EntityEgg extends EntityProjectile implements ClimateVariant {
     }
 
     @Override
-    protected float getGravity() {
+    protected float getDefaultGravity() {
         return 0.03f;
     }
 
