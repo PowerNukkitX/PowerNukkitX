@@ -236,7 +236,7 @@ tasks.named<ShadowJar>("shadowJar") {
 
     manifest {
         attributes(
-            "Main-Class" to "cn.nukkit.JarStart",
+            "Main-Class" to "org.powernukkitx.JarStart",
             "Implementation-Version" to project.version,
             "Implementation-Title" to project.name,
             "Multi-Release" to "true"
