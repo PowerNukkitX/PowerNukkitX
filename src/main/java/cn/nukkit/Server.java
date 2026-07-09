@@ -145,7 +145,7 @@ import java.util.regex.Pattern;
 /**
  * Represents the main server singleton for PowerNukkitX.
  * <p>
- * This class is instantiated in {@link Nukkit} and can be accessed via
+ * This class is instantiated in {@link PowerNukkitX} and can be accessed via
  * {@link cn.nukkit.Server#getInstance()}.
  * The constructor performs various initialization tasks, including
  * configuration loading, thread and thread pool creation,
@@ -391,9 +391,9 @@ public class Server {
 
         org.apache.logging.log4j.Level targetLevel = org.apache.logging.log4j.Level
                 .getLevel(this.settings.debugSettings().level());
-        org.apache.logging.log4j.Level currentLevel = Nukkit.getLogLevel();
+        org.apache.logging.log4j.Level currentLevel = PowerNukkitX.getLogLevel();
         if (targetLevel != null && targetLevel.intLevel() > currentLevel.intLevel()) {
-            Nukkit.setLogLevel(targetLevel);
+            PowerNukkitX.setLogLevel(targetLevel);
         }
 
         if (!StartArgUtils.loadModules()) {
@@ -577,7 +577,7 @@ public class Server {
             System.exit(1);
         }
         this.resourcePackManager = new ResourcePackManager(
-                new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
+                new ZippedResourcePackLoader(new File(PowerNukkitX.DATA_PATH, "resource_packs")),
                 new JarPluginResourcePackLoader(new File(this.pluginPath)));
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
@@ -588,7 +588,7 @@ public class Server {
         try {
             log.debug("Loading position tracking service");
             this.positionTrackingService = new PositionTrackingService(
-                    new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
+                    new File(PowerNukkitX.DATA_PATH, "services/position_tracking_db"));
         } catch (IOException e) {
             log.error("Failed to start the Position Tracking DB service!", e);
         }
@@ -1001,7 +1001,7 @@ public class Server {
                 TextFormat.YELLOW + (this.getIp().isEmpty() ? "*" : this.getIp()),
                 TextFormat.YELLOW + String.valueOf(this.getPort())));
         log.info(this.getLanguage().tr("nukkit.server.startFinished",
-                String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
+                String.valueOf((double) (System.currentTimeMillis() - PowerNukkitX.START_TIME) / 1000)));
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
@@ -1287,7 +1287,7 @@ public class Server {
 
     // TODO: Fix title tick
     public void titleTick() {
-        if (!Nukkit.ANSI || !Nukkit.TITLE) {
+        if (!PowerNukkitX.ANSI || !PowerNukkitX.TITLE) {
             return;
         }
 
@@ -1300,7 +1300,7 @@ public class Server {
                 + " | " + this.getGitCommit()
                 + " | Online " + this.players.size() + "/" + this.getMaxPlayers()
                 + " | Memory " + usage;
-        if (!Nukkit.shortTitle) {
+        if (!PowerNukkitX.shortTitle) {
             title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
                     + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
         }
@@ -2343,19 +2343,19 @@ public class Server {
     }
 
     public String getNukkitVersion() {
-        return Nukkit.VERSION;
+        return PowerNukkitX.VERSION;
     }
 
     public String getBStatsNukkitVersion() {
-        return Nukkit.VERSION;
+        return PowerNukkitX.VERSION;
     }
 
     public String getGitCommit() {
-        return Nukkit.GIT_COMMIT;
+        return PowerNukkitX.GIT_COMMIT;
     }
 
     public String getCodename() {
-        return Nukkit.CODENAME;
+        return PowerNukkitX.CODENAME;
     }
 
     public String getVersion() {
@@ -2363,7 +2363,7 @@ public class Server {
     }
 
     public String getApiVersion() {
-        return Nukkit.API_VERSION;
+        return PowerNukkitX.API_VERSION;
     }
 
     // endregion

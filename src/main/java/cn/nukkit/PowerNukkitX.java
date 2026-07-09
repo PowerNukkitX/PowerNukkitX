@@ -35,23 +35,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /*
- * `_   _       _    _    _ _
- * | \ | |     | |  | |  (_) |
- * |  \| |_   _| | _| | ___| |_
- * | . ` | | | | |/ / |/ / | __|
- * | |\  | |_| |   <|   <| | |_
- * |_| \_|\__,_|_|\_\_|\_\_|\__|
+ * ______                      _   _       _    _    _ _  __   __
+ * | ___ \                    | \ | |     | |  | |  (_) | \ \ / /
+ * | |_/ /____      _____ _ __|  \| |_   _| | _| | ___| |_ \ V /
+ * |  __/ _ \ \ /\ / / _ \ '__| . ` | | | | |/ / |/ / | __|/   \
+ * | | | (_) \ V  V /  __/ |  | |\  | |_| |   <|   <| | |_/ /^\ \
+ * \_|  \___/ \_/\_/ \___|_|  \_| \_/\__,_|_|\_\_|\_\_|\__\/   \/
+ *
  */
 
 /**
- * The launcher class of Nukkit, including the {@code main} function.
+ * The launcher class of PNX, including the {@code main} function.
  *
  * @author MagicDroidX(code) @ Nukkit Project
  * @author 粉鞋大妈(javadoc) @ Nukkit Project
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Slf4j
-public class Nukkit {
+public class PowerNukkitX {
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
     public final static String CODENAME = dynamic("PowerNukkitX");
@@ -142,7 +143,7 @@ public class Nukkit {
         if (verbosity != null) {
             try {
                 Level level = Level.valueOf(verbosity);
-                Nukkit.setLogLevel(level);
+                PowerNukkitX.setLogLevel(level);
             } catch (Exception e) {
                 // ignore
             }
@@ -248,7 +249,7 @@ public class Nukkit {
 
     private static Properties getGitInfo() {
         try {
-            InputStream gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
+            InputStream gitFileStream = PowerNukkitX.class.getModule().getResourceAsStream("git.properties");
             if (gitFileStream == null) {
                 return null;
             }

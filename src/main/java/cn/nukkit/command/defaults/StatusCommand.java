@@ -1,6 +1,6 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Nukkit;
+import cn.nukkit.PowerNukkitX;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -206,7 +206,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
         if (simpleMode) {
 
-            long time = System.currentTimeMillis() - Nukkit.START_TIME;
+            long time = System.currentTimeMillis() - PowerNukkitX.START_TIME;
 
             sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
 
@@ -266,7 +266,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             {
                 sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "PNX Server Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
                 // runtime
-                long time = System.currentTimeMillis() - Nukkit.START_TIME;
+                long time = System.currentTimeMillis() - PowerNukkitX.START_TIME;
                 sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
                 // TPS
                 var tps = server.getTicksPerSecond();
