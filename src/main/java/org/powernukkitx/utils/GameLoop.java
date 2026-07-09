@@ -44,6 +44,7 @@ public final class GameLoop {
     @Getter
     private volatile int loopCountPerSec;
     private volatile long nanosPerTick;
+    private volatile Thread loopThread;
     private final float[] tickSummary = new float[20];
     private final float[] MSPTSummary = new float[20];
     @Getter
@@ -109,6 +110,46 @@ public final class GameLoop {
             long timeTakenToTick = System.nanoTime() - startTickTime;
             updateMSTP(timeTakenToTick, MSPTSummary);
             updateTPS(timeTakenToTick);
+        }
+    }
+
+    /**
+     * Runs {@link #startLoop()} on a new dedicated daemon thread owned by this GameLoop.
+     * A dedicated thread (rather than a scheduled executor) is required for tick periods
+     * below the OS timer granularity (~1 ms): the pacer must own the thread to combine
+     * parkNanos with a spin phase. One loop = one thread; calling twice is an error.
+     */
+    public synchronized Thread startThread(String name) {
+        Preconditions.checkState(loopThread == null, "GameLoop thread already started");
+        Thread thread = new Thread(() -> {
+            try {
+                startLoop();
+            } catch (Throwable t) {
+                log.error("GameLoop thread {} died", name, t);
+            }
+        }, name);
+        thread.setDaemon(true);
+        this.loopThread = thread;
+        thread.start();
+        return thread;
+    }
+
+    /**
+     * Whether the thread created by {@link #startThread} is still running.
+     */
+    public boolean isThreadAlive() {
+        Thread thread = this.loopThread;
+        return thread != null && thread.isAlive();
+    }
+
+    /**
+     * Interrupts the thread created by {@link #startThread}, waking it from its
+     * inter-tick wait so a stopped loop exits promptly. No-op if none was started.
+     */
+    public void interruptThread() {
+        Thread thread = this.loopThread;
+        if (thread != null) {
+            thread.interrupt();
         }
     }
 

@@ -381,7 +381,6 @@ public class Level implements Metadatable {
     private final Long2ObjectMap<IntOpenHashSet> blockLightQueue = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>(8));
     private final int dimensionCount;
     /// base tick system
-    private Thread baseTickThread;
     @Getter
     private final GameLoop baseTickGameLoop;
     /// sub tick system
@@ -630,15 +629,7 @@ public class Level implements Metadatable {
         if (getServer().isLevelThreadMode()) {
             // Dedicated thread instead of a scheduled executor: executor timers have
             // millisecond granularity and cannot pace tick periods below 1 ms
-            this.baseTickThread = new Thread(() -> {
-                try {
-                    baseTickGameLoop.startLoop();
-                } catch (Throwable t) {
-                    log.error("Base-tick loop for level {} died", this.getName(), t);
-                }
-            }, "Level Thread - " + this.getName());
-            this.baseTickThread.setDaemon(true);
-            this.baseTickThread.start();
+            baseTickGameLoop.startThread("Level Thread - " + this.getName());
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
@@ -686,10 +677,8 @@ public class Level implements Metadatable {
     public void close() {
         if (isThreadRunning()) {
             this.baseTickGameLoop.stop();
-            if (this.baseTickThread != null) {
-                // Wake the loop thread from its inter-tick wait so it can exit promptly
-                this.baseTickThread.interrupt();
-            }
+            // Wake the loop thread from its inter-tick wait so it can exit promptly
+            this.baseTickGameLoop.interruptThread();
             this.subTickGameLoop.stop();
             if (this.subTickTask != null) {
                 this.subTickTask.cancel(false);
@@ -4609,7 +4598,7 @@ public class Level implements Metadatable {
     }
 
     public boolean isThreadRunning() {
-        return (baseTickThread != null && baseTickThread.isAlive()) || (subTickTask != null && !subTickTask.isDone());
+        return baseTickGameLoop.isThreadAlive() || (subTickTask != null && !subTickTask.isDone());
     }
 
     public boolean hasTickingAreas() {
