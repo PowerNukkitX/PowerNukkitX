@@ -1047,10 +1047,10 @@ public class Server {
     }
 
     private void checkTickUpdates(int currentTick) {
-        if (getSettings().levelSettings().alwaysTickPlayers()) {
-            for (Player p : new ArrayList<>(this.players.values())) {
-                p.onUpdate(currentTick);
-            }
+        boolean tickPlayers = getSettings().levelSettings().alwaysTickPlayers();
+        for (Player player : new ArrayList<>(this.players.values())) {
+            if (tickPlayers) player.onUpdate(currentTick);
+            if (!player.spawned) player.checkNetwork();
         }
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
