@@ -214,6 +214,7 @@ public class Server {
      */
     public final ForkJoinPool computeThreadPool;
     private final ScheduledExecutorService levelTickExecutor;
+    private final boolean levelThreadMode;
     private SimpleCommandMap commandMap;
     private ResourcePackManager resourcePackManager;
     private ConsoleCommandSender consoleSender;
@@ -396,6 +397,7 @@ public class Server {
             levelWorkerThreads = Runtime.getRuntime().availableProcessors();
         }
         this.levelTickExecutor = new ScheduledThreadPoolExecutor(levelWorkerThreads, r -> new Thread(r, "Level Worker"));
+        this.levelThreadMode = this.settings.levelSettings().levelThread();
 
         levelArray = Level.EMPTY_ARRAY;
 
@@ -1059,7 +1061,7 @@ public class Server {
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
         //Do level ticks if level threading is disabled
-        if (!this.getSettings().levelSettings().levelThread()) {
+        if (!this.levelThreadMode) {
             for (Level level : this.levelArray) {
                 if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
                     continue;
@@ -3082,6 +3084,16 @@ public class Server {
 
     public ScheduledExecutorService getLevelTickExecutor() {
         return levelTickExecutor;
+    }
+
+    /**
+     * Whether levels tick on their own dedicated threads (true) or on the main server
+     * loop (false). Fixed at boot from {@code level-settings.levelThread} — runtime
+     * changes to the setting are deliberately ignored so both tick paths can never be
+     * active at once.
+     */
+    public boolean isLevelThreadMode() {
+        return levelThreadMode;
     }
 
     public ServerSettings getSettings() {

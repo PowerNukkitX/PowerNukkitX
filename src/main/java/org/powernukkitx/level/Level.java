@@ -627,7 +627,7 @@ public class Level implements Metadatable {
                 log.error("Error in sub-tick for level {}", this.getName(), t);
             }
         }, 0, 50, TimeUnit.MILLISECONDS);
-        if (getServer().getSettings().levelSettings().levelThread()) {
+        if (getServer().isLevelThreadMode()) {
             // Dedicated thread instead of a scheduled executor: executor timers have
             // millisecond granularity and cannot pace tick periods below 1 ms
             this.baseTickThread = new Thread(() -> {
@@ -4603,7 +4603,7 @@ public class Level implements Metadatable {
     }
 
     public boolean isTicked() {
-        if (getServer().getSettings().levelSettings().levelThread()) {
+        if (getServer().isLevelThreadMode()) {
             return baseTickGameLoop.isRunning();
         } else return this.server.getLevels().containsKey(this.levelId);
     }
@@ -5614,7 +5614,7 @@ public class Level implements Metadatable {
     }
 
     public int getTick() {
-        return getServer().getSettings().levelSettings().levelThread() ? this.getBaseTickGameLoop().getTick() : getServer().getTick();
+        return getServer().isLevelThreadMode() ? this.getBaseTickGameLoop().getTick() : getServer().getTick();
     }
 
     /**

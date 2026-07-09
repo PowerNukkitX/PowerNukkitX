@@ -574,7 +574,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 + " §7 p99: §f" + formatNanos(p99) + " §7 max: §f" + formatNanos(max));
         sender.sendMessage("§7  target: §f" + formatNanos(target) + "/tick (" + server.getBaseTps() + " TPS)"
                 + " §7 measured TPS: §f" + NukkitMath.round(server.getTicksPerSecond(), 2));
-        boolean levelThread = server.getSettings().levelSettings().levelThread();
+        boolean levelThread = server.isLevelThreadMode();
         for (Level level : server.getLevels().values()) {
             if (levelThread) {
                 sender.sendMessage("§7  level " + level.getName() + ": §f"
@@ -612,7 +612,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             Server server = sender.getServer();
             server.getSettings().performanceSettings().baseTps(value.get(1).get());
             int baseTps = server.getBaseTps();
-            if (server.getSettings().levelSettings().levelThread()) {
+            if (server.isLevelThreadMode()) {
                 for (Level level : server.getLevels().values()) {
                     level.getBaseTickGameLoop().setLoopCountPerSec(baseTps);
                 }
