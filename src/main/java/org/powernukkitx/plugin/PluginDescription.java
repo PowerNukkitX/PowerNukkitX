@@ -104,8 +104,8 @@ public class PluginDescription {
         this.main = (String) plugin.get("main");
         Object api = plugin.get("api");
         this.api = asStringListOrSingle(api, "api");
-        if (this.main.startsWith("org.powernukkitx.") && !this.main.equals("org.powernukkitx.plugin.InternalPlugin") && !name.equals("PowerNukkit")) {
-            throw new PluginException("Invalid PluginDescription main, cannot start within the org.powernukkitx. package");
+        if (!this.main.equals("org.powernukkitx.plugin.InternalPlugin") && !name.equals("PowerNukkit") && PluginDescription.class.getClassLoader().getResource(this.main.replace('.', '/') + ".class") != null) {
+            throw new PluginException("Invalid PluginDescription main, cannot override existing server class " + this.main);
         }
 
         if (plugin.containsKey("commands")) {
