@@ -187,9 +187,20 @@ public class Server {
     private ServerScheduler scheduler;
     /**
      * A tick counter that records the number of ticks the server has passed.
+     * Long: at high tick rates an int overflows within hours (2^31 ticks ≈ 13 h at 45k TPS).
+     * Int-typed consumers (scheduler, onUpdate) receive a truncated view that wraps.
      */
-    private int tickCounter;
+    private long tickCounter;
     private long nextTick;
+    private long nextTickNanos;
+    private long lastTitleTickMillis;
+    private long lastQueryRegenMillis;
+    private long lastAutoSaveMillis;
+    /**
+     * Ring buffer of the most recent per-tick durations in nanoseconds, indexed by
+     * tickCounter. Used by /debug mspt for percentile statistics.
+     */
+    private final long[] tickDurationsNanos = new long[8192];
     private final float[] tickAverage = { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 };
     private final float[] useAverage = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     private float maxTick = 20;
@@ -203,6 +214,7 @@ public class Server {
      */
     public final ForkJoinPool computeThreadPool;
     private final ScheduledExecutorService levelTickExecutor;
+    private final boolean levelThreadMode;
     private SimpleCommandMap commandMap;
     private ResourcePackManager resourcePackManager;
     private ConsoleCommandSender consoleSender;
@@ -221,7 +233,6 @@ public class Server {
     private NetworkInterface network;
     private int serverAuthoritativeMovementMode = 0;
     private int defaultGamemode = Integer.MAX_VALUE;
-    private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
     private BaseLang baseLang;
     private LangCode baseLangCode;
@@ -386,6 +397,7 @@ public class Server {
             levelWorkerThreads = Runtime.getRuntime().availableProcessors();
         }
         this.levelTickExecutor = new ScheduledThreadPoolExecutor(levelWorkerThreads, r -> new Thread(r, "Level Worker"));
+        this.levelThreadMode = this.settings.levelSettings().levelThread();
 
         levelArray = Level.EMPTY_ARRAY;
 
@@ -1022,21 +1034,15 @@ public class Server {
         }, 60);
 
         this.nextTick = System.currentTimeMillis();
+        this.nextTickNanos = System.nanoTime();
         try {
             while (this.isRunning.get()) {
                 try {
                     this.tick();
 
-                    long next = this.nextTick;
-                    long current = System.currentTimeMillis();
-
-                    if (next - 0.1 > current) {
-                        long allocated = next - current - 1;
-                        if (allocated > 0) {
-                            // noinspection BusyWait
-                            Thread.sleep(allocated, 900000);
-                        }
-                    }
+                    long nanosPerTick = getNanosPerTick();
+                    GameLoop.waitUntilNanos(this.nextTickNanos,
+                            nanosPerTick < GameLoop.SPIN_ACTIVATION_NANOS ? GameLoop.SPIN_MARGIN_NANOS : 0L);
                 } catch (RuntimeException e) {
                     log.error("A RuntimeException happened while ticking the server", e);
                 }
@@ -1055,28 +1061,31 @@ public class Server {
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
         //Do level ticks if level threading is disabled
-        if (!this.getSettings().levelSettings().levelThread()) {
+        if (!this.levelThreadMode) {
             for (Level level : this.levelArray) {
                 if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
                     continue;
                 }
 
                 try {
-                    long levelTime = System.currentTimeMillis();
+                    long levelTimeNano = System.nanoTime();
                     // Ensures that the server won't try to tick a level without providers.
                     if (level.getProvider().getLevel() == null) {
                         log.warn("Tried to tick Level {} without a provider!", level.getName());
                         continue;
                     }
                     level.doTick(currentTick);
-                    int tickMs = (int) (System.currentTimeMillis() - levelTime);
+                    long tickNanos = System.nanoTime() - levelTimeNano;
+                    int tickMs = (int) (tickNanos / 1_000_000L);
                     level.tickRateTime = tickMs;
+                    level.tickRateTimeNanos = tickNanos;
                     if ((currentTick & 511) == 0) { // % 511
                         level.tickRateOptDelay = level.recalcTickOptDelay();
                     }
 
                     if (getSettings().levelSettings().autoTickRate()) {
-                        if (tickMs < getBaseMSPT() && level.getTickRate() > baseTickRate) {
+                        long nanosPerTick = getNanosPerTick();
+                        if (tickNanos < nanosPerTick && level.getTickRate() > baseTickRate) {
                             int r;
                             level.setTickRate(r = level.getTickRate() - 1);
                             if (r > baseTickRate) {
@@ -1084,13 +1093,13 @@ public class Server {
                             }
                             log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(),
                                     level.getTickRate());
-                        } else if (tickMs >= getBaseMSPT()) {
+                        } else if (tickNanos >= nanosPerTick) {
                             int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
                             if (level.getTickRate() == baseTickRate) {
-                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / getBaseMSPT())));
+                                level.setTickRate(Math.max(baseTickRate + 1, (int) Math.min(autoTickRateLimit, tickNanos / nanosPerTick)));
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
                                         NukkitMath.round(tickMs, 2), level.getTickRate());
-                            } else if ((tickMs / level.getTickRate()) >= getBaseMSPT()
+                            } else if ((tickNanos / level.getTickRate()) >= nanosPerTick
                                     && level.getTickRate() < autoTickRateLimit) {
                                 level.setTickRate(level.getTickRate() + 1);
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
@@ -1131,45 +1140,41 @@ public class Server {
     }
 
     public int getBaseTps() {
-        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 1000);
+        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 100_000);
     }
 
+    /**
+     * @deprecated millisecond resolution cannot represent tick periods above 1000 TPS;
+     * use {@link #getNanosPerTick()} instead. Floored at 1 ms for backwards compatibility.
+     */
+    @Deprecated
     public int getBaseMSPT() {
-        return 1000 / getBaseTps();
+        return (int) Math.max(1, getNanosPerTick() / 1_000_000L);
+    }
+
+    public long getNanosPerTick() {
+        return 1_000_000_000L / getBaseTps();
     }
 
     private void tick() {
         long tickTime = System.currentTimeMillis();
-
-        long time = tickTime - this.nextTick;
-        long sleepThreshold = getBaseMSPT() / 2L;
-        if (time < -sleepThreshold) {
-            try {
-                Thread.sleep(Math.max(0, -time - sleepThreshold));
-            } catch (InterruptedException e) {
-                log.debug("The thread {} got interrupted", Thread.currentThread().getName(), e);
-                Thread.currentThread().interrupt();
-            }
-        }
-
         long tickTimeNano = System.nanoTime();
-        if ((tickTime - this.nextTick) < -sleepThreshold) {
-            return;
-        }
 
         ++this.tickCounter;
         this.network.processInterfaces();
 
-        this.getScheduler().mainThreadHeartbeat(this.tickCounter);
+        this.getScheduler().mainThreadHeartbeat((int) this.tickCounter);
 
-        this.checkTickUpdates(this.tickCounter);
+        this.checkTickUpdates((int) this.tickCounter);
 
-        if ((this.tickCounter & 0b1111) == 0) {
+        if (tickTime - this.lastTitleTickMillis >= 800) {
+            this.lastTitleTickMillis = tickTime;
             this.titleTick();
             this.maxTick = getBaseTps();
             this.maxUse = 0;
 
-            if ((this.tickCounter & 0b111111111) == 0) {
+            if (tickTime - this.lastQueryRegenMillis >= 25_600) {
+                this.lastQueryRegenMillis = tickTime;
                 try {
                     this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
                 } catch (Exception e) {
@@ -1178,8 +1183,8 @@ public class Server {
             }
         }
 
-        if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
-            this.autoSaveTicker = 0;
+        if (this.autoSave && tickTime - this.lastAutoSaveMillis >= this.autoSaveTicks * 50L) {
+            this.lastAutoSaveMillis = tickTime;
             for (Level level : this.levelArray) {
                 for (BlockEntity be : level.getBlockEntities().values()) {
                     if (!be.closed) {
@@ -1202,15 +1207,18 @@ public class Server {
             // TODO: sendUsage
         }
 
+        long nanosPerTick = getNanosPerTick();
+
         // Handle freezable array
-        int freezableArrayCompressTime = (int) (getBaseMSPT() - (System.currentTimeMillis() - tickTime));
+        int freezableArrayCompressTime = (int) ((nanosPerTick - (System.nanoTime() - tickTimeNano)) / 1_000_000L);
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
         long nowNano = System.nanoTime();
-        float tick = (float) Math.min(getBaseTps(), 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
-        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / (getBaseMSPT() * 1000000.0));
+        this.tickDurationsNanos[(int) (this.tickCounter & (this.tickDurationsNanos.length - 1))] = nowNano - tickTimeNano;
+        float tick = (float) Math.min(getBaseTps(), 1_000_000_000d / Math.max(1, (double) nowNano - tickTimeNano));
+        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / nanosPerTick);
 
         if (this.maxTick > tick) {
             this.maxTick = tick;
@@ -1226,12 +1234,12 @@ public class Server {
         System.arraycopy(this.useAverage, 1, this.useAverage, 0, this.useAverage.length - 1);
         this.useAverage[this.useAverage.length - 1] = use;
 
-        if ((this.nextTick - tickTime) < -1000) {
-            this.nextTick = tickTime;
+        if (nowNano - this.nextTickNanos > GameLoop.CATCHUP_RESET_NANOS) {
+            this.nextTickNanos = nowNano;
         } else {
-            this.nextTick += getBaseMSPT();
+            this.nextTickNanos += nanosPerTick;
         }
-
+        this.nextTick = tickTime;
     }
 
     public long getNextTick() {
@@ -1239,10 +1247,26 @@ public class Server {
     }
 
     /**
-     * @return Returns the number of ticks recorded by the server
+     * @return Returns the number of ticks recorded by the server. Wraps after 2^31 ticks —
+     * reachable within hours at high tick rates; prefer {@link #getTickLong()}.
      */
     public int getTick() {
+        return (int) tickCounter;
+    }
+
+    /**
+     * @return Returns the number of ticks recorded by the server, without int wraparound
+     */
+    public long getTickLong() {
         return tickCounter;
+    }
+
+    /**
+     * Snapshot of the most recent per-tick durations in nanoseconds (unordered; zero
+     * entries mean the buffer hasn't filled yet). For diagnostics such as /debug mspt.
+     */
+    public long[] getTickDurationsNanos() {
+        return tickDurationsNanos.clone();
     }
 
     public float getTicksPerSecond() {
@@ -3060,6 +3084,16 @@ public class Server {
 
     public ScheduledExecutorService getLevelTickExecutor() {
         return levelTickExecutor;
+    }
+
+    /**
+     * Whether levels tick on their own dedicated threads (true) or on the main server
+     * loop (false). Fixed at boot from {@code level-settings.levelThread} — runtime
+     * changes to the setting are deliberately ignored so both tick paths can never be
+     * active at once.
+     */
+    public boolean isLevelThreadMode() {
+        return levelThreadMode;
     }
 
     public ServerSettings getSettings() {
