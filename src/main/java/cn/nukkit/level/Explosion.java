@@ -282,6 +282,7 @@ public class Explosion {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (Block block : this.affectedBlocks) {
+            if(block.getLevelBlock().isAir()) continue; //Prevents block to drop that was already broken in onBreak of multi tile blocks like some flowers or doors
             if (block instanceof BlockTnt tnt) {
                 tnt.prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
             } else if ((container = block.getLevel().getBlockEntity(block)) instanceof InventoryHolder inventoryHolder) {
@@ -304,8 +305,7 @@ public class Explosion {
                 smokePositions.add(block);
             }
 
-            this.level.setBlock(new Vector3((int) block.x, (int) block.y, (int) block.z),
-                    block.layer, Block.get(BlockID.AIR));
+            block.onBreak(Item.AIR);
 
             if (block.layer != 0) {
                 continue;
