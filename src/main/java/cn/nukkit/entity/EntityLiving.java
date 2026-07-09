@@ -422,6 +422,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             this.attackTimeByShieldKb = false;
             this.scheduleUpdate();
 
+            for (Effect effect : List.copyOf(this.getEffects().values())) {
+                effect.onHurt(this, source);
+            }
+
             return true;
         } else {
             return false;
@@ -490,6 +494,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops(weapon));
         this.server.getPluginManager().callEvent(ev);
+
+        for (Effect effect : List.copyOf(this.getEffects().values())) {
+            effect.onDeath(this);
+        }
 
         var manager = this.server.getScoreboardManager();
         // This will be null in the test environment, so it is necessary to check for null values.

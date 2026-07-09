@@ -102,13 +102,13 @@ public record PotionType(String name, String stringId, int id, int level, Potion
 
     public static final PotionType SLOWNESS_STRONG = new PotionType("Strong Slowness", "minecraft:strong_slowness", 42, 2, PotionEffectDefinition.SLOWNESS_STRONG);
 
-    public static final PotionType WIND_CHARGED = new PotionType("Wind Charged", "minecraft:wind_charged", 43, PotionEffectDefinition.EMPTY);
+    public static final PotionType WIND_CHARGED = new PotionType("Wind Charged", "minecraft:wind_charged", 43, PotionEffectDefinition.WIND_CHARGED);
 
-    public static final PotionType WEAVING = new PotionType("Weaving", "minecraft:weaving", 44, PotionEffectDefinition.EMPTY);
+    public static final PotionType WEAVING = new PotionType("Weaving", "minecraft:weaving", 44, PotionEffectDefinition.WEAVING);
 
-    public static final PotionType OOZING = new PotionType("Oozing", "minecraft:oozing", 45, PotionEffectDefinition.EMPTY);
+    public static final PotionType OOZING = new PotionType("Oozing", "minecraft:oozing", 45, PotionEffectDefinition.OOZING);
 
-    public static final PotionType INFESTED = new PotionType("Infested", "minecraft:infested", 46, PotionEffectDefinition.EMPTY);
+    public static final PotionType INFESTED = new PotionType("Infested", "minecraft:infested", 46, PotionEffectDefinition.INFESTED);
 
     public List<Effect> getEffects(PotionApplicationMode mode) {
         return effects.getEffects(mode);

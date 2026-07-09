@@ -71,6 +71,14 @@ public record EffectType(String stringId, Integer id) {
 
     public static final EffectType TRIAL_OMEN = new EffectType("trial_omen", 31);
 
+    public static final EffectType WIND_CHARGED = new EffectType("wind_charged", 32);
+
+    public static final EffectType WEAVING = new EffectType("weaving", 33);
+
+    public static final EffectType OOZING = new EffectType("oozing", 34);
+
+    public static final EffectType INFESTED = new EffectType("infested", 35);
+
     public static EffectType get(String stringId) {
         return Registries.EFFECT.getType(stringId);
     }

@@ -1,6 +1,7 @@
 package cn.nukkit.entity.effect;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.registry.Registries;
 
 import java.awt.*;
@@ -200,6 +201,25 @@ public abstract class Effect implements Cloneable {
     }
 
     public void apply(Entity entity, double tickCount) {
+
+    }
+
+    /**
+     * Called when the entity carrying this effect dies.
+     *
+     * @param entity the dying entity
+     */
+    public void onDeath(Entity entity) {
+
+    }
+
+    /**
+     * Called after the entity carrying this effect has been damaged.
+     *
+     * @param entity the damaged entity
+     * @param source the damage event that was applied
+     */
+    public void onHurt(Entity entity, EntityDamageEvent source) {
 
     }
 
