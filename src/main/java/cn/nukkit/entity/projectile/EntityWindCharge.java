@@ -121,7 +121,7 @@ public class EntityWindCharge extends EntityProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    protected float getDefaultGravity() {
         return 0.00f;
     }
 

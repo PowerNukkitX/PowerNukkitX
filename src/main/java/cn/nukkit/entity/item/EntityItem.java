@@ -63,7 +63,7 @@ public class EntityItem extends Entity {
     }
 
     @Override
-    public float getGravity() {
+    public float getDefaultGravity() {
         if (!getDataFlag(ActorFlags.HAS_GRAVITY)) return 0f;
         return 0.04f;
     }

@@ -194,7 +194,7 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    protected float getDefaultGravity() {
         return 0;
     }
 

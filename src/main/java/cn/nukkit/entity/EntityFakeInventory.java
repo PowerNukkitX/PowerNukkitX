@@ -94,7 +94,7 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
     }
 
     @Override
-    public float getGravity() {
+    public float getDefaultGravity() {
         return 0f;
     }
 

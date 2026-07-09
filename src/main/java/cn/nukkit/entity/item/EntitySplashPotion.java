@@ -84,7 +84,7 @@ public class EntitySplashPotion extends EntityProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    protected float getDefaultGravity() {
         return 0.05f;
     }
 

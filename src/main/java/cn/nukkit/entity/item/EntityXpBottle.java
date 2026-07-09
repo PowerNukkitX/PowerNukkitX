@@ -48,7 +48,7 @@ public class EntityXpBottle extends EntityProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    protected float getDefaultGravity() {
         return 0.1f;
     }
 

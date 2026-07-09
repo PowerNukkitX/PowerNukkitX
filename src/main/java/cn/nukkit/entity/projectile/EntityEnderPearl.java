@@ -53,7 +53,7 @@ public class EntityEnderPearl extends EntityProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    protected float getDefaultGravity() {
         return 0.03f;
     }
 

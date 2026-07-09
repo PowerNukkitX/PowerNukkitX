@@ -76,7 +76,7 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     @Override
-    public float getGravity() {
+    public float getDefaultGravity() {
         return 0.05f;
     }
 

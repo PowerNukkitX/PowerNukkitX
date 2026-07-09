@@ -112,7 +112,7 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     public void updateMovement() {}
 
     @Override
-    public float getGravity() {
+    public float getDefaultGravity() {
         return 0;
     }
 
