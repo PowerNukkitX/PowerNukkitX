@@ -324,15 +324,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
             return false;
         }
 
-        DoorToggleEvent event = new DoorToggleEvent(this, player);
-        level.getServer().getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return false;
-        }
-
-        player = event.getPlayer();
-
         Block down;
         Block up;
         if (this.isTop()) {
@@ -342,6 +333,17 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
             down = this;
             up = up();
         }
+
+        if(!up.getId().equals(down.getId())) return false;
+
+        DoorToggleEvent event = new DoorToggleEvent(this, player);
+        level.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        player = event.getPlayer();
 
         up.setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
         up.level.setBlock(up, up, true, true);
