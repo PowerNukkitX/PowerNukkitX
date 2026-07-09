@@ -1986,6 +1986,10 @@ public class Level implements Metadatable {
     }
 
     public boolean blocksBlockSight(Block b, boolean includeLiquids, boolean includePassables) {
+        return blocksBlockSight(b, includeLiquids, includePassables, false);
+    }
+
+    public boolean blocksBlockSight(Block b, boolean includeLiquids, boolean includePassables, boolean includeTransparentBlocks) {
         if (b == null) return false;
         if (b.isAir()) return false;
 
@@ -1995,6 +1999,10 @@ public class Level implements Metadatable {
         if (b.canPassThrough()) {
             return includePassables;
         }
+        if (b.isTransparent()) {
+            return includeTransparentBlocks;
+        }
+
         return true;
     }
 
