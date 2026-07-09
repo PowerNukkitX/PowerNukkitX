@@ -1,0 +1,75 @@
+package org.powernukkitx.scoreboard.scorer;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.Server;
+import org.powernukkitx.scoreboard.IScoreboard;
+import org.powernukkitx.scoreboard.IScoreboardLine;
+import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
+
+import java.util.UUID;
+
+
+@Getter
+public class PlayerScorer implements IScorer {
+
+    private UUID uuid;
+
+    public PlayerScorer(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public PlayerScorer(String uuid) {
+        this.uuid = UUID.fromString(uuid);
+    }
+
+    public PlayerScorer(Player player) {
+        this.uuid = player.getUniqueId();
+    }
+
+    public Player getPlayer() {
+        if (uuid == null) return null;
+        return Server.getInstance().getPlayer(uuid).isPresent() ? Server.getInstance().getPlayer(uuid).get() : null;
+    }
+
+    public boolean isOnline() {
+        return getPlayer() != null;
+    }
+
+    @Override
+    public ScoreInfo.IdentityDefinitionType getScorerType() {
+        return ScoreInfo.IdentityDefinitionType.PLAYER;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid != null ? uuid.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PlayerScorer playerScorer) {
+            return uuid.equals(playerScorer.uuid);
+        }
+        return false;
+    }
+
+    @Override
+    public String getName() {
+        return Server.getInstance().getOnlinePlayers().get(uuid) == null ? String.valueOf(uuid.getMostSignificantBits()) : Server.getInstance().getOnlinePlayers().get(uuid).getName();
+    }
+
+    @Override
+    public ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+        if (uuid == null) return null;
+        return Server.getInstance().getPlayer(uuid).isPresent() ?
+                new ScoreInfo(
+                        line.getLineId(),
+                        scoreboard.getObjectiveName(),
+                        line.getScore(),
+                        this.getScorerType(),
+                        Server.getInstance().getPlayer(uuid).get().getId()
+                )
+                : null;
+    }
+}

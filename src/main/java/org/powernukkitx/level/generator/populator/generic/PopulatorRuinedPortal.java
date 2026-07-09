@@ -1,0 +1,298 @@
+package org.powernukkitx.level.generator.populator.generic;
+
+import org.powernukkitx.block.*;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.generator.ChunkGenerateContext;
+import org.powernukkitx.level.generator.object.BlockManager;
+import org.powernukkitx.level.generator.object.RandomizableContainer;
+import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
+import org.powernukkitx.level.structure.PNXStructure;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.math.NukkitMath;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.tags.BiomeTags;
+import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.utils.random.Xoroshiro128;
+
+import java.util.List;
+
+import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
+
+public class PopulatorRuinedPortal extends Populator {
+
+    public static final String NAME = "generic_ruined_portal";
+
+    private static final BlockState NETHERRACK = BlockNetherrack.PROPERTIES.getDefaultState();
+    private static final BlockState CRYING_OBSIDIAN = BlockCryingObsidian.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_BRICKS = BlockPolishedBlackstoneBricks.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_BRICK_SLAB = BlockPolishedBlackstoneBrickSlab.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_BRICK_STAIRS = BlockPolishedBlackstoneBrickStairs.PROPERTIES.getDefaultState();
+    private static final BlockState CHISELED_POLISHED_BLACKSTONE = BlockChiseledPolishedBlackstone.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_WALL = BlockPolishedBlackstoneWall.PROPERTIES.getDefaultState();
+    private static final BlockState CRACKED_POLISHED_BLACKSTONE_BRICKS = BlockCrackedPolishedBlackstoneBricks.PROPERTIES.getDefaultState();
+
+    private static final ChestPopulator CHEST_POPULATOR = new ChestPopulator();
+
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(34222645L)
+            .minDistance(15)
+            .maxDistance(40)
+            .build());
+
+    private static final String[] PORTALS = new String[]{
+            "ruined_portal/portal_1",
+            "ruined_portal/portal_2",
+            "ruined_portal/portal_3",
+            "ruined_portal/portal_4",
+            "ruined_portal/portal_5",
+            "ruined_portal/portal_6",
+            "ruined_portal/portal_7",
+            "ruined_portal/portal_8",
+            "ruined_portal/portal_9",
+            "ruined_portal/portal_10"
+    };
+    private static final String[] GIANT_PORTALS = new String[]{
+            "ruined_portal/giant_portal_1",
+            "ruined_portal/giant_portal_2",
+            "ruined_portal/giant_portal_3"
+    };
+
+    @Override
+    public void apply(ChunkGenerateContext context) {
+        IChunk chunk = context.getChunk();
+        int chunkX = chunk.getX();
+        int chunkZ = chunk.getZ();
+        Level level = chunk.getLevel();
+        int biome = chunk.getBiomeId(7, SEA_LEVEL, 7);
+        if(PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
+            random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+            int x = (chunkX << 4) + 7;
+            int z = (chunkZ << 4) + 7;
+            List<String> tags = Registries.BIOME.getTags(chunk.getBiomeId(7, SEA_LEVEL, 7));
+            PortalHeight height = null;
+            if(tags.contains(BiomeTags.DESERT)) height = PortalHeight.PARTLY_BURIED;
+            else if(tags.contains(BiomeTags.JUNGLE) || tags.contains(BiomeTags.SWAMP)) height = PortalHeight.ON_LAND_SURFACE;
+            else if(tags.contains(BiomeTags.MOUNTAINS)) height = random.nextBoolean() ? PortalHeight.ON_LAND_SURFACE : PortalHeight.IN_MOUNTAIN;
+            else if(tags.contains(BiomeTags.OCEAN)) height = PortalHeight.ON_OCEAN_FLOOR;
+            else if(tags.contains(BiomeTags.NETHER)) height = PortalHeight.IN_NETHER;
+            else height = random.nextBoolean() ? PortalHeight.ON_LAND_SURFACE : PortalHeight.UNDERGROUND;
+            boolean big = random.nextBoundedInt(20) == 0;
+            PNXStructure structure = (PNXStructure) Registries.STRUCTURE.get(big ? GIANT_PORTALS[random.nextInt(GIANT_PORTALS.length)] : PORTALS[random.nextInt(PORTALS.length)]);
+            boolean airPocket = height == PortalHeight.IN_NETHER && random.nextFloat() < 0.5f;
+            int y = findSuitableY(random, level, x, z, height, airPocket, structure.getSizeX(), structure.getSizeY(), structure.getSizeZ());
+            BlockManager manager = new BlockManager(level);
+            structure.preparePlace(new Position(x, y, z), manager);
+            for(Block block : manager.getBlocks()) {
+                if (block.isAir() && shouldFillAirWithWater(level, block)) {
+                    manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
+                    continue;
+                }
+                if(block instanceof BlockJigsaw) manager.setBlockStateAt(block, NETHERRACK);
+                if(level.getBlock(block) instanceof BlockFlowingWater) {
+                    //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
+                    manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
+                }
+                if (block instanceof BlockFlowingLava && level.getBlock(block.up()) instanceof BlockFlowingWater) {
+                    manager.setBlockStateAt(block, BlockObsidian.PROPERTIES.getBlockState());
+                }
+                if(block instanceof BlockObsidian) {
+                    if(random.nextInt(5) == 0) {
+                        manager.setBlockStateAt(block, CRYING_OBSIDIAN);
+                    }
+                }
+                if (block instanceof BlockMagma) {
+                    manager.addHook(() -> {
+                        level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                    });
+                }
+                if(block instanceof BlockChest chest) {
+                    BlockVector3 chestPos = chest.asBlockVector3();
+                    manager.addHook(() -> {
+                        Block worldBlock = level.getBlock(chestPos.getX(), chestPos.getY(), chestPos.getZ());
+                        if (worldBlock instanceof BlockChest worldChest) {
+                            CHEST_POPULATOR.create(worldChest.getOrCreateBlockEntity().getInventory(), createChestLootRandom(level, chestPos));
+                        }
+                    });
+                }
+                if (level.getDimension() == Level.DIMENSION_NETHER) {
+                    if (block instanceof BlockChiseledStoneBricks) {
+                        manager.setBlockStateAt(block, CHISELED_POLISHED_BLACKSTONE.setPropertyValues(block.getProperties()));
+                    } else if (block instanceof BlockCrackedStoneBricks) {
+                        manager.setBlockStateAt(block, CRACKED_POLISHED_BLACKSTONE_BRICKS.setPropertyValues(block.getProperties()));
+                    } else if (block instanceof BlockMossyStoneBricks) {
+                        manager.unsetBlockStateAt(block);
+                    } else if (block instanceof BlockStoneBricks) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICKS);
+                    } else if (block instanceof BlockStoneBrickSlab) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_SLAB.setPropertyValues(block.getProperties()));
+                    } else if (block instanceof BlockStoneBrickStairs) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_STAIRS.setPropertyValues(block.getProperties()));
+                    } else if (block instanceof BlockStoneBrickWall) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_WALL.setPropertyValues(block.getProperties()));
+                    }
+                }
+            }
+            queueObject(chunk, manager);
+        }
+    }
+
+
+    private static int findSuitableY(
+            RandomSourceProvider random,
+            Level level,
+            int worldX,
+            int worldZ,
+            PortalHeight portalHeight,
+            boolean airPocket,
+            int structureWidth,
+            int structureHeight,
+            int structureDepth) {
+        int minY = level.getMinHeight() + 15;
+        int centerX = worldX + (structureWidth >> 1);
+        int centerZ = worldZ + (structureDepth >> 1);
+        int surfaceYAtCenter = getSurfaceY(level, centerX, centerZ, portalHeight);
+        int i;
+        if (portalHeight == PortalHeight.IN_NETHER) {
+            if (airPocket) {
+                i = NukkitMath.randomRange(random, 32, 100);
+            } else if (random.nextBoolean()) {
+                i = NukkitMath.randomRange(random, 27, 29);
+            } else {
+                i = NukkitMath.randomRange(random, 29, 100);
+            }
+        } else if (portalHeight == PortalHeight.IN_MOUNTAIN) {
+            int k = surfaceYAtCenter - structureHeight;
+            i = getRandomWithinInterval(random, 70, k);
+        } else if (portalHeight == PortalHeight.UNDERGROUND) {
+            int j1 = surfaceYAtCenter - structureHeight;
+            i = getRandomWithinInterval(random, minY, j1);
+        } else if (portalHeight == PortalHeight.PARTLY_BURIED) {
+            i = surfaceYAtCenter - structureHeight + NukkitMath.randomRange(random, 2, 8);
+        } else {
+            i = surfaceYAtCenter;
+        }
+
+        int minCornerX = worldX;
+        int minCornerZ = worldZ;
+        int maxCornerX = worldX + structureWidth - 1;
+        int maxCornerZ = worldZ + structureDepth - 1;
+
+        int y;
+        for (y = i; y > minY; y--) {
+            int cornersOnSolidGround = 0;
+            if (isOpaqueGround(level.getBlock(minCornerX, y, minCornerZ))) cornersOnSolidGround++;
+            if (isOpaqueGround(level.getBlock(maxCornerX, y, minCornerZ))) cornersOnSolidGround++;
+            if (isOpaqueGround(level.getBlock(minCornerX, y, maxCornerZ))) cornersOnSolidGround++;
+            if (isOpaqueGround(level.getBlock(maxCornerX, y, maxCornerZ))) cornersOnSolidGround++;
+            if (cornersOnSolidGround >= 3) {
+                return y;
+            }
+        }
+        return y;
+    }
+
+    private static int getSurfaceY(Level level, int x, int z, PortalHeight portalHeight) {
+        int y = level.getHeightMap(x, z);
+        if (portalHeight != PortalHeight.ON_OCEAN_FLOOR) {
+            return y;
+        }
+        while (y > level.getMinHeight() && isWater(level.getBlock(x, y, z))) {
+            y--;
+        }
+        return y;
+    }
+
+    private static boolean isWater(Block block) {
+        return block instanceof BlockFlowingWater;
+    }
+
+    private static boolean shouldFillAirWithWater(Level level, Block block) {
+        if (block.getFloorY() >= SEA_LEVEL) {
+            return false;
+        }
+        if (isWater(level.getBlock(block))) {
+            return true;
+        }
+        for (BlockFace face : BlockFace.values()) {
+            if (isWater(level.getBlock(block.getSide(face)))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static RandomSourceProvider createChestLootRandom(Level level, BlockVector3 pos) {
+        long seed = level.getSeed();
+        seed ^= 0x9E3779B97F4A7C15L * pos.getX();
+        seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
+        seed ^= 0x165667B19E3779F9L * pos.getZ();
+        return new Xoroshiro128(seed);
+    }
+
+    private static boolean isOpaqueGround(Block block) {
+        return block.isSolid() && !block.canBeReplaced() && !block.isTransparent();
+    }
+
+    private static int getRandomWithinInterval(RandomSourceProvider random, int start, int end) {
+        return start < end ? NukkitMath.randomRange(random, start, end) : end;
+    }
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+
+    protected static class ChestPopulator extends RandomizableContainer {
+
+        public ChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Block.OBSIDIAN, 0, 2, 1, 40))
+                    .register(new ItemEntry(Item.FLINT, 0, 4, 1, 40))
+                    .register(new ItemEntry(Item.IRON_NUGGET, 0, 18, 9, 40))
+                    .register(new ItemEntry(Item.FLINT_AND_STEEL, 40))
+                    .register(new ItemEntry(Item.FIRE_CHARGE, 40))
+                    .register(new ItemEntry(Item.GOLDEN_APPLE, 15))
+                    .register(new ItemEntry(Item.GOLD_NUGGET, 0, 24, 4, 15))
+                    .register(new ItemEntry(Item.GOLDEN_SWORD, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_AXE, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_HOE, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_SHOVEL, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_PICKAXE, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_BOOTS, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_CHESTPLATE, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_HELMET, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GOLDEN_LEGGINGS, 0, 1, 1, 15, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.GLISTERING_MELON_SLICE, 0, 12, 4, 5))
+                    .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
+                    .register(new ItemEntry(Block.LIGHT_WEIGHTED_PRESSURE_PLATE, 5))
+                    .register(new ItemEntry(Item.GOLDEN_CARROT, 0, 12, 4, 5))
+                    .register(new ItemEntry(Item.CLOCK, 5))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 8, 2, 5))
+                    .register(new ItemEntry(Block.BELL, 1))
+                    .register(new ItemEntry(Item.ENCHANTED_GOLDEN_APPLE, 1))
+                    .register(new ItemEntry(Block.GOLD_BLOCK, 0, 2, 1, 1));
+
+            this.pools.put(pool1.build(), new RollEntry(8, 4, pool1.getTotalWeight()));
+
+            PoolBuilder pool2 = new PoolBuilder()
+                    .register(new ItemEntry(Block.AIR, 1))
+                    .register(new ItemEntry(Block.LODESTONE, 0, 2, 1, 2));
+
+            this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
+        }
+    }
+
+    protected enum PortalHeight {
+        ON_LAND_SURFACE,
+        PARTLY_BURIED,
+        ON_OCEAN_FLOOR,
+        IN_MOUNTAIN,
+        UNDERGROUND,
+        IN_NETHER
+    }
+}

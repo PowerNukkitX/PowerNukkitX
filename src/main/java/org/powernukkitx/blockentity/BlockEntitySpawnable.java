@@ -1,0 +1,81 @@
+package org.powernukkitx.blockentity;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public abstract class BlockEntitySpawnable extends BlockEntity {
+
+    public BlockEntitySpawnable(IChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
+    @Override
+    protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.spawnToAll();
+    }
+
+
+    public CompoundTag getSpawnCompound() {
+        return new CompoundTag()
+                .putString("id", getNbt().getString("id"))
+                .putInt("x", getFloorX())
+                .putInt("y", getFloorY())
+                .putInt("z", getFloorZ());
+    }
+
+    public void spawnTo(Player player) {
+        if (this.closed) {
+            return;
+        }
+
+        player.sendPacket(getSpawnPacket());
+    }
+
+    public BlockActorDataPacket getSpawnPacket() {
+        return getSpawnPacket(null);
+    }
+
+    public BlockActorDataPacket getSpawnPacket(CompoundTag nbt) {
+        if (nbt == null) {
+            nbt = this.getSpawnCompound();
+        }
+
+        final BlockActorDataPacket packet = new BlockActorDataPacket();
+        packet.setBlockPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
+        packet.setActorDataTags(nbt.toNetwork());
+
+        return packet;
+    }
+
+    public void spawnToAll() {
+        if (this.closed) {
+            return;
+        }
+
+        for (Player player : this.getLevel().getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values()) {
+            if (player.spawned) {
+                this.spawnTo(player);
+            }
+        }
+    }
+
+    /**
+     * Called when a player updates a block entity's NBT data
+     * for example when writing on a sign.
+     *
+     * @param nbt    tag
+     * @param player player
+     * @return bool indication of success, will respawn the tile to the player if false.
+     */
+    public boolean updateCompoundTag(NbtMap nbt, Player player) {
+        return false;
+    }
+}
