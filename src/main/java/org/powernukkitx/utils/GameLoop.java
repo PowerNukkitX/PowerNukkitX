@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
 
 /**
@@ -17,6 +17,24 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public final class GameLoop {
+    /**
+     * Margin left for the spin phase of {@link #waitUntilNanos}. OS sleep primitives
+     * (parkNanos) can oversleep by roughly this much, so the coarse phase stops early
+     * and the remainder is spun precisely.
+     */
+    public static final long SPIN_MARGIN_NANOS = 2_000_000L;
+    /**
+     * Tick periods at or above this duration are paced with plain parkNanos (no spin
+     * phase) — sub-millisecond jitter is irrelevant there and spinning would waste CPU.
+     */
+    public static final long SPIN_ACTIVATION_NANOS = 10_000_000L;
+    /**
+     * If the loop falls further behind than this, missed ticks are dropped instead of
+     * being executed back-to-back to catch up (prevents a death spiral after GC pauses
+     * or long stalls).
+     */
+    public static final long CATCHUP_RESET_NANOS = 1_000_000_000L;
+
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final Object tickLock = new Object();
     private final Runnable onStart;
@@ -24,7 +42,9 @@ public final class GameLoop {
     private final Runnable onStop;
 
     @Getter
-    private final int loopCountPerSec;
+    private volatile int loopCountPerSec;
+    private volatile long nanosPerTick;
+    private volatile Thread loopThread;
     private final float[] tickSummary = new float[20];
     private final float[] MSPTSummary = new float[20];
     @Getter
@@ -37,6 +57,7 @@ public final class GameLoop {
         this.onTick = onTick;
         this.onStop = onStop;
         this.loopCountPerSec = loopCountPerSec;
+        this.nanosPerTick = 1_000_000_000L / loopCountPerSec;
         Arrays.fill(tickSummary, loopCountPerSec);
         Arrays.fill(MSPTSummary, 0f);
     }
@@ -45,8 +66,21 @@ public final class GameLoop {
         return new GameLoopBuilder();
     }
 
+    /**
+     * Changes the tick rate of a running loop. Takes effect on the next pacing decision.
+     */
+    public void setLoopCountPerSec(int loopCountPerSec) {
+        Preconditions.checkArgument(loopCountPerSec > 0 && loopCountPerSec <= 1_000_000_000);
+        this.loopCountPerSec = loopCountPerSec;
+        this.nanosPerTick = 1_000_000_000L / loopCountPerSec;
+    }
+
+    public long getNanosPerTick() {
+        return nanosPerTick;
+    }
+
     public float getTickUsage() {
-        return getMSPT() / (1000f / loopCountPerSec);
+        return getMSPT() / (nanosPerTick / 1_000_000f);
     }
 
     public float getTps() {
@@ -79,13 +113,51 @@ public final class GameLoop {
         }
     }
 
+    /**
+     * Runs {@link #startLoop()} on a new dedicated daemon thread owned by this GameLoop.
+     * A dedicated thread (rather than a scheduled executor) is required for tick periods
+     * below the OS timer granularity (~1 ms): the pacer must own the thread to combine
+     * parkNanos with a spin phase. One loop = one thread; calling twice is an error.
+     */
+    public synchronized Thread startThread(String name) {
+        Preconditions.checkState(loopThread == null, "GameLoop thread already started");
+        Thread thread = new Thread(() -> {
+            try {
+                startLoop();
+            } catch (Throwable t) {
+                log.error("GameLoop thread {} died", name, t);
+            }
+        }, name);
+        thread.setDaemon(true);
+        this.loopThread = thread;
+        thread.start();
+        return thread;
+    }
+
+    /**
+     * Whether the thread created by {@link #startThread} is still running.
+     */
+    public boolean isThreadAlive() {
+        Thread thread = this.loopThread;
+        return thread != null && thread.isAlive();
+    }
+
+    /**
+     * Interrupts the thread created by {@link #startThread}, waking it from its
+     * inter-tick wait so a stopped loop exits promptly. No-op if none was started.
+     */
+    public void interruptThread() {
+        Thread thread = this.loopThread;
+        if (thread != null) {
+            thread.interrupt();
+        }
+    }
+
     public void startLoop() {
         isRunning.set(true);
         onStart.run();
-        long nanoSleepTime = 0;
-        long idealNanoSleepPerTick = 1000000000 / loopCountPerSec;
+        long nextTickNanos = System.nanoTime();
         while (isRunning.get()) {
-            // Figure out how long it took to tick
             long startTickTime = System.nanoTime();
             synchronized (tickLock) {
                 if (!isRunning.get()) break;
@@ -96,27 +168,42 @@ public final class GameLoop {
             updateMSTP(timeTakenToTick, MSPTSummary);
             updateTPS(timeTakenToTick);
 
-            long sumOperateTime = System.nanoTime() - startTickTime;
-            // Sleep for the ideal time but take into account the time spent running the tick
-            nanoSleepTime += idealNanoSleepPerTick - sumOperateTime;
-            long sleepStart = System.nanoTime();
-            try {
-                if (nanoSleepTime > 0) {
-                    // noinspection BusyWait
-                    Thread.sleep(TimeUnit.NANOSECONDS.toMillis(nanoSleepTime));
-                }
-            } catch (InterruptedException exception) {
-                log.error("GameLoop interrupted", exception);
-                onStop.run();
-                return;
+            nextTickNanos += nanosPerTick;
+            long now = System.nanoTime();
+            if (now - nextTickNanos > CATCHUP_RESET_NANOS) {
+                nextTickNanos = now;
+            } else {
+                waitUntilNanos(nextTickNanos, nanosPerTick < SPIN_ACTIVATION_NANOS ? SPIN_MARGIN_NANOS : 0L);
             }
-            // How long did it actually take to sleep?
-            // If we didn't sleep for the correct amount,
-            // take that into account for the next sleep by
-            // leaving extra/less for the next sleep.
-            nanoSleepTime -= System.nanoTime() - sleepStart;
+            if (Thread.currentThread().isInterrupted()) {
+                log.debug("GameLoop thread {} interrupted, stopping", Thread.currentThread().getName());
+                break;
+            }
         }
         onStop.run();
+    }
+
+    /**
+     * Waits until {@code System.nanoTime()} reaches {@code deadlineNanos}.
+     * <p>
+     * Coarse phase parks the thread until {@code spinMarginNanos} before the deadline;
+     * the remainder is busy-spun with {@link Thread#onSpinWait()} for sub-millisecond
+     * precision. Pass {@code spinMarginNanos = 0} to skip spinning entirely (plain park,
+     * millisecond-class precision, no CPU burn). Returns early if the thread is interrupted.
+     */
+    public static void waitUntilNanos(long deadlineNanos, long spinMarginNanos) {
+        long remaining;
+        while ((remaining = deadlineNanos - System.nanoTime()) > spinMarginNanos) {
+            LockSupport.parkNanos(remaining - spinMarginNanos);
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+        }
+        if (spinMarginNanos > 0) {
+            while (System.nanoTime() - deadlineNanos < 0) {
+                Thread.onSpinWait();
+            }
+        }
     }
 
     private void updateTPS(long timeTakenToTick) {
@@ -168,7 +255,7 @@ public final class GameLoop {
         }
 
         public GameLoopBuilder loopCountPerSec(int loopCountPerSec) {
-            Preconditions.checkArgument(loopCountPerSec > 0 && loopCountPerSec <= 1024);
+            Preconditions.checkArgument(loopCountPerSec > 0 && loopCountPerSec <= 1_000_000_000);
             this.loopCountPerSec = loopCountPerSec;
             return this;
         }

@@ -60,6 +60,9 @@ public class PluginClassLoader extends URLClassLoader {
         Class<?> result = classes.get(name);
 
         if (result == null) {
+            if (getParent().getResource(name.replace('.', '/') + ".class") != null) {
+                throw new ClassNotFoundException(name);
+            }
             if (checkGlobal) {
                 result = loader.getClassByName(name);
             }

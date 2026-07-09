@@ -1,6 +1,7 @@
 package org.powernukkitx.command.defaults;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.Server;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.data.CommandEnum;
@@ -20,6 +21,7 @@ import org.powernukkitx.item.ItemFilledMap;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.biome.OverworldBiomePicker;
 import org.powernukkitx.level.generator.biome.result.OverworldBiomeResult;
@@ -34,6 +36,7 @@ import org.powernukkitx.plugin.PluginManager;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.AsyncTask;
 import org.powernukkitx.scheduler.TaskHandler;
+import org.powernukkitx.utils.GameLoop;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.TextFormat;
 import it.unimi.dsi.fastutil.Pair;
@@ -56,7 +59,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         super(name, "commands.debug.description");
         this.setPermission("nukkit.command.debug");
         this.commandParameters.clear();
-        //生物AI debug模式开关
+        // Toggle for AI debug mode
         this.commandParameters.put("entity", new CommandParameter[]{
                 CommandParameter.newEnum("entity", new String[]{"entity"}),
                 CommandParameter.newEnum("option", Arrays.stream(EntityAI.DebugOption.values()).map(option -> option.name().toLowerCase(Locale.ENGLISH)).toList().toArray(new String[0])),
@@ -108,6 +111,10 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         this.commandParameters.put("genrate", new CommandParameter[]{
                 CommandParameter.newEnum("genrate", new String[]{"genrate"})
         });
+        this.commandParameters.put("mspt", new CommandParameter[]{
+                CommandParameter.newEnum("mspt", new String[]{"mspt"}),
+                CommandParameter.newEnum("off", true, new String[]{"off"})
+        });
         this.enableParamTree();
     }
 
@@ -127,6 +134,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "toggle" -> handleToggle(sender, result.getValue(), log);
             case "tps" -> handleTps(sender, result.getValue(), log);
             case "genrate" -> handleGenRate(sender);
+            case "mspt" -> handleMspt(sender, result.getValue());
             default -> 0;
         };
     }
@@ -521,13 +529,98 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         return 1;
     }
 
+    private int handleMspt(CommandSender sender, ParamList value) {
+        Server server = sender.getServer();
+
+        if (value.hasResult(1)) { // "off": disarm phase profiling
+            for (Level level : server.getLevels().values()) {
+                level.setTickPhaseProfiling(false);
+            }
+            sender.sendMessage("§eLevel tick phase profiling disabled.");
+            return 1;
+        }
+
+        boolean armedNow = false;
+        for (Level level : server.getLevels().values()) {
+            if (!level.isTickPhaseProfiling()) {
+                level.setTickPhaseProfiling(true);
+                level.snapshotTickPhaseAvgNanos(true);
+                armedNow = true;
+            }
+        }
+        if (armedNow) {
+            sender.sendMessage("§ePhase profiling armed (adds ~11 clock reads per level tick). Run /debug mspt again in a few seconds for the breakdown; /debug mspt off to disarm.");
+        }
+
+        long[] durations = server.getTickDurationsNanos();
+        // Drop unfilled (zero) slots
+        int n = 0;
+        for (long d : durations) {
+            if (d > 0) durations[n++] = d;
+        }
+        if (n == 0) {
+            sender.sendMessage("§cNo tick samples recorded yet.");
+            return 1;
+        }
+        Arrays.sort(durations, 0, n);
+        long p50 = durations[(int) (n * 0.50)];
+        long p90 = durations[Math.min(n - 1, (int) (n * 0.90))];
+        long p99 = durations[Math.min(n - 1, (int) (n * 0.99))];
+        long max = durations[n - 1];
+        long target = server.getNanosPerTick();
+
+        sender.sendMessage("§eServer tick durations (" + n + " samples):");
+        sender.sendMessage("§7  p50: §f" + formatNanos(p50) + " §7 p90: §f" + formatNanos(p90)
+                + " §7 p99: §f" + formatNanos(p99) + " §7 max: §f" + formatNanos(max));
+        sender.sendMessage("§7  target: §f" + formatNanos(target) + "/tick (" + server.getBaseTps() + " TPS)"
+                + " §7 measured TPS: §f" + NukkitMath.round(server.getTicksPerSecond(), 2));
+        boolean levelThread = server.isLevelThreadMode();
+        for (Level level : server.getLevels().values()) {
+            if (levelThread) {
+                sender.sendMessage("§7  level " + level.getName() + ": §f"
+                        + NukkitMath.round(level.getBaseTickGameLoop().getMSPT(), 3) + " ms avg, TPS "
+                        + NukkitMath.round(level.getBaseTickGameLoop().getTps(), 2));
+            }
+            long[] phases = level.snapshotTickPhaseAvgNanos(true);
+            StringBuilder sb = new StringBuilder("§7    phases: §f");
+            boolean any = false;
+            for (int i = 0; i < phases.length; i++) {
+                if (phases[i] <= 0) continue;
+                if (any) sb.append("§7, §f");
+                sb.append(Level.TICK_PHASE_NAMES[i]).append(' ').append(formatNanos(phases[i]));
+                any = true;
+            }
+            if (any) {
+                sender.sendMessage((levelThread ? "" : "§7  level " + level.getName() + ":\n") + sb);
+            }
+        }
+        return 1;
+    }
+
+    private static String formatNanos(long nanos) {
+        if (nanos >= 1_000_000L) {
+            return NukkitMath.round(nanos / 1_000_000d, 3) + " ms";
+        }
+        if (nanos >= 1_000L) {
+            return NukkitMath.round(nanos / 1_000d, 2) + " µs";
+        }
+        return nanos + " ns";
+    }
+
     private int handleTps(CommandSender sender, ParamList value, CommandLogger log) {
-        if (!sender.isPlayer()) return 0;
-        if(value.hasResult(1)) {
-            if(!sender.getServer().getSettings().levelSettings().levelThread()) {
-                sender.getServer().getSettings().performanceSettings().baseTps(value.get(1).get());
-                log.addSuccess("Set base TPS to " + sender.getServer().getBaseTps());
-            } else log.addError("Cannot modify base TPS when using levelThread.");
+        if (value.hasResult(1)) {
+            Server server = sender.getServer();
+            server.getSettings().performanceSettings().baseTps(value.get(1).get());
+            int baseTps = server.getBaseTps();
+            if (server.isLevelThreadMode()) {
+                for (Level level : server.getLevels().values()) {
+                    level.getBaseTickGameLoop().setLoopCountPerSec(baseTps);
+                }
+            }
+            log.addSuccess("Set base TPS to " + baseTps);
+            if (server.getNanosPerTick() < GameLoop.SPIN_ACTIVATION_NANOS) {
+                log.addSuccess("§eHigh-TPS mode: tick threads will busy-wait for sub-millisecond precision (one CPU core per tick loop).");
+            }
         } else log.addSuccess("Current base TPS: " + sender.getServer().getBaseTps());
         log.output();
         return 1;
