@@ -12,6 +12,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.raid.RaidManager;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
@@ -341,6 +342,8 @@ public class Level implements Metadatable {
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<Player>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
+    @Getter
+    private final RaidManager raidManager = new RaidManager(this);
     public boolean stopTime;
     public int skyLightSubtracted;
     public int sleepTicks = 0;
@@ -1158,6 +1161,8 @@ public class Level implements Metadatable {
                 }
             }
             checkWeather();
+
+            this.raidManager.onTick(currentTick);
 
             this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
 

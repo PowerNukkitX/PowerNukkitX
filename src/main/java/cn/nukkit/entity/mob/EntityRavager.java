@@ -8,8 +8,10 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.NearbyFlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -43,7 +45,8 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
                 Set.of(
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.2f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
+                        new Behavior(new NearbyFlatRandomRoamExecutor(CoreMemoryTypes.STAY_NEARBY, 0.3f, 24, 100, false, -1, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY), 1, 1),
+                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 0, 1)
                 ),
                 Set.of(new NearestPlayerSensor(40, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true)),
