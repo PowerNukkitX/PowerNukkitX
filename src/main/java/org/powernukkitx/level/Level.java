@@ -346,6 +346,11 @@ public class Level implements Metadatable {
     public int sleepTicks = 0;
     public int noSleepNights = 0;
     public int tickRateTime = 0;
+    /**
+     * Duration of the last level tick in nanoseconds. Millisecond-resolution
+     * {@link #tickRateTime} is useless for budgets below 1 ms at high tick rates.
+     */
+    public long tickRateTimeNanos = 0;
     public int tickRateCounter = 0;
     /**
      * 当tps过低的时候，tps优化延迟会上升，计算密集型任务应当每隔此tick才运行一次
@@ -376,7 +381,7 @@ public class Level implements Metadatable {
     private final Long2ObjectMap<IntOpenHashSet> blockLightQueue = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>(8));
     private final int dimensionCount;
     /// base tick system
-    private ScheduledFuture<?> baseTickTask;
+    private Thread baseTickThread;
     @Getter
     private final GameLoop baseTickGameLoop;
     /// sub tick system
@@ -470,8 +475,16 @@ public class Level implements Metadatable {
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
         final String levelName = getName();
         baseTickGameLoop = GameLoop.builder()
-                .onTick(this::doTick)
-                .onStop(this::remove)
+                .onTick(loop -> {
+                    try {
+                        if (!this.players.isEmpty() || this.hasTickingAreas()) {
+                            this.doTick(loop);
+                        }
+                    } catch (Throwable t) {
+                        log.error("Error in base-tick for level {}", this.getName(), t);
+                    }
+                })
+                .onStop(() -> log.debug("{} BaseTick is closed!", levelName))
                 .loopCountPerSec(server.getBaseTps())
                 .build();
         subTickGameLoop = GameLoop.builder()
@@ -586,7 +599,7 @@ public class Level implements Metadatable {
     }
 
     public int recalcTickOptDelay() {
-        if (tickRateTime > 40) {
+        if (tickRateTimeNanos > server.getNanosPerTick() * 4 / 5) {
             return Math.min(tickRateOptDelay << 1, 8);
         } else if (tickRateOptDelay == 1) {
             return 1;
@@ -615,15 +628,17 @@ public class Level implements Metadatable {
             }
         }, 0, 50, TimeUnit.MILLISECONDS);
         if (getServer().getSettings().levelSettings().levelThread()) {
-            baseTickGameLoop.setRunning(true);
-            this.baseTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
+            // Dedicated thread instead of a scheduled executor: executor timers have
+            // millisecond granularity and cannot pace tick periods below 1 ms
+            this.baseTickThread = new Thread(() -> {
                 try {
-                    if (this.players.isEmpty() && !this.hasTickingAreas()) return;
-                    baseTickGameLoop.tick();
+                    baseTickGameLoop.startLoop();
                 } catch (Throwable t) {
-                    log.error("Error in base-tick for level {}", this.getName(), t);
+                    log.error("Base-tick loop for level {} died", this.getName(), t);
                 }
-            }, 0, server.getBaseMSPT(), TimeUnit.MILLISECONDS);
+            }, "Level Thread - " + this.getName());
+            this.baseTickThread.setDaemon(true);
+            this.baseTickThread.start();
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
@@ -671,8 +686,9 @@ public class Level implements Metadatable {
     public void close() {
         if (isThreadRunning()) {
             this.baseTickGameLoop.stop();
-            if (this.baseTickTask != null) {
-                this.baseTickTask.cancel(false);
+            if (this.baseTickThread != null) {
+                // Wake the loop thread from its inter-tick wait so it can exit promptly
+                this.baseTickThread.interrupt();
             }
             this.subTickGameLoop.stop();
             if (this.subTickTask != null) {
@@ -1130,12 +1146,62 @@ public class Level implements Metadatable {
         }
     }
 
+    /**
+     * Phase names for the per-tick timing breakdown, index-aligned with
+     * {@link #tickPhaseNanosAccum}. Shown by /debug mspt.
+     */
+    public static final String[] TICK_PHASE_NAMES = {
+            "heartbeat", "blockLight", "timeWeather", "mobSpawn", "blockUpdates",
+            "entities", "blockEntities", "tickChunks", "netSync", "cleanup"
+    };
+    private final long[] tickPhaseNanosAccum = new long[TICK_PHASE_NAMES.length];
+    private long tickPhaseSampleCount;
+    /**
+     * Phase timing is off by default — the 11 nanoTime calls and per-tick array cost real
+     * budget at high tick rates. Armed by /debug mspt, disarmed when it reads with reset.
+     */
+    private volatile boolean tickPhaseProfiling;
+
+    public void setTickPhaseProfiling(boolean enabled) {
+        this.tickPhaseProfiling = enabled;
+    }
+
+    public boolean isTickPhaseProfiling() {
+        return tickPhaseProfiling;
+    }
+
+    /**
+     * Average nanoseconds spent per tick in each {@link #TICK_PHASE_NAMES} phase since the
+     * last reset. Written by the level tick thread without synchronization — values are
+     * diagnostics, not exact accounting. Returns zeros while profiling is not armed
+     * ({@link #setTickPhaseProfiling}).
+     *
+     * @param reset clear the accumulators after reading
+     */
+    public long[] snapshotTickPhaseAvgNanos(boolean reset) {
+        long samples = Math.max(1, tickPhaseSampleCount);
+        long[] avg = new long[tickPhaseNanosAccum.length];
+        for (int i = 0; i < avg.length; i++) {
+            avg[i] = tickPhaseNanosAccum[i] / samples;
+        }
+        if (reset) {
+            Arrays.fill(tickPhaseNanosAccum, 0L);
+            tickPhaseSampleCount = 0;
+        }
+        return avg;
+    }
+
     public void doTick(int currentTick) {
         if (getProvider() == null) return; // level is closing
         this.tickTime = System.currentTimeMillis();
+        final boolean prof = this.tickPhaseProfiling;
+        final long[] phase = prof ? new long[TICK_PHASE_NAMES.length] : null;
+        long phaseStart = prof ? System.nanoTime() : 0;
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
+            if (prof) phase[0] = -phaseStart + (phaseStart = System.nanoTime());
             updateBlockLight();
+            if (prof) phase[1] = -phaseStart + (phaseStart = System.nanoTime());
             this.checkTime();
             if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
                 this.sendTime();
@@ -1162,12 +1228,14 @@ public class Level implements Metadatable {
             this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
 
             this.levelCurrentTick++;
+            if (prof) phase[2] = -phaseStart + (phaseStart = System.nanoTime());
 
             if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
                 if (countDespawnableEntities() < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
                     doMobSpawningNearPlayers();
                 }
             }
+            if (prof) phase[3] = -phaseStart + (phaseStart = System.nanoTime());
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
@@ -1189,6 +1257,7 @@ public class Level implements Metadatable {
                     }
                 }
             }
+            if (prof) phase[4] = -phaseStart + (phaseStart = System.nanoTime());
             if (!this.updateEntities.isEmpty()) {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
@@ -1223,9 +1292,12 @@ public class Level implements Metadatable {
                     }
                 }
             }
+            if (prof) phase[5] = -phaseStart + (phaseStart = System.nanoTime());
             this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
+            if (prof) phase[6] = -phaseStart + (phaseStart = System.nanoTime());
 
             this.tickChunks();
+            if (prof) phase[7] = -phaseStart + (phaseStart = System.nanoTime());
             synchronized (changedBlocks) {
                 if (!this.changedBlocks.isEmpty()) {
                     if (!this.players.isEmpty()) {
@@ -1287,13 +1359,22 @@ public class Level implements Metadatable {
                 Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
                 gameRules.refresh();
             }
+            if (prof) phase[8] = -phaseStart + (phaseStart = System.nanoTime());
         } catch (Exception e) {
             log.error(getServer().getLanguage().tr("nukkit.level.tickError",
                     this.getFolderPath(), Utils.getExceptionMessage(e)), e);
             e.printStackTrace();
         } finally {
+            if (prof) phaseStart = System.nanoTime();
             getPlayers().values().forEach(Player::checkNetwork);
             releaseTickCachedBlocks();
+            if (prof) {
+                phase[9] = System.nanoTime() - phaseStart;
+                for (int i = 0; i < phase.length; i++) {
+                    this.tickPhaseNanosAccum[i] += phase[i];
+                }
+                this.tickPhaseSampleCount++;
+            }
         }
     }
 
@@ -4528,7 +4609,7 @@ public class Level implements Metadatable {
     }
 
     public boolean isThreadRunning() {
-        return (baseTickTask != null && !baseTickTask.isDone()) || (subTickTask != null && !subTickTask.isDone());
+        return (baseTickThread != null && baseTickThread.isAlive()) || (subTickTask != null && !subTickTask.isDone());
     }
 
     public boolean hasTickingAreas() {

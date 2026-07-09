@@ -437,14 +437,18 @@ public class ServerScheduler {
         // Accepts pending.
         TaskHandler task;
         while ((task = pending.poll()) != null) {
-            int tick = Math.max(currentTick, task.getNextRunTick()); // Do not schedule in the past
+            // Do not schedule in the past. Subtraction instead of Math.max so the
+            // comparison stays correct when the tick counter wraps past Integer.MAX_VALUE
+            // (reachable within hours at high tick rates).
+            int next = task.getNextRunTick();
+            int tick = (next - currentTick > 0) ? next : currentTick;
             ArrayDeque<TaskHandler> queue = Utils.getOrCreate(queueMap, tick, ArrayDeque::new);
             queue.add(task);
         }
         if (currentTick - this.currentTick > queueMap.size()) { // A large number of ticks have passed since the last execution
             for (Map.Entry<Integer, ArrayDeque<TaskHandler>> entry : queueMap.entrySet()) {
                 int tick = entry.getKey();
-                if (tick <= currentTick) {
+                if (tick - currentTick <= 0) { // wraparound-safe "tick <= currentTick"
                     runTasks(tick);
                 }
             }
