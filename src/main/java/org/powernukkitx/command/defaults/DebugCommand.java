@@ -576,11 +576,13 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 + " §7 measured TPS: §f" + NukkitMath.round(server.getTicksPerSecond(), 2));
         boolean levelThread = server.isLevelThreadMode();
         for (Level level : server.getLevels().values()) {
+            String levelLine = "§7  level " + level.getName() + ": §f"
+                    + "measured TPS " + NukkitMath.round(level.getMeasuredTps(), 2);
             if (levelThread) {
-                sender.sendMessage("§7  level " + level.getName() + ": §f"
-                        + NukkitMath.round(level.getBaseTickGameLoop().getMSPT(), 3) + " ms avg, TPS "
-                        + NukkitMath.round(level.getBaseTickGameLoop().getTps(), 2));
+                levelLine += " §7 avg tick: §f"
+                        + formatNanos((long) (level.getBaseTickGameLoop().getMSPT() * 1_000_000f));
             }
+            sender.sendMessage(levelLine);
             long[] phases = level.snapshotTickPhaseAvgNanos(true);
             StringBuilder sb = new StringBuilder("§7    phases: §f");
             boolean any = false;
@@ -591,7 +593,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 any = true;
             }
             if (any) {
-                sender.sendMessage((levelThread ? "" : "§7  level " + level.getName() + ":\n") + sb);
+                sender.sendMessage(sb.toString());
             }
         }
         return 1;

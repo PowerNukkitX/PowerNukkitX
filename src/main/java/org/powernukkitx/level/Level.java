@@ -361,7 +361,7 @@ public class Level implements Metadatable {
     private AtomicReference<LevelProvider> provider;
     /// Cumulative world game time in ticks. Stored as a long (the provider persists it as a long)
     private long time;
-    private int nextTimeSendTick;
+    private long nextTimeSendMillis;
     private final String name;
     private final String folderPath;
     private Vector3 mutableBlock;
@@ -393,6 +393,16 @@ public class Level implements Metadatable {
     /// antiXray system
     private AntiXraySystem antiXraySystem;
     private GameplaySettings gameplaySettings;
+    /**
+     * Whether the previous tick's entity loop saw an {@link EntityAsyncPrepare}; gates the
+     * compute-pool dispatch in {@link #doTick(int)}. Starts true so the first tick dispatches.
+     */
+    private boolean hasAsyncPrepareEntities = true;
+
+    /// measured level tick rate: actual doTick calls per wall-clock second (~1s window)
+    private long tpsWindowStartMillis;
+    private int tpsWindowTicks;
+    private volatile float measuredTps;
 
     /// weather system
     private boolean raining = false;
@@ -1076,6 +1086,9 @@ public class Level implements Metadatable {
     }
 
     public void checkTime() {
+        if (!gameplaySettings.enableDaylightCycle()) {
+            return;
+        }
         if (!this.stopTime && this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
             long prior = this.time;
             this.time += tickRate;
@@ -1099,6 +1112,9 @@ public class Level implements Metadatable {
     }
 
     public void releaseTickCachedBlocks() {
+        if (this.tickCachedBlocks.isEmpty()) {
+            return;
+        }
         synchronized (this.tickCachedBlocks) {
             for (var each : tickCachedBlocks.values()) {
                 each.clearCachedStore();
@@ -1111,7 +1127,7 @@ public class Level implements Metadatable {
         try {
             int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
             long levelTime = System.currentTimeMillis();
-            doTick(gameLoop.getTick());
+            doTick((int) gameLoop.getTick());
             int tickMs = (int) (System.currentTimeMillis() - levelTime);
 
             if (getServer().getSettings().levelSettings().autoTickRate()) {
@@ -1187,6 +1203,13 @@ public class Level implements Metadatable {
     public void doTick(int currentTick) {
         if (getProvider() == null) return; // level is closing
         this.tickTime = System.currentTimeMillis();
+        this.tpsWindowTicks++;
+        long tpsElapsed = this.tickTime - this.tpsWindowStartMillis;
+        if (tpsElapsed >= 1000) {
+            this.measuredTps = this.tpsWindowStartMillis == 0 ? 0f : this.tpsWindowTicks * 1000f / tpsElapsed;
+            this.tpsWindowStartMillis = this.tickTime;
+            this.tpsWindowTicks = 0;
+        }
         final boolean prof = this.tickPhaseProfiling;
         final long[] phase = prof ? new long[TICK_PHASE_NAMES.length] : null;
         long phaseStart = prof ? System.nanoTime() : 0;
@@ -1196,9 +1219,9 @@ public class Level implements Metadatable {
             updateBlockLight();
             if (prof) phase[1] = -phaseStart + (phaseStart = System.nanoTime());
             this.checkTime();
-            if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
+            if (this.tickTime >= nextTimeSendMillis) { // Send time to client every 30 seconds to make sure it
                 this.sendTime();
-                nextTimeSendTick = currentTick + 30 * 20;
+                nextTimeSendMillis = this.tickTime + 30_000L;
             }
 
             // 检查突出区块（玩家附近3x3区块）
@@ -1218,7 +1241,10 @@ public class Level implements Metadatable {
             }
             checkWeather();
 
-            this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
+            if (gameplaySettings.enableDaylightCycle() || gameplaySettings.enableWeather()
+                    || (currentTick & 127) == 0) {
+                this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
+            }
 
             this.levelCurrentTick++;
             if (prof) phase[2] = -phaseStart + (phaseStart = System.nanoTime());
@@ -1252,16 +1278,20 @@ public class Level implements Metadatable {
             }
             if (prof) phase[4] = -phaseStart + (phaseStart = System.nanoTime());
             if (!this.updateEntities.isEmpty()) {
-                CompletableFuture.runAsync(() -> updateEntities.keySet()
-                        .longParallelStream().forEach(id -> {
-                            Entity entity = this.updateEntities.get(id);
-                            if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                try {
-                                    entityAsyncPrepare.asyncPrepare(getTick());
-                                } catch (Exception e) {
+                // skip unless previous tick's serial loop saw entity implementing EntityAsyncPrepare
+                if (this.hasAsyncPrepareEntities) {
+                    CompletableFuture.runAsync(() -> updateEntities.keySet()
+                            .longParallelStream().forEach(id -> {
+                                Entity entity = this.updateEntities.get(id);
+                                if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                    try {
+                                        entityAsyncPrepare.asyncPrepare(getTick());
+                                    } catch (Exception e) {
+                                    }
                                 }
-                            }
-                        }), Server.getInstance().getComputeThreadPool()).join();
+                            }), Server.getInstance().getComputeThreadPool()).join();
+                }
+                boolean seenAsyncPrepare = false;
                 for (long id : this.updateEntities.keySetLong()) {
                     Entity entity = this.updateEntities.get(id);
                     if (entity instanceof EntityIntelligent intelligent) {
@@ -1280,10 +1310,14 @@ public class Level implements Metadatable {
                         this.updateEntities.remove(id);
                         continue;
                     }
+                    if (entity instanceof EntityAsyncPrepare) {
+                        seenAsyncPrepare = true;
+                    }
                     if (entity.closed || !entity.onUpdate(currentTick)) {
                         this.updateEntities.remove(id);
                     }
                 }
+                this.hasAsyncPrepareEntities = seenAsyncPrepare;
             }
             if (prof) phase[5] = -phaseStart + (phaseStart = System.nanoTime());
             this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
@@ -1291,8 +1325,9 @@ public class Level implements Metadatable {
 
             this.tickChunks();
             if (prof) phase[7] = -phaseStart + (phaseStart = System.nanoTime());
-            synchronized (changedBlocks) {
-                if (!this.changedBlocks.isEmpty()) {
+            if (!this.changedBlocks.isEmpty()) {
+                synchronized (changedBlocks) {
+                    if (!this.changedBlocks.isEmpty()) {
                     if (!this.players.isEmpty()) {
                         var iter = changedBlocks.long2ObjectEntrySet().fastIterator();
                         while (iter.hasNext()) {
@@ -1327,23 +1362,26 @@ public class Level implements Metadatable {
                         }
                     }
                     this.changedBlocks.clear();
+                    }
                 }
             }
             if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
                 this.checkSleep();
             }
 
-            for (long index : this.chunkPackets.keySet()) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
-                Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
-                if (chunkPlayers.length > 0) {
-                    for (var pk : this.chunkPackets.get(index)) {
-                        Server.broadcastPacket(chunkPlayers, pk);
+            if (!this.chunkPackets.isEmpty()) {
+                for (long index : this.chunkPackets.keySet()) {
+                    int chunkX = Level.getHashX(index);
+                    int chunkZ = Level.getHashZ(index);
+                    Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
+                    if (chunkPlayers.length > 0) {
+                        for (var pk : this.chunkPackets.get(index)) {
+                            Server.broadcastPacket(chunkPlayers, pk);
+                        }
                     }
                 }
+                this.chunkPackets.clear();
             }
-            this.chunkPackets.clear();
 
             if (gameRules.isStale()) {
                 final GameRulesChangedPacket packet = new GameRulesChangedPacket();
@@ -1740,6 +1778,9 @@ public class Level implements Metadatable {
             }
         }
 
+        int tickSpeed = gameplaySettings.enableBlockRandomTicking()
+                ? gameRules.getInteger(GameRule.RANDOM_TICK_SPEED) : 0;
+
         synchronized (this.chunkTickList) {
             if (!this.chunkTickList.isEmpty()) {
                 ObjectIterator<Long2IntMap.Entry> iter = this.chunkTickList.long2IntEntrySet().iterator();
@@ -1764,16 +1805,16 @@ public class Level implements Metadatable {
                         iter.remove();
                     }
 
-                    CompletableFuture.runAsync(() -> {
-                        for (Entity entity : chunk.getEntities().values()) {
-                            entity.scheduleUpdate();
-                        }
-                    });
+                    if (!chunk.getEntities().isEmpty()) {
+                        CompletableFuture.runAsync(() -> {
+                            for (Entity entity : chunk.getEntities().values()) {
+                                entity.scheduleUpdate();
+                            }
+                        });
+                    }
 
                     chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
 
-                    int tickSpeed = gameplaySettings.enableBlockRandomTicking()
-                            ? gameRules.getInteger(GameRule.RANDOM_TICK_SPEED) : 0;
                     if (tickSpeed <= 0) {
                         continue;
                     }
@@ -2300,7 +2341,7 @@ public class Level implements Metadatable {
         }
 
         if (entities) {
-            return this.fastCollidingEntities(bb.grow(0.25f, 0.25f, 0.25f), entity).size() > 0;
+            return !this.fastCollidingEntities(bb.grow(0.25f, 0.25f, 0.25f), entity).isEmpty();
         }
         return false;
     }
@@ -2540,6 +2581,9 @@ public class Level implements Metadatable {
     }
 
     public void updateBlockLight() {
+        if (this.blockLightQueue.isEmpty()) {
+            return;
+        }
         if (!gameplaySettings.enableBlockLightUpdates()) {
             synchronized (this.blockLightQueue) {
                 this.blockLightQueue.clear();
@@ -5640,7 +5684,18 @@ public class Level implements Metadatable {
     }
 
     public int getTick() {
-        return getServer().isLevelThreadMode() ? this.getBaseTickGameLoop().getTick() : getServer().getTick();
+        // Truncation is deliberate: consumers only compute tick *differences*, which stay
+        // correct across the int wrap. Absolute deadlines must use getCurrentTick() (long).
+        return getServer().isLevelThreadMode() ? (int) this.getBaseTickGameLoop().getTick() : getServer().getTick();
+    }
+
+    /**
+     * Actual level ticks executed per wall-clock second, sampled over a ~1 second window.
+     * Unlike {@link GameLoop#getTps()} (a per-tick capacity estimate clamped to the target),
+     * this reflects what the loop really achieved. 0 until the first window completes.
+     */
+    public float getMeasuredTps() {
+        return measuredTps;
     }
 
     /**

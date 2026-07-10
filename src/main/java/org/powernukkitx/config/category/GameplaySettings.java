@@ -73,6 +73,8 @@ public class GameplaySettings extends OkaeriConfig {
     boolean enableRecipes = true;
     @Comment("pnx.settings.gameplay.enableCreativeInventory")
     boolean enableCreativeInventory = true;
+    @Comment("pnx.settings.gameplay.enableDaylightCycle")
+    boolean enableDaylightCycle = true;
     @Comment("pnx.settings.gameplay.enableWeather")
     boolean enableWeather = true;
     @Comment("pnx.settings.gameplay.enableEntitySpawning")

@@ -1161,7 +1161,7 @@ public class Server {
     }
 
     public int getBaseTps() {
-        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 100_000);
+        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 1_000_000);
     }
 
     /**

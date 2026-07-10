@@ -256,7 +256,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                 " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
                                 (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
                                 (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "") +
-                                (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
+                                (level.getBaseTickGameLoop().isRunning() ? " (" + getTPSColor(level.getMeasuredTps()) + NukkitMath.round(level.getMeasuredTps(), 2) + " TPS, " + formatMspt(level.getBaseTickGameLoop().getMSPT()) + ")" : "")
                 );
             }
         } else if (fullMode){
@@ -419,13 +419,29 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
     }
 
     private TextFormat getTPSColor(float tps) {
+        float target = Math.max(1, Server.getInstance().getBaseTps());
+        float ratio = tps / target;
         TextFormat tpsColor = TextFormat.GREEN;
-        if (tps < 12) {
+        if (ratio < 0.60f) {
             tpsColor = TextFormat.RED;
-        } else if (tps < 17) {
+        } else if (ratio < 0.85f) {
             tpsColor = TextFormat.GOLD;
         }
         return tpsColor;
+    }
+
+    /**
+     * Formats a per-tick duration given in milliseconds, switching to µs/ns below 1 ms so
+     * high tick rates don't render in scientific notation (e.g. {@code 2.0E-4 MSPT}).
+     */
+    private static String formatMspt(float mspt) {
+        if (mspt >= 1f) {
+            return NukkitMath.round(mspt, 2) + " ms";
+        }
+        if (mspt >= 0.001f) {
+            return NukkitMath.round(mspt * 1000f, 2) + " µs";
+        }
+        return Math.round(mspt * 1_000_000f) + " ns";
     }
 
     public enum ComputerSystemEntry {
@@ -449,11 +465,11 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             currentCount++;
             float currentTps = Server.getInstance().getTicksPerSecond();
 
-            sender.sendMessage(TextFormat.GRAY + "[" + currentCount + "]" + getTPSColor(currentTps) + " Current TPS: " + currentTps);
+            sender.sendMessage(TextFormat.GRAY + "[" + currentCount + "]" + getTPSColor(currentTps) + " Current TPS: " + NukkitMath.round(currentTps, 2));
             tpsSum += currentTps;
             if (currentCount >= count) {
                 var averageTps = (tpsSum / count);
-                sender.sendMessage(TextFormat.GOLD + "Average TPS: " + getTPSColor(averageTps));
+                sender.sendMessage(TextFormat.GOLD + "Average TPS: " + getTPSColor(averageTps) + NukkitMath.round(averageTps, 2));
                 this.cancel();
             }
         }
