@@ -6,11 +6,12 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.trialchambers.TrialChambersStructure;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
-public class TrialChambersPopulator extends Populator {
+public class TrialChambersPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_trial_chambers";
 
@@ -24,6 +25,8 @@ public class TrialChambersPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         if (!chunk.isOverWorld()) {
             return;

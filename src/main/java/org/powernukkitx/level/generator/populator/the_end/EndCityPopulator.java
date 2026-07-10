@@ -6,11 +6,12 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.EndCityPieces;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.Xoroshiro128;
 import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
-public class EndCityPopulator extends Populator {
+public class EndCityPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "the_end_end_city";
     private static final int SPACING = 20;
@@ -18,6 +19,8 @@ public class EndCityPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

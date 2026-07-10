@@ -9,6 +9,7 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockFace;
@@ -23,7 +24,7 @@ import java.util.List;
 
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
-public class PopulatorRuinedPortal extends Populator {
+public class PopulatorRuinedPortal extends Populator implements PopulatorStructure {
 
     public static final String NAME = "generic_ruined_portal";
 
@@ -64,6 +65,8 @@ public class PopulatorRuinedPortal extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

@@ -1,5 +1,6 @@
 package org.powernukkitx.level.generator.terra;
 
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.ChunkState;
@@ -7,9 +8,16 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateStage;
 import org.powernukkitx.level.generator.PopulatedGenerator;
+import org.powernukkitx.level.generator.populator.generic.PopulatorRuinedPortal;
+import org.powernukkitx.level.generator.populator.nether.BastionRemnantPopulator;
+import org.powernukkitx.level.generator.populator.nether.NetherFortressPopulator;
+import org.powernukkitx.level.generator.populator.nether.soulsand_valley.NetherFossilPopulator;
+import org.powernukkitx.level.generator.populator.the_end.EndCityPopulator;
 import org.powernukkitx.level.generator.stages.GeneratedStage;
 import org.powernukkitx.level.generator.stages.LightPopulationStage;
 import org.powernukkitx.level.generator.stages.FinishedStage;
+import org.powernukkitx.level.generator.stages.PopulatorStage;
+import org.powernukkitx.level.generator.stages.normal.NormalPopulatorStage;
 import org.powernukkitx.level.generator.terra.delegate.PNXProtoChunk;
 import org.powernukkitx.level.generator.terra.delegate.PNXProtoWorld;
 import org.powernukkitx.level.generator.terra.delegate.PNXServerWorld;
@@ -21,6 +29,7 @@ import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -34,15 +43,12 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
 
     public TerraGenerator(DimensionData dimensionData, Map<String, Object> options) {
         super(dimensionData, options);
-        String packName = "default";
-        if (options.containsKey("pack")) {
-            packName = options.get("pack").toString();
-        }
+        String packName = options.getOrDefault("pack", "overworld").toString();
         this.configPack = createConfigPack(packName);
         this.chunkGenerator = createGenerator(this.configPack);
         this.biomeProvider = this.configPack.getBiomeProvider();
         this.worldProperties = new WorldProperties() {
-            
+
             @Override
             public long getSeed() {
                 return level.getSeed();
@@ -69,6 +75,9 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
     public void stages(GenerateStage.Builder builder) {
         builder.start(new TerrainStage());
         builder.next(Registries.GENERATE_STAGE.get(GeneratedStage.NAME));
+        if((boolean) options.getOrDefault("structures", true)) {
+            builder.next(new StructureStage());
+        }
         builder.next(new PopulateStage());
         builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
@@ -115,6 +124,31 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
         }
     }
 
+    class StructureStage extends PopulatorStage {
+
+        private final ObjectArraySet<String> populators = new ObjectArraySet<>();
+
+        public StructureStage() {
+            populators.addAll(switch (dimensionData.getDimensionId()) {
+                case 1 -> List.of(BastionRemnantPopulator.NAME,
+                    NetherFortressPopulator.NAME,
+                    PopulatorRuinedPortal.NAME,
+                    NetherFossilPopulator.NAME);
+                case 2 -> List.of(EndCityPopulator.NAME);
+                default -> NormalPopulatorStage.POPULATORS.clone();
+            });
+        }
+
+        @Override
+        public ObjectArraySet<String> populators() {
+            return populators;
+        }
+
+        @Override
+        public String name() {
+            return "terra_structure";
+        }
+    }
     class PopulateStage extends GenerateStage {
 
         @Override
