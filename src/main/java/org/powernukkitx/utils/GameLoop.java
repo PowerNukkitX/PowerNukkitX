@@ -53,10 +53,6 @@ public final class GameLoop {
      * sub-microsecond tick periods.
      */
     private int summaryIndex;
-    /**
-     * Long, not int: an int tick counter wraps after ~6 hours at 100k TPS
-     * (~36 minutes at 1M TPS), breaking absolute tick-deadline comparisons.
-     */
     @Getter
     private long tick;
 

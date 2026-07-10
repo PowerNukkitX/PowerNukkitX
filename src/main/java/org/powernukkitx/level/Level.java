@@ -5684,8 +5684,6 @@ public class Level implements Metadatable {
     }
 
     public int getTick() {
-        // Truncation is deliberate: consumers only compute tick *differences*, which stay
-        // correct across the int wrap. Absolute deadlines must use getCurrentTick() (long).
         return getServer().isLevelThreadMode() ? (int) this.getBaseTickGameLoop().getTick() : getServer().getTick();
     }
 
