@@ -3,6 +3,7 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +42,18 @@ public class BlockBush extends BlockFlowable implements Supportable {
         }
         return false;
     }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (!isSupportDirt(down(1, 0))) {
+                this.getLevel().useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+        }
+        return 0;
+    }
+
 
     @Override
     public Item[] getDrops(Item item) {
