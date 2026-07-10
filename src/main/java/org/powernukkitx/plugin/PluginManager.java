@@ -22,6 +22,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -677,11 +678,19 @@ public class PluginManager {
         }
     }
 
+    private final Map<Class<? extends Event>, HandlerList> handlerListCache = new ConcurrentHashMap<>();
+
     private HandlerList getEventListeners(Class<? extends Event> type) throws IllegalAccessException {
+        HandlerList cached = handlerListCache.get(type);
+        if (cached != null) {
+            return cached;
+        }
         try {
             Method method = getRegistrationClass(type).getDeclaredMethod("getHandlers");
             method.setAccessible(true);
-            return (HandlerList) method.invoke(null);
+            HandlerList handlerList = (HandlerList) method.invoke(null);
+            handlerListCache.put(type, handlerList);
+            return handlerList;
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("getHandlers method in " + type.getName() + " was not static!", e);
         } catch (Exception e) {
