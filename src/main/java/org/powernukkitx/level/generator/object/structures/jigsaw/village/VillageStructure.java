@@ -442,9 +442,10 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected int getTerrainY(Level level, int x, int z) {
         int height = level.getHeightMap(x, z);
-        while (isReplaceableTerrainCover(level.getBlock(x, height, z))
+        while (height > level.getMinHeight()
+                && (isReplaceableTerrainCover(level.getBlock(x, height, z))
                 || level.getBlock(x, height, z).canBeReplaced()
-                || level.getBlock(x, height, z).isTransparent()) {
+                || level.getBlock(x, height, z).isTransparent())) {
             height--;
         }
         return height;
