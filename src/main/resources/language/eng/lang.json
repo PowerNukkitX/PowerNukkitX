@@ -121,7 +121,6 @@
   "pnx.settings.gameplay.enableWeather": "Whether to run the weather cycle at all. Disabling skips all weather processing every tick and forces clear weather (stronger than the doweathercycle gamerule, which is ignored)",
   "pnx.settings.gameplay.enableEntitySpawning": "Whether to run natural entity spawning. Disabling skips all spawn rule processing every tick (stronger than the domobspawning gamerule, which is ignored). Spawn eggs and plugins can still spawn entities",
   "pnx.settings.gameplay.enableBlockRandomTicking": "Whether to run random block ticks. Disabling stops crop growth, fire spread, leaf decay, ice melting etc. and skips the random tick chunk scan every tick (stronger than randomtickspeed 0). Scheduled updates (redstone, pistons, liquids) keep working",
-  "pnx.settings.gameplay.enableBlockLightUpdates": "Whether to process block light updates. Only disable on servers where lighting artifacts are acceptable (fixed/pre-lit maps)",
   "pnx.settings.gameplay.enableLiquidFlow": "Whether liquids flow. Disabling makes water and lava static (placed liquid stays a source block and never spreads)",
   "pnx.settings.gameplay.enableItemDrops": "Whether breaking blocks and killing entities drop items. Disabling prevents all item entity drops from block breaks and deaths (item entities cost tick time)",
   "pnx.settings.gameplay.enableXpOrbs": "Whether XP orbs spawn. Disabling prevents all experience orb entities (mob kills, mining, furnaces give no XP)",

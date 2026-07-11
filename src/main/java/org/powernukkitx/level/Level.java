@@ -393,6 +393,8 @@ public class Level implements Metadatable {
     /// antiXray system
     private AntiXraySystem antiXraySystem;
     private GameplaySettings gameplaySettings;
+    /** Cached {@code chunk-settings.lightUpdates}: gates all block/sky light work (boot-time only). */
+    private boolean lightUpdatesEnabled;
     /**
      * Whether the previous tick's entity loop saw an {@link EntityAsyncPrepare}; gates the
      * compute-pool dispatch in {@link #doTick(int)}. Starts true so the first tick dispatches.
@@ -419,6 +421,7 @@ public class Level implements Metadatable {
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
         this.gameplaySettings = server.getSettings().gameplaySettings();
+        this.lightUpdatesEnabled = server.getSettings().chunkSettings().lightUpdates();
         this.autoSave = server.getAutoSave();
         this.generatorClass = Registries.GENERATOR.get(generatorConfig.name());
         if (generatorClass == null) {
@@ -2584,7 +2587,7 @@ public class Level implements Metadatable {
         if (this.blockLightQueue.isEmpty()) {
             return;
         }
-        if (!gameplaySettings.enableBlockLightUpdates()) {
+        if (!lightUpdatesEnabled) {
             synchronized (this.blockLightQueue) {
                 this.blockLightQueue.clear();
             }
@@ -2815,7 +2818,7 @@ public class Level implements Metadatable {
         }
 
         if (update) {
-            if (server.getSettings().chunkSettings().lightUpdates()) {
+            if (lightUpdatesEnabled) {
                 updateAllLight(block);
             }
 
@@ -3936,7 +3939,7 @@ public class Level implements Metadatable {
             addBlockChange(x, y, z);
 
         temporalVector.setComponents(x, y, z);
-        if (server.getSettings().chunkSettings().lightUpdates()) {
+        if (lightUpdatesEnabled) {
             updateAllLight(new Vector3(x, y, z));
         }
     }
@@ -4339,6 +4342,24 @@ public class Level implements Metadatable {
         if (!updateBlockEntities.contains(entity)) {
             updateBlockEntities.add(entity);
         }
+    }
+
+    /**
+     * Diagnostics: number of block entities currently queued for per-tick updates.
+     * O(n) — intended for commands like /debug mspt, not for hot paths.
+     */
+    public int getPendingBlockEntityUpdateCount() {
+        return updateBlockEntities.size();
+    }
+
+    /** Diagnostics: total block entities registered in this level. */
+    public int getBlockEntityCount() {
+        return blockEntities.size();
+    }
+
+    /** Diagnostics: total entities registered in this level. */
+    public int getEntityCount() {
+        return entities.size();
     }
 
     public void removeBlockEntity(BlockEntity entity) {

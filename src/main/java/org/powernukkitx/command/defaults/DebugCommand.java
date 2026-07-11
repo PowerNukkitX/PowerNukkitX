@@ -582,6 +582,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 levelLine += " §7 avg tick: §f"
                         + formatNanos((long) (level.getBaseTickGameLoop().getMSPT() * 1_000_000f));
             }
+            levelLine += " §7 entities: §f" + level.getEntityCount()
+                    + " §7 blockEntities: §f" + level.getBlockEntityCount()
+                    + " §7(updating: §f" + level.getPendingBlockEntityUpdateCount() + "§7)";
             sender.sendMessage(levelLine);
             long[] phases = level.snapshotTickPhaseAvgNanos(true);
             StringBuilder sb = new StringBuilder("§7    phases: §f");

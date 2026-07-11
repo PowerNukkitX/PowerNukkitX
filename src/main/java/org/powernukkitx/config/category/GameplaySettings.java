@@ -81,8 +81,6 @@ public class GameplaySettings extends OkaeriConfig {
     boolean enableEntitySpawning = true;
     @Comment("pnx.settings.gameplay.enableBlockRandomTicking")
     boolean enableBlockRandomTicking = true;
-    @Comment("pnx.settings.gameplay.enableBlockLightUpdates")
-    boolean enableBlockLightUpdates = true;
     @Comment("pnx.settings.gameplay.enableLiquidFlow")
     boolean enableLiquidFlow = true;
     @Comment("pnx.settings.gameplay.enableItemDrops")
