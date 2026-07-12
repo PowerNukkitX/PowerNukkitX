@@ -10,13 +10,14 @@ import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStart;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StrongholdPopulator extends Populator {
+public class StrongholdPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_stronghold";
 
@@ -29,6 +30,8 @@ public class StrongholdPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

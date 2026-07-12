@@ -1,5 +1,6 @@
 package org.powernukkitx.level.generator.terra.delegate;
 
+import lombok.extern.slf4j.Slf4j;
 import org.powernukkitx.level.Position;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -11,6 +12,7 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
+@Slf4j
 public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int centerChunkZ) implements ProtoWorld {
 
     @Override
@@ -36,8 +38,13 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         String identifier = (String) entityType.getHandle();
-        org.powernukkitx.entity.Entity nukkitEntity = org.powernukkitx.entity.Entity.createEntity(identifier, new Position(v, v1, v2, ((PNXServerWorld) serverWorld).generatorWrapper().getLevel()));
-        return new PNXEntity(nukkitEntity, serverWorld);
+        try {
+            org.powernukkitx.entity.Entity nukkitEntity = org.powernukkitx.entity.Entity.createEntity(identifier, new Position(v, v1, v2, ((PNXServerWorld) serverWorld).generatorWrapper().getLevel()));
+            return new PNXEntity(nukkitEntity, serverWorld);
+        } catch (Exception e) {
+            log.error("Failed to spawn entity {} in {}", identifier, serverWorld);
+            throw e;
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.powernukkitx.level.generator.object.structures.OceanMonumentPieces;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStart;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.registry.Registries;
@@ -20,7 +21,7 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 
-public class OceanMonumentPopulator extends Populator {
+public class OceanMonumentPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_ocean_monument";
 
@@ -40,6 +41,8 @@ public class OceanMonumentPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

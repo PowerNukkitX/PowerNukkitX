@@ -12,10 +12,11 @@ import org.powernukkitx.level.generator.object.structures.jigsaw.village.SnowyVi
 import org.powernukkitx.level.generator.object.structures.jigsaw.village.TaigaVillageStructure;
 import org.powernukkitx.level.generator.object.structures.jigsaw.village.VillageStructure;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 
-public class VillagePopulator extends Populator {
+public class VillagePopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_village";
 
@@ -34,6 +35,8 @@ public class VillagePopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

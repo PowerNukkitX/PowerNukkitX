@@ -9,6 +9,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.registry.Registries;
@@ -20,7 +21,7 @@ import java.util.Objects;
 import static org.powernukkitx.level.generator.stages.nether.NetherTerrainStage.LAVA_LEVEL;
 
 @Slf4j
-public class NetherFossilPopulator extends Populator {
+public class NetherFossilPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "nether_fossil";
 
@@ -32,6 +33,8 @@ public class NetherFossilPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

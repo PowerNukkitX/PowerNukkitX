@@ -7,10 +7,11 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.ObjectDesertPyramid;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.Vector3;
 
-public class DesertPyramidPopulator extends Populator {
+public class DesertPyramidPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_desert_pyramid";
 
@@ -25,6 +26,8 @@ public class DesertPyramidPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
