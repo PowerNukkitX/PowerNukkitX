@@ -18,9 +18,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 public class BlockBubbleColumn extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
+    private static final double BUBBLE_UP_TARGET_SPEED = 8.0 / 20.0;
+    private static final double BUBBLE_DOWN_TARGET_SPEED = -6.0 / 20.0;
+    private static final double BUBBLE_ACCELERATION = 0.8;
+
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
@@ -53,12 +56,12 @@ public class BlockBubbleColumn extends BlockTransparent {
     public boolean canBeFlowedInto() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
-    
+
     @Override
     public Item toItem() {
         return Item.AIR;
@@ -68,7 +71,7 @@ public class BlockBubbleColumn extends BlockTransparent {
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }
-    
+
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
@@ -106,32 +109,31 @@ public class BlockBubbleColumn extends BlockTransparent {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity.canBeMovedByCurrents()) {
-            if (up().isAir()) {
-                if (isDragDown()) {
-                    entity.motionY = Math.max(-0.9, entity.motionY - 0.03);
-                } else {
-                    if (entity instanceof EntityPhysical entityPhysical && entity.motionY < -entityPhysical.getGravity() * 8) {
-                        entity.motionY = -entityPhysical.getGravity() * 2;
-                    }
-                    entity.motionY = Math.min(1.8, entity.motionY + 0.1);
-                }
-                
-                ThreadLocalRandom random = ThreadLocalRandom.current();
-                for(int i = 0; i < 2; ++i) {
-                    level.addParticle(new WaterSplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
-                    level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
-                }
-                
+        if (!entity.canBeMovedByCurrents()) return;
+
+        if (isDragDown()) {
+            entity.motionY = Math.max(BUBBLE_DOWN_TARGET_SPEED, entity.motionY - BUBBLE_ACCELERATION);
+        } else {
+            if (entity instanceof EntityPhysical entityPhysical && entity.motionY < -entityPhysical.getGravity() * 8) {
+                entity.motionY = -entityPhysical.getGravity() * 2;
             } else {
-                if (isDragDown()) {
-                    entity.motionY = Math.max(-0.3, entity.motionY - 0.3);
-                } else {
-                    entity.motionY = Math.min(0.7, entity.motionY + 0.06);
-                }
+                entity.motionY = Math.min(BUBBLE_UP_TARGET_SPEED, entity.motionY + BUBBLE_ACCELERATION);
             }
-            entity.motionChanged = true;
-            entity.resetFallDistance();
+        }
+
+        if (up().isAir()) {
+            spawnColumnParticles();
+        }
+
+        entity.motionChanged = true;
+        entity.resetFallDistance();
+    }
+
+    private void spawnColumnParticles() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 0; i < 2; ++i) {
+            level.addParticle(new WaterSplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
+            level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
         }
     }
 
@@ -144,7 +146,7 @@ public class BlockBubbleColumn extends BlockTransparent {
         this.getLevel().setBlock(this, this, true, true);
         return true;
     }
-    
+
     @Override
     public double getHardness() {
         return 100;
