@@ -83,9 +83,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             sessionFailEvent.setDisconnectFailReason(notAuthenticated);
             server.getPluginManager().callEvent(sessionFailEvent);
 
-            if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-            }
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+
             return;
         }
 
