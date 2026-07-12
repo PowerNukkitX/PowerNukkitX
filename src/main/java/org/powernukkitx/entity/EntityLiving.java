@@ -399,6 +399,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     final AnimatePacket animatePacket = new AnimatePacket();
                     animatePacket.setTargetRuntimeID(this.getId());
                     animatePacket.setAction(AnimatePacket.Action.CRITICAL_HIT);
+                    animatePacket.setData(55f);
 
                     this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animatePacket);
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
