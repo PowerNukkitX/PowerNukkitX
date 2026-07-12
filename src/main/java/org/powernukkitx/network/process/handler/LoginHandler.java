@@ -2,7 +2,7 @@ package org.powernukkitx.network.process.handler;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
-import org.powernukkitx.event.player.PlayerLoginSessionFailEvent;
+import org.powernukkitx.event.player.PlayerLoginFailEvent;
 import org.powernukkitx.event.player.PlayerPreLoginEvent;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.process.PacketHandler;
@@ -40,14 +40,14 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
     @Override
     public void handle(LoginPacket packet, PlayerSessionHolder holder, Server server) {
-        PlayerLoginSessionFailEvent sessionFailEvent = new PlayerLoginSessionFailEvent(holder, DisconnectFailReason.NO_REASON);
+        PlayerLoginFailEvent sessionFailEvent = new PlayerLoginFailEvent(holder, DisconnectFailReason.NO_REASON);
 
         if (!holder.getState().equals(SessionState.LOGIN)) {
             sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNEXPECTED_PACKET);
             server.getPluginManager().callEvent(sessionFailEvent);
 
             if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             }
             return;
         }
@@ -66,7 +66,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             server.getPluginManager().callEvent(sessionFailEvent);
 
             if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT);
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             }
             return;
         }
@@ -78,7 +78,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             server.getPluginManager().callEvent(sessionFailEvent);
 
             if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(notAuthenticated);
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             }
             return;
         }
@@ -89,7 +89,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             server.getPluginManager().callEvent(sessionFailEvent);
 
             if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(notAuthenticated);
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             }
             return;
         }
@@ -101,7 +101,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 server.getPluginManager().callEvent(sessionFailEvent);
 
                 if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(notAuthenticated);
+                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 }
                 return;
             }
@@ -114,7 +114,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 server.getPluginManager().callEvent(sessionFailEvent);
 
                 if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(DisconnectFailReason.UNKNOWN, event.getKickMessage());
+                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 }
                 return;
             }
@@ -124,7 +124,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 server.getPluginManager().callEvent(sessionFailEvent);
 
                 if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(DisconnectFailReason.SERVER_FULL);
+                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 }
                 return;
             }
@@ -134,7 +134,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 server.getPluginManager().callEvent(sessionFailEvent);
 
                 if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(DisconnectFailReason.NOT_ALLOWED);
+                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 }
                 return;
             }
@@ -157,7 +157,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 server.getPluginManager().callEvent(sessionFailEvent);
 
                 if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(DisconnectFailReason.INVALID_PLATFORM_SKIN);
+                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 }
                 return;
             }
@@ -170,7 +170,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 server.getPluginManager().callEvent(sessionFailEvent);
 
                 if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA);
+                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 }
                 return;
             }
@@ -196,7 +196,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             server.getPluginManager().callEvent(sessionFailEvent);
 
             if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(DisconnectFailReason.NOT_AUTHENTICATED);
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             }
         }
     }
