@@ -1804,8 +1804,6 @@ public class Level implements Metadatable {
         }
 
         if (hasTickingAreas) {
-            // Recompute the hash list only occasionally: iterating areas and hashing their
-            // chunk positions every tick showed up in profiles at high tick rates.
             if (this.tickingAreaChunkHashes == null || (this.levelCurrentTick & 127) == 0) {
                 var hashes = new it.unimi.dsi.fastutil.longs.LongArrayList();
                 for (TickingArea area : tickingAreas) {
