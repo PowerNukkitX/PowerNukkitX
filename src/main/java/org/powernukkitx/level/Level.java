@@ -1912,8 +1912,6 @@ public class Level implements Metadatable {
     private void appendTickingAreaChunks(Set<TickingArea> tickingAreas, boolean hasTickingAreas) {
         long areaVersion = this.server.getTickingAreaManager() != null
                 ? this.server.getTickingAreaManager().getVersion() : 0;
-        // Always record the version — also when this level has no areas — or a version bump
-        // from another level's areas would look permanently stale to the tick-all cache check.
         if (!hasTickingAreas) {
             this.tickingAreaChunkHashes = null;
             this.tickingAreaHashesVersion = areaVersion;
