@@ -83,9 +83,6 @@ import org.powernukkitx.utils.PortalHelper;
 import org.powernukkitx.utils.TextFormat;
 import org.powernukkitx.utils.Utils;
 import com.google.common.collect.Iterables;
-import it.unimi.dsi.fastutil.floats.FloatArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
@@ -886,7 +883,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.getDataFlag(ActorFlags.WALL_CLIMBING);
     }
 
-    public void setCanClimbWalls(boolean value) {
+    public boolean isWallClimbing() {
+        return this.getDataFlag(ActorFlags.WALL_CLIMBING);
+    }
+
+    public void setWallClimbing(boolean value) {
         this.setDataFlag(ActorFlags.WALL_CLIMBING, value);
     }
 

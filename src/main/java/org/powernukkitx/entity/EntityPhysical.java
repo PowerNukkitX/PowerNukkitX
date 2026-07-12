@@ -16,6 +16,7 @@ import org.powernukkitx.event.player.EntityFreezeEvent;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.AxisAlignedBB;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector2;
 import org.powernukkitx.math.Vector2f;
@@ -100,6 +101,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (!this.isImmobile()) {
             // Dealing with gravity
             handleGravity();
+            handleWallClimbing();
             if (needsRecalcMovement) {
                 // Handling collision box extrusion movement
                 handleCollideMovement(currentTick);
@@ -200,6 +202,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.motionY -= this.getGravity();
         if (!this.onGround && this.hasWaterAt(getFootHeight())) {
             // Landing water
+            resetFallDistance();
+        }
+    }
+
+    protected void handleWallClimbing() {
+        if (this.isWallClimbing()) {
+            this.motionY = NukkitMath.clamp(this.motionY, -2, 2);
             resetFallDistance();
         }
     }
