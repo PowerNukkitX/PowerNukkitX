@@ -22,7 +22,7 @@ public abstract class BlockFallable extends BlockSolid {
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().getSettings().gameplaySettings().enableBlockGravity()) {
+        if (!this.level.getGameplaySettings().enableBlockGravity()) {
             return 0;
         }
         Block down = this.down();

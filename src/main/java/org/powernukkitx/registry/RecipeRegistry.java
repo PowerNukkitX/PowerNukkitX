@@ -464,6 +464,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     @Override
     public void register(String key, Recipe recipe) throws RegisterException {
+        if (!enabled) {
+            log.debug("Ignoring recipe registration for {} because the recipe registry is disabled by gameplay settings", key);
+            return;
+        }
         if (recipe instanceof CraftingRecipe craftingRecipe) {
             Item item = recipe.getResults().getFirst();
             UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(item.getId()), String.valueOf(item.getDamage()), String.valueOf(item.getCount()), Arrays.toString(item.getNbtBytes()));

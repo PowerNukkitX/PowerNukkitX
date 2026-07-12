@@ -181,6 +181,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Add an item to {@link CreativeItemRegistry}
      */
     public void addCreativeItem(Item item) {
+        if (!enabled) return;
         int i = MAP.lastIntKey();
         try {
             this.register(i + 1, item.clone());
@@ -193,6 +194,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Add an item to {@link CreativeItemRegistry} with a specific group index.
      */
     public void addCreativeItem(Item item, int groupIndex) {
+        if (!enabled) return;
         int i = MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1;
         try {
             this.register(i, item.clone(), groupIndex);
@@ -281,6 +283,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Register a creative item and specify its group index directly.
      */
     public void register(Integer key, Item value, int groupIndex) throws RegisterException {
+        if (!enabled) return;
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
         }
@@ -289,6 +292,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     @Override
     public void register(Integer key, Item value) throws RegisterException {
+        if (!enabled) return;
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);

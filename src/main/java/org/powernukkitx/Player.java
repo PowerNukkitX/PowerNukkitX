@@ -3095,6 +3095,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
+            this.nextChunkOrderRun = 0;
             // Vanilla cadence is one run per 20 Hz tick;
             // gate by wall clock to keep that cadence at any tick rate.
             long now = System.currentTimeMillis();

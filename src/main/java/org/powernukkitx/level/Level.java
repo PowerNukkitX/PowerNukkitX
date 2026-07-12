@@ -13,6 +13,7 @@ import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.config.category.GameplaySettings;
 import org.powernukkitx.level.tickingarea.TickingArea;
+import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityAsyncPrepare;
 import org.powernukkitx.entity.EntityID;
@@ -1102,6 +1103,10 @@ public class Level implements Metadatable {
         return unregisterChunkLoader(loader, chunkX, chunkZ, true);
     }
 
+    public GameplaySettings getGameplaySettings() {
+        return gameplaySettings;
+    }
+
     public void checkTime() {
         if (!gameplaySettings.enableDaylightCycle()) {
             return;
@@ -1759,9 +1764,9 @@ public class Level implements Metadatable {
     }
 
     private void tickChunks() {
-        Set<TickingArea> tickingAreas = this.server.getTickingAreaManager() != null
-                ? this.server.getTickingAreaManager().getAllTickingArea() : null;
-        boolean hasTickingAreas = tickingAreas != null && !tickingAreas.isEmpty();
+        TickingAreaManager areaManager = this.server.getTickingAreaManager();
+        long areaVersion = areaManager != null ? areaManager.getVersion() : 0;
+        boolean hasTickingAreas = areaManager != null && areaManager.hasAreas();
         if (this.chunksPerTicks == 0 || (this.loaders.isEmpty() && !hasTickingAreas)) {
             this.chunkTickList.clear();
             this.cachedTickChunks = null;
@@ -1772,7 +1777,7 @@ public class Level implements Metadatable {
                 ? gameRules.getInteger(GameRule.RANDOM_TICK_SPEED) : 0;
 
         if (this.chunksPerTicks < 0) {
-            tickAllChunksCached(tickingAreas, hasTickingAreas, tickSpeed);
+            tickAllChunksCached(areaManager, hasTickingAreas, areaVersion, tickSpeed);
             return;
         }
         this.cachedTickChunks = null;
@@ -1812,7 +1817,7 @@ public class Level implements Metadatable {
             }
         }
 
-        appendTickingAreaChunks(tickingAreas, hasTickingAreas);
+        appendTickingAreaChunks(areaManager, hasTickingAreas, areaVersion);
 
         synchronized (this.chunkTickList) {
             if (!this.chunkTickList.isEmpty()) {
@@ -1852,21 +1857,19 @@ public class Level implements Metadatable {
      * Ticks the cached tick-all chunk set, rebuilding it when a loader crossed a chunk
      * border, a chunk loaded or unloaded, or ticking areas changed.
      */
-    private void tickAllChunksCached(Set<TickingArea> tickingAreas, boolean hasTickingAreas, int tickSpeed) {
+    private void tickAllChunksCached(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion, int tickSpeed) {
         long loaderKey = 1;
         synchronized (this.loaders) {
             for (ChunkLoader loader : this.loaders.values()) {
                 loaderKey = loaderKey * 31 + Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
             }
         }
-        long areaVersion = this.server.getTickingAreaManager() != null
-                ? this.server.getTickingAreaManager().getVersion() : 0;
         if (this.cachedTickChunks == null || this.tickChunkCacheDirty
                 || loaderKey != this.cachedTickChunksLoaderKey
                 || areaVersion != this.tickingAreaHashesVersion) {
             this.tickChunkCacheDirty = false;
             this.cachedTickChunksLoaderKey = loaderKey;
-            rebuildTickAllChunkCache(tickingAreas, hasTickingAreas);
+            rebuildTickAllChunkCache(areaManager, hasTickingAreas, areaVersion);
         }
         for (IChunk chunk : this.cachedTickChunks) {
             if (!chunk.isLoaded()) {
@@ -1876,7 +1879,7 @@ public class Level implements Metadatable {
         }
     }
 
-    private void rebuildTickAllChunkCache(Set<TickingArea> tickingAreas, boolean hasTickingAreas) {
+    private void rebuildTickAllChunkCache(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
         this.chunkTickList.clear();
         LevelProvider provider = requireProvider();
         synchronized (this.loaders) {
@@ -1893,7 +1896,7 @@ public class Level implements Metadatable {
                 }
             }
         }
-        appendTickingAreaChunks(tickingAreas, hasTickingAreas);
+        appendTickingAreaChunks(areaManager, hasTickingAreas, areaVersion);
 
         List<IChunk> resolved = new ArrayList<>(this.chunkTickList.size());
         for (Long2IntMap.Entry entry : this.chunkTickList.long2IntEntrySet()) {
@@ -1911,9 +1914,7 @@ public class Level implements Metadatable {
         this.cachedTickChunks = resolved.toArray(new IChunk[0]);
     }
 
-    private void appendTickingAreaChunks(Set<TickingArea> tickingAreas, boolean hasTickingAreas) {
-        long areaVersion = this.server.getTickingAreaManager() != null
-                ? this.server.getTickingAreaManager().getVersion() : 0;
+    private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
         if (!hasTickingAreas) {
             this.tickingAreaChunkHashes = null;
             this.tickingAreaHashesVersion = areaVersion;
@@ -1922,7 +1923,7 @@ public class Level implements Metadatable {
         if (this.tickingAreaChunkHashes == null || areaVersion != this.tickingAreaHashesVersion) {
             this.tickingAreaHashesVersion = areaVersion;
             var hashes = new LongOpenHashSet();
-            for (TickingArea area : tickingAreas) {
+            for (TickingArea area : areaManager.getAllTickingArea()) {
                 if (!this.getName().equals(area.getLevelName())) {
                     continue;
                 }

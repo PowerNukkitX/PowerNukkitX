@@ -248,6 +248,10 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
 
             for (Level level : server.getLevels().values()) {
+                float levelTps = level.getMeasuredTps();
+                if (levelTps <= 0) {
+                    levelTps = level.getBaseTickGameLoop().getTps();
+                }
                 sender.sendMessage(
                         TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
                                 TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
@@ -256,7 +260,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                 " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
                                 (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
                                 (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "") +
-                                (level.getBaseTickGameLoop().isRunning() ? " (" + getTPSColor(level.getMeasuredTps()) + NukkitMath.round(level.getMeasuredTps(), 2) + " TPS, " + formatMspt(level.getBaseTickGameLoop().getMSPT()) + ")" : "")
+                                (level.getBaseTickGameLoop().isRunning() ? " (" + getTPSColor(levelTps) + NukkitMath.round(levelTps, 2) + " TPS, " + NukkitMath.formatNanos((long) (level.getBaseTickGameLoop().getMSPT() * 1_000_000f)) + ")" : "")
                 );
             }
         } else if (fullMode){
@@ -428,20 +432,6 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             tpsColor = TextFormat.GOLD;
         }
         return tpsColor;
-    }
-
-    /**
-     * Formats a per-tick duration given in milliseconds, switching to µs/ns below 1 ms so
-     * high tick rates don't render in scientific notation (e.g. {@code 2.0E-4 MSPT}).
-     */
-    private static String formatMspt(float mspt) {
-        if (mspt >= 1f) {
-            return NukkitMath.round(mspt, 2) + " ms";
-        }
-        if (mspt >= 0.001f) {
-            return NukkitMath.round(mspt * 1000f, 2) + " µs";
-        }
-        return Math.round(mspt * 1_000_000f) + " ns";
     }
 
     public enum ComputerSystemEntry {

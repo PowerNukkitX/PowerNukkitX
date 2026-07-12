@@ -41,6 +41,11 @@ public abstract class TickingAreaManager {
 
     public abstract Set<TickingArea> getAllTickingArea();
 
+    public boolean hasAreas() {
+        Set<TickingArea> areas = getAllTickingArea();
+        return areas != null && !areas.isEmpty();
+    }
+
     public abstract TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos);
 
     public abstract TickingArea getTickingAreaByPos(Position pos);

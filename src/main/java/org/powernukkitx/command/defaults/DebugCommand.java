@@ -54,6 +54,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import static org.powernukkitx.math.NukkitMath.formatNanos;
+
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
         super(name, "commands.debug.description");
@@ -615,16 +617,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             }
         }
         return 1;
-    }
-
-    private static String formatNanos(long nanos) {
-        if (nanos >= 1_000_000L) {
-            return NukkitMath.round(nanos / 1_000_000d, 3) + " ms";
-        }
-        if (nanos >= 1_000L) {
-            return NukkitMath.round(nanos / 1_000d, 2) + " µs";
-        }
-        return nanos + " ns";
     }
 
     private int handleTps(CommandSender sender, ParamList value, CommandLogger log) {

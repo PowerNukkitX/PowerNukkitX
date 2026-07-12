@@ -127,19 +127,13 @@ public class BlockUpdateScheduler {
 
     public void add(BlockUpdateEntry entry) {
         long time = getMinTime(entry);
-        Long previousTime = entryToTick.put(entry, time);
-        if (previousTime != null && previousTime != time) {
-            Set<BlockUpdateEntry> previousSet = queuedUpdates.get((long) previousTime);
-            if (previousSet != null) {
-                previousSet.remove(entry);
-            }
-        }
         Set<BlockUpdateEntry> updateSet = queuedUpdates.get(time);
         if (updateSet == null) {
             Set<BlockUpdateEntry> tmp = queuedUpdates.putIfAbsent(time, updateSet = ConcurrentHashMap.newKeySet());
             if (tmp != null) updateSet = tmp;
         }
         updateSet.add(entry);
+        entryToTick.put(entry, time);
     }
 
     public boolean contains(BlockUpdateEntry entry) {

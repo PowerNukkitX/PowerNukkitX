@@ -226,7 +226,7 @@ public abstract class BlockLiquid extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().getSettings().gameplaySettings().enableLiquidFlow()) {
+        if (!this.level.getGameplaySettings().enableLiquidFlow()) {
             return 0;
         }
         if (type == Level.BLOCK_UPDATE_NORMAL) {//for normal update tick

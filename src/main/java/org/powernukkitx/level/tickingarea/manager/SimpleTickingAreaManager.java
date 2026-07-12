@@ -56,6 +56,11 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
+    public boolean hasAreas() {
+        return !areaMap.isEmpty();
+    }
+
+    @Override
     public @Nullable TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos) {
         TickingArea matchedArea = null;
         for (var area : areaMap.values()) {
