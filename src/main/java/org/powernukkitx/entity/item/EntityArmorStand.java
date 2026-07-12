@@ -91,6 +91,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    protected boolean shouldStopMotionWhenImmobile() {
+        return false;
+    }
+
+    @Override
     public boolean isPersistent() {
         return true;
     }
