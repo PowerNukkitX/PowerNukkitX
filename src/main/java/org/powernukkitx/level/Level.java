@@ -398,6 +398,17 @@ public class Level implements Metadatable {
     private boolean lightUpdatesEnabled;
     /** Chunk hashes covered by ticking areas of this level; refreshed every 128 ticks in tickChunks. */
     private long[] tickingAreaChunkHashes;
+    /** Resolved chunk set for tick-all mode ({@code chunksPerTicks < 0}); see tickAllChunksCached. */
+    private IChunk[] cachedTickChunks;
+    private long cachedTickChunksLoaderKey;
+    /** Set on chunk load/unload (any thread) so the tick-all cache rebuilds next tick. */
+    private volatile boolean tickChunkCacheDirty = true;
+    /**
+     * {@link TickingAreaManager#getVersion()} the {@link #tickingAreaChunkHashes} were built
+     * from. Owned by appendTickingAreaChunks; the tick-all cache check reads it too, which is
+     * safe because appendTickingAreaChunks runs inside the cache rebuild.
+     */
+    private long tickingAreaHashesVersion = -1;
     /**
      * Whether the previous tick's entity loop saw an {@link EntityAsyncPrepare}; gates the
      * compute-pool dispatch in {@link #doTick(int)}. Starts true so the first tick dispatches.
@@ -1753,12 +1764,21 @@ public class Level implements Metadatable {
         boolean hasTickingAreas = tickingAreas != null && !tickingAreas.isEmpty();
         if (this.chunksPerTicks == 0 || (this.loaders.isEmpty() && !hasTickingAreas)) {
             this.chunkTickList.clear();
+            this.cachedTickChunks = null;
             return;
         }
 
-        boolean shouldTickAll = this.chunksPerTicks < 0;
+        int tickSpeed = gameplaySettings.enableBlockRandomTicking()
+                ? gameRules.getInteger(GameRule.RANDOM_TICK_SPEED) : 0;
+
+        if (this.chunksPerTicks < 0) {
+            tickAllChunksCached(tickingAreas, hasTickingAreas, tickSpeed);
+            return;
+        }
+        this.cachedTickChunks = null;
+
         int chunksPerLoader = Math.min(200, Math.max(1, (int) (((double) (this.chunksPerTicks - this.loaders.size()) / this.loaders.size() + 0.5))));
-        int range = shouldTickAll ? this.chunkTickRadius : Math.min(3 + chunksPerLoader / 30, this.chunkTickRadius);
+        int range = Math.min(3 + chunksPerLoader / 30, this.chunkTickRadius);
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         synchronized (this.loaders) {
@@ -1770,64 +1790,29 @@ public class Level implements Metadatable {
                 int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
                 this.chunkTickList.put(index, existingLoaders + 1);
 
-                if (shouldTickAll) {
-                    for (int dx = -range; dx <= range; dx++) {
-                        for (int dz = -range; dz <= range; dz++) {
-                            long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
-                            if (requireProvider().isChunkLoaded(hash)) {
-                                this.chunkTickList.put(hash, -1);
-                            }
-                        }
-                    }
-                } else {
-                    int attempts = 0;
-                    int added = 0;
-                    int maxAttempts = Math.max(chunksPerLoader * 4, (range * 2 + 1) * (range * 2 + 1));
+                int attempts = 0;
+                int added = 0;
+                int maxAttempts = Math.max(chunksPerLoader * 4, (range * 2 + 1) * (range * 2 + 1));
 
-                    while (added < chunksPerLoader && attempts++ < maxAttempts) {
-                        int dx = random.nextInt((range * 2) + 1) - range;
-                        int dz = random.nextInt((range * 2) + 1) - range;
-                        long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
+                while (added < chunksPerLoader && attempts++ < maxAttempts) {
+                    int dx = random.nextInt((range * 2) + 1) - range;
+                    int dz = random.nextInt((range * 2) + 1) - range;
+                    long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
 
-                        if (this.chunkTickList.containsKey(hash)) {
-                            continue;
-                        }
-
-                        if (requireProvider().isChunkLoaded(hash)) {
-                            this.chunkTickList.put(hash, -1);
-                        }
-
-                        added++;
-                    }
-                }
-            }
-        }
-
-        if (hasTickingAreas) {
-            if (this.tickingAreaChunkHashes == null || (this.levelCurrentTick & 127) == 0) {
-                var hashes = new it.unimi.dsi.fastutil.longs.LongArrayList();
-                for (TickingArea area : tickingAreas) {
-                    if (!this.getName().equals(area.getLevelName())) {
+                    if (this.chunkTickList.containsKey(hash)) {
                         continue;
                     }
-                    for (TickingArea.ChunkPos pos : area.getChunks()) {
-                        hashes.add(Level.chunkHash(pos.x, pos.z));
+
+                    if (requireProvider().isChunkLoaded(hash)) {
+                        this.chunkTickList.put(hash, -1);
                     }
-                }
-                this.tickingAreaChunkHashes = hashes.toLongArray();
-            }
-            LevelProvider provider = requireProvider();
-            for (long hash : this.tickingAreaChunkHashes) {
-                if (!this.chunkTickList.containsKey(hash) && provider.isChunkLoaded(hash)) {
-                    this.chunkTickList.put(hash, -1);
+
+                    added++;
                 }
             }
-        } else {
-            this.tickingAreaChunkHashes = null;
         }
 
-        int tickSpeed = gameplaySettings.enableBlockRandomTicking()
-                ? gameRules.getInteger(GameRule.RANDOM_TICK_SPEED) : 0;
+        appendTickingAreaChunks(tickingAreas, hasTickingAreas);
 
         synchronized (this.chunkTickList) {
             if (!this.chunkTickList.isEmpty()) {
@@ -1853,45 +1838,143 @@ public class Level implements Metadatable {
                         iter.remove();
                     }
 
-                    if (chunk.hasEntities()) {
-                        CompletableFuture.runAsync(() -> {
-                            for (Entity entity : chunk.getEntities().values()) {
-                                entity.scheduleUpdate();
-                            }
-                        });
-                    }
-
-                    chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
-
-                    if (tickSpeed <= 0) {
-                        continue;
-                    }
-
-                    for (ChunkSection section : chunk.getSections()) {
-                        if (section == null || section.isEmpty()) {
-                            continue;
-                        }
-                        for (int i = 0; i < tickSpeed; ++i) {
-                            int lcg = this.getUpdateLCG();
-                            int x = lcg & 0x0f;
-                            int y = lcg >>> 8 & 0x0f;
-                            int z = lcg >>> 16 & 0x0f;
-                            BlockState state = section.getBlockState(x, y, z);
-                            if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
-                                if (Block.isTickingDisabled(this, state.getIdentifier())) {
-                                    continue;
-                                }
-                                Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
-                                block.setLevel(this);
-                                block.onUpdate(BLOCK_UPDATE_RANDOM);
-                            }
-                        }
-                    }
+                    tickChunk(chunk, tickSpeed);
                 }
             }
         }
         if (this.clearChunksOnTick) {
             this.chunkTickList.clear();
+        }
+    }
+
+    /**
+     * Ticks the cached tick-all chunk set, rebuilding it when a loader crossed a chunk
+     * border, chunks may have loaded/unloaded (periodic safety refresh), or areas changed.
+     */
+    private void tickAllChunksCached(Set<TickingArea> tickingAreas, boolean hasTickingAreas, int tickSpeed) {
+        long loaderKey = 1;
+        synchronized (this.loaders) {
+            for (ChunkLoader loader : this.loaders.values()) {
+                loaderKey = loaderKey * 31 + Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
+            }
+        }
+        long areaVersion = this.server.getTickingAreaManager() != null
+                ? this.server.getTickingAreaManager().getVersion() : 0;
+        if (this.cachedTickChunks == null || this.tickChunkCacheDirty
+                || loaderKey != this.cachedTickChunksLoaderKey
+                || areaVersion != this.tickingAreaHashesVersion) {
+            this.tickChunkCacheDirty = false;
+            this.cachedTickChunksLoaderKey = loaderKey;
+            rebuildTickAllChunkCache(tickingAreas, hasTickingAreas);
+        }
+        for (IChunk chunk : this.cachedTickChunks) {
+            if (!chunk.isLoaded()) {
+                continue;
+            }
+            tickChunk(chunk, tickSpeed);
+        }
+    }
+
+    private void rebuildTickAllChunkCache(Set<TickingArea> tickingAreas, boolean hasTickingAreas) {
+        this.chunkTickList.clear();
+        LevelProvider provider = requireProvider();
+        synchronized (this.loaders) {
+            for (ChunkLoader loader : this.loaders.values()) {
+                int chunkX = (int) loader.getX() >> 4;
+                int chunkZ = (int) loader.getZ() >> 4;
+                for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
+                    for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
+                        long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
+                        if (provider.isChunkLoaded(hash)) {
+                            this.chunkTickList.put(hash, -1);
+                        }
+                    }
+                }
+            }
+        }
+        appendTickingAreaChunks(tickingAreas, hasTickingAreas);
+
+        List<IChunk> resolved = new ArrayList<>(this.chunkTickList.size());
+        for (Long2IntMap.Entry entry : this.chunkTickList.long2IntEntrySet()) {
+            long index = entry.getLongKey();
+            if (!areNeighboringChunksLoaded(index)) {
+                continue;
+            }
+            IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
+            if (chunk != null) {
+                resolved.add(chunk);
+            }
+        }
+        this.chunkTickList.clear();
+        this.cachedTickChunks = resolved.toArray(new IChunk[0]);
+    }
+
+    private void appendTickingAreaChunks(Set<TickingArea> tickingAreas, boolean hasTickingAreas) {
+        long areaVersion = this.server.getTickingAreaManager() != null
+                ? this.server.getTickingAreaManager().getVersion() : 0;
+        // Always record the version — also when this level has no areas — or a version bump
+        // from another level's areas would look permanently stale to the tick-all cache check.
+        if (!hasTickingAreas) {
+            this.tickingAreaChunkHashes = null;
+            this.tickingAreaHashesVersion = areaVersion;
+            return;
+        }
+        if (this.tickingAreaChunkHashes == null || areaVersion != this.tickingAreaHashesVersion) {
+            this.tickingAreaHashesVersion = areaVersion;
+            var hashes = new LongArrayList();
+            for (TickingArea area : tickingAreas) {
+                if (!this.getName().equals(area.getLevelName())) {
+                    continue;
+                }
+                for (TickingArea.ChunkPos pos : area.getChunks()) {
+                    hashes.add(Level.chunkHash(pos.x, pos.z));
+                }
+            }
+            this.tickingAreaChunkHashes = hashes.toLongArray();
+        }
+        LevelProvider provider = requireProvider();
+        for (long hash : this.tickingAreaChunkHashes) {
+            if (!this.chunkTickList.containsKey(hash) && provider.isChunkLoaded(hash)) {
+                this.chunkTickList.put(hash, -1);
+            }
+        }
+    }
+
+    /** Per-chunk tick work: entity update scheduling, scheduled block updates, random ticks. */
+    private void tickChunk(IChunk chunk, int tickSpeed) {
+        if (chunk.hasEntities()) {
+            CompletableFuture.runAsync(() -> {
+                for (Entity entity : chunk.getEntities().values()) {
+                    entity.scheduleUpdate();
+                }
+            });
+        }
+
+        chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
+
+        if (tickSpeed <= 0) {
+            return;
+        }
+
+        for (ChunkSection section : chunk.getSections()) {
+            if (section == null || section.isEmpty()) {
+                continue;
+            }
+            for (int i = 0; i < tickSpeed; ++i) {
+                int lcg = this.getUpdateLCG();
+                int x = lcg & 0x0f;
+                int y = lcg >>> 8 & 0x0f;
+                int z = lcg >>> 16 & 0x0f;
+                BlockState state = section.getBlockState(x, y, z);
+                if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
+                    if (Block.isTickingDisabled(this, state.getIdentifier())) {
+                        continue;
+                    }
+                    Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
+                    block.setLevel(this);
+                    block.onUpdate(BLOCK_UPDATE_RANDOM);
+                }
+            }
         }
     }
 
@@ -4522,6 +4605,7 @@ public class Level implements Metadatable {
         }
 
         if (chunk.getProvider() != null) {
+            this.tickChunkCacheDirty = true;
             this.server.getPluginManager().callEvent(new ChunkLoadEvent(chunk, !chunk.isGenerated()));
         } else {
             this.unloadChunk(x, z, false);
@@ -4647,6 +4731,7 @@ public class Level implements Metadatable {
                 }
             }
             levelProvider.unloadChunk(x, z, safe);
+            this.tickChunkCacheDirty = true;
         } catch (Exception e) {
             log.error(this.server.getLanguage().tr("nukkit.level.chunkUnloadError", e.toString()), e);
         }

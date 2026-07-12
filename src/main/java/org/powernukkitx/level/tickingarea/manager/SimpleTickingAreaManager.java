@@ -23,18 +23,21 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     public void addTickingArea(TickingArea area) {
         areaMap.put(area.getName(), area);
         storage.addTickingArea(area);
+        bumpVersion();
     }
 
     @Override
     public void removeTickingArea(String name) {
         areaMap.remove(name);
         storage.removeTickingArea(name);
+        bumpVersion();
     }
 
     @Override
     public void removeAllTickingArea() {
         areaMap.clear();
         storage.removeAllTickingArea();
+        bumpVersion();
     }
 
     @Override
