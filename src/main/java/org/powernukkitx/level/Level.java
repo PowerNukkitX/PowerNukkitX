@@ -396,8 +396,8 @@ public class Level implements Metadatable {
     private GameplaySettings gameplaySettings;
     /** Cached {@code chunk-settings.lightUpdates}: gates all block/sky light work (boot-time only). */
     private boolean lightUpdatesEnabled;
-    /** Chunk hashes covered by ticking areas of this level; refreshed every 128 ticks in tickChunks. */
-    private long[] tickingAreaChunkHashes;
+    /** Chunk hashes covered by ticking areas of this level; rebuilt when the ticking-area version changes. */
+    private LongOpenHashSet tickingAreaChunkHashes;
     /** Resolved chunk set for tick-all mode ({@code chunksPerTicks < 0}); see tickAllChunksCached. */
     private IChunk[] cachedTickChunks;
     private long cachedTickChunksLoaderKey;
@@ -1144,7 +1144,7 @@ public class Level implements Metadatable {
         try {
             int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
             long levelTime = System.currentTimeMillis();
-            doTick((int) gameLoop.getTick());
+            doTick(gameLoop.getTick());
             int tickMs = (int) (System.currentTimeMillis() - levelTime);
 
             if (getServer().getSettings().levelSettings().autoTickRate()) {
@@ -1479,11 +1479,11 @@ public class Level implements Metadatable {
 
     private void checkWeather() {
         if (!gameplaySettings.enableWeather()) {
-            if (isRaining()) {
-                setRaining(false);
+            if (isRaining() && !setRaining(false)) {
+                this.raining = false;
             }
-            if (isThundering()) {
-                setThundering(false);
+            if (isThundering() && !setThundering(false)) {
+                this.thundering = false;
             }
             return;
         }
@@ -1820,7 +1820,8 @@ public class Level implements Metadatable {
                 while (iter.hasNext()) {
                     Long2IntMap.Entry entry = iter.next();
                     long index = entry.getLongKey();
-                    if (!areNeighboringChunksLoaded(index)) {
+                    if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
+                            && !areNeighboringChunksLoaded(index)) {
                         iter.remove();
                         continue;
                     }
@@ -1849,7 +1850,7 @@ public class Level implements Metadatable {
 
     /**
      * Ticks the cached tick-all chunk set, rebuilding it when a loader crossed a chunk
-     * border, chunks may have loaded/unloaded (periodic safety refresh), or areas changed.
+     * border, a chunk loaded or unloaded, or ticking areas changed.
      */
     private void tickAllChunksCached(Set<TickingArea> tickingAreas, boolean hasTickingAreas, int tickSpeed) {
         long loaderKey = 1;
@@ -1897,7 +1898,8 @@ public class Level implements Metadatable {
         List<IChunk> resolved = new ArrayList<>(this.chunkTickList.size());
         for (Long2IntMap.Entry entry : this.chunkTickList.long2IntEntrySet()) {
             long index = entry.getLongKey();
-            if (!areNeighboringChunksLoaded(index)) {
+            if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
+                    && !areNeighboringChunksLoaded(index)) {
                 continue;
             }
             IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
@@ -1919,7 +1921,7 @@ public class Level implements Metadatable {
         }
         if (this.tickingAreaChunkHashes == null || areaVersion != this.tickingAreaHashesVersion) {
             this.tickingAreaHashesVersion = areaVersion;
-            var hashes = new LongArrayList();
+            var hashes = new LongOpenHashSet();
             for (TickingArea area : tickingAreas) {
                 if (!this.getName().equals(area.getLevelName())) {
                     continue;
@@ -1928,7 +1930,7 @@ public class Level implements Metadatable {
                     hashes.add(Level.chunkHash(pos.x, pos.z));
                 }
             }
-            this.tickingAreaChunkHashes = hashes.toLongArray();
+            this.tickingAreaChunkHashes = hashes;
         }
         LevelProvider provider = requireProvider();
         for (long hash : this.tickingAreaChunkHashes) {
@@ -4891,6 +4893,7 @@ public class Level implements Metadatable {
             }
         }
         this.time = time;
+        this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
         this.sendTime();
     }
 
@@ -5835,7 +5838,7 @@ public class Level implements Metadatable {
     }
 
     public int getTick() {
-        return getServer().isLevelThreadMode() ? (int) this.getBaseTickGameLoop().getTick() : getServer().getTick();
+        return getServer().isLevelThreadMode() ? this.getBaseTickGameLoop().getTick() : getServer().getTick();
     }
 
     /**

@@ -53,7 +53,6 @@ public final class GameLoop {
      * sub-microsecond tick periods.
      */
     private int summaryIndex;
-    @Getter
     private long tick;
 
     private GameLoop(Runnable onStart, Consumer<GameLoop> onTick, Runnable onStop, int loopCountPerSec) {
@@ -105,6 +104,14 @@ public final class GameLoop {
             sum += mspt;
         }
         return sum / count;
+    }
+
+    public int getTick() {
+        return (int) tick;
+    }
+
+    public long getTickLong() {
+        return tick;
     }
 
     public void tick() {

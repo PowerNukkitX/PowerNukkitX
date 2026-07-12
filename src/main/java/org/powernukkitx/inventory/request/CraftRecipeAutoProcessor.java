@@ -33,6 +33,8 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
     public ActionResponse handle(AutoCraftRecipeAction action, Player player, ItemStackRequestContext context) {
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
         if (recipe == null) {
+            log.debug("Rejecting auto craft request for unknown recipe network id {} (recipe registry {})",
+                    action.getRecipeNetworkId(), Registries.RECIPE.isEnabled() ? "enabled" : "disabled");
             return context.error();
         }
 

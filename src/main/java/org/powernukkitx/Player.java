@@ -930,6 +930,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void handleMovement(Location clientPos) {
         if (!this.firstMove
+                && this.chunk != null && this.chunk.getChunkState().canSend()
                 && clientPos.x == this.x && clientPos.y == this.y && clientPos.z == this.z
                 && clientPos.yaw == this.yaw && clientPos.pitch == this.pitch && clientPos.headYaw == this.headYaw) {
             return;
