@@ -39,6 +39,7 @@ import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
 import org.jetbrains.annotations.Nullable;
+import org.powernukkitx.utils.TextFormat;
 
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
@@ -151,6 +152,11 @@ public class PlayerSessionHolder {
         final DisconnectPacket packet = new DisconnectPacket();
         packet.setReason(reason);
         packet.setMessages(new DisconnectPacketMessages(message, ""));
+
+        InetSocketAddress address = (InetSocketAddress) this.getSession().getSocketAddress();
+
+        log.info(TextFormat.AQUA + "[Network session disconnected: " + address.getAddress().getHostAddress() + ":" + address.getPort() + "] - " + message);
+
         this.session.sendPacketImmediately(packet);
     }
 

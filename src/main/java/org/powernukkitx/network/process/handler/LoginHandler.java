@@ -2,6 +2,7 @@ package org.powernukkitx.network.process.handler;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
+import org.powernukkitx.event.player.PlayerLoginSessionFailEvent;
 import org.powernukkitx.event.player.PlayerPreLoginEvent;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.process.PacketHandler;
@@ -39,8 +40,15 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
     @Override
     public void handle(LoginPacket packet, PlayerSessionHolder holder, Server server) {
+        PlayerLoginSessionFailEvent sessionFailEvent = new PlayerLoginSessionFailEvent(holder, DisconnectFailReason.NO_REASON);
+
         if (!holder.getState().equals(SessionState.LOGIN)) {
-            holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
+            sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNEXPECTED_PACKET);
+            server.getPluginManager().callEvent(sessionFailEvent);
+
+            if (!sessionFailEvent.isCancelled()) {
+                holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
+            }
             return;
         }
 
@@ -53,29 +61,48 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                     serverOutdated ?
                             PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
             );
-            holder.disconnect(
-                    serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT
-            );
+
+            sessionFailEvent.setDisconnectFailReason(serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT);
+            server.getPluginManager().callEvent(sessionFailEvent);
+
+            if (!sessionFailEvent.isCancelled()) {
+                holder.disconnect(serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT);
+            }
             return;
         }
 
         final PlayerAuthenticationType type = packet.getAuthenticationType();
         final DisconnectFailReason notAuthenticated = DisconnectFailReason.NOT_AUTHENTICATED;
         if (type.equals(PlayerAuthenticationType.UNKNOWN)) {
-            holder.disconnect(notAuthenticated);
+            sessionFailEvent.setDisconnectFailReason(notAuthenticated);
+            server.getPluginManager().callEvent(sessionFailEvent);
+
+            if (!sessionFailEvent.isCancelled()) {
+                holder.disconnect(notAuthenticated);
+            }
             return;
         }
 
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
         if (xboxAuthRequired && packet.getToken() == null || packet.getToken().isEmpty()) {
-            holder.disconnect(notAuthenticated);
+            sessionFailEvent.setDisconnectFailReason(notAuthenticated);
+            server.getPluginManager().callEvent(sessionFailEvent);
+
+            if (!sessionFailEvent.isCancelled()) {
+                holder.disconnect(notAuthenticated);
+            }
             return;
         }
 
         try {
             final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
             if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
-                holder.disconnect(notAuthenticated);
+                sessionFailEvent.setDisconnectFailReason(notAuthenticated);
+                server.getPluginManager().callEvent(sessionFailEvent);
+
+                if (!sessionFailEvent.isCancelled()) {
+                    holder.disconnect(notAuthenticated);
+                }
                 return;
             }
 
@@ -83,37 +110,68 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
             server.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
-                holder.disconnect(DisconnectFailReason.UNKNOWN, event.getKickMessage());
+                sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
+                server.getPluginManager().callEvent(sessionFailEvent);
+
+                if (!sessionFailEvent.isCancelled()) {
+                    holder.disconnect(DisconnectFailReason.UNKNOWN, event.getKickMessage());
+                }
                 return;
             }
 
             if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
-                holder.disconnect(DisconnectFailReason.SERVER_FULL);
+                sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.SERVER_FULL);
+                server.getPluginManager().callEvent(sessionFailEvent);
+
+                if (!sessionFailEvent.isCancelled()) {
+                    holder.disconnect(DisconnectFailReason.SERVER_FULL);
+                }
                 return;
             }
 
             if (!server.isWhitelisted(identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH))) {
-                holder.disconnect(DisconnectFailReason.NOT_ALLOWED);
+                sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.NOT_ALLOWED);
+                server.getPluginManager().callEvent(sessionFailEvent);
+
+                if (!sessionFailEvent.isCancelled()) {
+                    holder.disconnect(DisconnectFailReason.NOT_ALLOWED);
+                }
                 return;
             }
 
             var entry = server.getNameBans().getEntires().get(identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH));
             if (entry != null) {
                 String reason = entry.getReason();
-                holder.disconnect(DisconnectFailReason.UNKNOWN, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+                sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
+                server.getPluginManager().callEvent(sessionFailEvent);
+
+                if (!sessionFailEvent.isCancelled()) {
+                    holder.disconnect(DisconnectFailReason.UNKNOWN, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+                }
                 return;
             }
 
             final ClientJwtValidationResult clientJwtValidationResult = this.validateClientJwt(packet, identityClaims.parsedIdentityPublicKey());
             if (!clientJwtValidationResult.isValid()) {
-                holder.disconnect(DisconnectFailReason.INVALID_PLATFORM_SKIN);
+                sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.INVALID_PLATFORM_SKIN);
+                server.getPluginManager().callEvent(sessionFailEvent);
+
+                if (!sessionFailEvent.isCancelled()) {
+                    holder.disconnect(DisconnectFailReason.INVALID_PLATFORM_SKIN);
+                }
                 return;
             }
 
             final ClientChainData clientChainData = clientJwtValidationResult.getClientChainData();
             if (clientChainData.isEduMode()) {
                 holder.sendPlayStatus(PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA);
-                holder.disconnect(DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA);
+
+                sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA);
+                server.getPluginManager().callEvent(sessionFailEvent);
+
+                if (!sessionFailEvent.isCancelled()) {
+                    holder.disconnect(DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA);
+                }
                 return;
             }
             holder.setPlayerInfo(
@@ -134,7 +192,12 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             }
         } catch (InvalidJwtException | JoseException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             log.debug("Error while validating jwt", e);
-            holder.disconnect(notAuthenticated);
+            sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.NOT_AUTHENTICATED);
+            server.getPluginManager().callEvent(sessionFailEvent);
+
+            if (!sessionFailEvent.isCancelled()) {
+                holder.disconnect(DisconnectFailReason.NOT_AUTHENTICATED);
+            }
         }
     }
 
@@ -162,8 +225,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                     clientChainData,
                     skin
             );
-        } catch (InvalidJwtException ignored) {
-        }
+        } catch (InvalidJwtException ignored) {}
+
         return ClientJwtValidationResult.INVALID;
     }
 
