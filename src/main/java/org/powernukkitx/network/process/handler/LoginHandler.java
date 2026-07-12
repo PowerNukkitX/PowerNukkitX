@@ -46,11 +46,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNEXPECTED_PACKET);
             server.getPluginManager().callEvent(sessionFailEvent);
 
-            if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-            }
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             return;
         }
+
 
         final int clientNetworkVersion = packet.getClientNetworkVersion();
         final int serverNetworkVersion = NetworkConstants.CODEC.getProtocolVersion();
@@ -65,9 +64,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             sessionFailEvent.setDisconnectFailReason(serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT);
             server.getPluginManager().callEvent(sessionFailEvent);
 
-            if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-            }
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             return;
         }
 
@@ -77,9 +74,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             sessionFailEvent.setDisconnectFailReason(notAuthenticated);
             server.getPluginManager().callEvent(sessionFailEvent);
 
-            if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-            }
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason());
             return;
         }
 
@@ -100,9 +95,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 sessionFailEvent.setDisconnectFailReason(notAuthenticated);
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-                }
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 return;
             }
 
@@ -113,9 +106,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-                }
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 return;
             }
 
@@ -123,9 +114,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.SERVER_FULL);
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-                }
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 return;
             }
 
@@ -133,9 +122,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.NOT_ALLOWED);
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-                }
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 return;
             }
 
@@ -145,9 +132,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(DisconnectFailReason.UNKNOWN, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-                }
+                holder.disconnect(DisconnectFailReason.UNKNOWN, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
                 return;
             }
 
@@ -156,9 +141,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.INVALID_PLATFORM_SKIN);
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-                }
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+
                 return;
             }
 
@@ -169,9 +153,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA);
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                if (!sessionFailEvent.isCancelled()) {
-                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-                }
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 return;
             }
             holder.setPlayerInfo(
@@ -195,9 +177,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.NOT_AUTHENTICATED);
             server.getPluginManager().callEvent(sessionFailEvent);
 
-            if (!sessionFailEvent.isCancelled()) {
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-            }
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason());
         }
     }
 
