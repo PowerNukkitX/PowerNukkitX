@@ -586,17 +586,32 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     + " §7 blockEntities: §f" + level.getBlockEntityCount()
                     + " §7(updating: §f" + level.getPendingBlockEntityUpdateCount() + "§7)";
             sender.sendMessage(levelLine);
+            long[] phaseMax = level.snapshotTickPhaseMaxNanos(true);
             long[] phases = level.snapshotTickPhaseAvgNanos(true);
+            long phaseSum = 0;
             StringBuilder sb = new StringBuilder("§7    phases: §f");
             boolean any = false;
             for (int i = 0; i < phases.length; i++) {
+                phaseSum += phases[i];
                 if (phases[i] <= 0) continue;
                 if (any) sb.append("§7, §f");
                 sb.append(Level.TICK_PHASE_NAMES[i]).append(' ').append(formatNanos(phases[i]));
                 any = true;
             }
             if (any) {
+                sb.append("§7  (sum ").append(formatNanos(phaseSum)).append(")");
                 sender.sendMessage(sb.toString());
+                StringBuilder mx = new StringBuilder("§7    worst tick: §f");
+                boolean anyMax = false;
+                for (int i = 0; i < phaseMax.length; i++) {
+                    if (phaseMax[i] < 1_000) continue;
+                    if (anyMax) mx.append("§7, §f");
+                    mx.append(Level.TICK_PHASE_NAMES[i]).append(' ').append(formatNanos(phaseMax[i]));
+                    anyMax = true;
+                }
+                if (anyMax) {
+                    sender.sendMessage(mx.toString());
+                }
             }
         }
         return 1;

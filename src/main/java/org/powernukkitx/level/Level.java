@@ -12,6 +12,7 @@ import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.config.category.GameplaySettings;
+import org.powernukkitx.level.tickingarea.TickingArea;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityAsyncPrepare;
 import org.powernukkitx.entity.EntityID;
@@ -395,6 +396,8 @@ public class Level implements Metadatable {
     private GameplaySettings gameplaySettings;
     /** Cached {@code chunk-settings.lightUpdates}: gates all block/sky light work (boot-time only). */
     private boolean lightUpdatesEnabled;
+    /** Chunk hashes covered by ticking areas of this level; refreshed every 128 ticks in tickChunks. */
+    private long[] tickingAreaChunkHashes;
     /**
      * Whether the previous tick's entity loop saw an {@link EntityAsyncPrepare}; gates the
      * compute-pool dispatch in {@link #doTick(int)}. Starts true so the first tick dispatches.
@@ -1167,6 +1170,7 @@ public class Level implements Metadatable {
             "entities", "blockEntities", "tickChunks", "netSync", "cleanup"
     };
     private final long[] tickPhaseNanosAccum = new long[TICK_PHASE_NAMES.length];
+    private final long[] tickPhaseNanosMax = new long[TICK_PHASE_NAMES.length];
     private long tickPhaseSampleCount;
     /**
      * Phase timing is off by default — the 11 nanoTime calls and per-tick array cost real
@@ -1201,6 +1205,18 @@ public class Level implements Metadatable {
             tickPhaseSampleCount = 0;
         }
         return avg;
+    }
+
+    /**
+     * Worst single-tick duration per phase since the last reset. Distinguishes a phase
+     * that is uniformly expensive from one whose average is driven by rare spikes.
+     */
+    public long[] snapshotTickPhaseMaxNanos(boolean reset) {
+        long[] max = tickPhaseNanosMax.clone();
+        if (reset) {
+            Arrays.fill(tickPhaseNanosMax, 0L);
+        }
+        return max;
     }
 
     public void doTick(int currentTick) {
@@ -1406,6 +1422,9 @@ public class Level implements Metadatable {
                 phase[9] = System.nanoTime() - phaseStart;
                 for (int i = 0; i < phase.length; i++) {
                     this.tickPhaseNanosAccum[i] += phase[i];
+                    if (phase[i] > this.tickPhaseNanosMax[i]) {
+                        this.tickPhaseNanosMax[i] = phase[i];
+                    }
                 }
                 this.tickPhaseSampleCount++;
             }
@@ -1729,7 +1748,10 @@ public class Level implements Metadatable {
     }
 
     private void tickChunks() {
-        if (this.chunksPerTicks == 0 || this.loaders.isEmpty()) {
+        Set<TickingArea> tickingAreas = this.server.getTickingAreaManager() != null
+                ? this.server.getTickingAreaManager().getAllTickingArea() : null;
+        boolean hasTickingAreas = tickingAreas != null && !tickingAreas.isEmpty();
+        if (this.chunksPerTicks == 0 || (this.loaders.isEmpty() && !hasTickingAreas)) {
             this.chunkTickList.clear();
             return;
         }
@@ -1781,6 +1803,31 @@ public class Level implements Metadatable {
             }
         }
 
+        if (hasTickingAreas) {
+            // Recompute the hash list only occasionally: iterating areas and hashing their
+            // chunk positions every tick showed up in profiles at high tick rates.
+            if (this.tickingAreaChunkHashes == null || (this.levelCurrentTick & 127) == 0) {
+                var hashes = new it.unimi.dsi.fastutil.longs.LongArrayList();
+                for (TickingArea area : tickingAreas) {
+                    if (!this.getName().equals(area.getLevelName())) {
+                        continue;
+                    }
+                    for (TickingArea.ChunkPos pos : area.getChunks()) {
+                        hashes.add(Level.chunkHash(pos.x, pos.z));
+                    }
+                }
+                this.tickingAreaChunkHashes = hashes.toLongArray();
+            }
+            LevelProvider provider = requireProvider();
+            for (long hash : this.tickingAreaChunkHashes) {
+                if (!this.chunkTickList.containsKey(hash) && provider.isChunkLoaded(hash)) {
+                    this.chunkTickList.put(hash, -1);
+                }
+            }
+        } else {
+            this.tickingAreaChunkHashes = null;
+        }
+
         int tickSpeed = gameplaySettings.enableBlockRandomTicking()
                 ? gameRules.getInteger(GameRule.RANDOM_TICK_SPEED) : 0;
 
@@ -1808,7 +1855,7 @@ public class Level implements Metadatable {
                         iter.remove();
                     }
 
-                    if (!chunk.getEntities().isEmpty()) {
+                    if (chunk.hasEntities()) {
                         CompletableFuture.runAsync(() -> {
                             for (Entity entity : chunk.getEntities().values()) {
                                 entity.scheduleUpdate();
@@ -2825,8 +2872,10 @@ public class Level implements Metadatable {
             BlockUpdateEvent ev = new BlockUpdateEvent(block);
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                for (Entity entity : this.getNearbyEntitiesSafe(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
-                    entity.scheduleUpdate();
+                if (!this.entities.isEmpty()) {
+                    for (Entity entity : this.fastNearbyEntities(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
+                        entity.scheduleUpdate();
+                    }
                 }
 
                 block = ev.getBlock();
