@@ -47,11 +47,11 @@ jobs:
         id: tag-name
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            echo TAG_NAME="nightly" >> $GITHUB_OUTPUT
+            echo "TAG_NAME=nightly" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.event_name }}" == "release" ]]; then
-            echo TAG_NAME="${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            echo "TAG_NAME=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo TAG_NAME="${{ github.event.inputs.release }}" >> $GITHUB_OUTPUT
+            echo "TAG_NAME=${{ github.event.inputs.release }}" >> "$GITHUB_OUTPUT"
           else
             echo "Unsupported event type: ${{ github.event_name }}"
             exit 1
@@ -61,17 +61,19 @@ jobs:
         id: version
         run: |
           VERSION="${{ steps.tag-name.outputs.TAG_NAME }}"
-          echo MAJOR=$(echo $VERSION | cut -d. -f1) >> $GITHUB_OUTPUT
-          echo MINOR=$(echo $VERSION | cut -d. -f1-2) >> $GITHUB_OUTPUT
+          MAJOR="$(echo "$VERSION" | cut -d. -f1)"
+          MINOR="$(echo "$VERSION" | cut -d. -f1-2)"
+          echo "MAJOR=$MAJOR" >> "$GITHUB_OUTPUT"
+          echo "MINOR=$MINOR" >> "$GITHUB_OUTPUT"
 
       - name: Detect channel
         id: channel
         run: |
           # Semver tag means a stable release, "nightly" and anything else stays unstable.
           if [[ "${{ steps.tag-name.outputs.TAG_NAME }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo CHANNEL=stable >> $GITHUB_OUTPUT
+            echo "CHANNEL=stable" >> "$GITHUB_OUTPUT"
           else
-            echo CHANNEL=unstable >> $GITHUB_OUTPUT
+            echo "CHANNEL=unstable" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build image for tag
