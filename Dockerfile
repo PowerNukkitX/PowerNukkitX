@@ -24,10 +24,6 @@ RUN chmod +x gradlew && ./gradlew shadowJar --no-daemon --no-configuration-cache
 # Use Temurin JDK image for runtime. Some server/plugin paths expect JDK tooling.
 FROM eclipse-temurin:21-jdk AS run
 
-# Copy artifact from build image
-COPY --from=build /src/build/powernukkitx.jar /app/powernukkitx.jar
-
-
 # Create minecraft user
 RUN useradd --user-group \
             --no-create-home \
@@ -35,11 +31,12 @@ RUN useradd --user-group \
             --shell /usr/sbin/nologin \
             minecraft
 
+COPY --from=build --chown=minecraft:minecraft /src/build/powernukkitx.jar /app/powernukkitx.jar
+
 # Ports
 EXPOSE 19132
 
-RUN mkdir /data && mkdir /home/minecraft
-RUN chown -R minecraft:minecraft /app /data /home/minecraft
+RUN mkdir /data /home/minecraft && chown minecraft:minecraft /app /data /home/minecraft
 
 # User and group to run as
 USER minecraft:minecraft
