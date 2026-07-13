@@ -99,7 +99,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     protected void initEntity() {
         this.setHealthCurrent(6);
         this.setHealthMax(6);
-        this.setImmobile(true);
 
         super.initEntity();
 
