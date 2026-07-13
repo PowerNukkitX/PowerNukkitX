@@ -3,7 +3,6 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.EntityPhysical;
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.event.block.BlockFromToEvent;
 import org.powernukkitx.item.Item;
@@ -20,9 +19,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBubbleColumn extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
-    private static final double BUBBLE_UP_TARGET_SPEED = 8.0 / 20.0;
-    private static final double BUBBLE_DOWN_TARGET_SPEED = -6.0 / 20.0;
-    private static final double BUBBLE_ACCELERATION = 0.8;
+    private static final double DOWNWARD_MIN_MOTION = -0.3;
+    private static final double DOWNWARD_ACCELERATION = 0.03;
+    private static final double UPWARD_ACCELERATION = 0.02;
+    private static final double UPWARD_MAX_MOTION = 1.8;
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -109,20 +109,17 @@ public class BlockBubbleColumn extends BlockTransparent {
 
     @Override
     public void onEntityCollide(Entity entity) {
+        if (entity instanceof Player) return;
         if (!entity.canBeMovedByCurrents()) return;
-
-        if (isDragDown()) {
-            entity.motionY = Math.max(BUBBLE_DOWN_TARGET_SPEED, entity.motionY - BUBBLE_ACCELERATION);
-        } else {
-            if (entity instanceof EntityPhysical entityPhysical && entity.motionY < -entityPhysical.getGravity() * 8) {
-                entity.motionY = -entityPhysical.getGravity() * 2;
-            } else {
-                entity.motionY = Math.min(BUBBLE_UP_TARGET_SPEED, entity.motionY + BUBBLE_ACCELERATION);
-            }
-        }
 
         if (up().isAir()) {
             spawnColumnParticles();
+        }
+
+        if (isDragDown()) {
+            entity.motionY = Math.max(DOWNWARD_MIN_MOTION, entity.motionY - DOWNWARD_ACCELERATION);
+        } else {
+            entity.motionY = Math.min(UPWARD_MAX_MOTION, entity.motionY + UPWARD_ACCELERATION);
         }
 
         entity.motionChanged = true;
