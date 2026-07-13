@@ -84,6 +84,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             server.getPluginManager().callEvent(sessionFailEvent);
 
             holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+            return;
+        }
         try {
             final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
             if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
