@@ -38,11 +38,16 @@ public class RouteTree {
             Map.entry(MessageStringNode.class, CommandParamType.MESSAGE),
             Map.entry(RemainStringNode.class, CommandParamType.JSON_OBJECT),
             Map.entry(BlockStateNode.class, CommandParamType.BLOCK_STATE),
-            Map.entry(ItemNode.class, CommandParamType.ID),
-            Map.entry(BlockNode.class, CommandParamType.ID),
             Map.entry(PlayersNode.class, CommandParamType.SELECTION),
             Map.entry(TargetNode.class, CommandParamType.SELECTION),
             Map.entry(EnumNode.class, CommandParamType.ID)
+    );
+
+    @SuppressWarnings("rawtypes")
+    private static final Map<Class<? extends ParamNode>, CommandEnum> NODE_ENUM_MAP = Map.ofEntries(
+            Map.entry(BooleanNode.class, CommandEnum.ENUM_BOOLEAN),
+            Map.entry(ItemNode.class, CommandEnum.ENUM_ITEM),
+            Map.entry(BlockNode.class, CommandEnum.ENUM_BLOCK)
     );
 
     private final RouteNode root;
@@ -171,12 +176,8 @@ public class RouteTree {
                     if (suggestions != null) {
                         params.add(CommandParameter.newEnum(node.getName(), false,
                                 new CommandEnum(node.getName(), suggestions)));
-                    } else if (node.getParamNode() instanceof BooleanNode) {
-                        params.add(CommandParameter.newEnum(node.getName(), false, CommandEnum.ENUM_BOOLEAN));
                     } else {
-                        @SuppressWarnings("rawtypes")
-                        CommandParamType type = NODE_TYPE_MAP.getOrDefault((Class<? extends ParamNode>) node.getParamNode().getClass(), CommandParamType.RAW_TEXT);
-                        params.add(CommandParameter.newType(node.getName(), false, type, node.getParamNode()));
+                        params.add(createArgumentParameter(node));
                     }
                 }
             }
@@ -185,6 +186,19 @@ public class RouteTree {
                         params.toArray(CommandParameter.EMPTY_ARRAY));
             }
         }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private CommandParameter createArgumentParameter(RouteNode node) {
+        IParamNode<?> paramNode = node.getParamNode();
+        Class<? extends ParamNode> nodeClass = (Class<? extends ParamNode>) paramNode.getClass();
+        CommandEnum enumData = NODE_ENUM_MAP.get(nodeClass);
+        if (enumData != null) {
+            return CommandParameter.newEnum(node.getName(), false, enumData, paramNode);
+        }
+
+        CommandParamType type = NODE_TYPE_MAP.getOrDefault(nodeClass, CommandParamType.RAW_TEXT);
+        return CommandParameter.newType(node.getName(), false, type, paramNode);
     }
 
     private void collectPaths(RouteNode node, List<RouteNode> current, List<List<RouteNode>> result) {
