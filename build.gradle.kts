@@ -19,7 +19,7 @@ plugins {
     idea
     jacoco
     id("io.github.goooler.shadow") version "8.1.7"
-    id("io.freefair.lombok") version "8.4"
+    id("io.freefair.lombok") version "9.5.0"
     id("com.gorylenko.gradle-git-properties") version "2.5.5"
 }
 
@@ -46,6 +46,7 @@ dependencies {
     api(libs.fastutil)
     api(libs.snakeyaml)
     api(libs.stateless4j)
+    api(libs.bedrock.connection)
 
     implementation(libs.bundles.leveldb)
     implementation(libs.rng.simple)
@@ -60,12 +61,11 @@ dependencies {
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
-    implementation(libs.bedrock.connection)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
-    
+
     testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)
@@ -92,7 +92,7 @@ java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(26))
     }
 }
 
