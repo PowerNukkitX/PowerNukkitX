@@ -4,11 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityItem;
-<<<<<<< Updated upstream
 import org.powernukkitx.event.block.BlockFadeEvent;
-=======
-import org.powernukkitx.entity.mob.EntityZombie;import org.powernukkitx.event.block.BlockFadeEvent;
->>>>>>> Stashed changes
 import org.powernukkitx.event.block.BlockFromToEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
@@ -26,13 +22,8 @@ public class BlockBubbleColumn extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
     private static final double DOWNWARD_MIN_MOTION = -0.3;
     private static final double DOWNWARD_ACCELERATION = 0.03;
-<<<<<<< Updated upstream
     private static final double UPWARD_ACCELERATION = 0.02;
     private static final double UPWARD_MAX_MOTION = 1.8;
-=======
-    private static final double UPWARD_ACCELERATION = 0.041;
-    private static final double UPWARD_MAX_MOTION = 0.8;
->>>>>>> Stashed changes
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -120,11 +111,7 @@ public class BlockBubbleColumn extends BlockTransparent {
     @Override
     public void onEntityCollide(Entity entity) {
         if (entity instanceof Player) return;
-<<<<<<< Updated upstream
         if (!(entity instanceof EntityItem) && !entity.canBeMovedByCurrents()) return;
-=======
-        if (!entity.canBeMovedByCurrents()) return;
->>>>>>> Stashed changes
 
         if (up().isAir()) {
             spawnColumnParticles();
@@ -133,12 +120,6 @@ public class BlockBubbleColumn extends BlockTransparent {
         if (isDragDown()) {
             entity.motionY = Math.max(DOWNWARD_MIN_MOTION, entity.motionY - DOWNWARD_ACCELERATION);
         } else {
-<<<<<<< Updated upstream
-=======
-            if (entity instanceof EntityZombie && entity.motionY < -0.64) {
-                entity.motionY = -0.16;
-            }
->>>>>>> Stashed changes
             entity.motionY = Math.min(UPWARD_MAX_MOTION, entity.motionY + UPWARD_ACCELERATION);
         }
 
