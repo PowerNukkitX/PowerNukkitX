@@ -22,8 +22,8 @@ public class BlockBubbleColumn extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
     private static final double DOWNWARD_MIN_MOTION = -0.3;
     private static final double DOWNWARD_ACCELERATION = 0.03;
-    private static final double UPWARD_ACCELERATION = 0.02;
-    private static final double UPWARD_MAX_MOTION = 1.8;
+    private static final double UPWARD_ACCELERATION = 0.08;
+    private static final double UPWARD_MAX_MOTION = 0.6;
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -110,12 +110,12 @@ public class BlockBubbleColumn extends BlockTransparent {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity instanceof Player) return;
-        if (!(entity instanceof EntityItem) && !entity.canBeMovedByCurrents()) return;
-
         if (up().isAir()) {
             spawnColumnParticles();
         }
+
+        if (entity instanceof Player) return;
+        if (!(entity instanceof EntityItem) && !entity.canBeMovedByCurrents()) return;
 
         if (isDragDown()) {
             entity.motionY = Math.max(DOWNWARD_MIN_MOTION, entity.motionY - DOWNWARD_ACCELERATION);
