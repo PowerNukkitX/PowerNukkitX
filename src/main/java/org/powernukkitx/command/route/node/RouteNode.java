@@ -72,6 +72,8 @@ public class RouteNode {
     public RouteNode then(RouteNode child) {
         child.parent = this;
         children.add(child);
+        if (child.optional && child.executor == null)
+            child.executor = this.executor;
         return this;
     }
 
