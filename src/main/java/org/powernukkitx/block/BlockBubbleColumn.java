@@ -3,6 +3,7 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.item.EntityItem;
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.event.block.BlockFromToEvent;
 import org.powernukkitx.item.Item;
@@ -110,7 +111,7 @@ public class BlockBubbleColumn extends BlockTransparent {
     @Override
     public void onEntityCollide(Entity entity) {
         if (entity instanceof Player) return;
-        if (!entity.canBeMovedByCurrents()) return;
+        if (!(entity instanceof EntityItem) && !entity.canBeMovedByCurrents()) return;
 
         if (up().isAir()) {
             spawnColumnParticles();
