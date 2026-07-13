@@ -18,7 +18,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 RUN git submodule update --init
-RUN ./gradlew shadowJar --no-daemon --no-configuration-cache
+RUN chmod +x gradlew && ./gradlew shadowJar --no-daemon --no-configuration-cache
 
 # Use Temurin JDK image for runtime. Some server/plugin paths expect JDK tooling.
 FROM eclipse-temurin:21-jdk AS run
