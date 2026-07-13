@@ -67,7 +67,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
-        if (xboxAuthRequired && packet.getToken() == null || packet.getToken().isEmpty()) {
+        if (xboxAuthRequired && (packet.getToken() == null || packet.getToken().isEmpty())) {
             holder.disconnect(notAuthenticated);
             return;
         }
