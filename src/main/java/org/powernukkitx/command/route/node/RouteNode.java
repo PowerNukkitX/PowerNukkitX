@@ -71,6 +71,20 @@ public class RouteNode {
      */
     public RouteNode then(RouteNode child) {
         child.parent = this;
+        switch (child.getType()) {
+            case LITERAL -> {
+                for (RouteNode child1 : this.children) {
+                    if (child1.getType() != NodeType.LITERAL) {
+                        throw new IllegalArgumentException("You cannot use literals when using arguments.");
+                    }
+                }
+            }
+            case ARGUMENT -> {
+                if(!children.isEmpty()) {
+                    throw new IllegalArgumentException("Cannot use multiple arguments in the same node.");
+                }
+            }
+        };
         children.add(child);
         return this;
     }
