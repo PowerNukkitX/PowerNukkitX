@@ -40,6 +40,8 @@ public class RouteNode {
     private SenderType senderType = SenderType.ANY;
     private String permission;
     private String permissionMessage;
+    @Getter
+    private boolean optional;
 
     private Object suggest = null;
 
@@ -103,6 +105,14 @@ public class RouteNode {
     public RouteNode permission(String permission, String message) {
         this.permission = permission;
         this.permissionMessage = message;
+        return this;
+    }
+
+    /**
+     * Marks this node as optional in generated command parameters.
+     */
+    public RouteNode optional(boolean optional) {
+        this.optional = optional;
         return this;
     }
 

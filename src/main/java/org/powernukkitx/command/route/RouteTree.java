@@ -169,12 +169,12 @@ public class RouteTree {
             for (RouteNode node : path) {
                 if (node.isSuggestHidden()) break;
                 if (node.getType() == NodeType.LITERAL) {
-                    params.add(CommandParameter.newEnum(node.getName(), false,
+                    params.add(CommandParameter.newEnum(node.getName(), node.isOptional(),
                             new CommandEnum(node.getName(), List.of(node.getName()))));
                 } else {
                     List<String> suggestions = node.getSuggestions();
                     if (suggestions != null) {
-                        params.add(CommandParameter.newEnum(node.getName(), false,
+                        params.add(CommandParameter.newEnum(node.getName(), node.isOptional(),
                                 new CommandEnum(node.getName(), suggestions)));
                     } else {
                         params.add(createArgumentParameter(node));
@@ -194,11 +194,11 @@ public class RouteTree {
         Class<? extends ParamNode> nodeClass = (Class<? extends ParamNode>) paramNode.getClass();
         CommandEnum enumData = NODE_ENUM_MAP.get(nodeClass);
         if (enumData != null) {
-            return CommandParameter.newEnum(node.getName(), false, enumData, paramNode);
+            return CommandParameter.newEnum(node.getName(), node.isOptional(), enumData, paramNode);
         }
 
         CommandParamType type = NODE_TYPE_MAP.getOrDefault(nodeClass, CommandParamType.RAW_TEXT);
-        return CommandParameter.newType(node.getName(), false, type, paramNode);
+        return CommandParameter.newType(node.getName(), node.isOptional(), type, paramNode);
     }
 
     private void collectPaths(RouteNode node, List<RouteNode> current, List<List<RouteNode>> result) {
