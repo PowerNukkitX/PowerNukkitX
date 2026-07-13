@@ -77,6 +77,7 @@ jobs:
       - name: Build image for tag
         uses: docker/build-push-action@v7.1.0
         with:
+          context: .
           push: true
           file: ./Dockerfile
           tags: |
@@ -87,6 +88,7 @@ jobs:
         if: steps.channel.outputs.CHANNEL == 'stable'
         uses: docker/build-push-action@v7.1.0
         with:
+          context: .
           push: true
           file: ./Dockerfile
           tags: |
@@ -97,6 +99,7 @@ jobs:
         if: steps.channel.outputs.CHANNEL == 'stable'
         uses: docker/build-push-action@v7.1.0
         with:
+          context: .
           push: true
           file: ./Dockerfile
           tags: |
@@ -107,6 +110,7 @@ jobs:
         if: steps.channel.outputs.CHANNEL == 'stable'
         uses: docker/build-push-action@v7.1.0
         with:
+          context: .
           push: true
           file: ./Dockerfile
           tags: |
