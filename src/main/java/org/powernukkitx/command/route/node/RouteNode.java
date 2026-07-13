@@ -72,8 +72,6 @@ public class RouteNode {
     public RouteNode then(RouteNode child) {
         child.parent = this;
         children.add(child);
-        if (child.optional && child.executor == null)
-            child.executor = this.executor;
         return this;
     }
 
@@ -82,12 +80,6 @@ public class RouteNode {
      */
     public RouteNode exec(Function<CommandContext, CommandResult> executor) {
         this.executor = executor;
-        //Passing executor to optional children
-        for(RouteNode child : this.children) {
-            if(child.optional && child.executor == null) {
-                child.exec(this.executor);
-            }
-        }
         return this;
     }
 
