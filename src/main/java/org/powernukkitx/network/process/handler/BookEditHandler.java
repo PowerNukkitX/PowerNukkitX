@@ -31,7 +31,7 @@ public class BookEditHandler implements PacketHandler<BookEditPacket> {
         }
 
         final BookEditAction action = packet.getOperation();
-        if (!action.getType().equals(BookEditOperation.FINALIZE)) {
+        if (action.getType().equals(BookEditOperation.FINALIZE)) {
             final BookEditAction.Finalize finalize = (BookEditAction.Finalize) action;
             if (finalize.getTitle() == null || finalize.getTitle().length() > 512) {
                 return;

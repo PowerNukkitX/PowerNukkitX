@@ -79,15 +79,11 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
-        if (xboxAuthRequired && packet.getToken() == null || packet.getToken().isEmpty()) {
+        if (xboxAuthRequired && (packet.getToken() == null || packet.getToken().isEmpty())) {
             sessionFailEvent.setDisconnectFailReason(notAuthenticated);
             server.getPluginManager().callEvent(sessionFailEvent);
 
             holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-
-            return;
-        }
-
         try {
             final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
             if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
