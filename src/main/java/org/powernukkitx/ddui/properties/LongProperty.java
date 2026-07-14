@@ -1,6 +1,6 @@
 package org.powernukkitx.ddui.properties;
 
-import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DynamicValueType;
 
 /**
  * A property that holds a {@code long} value.
@@ -11,8 +11,8 @@ import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
 public class LongProperty extends DataDrivenProperty<Long, Long> {
 
     @Override
-    public DataStorePropertyValueType getType() {
-        return DataStorePropertyValueType.INT64;
+    public DynamicValueType getType() {
+        return DynamicValueType.INTEGER;
     }
 
     public LongProperty(String name, long value) {
