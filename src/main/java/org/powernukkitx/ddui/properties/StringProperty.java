@@ -1,6 +1,6 @@
 package org.powernukkitx.ddui.properties;
 
-import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DynamicValueType;
 
 /**
  * A property that holds a {@link String} value.
@@ -11,8 +11,8 @@ import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
 public class StringProperty extends DataDrivenProperty<String, String> {
 
     @Override
-    public DataStorePropertyValueType getType() {
-        return DataStorePropertyValueType.STRING;
+    public DynamicValueType getType() {
+        return DynamicValueType.STRING;
     }
 
     public StringProperty(String name, String value) {
