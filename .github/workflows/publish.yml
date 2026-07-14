@@ -190,7 +190,7 @@ jobs:
             echo "" >> "$FILE"
 
             echo "$COMPARE" | jq -r '
-              .commits | reverse | .[].commit.message | split("\n")[0]
+              .commits | map(.commit.message | split("\n")[0]) | sort | .[]
             ' > /tmp/commits.txt
 
             LAST_SECTION=""
@@ -310,7 +310,7 @@ jobs:
             echo "### ✨ Changes since $LAST" >> release-notes.md
             echo "" >> release-notes.md
             gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}" \
-              --jq '.commits | reverse | .[] | "- \(.commit.message | split("\n")[0])"' \
+              --jq '.commits | map(.commit.message | split("\n")[0]) | sort | .[] | "- \(.)"' \
               >> release-notes.md 2>/dev/null || true
           fi
 
