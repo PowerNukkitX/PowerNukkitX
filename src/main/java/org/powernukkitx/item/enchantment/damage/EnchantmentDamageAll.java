@@ -33,6 +33,6 @@ public class EnchantmentDamageAll extends EnchantmentDamage {
             return 0;
         }
 
-        return level * 1.25;
+        return 0.5 * (level + 1);
     }
 }

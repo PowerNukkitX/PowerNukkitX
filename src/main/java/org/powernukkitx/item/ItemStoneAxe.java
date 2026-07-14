@@ -31,7 +31,7 @@ public class ItemStoneAxe extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 4;
+        return 5;
     }
 
     @Override

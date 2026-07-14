@@ -21,7 +21,7 @@ public class ItemNetheriteHoe extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 6;
+        return 1;
     }
 
     @Override

@@ -31,6 +31,6 @@ public class ItemWoodenShovel extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 1;
+        return 2;
     }
 }

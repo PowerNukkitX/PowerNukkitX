@@ -22,7 +22,7 @@ public class ItemDiamondAxe extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 6;
+        return 7;
     }
 
     @Override
