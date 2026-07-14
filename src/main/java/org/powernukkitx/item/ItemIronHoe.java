@@ -30,6 +30,6 @@ public class ItemIronHoe extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 1;
+        return 5;
     }
 }

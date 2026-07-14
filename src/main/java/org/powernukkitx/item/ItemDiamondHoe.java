@@ -22,6 +22,6 @@ public class ItemDiamondHoe extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 1;
+        return 6;
     }
 }
