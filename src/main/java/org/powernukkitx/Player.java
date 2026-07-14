@@ -80,7 +80,7 @@ import org.powernukkitx.level.PlayerChunkManager;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
-import org.powernukkitx.level.particle.CrackBlockParticle;
+import org.powernukkitx.level.particle.BreakBlockParticle;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.AxisAlignedBB;
@@ -451,7 +451,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
-            Block block = this.level.getBlock(pos, false);
             double miningTimeRequired;
 
             if (this.breakingBlock instanceof CustomBlock customBlock) {
@@ -471,7 +470,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     pk.setPosition(Vector3f.from(this.breakingBlock.x, this.breakingBlock.y, this.breakingBlock.z));
                     pk.setData(65535 / breakTick);
                     this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                    this.level.addParticle(new CrackBlockParticle(pos, block));
+                }
+
+                if (face != null && this.server.isServerAuthoritativeBlockBreaking()) {
+                    this.level.addParticle(new BreakBlockParticle(pos.add(0.5, 0.5, 0.5), this.breakingBlock, face));
                 }
 
                 long timeDiff = time - breakingBlockTime;
@@ -2976,7 +2978,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement() > 0 && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
+            if (this.server.isServerAuthoritativeBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 

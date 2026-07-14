@@ -3118,6 +3118,10 @@ public class Server {
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
     }
+
+    public boolean isServerAuthoritativeBlockBreaking() {
+        return this.serverAuthoritativeMovementMode > 0 && !this.settings.miscSettings().overrideServerAuthBlockBreaking();
+    }
     // endregion
 
     // region threading
