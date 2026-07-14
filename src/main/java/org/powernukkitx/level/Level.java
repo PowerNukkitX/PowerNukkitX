@@ -4151,15 +4151,14 @@ public class Level implements Metadatable {
     public void requestChunk(int x, int z, Player player) {
         Preconditions.checkArgument(player.getLoaderId() > 0, player.getName() + " has no chunk loader");
         long index = Level.chunkHash(x, z);
-        var casLock = new AtomicBoolean(false);
-        Int2ObjectNonBlockingMap<Player> playerInt2ObjectMap = this.chunkSendQueue.computeIfAbsent(index, (key) -> {
-            if (casLock.weakCompareAndSetVolatile(false, true)) {
-                return new Int2ObjectNonBlockingMap<>();
-            } else {
-                return null;
+        synchronized (this.chunkSendQueue) {
+            Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            if (players == null) {
+                players = new Int2ObjectNonBlockingMap<>();
+                this.chunkSendQueue.put(index, players);
             }
-        });
-        Objects.requireNonNull(playerInt2ObjectMap).put(player.getLoaderId(), player);
+            players.put(player.getLoaderId(), player);
+        }
     }
 
     private void sendChunk(int x, int z, long index, BedrockPacket packet) {
@@ -4188,14 +4187,24 @@ public class Level implements Metadatable {
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
-            final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            final Int2ObjectNonBlockingMap<Player> players;
+            synchronized (this.chunkSendQueue) {
+                players = this.chunkSendQueue.get(index);
+            }
             if (players != null) {
                 IChunk chunk = this.getChunk(x, z);
                 if (chunk != null && chunk.getChunkState().canSend()) {
+                    final Int2ObjectNonBlockingMap<Player> playersToSend;
+                    synchronized (this.chunkSendQueue) {
+                        playersToSend = this.chunkSendQueue.remove(index);
+                    }
+                    if (playersToSend == null) {
+                        continue;
+                    }
                     final var pair = this.requireProvider().requestChunkData(x, z);
                     final var chunkData = pair.first();
                     try {
-                        for (Player player : Objects.requireNonNull(players).values()) {
+                        for (Player player : playersToSend.values()) {
                             if (player.isConnected()) {
                                 final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
                                 networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
@@ -4216,7 +4225,6 @@ public class Level implements Metadatable {
                     } finally {
                         chunkData.release();
                     }
-                    this.chunkSendQueue.remove(index);
                 } else if (!this.chunkGenerationQueue.containsKey(index)) {
                     this.generateChunk(x, z, true);
                 }
