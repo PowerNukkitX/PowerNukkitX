@@ -67,8 +67,8 @@ public class CraftLoomActionProcessor implements ItemStackRequestActionProcessor
             result.setBaseColor(dyeColor);
         }
         player.getCreativeOutputInventory().setItem(result);
-        ConsumeActionHelper.consume(loomInventory, 0, times);
-        ConsumeActionHelper.consume(loomInventory, 1, times);
+        loomInventory.decreaseCount(0, times);
+        loomInventory.decreaseCount(1, times);
         return null;
     }
 }

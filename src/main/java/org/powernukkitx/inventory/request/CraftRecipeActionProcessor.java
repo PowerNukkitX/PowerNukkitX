@@ -102,8 +102,8 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                         return context.error();
                     }
                     player.setExperience(player.getExperience(), player.getExperienceLevel() - lapisCost);
-                    ConsumeActionHelper.consume(inventory, 0, first.getCount());
-                    ConsumeActionHelper.consume(inventory, 1, lapisCost);
+                    inventory.decreaseCount(0, first.getCount());
+                    inventory.decreaseCount(1, lapisCost);
                 }
                 player.getCreativeOutputInventory().setItem(item);
                 EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetworkId());
@@ -175,9 +175,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                         return context.error();
                     }
                 }
-                ConsumeActionHelper.consume(inventory, 0, requiredA * craftsN);
+                inventory.decreaseCount(0, requiredA * craftsN);
                 if (cb) {
-                    ConsumeActionHelper.consume(inventory, 1, requiredB * craftsN);
+                    inventory.decreaseCount(1, requiredB * craftsN);
                 }
                 int traderExp = tradeRecipe.contains("traderExp") ? tradeRecipe.getInt("traderExp") : 0;
                 int rewardExp = tradeRecipe.contains("rewardExp") ? tradeRecipe.getInt("rewardExp") : 0;
@@ -231,7 +231,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             }
             for (int slot = 0; slot < craftInventory.getSize(); slot++) {
                 if (!craftInventory.getItem(slot).isNull()) {
-                    ConsumeActionHelper.consume(craftInventory, slot, numberOfRequestedCrafts);
+                    craftInventory.decreaseCount(slot, numberOfRequestedCrafts);
                 }
             }
             context.put(GRID_CONSUMED_KEY, true);
@@ -287,9 +287,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 result.setNbt(tag);
             }
             player.getCreativeOutputInventory().setItem(result);
-            ConsumeActionHelper.consume(smithingInventory, 0, 1);
-            ConsumeActionHelper.consume(smithingInventory, 1, 1);
-            ConsumeActionHelper.consume(smithingInventory, 2, 1);
+            smithingInventory.decreaseCount(0, 1);
+            smithingInventory.decreaseCount(1, 1);
+            smithingInventory.decreaseCount(2, 1);
             return null;
         }
         return context.error();
@@ -327,9 +327,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             compound.putCompound("Trim", trim);
             result.setNbt(compound);
             player.getCreativeOutputInventory().setItem(result);
-            ConsumeActionHelper.consume(smithingInventory, 0, 1);
-            ConsumeActionHelper.consume(smithingInventory, 1, 1);
-            ConsumeActionHelper.consume(smithingInventory, 2, 1);
+            smithingInventory.decreaseCount(0, 1);
+            smithingInventory.decreaseCount(1, 1);
+            smithingInventory.decreaseCount(2, 1);
             return null;
         }
         return context.error();

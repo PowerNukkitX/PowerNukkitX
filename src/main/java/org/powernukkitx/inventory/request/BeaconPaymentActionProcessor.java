@@ -1,5 +1,6 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntityBeacon;
 import org.powernukkitx.entity.effect.EffectType;
@@ -12,6 +13,8 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DestroyAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,7 +57,7 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
             return context.error();
         }
         boolean paymentConsumed = false;
-        for (DestroyAction destroy : ConsumeActionHelper.findAllDestroyActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1)) {
+        for (DestroyAction destroy : findAllDestroyActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1)) {
             if (destroy.getCount() < 1) {
                 continue;
             }
@@ -82,5 +85,16 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
     @Override
     public ItemStackRequestActionType getType() {
         return ItemStackRequestActionType.BEACON_PAYMENT;
+    }
+
+    private static List<DestroyAction> findAllDestroyActions(ItemStackRequestAction[] actions, int startIndex) {
+        var found = new ArrayList<DestroyAction>();
+        for (int i = startIndex; i < actions.length; i++) {
+            var action = actions[i];
+            if (action instanceof DestroyAction destroyAction) {
+                found.add(destroyAction);
+            }
+        }
+        return found;
     }
 }

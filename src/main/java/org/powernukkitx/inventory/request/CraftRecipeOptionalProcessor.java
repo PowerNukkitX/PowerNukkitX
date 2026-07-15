@@ -63,7 +63,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 player.setExperience(player.getExperience(), player.getExperienceLevel() - anvilResult.cost());
                 if (!anvilResult.result().isNull()) {
                     anvilInventory.clear(AnvilInventory.INPUT, false);
-                    ConsumeActionHelper.consume(anvilInventory, AnvilInventory.MATERIAL, anvilResult.materialConsumed());
+                    anvilInventory.decreaseCount(AnvilInventory.MATERIAL, anvilResult.materialConsumed());
                 }
             } else {
                 return context.error();
@@ -73,8 +73,8 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             if (item != null) {
                 player.getCreativeOutputInventory().setItem(item);
                 if (!item.isNull()) {
-                    ConsumeActionHelper.consume(cartographyInventory, 0, 1);
-                    ConsumeActionHelper.consume(cartographyInventory, 1, 1);
+                    cartographyInventory.decreaseCount(0, 1);
+                    cartographyInventory.decreaseCount(1, 1);
                 }
             } else {
                 return context.error();

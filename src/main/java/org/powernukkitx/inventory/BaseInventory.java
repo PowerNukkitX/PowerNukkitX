@@ -253,7 +253,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void decreaseCount(int slot) {
+    public void decreaseCount(int slot, int amount) {
         Item item;
         synchronized (this.slots) {
             item = this.slots.getOrDefault(slot, Item.AIR);
@@ -263,7 +263,10 @@ public abstract class BaseInventory implements Inventory {
                 return;
             }
         }
-        item.count--;
+        item.count -= amount;
+        if (item.count <= 0) {
+            this.clear(slot);
+        }
         this.setItem(slot, item);
     }
 
