@@ -19,7 +19,6 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action
 import org.jetbrains.annotations.Nullable;
 
 import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
-import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.findAllConsumeActions;
 
 @Slf4j
 public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor<AutoCraftRecipeAction> {
@@ -65,7 +64,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             return context.error();
         } else {
             context.put(RECIPE_DATA_KEY, recipe);
-            var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
+            var consumeActions = ConsumeActionHelper.findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
 
             int consumeActionCountNeeded = 0;
             for (var item : eventItems) {

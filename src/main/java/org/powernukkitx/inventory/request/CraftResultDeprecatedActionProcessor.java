@@ -5,6 +5,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.inventory.InputInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.recipe.RecipeType;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +79,22 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
         if (resultItem.getCount() > totalInputCount) {
             log.warn("Multi recipe result count {} exceeds crafting input count {}!", resultItem.getCount(), totalInputCount);
             return false;
+        }
+        if (resultItem.hasEnchantments()) {
+            for (Enchantment ench : resultItem.getEnchantments()) {
+                boolean backedByInput = false;
+                for (Item ingredient : craft.getInput().getFlatItems()) {
+                    if (ingredient.isNull() || !ingredient.getId().equals(resultItem.getId())) continue;
+                    if (ingredient.getEnchantmentLevel(ench.getId()) >= ench.getLevel()) {
+                        backedByInput = true;
+                        break;
+                    }
+                }
+                if (!backedByInput) {
+                    log.warn("Multi recipe result {} carries enchantment {} lvl {} not present on any crafting input!", resultItem, ench.getId(), ench.getLevel());
+                    return false;
+                }
+            }
         }
         return true;
     }

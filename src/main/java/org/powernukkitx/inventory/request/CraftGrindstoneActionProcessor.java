@@ -59,6 +59,12 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
             player.sendAllInventories();
             return context.error();
         }
+        int expectedConsumes = ((firstItem == null || firstItem.isNull()) ? 0 : 1)
+                + ((secondItem == null || secondItem.isNull()) ? 0 : 1);
+        ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "grindstone", expectedConsumes);
+        if (consumeError != null) {
+            return consumeError;
+        }
         player.addExperience(event.getExperienceDropped());
         player.getCreativeOutputInventory().setItem(event.getResultItem());
         return null;

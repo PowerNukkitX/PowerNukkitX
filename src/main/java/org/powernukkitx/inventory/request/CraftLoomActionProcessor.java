@@ -55,6 +55,11 @@ public class CraftLoomActionProcessor implements ItemStackRequestActionProcessor
         if (dye instanceof ItemDye itemDye) {
             dyeColor = itemDye.getDyeColor();
         }
+        int expectedConsumes = 2 + ((pattern == null || pattern.isNull()) ? 0 : 1);
+        ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "loom", expectedConsumes);
+        if (consumeError != null) {
+            return consumeError;
+        }
         ItemBanner result = (ItemBanner) banner.clone();
         result.setCount(action.getTimesCrafted());
         if (patternType != null) {

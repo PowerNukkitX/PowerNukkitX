@@ -30,9 +30,7 @@ import org.cloudburstmc.protocol.bedrock.data.TrimMaterial;
 import org.cloudburstmc.protocol.bedrock.data.TrimPattern;
 import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantmentInstance;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchantOption;
-import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeAction;
-import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
 import java.util.ArrayList;
@@ -211,8 +209,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 }
             }
             // Validate the consume action count which client sent
-            // 还有一部分检查被放在了ConsumeActionProcessor里面（例如消耗物品数量检查）
-            var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
+            var consumeActions = ConsumeActionHelper.findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
             var consumeActionCountNeeded = input.canConsumerItemCount();
             if (consumeActions.size() != consumeActionCountNeeded) {
                 log.warn("Mismatched consume action count! Expected: {}, Actual: {} on inventory {}", consumeActionCountNeeded, consumeActions.size(), craft.getClass().getSimpleName());
@@ -315,16 +312,5 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     @Override
     public ItemStackRequestActionType getType() {
         return ItemStackRequestActionType.CRAFT_RECIPE;
-    }
-
-    public static List<ConsumeAction> findAllConsumeActions(ItemStackRequestAction[] actions, int startIndex) {
-        var found = new ArrayList<ConsumeAction>();
-        for (int i = startIndex; i < actions.length; i++) {
-            var action = actions[i];
-            if (action instanceof ConsumeAction consumeAction) {
-                found.add(consumeAction);
-            }
-        }
-        return found;
     }
 }
