@@ -266,6 +266,7 @@ public abstract class BaseInventory implements Inventory {
         item.count -= amount;
         if (item.count <= 0) {
             this.clear(slot);
+            return;
         }
         this.setItem(slot, item);
     }
