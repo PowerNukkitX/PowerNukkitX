@@ -1,9 +1,10 @@
 package org.powernukkitx.scoreboard.scorer;
 
+import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangeFakePlayerScore;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ScorePacketEntryAction;
 import org.powernukkitx.scoreboard.IScoreboard;
 import org.powernukkitx.scoreboard.IScoreboardLine;
-import lombok.Getter;
-import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 
 
 @Getter
@@ -16,8 +17,8 @@ public class FakeScorer implements IScorer {
     }
 
     @Override
-    public ScoreInfo.IdentityDefinitionType getScorerType() {
-        return ScoreInfo.IdentityDefinitionType.FAKE_PLAYER;
+    public ScorePacketEntryAction getScorerType() {
+        return ScorePacketEntryAction.CHANGE_FAKE_PLAYER;
     }
 
     @Override
@@ -39,12 +40,12 @@ public class FakeScorer implements IScorer {
     }
 
     @Override
-    public ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        return new ScoreInfo(
-                line.getLineId(),
-                scoreboard.getObjectiveName(),
-                line.getScore(),
-                getFakeName()
-        );
+    public ChangeFakePlayerScore toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+        final ChangeFakePlayerScore score = new ChangeFakePlayerScore();
+        score.setScoreboardId(line.getLineId());
+        score.setObjectiveName(scoreboard.getObjectiveName());
+        score.setScoreValue(line.getScore());
+        score.setFakePlayerName(this.getFakeName());
+        return score;
     }
 }

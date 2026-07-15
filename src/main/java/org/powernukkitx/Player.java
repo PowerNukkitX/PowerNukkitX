@@ -1,5 +1,55 @@
 package org.powernukkitx;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
+import io.netty.buffer.Unpooled;
+import io.netty.util.internal.EmptyArrays;
+import io.netty.util.internal.PlatformDependent;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
+import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
+import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.data.*;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginType;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
+import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
+import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
+import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageOnly;
+import org.cloudburstmc.protocol.bedrock.data.payload.text.TextPacketBody;
+import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.powernukkitx.AdventureSettings.Type;
 import org.powernukkitx.api.UnintendedClientBehaviour;
 import org.powernukkitx.api.UsedByReflection;
@@ -123,54 +173,6 @@ import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.PortalHelper;
 import org.powernukkitx.utils.TextFormat;
 import org.powernukkitx.utils.Utils;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Sets;
-import io.netty.buffer.Unpooled;
-import io.netty.util.internal.EmptyArrays;
-import io.netty.util.internal.PlatformDependent;
-import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
-import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
-import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
-import org.cloudburstmc.protocol.bedrock.data.*;
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
-import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
-import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginData;
-import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginType;
-import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
-import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
-import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
-import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
-import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
-import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
-import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageOnly;
-import org.cloudburstmc.protocol.bedrock.data.payload.text.TextPacketBody;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
-import org.cloudburstmc.protocol.bedrock.packet.*;
-import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.awt.*;
 import java.net.InetSocketAddress;
@@ -1070,11 +1072,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 (float) this.yaw,
                 (float) this.headYaw
         ));
-        pk.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
+        pk.setPositionMode(PositionMode.NORMAL);
         pk.setOnGround(false);
         pk.setRidingRuntimeID(this.riding.getId());
-        pk.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
-        pk.setSourceActorType(0);
+
+        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
+        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
+        teleportData.setSourceActorType(0);
+        pk.setTeleportData(teleportData);
+
         pk.setTick(this.getLevel().getCurrentTick());
 
         Server.broadcastPacket(this.hasSpawned.values(), pk);
@@ -1242,7 +1248,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastPitch = originalPos.getPitch();
 
         Vector3 syncPos = originalPos.add(0, 0.00001, 0);
-        this.sendPosition(syncPos, originalPos.getYaw(), originalPos.getPitch(), MovePlayerPacket.PositionMode.RESPAWN);
+        this.sendPosition(syncPos, originalPos.getYaw(), originalPos.getPitch(), PositionMode.RESPAWN);
 
         if (this.speed == null) {
             this.speed = new Vector3(0, 0, 0);
@@ -2135,14 +2141,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void setSkin(Skin skin) {
         super.setSkin(skin);
-        SerializedSkin serializedSkin = skin.getSkin();
+        org.cloudburstmc.protocol.bedrock.data.skin.Skin serializedSkin = skin.getSkin();
         if (this.spawned) {
             var skinPacket = new PlayerSkinPacket();
             skinPacket.setUuid(this.getUniqueId());
-            skinPacket.setSerializedSkin(serializedSkin);
-            skinPacket.setNewSkinName(serializedSkin.getSkinId());
+            skinPacket.setSkin(serializedSkin);
+            skinPacket.setLocalizedNewSkinName(serializedSkin.getSkinId());
             skinPacket.setTrustedSkin(skin.isTrusted());
-            skinPacket.setOldSkinName("");
+            skinPacket.setLocalizedOldSkinName("");
             Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
         }
     }
@@ -2778,7 +2784,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
-        this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.PositionMode.NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
+        this.sendPosition(new Vector3(x, y, z), yaw, pitch, PositionMode.NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
     /**
@@ -4471,30 +4477,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, MovePlayerPacket.PositionMode, Player[])
+     * @see #sendPosition(Vector3, double, double, PositionMode, Player[])
      */
     public void sendPosition(Vector3 pos) {
         this.sendPosition(pos, this.yaw);
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, MovePlayerPacket.PositionMode, Player[])
+     * @see #sendPosition(Vector3, double, double, PositionMode, Player[])
      */
     public void sendPosition(Vector3 pos, double yaw) {
         this.sendPosition(pos, yaw, this.pitch);
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, MovePlayerPacket.PositionMode, Player[])
+     * @see #sendPosition(Vector3, double, double, PositionMode, Player[])
      */
     public void sendPosition(Vector3 pos, double yaw, double pitch) {
-        this.sendPosition(pos, yaw, pitch, MovePlayerPacket.PositionMode.NORMAL);
+        this.sendPosition(pos, yaw, pitch, PositionMode.NORMAL);
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, MovePlayerPacket.PositionMode, Player[])
+     * @see #sendPosition(Vector3, double, double, PositionMode, Player[])
      */
-    public void sendPosition(Vector3 pos, double yaw, double pitch, MovePlayerPacket.PositionMode mode) {
+    public void sendPosition(Vector3 pos, double yaw, double pitch, PositionMode mode) {
         this.sendPosition(pos, yaw, pitch, mode, null);
     }
 
@@ -4507,7 +4513,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param mode    the mode of MovePlayerPacket
      * @param targets the players of receive the packet
      */
-    public void sendPosition(Vector3 pos, double yaw, double pitch, MovePlayerPacket.PositionMode mode, Player[] targets) {
+    public void sendPosition(Vector3 pos, double yaw, double pitch, PositionMode mode, Player[] targets) {
         final MovePlayerPacket pk = new MovePlayerPacket();
         pk.setPlayerRuntimeID(this.getId());
         pk.setPosition(Vector3f.from(pos.x, pos.y + this.getEyeHeight(), pos.z));
@@ -4516,9 +4522,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.setOnGround(this.onGround);
         if (this.riding != null) {
             pk.setRidingRuntimeID(this.riding.getId());
-            pk.setPositionMode(MovePlayerPacket.PositionMode.ONLY_HEAD_ROT);
+            pk.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         }
-        pk.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
+
+        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
+        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
+
+        pk.setTeleportData(teleportData);
 
         if (targets != null) {
             Server.broadcastPacket(targets, pk);
@@ -4581,10 +4591,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.nextChunkOrderRun = 0;
             }
             //send to a client
-            this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.PositionMode.TELEPORT);
+            this.sendPosition(to, to.yaw, to.pitch, PositionMode.TELEPORT);
             this.newPosition = to;
         } else {
-            this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.PositionMode.TELEPORT);
+            this.sendPosition(this, to.yaw, to.pitch, PositionMode.TELEPORT);
             this.newPosition = this;
         }
         //state update
@@ -5660,7 +5670,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void removeLine(IScoreboardLine line) {
         final SetScorePacket packet = new SetScorePacket();
-        packet.setScorePacketType(ScorePacketType.REMOVE);
+        packet.setRemove(true);
         var networkInfo = line.toNetworkInfo();
         if (networkInfo != null)
             packet.getScoreInfo().add(networkInfo);
@@ -5675,7 +5685,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
-        packet.setScorePacketType(ScorePacketType.SET);
+        packet.setRemove(false);
         var networkInfo = line.toNetworkInfo();
         if (networkInfo != null)
             packet.getScoreInfo().add(networkInfo);
@@ -5699,7 +5709,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //client will not storage the score of a scoreboard, so we should send the score to client
         final SetScorePacket setScorePacket = new SetScorePacket();
-        setScorePacket.setScorePacketType(ScorePacketType.SET);
+        setScorePacket.setRemove(false);
         setScorePacket.getScoreInfo().addAll(
                 scoreboard.getLines().values().stream()
                         .map(IScoreboardLine::toNetworkInfo)
@@ -6017,7 +6027,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static class PlayerInfo {
         ChainValidationResult.IdentityClaims identityClaims;
         ClientChainData clientChainData;
-        SerializedSkin skin;
+        org.cloudburstmc.protocol.bedrock.data.skin.Skin skin;
         boolean xboxAuth;
     }
 
@@ -6124,7 +6134,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void syncCreativeContent() {
         final CreativeContentPacket packet = new CreativeContentPacket();
         packet.getGroups().addAll(Registries.CREATIVE.getCreativeGroups());
-        packet.getContents().addAll(Registries.CREATIVE.getCreativeItemData());
+        packet.getEntries().addAll(Registries.CREATIVE.getCreativeItemData());
 
         this.sendPacketImmediately(packet);
     }

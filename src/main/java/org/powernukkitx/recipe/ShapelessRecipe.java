@@ -1,11 +1,12 @@
 package org.powernukkitx.recipe;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ShapelessRecipePayload;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.RecipeRegistry;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.CraftingDataEntryType;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,18 +70,17 @@ public class ShapelessRecipe extends CraftingRecipe {
         return true;
     }
 
-    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe toNetwork() {
-        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe.of(
-                CraftingDataEntryType.SHAPELESS_RECIPE,
-                this.getRecipeId(),
-                this.getIngredients().stream().map(ItemDescriptor::toNetwork).toList(),
-                this.getResults().stream().map(Item::toNetwork).toList(),
-                this.getUUID(),
-                this.getRecipeIdTag(),
-                this.getPriority(),
-                this.getNetId(),
-                this.getRequirement()
-        );
+    public ShapelessRecipePayload toNetwork() {
+        final ShapelessRecipePayload payload = new ShapelessRecipePayload();
+        payload.setRecipeId(this.getRecipeId());
+        payload.getIngredients().addAll(this.getIngredients().stream().map(ItemDescriptor::toNetwork).toList());
+        payload.getResults().addAll(this.getResults().stream().map(Item::toNetwork).toList());
+        payload.setUuid(this.getUUID());
+        payload.setTag(this.getRecipeIdTag());
+        payload.setPriority(this.getPriority());
+        payload.setUnlockingRequirement(this.getRequirement());
+        payload.setNetId(new RecipeNetId(this.getNetId()));
+        return payload;
     }
 
     public String getRecipeIdTag() {

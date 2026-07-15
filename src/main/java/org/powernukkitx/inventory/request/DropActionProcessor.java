@@ -1,5 +1,7 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
 import org.powernukkitx.event.player.PlayerDropItemEvent;
 import org.powernukkitx.inventory.Inventory;
@@ -31,7 +33,7 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
         FullContainerName containerName = action.getSource().getFullContainerName();
         Integer dynamicId = containerName.getDynamicID();
         Inventory inventory = NetworkMapping.getInventory(player, containerName.getContainerName(), dynamicId);
-        var count = action.getCount();
+        var count = action.getAmount();
         var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
         var item = inventory.getItem(slot);
 
@@ -66,21 +68,20 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
             inventory.setItem(slot, item, false);
         }
         return context.success(List.of(
-                new ItemStackResponseContainerInfo(
-                        inventory.getContainerEnumName(slot),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        inventory.toNetworkSlot(slot),
-                                        inventory.toNetworkSlot(slot),
-                                        item.getCount(),
-                                        item.getNetId(),
-                                        item.getCustomName(),
-                                        item.getDamage(),
-                                        ""
-                                )
-                        ),
-                        containerName
-                )
+            new ItemStackResponseContainerInfo(
+                inventory.getContainerEnumName(slot),
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        inventory.toNetworkSlot(slot),
+                        inventory.toNetworkSlot(slot),
+                        item.getCount(),
+                        new ItemStackNetId(item.getNetId()),
+                        new RedactableString(item.getCustomName(), ""),
+                        item.getDamage()
+                    )
+                ),
+                containerName
+            )
         ));
     }
 }

@@ -1,17 +1,6 @@
 package org.powernukkitx.entity;
 
-import org.powernukkitx.Player;
-import org.powernukkitx.block.Block;
-import org.powernukkitx.entity.data.human.Skin;
-import org.powernukkitx.event.entity.EntityDamageEvent;
-import org.powernukkitx.event.player.EntityFreezeEvent;
-import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemShield;
-import org.powernukkitx.level.format.IChunk;
-import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
-
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
@@ -23,11 +12,20 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesData;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesDataSerializedLayer;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedLayer;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
 import org.jetbrains.annotations.NotNull;
+import org.powernukkitx.Player;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.entity.data.human.Skin;
+import org.powernukkitx.event.entity.EntityDamageEvent;
+import org.powernukkitx.event.player.EntityFreezeEvent;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemShield;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.SkinUtils;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -153,9 +151,9 @@ public class EntityHuman extends EntityHumanType {
 
 
         if(!(human instanceof Player) && human.getSkin() != null) {
-            SerializedSkin skin = human.getSkin().getSkin();
+            org.cloudburstmc.protocol.bedrock.data.skin.Skin skin = human.getSkin().getSkin();
             boolean trusted = human.getSkin().isTrusted();
-            SerializedSkin.Builder builder = human.getSkin().getSkin().toBuilder();
+            org.cloudburstmc.protocol.bedrock.data.skin.Skin.Builder builder = human.getSkin().getSkin().toBuilder();
 
             boolean changed = false;
 

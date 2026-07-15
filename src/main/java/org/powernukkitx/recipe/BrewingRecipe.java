@@ -1,9 +1,9 @@
 package org.powernukkitx.recipe;
 
 
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.PotionMixDataEntry;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.registry.RecipeRegistry;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.PotionMixDataEntry;
 
 import java.util.List;
 
@@ -24,13 +24,13 @@ public class BrewingRecipe extends MixRecipe {
     }
 
     public PotionMixDataEntry toNetwork() {
-        return new PotionMixDataEntry(
-                this.getInput().getRuntimeId(),
-                this.getInput().getDamage(),
-                this.getIngredient().getRuntimeId(),
-                this.getIngredient().getDamage(),
-                this.getResult().getRuntimeId(),
-                this.getResult().getDamage()
-        );
+        final PotionMixDataEntry entry = new PotionMixDataEntry();
+        entry.setFromPotionId(this.getInput().getRuntimeId());
+        entry.setFromItemAux(this.getInput().getDamage());
+        entry.setReagentItemId(this.getIngredient().getRuntimeId());
+        entry.setReagentItemAux(this.getIngredient().getDamage());
+        entry.setToPotionId(this.getResult().getRuntimeId());
+        entry.setToItemAux(this.getResult().getDamage());
+        return entry;
     }
 }

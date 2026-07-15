@@ -1,12 +1,13 @@
 package org.powernukkitx.scoreboard.scorer;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ScoreInfo;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ScorePacketEntryAction;
 import org.powernukkitx.scoreboard.IScoreboard;
 import org.powernukkitx.scoreboard.IScoreboardLine;
-import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 
 public interface IScorer {
 
-    ScoreInfo.IdentityDefinitionType getScorerType();
+    ScorePacketEntryAction getScorerType();
 
     String getName();
 

@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
 import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
@@ -160,7 +161,7 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                 }
             }
             case PlayerActionType.CHANGE_DIMENSION_ACK ->
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.NORMAL);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.NORMAL);
             case PlayerActionType.START_GLIDING -> {
                 if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
                     return;
@@ -220,18 +221,18 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
             }
             case PlayerActionType.START_SPIN_ATTACK -> {
                 if (!Objects.equals(player.getInventory().getItemInMainHand().getId(), ItemID.TRIDENT)) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                     break;
                 }
 
                 int riptideLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
                 if (riptideLevel < 1) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                     break;
                 }
 
                 if (!(player.isTouchingWater() || (player.getLevel().isRaining() && player.getLevel().canBlockSeeSky(player)))) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                     break;
                 }
 
@@ -239,7 +240,7 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                 player.getServer().getPluginManager().callEvent(playerToggleSpinAttackEvent);
 
                 if (playerToggleSpinAttackEvent.isCancelled()) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                 } else {
                     player.setSpinAttacking(true);
 

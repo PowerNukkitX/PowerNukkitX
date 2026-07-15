@@ -46,17 +46,17 @@ public class CraftLoomActionProcessor implements ItemStackRequestActionProcessor
         }
 
         Item pattern = loomInventory.getPattern();
-        BannerPatternType patternType = BannerPatternType.fromCode(action.getPatternId());
-        if (pattern instanceof ItemBannerPattern itemBannerPattern && action.getPatternId() != null && !action.getPatternId().isBlank()) {
+        BannerPatternType patternType = BannerPatternType.fromCode(action.getPatternNameId());
+        if (pattern instanceof ItemBannerPattern itemBannerPattern && action.getPatternNameId() != null && !action.getPatternNameId().isBlank()) {
             patternType = itemBannerPattern.getPatternType();
-            if (!action.getPatternId().equals(patternType.getCode())) return context.error();
+            if (!action.getPatternNameId().equals(patternType.getCode())) return context.error();
         }
         DyeColor dyeColor = DyeColor.BLACK;
         if (dye instanceof ItemDye itemDye) {
             dyeColor = itemDye.getDyeColor();
         }
         ItemBanner result = (ItemBanner) banner.clone();
-        result.setCount(action.getTimesCrafted());
+        result.setCount(action.getNumCrafts());
         if (patternType != null) {
             result.addPattern(new BannerPattern(patternType, dyeColor));
         } else {

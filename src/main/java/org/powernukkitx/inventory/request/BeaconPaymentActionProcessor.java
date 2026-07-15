@@ -41,8 +41,8 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
         }
         BlockEntityBeacon holder = beaconInventory.getHolder();
         int powerLevel = holder.getPowerLevel();
-        int primary = action.getPrimaryEffect();
-        int secondary = action.getSecondaryEffect();
+        int primary = action.getPrimaryEffectId();
+        int secondary = action.getSecondaryEffectId();
         if (!BlockEntityBeacon.isPrimaryAllowed(primary, powerLevel)) {
             log.warn("beacon primary effect {} is not allowed for power level {}!", primary, powerLevel);
             return context.error();
@@ -58,6 +58,6 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
 
     @Override
     public ItemStackRequestActionType getType() {
-        return ItemStackRequestActionType.BEACON_PAYMENT;
+        return ItemStackRequestActionType.SCREEN_BEACON_PAYMENT;
     }
 }

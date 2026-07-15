@@ -1,5 +1,7 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
@@ -26,7 +28,7 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
     @Override
     public ActionResponse handle(ConsumeAction action, Player player, ItemStackRequestContext context) {
         // We have validated the recipe in CraftRecipeActionProcessor, so here we can believe the client directly
-        var count = action.getCount();
+        var count = action.getAmount();
         if (count == 0) {
             log.warn("cannot consume 0 items!");
 
@@ -74,21 +76,20 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         }
 
         return context.success(List.of(
-                new ItemStackResponseContainerInfo(
-                        containerEnumName,
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        sourceContainer.toNetworkSlot(slot),
-                                        sourceContainer.toNetworkSlot(slot),
-                                        item.getCount(),
-                                        item.getNetId(),
-                                        item.getCustomName(),
-                                        item.getDamage(),
-                                        ""
-                                )
-                        ),
-                        containerName
-                )
+            new ItemStackResponseContainerInfo(
+                containerEnumName,
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        sourceContainer.toNetworkSlot(slot),
+                        sourceContainer.toNetworkSlot(slot),
+                        item.getCount(),
+                        new ItemStackNetId(item.getNetId()),
+                        new RedactableString(item.getCustomName(), ""),
+                        item.getDamage()
+                    )
+                ),
+                containerName
+            )
         ));
     }
 

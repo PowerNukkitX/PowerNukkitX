@@ -73,10 +73,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     @Override
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
         Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
-        if (action.getRecipeNetworkId() >= EnchantmentHelper.ENCH_RECIPEID) {  //handle ench recipe
-            EnchantmentHelper.ItemEnchantOptionWithEntry enchantOptionWithEntry = EnchantmentHelper.RECIPE_MAP.get(action.getRecipeNetworkId());
+        if (action.getRecipeNetId().getRawId() >= EnchantmentHelper.ENCH_RECIPEID) {  //handle ench recipe
+            EnchantmentHelper.ItemEnchantOptionWithEntry enchantOptionWithEntry = EnchantmentHelper.RECIPE_MAP.get(action.getRecipeNetId().getRawId());
             if (enchantOptionWithEntry == null) {
-                log.error("Can't find enchant recipe from netId {}", action.getRecipeNetworkId());
+                log.error("Can't find enchant recipe from netId {}", action.getRecipeNetId());
                 return context.error();
             }
             final ItemEnchantOption enchantOptionData = enchantOptionWithEntry.getOption();
@@ -101,15 +101,15 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     player.setExperience(player.getExperience(), player.getExperienceLevel() - (enchantOptionWithEntry.getEntry() + 1));
                 }
                 player.getCreativeOutputInventory().setItem(item);
-                EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetworkId());
+                EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetId().getRawId());
                 player.regenerateEnchantmentSeed();
                 context.put(ENCH_RECIPE_KEY, true);
             }
             return null;
-        } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
-            CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
+        } else if (action.getRecipeNetId().getRawId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
+            CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetId().getRawId());
             if (tradeRecipe == null) {
-                log.error("Can't find trade recipe from netId {}", action.getRecipeNetworkId());
+                log.error("Can't find trade recipe from netId {}", action.getRecipeNetId());
                 return context.error();
             }
             if (action.getNumberOfRequestedCrafts() < 1) {
@@ -177,7 +177,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             craft = player.getCraftingGrid();
         }
         int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
-        Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
+        Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetId().getRawId());
         Input input = craft.getInput();
         Item[][] data = input.getData();
         ArrayList<Item> items = new ArrayList<>();
@@ -196,7 +196,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             } else if (recipe instanceof SmithingTransformRecipe smithingTransformRecipe) {
                 return handleSmithingUpgrade(smithingTransformRecipe, player, context);
             }
-            log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
+            log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
         } else {
             // Validate if the player has provided enough ingredients
