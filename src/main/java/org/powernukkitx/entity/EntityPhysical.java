@@ -109,7 +109,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             handleGroundFrictionMovement();
             handlePassableBlockFrictionMovement();
         }
-        // Consumed: BlockBubbleColumn#onEntityCollide sets it again later this tick if the column still has us
         this.inBubbleColumn = false;
     }
 
@@ -305,7 +304,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleFloatingMovement() {
-        if (this.inBubbleColumn) return; // the column owns the vertical axis
+        if (this.inBubbleColumn) return;
         if (this.hasWaterAt(0)) {
             this.motionY += this.getGravity() * getFloatingForceFactor();
         }

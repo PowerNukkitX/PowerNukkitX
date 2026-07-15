@@ -5363,7 +5363,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return;
         }
 
-        // Re-established below if we are still in a column, so it can never go stale
         this.inBubbleColumn = false;
 
         boolean needsRecalcCurrent = true;

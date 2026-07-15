@@ -219,7 +219,6 @@ public class EntityBoat extends EntityVehicle {
      */
     private void tickWhirlpool() {
         if (this.draggedUnder) {
-            // Latched until the boat has finished sinking - once it is out of the water it can float again
             if (!isBoatInWater()) {
                 this.draggedUnder = false;
                 this.whirlpoolTicks = 0;
@@ -234,7 +233,6 @@ public class EntityBoat extends EntityVehicle {
         } else {
             this.whirlpoolTicks = 0;
         }
-        // Consumed: BlockBubbleColumn sets it again this tick if the boat is still over a whirlpool
         this.overWhirlpool = false;
     }
 
@@ -262,7 +260,6 @@ public class EntityBoat extends EntityVehicle {
         boolean inWater = isBoatInWater();
 
         if (this.draggedUnder) {
-            // BlockBubbleColumn#onEntityCollide is dragging the boat down the column; buoyancy must not float it up
             sinking = true;
             hasUpdated = true;
         } else if (inWater) {

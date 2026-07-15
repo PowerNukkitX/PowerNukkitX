@@ -128,18 +128,15 @@ public class BlockBubbleColumn extends BlockTransparent {
             spawnColumnParticles();
         }
 
-        // Make Boats resist first, then sink
         if (entity instanceof final EntityBoat boat) {
             boat.onBubbleColumn(isDragDown());
             if (!boat.isDraggedUnder()) return;
         }
 
-        // The client simulates bubble columns for the player it controls, so pushing it from here would fight that
         if (entity instanceof Player) return;
 
         entity.inBubbleColumn = true;
 
-        // Cap the entry speed
         final double motionY = Math.max(entity.motionY, DOWNWARD_MAX_MOTION);
 
         if (surface) {

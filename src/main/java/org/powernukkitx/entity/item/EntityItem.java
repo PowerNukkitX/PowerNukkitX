@@ -238,7 +238,6 @@ public class EntityItem extends Entity {
 
             String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
             if (this.inBubbleColumn) {
-                // BlockBubbleColumn#onEntityCollide has already set motionY
                 hasUpdate = true;
             } else if (Objects.equals(bid, BlockID.FLOWING_WATER) || Objects.equals(bid, BlockID.WATER)
                     || Objects.equals(bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_WATER)
