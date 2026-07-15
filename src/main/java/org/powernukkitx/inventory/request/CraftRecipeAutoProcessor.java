@@ -1,5 +1,7 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 import org.powernukkitx.Player;
 import org.powernukkitx.event.inventory.CraftItemEvent;
 import org.powernukkitx.inventory.CreativeOutputInventory;
@@ -18,8 +20,10 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
-import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.findAllConsumeActions;
 
 @Slf4j
 public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor<AutoCraftRecipeAction> {
@@ -106,5 +110,16 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             return Item.fromNetwork(itemData).equals(item, true, false);
         }
         return false;
+    }
+
+    private static List<ConsumeAction> findAllConsumeActions(ItemStackRequestAction[] actions, int startIndex) {
+        var found = new ArrayList<ConsumeAction>();
+        for (int i = startIndex; i < actions.length; i++) {
+            var action = actions[i];
+            if (action instanceof ConsumeAction consumeAction) {
+                found.add(consumeAction);
+            }
+        }
+        return found;
     }
 }
