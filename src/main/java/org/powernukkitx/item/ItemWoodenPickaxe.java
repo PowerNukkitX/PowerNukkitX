@@ -30,6 +30,6 @@ public class ItemWoodenPickaxe extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 3;
+        return 2;
     }
 }

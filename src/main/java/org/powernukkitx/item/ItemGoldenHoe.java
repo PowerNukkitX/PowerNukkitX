@@ -27,9 +27,4 @@ public class ItemGoldenHoe extends ItemTool {
     public int getTier() {
         return ItemTool.TIER_GOLD;
     }
-
-    @Override
-    public int getAttackDamage() {
-        return 3;
-    }
 }

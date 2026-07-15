@@ -30,7 +30,7 @@ public class ItemNetheriteSword extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 9;
+        return 8;
     }
 
     @Override

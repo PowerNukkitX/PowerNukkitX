@@ -30,6 +30,6 @@ public class ItemIronPickaxe extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 5;
+        return 4;
     }
 }

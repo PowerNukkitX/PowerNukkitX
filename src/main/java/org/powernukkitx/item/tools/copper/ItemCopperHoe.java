@@ -21,9 +21,4 @@ public class ItemCopperHoe extends ItemTool {
     public int getTier() {
         return WEARABLE_TIER_COPPER;
     }
-
-    @Override
-    public int getAttackDamage() {
-        return 4;
-    }
 }
