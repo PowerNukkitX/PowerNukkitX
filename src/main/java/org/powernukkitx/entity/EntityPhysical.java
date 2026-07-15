@@ -109,6 +109,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             handleGroundFrictionMovement();
             handlePassableBlockFrictionMovement();
         }
+        // Consumed: BlockBubbleColumn#onEntityCollide sets it again later this tick if the column still has us
+        this.inBubbleColumn = false;
     }
 
     @Override
@@ -196,8 +198,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             this.fallingTick = 0;
             return;
         }
-        // Gravity is always there
-        this.motionY -= this.getGravity();
+        if (!this.inBubbleColumn) {
+            this.motionY -= this.getGravity();
+        }
         if (!this.onGround && this.hasWaterAt(getFootHeight())) {
             // Landing water
             resetFallDistance();
@@ -240,7 +243,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return;
         final double factor = getPassableBlockFrictionFactor();
         this.motionX *= factor;
-        this.motionY *= factor;
+        if (!this.inBubbleColumn) {
+            this.motionY *= factor;
+        }
         this.motionZ *= factor;
 
         if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
@@ -300,6 +305,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleFloatingMovement() {
+        if (this.inBubbleColumn) return; // the column owns the vertical axis
         if (this.hasWaterAt(0)) {
             this.motionY += this.getGravity() * getFloatingForceFactor();
         }

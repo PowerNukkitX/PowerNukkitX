@@ -2,6 +2,7 @@ package org.powernukkitx.entity.item;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockBubbleColumn;
 import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityHuman;
@@ -56,6 +57,19 @@ public class EntityBoat extends EntityVehicle {
     public int woodID;
     protected boolean sinking = true;
     private int ticksInWater;
+
+    /**
+     * How long a whirlpool holds the boat before it stops floating and gets dragged under.
+     */
+    private static final int WHIRLPOOL_RESIST_TICKS = 60;
+
+    /**
+     * BOAT_BUBBLE_TIME - the vanilla "how long the whirlpool has had the boat" counter. Synced to the client (which is
+     * expected to render the shake from it) and read back by the server as the resist timer, so the two never differ.
+     */
+    private int bubbleTime;
+    private boolean overWhirlpool;
+    private boolean draggedUnder;
 
     public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -181,7 +195,60 @@ public class EntityBoat extends EntityVehicle {
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
+    /**
+     * Called by {@link BlockBubbleColumn} on every tick the boat sits in a column. Only a
+     * whirlpool (a downward column) sinks a boat; an upward column just lets it keep floating on the water it fills.
+     *
+     * @param dragsDown whether the column is a whirlpool (magma drags down, soul sand pushes up)
+     */
+    public void onBubbleColumn(boolean dragsDown) {
+        this.overWhirlpool = dragsDown;
+    }
+
+    /**
+     * Whether a whirlpool has finished shaking the boat and is now dragging it under. While this is true the boat is
+     * empty (the rider was ejected when it flipped), so {@link BlockBubbleColumn} does the sinking.
+     */
+    public boolean isDraggedUnder() {
+        return this.draggedUnder;
+    }
+
+    private void setBubbleTime(int bubbleTime) {
+        if (this.bubbleTime == bubbleTime) return;
+        this.bubbleTime = bubbleTime;
+        setDataProperty(ActorDataTypes.BUBBLE_TIME, bubbleTime);
+    }
+
+    /**
+     * Drives the whirlpool timer off {@link #bubbleTime}. The boat floats and shakes for
+     * {@link #WHIRLPOOL_RESIST_TICKS}; when that runs out it is dragged under and the rider is ejected at that instant.
+     */
+    private void tickWhirlpool() {
+        if (this.draggedUnder) {
+            // Latched until the boat has finished sinking - once it is out of the water it can float again
+            if (!isBoatInWater()) {
+                this.draggedUnder = false;
+            }
+        } else if (this.overWhirlpool) {
+            setBubbleTime(this.bubbleTime + 1);
+            // TODO: Add boat shaking; need to debug what BDS sends for this
+            if (this.bubbleTime >= WHIRLPOOL_RESIST_TICKS) {
+                this.draggedUnder = true;
+                setBubbleTime(0);
+                for (final Entity passenger : passengers) {
+                    dismountEntity(passenger, false, false);
+                }
+            }
+        } else if (this.bubbleTime != 0) {
+            setBubbleTime(0);
+        }
+        // Consumed: BlockBubbleColumn sets it again this tick if the boat is still over a whirlpool
+        this.overWhirlpool = false;
+    }
+
     private boolean updateBoat(int tickDiff) {
+        tickWhirlpool();
+
         // The rolling amplitude
         if (getRollingAmplitude() > 0) {
             setRollingAmplitude(getRollingAmplitude() - 1);
@@ -202,7 +269,11 @@ public class EntityBoat extends EntityVehicle {
         double waterDiff = getWaterLevel();
         boolean inWater = isBoatInWater();
 
-        if (inWater) {
+        if (this.draggedUnder) {
+            // BlockBubbleColumn#onEntityCollide is dragging the boat down the column; buoyancy must not float it up
+            sinking = true;
+            hasUpdated = true;
+        } else if (inWater) {
             hasUpdated = computeBuoyancy(waterDiff);
         } else {
             double oldMotionY = motionY;

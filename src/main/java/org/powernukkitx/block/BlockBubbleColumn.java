@@ -3,7 +3,7 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.item.EntityItem;
+import org.powernukkitx.entity.item.EntityBoat;
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.event.block.BlockFromToEvent;
 import org.powernukkitx.item.Item;
@@ -20,10 +20,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBubbleColumn extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
+
     private static final double DOWNWARD_MAX_MOTION = -0.3;
+    private static final double DOWNWARD_MAX_EXIT_MOTION = -0.9;
     private static final double DOWNWARD_ACCELERATION = 0.03;
+    private static final double UPWARD_MIN_MOTION = 0.7;
+    private static final double UPWARD_MAX_EXIT_MOTION = 1.8;
     private static final double UPWARD_ACCELERATION = 0.08;
-    private static final double UPWARD_MIN_MOTION = 0.6;
+    private static final double UPWARD_EXIT_ACCELERATION = 0.1;
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -109,19 +113,47 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
 
     @Override
+    public double getPassableBlockFrictionFactor() {
+        final Block water = getTickCachedLevelBlockAtLayer(1);
+        return water instanceof BlockLiquid ? water.getPassableBlockFrictionFactor() : super.getPassableBlockFrictionFactor();
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
         if (!entity.canBeMovedByCurrents()) return;
 
-        if (up().isAir()) {
+        final boolean surface = up().isAir();
+
+        if (surface) {
             spawnColumnParticles();
         }
 
+        // Make Boats resist first, then sink
+        if (entity instanceof final EntityBoat boat) {
+            boat.onBubbleColumn(isDragDown());
+            if (!boat.isDraggedUnder()) return;
+        }
+
+        // The client simulates bubble columns for the player it controls, so pushing it from here would fight that
         if (entity instanceof Player) return;
 
-        if (isDragDown()) {
-            entity.motionY = Math.max(DOWNWARD_MAX_MOTION, entity.motionY - DOWNWARD_ACCELERATION);
+        entity.inBubbleColumn = true;
+
+        // Cap the entry speed
+        final double motionY = Math.max(entity.motionY, DOWNWARD_MAX_MOTION);
+
+        if (surface) {
+            if (isDragDown()) {
+                entity.motionY = Math.max(DOWNWARD_MAX_EXIT_MOTION, motionY - DOWNWARD_ACCELERATION);
+            } else {
+                entity.motionY = Math.min(UPWARD_MAX_EXIT_MOTION, motionY + UPWARD_EXIT_ACCELERATION);
+            }
         } else {
-            entity.motionY = Math.min(UPWARD_MIN_MOTION, entity.motionY + UPWARD_ACCELERATION);
+            if (isDragDown()) {
+                entity.motionY = Math.max(DOWNWARD_MAX_MOTION, motionY - DOWNWARD_ACCELERATION);
+            } else {
+                entity.motionY = Math.min(UPWARD_MIN_MOTION, motionY + UPWARD_ACCELERATION);
+            }
         }
 
         entity.motionChanged = true;

@@ -213,6 +213,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public boolean closed = false;
     public boolean noClip = false;
     /**
+     * Set by {@link BlockBubbleColumn} on every tick the entity is inside a column, and cleared once the entity's
+     * physics have consumed it. While it is set, the column owns the entity's vertical motion.
+     */
+    public boolean inBubbleColumn = false;
+    /**
      * spawned by server
      * <p>
      * player's UUID is sent by client,so this value cannot be used in Player
@@ -4960,6 +4965,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
 
     protected boolean hasWaterAt(float height, boolean tickCached) {
+        return hasWaterAt(height, tickCached, false);
+    }
+
+    /**
+     * Whether the entity is in water for the purpose of <em>physics</em>, counting a bubble column as the water it is
+     * (the water sits on layer 1 of the column block). {@link #isInsideOfWater()} deliberately excludes columns
+     * because it also drives breathing, and a water-breathing mob suffocates in a bubble column rather than breathing
+     * in it.
+     */
+    public boolean isInsideOfWaterPhysics() {
+        return hasWaterAt(this.getEyeHeight(), false, true);
+    }
+
+    /**
+     * @param bubbleColumnCountsAsWater see {@link #isInsideOfWaterPhysics()}
+     */
+    protected boolean hasWaterAt(float height, boolean tickCached, boolean bubbleColumnCountsAsWater) {
         double y = this.y + height;
         Block block = tickCached ?
                 this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z))) :
@@ -4967,7 +4989,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         boolean layer1 = false;
         Block block1 = tickCached ? block.getTickCachedLevelBlockAtLayer(1) : block.getLevelBlockAtLayer(1);
-        if (!(block instanceof BlockBubbleColumn) && (
+        if ((bubbleColumnCountsAsWater || !(block instanceof BlockBubbleColumn)) && (
                 block instanceof BlockFlowingWater
                         || (layer1 = block1 instanceof BlockFlowingWater))) {
             BlockFlowingWater water = (BlockFlowingWater) (layer1 ? block1 : block);
@@ -5340,6 +5362,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.noClip) {
             return;
         }
+
+        // Re-established below if we are still in a column, so it can never go stale
+        this.inBubbleColumn = false;
 
         boolean needsRecalcCurrent = true;
         if (this instanceof EntityPhysical entityPhysical) {
