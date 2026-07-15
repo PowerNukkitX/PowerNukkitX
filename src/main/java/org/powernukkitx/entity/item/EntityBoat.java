@@ -64,10 +64,9 @@ public class EntityBoat extends EntityVehicle {
     private static final int WHIRLPOOL_RESIST_TICKS = 60;
 
     /**
-     * BOAT_BUBBLE_TIME - the vanilla "how long the whirlpool has had the boat" counter. Synced to the client (which is
-     * expected to render the shake from it) and read back by the server as the resist timer, so the two never differ.
+     * How long the whirlpool has held the boat.
      */
-    private int bubbleTime;
+    private int whirlpoolTicks;
     private boolean overWhirlpool;
     private boolean draggedUnder;
 
@@ -91,8 +90,9 @@ public class EntityBoat extends EntityVehicle {
         this.setDataFlag(ActorFlags.HAS_GRAVITY);
         this.setDataFlag(ActorFlags.STACKABLE);
         this.actorDataMap.put(ActorDataTypes.VARIANT, woodID);
+        this.actorDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, 40);
         this.actorDataMap.put(ActorDataTypes.IS_BUOYANT, true);
-        this.actorDataMap.put(ActorDataTypes.BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
+        this.actorDataMap.put(ActorDataTypes.BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"can_auto_step_from_liquid\":false,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"movement_type\":\"waves\"}");
         this.actorDataMap.put(ActorDataTypes.AIR_SUPPLY, (short) 300);
         this.actorDataMap.put(ActorDataTypes.OWNER, -1L);
         this.actorDataMap.put(ActorDataTypes.ROW_TIME_LEFT, 0f);
@@ -213,34 +213,26 @@ public class EntityBoat extends EntityVehicle {
         return this.draggedUnder;
     }
 
-    private void setBubbleTime(int bubbleTime) {
-        if (this.bubbleTime == bubbleTime) return;
-        this.bubbleTime = bubbleTime;
-        setDataProperty(ActorDataTypes.BUBBLE_TIME, bubbleTime);
-    }
-
     /**
-     * Drives the whirlpool timer off {@link #bubbleTime}. The boat floats and shakes for
-     * {@link #WHIRLPOOL_RESIST_TICKS}; when that runs out it is dragged under and the rider is ejected at that instant.
+     * Drives the whirlpool timer. The boat floats for {@link #WHIRLPOOL_RESIST_TICKS}; when that runs out it is
+     * dragged under and the rider is ejected at that instant.
      */
     private void tickWhirlpool() {
         if (this.draggedUnder) {
             // Latched until the boat has finished sinking - once it is out of the water it can float again
             if (!isBoatInWater()) {
                 this.draggedUnder = false;
+                this.whirlpoolTicks = 0;
             }
         } else if (this.overWhirlpool) {
-            setBubbleTime(this.bubbleTime + 1);
-            // TODO: Add boat shaking; need to debug what BDS sends for this
-            if (this.bubbleTime >= WHIRLPOOL_RESIST_TICKS) {
+            if (++this.whirlpoolTicks >= WHIRLPOOL_RESIST_TICKS) {
                 this.draggedUnder = true;
-                setBubbleTime(0);
-                for (final Entity passenger : passengers) {
-                    dismountEntity(passenger, false, false);
+                for (final Entity passenger : List.copyOf(passengers)) {
+                    dismountEntity(passenger, true, true);
                 }
             }
-        } else if (this.bubbleTime != 0) {
-            setBubbleTime(0);
+        } else {
+            this.whirlpoolTicks = 0;
         }
         // Consumed: BlockBubbleColumn sets it again this tick if the boat is still over a whirlpool
         this.overWhirlpool = false;
