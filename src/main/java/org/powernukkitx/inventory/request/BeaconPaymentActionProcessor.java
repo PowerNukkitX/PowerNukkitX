@@ -7,7 +7,9 @@ import org.powernukkitx.inventory.BeaconInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.BeaconPaymentAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DestroyAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
 import java.util.Optional;
@@ -49,6 +51,27 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
         }
         if (secondary != 0 && secondary != primary && secondary != EffectType.REGENERATION.id()) {
             log.warn("invalid beacon secondary effect {}!", secondary);
+            return context.error();
+        }
+        boolean paymentConsumed = false;
+        for (DestroyAction destroy : ConsumeActionHelper.findAllDestroyActions(context.getItemStackRequest().getActions(), 0)) {
+            if (destroy.getCount() < 1) {
+                continue;
+            }
+            FullContainerName srcName = destroy.getSource().getFullContainerName();
+            Inventory destroyed;
+            try {
+                destroyed = NetworkMapping.getInventory(player, srcName.getContainerName(), srcName.getDynamicID());
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            if (destroyed == beaconInventory) {
+                paymentConsumed = true;
+                break;
+            }
+        }
+        if (!paymentConsumed) {
+            log.warn("{}: beacon activated without consuming payment!", player.getName());
             return context.error();
         }
         holder.setPrimaryPower(primary);

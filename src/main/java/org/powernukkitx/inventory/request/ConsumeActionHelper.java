@@ -3,6 +3,7 @@ package org.powernukkitx.inventory.request;
 import org.powernukkitx.Player;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DestroyAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 
 import java.util.ArrayList;
@@ -20,6 +21,17 @@ public final class ConsumeActionHelper {
             var action = actions[i];
             if (action instanceof ConsumeAction consumeAction) {
                 found.add(consumeAction);
+            }
+        }
+        return found;
+    }
+
+    public static List<DestroyAction> findAllDestroyActions(ItemStackRequestAction[] actions, int startIndex) {
+        var found = new ArrayList<DestroyAction>();
+        for (int i = startIndex; i < actions.length; i++) {
+            var action = actions[i];
+            if (action instanceof DestroyAction destroyAction) {
+                found.add(destroyAction);
             }
         }
         return found;
