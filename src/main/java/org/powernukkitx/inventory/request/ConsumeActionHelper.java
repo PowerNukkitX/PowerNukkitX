@@ -1,7 +1,7 @@
 package org.powernukkitx.inventory.request;
 
-import org.powernukkitx.Player;
-import lombok.extern.slf4j.Slf4j;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.item.Item;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DestroyAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
@@ -9,10 +9,20 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public final class ConsumeActionHelper {
 
     private ConsumeActionHelper() {
+    }
+
+    public static void consume(Inventory inventory, int slot, int amount) {
+        Item item = inventory.getItem(slot);
+        int remaining = item.getCount() - amount;
+        if (remaining <= 0) {
+            inventory.clear(slot, false);
+        } else {
+            item.setCount(remaining);
+            inventory.setItem(slot, item, false);
+        }
     }
 
     public static List<ConsumeAction> findAllConsumeActions(ItemStackRequestAction[] actions, int startIndex) {
@@ -37,12 +47,4 @@ public final class ConsumeActionHelper {
         return found;
     }
 
-    public static ActionResponse validateConsumes(ItemStackRequestContext context, Player player, String station, int expectedConsumes) {
-        int actualConsumes = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1).size();
-        if (actualConsumes < expectedConsumes) {
-            log.warn("{}: {} result taken without consuming inputs (expected {} consume actions, got {})", player.getName(), station, expectedConsumes, actualConsumes);
-            return context.error();
-        }
-        return null;
-    }
 }

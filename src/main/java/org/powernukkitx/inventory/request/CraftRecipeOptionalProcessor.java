@@ -57,29 +57,25 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         }
 
         if (inventory instanceof AnvilInventory anvilInventory) {
-            Pair<Item, Integer> pair = updateAnvilResult(player, anvilInventory, filterString);
-            if (pair != null) {
-                int expectedConsumes = (anvilInventory.getInputSlot().isNull() ? 0 : 1)
-                        + (anvilInventory.getMaterialSlot().isNull() ? 0 : 1);
-                ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "anvil", expectedConsumes);
-                if (consumeError != null) {
-                    return consumeError;
+            AnvilResult anvilResult = updateAnvilResult(player, anvilInventory, filterString);
+            if (anvilResult != null) {
+                player.getCreativeOutputInventory().setItem(anvilResult.result());
+                player.setExperience(player.getExperience(), player.getExperienceLevel() - anvilResult.cost());
+                if (!anvilResult.result().isNull()) {
+                    anvilInventory.clear(AnvilInventory.INPUT, false);
+                    ConsumeActionHelper.consume(anvilInventory, AnvilInventory.MATERIAL, anvilResult.materialConsumed());
                 }
-                player.getCreativeOutputInventory().setItem(pair.left());
-                player.setExperience(player.getExperience(), player.getExperienceLevel() - pair.right());
             } else {
                 return context.error();
             }
         } else if (inventory instanceof CartographyTableInventory cartographyInventory) {
             Item item = updateCartographyTableResult(player, cartographyInventory, filterString);
             if (item != null) {
-                int expectedConsumes = (cartographyInventory.getInput().isNull() ? 0 : 1)
-                        + (cartographyInventory.getAdditional().isNull() ? 0 : 1);
-                ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "cartography", expectedConsumes);
-                if (consumeError != null) {
-                    return consumeError;
-                }
                 player.getCreativeOutputInventory().setItem(item);
+                if (!item.isNull()) {
+                    ConsumeActionHelper.consume(cartographyInventory, 0, 1);
+                    ConsumeActionHelper.consume(cartographyInventory, 1, 1);
+                }
             } else {
                 return context.error();
             }
@@ -94,7 +90,10 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         return ItemStackRequestActionType.CRAFT_RECIPE_OPTIONAL;
     }
 
-    public @Nullable Pair<Item, Integer> updateAnvilResult(Player player, AnvilInventory inventory, @Nullable String filterString) {
+    public record AnvilResult(Item result, int cost, int materialConsumed) {
+    }
+
+    public @Nullable AnvilResult updateAnvilResult(Player player, AnvilInventory inventory, @Nullable String filterString) {
         Item target = inventory.getInputSlot();
         Item sacrifice = inventory.getMaterialSlot();
         if (target.isNull() && sacrifice.isNull()) {
@@ -105,6 +104,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
 
         int extraCost = 0;
         int costHelper = 0;
+        int materialConsumed = 0;
         String repairMaterial = getRepairMaterial(target);
         Item result = target.clone();
 
@@ -126,6 +126,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                     ++extraCost;
                     repair = Math.min(result.getDamage(), result.getMaxDurability() / 4);
                 }
+                materialConsumed = repair2;
             } else {
                 if (!enchantedBook && (!Objects.equals(result.getId(), sacrifice.getId()) || result.getMaxDurability() == -1)) {//Anvil - ench
                     player.getLevel().addSound(player, Sound.RANDOM_ANVIL_USE, 1, 1);
@@ -225,6 +226,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                         }
                     }
                 }
+                materialConsumed = 1;
             }
         }
 
@@ -275,7 +277,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             }
         }
         resultPair.left(result);
-        return resultPair;
+        return new AnvilResult(result, resultPair.right(), materialConsumed);
     }
 
     public @Nullable Item updateCartographyTableResult(Player player, CartographyTableInventory inventory, String filterString) {

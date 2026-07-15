@@ -47,6 +47,7 @@ import java.util.Optional;
 public class CraftRecipeActionProcessor implements ItemStackRequestActionProcessor<CraftRecipeAction> {
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
+    public static final String GRID_CONSUMED_KEY = "grid_consumed";
 
     public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
         String id = input.getId();
@@ -95,12 +96,14 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             EnchantItemEvent event = new EnchantItemEvent((EnchantInventory) inventory, first.clone().autoAssignStackNetworkId(), item, enchantOptionData.getCost(), player);
             Server.getInstance().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "enchant", 1);
-                if (consumeError != null) {
-                    return consumeError;
-                }
                 if ((player.getGamemode() & 0x01) == 0) {
-                    player.setExperience(player.getExperience(), player.getExperienceLevel() - (enchantOptionWithEntry.getEntry() + 1));
+                    int lapisCost = enchantOptionWithEntry.getEntry() + 1;
+                    if (inventory.getItem(1).getCount() < lapisCost) {
+                        return context.error();
+                    }
+                    player.setExperience(player.getExperience(), player.getExperienceLevel() - lapisCost);
+                    ConsumeActionHelper.consume(inventory, 0, first.getCount());
+                    ConsumeActionHelper.consume(inventory, 1, lapisCost);
                 }
                 player.getCreativeOutputInventory().setItem(item);
                 EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetworkId());
@@ -145,10 +148,6 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     if (checkTrade(tradeRecipe.getCompound("buyB"), second, reductionB)) return context.error();
                     if (tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses"))
                         return context.error();
-                    ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "trade", 2);
-                    if (consumeError != null) {
-                        return consumeError;
-                    }
                     player.getCreativeOutputInventory().setItem(output);
                 }
             } else if (ca) {
@@ -159,15 +158,27 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first, reductionA)) return context.error();
                     if (tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses"))
                         return context.error();
-                    ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "trade", 1);
-                    if (consumeError != null) {
-                        return consumeError;
-                    }
                     inventory.sendContents(player);
                     player.getCreativeOutputInventory().setItem(output);
                 }
             }
             if (ca) {
+                int craftsN = action.getNumberOfRequestedCrafts();
+                int requiredA = Math.max(tradeRecipe.getCompound("buyA").getByte("Count") - reductionA, 1);
+                if (requiredA * craftsN > first.getCount()) {
+                    return context.error();
+                }
+                int requiredB = 0;
+                if (cb) {
+                    requiredB = Math.max(tradeRecipe.getCompound("buyB").getByte("Count") - reductionB, 1);
+                    if (requiredB * craftsN > second.getCount()) {
+                        return context.error();
+                    }
+                }
+                ConsumeActionHelper.consume(inventory, 0, requiredA * craftsN);
+                if (cb) {
+                    ConsumeActionHelper.consume(inventory, 1, requiredB * craftsN);
+                }
                 int traderExp = tradeRecipe.contains("traderExp") ? tradeRecipe.getInt("traderExp") : 0;
                 int rewardExp = tradeRecipe.contains("rewardExp") ? tradeRecipe.getInt("rewardExp") : 0;
                 player.addExperience(rewardExp * action.getNumberOfRequestedCrafts());
@@ -209,24 +220,21 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
         } else {
-            // Validate if the player has provided enough ingredients
-            var itemStackArray = player.getCraftingGrid().getInput().getFlatItems();
-            for (int slot = 0; slot < itemStackArray.length; slot++) {
-                var ingredient = itemStackArray[slot];
-                // Skip empty slot because we have checked item type above
+            Inventory craftInventory = (Inventory) craft;
+            for (int slot = 0; slot < craftInventory.getSize(); slot++) {
+                Item ingredient = craftInventory.getItem(slot);
                 if (ingredient.isNull()) continue;
                 if (ingredient.getCount() < numberOfRequestedCrafts) {
                     log.warn("Not enough ingredients in slot {}! Expected: {}, Actual: {}", slot, numberOfRequestedCrafts, ingredient.getCount());
                     return context.error();
                 }
             }
-            // Validate the consume action count which client sent
-            var consumeActions = ConsumeActionHelper.findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
-            var consumeActionCountNeeded = input.canConsumerItemCount();
-            if (consumeActions.size() != consumeActionCountNeeded) {
-                log.warn("Mismatched consume action count! Expected: {}, Actual: {} on inventory {}", consumeActionCountNeeded, consumeActions.size(), craft.getClass().getSimpleName());
-                return context.error();
+            for (int slot = 0; slot < craftInventory.getSize(); slot++) {
+                if (!craftInventory.getItem(slot).isNull()) {
+                    ConsumeActionHelper.consume(craftInventory, slot, numberOfRequestedCrafts);
+                }
             }
+            context.put(GRID_CONSUMED_KEY, true);
             if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
                 context.put(RECIPE_DATA_KEY, recipe);
             } else if (recipe.getResults().size() == 1) {
@@ -273,17 +281,15 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectIngredient.match(ingredient);
         match &= expectTemplate.match(template);
         if (match) {
-            int expectedConsumes = (equipment.isNull() ? 0 : 1) + (ingredient.isNull() ? 0 : 1) + (template.isNull() ? 0 : 1);
-            ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "smithing", expectedConsumes);
-            if (consumeError != null) {
-                return consumeError;
-            }
             Item result = recipe.getResult().clone();
             CompoundTag tag = equipment.getNbt();
             if (tag != null) {
                 result.setNbt(tag);
             }
             player.getCreativeOutputInventory().setItem(result);
+            ConsumeActionHelper.consume(smithingInventory, 0, 1);
+            ConsumeActionHelper.consume(smithingInventory, 1, 1);
+            ConsumeActionHelper.consume(smithingInventory, 2, 1);
             return null;
         }
         return context.error();
@@ -320,12 +326,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
             compound.putCompound("Trim", trim);
             result.setNbt(compound);
-            int expectedConsumes = (equipment.isNull() ? 0 : 1) + (ingredient.isNull() ? 0 : 1) + (template.isNull() ? 0 : 1);
-            ActionResponse consumeError = ConsumeActionHelper.validateConsumes(context, player, "smithing", expectedConsumes);
-            if (consumeError != null) {
-                return consumeError;
-            }
             player.getCreativeOutputInventory().setItem(result);
+            ConsumeActionHelper.consume(smithingInventory, 0, 1);
+            ConsumeActionHelper.consume(smithingInventory, 1, 1);
+            ConsumeActionHelper.consume(smithingInventory, 2, 1);
             return null;
         }
         return context.error();

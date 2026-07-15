@@ -54,7 +54,7 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
             return context.error();
         }
         boolean paymentConsumed = false;
-        for (DestroyAction destroy : ConsumeActionHelper.findAllDestroyActions(context.getItemStackRequest().getActions(), 0)) {
+        for (DestroyAction destroy : ConsumeActionHelper.findAllDestroyActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1)) {
             if (destroy.getCount() < 1) {
                 continue;
             }
