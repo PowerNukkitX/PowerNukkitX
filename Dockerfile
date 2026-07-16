@@ -35,7 +35,6 @@ COPY --from=build --chown=minecraft:minecraft /src/build/powernukkitx.jar /app/p
 
 # Ports
 EXPOSE 19132/udp
-EXPOSE 19132/tcp
 
 RUN mkdir /data /home/minecraft && chown minecraft:minecraft /app /data /home/minecraft
 
