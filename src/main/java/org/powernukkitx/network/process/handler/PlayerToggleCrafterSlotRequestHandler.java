@@ -6,6 +6,7 @@ import org.powernukkitx.block.BlockCrafter;
 import org.powernukkitx.blockentity.BlockEntityCrafter;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.math.Vector3;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerToggleCrafterSlotRequestPacket;
@@ -19,6 +20,11 @@ public class PlayerToggleCrafterSlotRequestHandler implements PacketHandler<Play
     public void handle(PlayerToggleCrafterSlotRequestPacket packet, PlayerSessionHolder holder, Server server) {
         Level level = holder.getPlayer().getLevel();
         BlockVector3 position = BlockVector3.fromNetwork(packet.getPos());
+
+        if (position.asVector3().distanceSquared(holder.getPlayer()) > 10000) {
+            return;
+        }
+
         Block block = level.getBlock(position.asVector3());
         if (!(block instanceof BlockCrafter crafter)) {
             return;

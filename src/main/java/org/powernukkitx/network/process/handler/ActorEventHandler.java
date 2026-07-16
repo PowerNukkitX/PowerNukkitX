@@ -48,7 +48,7 @@ public class ActorEventHandler implements PacketHandler<ActorEventPacket> {
             }
 
             player.sendPacket(packet);
-            Server.broadcastPacket(player.getViewers().values(), packet);
+            Server.broadcastPacket(player.getViewers().values(), packet); // TODO: fix it
         }
     }
 }

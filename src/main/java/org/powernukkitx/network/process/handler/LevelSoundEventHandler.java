@@ -15,7 +15,7 @@ public class LevelSoundEventHandler implements PacketHandler<LevelSoundEventPack
     public void handle(LevelSoundEventPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
         if (!player.isSpectator()) {
-            player.level.addChunkPacket(player.getChunkX(), player.getChunkZ(), packet);
+            player.level.addChunkPacket(player.getChunkX(), player.getChunkZ(), packet); // TODO: fix it
         }
     }
 }

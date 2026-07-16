@@ -20,6 +20,7 @@ public class RequestChunkRadiusHandler implements PacketHandler<RequestChunkRadi
             holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
             return;
         }
+
         final int viewDistance = server.getSettings().gameplaySettings().viewDistance();
         final int radius = Math.max(MIN_CHUNK_RADIUS, Math.min(packet.getChunkRadius(), viewDistance));
         holder.getPlayer().setViewDistance(radius);

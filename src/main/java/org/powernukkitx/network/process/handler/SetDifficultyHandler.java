@@ -19,6 +19,7 @@ public class SetDifficultyHandler implements PacketHandler<SetDifficultyPacket> 
         if (!playerHandle.player.spawned || !playerHandle.player.hasPermission("nukkit.command.difficulty")) {
             return;
         }
+
         server.setDifficulty(packet.getDifficulty());
         final SetDifficultyPacket difficultyPacket = new SetDifficultyPacket();
         packet.setDifficulty(server.getDifficulty());

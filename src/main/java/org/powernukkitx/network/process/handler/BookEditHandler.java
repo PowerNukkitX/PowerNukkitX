@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.player.PlayerEditBookEvent;
+import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemWritableBook;
 import org.powernukkitx.item.ItemWrittenBook;
@@ -25,7 +26,13 @@ public class BookEditHandler implements PacketHandler<BookEditPacket> {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
 
-        Item oldBook = player.getInventory().getItem(packet.getBookSlot());
+        HumanInventory inventory = player.getInventory();
+        if (!inventory.isHotbarSlot(packet.getBookSlot())) {
+            log.warn("Invalid book slot {} from player {}", packet.getBookSlot(), playerHandle.getUsername());
+            return;
+        }
+
+        Item oldBook = inventory.getItem(packet.getBookSlot());
         if (!oldBook.getId().equals(Item.WRITABLE_BOOK)) {
             return;
         }

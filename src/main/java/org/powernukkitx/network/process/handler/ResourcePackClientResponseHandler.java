@@ -14,6 +14,7 @@ import org.cloudburstmc.protocol.bedrock.packet.ResourcePackClientResponsePacket
 import org.cloudburstmc.protocol.bedrock.packet.ResourcePackDataInfoPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ResourcePackStackPacket;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
  * @author Kaooot
  */
 public class ResourcePackClientResponseHandler implements PacketHandler<ResourcePackClientResponsePacket> {
+    private ArrayList<String> usedUuids = new ArrayList<>();
 
     @Override
     public void handle(ResourcePackClientResponsePacket packet, PlayerSessionHolder holder, Server server) {
@@ -38,6 +40,13 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                     } else {
                         uuid = UUID.fromString(downloadingPack);
                     }
+
+                    if (usedUuids.contains(uuid.toString())) {
+                        holder.disconnect(DisconnectFailReason.RESOURCE_PACK_LOADING_FAILED);
+                        return;
+                    }
+                    usedUuids.add(uuid.toString());
+
                     final ResourcePack resourcePack = server.getResourcePackManager().getPackById(uuid);
                     if (resourcePack == null) {
                         holder.disconnect(DisconnectFailReason.RESOURCE_PACK_LOADING_FAILED);

@@ -43,11 +43,11 @@ public class PacketHandlerRegistry {
         register(MobEquipmentPacket.class, new MobEquipmentHandler());
         register(ModalFormResponsePacket.class, new ModalFormResponseHandler());
         register(MoveActorAbsolutePacket.class, new MoveActorAbsoluteHandler());
-        register(MovePlayerPacket.class, new MovePlayerHandler());
+        //register(MovePlayerPacket.class, new MovePlayerHandler()); Unused since idk
         register(NpcRequestPacket.class, new NpcRequestHandler());
-        register(PacketViolationWarningPacket.class, new PacketViolationWarningHandler());
+        //register(PacketViolationWarningPacket.class, new PacketViolationWarningHandler()); Unused?
         register(PlayerActionPacket.class, new PlayerActionHandler());
-        register(PlayerHotbarPacket.class, new PlayerHotbarHandler());
+        //register(PlayerHotbarPacket.class, new PlayerHotbarHandler()); Unused
         register(PlayerSkinPacket.class, new PlayerSkinHandler());
         register(PlayerToggleCrafterSlotRequestPacket.class, new PlayerToggleCrafterSlotRequestHandler());
         register(PositionTrackingDBClientRequestPacket.class, new PositionTrackingDBClientRequestHandler());
@@ -65,7 +65,7 @@ public class PacketHandlerRegistry {
         register(StructureBlockUpdatePacket.class, new StructureBlockUpdateHandler());
         register(StructureTemplateDataRequestPacket.class, new StructureTemplateDataRequestHandler());
         register(TextPacket.class, new TextHandler());
-        register(TickSyncPacket.class, new TickSyncHandler());
+        //register(TickSyncPacket.class, new TickSyncHandler()); Unused
         register(NetworkStackLatencyPacket.class, new NetworkStackLatencyHandler());
     }
 

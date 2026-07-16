@@ -29,6 +29,7 @@ public class MoveActorAbsoluteHandler implements PacketHandler<MoveActorAbsolute
         if (!playerHandle.packetRateLimiter.tryMovement()) {
             return;
         }
+
         Vector3f pos = packet.getMoveData().getPos();
         Vector3f rot = packet.getMoveData().getRotation();
         if (!Double.isFinite(pos.getX()) || !Double.isFinite(pos.getY()) || !Double.isFinite(pos.getZ()) || !Double.isFinite(rot.getX()) || !Double.isFinite(rot.getY()) || !Double.isFinite(rot.getZ())) {
