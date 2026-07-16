@@ -13,8 +13,10 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemS
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.ENCH_RECIPE_KEY;
+import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.GRID_CONSUMED_KEY;
 
 /**
  * Allay Project 2023/12/1
@@ -23,9 +25,28 @@ import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.ENCH
  */
 @Slf4j
 public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<ConsumeAction> {
+
+    private static final Set<ContainerEnumName> SERVER_CONSUMED_CONTAINERS = Set.of(
+            ContainerEnumName.ANVIL_INPUT_CONTAINER,
+            ContainerEnumName.ANVIL_MATERIAL_CONTAINER,
+            ContainerEnumName.GRINDSTONE_INPUT_CONTAINER,
+            ContainerEnumName.GRINDSTONE_ADDITIONAL_CONTAINER,
+            ContainerEnumName.CARTOGRAPHY_INPUT_CONTAINER,
+            ContainerEnumName.CARTOGRAPHY_ADDITIONAL_CONTAINER,
+            ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER,
+            ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER,
+            ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER,
+            ContainerEnumName.LOOM_INPUT_CONTAINER,
+            ContainerEnumName.LOOM_DYE_CONTAINER,
+            ContainerEnumName.LOOM_MATERIAL_CONTAINER,
+            ContainerEnumName.ENCHANTING_INPUT_CONTAINER,
+            ContainerEnumName.ENCHANTING_MATERIAL_CONTAINER,
+            ContainerEnumName.TRADE2_INGREDIENT1_CONTAINER,
+            ContainerEnumName.TRADE2_INGREDIENT2_CONTAINER
+    );
+
     @Override
     public ActionResponse handle(ConsumeAction action, Player player, ItemStackRequestContext context) {
-        // We have validated the recipe in CraftRecipeActionProcessor, so here we can believe the client directly
         var count = action.getCount();
         if (count == 0) {
             log.warn("cannot consume 0 items!");
@@ -37,6 +58,28 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         Inventory sourceContainer = NetworkMapping.getInventory(player, containerName.getContainerName(), dynamicId);
         int slot = sourceContainer.fromNetworkSlot(action.getSource().getSlot());
         Item item = sourceContainer.getItem(slot);
+        ContainerEnumName sourceContainerType = containerName.getContainerName();
+        boolean serverConsumed = SERVER_CONSUMED_CONTAINERS.contains(sourceContainerType)
+                || (sourceContainerType == ContainerEnumName.CRAFTING_INPUT_CONTAINER && Boolean.TRUE.equals(context.get(GRID_CONSUMED_KEY)));
+        if (serverConsumed) {
+            return context.success(List.of(
+                    new ItemStackResponseContainerInfo(
+                            sourceContainer.getContainerEnumName(slot),
+                            Lists.newArrayList(
+                                    new ItemStackResponseSlotInfo(
+                                            sourceContainer.toNetworkSlot(slot),
+                                            sourceContainer.toNetworkSlot(slot),
+                                            item.getCount(),
+                                            item.getNetId(),
+                                            item.getCustomName(),
+                                            item.getDamage(),
+                                            ""
+                                    )
+                            ),
+                            containerName
+                    )
+            ));
+        }
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
 

@@ -189,7 +189,14 @@ public interface Inventory {
     /**
      * Decrease the item count in the slot index.
      */
-    void decreaseCount(int slot);
+    default void decreaseCount(int slot) {
+        this.decreaseCount(slot, 1);
+    }
+
+    /**
+     * Decrease the item count in the slot index by a specific amount.
+     */
+    void decreaseCount(int slot, int amount);
 
 
     /**

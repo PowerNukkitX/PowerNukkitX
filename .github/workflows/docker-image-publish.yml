@@ -1,0 +1,126 @@
+name: Update Docker Hub images
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Tag name to build'
+        required: true
+
+jobs:
+  build:
+    name: Update Docker Hub images
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get tag name
+        id: tag-name
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          DISPATCH_TAG: ${{ github.event.inputs.release }}
+        run: |
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            echo "TAG_NAME=nightly" >> "$GITHUB_OUTPUT"
+          elif [[ "$EVENT_NAME" == "release" ]]; then
+            echo "TAG_NAME=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "TAG_NAME=$DISPATCH_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "Unsupported event type: $EVENT_NAME"
+            exit 1
+          fi
+
+      - name: Parse version
+        id: version
+        env:
+          TAG_NAME: ${{ steps.tag-name.outputs.TAG_NAME }}
+        run: |
+          MAJOR="$(echo "$TAG_NAME" | cut -d. -f1)"
+          MINOR="$(echo "$TAG_NAME" | cut -d. -f1-2)"
+          echo "MAJOR=$MAJOR" >> "$GITHUB_OUTPUT"
+          echo "MINOR=$MINOR" >> "$GITHUB_OUTPUT"
+
+      - name: Detect channel
+        id: channel
+        env:
+          TAG_NAME: ${{ steps.tag-name.outputs.TAG_NAME }}
+        run: |
+          # Semver tag means a stable release, "nightly" and anything else stays unstable.
+          if [[ "$TAG_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "CHANNEL=stable" >> "$GITHUB_OUTPUT"
+          else
+            echo "CHANNEL=unstable" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build image for tag
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: .
+          push: true
+          file: ./Dockerfile
+          tags: |
+            powernukkitx/server:${{ steps.tag-name.outputs.TAG_NAME }}
+            ghcr.io/powernukkitx/server:${{ steps.tag-name.outputs.TAG_NAME }}
+
+      - name: Build image for major tag
+        if: steps.channel.outputs.CHANNEL == 'stable'
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: .
+          push: true
+          file: ./Dockerfile
+          tags: |
+            powernukkitx/server:${{ steps.version.outputs.MAJOR }}
+            ghcr.io/powernukkitx/server:${{ steps.version.outputs.MAJOR }}
+
+      - name: Build image for minor tag
+        if: steps.channel.outputs.CHANNEL == 'stable'
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: .
+          push: true
+          file: ./Dockerfile
+          tags: |
+            powernukkitx/server:${{ steps.version.outputs.MINOR }}
+            ghcr.io/powernukkitx/server:${{ steps.version.outputs.MINOR }}
+
+      - name: Build image for latest tag
+        if: steps.channel.outputs.CHANNEL == 'stable'
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: .
+          push: true
+          file: ./Dockerfile
+          tags: |
+            powernukkitx/server:latest
+            ghcr.io/powernukkitx/server:latest

@@ -137,7 +137,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
     }
 
     @Override
-    public void decreaseCount(int slot) {
+    public void decreaseCount(int slot, int amount) {
 
     }
 

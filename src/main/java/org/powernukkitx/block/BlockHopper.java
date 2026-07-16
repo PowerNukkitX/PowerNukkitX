@@ -5,7 +5,6 @@ import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityHopper;
-import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityItem;
 import org.powernukkitx.event.inventory.InventoryMoveItemEvent;
 import org.powernukkitx.inventory.ContainerInventory;
@@ -276,10 +275,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
             boolean pickedUpItem = false;
 
-            for (Entity entity : hopperPos.level.getCollidingEntities(pickupArea)) {
-                if (entity == null || entity.isClosed() || !(entity instanceof EntityItem itemEntity))
-                    continue;
-
+            for (EntityItem itemEntity : hopperPos.level.getCollidingItemEntities(pickupArea)) {
                 if (itemEntity.isDisplayOnly())
                     continue;
 
@@ -296,7 +292,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
                 Item[] items = hopperInv.addItem(item);
 
                 if (items.length == 0) {
-                    entity.close();
+                    itemEntity.close();
                     pickedUpItem = true;
                     continue;
                 }

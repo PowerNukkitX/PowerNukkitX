@@ -21,7 +21,7 @@ public class LevelSettings extends OkaeriConfig {
     @Comment("pnx.settings.level.alwaystickplayers")
     boolean alwaysTickPlayers = false;
     @Comment("pnx.settings.level.loadalllevels")
-    boolean loadAllLevels = false;
+    boolean loadAllLevels = true;
     @Comment("pnx.settings.level.chunkunloaddelay")
     int chunkUnloadDelay = 15000;
     @Comment("pnx.settings.level.entityspawncap")

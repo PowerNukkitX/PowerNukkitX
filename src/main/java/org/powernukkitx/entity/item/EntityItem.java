@@ -183,13 +183,13 @@ public class EntityItem extends Entity {
 
         if (this.mergeItems && this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
             if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
-                for (Entity entity : this.getLevel().getNearbyEntities(getBoundingBox().grow(1, 1, 1), this, false)) {
-                    if (entity instanceof EntityItem) {
+                for (EntityItem entity : this.getLevel().getCollidingItemEntities(getBoundingBox().grow(1, 1, 1))) {
+                    if (entity != this) {
                         if (!entity.isAlive()) {
                             continue;
                         }
-                        if (!((EntityItem) entity).mergeItems) continue;
-                        Item closeItem = ((EntityItem) entity).getItem();
+                        if (!entity.mergeItems) continue;
+                        Item closeItem = entity.getItem();
                         if (!closeItem.equals(getItem(), true, true)) {
                             continue;
                         }

@@ -3636,6 +3636,44 @@ public class Level implements Metadatable {
         return getEntitiesFromBuffer(index, overflow);
     }
 
+    /**
+     * Returns only the {@link EntityItem} instances whose bounding box intersects {@code bb}.
+     * <p>
+     * Same chunk range and intersection test as {@link #getCollidingEntities(AxisAlignedBB)}, but skips every
+     * non-item entity and allocates nothing when there is no item to return.
+     *
+     * @param bb the area to search
+     * @return matching item entities, or an empty list (never null)
+     */
+    public List<EntityItem> getCollidingItemEntities(AxisAlignedBB bb) {
+        int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
+        int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+        int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
+        int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+
+        List<EntityItem> result = null;
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                IChunk chunk = this.getChunkIfLoaded(x, z);
+                if (chunk == null) {
+                    continue;
+                }
+                for (Entity ent : chunk.getEntities().values()) {
+                    if (ent instanceof EntityItem item && !item.isClosed()
+                            && item.boundingBox.intersectsWith(bb)) {
+                        if (result == null) {
+                            result = new ArrayList<>();
+                        }
+                        result.add(item);
+                    }
+                }
+            }
+        }
+
+        return result == null ? Collections.emptyList() : result;
+    }
+
     public List<Entity> fastCollidingEntities(AxisAlignedBB bb) {
         return this.fastCollidingEntities(bb, null);
     }
@@ -4151,15 +4189,14 @@ public class Level implements Metadatable {
     public void requestChunk(int x, int z, Player player) {
         Preconditions.checkArgument(player.getLoaderId() > 0, player.getName() + " has no chunk loader");
         long index = Level.chunkHash(x, z);
-        var casLock = new AtomicBoolean(false);
-        Int2ObjectNonBlockingMap<Player> playerInt2ObjectMap = this.chunkSendQueue.computeIfAbsent(index, (key) -> {
-            if (casLock.weakCompareAndSetVolatile(false, true)) {
-                return new Int2ObjectNonBlockingMap<>();
-            } else {
-                return null;
+        synchronized (this.chunkSendQueue) {
+            Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            if (players == null) {
+                players = new Int2ObjectNonBlockingMap<>();
+                this.chunkSendQueue.put(index, players);
             }
-        });
-        Objects.requireNonNull(playerInt2ObjectMap).put(player.getLoaderId(), player);
+            players.put(player.getLoaderId(), player);
+        }
     }
 
     private void sendChunk(int x, int z, long index, BedrockPacket packet) {
@@ -4188,14 +4225,24 @@ public class Level implements Metadatable {
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
-            final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            final Int2ObjectNonBlockingMap<Player> players;
+            synchronized (this.chunkSendQueue) {
+                players = this.chunkSendQueue.get(index);
+            }
             if (players != null) {
                 IChunk chunk = this.getChunk(x, z);
                 if (chunk != null && chunk.getChunkState().canSend()) {
+                    final Int2ObjectNonBlockingMap<Player> playersToSend;
+                    synchronized (this.chunkSendQueue) {
+                        playersToSend = this.chunkSendQueue.remove(index);
+                    }
+                    if (playersToSend == null) {
+                        continue;
+                    }
                     final var pair = this.requireProvider().requestChunkData(x, z);
                     final var chunkData = pair.first();
                     try {
-                        for (Player player : Objects.requireNonNull(players).values()) {
+                        for (Player player : playersToSend.values()) {
                             if (player.isConnected()) {
                                 final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
                                 networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
@@ -4216,7 +4263,6 @@ public class Level implements Metadatable {
                     } finally {
                         chunkData.release();
                     }
-                    this.chunkSendQueue.remove(index);
                 } else if (!this.chunkGenerationQueue.containsKey(index)) {
                     this.generateChunk(x, z, true);
                 }

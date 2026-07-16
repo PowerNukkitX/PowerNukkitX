@@ -136,7 +136,7 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public void decreaseCount(int slot) {
+    public void decreaseCount(int slot, int amount) {
 
     }
 

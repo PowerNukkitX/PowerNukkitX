@@ -7,6 +7,7 @@ import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
+import org.powernukkitx.entity.ai.controller.ClimbController;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
@@ -71,7 +72,11 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
                         new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0)
                 ),
-                Set.of(new WalkController(), new LookController(true, true)),
+                Set.of(
+                        new WalkController(),
+                        new ClimbController(),
+                        new LookController(true, true)
+                ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
@@ -81,6 +86,8 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
     protected void initEntity() {
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
+        this.setCanClimb(true);
+        this.setWallClimbing(false);
     }
 
     @Override

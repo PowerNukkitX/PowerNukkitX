@@ -58,7 +58,7 @@ public class BlockAmethystCluster extends BlockAmethystBud {
         fortuneLevel = Math.max(0, Math.min(3, fortuneLevel));
 
         int[] choices = FORTUNE_DROPS[fortuneLevel];
-        int amount = choices[RANDOM.nextBoundedInt(choices.length)];
+        int amount = choices[RANDOM.nextBoundedInt(choices.length - 1)];
 
         return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, amount)};
     }

@@ -80,7 +80,7 @@ import org.powernukkitx.level.PlayerChunkManager;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
-import org.powernukkitx.level.particle.CrackBlockParticle;
+import org.powernukkitx.level.particle.BreakBlockParticle;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.AxisAlignedBB;
@@ -451,7 +451,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
-            Block block = this.level.getBlock(pos, false);
             double miningTimeRequired;
 
             if (this.breakingBlock instanceof CustomBlock customBlock) {
@@ -471,7 +470,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     pk.setPosition(Vector3f.from(this.breakingBlock.x, this.breakingBlock.y, this.breakingBlock.z));
                     pk.setData(65535 / breakTick);
                     this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                    this.level.addParticle(new CrackBlockParticle(pos, block));
+                }
+
+                if (face != null && this.server.isServerAuthoritativeBlockBreaking()) {
+                    this.level.addParticle(new BreakBlockParticle(pos.add(0.5, 0.5, 0.5), this.breakingBlock, face));
                 }
 
                 long timeDiff = time - breakingBlockTime;
@@ -2976,7 +2978,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement() > 0 && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
+            if (this.server.isServerAuthoritativeBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 
@@ -3144,7 +3146,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * reason=empty string
      *
-     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
      */
     public boolean kick() {
         return this.kick("");
@@ -3153,7 +3155,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
      *
-     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
      */
     public boolean kick(String reason, boolean isAdmin) {
         return this.kick(PlayerKickEvent.Reason.UNKNOWN, reason, isAdmin);
@@ -3162,61 +3164,98 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
      *
-     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
      */
     public boolean kick(String reason) {
         return kick(PlayerKickEvent.Reason.UNKNOWN, reason);
     }
 
     /**
-     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
+     *
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
+     */
+    public boolean kick(String reason, String disconnectScreenMessage) {
+        return kick(PlayerKickEvent.Reason.UNKNOWN, reason, disconnectScreenMessage);
+    }
+
+    /**
+     * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
+     *
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
+     */
+    public boolean kick(String reason, String disconnectScreenMessage, boolean isAdmin) {
+        return kick(PlayerKickEvent.Reason.UNKNOWN, reason, disconnectScreenMessage, isAdmin);
+    }
+
+    /**
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
      */
     public boolean kick(PlayerKickEvent.Reason reason) {
         return this.kick(reason, true);
     }
 
     /**
-     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
      */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString) {
         return this.kick(reason, reasonString, true);
     }
 
     /**
-     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
+     */
+    public boolean kick(PlayerKickEvent.Reason reason, String reasonString, String disconnectScreenMessage) {
+        return this.kick(reason, reasonString, disconnectScreenMessage, true);
+    }
+
+    /**
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
      */
     public boolean kick(PlayerKickEvent.Reason reason, boolean isAdmin) {
         return this.kick(reason, reason.toString(), isAdmin);
     }
 
     /**
-     * Kicks the player
-     *
-     * @param reason       Reason enum
-     * @param reasonString Reason String
-     * @param isAdmin      Whether from the administrator kicked out
-     * @return boolean
+     * @see #kick(PlayerKickEvent.Reason, String, String, boolean)
      */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
+        return this.kick(reason, reasonString, reasonString, isAdmin);
+    }
+
+    /**
+     * Kicks the player.
+     *
+     * @param reason                  Reason enum
+     * @param reasonString            Reason String shown inside the console
+     * @param disconnectScreenMessage Reason String shown on the player's screen
+     * @param isAdmin                 Whether from the administrator kicked out
+     * @return boolean
+     */
+    public boolean kick(PlayerKickEvent.Reason reason, String reasonString, String disconnectScreenMessage, boolean isAdmin) {
         PlayerKickEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
+        this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, reasonString, disconnectScreenMessage, this.getLeaveMessage()));
         if (!ev.isCancelled()) {
+            String finalReason;
             String message;
             if (isAdmin) {
                 if (!Server.getInstance().getNameBans().isBanned(getName())) {
-                    message = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
+                    finalReason = "Kicked by admin." + (!reasonString.isEmpty() ? " Reason: " + reasonString : "");
+                    message = "Kicked by admin." + (!disconnectScreenMessage.isEmpty() ? " Reason: " + disconnectScreenMessage : (!reasonString.isEmpty() ? " Reason: " + reasonString : ""));
                 } else {
-                    message = reasonString;
+                    finalReason = reasonString;
+                    message = disconnectScreenMessage;
                 }
             } else {
-                if (reasonString.isEmpty()) {
+                finalReason = reasonString.isEmpty() ? "disconnectionScreen.noReason" : reasonString;
+                if (disconnectScreenMessage.isEmpty()) {
                     message = "disconnectionScreen.noReason";
                 } else {
-                    message = reasonString;
+                    message = disconnectScreenMessage;
                 }
             }
 
-            this.close(ev.getQuitMessage(), message);
+            this.close(ev.getQuitMessage(), finalReason, message);
 
             return true;
         }
@@ -3611,7 +3650,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(pk);
     }
 
-
     @Override
     public void close() {
         this.close("");
@@ -3620,41 +3658,48 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * {@code notify=true}
      *
-     * @see #close(TextContainer, String)
+     * @see #close(TextContainer, String, String)
      */
     public void close(String reason) {
-        this.close(this.getLeaveMessage(), reason);
+        this.close(this.getLeaveMessage(), reason, reason);
     }
 
-    public void close(String message, String reason) {
-        this.close(new TextContainer(message), reason);
+    public void close(String reason, String disconnectScreenMessage) {
+        this.close(this.getLeaveMessage(), reason, disconnectScreenMessage);
+    }
+
+    public void close(String message, String reason, String disconnectScreenMessage) {
+        this.close(new TextContainer(message), reason, disconnectScreenMessage);
     }
 
     /**
      * {@code reason="generic",notify=true}
      *
-     * @see #close(TextContainer, String)
+     * @see #close(TextContainer, String, String)
      */
     public void close(TextContainer message) {
         this.close(message, "generic");
     }
 
     /**
-     * Closing the player's connection and all its activities are almost as function as {@link #kick}, the difference is that {@link #kick} is implemented based on {@code close}.
-     *
-     * @param message PlayerQuitEvent message
-     * @param reason  Reason for logout
+     * @see #close(TextContainer, String, String)
      */
     public void close(TextContainer message, String reason) {
+        this.close(message, reason, reason);
+    }
+
+    public void close(TextContainer message, String reason, String disconnectScreenMessage) {
         if (this.closed || !this.connected.compareAndSet(true, false)) {
             return;
         }
         //output logout information
         log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
-                TextFormat.AQUA + this.getName() + TextFormat.WHITE,
-                this.getAddress(),
-                String.valueOf(this.getPort()),
-                this.getServer().getLanguage().tr(reason)));
+            TextFormat.AQUA + this.getName() + TextFormat.WHITE,
+            this.getAddress(),
+            String.valueOf(this.getPort()),
+            this.getServer().getLanguage().tr(reason)));
+
+        if (disconnectScreenMessage == null) disconnectScreenMessage = reason;
 
         resetInventory();
         for (var inv : this.windows.keySet()) {
@@ -3742,7 +3787,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         log.debug(reason);
         // true when the server closes the client connection
         if (this.session.isConnected()) {
-            this.session.disconnect(reason, false);
+            this.session.disconnect(disconnectScreenMessage, false);
         }
     }
 
