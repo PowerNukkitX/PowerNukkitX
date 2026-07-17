@@ -57,6 +57,15 @@ public class Palette<V> {
         this.addToPalette(first);
     }
 
+    public boolean anyMatch(java.util.function.Predicate<V> predicate) {
+        for (int i = 0, size = this.palette.size(); i < size; i++) {
+            if (predicate.test(this.palette.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected void addToPalette(V value) {
         if (this.paletteIndex != null) {
             if (!this.paletteIndex.containsKey(value)) {

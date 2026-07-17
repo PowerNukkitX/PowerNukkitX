@@ -46,6 +46,7 @@ import org.powernukkitx.level.format.ChunkState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.poi.PoiManager;
 import org.powernukkitx.level.format.UnsafeChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.generator.BiomedGenerator;
@@ -311,6 +312,7 @@ public class Level implements Metadatable {
     public static final AtomicLong GENERATED_CHUNK_COUNT = new AtomicLong();
     private final Server server;
     private final int levelId;
+    private final PoiManager poiManager = new PoiManager(this);
     // Loaders still remain single-threaded
     private final Int2ObjectOpenHashMap<ChunkLoader> loaders = new Int2ObjectOpenHashMap<>();
     private final Int2IntMap loaderCounter = new Int2IntOpenHashMap();
@@ -2734,6 +2736,10 @@ public class Level implements Metadatable {
         BlockChangeEvent blockChangeEvent = new BlockChangeEvent(block, blockPrevious);
         this.server.getPluginManager().callEvent(blockChangeEvent);
 
+        if (layer == 0) {
+            this.poiManager.onBlockChange(x, y, z, statePrevious, state);
+        }
+
         int cx = x >> 4;
         int cz = z >> 4;
         long index = Level.chunkHash(cx, cz);
@@ -3971,6 +3977,10 @@ public class Level implements Metadatable {
         return this.requireProvider().getLoadedChunk(index);
     }
 
+    public PoiManager getPoiManager() {
+        return this.poiManager;
+    }
+
     /**
      * Set chunk to the level provider
      */
@@ -4555,6 +4565,8 @@ public class Level implements Metadatable {
         } catch (Exception e) {
             log.error(this.server.getLanguage().tr("nukkit.level.chunkUnloadError", e.toString()), e);
         }
+
+        this.poiManager.onChunkUnload(x, z);
 
         return true;
     }

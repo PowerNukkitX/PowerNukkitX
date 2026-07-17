@@ -52,10 +52,11 @@ import org.powernukkitx.inventory.InventorySlice;
 import org.powernukkitx.inventory.TradeInventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
-import org.powernukkitx.level.Location;
 import org.powernukkitx.level.ParticleEffect;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.poi.PoiManager;
+import org.powernukkitx.level.poi.PoiTypeRegistry;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -241,25 +242,19 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         entity -> {
                             if (getLevel().getTick() % 120 == 0) {
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
-                                    int range = 48;
-                                    int lookY = 5;
-                                    BlockBed block = null;
-                                    for (int x = -range; x <= range; x++) {
-                                        for (int z = -range; z <= range; z++) {
-                                            for (int y = -lookY; y <= lookY; y++) {
-                                                Location lookLocation = entity.add(x, y, z);
-                                                Block lookBlock = lookLocation.getLevelBlock();
-                                                if (lookBlock instanceof BlockBed bed
-                                                        && !bed.isHeadPiece() && Arrays.stream(getLevel().getEntities()).noneMatch(entity1 -> entity1 instanceof EntityVillagerV2 v && v.getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED) && v.getBed().equals(bed))) {
-                                                    block = bed.getFootPart();
+                                    getLevel().getPoiManager().findClosest(type -> type == PoiTypeRegistry.HOME, this, 48, PoiManager.Occupancy.HAS_SPACE)
+                                            .ifPresent(record -> {
+                                                BlockVector3 pos = record.getPos();
+                                                if (getLevel().getBlock(pos.x, pos.y, pos.z) instanceof BlockBed bed && !bed.isOccupied()) {
+                                                    setBed(bed.getFootPart());
                                                 }
-                                            }
-                                        }
-                                    }
-                                    if (block != null && !block.isOccupied()) setBed(block);
+                                            });
                                 } else if (!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
+                                    getLevel().getPoiManager().release(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3());
                                     this.nbt.remove("bed");
                                     getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
+                                } else {
+                                    getLevel().getPoiManager().ensureTicket(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3());
                                 }
                             }
                         },
@@ -295,19 +290,27 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                             if (getLevel().getTick() % 30 == 0 && !isBaby()) {
                                 Block siteBlock = getMemoryStorage().get(CoreMemoryTypes.SITE_BLOCK);
                                 if (siteBlock != null && !siteBlock.getLevelBlock().getId().equals(siteBlock.getId())) {
+                                    getLevel().getPoiManager().release(siteBlock.asBlockVector3());
                                     getMemoryStorage().clear(CoreMemoryTypes.SITE_BLOCK);
                                     if (getTradeExp() == 0) {
                                         setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
                                     }
+                                } else if (siteBlock != null) {
+                                    getLevel().getPoiManager().ensureTicket(siteBlock.asBlockVector3());
                                 }
 
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.SITE_BLOCK)) {
-                                    for (Block block : getLevel().getCollisionBlocks(this.getBoundingBox().grow(16, 4, 16))) {
-                                        if (Arrays.stream(getLevel().getEntities()).noneMatch(entity1 -> entity1 instanceof EntityVillagerV2 v && v.getMemoryStorage().notEmpty(CoreMemoryTypes.SITE_BLOCK) && v.getSite().equals(block))
-                                                && setProfessionBlock(block))
-                                            return;
+                                    Profession currentProfession = Profession.getProfession(getProfession());
+                                    String requiredBlockId = getTradeExp() != 0 && currentProfession != null ? currentProfession.getBlockID() : null;
+                                    var poi = getLevel().getPoiManager().findClosest(
+                                            type -> type.isJobSite() && (requiredBlockId == null || requiredBlockId.equals(type.jobSiteBlockId())),
+                                            this, 16, PoiManager.Occupancy.HAS_SPACE);
+                                    boolean acquired = false;
+                                    if (poi.isPresent()) {
+                                        BlockVector3 pos = poi.get().getPos();
+                                        acquired = setProfessionBlock(getLevel().getBlock(pos.x, pos.y, pos.z));
                                     }
-                                    if (getTradeExp() == 0) setProfession(0, true);
+                                    if (!acquired && getTradeExp() == 0) setProfession(0, true);
                                 }
                             }
                         },
@@ -375,7 +378,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public void setBed(BlockBed bed) {
-        if (bed.isBedValid()) {
+        if (bed.isBedValid() && getLevel().getPoiManager().takeAt(bed.getFootPart().asBlockVector3())) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, bed);
             for (int i = 0; i < 5; i++) {
                 float randX = Utils.rand(0f, 0.5f);
@@ -744,6 +747,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         for (Profession profession : Profession.getProfessions().values()) {
             if (getTradeExp() != 0 && profession.getIndex() != getProfession()) continue;
             if (block.getId().equals(profession.getBlockID())) {
+                if (!getLevel().getPoiManager().takeAt(block.asBlockVector3())) return false;
                 getMemoryStorage().put(CoreMemoryTypes.SITE_BLOCK, block);
                 setProfession(profession.getIndex(), true);
                 return true;
@@ -868,6 +872,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void close() {
+        if (getLevel() != null && getMemoryStorage() != null) {
+            BlockBed bed = getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED);
+            if (bed != null) getLevel().getPoiManager().release(bed.asBlockVector3());
+            Block site = getMemoryStorage().get(CoreMemoryTypes.SITE_BLOCK);
+            if (site != null) getLevel().getPoiManager().release(site.asBlockVector3());
+        }
         this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
         super.close();
     }
