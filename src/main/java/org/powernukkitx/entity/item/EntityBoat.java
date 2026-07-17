@@ -2,6 +2,7 @@ package org.powernukkitx.entity.item;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockBubbleColumn;
 import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityHuman;
@@ -57,6 +58,18 @@ public class EntityBoat extends EntityVehicle {
     protected boolean sinking = true;
     private int ticksInWater;
 
+    /**
+     * How long a whirlpool holds the boat before it stops floating and gets dragged under.
+     */
+    private static final int WHIRLPOOL_RESIST_TICKS = 60;
+
+    /**
+     * How long the whirlpool has held the boat.
+     */
+    private int whirlpoolTicks;
+    private boolean overWhirlpool;
+    private boolean draggedUnder;
+
     public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
@@ -77,8 +90,9 @@ public class EntityBoat extends EntityVehicle {
         this.setDataFlag(ActorFlags.HAS_GRAVITY);
         this.setDataFlag(ActorFlags.STACKABLE);
         this.actorDataMap.put(ActorDataTypes.VARIANT, woodID);
+        this.actorDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, 40);
         this.actorDataMap.put(ActorDataTypes.IS_BUOYANT, true);
-        this.actorDataMap.put(ActorDataTypes.BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
+        this.actorDataMap.put(ActorDataTypes.BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"can_auto_step_from_liquid\":false,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"movement_type\":\"waves\"}");
         this.actorDataMap.put(ActorDataTypes.AIR_SUPPLY, (short) 300);
         this.actorDataMap.put(ActorDataTypes.OWNER, -1L);
         this.actorDataMap.put(ActorDataTypes.ROW_TIME_LEFT, 0f);
@@ -181,7 +195,50 @@ public class EntityBoat extends EntityVehicle {
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
+    /**
+     * Called by {@link BlockBubbleColumn} on every tick the boat sits in a column. Only a
+     * whirlpool (a downward column) sinks a boat; an upward column just lets it keep floating on the water it fills.
+     *
+     * @param dragsDown whether the column is a whirlpool (magma drags down, soul sand pushes up)
+     */
+    public void onBubbleColumn(boolean dragsDown) {
+        this.overWhirlpool = dragsDown;
+    }
+
+    /**
+     * Whether a whirlpool has finished shaking the boat and is now dragging it under. While this is true the boat is
+     * empty (the rider was ejected when it flipped), so {@link BlockBubbleColumn} does the sinking.
+     */
+    public boolean isDraggedUnder() {
+        return this.draggedUnder;
+    }
+
+    /**
+     * Drives the whirlpool timer. The boat floats for {@link #WHIRLPOOL_RESIST_TICKS}; when that runs out it is
+     * dragged under and the rider is ejected at that instant.
+     */
+    private void tickWhirlpool() {
+        if (this.draggedUnder) {
+            if (!isBoatInWater()) {
+                this.draggedUnder = false;
+                this.whirlpoolTicks = 0;
+            }
+        } else if (this.overWhirlpool) {
+            if (++this.whirlpoolTicks >= WHIRLPOOL_RESIST_TICKS) {
+                this.draggedUnder = true;
+                for (final Entity passenger : List.copyOf(passengers)) {
+                    dismountEntity(passenger, true, true);
+                }
+            }
+        } else {
+            this.whirlpoolTicks = 0;
+        }
+        this.overWhirlpool = false;
+    }
+
     private boolean updateBoat(int tickDiff) {
+        tickWhirlpool();
+
         // The rolling amplitude
         if (getRollingAmplitude() > 0) {
             setRollingAmplitude(getRollingAmplitude() - 1);
@@ -202,7 +259,10 @@ public class EntityBoat extends EntityVehicle {
         double waterDiff = getWaterLevel();
         boolean inWater = isBoatInWater();
 
-        if (inWater) {
+        if (this.draggedUnder) {
+            sinking = true;
+            hasUpdated = true;
+        } else if (inWater) {
             hasUpdated = computeBuoyancy(waterDiff);
         } else {
             double oldMotionY = motionY;
