@@ -30,6 +30,7 @@ import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.PlayerActionType;
 import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
 import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 
@@ -95,6 +96,9 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         if (packet.getInputData().contains(PlayerAuthInputData.START_JUMPING)) {
             PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
             player.getServer().getPluginManager().callEvent(playerJumpEvent);
+        }
+        if (packet.getInputData().contains(PlayerAuthInputData.MISSED_SWING)) {
+            player.getLevel().addLevelSoundEvent(player, SoundEvent.ATTACK_NO_DAMAGE, -1, "minecraft:player", false, false);
         }
         if (packet.getInputData().contains(PlayerAuthInputData.START_SWIMMING)) {
             var playerSwimmingEvent = new PlayerToggleSwimEvent(player, true);
