@@ -27,6 +27,10 @@ public class BlockStoneButton extends BlockButton {
         super(blockstate, DEFINITION);
     }
 
+    public BlockStoneButton(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Stone Button";

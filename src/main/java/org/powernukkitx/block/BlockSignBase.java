@@ -43,6 +43,10 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
         super(blockState, DEFINITION);
     }
 
+    public BlockSignBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

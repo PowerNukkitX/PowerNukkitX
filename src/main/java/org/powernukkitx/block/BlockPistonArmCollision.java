@@ -37,6 +37,10 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
         super(blockstate, DEFINITION);
     }
 
+    public BlockPistonArmCollision(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Piston Head";

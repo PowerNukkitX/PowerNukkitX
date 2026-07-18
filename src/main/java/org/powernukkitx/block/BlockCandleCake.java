@@ -28,6 +28,10 @@ public class BlockCandleCake extends BlockTransparent {
         super(blockState, DEFINITION);
     }
 
+    public BlockCandleCake(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     public BlockCandleCake() {
         this(PROPERTIES.getDefaultState());
     }

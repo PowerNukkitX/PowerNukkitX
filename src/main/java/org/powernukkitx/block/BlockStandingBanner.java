@@ -49,6 +49,10 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         super(blockstate, DEFINITION);
     }
 
+    public BlockStandingBanner(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     @NotNull
     public String getBlockEntityType() {

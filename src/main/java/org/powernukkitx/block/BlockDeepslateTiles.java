@@ -27,6 +27,10 @@ public class BlockDeepslateTiles extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockDeepslateTiles(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Deepslate Tiles";

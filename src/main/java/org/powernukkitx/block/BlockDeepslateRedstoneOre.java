@@ -23,6 +23,10 @@ public class BlockDeepslateRedstoneOre extends BlockRedstoneOre {
         super(blockstate, DEFINITION);
     }
 
+    public BlockDeepslateRedstoneOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Deepslate Redstone Ore";

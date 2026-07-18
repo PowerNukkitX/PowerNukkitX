@@ -64,6 +64,10 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         super(blockstate, DEFINITION);
     }
 
+    public BlockFrame(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     @NotNull
     public BlockFace getBlockFace() {

@@ -24,6 +24,10 @@ public class BlockPolishedBlackstoneStairs extends BlockBlackstoneStairs {
         super(blockstate, DEFINITION);
     }
 
+    public BlockPolishedBlackstoneStairs(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Polished Blackstone Stairs";

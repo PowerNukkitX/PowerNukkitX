@@ -26,4 +26,8 @@ public class BlockResinBricks extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockResinBricks(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
 }

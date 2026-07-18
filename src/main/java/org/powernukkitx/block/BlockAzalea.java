@@ -43,6 +43,10 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
         super(blockstate, DEFINITION);
     }
 
+    public BlockAzalea(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Azalea";

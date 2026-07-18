@@ -31,6 +31,12 @@ public class BlockWoodenPressurePlate extends BlockPressurePlateBase {
         this.offPitch = 0.7f;
     }
 
+    public BlockWoodenPressurePlate(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+        this.onPitch = 0.8f;
+        this.offPitch = 0.7f;
+    }
+
     @Override
     public String getName() {
         return "Oak Pressure Plate";

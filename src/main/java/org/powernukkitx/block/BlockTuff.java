@@ -24,6 +24,10 @@ public class BlockTuff extends BlockSolid {
     public BlockTuff(BlockState blockState) {
         super(blockState, DEFINITION);
     }
+
+    public BlockTuff(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
     
     @Override
     public String getName() {

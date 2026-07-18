@@ -42,6 +42,10 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         super(state, DEFINITION);
     }
 
+    public BlockDaylightDetector(BlockState state, BlockDefinition definition) {
+        super(state, definition);
+    }
+
     @Override
     public String getName() {
         return "Daylight Detector";

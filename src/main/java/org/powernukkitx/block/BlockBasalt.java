@@ -33,6 +33,10 @@ public class BlockBasalt extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockBasalt(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Basalt";

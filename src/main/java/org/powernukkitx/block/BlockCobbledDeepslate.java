@@ -27,6 +27,10 @@ public class BlockCobbledDeepslate extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockCobbledDeepslate(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Cobbled Deepslate";

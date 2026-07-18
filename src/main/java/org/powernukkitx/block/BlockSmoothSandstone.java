@@ -25,5 +25,9 @@ public class BlockSmoothSandstone extends BlockSandstone {
         super(blockstate, DEFINITION);
     }
 
+    public BlockSmoothSandstone(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     
     }

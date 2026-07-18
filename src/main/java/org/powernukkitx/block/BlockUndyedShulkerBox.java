@@ -46,6 +46,10 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         super(blockState, DEFINITION);
     }
 
+    public BlockUndyedShulkerBox(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     @NotNull
     public BlockProperties getProperties() {
