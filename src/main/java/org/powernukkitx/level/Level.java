@@ -4967,35 +4967,17 @@ public class Level implements Metadatable {
 
             int size = toRemove.size();
             if(size > 0) {
-                Set<IChunk> chunksToSave = toRemove.stream()
-                        .map(index -> getChunkIfLoaded(getHashX(index), getHashZ(index)))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toUnmodifiableSet());
-
-                if (!chunksToSave.isEmpty() && getAutoSave()) {
-                    for (IChunk c : chunksToSave) {
-                        for (BlockEntity be : c.getBlockEntities().values()) {
-                            if (!be.closed) {
-                                be.saveNBT();
-                                be.serializationSnapshot = be.getNbt().copy();
-                            }
-                        }
-                        for (Entity e : c.getEntities().values()) {
-                            if (!(e instanceof Player) && !e.closed) {
-                                e.saveNBT();
-                                e.serializationSnapshot = e.getNbt().copy();
-                            }
-                        }
-                    }
-                    requireProvider().saveChunks(chunksToSave);
-                }
-
                 for (int i = 0; i < size; i++) {
                     long index = toRemove.getLong(i);
                     int X = getHashX(index);
                     int Z = getHashZ(index);
 
-                    if (this.unloadChunk(X, Z, true, false)) {
+                    // trySave=true - let unloadChunk write the current block entity
+                    // contents unconditionally. The old path saved through the
+                    // hasChanged-filtered batch save, so a concurrent autosave could
+                    // clear the dirty flag after a take and leave stale chest data on
+                    // disk, duplicating the item on the next reload.
+                    if (this.unloadChunk(X, Z, true, true)) {
                         this.unloadQueue.remove(index);
                         unloaded++;
                     }
