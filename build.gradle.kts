@@ -222,6 +222,7 @@ tasks.withType<AbstractCopyTask>() {
 }
 
 tasks.named<AbstractArchiveTask>("sourcesJar") {
+    dependsOn("generateGitProperties")
     destinationDirectory.set(layout.buildDirectory)
 }
 
