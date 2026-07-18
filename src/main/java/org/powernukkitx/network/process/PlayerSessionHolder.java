@@ -325,7 +325,7 @@ public class PlayerSessionHolder {
         packet.setMovementSettings(new SyncedPlayerMovementSettings(
                 ServerAuthMovementMode.SERVER_AUTHORITATIVE_V3,
                 0,
-                server.isServerAuthoritativeBlockBreaking()
+                true
             )
         );
         packet.getBlockProperties().addAll(

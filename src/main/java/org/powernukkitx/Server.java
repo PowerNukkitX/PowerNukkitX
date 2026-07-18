@@ -1,10 +1,35 @@
 package org.powernukkitx;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.sun.management.OperatingSystemMXBean;
+import eu.okaeri.configs.ConfigManager;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.longs.LongLists;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
 import org.cloudburstmc.protocol.bedrock.data.payload.experiment.ExperimentToggle;
 import org.cloudburstmc.protocol.bedrock.data.payload.list.PlayerListAddEntry;
 import org.cloudburstmc.protocol.bedrock.data.payload.list.PlayerListRemoveEntry;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerListPacket;
+import org.iq80.leveldb.CompressionType;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBIterator;
+import org.iq80.leveldb.Options;
+import org.iq80.leveldb.impl.Iq80DBFactory;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.block.BlockComposter;
 import org.powernukkitx.block.dispenser.DispenseBehaviorRegister;
+import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.command.Command;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.ConsoleCommandSender;
@@ -18,6 +43,7 @@ import org.powernukkitx.config.updater.ConfigUpdater;
 import org.powernukkitx.console.NukkitConsole;
 import org.powernukkitx.education.Education;
 import org.powernukkitx.entity.Attribute;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.data.human.Skin;
 import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.entity.data.property.EntityProperty;
@@ -36,8 +62,6 @@ import org.powernukkitx.lang.LangCode;
 import org.powernukkitx.lang.TextContainer;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
-import org.powernukkitx.blockentity.BlockEntity;
-import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.LevelConfig;
@@ -91,31 +115,6 @@ import org.powernukkitx.scoreboard.storage.JSONScoreboardStorage;
 import org.powernukkitx.utils.*;
 import org.powernukkitx.utils.collection.FreezableArrayManager;
 import org.powernukkitx.wizard.WizardConfig;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import com.sun.management.OperatingSystemMXBean;
-import eu.okaeri.configs.ConfigManager;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
-import it.unimi.dsi.fastutil.longs.LongList;
-import it.unimi.dsi.fastutil.longs.LongLists;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.cloudburstmc.nbt.NBTInputStream;
-import org.cloudburstmc.nbt.NBTOutputStream;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
-import org.cloudburstmc.protocol.bedrock.data.Experiment;
-import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
-import org.cloudburstmc.protocol.bedrock.packet.PlayerListPacket;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.DBIterator;
-import org.iq80.leveldb.Options;
-import org.iq80.leveldb.impl.Iq80DBFactory;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -233,6 +232,9 @@ public class Server {
     private PlayerMetadataStore playerMetadata;
     private LevelMetadataStore levelMetadata;
     private NetworkInterface network;
+    /**
+     * @deprecated
+     */
     private int serverAuthoritativeMovementMode = 0;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicks = 6000;
@@ -3126,12 +3128,9 @@ public class Server {
             return this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
     }
 
+    @Deprecated
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
-    }
-
-    public boolean isServerAuthoritativeBlockBreaking() {
-        return this.serverAuthoritativeMovementMode > 0 && !this.settings.miscSettings().overrideServerAuthBlockBreaking();
     }
     // endregion
 

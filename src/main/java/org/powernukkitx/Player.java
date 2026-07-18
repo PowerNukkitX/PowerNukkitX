@@ -474,7 +474,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
                 }
 
-                if (face != null && this.server.isServerAuthoritativeBlockBreaking()) {
+                if (face != null && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
                     this.level.addParticle(new BreakBlockParticle(pos.add(0.5, 0.5, 0.5), this.breakingBlock, face));
                 }
 
@@ -2983,8 +2983,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (!this.isSleeping()) {
                 this.timeSinceRest++;
             }
-
-            if (this.server.isServerAuthoritativeBlockBreaking()) { // For server-side use only, as client-side continue break is normal.
+            if (this.server.getServerAuthoritativeMovement() > 0 && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 
