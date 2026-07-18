@@ -46,7 +46,6 @@ import static org.mockito.Mockito.mock;
 class PacketHandlerSmokeTest {
 
     private TestPlayer player;
-    private PlayerHandle handle;
     private PlayerSessionHolder holder;
     private int checked = 0;
 
@@ -55,7 +54,7 @@ class PacketHandlerSmokeTest {
         ServerMockFixture.boot();
         player = PlayerFixture.get();
         player.spawned = true;
-        handle = new PlayerHandle(player);
+        PlayerHandle handle = new PlayerHandle(player);
         player.setPlayerHandle(handle);
 
         BedrockServerSession session = player.getSession();
