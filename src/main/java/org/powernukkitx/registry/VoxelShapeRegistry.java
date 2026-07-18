@@ -1,11 +1,16 @@
 package org.powernukkitx.registry;
 
 import org.powernukkitx.block.customblock.data.voxel.VoxelBox;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import org.cloudburstmc.protocol.bedrock.data.VoxelShapes;
 import org.cloudburstmc.protocol.bedrock.packet.VoxelShapesPacket;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -50,11 +55,34 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
             register("minecraft:empty", EMPTY_SHAPE);
             register("minecraft:unit_cube", unitCubeShape);
 
+            loadVanillaShapes();
+
             rebuildPacket();
         } catch (RegisterException e) {
             e.printStackTrace();
         }
     }
+
+    private void loadVanillaShapes() {
+        try (var stream = VoxelShapeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/voxel_shapes.json");
+             var reader = new InputStreamReader(stream)) {
+            final List<VanillaShape> shapes = new Gson().fromJson(reader, new TypeToken<List<VanillaShape>>() {
+            }.getType());
+            for (VanillaShape shape : shapes) {
+                final List<VoxelBox> boxes = new ArrayList<>();
+                for (int[][] box : shape.boxes) {
+                    boxes.add(new VoxelBox(box[0], box[1]));
+                }
+                register(shape.identifier, boxes);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (RegisterException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private record VanillaShape(String identifier, int[][][] boxes) {}
 
     /**
      * Registers a VoxelShape by converting a list of raw boxes.
@@ -99,9 +127,9 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
         for (int z = 0; z < resZ; z++) {
             for (int y = 0; y < resY; y++) {
                 for (int x = 0; x < resX; x++) {
-                    float midX = (xCoords.get(x) + xCoords.get(x + 1)) / 32.0f; // Scale to 0-1 range for check
-                    float midY = (yCoords.get(y) + yCoords.get(y + 1)) / 32.0f;
-                    float midZ = (zCoords.get(z) + zCoords.get(z + 1)) / 32.0f;
+                    float midX = (xCoords.get(x) + xCoords.get(x + 1)) / 2.0f; // xCoords already normalized to 0-1
+                    float midY = (yCoords.get(y) + yCoords.get(y + 1)) / 2.0f;
+                    float midZ = (zCoords.get(z) + zCoords.get(z + 1)) / 2.0f;
 
                     if (isInside(midX, midY, midZ, boxes)) {
                         bitSet.set(x + (y * resX) + (z * resX * resY));
