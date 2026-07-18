@@ -1,0 +1,70 @@
+package org.powernukkitx.entity.ai.executor.villager;
+
+import org.powernukkitx.block.BlockBed;
+import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.ai.executor.EntityControl;
+import org.powernukkitx.entity.ai.executor.IBehaviorExecutor;
+import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
+import org.powernukkitx.entity.passive.EntityVillagerV2;
+import org.powernukkitx.level.Location;
+import org.powernukkitx.math.BVector3;
+import org.powernukkitx.math.Vector3;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+
+
+public class SleepExecutor implements EntityControl, IBehaviorExecutor {
+
+
+    public SleepExecutor() {}
+    @Override
+    public boolean execute(EntityIntelligent entity) {
+        return true;
+    }
+
+    @Override
+    public void onStart(EntityIntelligent entity) {
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
+        if(entity.getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
+            if(entity.getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED) instanceof BlockBed bed) {
+
+                BlockBed head = bed.getHeadPart();
+                BlockBed foot = bed.getFootPart();
+
+                Location sleepingLocation = foot.getLocation().add(switch (head.getBlockFace()) {
+                    case NORTH -> new Vector3(0.5f, 0.5625f, 0);
+                    case SOUTH -> new Vector3(0.5f, 0.5625f, 1);
+                    case WEST -> new Vector3(0, 0.5625f, 0.5);
+                    case EAST -> new Vector3(1, 0.5625f, 0.5);
+                    default -> Vector3.ZERO;
+                });
+                sleepingLocation.setYaw(BVector3.getYawFromVector(head.getBlockFace().getOpposite().getUnitVector()));
+                sleepingLocation.setHeadYaw(sleepingLocation.getYaw());
+                entity.teleport(sleepingLocation);
+                entity.respawnToAll();
+                entity.setDataFlag(ActorFlags.SLEEPING);
+                entity.setDataProperty(ActorDataTypes.BED_POSITION, head.asBlockVector3().toNetwork());
+                entity.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED);
+            }
+        }
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        entity.setDataFlag(ActorFlags.SLEEPING, false);
+        entity.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
+        entity.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
+        if(!entity.getLevel().isNight()) {
+            if(entity instanceof EntityVillagerV2 villager) {
+                villager.heal(villager.getHealthMax());
+            }
+        }
+    }
+
+    @Override
+    public void onInterrupt(EntityIntelligent entity) {
+        onStop(entity);
+    }
+}

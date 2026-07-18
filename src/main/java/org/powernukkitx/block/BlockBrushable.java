@@ -1,0 +1,72 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.blockentity.BlockEntityBrushable;
+import org.powernukkitx.blockentity.BlockEntityID;
+import org.powernukkitx.entity.item.EntityFallingBlock;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * @author Buddelbubi
+ * @since 2026/03/31
+ */
+public abstract class BlockBrushable extends BlockFallable implements BlockEntityHolder<BlockEntityBrushable> {
+
+    public BlockBrushable(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        int progress = getPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS);
+        if (progress < 3) {
+            setPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS, progress + 1);
+            getLevel().addSound(this, getHitSound());
+            getLevel().setBlock(this, this, false, true);
+        } else {
+            BlockEntityBrushable brushable = getOrCreateBlockEntity();
+            getLevel().dropItem(this.add(HALF), brushable.getItem());
+            getLevel().setBlock(this, getFinalState());
+            getLevel().addSound(this, getBreakSound());
+        }
+        return super.onActivate(item, player, blockFace, fx, fy, fz);
+    }
+
+    @Override
+    protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
+        customNbt = customNbt.copy().putBoolean("BreakOnGround", true);
+        return super.createFallingEntity(customNbt);
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{Item.AIR};
+    }
+
+    public abstract Block getFinalState();
+
+    protected abstract Sound getHitSound();
+
+    protected abstract Sound getBreakSound();
+
+    @Override
+    public @NotNull Class<? extends BlockEntityBrushable> getBlockEntityClass() {
+        return BlockEntityBrushable.class;
+    }
+
+    @Override
+    public @NotNull String getBlockEntityType() {
+        return BlockEntityID.BRUSHABLE_BLOCK;
+    }
+}

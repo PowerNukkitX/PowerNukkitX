@@ -1,0 +1,80 @@
+package org.powernukkitx.item;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockBedrock;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockObsidian;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.SimpleAxisAlignedBB;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.DoubleTag;
+import org.powernukkitx.nbt.tag.FloatTag;
+import org.powernukkitx.nbt.tag.ListTag;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+public class ItemEndCrystal extends Item {
+
+    public ItemEndCrystal() {
+        this(0, 1);
+    }
+
+    public ItemEndCrystal(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemEndCrystal(Integer meta, int count) {
+        super(END_CRYSTAL, meta, count, "End Crystal");
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+        if (!(target instanceof BlockBedrock) && !(target instanceof BlockObsidian)) return false;
+        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        Entity[] entities = level.getNearbyEntities(new SimpleAxisAlignedBB(target.x, target.y, target.z, target.x + 1, target.y + 2, target.z + 1));
+        Block up = target.up();
+
+        if (chunk == null || !up.getId().equals(BlockID.AIR) || !up.up().getId().equals(BlockID.AIR) || entities.length != 0) {
+            return false;
+        }
+
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(target.x + 0.5))
+                        .add(new DoubleTag(up.y))
+                        .add(new DoubleTag(target.z + 0.5)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
+                        .add(new FloatTag(0)));
+
+        if (this.hasCustomName()) {
+            nbt.putString("CustomName", this.getCustomName());
+        }
+
+        Entity entity = Entity.createEntity(Entity.ENDER_CRYSTAL, chunk, nbt);
+
+        if (entity != null) {
+            if (player.isAdventure() || player.isSurvival()) {
+                Item item = player.getInventory().getItemInMainHand();
+                item.setCount(item.getCount() - 1);
+                player.getInventory().setItemInMainHand(item);
+            }
+            entity.spawnToAll();
+            return true;
+        }
+        return false;
+    }
+}

@@ -1,0 +1,52 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockPolishedCinnabarStairs extends BlockStairs {
+    public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_CINNABAR_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockPolishedCinnabarStairs() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockPolishedCinnabarStairs(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    public double getHardness() {
+        return 1.5;
+    }
+
+    @Override
+    public double getResistance() {
+        return 6;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
+    }
+
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
+
+    @Override
+    public String getName() {
+        return "Polished Cinnabar Stairs";
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+}

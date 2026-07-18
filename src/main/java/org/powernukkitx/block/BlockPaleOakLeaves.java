@@ -1,0 +1,36 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.enums.WoodType;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockPaleOakLeaves extends BlockLeaves {
+    public static final BlockProperties PROPERTIES = new BlockProperties(PALE_OAK_LEAVES, CommonBlockProperties.PERSISTENT_BIT, CommonBlockProperties.UPDATE_BIT);
+
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockPaleOakLeaves(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    public WoodType getType() {
+        return WoodType.PALE_OAK;
+    }
+
+    @Override
+    public Item toSapling() {
+        return Item.get(PALE_OAK_SAPLING);
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.IRON_BLOCK_COLOR;
+    }
+}

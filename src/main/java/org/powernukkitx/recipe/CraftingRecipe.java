@@ -1,0 +1,51 @@
+package org.powernukkitx.recipe;
+
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
+
+import java.util.UUID;
+
+/**
+ * @author CreeperFace
+ */
+public abstract class CraftingRecipe extends BaseRecipe {
+    protected UUID uuid;
+    private final int priority;
+    private final int netId;
+    protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
+
+    protected CraftingRecipe(String id, int netId, int priority, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(id);
+        this.priority = priority;
+        this.netId = netId;
+        this.recipeUnlockingRequirement = recipeUnlockingRequirement == null ? new RecipeUnlockingRequirement(RecipeUnlockingContext.NONE) : recipeUnlockingRequirement;
+    }
+
+
+    /**
+     * Get the priority of this recipe,
+     * the lower the value, the higher the priority.
+     * and the same output recipe will be to match the higher priority
+     *
+     * @return the priority
+     */
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    public RecipeUnlockingRequirement getRequirement() {
+        return recipeUnlockingRequirement;
+    }
+
+    public int getNetId() {
+        return netId;
+    }
+}

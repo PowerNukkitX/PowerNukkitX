@@ -1,0 +1,90 @@
+package org.powernukkitx.block.dispenser;
+
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.projectile.EntityProjectile;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.Vector3;
+import org.powernukkitx.nbt.tag.CompoundTag;
+
+import java.util.Objects;
+
+/**
+ * @author CreeperFace
+ */
+public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
+
+    private final String entityType;
+
+    public ProjectileDispenseBehavior(String entity) {
+        this.entityType = entity;
+    }
+
+    @Override
+    public Item dispense(BlockDispenser source, BlockFace face, Item item) {
+        Vector3 dispensePos = source.getDispensePosition();
+
+        CompoundTag nbt = Entity.getDefaultNBT(dispensePos);
+        nbt = this.correctNBT(nbt, item);
+
+        Entity projectile = Entity.createEntity(getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
+
+        if (!(projectile instanceof EntityProjectile)) {
+            return super.dispense(source, face, item);
+        }
+
+        Vector3 motion = initMotion(face);
+
+        projectile.setMotion(motion);
+        ((EntityProjectile) projectile).inaccurate(getAccuracy());
+        projectile.setMotion(projectile.getMotion().multiply(getMotion()));
+
+        ((EntityProjectile) projectile).updateRotation();
+
+        projectile.spawnToAll();
+
+        source.level.addSound(source, getShootingSound());
+
+        return null;
+    }
+
+    protected Sound getShootingSound() {
+        return Sound.RANDOM_BOW;
+    }
+
+    protected Vector3 initMotion(BlockFace face) {
+        return new Vector3(face.getXOffset(), face.getYOffset() + 0.1f, face.getZOffset())
+                .normalize();
+    }
+
+    protected double getMotion() {
+        return 1.1;
+    }
+
+    protected float getAccuracy() {
+        return 6;
+    }
+
+    protected String getEntityType() {
+        return this.entityType;
+    }
+
+    /**
+     * you can add extra data of projectile here
+     *
+     * @param nbt tag
+     */
+    protected CompoundTag correctNBT(CompoundTag nbt) {
+        return this.correctNBT(nbt, null);
+    }
+
+    protected CompoundTag correctNBT(CompoundTag nbt, Item item) {
+        if (item != null) {
+            if (Objects.equals(item.getId(), Item.SPLASH_POTION) || Objects.equals(item.getId(), Item.LINGERING_POTION)) {
+                return nbt.putInt("PotionId", item.getDamage());
+            }
+        }
+        return nbt;
+    }
+}

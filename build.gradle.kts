@@ -18,13 +18,13 @@ plugins {
     java
     idea
     jacoco
-    id("io.github.goooler.shadow") version "8.1.7"
-    id("io.freefair.lombok") version "8.4"
-    id("com.gorylenko.gradle-git-properties") version "2.4.1"
+    id("io.github.goooler.shadow") version "8.1.8"
+    id("io.freefair.lombok") version "9.5.0"
+    id("com.gorylenko.gradle-git-properties") version "4.0.1"
 }
 
 group = "org.powernukkitx"
-version = "2.0.0-SNAPSHOT"
+version = providers.gradleProperty("buildVersion").orElse("nightly-SNAPSHOT").get()
 description = "powernukkitx"
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
@@ -60,10 +60,13 @@ dependencies {
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
+    implementation(libs.bedrock.connection)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
+    
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
@@ -81,6 +84,8 @@ configurations.all {
 
 tasks.withType<JavaCompile>().configureEach {
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+    options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000", "-nowarn"))
+    options.isWarnings = false
 }
 
 java {
@@ -154,9 +159,7 @@ tasks.compileJava {
     options.compilerArgs.addAll(listOf(
         "-Xpkginfo:always",
         "-parameters",
-        "-Xlint:-options",
-        "-Xlint:deprecation",
-        "-Xlint:unchecked"
+        "-Xlint:-options"
     ))
     options.isIncremental = true
     options.isFork = true
@@ -201,6 +204,9 @@ tasks.test {
     finalizedBy("jacocoTestReport") // report is always generated after tests run
 }
 
+tasks.withType<Test>().configureEach {
+    onlyIf { !project.hasProperty("skipTests") }
+}
 
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {
@@ -216,6 +222,7 @@ tasks.withType<AbstractCopyTask>() {
 }
 
 tasks.named<AbstractArchiveTask>("sourcesJar") {
+    dependsOn("generateGitProperties")
     destinationDirectory.set(layout.buildDirectory)
 }
 
@@ -230,7 +237,7 @@ tasks.named<ShadowJar>("shadowJar") {
 
     manifest {
         attributes(
-            "Main-Class" to "cn.nukkit.JarStart",
+            "Main-Class" to "org.powernukkitx.JarStart",
             "Implementation-Version" to project.version,
             "Implementation-Title" to project.name,
             "Multi-Release" to "true"

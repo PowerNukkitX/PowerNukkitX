@@ -1,0 +1,41 @@
+package org.powernukkitx.network.process.handler;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.PlayerHandle;
+import org.powernukkitx.Server;
+import org.powernukkitx.network.process.PacketHandler;
+import org.powernukkitx.network.process.PlayerSessionHolder;
+import org.powernukkitx.utils.UUIDValidator;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.EmoteFlag;
+import org.cloudburstmc.protocol.bedrock.packet.EmotePacket;
+
+/**
+ * @author Kaooot
+ */
+@Slf4j
+public class EmoteHandler implements PacketHandler<EmotePacket> {
+
+    @Override
+    public void handle(EmotePacket packet, PlayerSessionHolder holder, Server server) {
+        final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (!playerHandle.player.spawned) {
+            return;
+        }
+        if (packet.getActorRuntimeId() != playerHandle.player.getId()) {
+            log.warn("{} sent EmotePacket with invalid entity id: {} != {}", playerHandle.getUsername(), packet.getActorRuntimeId(), playerHandle.player.getId());
+            return;
+        }
+        if (!UUIDValidator.isValidUUID(packet.getEmoteId())) {
+            log.warn("{} sent EmotePacket with invalid emoteId: {}", playerHandle.getUsername(), packet.getEmoteId());
+            return;
+        }
+
+        packet.getFlags().clear();
+        packet.getFlags().add(EmoteFlag.SERVER_SIDE);
+        packet.getFlags().add(EmoteFlag.MUTE_EMOTE_CHAT);
+        for (Player viewer : playerHandle.player.getViewers().values()) {
+            viewer.sendPacket(packet);
+        }
+    }
+}

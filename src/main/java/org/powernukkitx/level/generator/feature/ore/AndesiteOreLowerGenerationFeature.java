@@ -1,0 +1,21 @@
+package org.powernukkitx.level.generator.feature.ore;
+
+import org.powernukkitx.block.BlockAndesite;
+import org.powernukkitx.block.BlockState;
+
+public class AndesiteOreLowerGenerationFeature extends GraniteOreLowerGenerationFeature {
+
+    private static final BlockState STATE = BlockAndesite.PROPERTIES.getDefaultState();
+
+    public static final String NAME = "minecraft:overworld_underground_andesite_lower_feature";
+
+    @Override
+    public BlockState getState(BlockState original) {
+        return STATE;
+    }
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+}

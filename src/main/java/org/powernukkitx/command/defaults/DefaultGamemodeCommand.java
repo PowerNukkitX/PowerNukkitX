@@ -1,0 +1,57 @@
+package org.powernukkitx.command.defaults;
+
+import org.powernukkitx.Server;
+import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.data.CommandEnum;
+import org.powernukkitx.command.data.CommandParameter;
+import org.powernukkitx.command.tree.ParamList;
+import org.powernukkitx.command.utils.CommandLogger;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+
+import java.util.Map;
+
+/**
+ * @author xtypr
+ * @since 2015/11/12
+ */
+public class DefaultGamemodeCommand extends VanillaCommand {
+
+    public DefaultGamemodeCommand(String name) {
+        super(name, "commands.defaultgamemode.description");
+        this.setPermission("nukkit.command.defaultgamemode");
+        this.commandParameters.clear();
+        this.commandParameters.put("default", new CommandParameter[]{
+                CommandParameter.newType("gameMode", CommandParamType.INT)
+        });
+        this.commandParameters.put("byString", new CommandParameter[]{
+                CommandParameter.newEnum("gameMode", CommandEnum.ENUM_GAMEMODE)
+        });
+        this.enableParamTree();
+    }
+
+    @Override
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        int gameMode;
+        switch (result.getKey()) {
+            case "default" -> gameMode = list.getResult(0);
+            case "byString" -> {
+                String mode = list.getResult(0);
+                gameMode = Server.getGamemodeFromString(mode);
+            }
+            default -> {
+                return 0;
+            }
+        }
+
+        boolean valid = gameMode >= 0 && gameMode <= 3;
+        if (valid) {
+            sender.getServer().getSettings().gameplaySettings().gamemode(gameMode);
+            log.addSuccess("commands.defaultgamemode.success", Server.getGamemodeString(gameMode)).output();
+            return 1;
+        } else {
+            log.addError("commands.gamemode.fail.invalid", String.valueOf(gameMode)).output();
+            return 0;
+        }
+    }
+}

@@ -1,0 +1,299 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.CommonPropertyMap;
+import org.powernukkitx.block.property.enums.MinecraftCardinalDirection;
+import org.powernukkitx.blockentity.BlockEntity;
+import org.powernukkitx.blockentity.BlockEntityChest;
+import org.powernukkitx.inventory.ContainerInventory;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemBlock;
+import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.utils.Faceable;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
+import java.util.List;
+
+/**
+ * @author Angelic47 (Nukkit Project)
+ */
+
+public class BlockChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityChest> {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockChest() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockChest(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    @NotNull
+    public Class<? extends BlockEntityChest> getBlockEntityClass() {
+        return BlockEntityChest.class;
+    }
+
+    @Override
+    @NotNull
+    public String getBlockEntityType() {
+        return BlockEntity.CHEST;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public String getName() {
+        return "Chest";
+    }
+
+    @Override
+    public double getHardness() {
+        return 2.5;
+    }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
+
+    @Override
+    public double getResistance() {
+        return 12.5;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_AXE;
+    }
+
+    @Override
+    public double getMinX() {
+        return this.x + 0.0625;
+    }
+
+    @Override
+    public double getMinY() {
+        return this.y;
+    }
+
+    @Override
+    public double getMinZ() {
+        return this.z + 0.0625;
+    }
+
+    @Override
+    public double getMaxX() {
+        return this.x + 0.9375;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 0.9475;
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z + 0.9375;
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
+
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
+
+        if (item.hasCustomName()) {
+            nbt.putString("CustomName", item.getCustomName());
+        }
+
+        if (item.hasCustomBlockData()) {
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
+        }
+
+        BlockEntityChest blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
+        if (blockEntity == null) {
+            return false;
+        }
+
+        tryPair();
+
+        return true;
+    }
+
+    /**
+     * 尝试与旁边箱子连接
+     * <p>
+     * Try to pair with a chest next to it
+     *
+     * @return 是否连接成功 <br> Whether pairing was successful
+     */
+    protected boolean tryPair() {
+        BlockEntityChest blockEntity = getBlockEntity();
+        if (blockEntity == null)
+            return false;
+
+        BlockEntityChest chest = findPair();
+        if (chest == null)
+            return false;
+
+        chest.pairWith(blockEntity);
+        blockEntity.pairWith(chest);
+        return true;
+    }
+
+    /**
+     * 寻找附近的可配对箱子
+     * <p>
+     * Search for nearby chest to pair with
+     *
+     * @return 找到的可配对箱子。若没找到，则为null <br> Chest to pair with. Null if none have been found
+     */
+    protected @Nullable BlockEntityChest findPair() {
+        List<MinecraftCardinalDirection> universe = CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.getValidValues().reversed(); // The client tries to calculate the pair on their end as well, but in reverse order than our MINECRAFT_CARDINAL_DIRECTION
+        BlockFace thisFace = getBlockFace();
+        for (var direction : universe) {
+            BlockFace directionFace = CommonPropertyMap.CARDINAL_BLOCKFACE.get(direction);
+            Block side = this.getSide(directionFace);
+            if (side instanceof BlockChest chest
+                    && !(side instanceof BlockTrappedChest) // Only pair BlockChest with BlockChest and BlockTrappedChest with BlockTrappedChest
+                    && directionFace.getAxis() != thisFace.getAxis()) {
+                BlockFace pairFace = chest.getBlockFace();
+                if (thisFace == pairFace) {
+                    return chest.getBlockEntity();
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean cloneTo(Position pos) {
+        if (!super.cloneTo(pos)) return false;
+        else {
+            var blockEntity = this.getBlockEntity();
+            if (blockEntity != null && blockEntity.isPaired())
+                ((BlockChest) pos.getLevelBlock()).tryPair();
+            return true;
+        }
+    }
+
+    @Override
+    public boolean onBreak(Item item) {
+        BlockEntityChest chest = getBlockEntity();
+        if (chest != null) {
+            chest.unpair();
+        }
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
+
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (isNotActivate(player)) return false;
+        Item itemInHand = player.getInventory().getItemInMainHand();
+        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
+
+        // Check if the chest can be opened - bypass for SILENT
+        if (!player.getDataFlag(ActorFlags.SILENT) && !this.hasFreeSpaceAbove()) {
+            return false;
+        }
+
+        BlockEntityChest chest = getOrCreateBlockEntity();
+
+        // If paired, check if the pair can be opened
+        if (chest.isPaired()) {
+            BlockEntityChest pair = chest.getPair();
+            if (pair != null) {
+                Block pairedBlock = pair.getBlock();
+                if (!pairedBlock.hasFreeSpaceAbove()) {
+                    return false;
+                }
+            }
+        }
+
+        if (chest.getNbt().contains("Lock") && chest.getNbt().get("Lock") instanceof StringTag
+                && !chest.getNbt().getString("Lock").equals(item.getCustomName())) {
+            return false;
+        }
+
+        player.addWindow(chest.getInventory());
+        return true;
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride() {
+        BlockEntityChest blockEntity = getBlockEntity();
+
+        if (blockEntity != null) {
+            return ContainerInventory.calculateRedstone(blockEntity.getInventory());
+        }
+
+        return super.getComparatorInputOverride();
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(this, 0);
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(this.getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        this.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return canMove();
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return canMove();
+    }
+
+    /**
+     * TODO: Double chests cannot be moved
+     */
+    protected boolean canMove() {
+        var blockEntity = this.getBlockEntity();
+        return blockEntity == null || !blockEntity.isPaired();
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{new ItemBlock(getProperties().getDefaultState().toBlock(), 0)};
+    }
+}

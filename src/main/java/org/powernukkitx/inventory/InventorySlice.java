@@ -1,0 +1,369 @@
+package org.powernukkitx.inventory;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.item.Item;
+import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public class InventorySlice implements Inventory {
+    @NotNull
+    private final Inventory rawInv;
+    private int startSlot;
+    private int endSlot;
+    private Map<Integer, ContainerEnumName> slotTypeMap;
+    private BiMap<Integer, Integer> networkSlotMap;
+
+    public InventorySlice(@NotNull Inventory rawInv, int startSlot, int endSlot) {
+        this.rawInv = rawInv;
+        this.startSlot = startSlot;
+        this.endSlot = endSlot;
+    }
+
+    @Override
+    public ContainerEnumName getContainerEnumName(int nativeSlot) {
+        if (slotTypeMap != null) {
+            return slotTypeMap.get(nativeSlot);
+        } else return rawInv.getContainerEnumName(nativeSlot);
+    }
+
+    @Override
+    public int toNetworkSlot(int nativeSlot) {
+        if (networkSlotMap != null) {
+            return networkSlotMap.getOrDefault(nativeSlot, nativeSlot);
+        } else return rawInv.toNetworkSlot(nativeSlot);
+    }
+
+    @Override
+    public int fromNetworkSlot(int networkSlot) {
+        if (networkSlotMap != null) {
+            return networkSlotMap.inverse().getOrDefault(networkSlot, networkSlot);
+        } else return rawInv.fromNetworkSlot(networkSlot);
+    }
+
+    public void setNetworkMapping(Map<Integer, ContainerEnumName> map, BiMap<Integer, Integer> biMap) {
+        slotTypeMap = map;
+        networkSlotMap = biMap;
+    }
+
+    public void setStartSlot(int startSlot) {
+        this.startSlot = startSlot;
+    }
+
+    public void setEndSlot(int endSlot) {
+        this.endSlot = endSlot;
+    }
+
+    public int getStartSlot() {
+        return startSlot;
+    }
+
+    public int getEndSlot() {
+        return endSlot;
+    }
+
+    @Override
+    public int getSize() {
+        return endSlot - startSlot;
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return rawInv.getMaxStackSize();
+    }
+
+    @Override
+    public void setMaxStackSize(int size) {
+        rawInv.setMaxStackSize(size);
+    }
+
+    @NotNull
+    @Override
+    public Item getItem(int index) {
+        // check whether the index is in the range
+        if (index < 0 || index >= getSize()) {
+            return Item.AIR;
+        }
+        return rawInv.getItem(index + startSlot);
+    }
+
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        // check whether the index is in the range
+        if (index < 0 || index >= getSize()) {
+            return false;
+        }
+        return rawInv.setItem(index + startSlot, item, send);
+    }
+
+    @Override
+    public Item[] addItem(Item... slots) {
+        return rawInv.addItem(slots);
+    }
+
+    @Override
+    public boolean canAddItem(Item item) {
+        item = item.clone();
+        boolean checkDamage = item.hasMeta();
+        boolean checkTag = item.getNbt() != null;
+        for (int i = startSlot; i < endSlot; ++i) {
+            Item slot = rawInv.getItem(i);
+            if (item.equals(slot, checkDamage, checkTag)) {
+                int diff;
+                if ((diff = Math.min(slot.getMaxStackSize(), rawInv.getMaxStackSize()) - slot.getCount()) > 0) {
+                    item.setCount(item.getCount() - diff);
+                }
+            } else if (slot.isNull()) {
+                item.setCount(item.getCount() - Math.min(slot.getMaxStackSize(), rawInv.getMaxStackSize()));
+            }
+
+            if (item.getCount() <= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Item[] removeItem(Item... slots) {
+        return rawInv.removeItem(slots);
+    }
+
+    @NotNull
+    @Override
+    public Map<Integer, Item> getContents() {
+        var map = new HashMap<Integer, Item>();
+        for (int i = startSlot; i < endSlot; i++) {
+            map.put(i - startSlot, rawInv.getItem(i));
+        }
+        return map;
+    }
+
+    @Override
+    public void setContents(Map<Integer, Item> items) {
+        for (Map.Entry<Integer, Item> entry : items.entrySet()) {
+            // check whether the index is in the range
+            var key = entry.getKey();
+            if (key < 0 || key >= getSize()) {
+                continue;
+            }
+            rawInv.setItem(entry.getKey() + startSlot, entry.getValue());
+        }
+    }
+
+    @Override
+    public void sendContents(Player player) {
+        rawInv.sendContents(player);
+    }
+
+    @Override
+    public void sendContents(Player... players) {
+        rawInv.sendContents(players);
+    }
+
+    @Override
+    public void sendContents(Collection<Player> players) {
+        rawInv.sendContents(players);
+    }
+
+    @Override
+    public void sendSlot(int index, Player player) {
+        rawInv.sendSlot(index + startSlot, player);
+    }
+
+    @Override
+    public void sendSlot(int index, Player... players) {
+        rawInv.sendSlot(index + startSlot, players);
+    }
+
+    @Override
+    public void sendSlot(int index, Collection<Player> players) {
+        rawInv.sendSlot(index + startSlot, players);
+    }
+
+    @Override
+    public int getFreeSpace(Item item) {
+        return rawInv.getFreeSpace(item);
+    }
+
+    @Override
+    public boolean contains(Item item) {
+        int count = Math.max(1, item.getCount());
+        boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
+        boolean checkTag = item.getNbtBytes() != null;
+        for (Item i : this.getContents().values()) {
+            if (item.equals(i, checkDamage, checkTag)) {
+                count -= i.getCount();
+                if (count <= 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public Map<Integer, Item> all(Item item) {
+        Map<Integer, Item> slots = new HashMap<>();
+        boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
+        boolean checkTag = item.getNbtBytes() != null;
+        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+            if (item.equals(entry.getValue(), checkDamage, checkTag)) {
+                slots.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return slots;
+    }
+
+    @Override
+    public int first(Item item, boolean exact) {
+        int count = Math.max(1, item.getCount());
+        boolean checkDamage = item.hasMeta();
+        boolean checkTag = item.getNbtBytes() != null;
+        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+            if (item.equals(entry.getValue(), checkDamage, checkTag) && (entry.getValue().getCount() == count || (!exact && entry.getValue().getCount() > count))) {
+                return entry.getKey();
+            }
+        }
+
+        return -1;
+    }
+
+    @Override
+    public int firstEmpty(Item item) {
+        for (int i = startSlot; i < endSlot; ++i) {
+            if (rawInv.getItem(i).isNull()) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    @Override
+    public void decreaseCount(int slot) {
+        this.decreaseCount(slot, 1);
+    }
+
+    @Override
+    public void decreaseCount(int slot, int amount) {
+        if (slot < 0 || slot >= getSize()) {
+            throw new IllegalArgumentException("Slot index " + slot + " out of range");
+        }
+        rawInv.decreaseCount(slot + startSlot, amount);
+    }
+
+    @Override
+    public void remove(Item item) {
+        boolean checkDamage = item.hasMeta();
+        boolean checkTag = item.getNbtBytes() != null;
+        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+            if (item.equals(entry.getValue(), checkDamage, checkTag)) {
+                this.clear(entry.getKey());
+            }
+        }
+    }
+
+    @Override
+    public boolean clear(int index, boolean send) {
+        return rawInv.clear(index + startSlot, send);
+    }
+
+    @Override
+    public void clearAll() {
+        for (int i = startSlot; i < endSlot; ++i) {
+            rawInv.clear(i);
+        }
+    }
+
+    @Override
+    public boolean isFull() {
+        for (int i = startSlot; i < endSlot; ++i) {
+            var item = rawInv.getItem(i);
+            if (item == null || item.isNull() || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if (this.getMaxStackSize() <= 0) {
+            return false;
+        }
+
+        for (Item item : this.getContents().values()) {
+            if (item != null && !item.isNull()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public Set<Player> getViewers() {
+        return rawInv.getViewers();
+    }
+
+    @Override
+    public ContainerType getType() {
+        return rawInv.getType();
+    }
+
+    @Override
+    public InventoryHolder getHolder() {
+        return rawInv.getHolder();
+    }
+
+    @Override
+    public void onOpen(Player who) {
+        rawInv.onOpen(who);
+    }
+
+    @Override
+    public boolean open(Player who) {
+        return rawInv.open(who);
+    }
+
+    @Override
+    public void close(Player who) {
+        rawInv.close(who);
+    }
+
+    @Override
+    public void onClose(Player who) {
+        rawInv.onClose(who);
+    }
+
+    @Override
+    public void onSlotChange(int index, Item before, boolean send) {
+        // check whether the index is in the range
+        if (index < 0 || index >= getSize()) {
+            throw new IllegalArgumentException("Slot index " + index + " out of range");
+        }
+        rawInv.onSlotChange(index + startSlot, before, send);
+    }
+
+
+    @Override
+    public void addListener(InventoryListener listener) {
+        rawInv.addListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));
+    }
+
+
+    @Override
+    public void removeListener(InventoryListener listener) {
+        rawInv.removeListener(((inventory, oldItem, slot) -> listener.onInventoryChanged(this, oldItem, slot - startSlot)));
+    }
+}

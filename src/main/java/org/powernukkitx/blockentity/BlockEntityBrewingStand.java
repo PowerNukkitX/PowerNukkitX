@@ -1,0 +1,405 @@
+package org.powernukkitx.blockentity;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockBrewingStand;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.event.inventory.BrewEvent;
+import org.powernukkitx.event.inventory.StartBrewEvent;
+import org.powernukkitx.inventory.BrewingInventory;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.inventory.InventorySlice;
+import org.powernukkitx.inventory.RecipeInventoryHolder;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.recipe.ContainerRecipe;
+import org.powernukkitx.recipe.MixRecipe;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.ItemHelper;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
+
+import java.util.HashSet;
+
+public class BlockEntityBrewingStand extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
+
+    protected BrewingInventory inventory;
+
+    public static final int MAX_BREW_TIME = 400;
+
+    public int brewTime;
+    public int fuelTotal;
+    public int fuelAmount;
+
+    public BlockEntityBrewingStand(IChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
+    @Override
+    protected void initBlockEntity() {
+        super.initBlockEntity();
+        if (brewTime < MAX_BREW_TIME) {
+            this.scheduleUpdate();
+        }
+    }
+
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        inventory = new BrewingInventory(this);
+        if (!nbt.containsList("Items", Tag.TAG_Compound)) {
+            nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
+        }
+
+        for (int i = 0; i < getSize(); i++) {
+            inventory.setItem(i, this.getItem(i));
+        }
+
+        final CompoundTag nbtMap = this.getNbt();
+        if (!nbt.contains("CookTime") || nbtMap.getShort("CookTime") > MAX_BREW_TIME) {
+            this.brewTime = MAX_BREW_TIME;
+        } else {
+            this.brewTime = nbtMap.getShort("CookTime");
+        }
+
+        this.fuelAmount = nbtMap.getShort("FuelAmount");
+        this.fuelTotal = nbtMap.getShort("FuelTotal");
+    }
+
+    @Override
+    public String getName() {
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Brewing Stand";
+    }
+
+    @Override
+    public boolean hasName() {
+        return nbt.contains("CustomName");
+    }
+
+    @Override
+    public void setName(String name) {
+        if (name == null || name.equals("")) {
+            this.nbt.remove("CustomName");
+            return;
+        }
+
+        this.nbt.putString("CustomName", name);
+    }
+
+    @Override
+    public void close() {
+        if (!closed) {
+            for (Player player : new HashSet<>(getInventory().getViewers())) {
+                player.removeWindow(getInventory());
+            }
+            super.close();
+        }
+    }
+
+    @Override
+    public void onBreak(boolean isSilkTouch) {
+        for (Item content : inventory.getContents().values()) {
+            level.dropItem(this, content);
+        }
+        this.inventory.clearAll();
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound))
+                .putShort("CookTime", (short) brewTime)
+                .putShort("FuelAmount", (short) this.fuelAmount)
+                .putShort("FuelTotal", (short) this.fuelTotal);
+        for (int index = 0; index < getSize(); index++) {
+            this.setItem(index, inventory.getItem(index));
+        }
+    }
+
+    @Override
+    public boolean isBlockEntityValid() {
+        return getBlock().getId() == BlockID.BREWING_STAND;
+    }
+
+    public int getSize() {
+        return 5;
+    }
+
+    protected int getSlotIndex(int index) {
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getByte("Slot") == index) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public Item getItem(int index) {
+        int i = this.getSlotIndex(index);
+        if (i < 0) {
+            return Item.AIR;
+        } else {
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
+            return ItemHelper.read(data);
+        }
+    }
+
+    public void setItem(int index, Item item) {
+        int i = this.getSlotIndex(index);
+
+        CompoundTag d = ItemHelper.write(item, index);
+
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
+
+        if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
+            if (i >= 0) {
+                items.remove(i);
+            }
+        } else if (i < 0) {
+            items.add(d);
+        } else {
+            items.add(i, d);
+        }
+        this.nbt.putList("Items", items);
+    }
+
+    @Override
+    public BrewingInventory getInventory() {
+        return inventory;
+    }
+
+    @Override
+    public boolean onUpdate() {
+        if (!isBlockEntityValid()) this.close();
+
+        if (closed) {
+            return false;
+        }
+
+        restockFuel();
+
+        if (this.fuelAmount <= 0 || matchRecipes(true)[0] == null) {
+            stopBrewing();
+            return false;
+        }
+
+        if (brewTime == MAX_BREW_TIME) {
+            StartBrewEvent e = new StartBrewEvent(this);
+            this.server.getPluginManager().callEvent(e);
+
+            if (e.isCancelled()) {
+                return false;
+            }
+
+            this.sendBrewTime();
+        }
+
+        if (--brewTime > 0) {
+
+            if (brewTime % 40 == 0) {
+                sendBrewTime();
+            }
+
+            return true;
+        }
+
+        //20 seconds
+        BrewEvent e = new BrewEvent(this);
+        this.server.getPluginManager().callEvent(e);
+
+        if (e.isCancelled()) {
+            stopBrewing();
+            return true;
+        }
+
+        boolean mixed = false;
+        MixRecipe[] recipes = matchRecipes(false);
+        for (int i = 0; i < 3; i++) {
+            MixRecipe recipe = recipes[i];
+            if (recipe == null) {
+                continue;
+            }
+
+            Item previous = inventory.getItem(i + 1);
+            if (!previous.isNull()) {
+                Item result = recipe.getResult();
+                result.setCount(previous.getCount());
+                if (recipe instanceof ContainerRecipe) {
+                    result.setDamage(previous.getDamage());
+                }
+                inventory.setItem(i + 1, result);
+                mixed = true;
+            }
+        }
+
+        if (mixed) {
+            Item ingredient = this.inventory.getIngredient();
+            ingredient.count--;
+            this.inventory.setIngredient(ingredient);
+
+            this.fuelAmount--;
+            this.sendFuel();
+
+            this.getLevel().addSound(this, Sound.RANDOM_POTION_BREWED);
+        }
+
+        stopBrewing();
+        return true;
+    }
+
+    private void restockFuel() {
+        Item fuel = this.getInventory().getFuel();
+        if (this.fuelAmount > 0 || fuel.getId() != ItemID.BLAZE_POWDER || fuel.getCount() <= 0) {
+            return;
+        }
+
+        fuel.count--;
+        this.fuelAmount = 20;
+        this.fuelTotal = 20;
+
+        this.inventory.setFuel(fuel);
+        this.sendFuel();
+    }
+
+    private void stopBrewing() {
+        this.brewTime = 0;
+        this.sendBrewTime();
+        this.brewTime = MAX_BREW_TIME;
+    }
+
+    private MixRecipe[] matchRecipes(boolean quickTest) {
+        MixRecipe[] recipes = new MixRecipe[quickTest ? 1 : 3];
+        Item ingredient = inventory.getIngredient();
+        for (int i = 0; i < 3; i++) {
+            Item potion = inventory.getItem(i + 1);
+            if (potion.isNull()) {
+                continue;
+            }
+
+            MixRecipe recipe = Registries.RECIPE.findBrewingRecipe(ingredient, potion);
+            if (recipe == null) {
+                recipe = Registries.RECIPE.findContainerRecipe(ingredient, potion);
+            }
+            if (recipe == null) {
+                continue;
+            }
+
+            if (quickTest) {
+                recipes[0] = recipe;
+                return recipes;
+            }
+
+            recipes[i] = recipe;
+        }
+
+        return recipes;
+    }
+
+    protected void sendFuel() {
+        for (Player p : this.inventory.getViewers()) {
+            int windowId = p.getWindowId(this.inventory);
+            if (windowId > 0) {
+                final ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+                pk1.setContainerID((byte) windowId);
+                pk1.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_AMOUNT);
+                pk1.setValue(this.fuelAmount);
+                p.sendPacket(pk1);
+
+                final ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
+                pk2.setContainerID((byte) windowId);
+                pk2.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_TOTAL);
+                pk2.setValue(this.fuelTotal);
+                p.sendPacket(pk2);
+            }
+        }
+    }
+
+    protected void sendBrewTime() {
+        final ContainerSetDataPacket pk = new ContainerSetDataPacket();
+        pk.setId(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
+        pk.setValue(this.brewTime);
+
+        for (Player p : this.inventory.getViewers()) {
+            int windowId = p.getWindowId(this.inventory);
+            if (windowId > 0) {
+                pk.setContainerID((byte) windowId);
+                p.sendPacket(pk);
+            }
+        }
+    }
+
+    public void updateBlock() {
+        Block block = this.getLevelBlock();
+
+        if (!(block instanceof BlockBrewingStand blockBrewingStand)) {
+            return;
+        }
+
+        for (int i = 1; i <= 3; ++i) {
+            Item potion = this.inventory.getItem(i);
+
+            String id = potion.getId();
+            if ((id == ItemID.POTION || id == ItemID.SPLASH_POTION || id == ItemID.LINGERING_POTION) && potion.getCount() > 0) {
+                switch (i) {
+                    case 1 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, true);
+                    case 2 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, true);
+                    case 3 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT, true);
+                }
+            } else {
+                switch (i) {
+                    case 1 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, false);
+                    case 2 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, false);
+                    case 3 -> blockBrewingStand.setPropertyValue(CommonBlockProperties.BREWING_STAND_SLOT_C_BIT, false);
+                }
+            }
+        }
+        this.level.setBlock(block, block, false, false);
+
+        if (brewTime != MAX_BREW_TIME && matchRecipes(true)[0] == null) {
+            stopBrewing();
+        }
+    }
+
+    public int getFuel() {
+        return fuelAmount;
+    }
+
+    public void setFuel(int fuel) {
+        this.fuelAmount = fuel;
+    }
+
+    @Override
+    public CompoundTag getSpawnCompound() {
+        CompoundTag nbt = super.getSpawnCompound()
+                .putBoolean("isMovable", this.isMovable())
+                .putShort("FuelTotal", (short) this.fuelTotal)
+                .putShort("FuelAmount", (short) this.fuelAmount);
+
+        if (this.brewTime < MAX_BREW_TIME) {
+            nbt.putShort("CookTime", (short) this.brewTime);
+        }
+
+        if (this.hasName()) {
+            nbt.putString("CustomName", this.getNbt().getString("CustomName"));
+        }
+
+        return nbt;
+    }
+
+    @Override
+    public Inventory getIngredientView() {
+        return new InventorySlice(this.inventory, 0, 1);
+    }
+
+    @Override
+    public Inventory getProductView() {
+        return new InventorySlice(this.inventory, 1, 4);
+    }
+}
