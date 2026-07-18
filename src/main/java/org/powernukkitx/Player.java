@@ -2196,8 +2196,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * If WaterdogPE compatibility is enabled, the address is modified to be WaterdogPE compatible, otherwise it is the same as {@link #rawSocketAddress}
-     *
      * @return {@link String}
      */
     public String getAddress() {
@@ -2212,8 +2210,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * If WaterdogPE compatibility is enabled, the address is modified to be WaterdogPE compatible, otherwise it is the same as {@link #rawSocketAddress}
-     *
      * @return {@link InetSocketAddress}
      */
     public InetSocketAddress getSocketAddress() {
@@ -5926,10 +5922,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the XUID
      */
     public String getXUID() {
-        return this.server.getSettings().baseSettings().waterdogpe() &&
-            this.info.clientChainData.getWaterdogData() != null ?
-            this.info.clientChainData.getWaterdogData().getXuid() :
-            this.info.identityClaims.extraData.xuid;
+        String xuid = this.info.identityClaims.extraData.xuid;
+        var proxy = this.server.getProxyAuthProvider();
+        return proxy != null ? proxy.getXuid(this.info.clientChainData, xuid) : xuid;
     }
 
     /**

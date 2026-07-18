@@ -55,7 +55,6 @@
 **Minecraft: Bedrock Edition için zengin özellikli, yüksek derecede özelleştirilebilir üçüncü parti sunucu yazılımı.**
 - 🪄 **Özel Eşya, Blok ve Varlık desteği**
 - 🤖 **Vanilla'ya benzer Canavar Yapay Zekası**
-- 🪴 **Terra Jeneratörü**
 - ✏️ **Tam Vanilla Komut Desteği**
 - 🗃️ **Tam Eşya, Blok ve Kutu Desteği**
 - 🗿 **Keşfedilecek daha fazla özellik...**

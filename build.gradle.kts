@@ -56,15 +56,15 @@ dependencies {
     implementation(libs.disruptor)
     implementation(libs.oshi)
     implementation(libs.fastreflection)
-    implementation(libs.terra)
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
     implementation(libs.bedrock.connection)
+    implementation(libs.commonslang3)
+    implementation(libs.caffeine)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
-    testImplementation(libs.commonslang3)
     
     testRuntimeOnly(libs.junit.platform.launcher)
 
@@ -151,7 +151,7 @@ tasks.build {
 tasks.clean {
     group = ALPHA_BUILD
     description = "Deletes the build directory and generated files"
-    delete("pnx.yml", "terra", "services")
+    delete("pnx.yml", "services")
 }
 
 tasks.compileJava {

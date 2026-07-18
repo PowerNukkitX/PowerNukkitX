@@ -55,7 +55,6 @@
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
 - 🪄 **Custom Item, Block and Entity support**
 - 🤖 **Vanilla-like Mob AI**
-- 🪴 **Terra Generator**
 - ✏️ **Full Vanilla Command Support**
 - 🗃️ **Full Item, Block and Container Support**
 - 🗿 **More features to discover...**

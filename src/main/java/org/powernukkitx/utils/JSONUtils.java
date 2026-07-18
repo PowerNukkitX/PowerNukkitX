@@ -1,8 +1,8 @@
 package org.powernukkitx.utils;
 
 import org.powernukkitx.utils.exception.FormativeRuntimeException;
-import com.dfsek.terra.lib.commons.lang3.BooleanUtils;
-import com.dfsek.terra.lib.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -287,7 +287,7 @@ public class JSONUtils {
      * Lenient JSON deserialization
      */
     public static <V> V fromLenient(String json, Class<V> type) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         try (StringReader stringReader = new StringReader(json);
@@ -303,7 +303,7 @@ public class JSONUtils {
      * Lenient JSON deserialization
      */
     public static <V> V fromLenient(String json, Type type) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         try (StringReader stringReader = new StringReader(json);
@@ -319,7 +319,7 @@ public class JSONUtils {
      * Lenient JSON deserialization
      */
     public static <V> V fromLenient(String json, TypeToken<V> typeToken) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         try (StringReader stringReader = new StringReader(json);
@@ -335,7 +335,7 @@ public class JSONUtils {
      * Lenient JSON deserialization (List)
      */
     public static <V> List<V> fromListLenient(String json, Class<V> type) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         try (StringReader stringReader = new StringReader(json);
@@ -418,7 +418,7 @@ public class JSONUtils {
      * @return String，default is null
      */
     public static String getAsString(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         String propertyValue;
@@ -440,7 +440,7 @@ public class JSONUtils {
      * @return int，default is 0
      */
     public static int getAsInt(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return 0;
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -460,7 +460,7 @@ public class JSONUtils {
      * @return long，default is 0
      */
     public static long getAsLong(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return 0L;
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -480,7 +480,7 @@ public class JSONUtils {
      * @return double，default is 0.0
      */
     public static double getAsDouble(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return 0.0;
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -500,7 +500,7 @@ public class JSONUtils {
      * @return BigInteger，default 0.0
      */
     public static BigInteger getAsBigInteger(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return new BigInteger(String.valueOf(0.00));
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -520,7 +520,7 @@ public class JSONUtils {
      * @return BigDecimal，default 0.0
      */
     public static BigDecimal getAsBigDecimal(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return new BigDecimal("0.0");
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -540,7 +540,7 @@ public class JSONUtils {
      * @return boolean, default is false
      */
     public static boolean getAsBoolean(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return false;
         }
         JsonPrimitive jsonByKey = (JsonPrimitive) getAsJsonObject(json, key);
@@ -573,7 +573,7 @@ public class JSONUtils {
      * @return byte, default is 0
      */
     public static byte getAsByte(String json, String key) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return 0;
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -593,7 +593,7 @@ public class JSONUtils {
      * @return object, default null
      */
     public static <V> V getAsObject(String json, String key, Class<V> type) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -613,7 +613,7 @@ public class JSONUtils {
      * @return list, default null
      */
     public static <V> List<V> getAsList(String json, String key, Class<V> type) {
-        if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
             return null;
         }
         JsonElement jsonByKey = getAsJsonObject(json, key);
@@ -750,40 +750,40 @@ public class JSONUtils {
                 if (c == short.class) {
                     return NumberUtils.toShort(json);
                 } else if (c == Short.class) {
-                    if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+                    if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
                         return null;
                     }
                     return Short.parseShort(json);
                 } else if (c == int.class) {
                     return NumberUtils.toInt(json);
                 } else if (c == Integer.class) {
-                    if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+                    if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
                         return null;
                     }
                     return Integer.parseInt(json);
                 } else if (c == long.class) {
                     return NumberUtils.toLong(json);
                 } else if (c == Long.class) {
-                    if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+                    if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
                         return null;
                     }
                     return Long.parseLong(json);
                 } else if (c == float.class) {
                     return Float.parseFloat(json);
                 } else if (c == Float.class) {
-                    if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+                    if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
                         return null;
                     }
                     return NumberUtils.toFloat(json);
                 } else if (c == double.class) {
                     return NumberUtils.toDouble(json);
                 } else if (c == Double.class) {
-                    if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+                    if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
                         return null;
                     }
                     return Double.parseDouble(json);
                 } else if (c == BigDecimal.class) {
-                    if (com.dfsek.terra.lib.commons.lang3.StringUtils.isEmpty(json)) {
+                    if (org.apache.commons.lang3.StringUtils.isEmpty(json)) {
                         return null;
                     }
                     return new BigDecimal(json);

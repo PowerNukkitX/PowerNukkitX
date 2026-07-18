@@ -68,7 +68,6 @@ import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.LevelProviderManager;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
-import org.powernukkitx.level.generator.terra.PNXPlatform;
 import org.powernukkitx.level.tickingarea.manager.SimpleTickingAreaManager;
 import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
 import org.powernukkitx.level.tickingarea.storage.JSONTickingAreaStorage;
@@ -88,6 +87,7 @@ import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
 import org.powernukkitx.network.process.NetworkState;
+import org.powernukkitx.network.process.auth.ProxyAuthProvider;
 import org.powernukkitx.permission.BanEntry;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.permission.DefaultPermissions;
@@ -284,7 +284,7 @@ public class Server {
     private final ServerSettings settings;
     private Watchdog watchdog;
     private DB playerDataDB;
-    private boolean useTerra;
+    private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
 
@@ -417,7 +417,6 @@ public class Server {
 
         this.allowNether = this.settings.gameplaySettings().allowNether();
         this.allowTheEnd = this.settings.gameplaySettings().allowTheEnd();
-        this.useTerra = this.settings.miscSettings().enableTerra();
         this.checkLoginTime = this.settings.networkSettings().checkLoginTime();
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
@@ -434,9 +433,6 @@ public class Server {
         this.scheduler = new ServerScheduler();
 
         this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
-        if (this.getSettings().baseSettings().waterdogpe()) {
-            this.checkLoginTime = false;
-        }
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
@@ -553,12 +549,6 @@ public class Server {
 
         if (settings.gameplaySettings().enableEducation()) {
             Education.enable();
-            if (settings.baseSettings().waterdogpe())
-                log.info("You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
-        }
-
-        if (useTerra) {// load terra
-            PNXPlatform instance = PNXPlatform.getInstance();
         }
 
         freezableArrayManager = new FreezableArrayManager(
@@ -3101,6 +3091,14 @@ public class Server {
 
     public ServerSettings getSettings() {
         return settings;
+    }
+
+    public ProxyAuthProvider getProxyAuthProvider() {
+        return proxyAuthProvider;
+    }
+
+    public void setProxyAuthProvider(ProxyAuthProvider proxyAuthProvider) {
+        this.proxyAuthProvider = proxyAuthProvider;
     }
 
     public boolean isNetherAllowed() {

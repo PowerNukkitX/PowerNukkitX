@@ -56,7 +56,6 @@
 
 - 🪄 **Objet personnalisé, bloc, entité**
 - 🤖 **Cadre d'IA intégré**
-- 🪴 **Générateur Terra**
 - ✏️ **Prise en charge complète des commandes Vanilla**
 - 🗃️ **Prise en charge complète des objets, blocs et conteneurs**
 - 🗿 **Plus de fonctionnalités à découvrir...**
