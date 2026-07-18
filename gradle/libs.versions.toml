@@ -5,7 +5,7 @@
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 pnx-terra-binary                                = "6.6.1-BETA"
 fastreflection                                  = "1.0.3"
-com-github-oshi-oshi-core                       = "6.4.10"
+com-github-oshi-oshi-core                       = "7.4.0"
 com-google-code-findbugs-jsr305                 = "3.0.2"
 com-google-code-gson-gson                       = "2.10.1"
 com-google-guava-guava                          = "33.0.0-jre"
