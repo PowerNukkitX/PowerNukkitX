@@ -58,7 +58,7 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
         }
         boolean paymentConsumed = false;
         for (DestroyAction destroy : findAllDestroyActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1)) {
-            if (destroy.getCount() < 1) {
+            if (destroy.getAmount() < 1) {
                 continue;
             }
             FullContainerName srcName = destroy.getSource().getFullContainerName();
