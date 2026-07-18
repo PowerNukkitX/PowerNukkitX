@@ -82,7 +82,11 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                         Item item = player.getInventory().getItemInMainHand();
 
                         int ticksUsed = player.getLevel().getTick() - lastUseTick;
-                        if (!item.onRelease(player, ticksUsed)) {
+                        if (item.isEdible() && ticksUsed >= item.getUsingTicks()) {
+                            if (item.onUse(player, ticksUsed)) {
+                                item.afterUse(player);
+                            }
+                        } else if (!item.onRelease(player, ticksUsed)) {
                             player.getInventory().sendContents(player);
                         }
 
