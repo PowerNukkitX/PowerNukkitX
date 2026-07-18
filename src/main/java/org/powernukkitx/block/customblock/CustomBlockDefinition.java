@@ -155,10 +155,8 @@ public class CustomBlockDefinition extends BlockDefinition {
                     newId = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
                 } while (INTERNAL_ALLOCATION_ID_MAP.containsValue(newId));
 
-                block_id = INTERNAL_ALLOCATION_ID_MAP.putIfAbsent(identifier, newId);
-                if (block_id == -1) {
-                    block_id = newId;
-                }
+                Integer previous = INTERNAL_ALLOCATION_ID_MAP.putIfAbsent(identifier, newId);
+                block_id = (previous == null) ? newId : previous;
             }
             nbt.putCompound("vanilla_block_data",
                     new CompoundTag()

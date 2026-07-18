@@ -253,18 +253,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             return new BlockColor((int) ((val >> 16) & 0xFF), (int) ((val >> 8) & 0xFF), (int) (val & 0xFF), 0xFF);
         }
         if (s.length() == 8) {
-            return new BlockColor((int) ((val >> 16) & 0xFF), (int) ((val >> 8) & 0xFF), (int) (val & 0xFF), (int) ((val >> 24) & 0xFF));
+            return new BlockColor((int) ((val >> 24) & 0xFF), (int) ((val >> 16) & 0xFF), (int) ((val >> 8) & 0xFF), (int) (val & 0xFF));
         }
         return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
-    }
-
-    private static double speedBonusByEfficiencyLore0(int efficiencyLoreLevel) {
-        if (efficiencyLoreLevel == 0) return 0;
-        return efficiencyLoreLevel * efficiencyLoreLevel + 1;
-    }
-
-    private static double speedRateByHasteLore0(int hasteLoreLevel) {
-        return 1.0 + (0.2 * hasteLoreLevel);
     }
 
     private static int toolType0(Item item, Block b) {
@@ -282,8 +273,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     private static boolean correctTool0(int blockToolType, Item item, Block b) {
         String block = b.getId();
-        if (b instanceof BlockLeaves && item.isHoe()) {
-            return (blockToolType == ItemTool.TYPE_SHEARS && item.isHoe());
+        if (b instanceof BlockLeaves) {
+            return item.isHoe() || item.isShears();
         } else if (block.equals(BAMBOO) && item.isSword()) {
             return (blockToolType == ItemTool.TYPE_AXE && item.isSword());
         } else
