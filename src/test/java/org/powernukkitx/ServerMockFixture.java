@@ -152,18 +152,23 @@ public final class ServerMockFixture {
         }
         doNothing().when(server).sendRecipeList(any());
 
+        // Unique per JVM fork - LevelDB takes a process file lock, so a fixed dir would
+        // collide when Gradle runs test workers in parallel.
+        final String levelName = "newlevel_fixture_" + ProcessHandle.current().pid() + "_" + System.nanoTime();
+        final File levelDir = new File("src/test/resources/" + levelName);
         try {
             FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
             FieldUtils.writeDeclaredField(server, "autoSave", false, true);
             Network network = new Network(server);
             FieldUtils.writeDeclaredField(server, "network", network, true);
 
-            FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/newlevel_fixture"));
+            FileUtils.copyDirectory(new File("src/test/resources/level"), levelDir);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(levelDir)));
 
-        level = new Level(server, "newlevel_fixture", "src/test/resources/newlevel_fixture",
+        level = new Level(server, levelName, levelDir.getPath(),
                 1, LevelDBProvider.class,
                 new LevelConfig.GeneratorConfig("flat", 114514L, false, LevelConfig.AntiXrayMode.LOW,
                         true, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
