@@ -1469,23 +1469,23 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 将方块克隆到指定位置<p/>
-     * 此方法会连带克隆方块实体<p/>
-     * 注意，此方法会先清除指定位置的方块为空气再进行克隆
+     * Clones the block to the given position.<p/>
+     * This method also clones the block entity along with it.<p/>
+     * Note that this method first clears the block at the target position to air before cloning.
      *
-     * @param pos    要克隆到的位置
-     * @param update 是否需要更新克隆的方块
-     * @return 是否克隆成功
+     * @param pos    the position to clone to
+     * @param update whether the cloned block needs to be updated
+     * @return whether the clone succeeded
      */
     @SuppressWarnings("null")
     public boolean cloneTo(Position pos, boolean update) {
-        //清除旧方块
+        //clear the old block
         level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
             var clonedBlock = this.clone();
             clonedBlock.position(pos);
             CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
-            //方块实体要求direct=true
+            //block entities require direct=true
             return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, false, update, tag) != null;
         } else {
             return pos.level.setBlock(pos, this.layer, this.clone(), true, update);

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor {
 
-    //指示执行器应该从哪个Memory获取目标位置
+    //indicates which Memory the executor should get the target position from
     protected MemoryType<? extends Vector3> memory;
     protected float speed;
     protected Vector3 oldTarget;

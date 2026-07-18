@@ -317,7 +317,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * Create an entity from the network id
      *
-     * @param type 网络ID<br> network id
+     * @param type network id
      * @param pos  the pos
      * @param args the args
      * @return the entity
@@ -332,7 +332,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * Create an entity from the network id
      *
-     * @param type  网络ID<br> network id
+     * @param type  network id
      * @param chunk the chunk
      * @param nbt   the nbt
      * @param args  the args
@@ -1911,8 +1911,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param x       x
      * @param y       y
      * @param z       z
-     * @param yaw     左右旋转
-     * @param pitch   上下旋转
+     * @param yaw     left/right rotation
+     * @param pitch   up/down rotation
      * @param headYaw headYaw
      */
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
@@ -5147,6 +5147,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
+    public boolean isMoving() {
+        return getDataFlag(ActorFlags.MOVING);
+    }
+
     private Vec3 applyCollisionOffsets(double dx, double dy, double dz, AxisAlignedBB box, List<AxisAlignedBB> list) {
         for (AxisAlignedBB bb : list) {
             dy = bb.calculateYOffset(box, dy);
@@ -5505,7 +5509,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param yaw     the yaw
      * @param pitch   the pitch
      * @param headYaw the head yaw
-     * @return 切换地图失败会返回false
+     * @return false if switching the map fails
      */
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch, double headYaw) {
         this.setRotation(yaw, pitch, headYaw);
@@ -5597,11 +5601,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
-     * 设置一个运动向量(会使得实体移动这个向量的距离，非精准移动)<p/>
-     * <p>
      * Set a motion vector (will make the entity move the distance of this vector, not move precisely)
      *
-     * @param motion 运动向量<br>a motion vector
+     * @param motion a motion vector
      * @return boolean
      */
     public boolean setMotion(Vector3 motion) {
@@ -6056,11 +6058,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     /**
      * Play the animation of this entity to a specified group of players
-     * <p>
-     * 向指定玩家群体播放此实体的动画
      *
-     * @param animation 动画对象 Animation objects
-     * @param players   可视玩家 Visible Player
+     * @param animation Animation objects
+     * @param players   Visible Player
      */
     public void playAnimation(EntityAnimation animation, Collection<Player> players) {
         var pk = animation.toNetwork();
@@ -6076,12 +6076,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     /**
      * Play the action animation of this entity to a specified group of players
-     * <p>
-     * 向指定玩家群体播放此实体的action动画
      *
      * @param action      the action
      * @param swingSource the swing source
-     * @param players     可视玩家 Visible Player
+     * @param players     Visible Player
      */
     public void playActionAnimation(AnimatePacket.Action action, ActorSwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();
