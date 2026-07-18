@@ -399,6 +399,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     final AnimatePacket animatePacket = new AnimatePacket();
                     animatePacket.setTargetRuntimeID(this.getId());
                     animatePacket.setAction(AnimatePacket.Action.CRITICAL_HIT);
+                    animatePacket.setData(55f);
 
                     this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animatePacket);
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
@@ -421,6 +422,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             this.attackTime = source.getAttackCooldown();
             this.attackTimeByShieldKb = false;
             this.scheduleUpdate();
+
+            for (Effect effect : List.copyOf(this.getEffects().values())) {
+                effect.onHurt(this, source);
+            }
 
             return true;
         } else {
@@ -490,6 +495,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops(weapon));
         this.server.getPluginManager().callEvent(ev);
+
+        for (Effect effect : List.copyOf(this.getEffects().values())) {
+            effect.onDeath(this);
+        }
 
         var manager = this.server.getScoreboardManager();
         // This will be null in the test environment, so it is necessary to check for null values.

@@ -11,6 +11,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.structure.AbstractStructure;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockVector3;
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 @Slf4j
-public class FossilPopulator extends Populator {
+public class FossilPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_fossil";
     private static final int RARITY = 64;
@@ -31,6 +32,8 @@ public class FossilPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

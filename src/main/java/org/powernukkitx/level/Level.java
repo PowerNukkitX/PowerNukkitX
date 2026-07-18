@@ -1,5 +1,9 @@
 package org.powernukkitx.level;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.move.MoveActorDeltaData;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -98,7 +102,6 @@ import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
-import org.cloudburstmc.protocol.bedrock.data.MoveActorDeltaData;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
@@ -356,7 +359,7 @@ public class Level implements Metadatable {
     public long tickRateTimeNanos = 0;
     public int tickRateCounter = 0;
     /**
-     * 当tps过低的时候，tps优化延迟会上升，计算密集型任务应当每隔此tick才运行一次
+     * When the tps is too low, the tps optimization delay rises; compute-intensive tasks should only run once every this many ticks
      */
     public int tickRateOptDelay = 1;
     public GameRules gameRules;
@@ -578,12 +581,10 @@ public class Level implements Metadatable {
     }
 
     public static int chunkBlockHash(int x, int y, int z) {
-        return (x << 13) | (z << 9) | (y + 64); // 为适配384世界，y需要额外的1bit来存储
+        return (x << 13) | (z << 9) | (y + 64); // to support 384-height worlds, y needs an extra bit for storage
     }
 
     /**
-     * 获取chunkX从chunk hash
-     * <p>
      * Get chunkX from chunk hash
      *
      * @param hash the hash
@@ -594,8 +595,6 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 获取chunkZ从chunk hash
-     * <p>
      * Get chunkZ from chunk hash
      *
      * @param hash the hash
@@ -1259,8 +1258,8 @@ public class Level implements Metadatable {
                 nextTimeSendMillis = this.tickTime + 30_000L;
             }
 
-            // 检查突出区块（玩家附近3x3区块）
-            if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
+            // check highlighted chunks (the 3x3 chunks around players)
+            if ((currentTick & 127) == 0) { // checking once every 127 ticks is reasonable
                 highLightChunks.clear();
                 for (var player : this.players.values()) {
                     if (player.isOnline()) {
@@ -2068,9 +2067,9 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 立即对围绕指定位置的方块发送neighborChange更新
+     * Immediately sends a neighborChange update to the blocks surrounding the specified position
      *
-     * @param pos 指定位置
+     * @param pos the specified position
      */
     public void neighborChangeAroundImmediately(Vector3 pos) {
         for (var face : BlockFace.values()) {
@@ -3843,6 +3842,44 @@ public class Level implements Metadatable {
         return getEntitiesFromBuffer(index, overflow);
     }
 
+    /**
+     * Returns only the {@link EntityItem} instances whose bounding box intersects {@code bb}.
+     * <p>
+     * Same chunk range and intersection test as {@link #getCollidingEntities(AxisAlignedBB)}, but skips every
+     * non-item entity and allocates nothing when there is no item to return.
+     *
+     * @param bb the area to search
+     * @return matching item entities, or an empty list (never null)
+     */
+    public List<EntityItem> getCollidingItemEntities(AxisAlignedBB bb) {
+        int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
+        int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+        int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
+        int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+
+        List<EntityItem> result = null;
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                IChunk chunk = this.getChunkIfLoaded(x, z);
+                if (chunk == null) {
+                    continue;
+                }
+                for (Entity ent : chunk.getEntities().values()) {
+                    if (ent instanceof EntityItem item && !item.isClosed()
+                            && item.boundingBox.intersectsWith(bb)) {
+                        if (result == null) {
+                            result = new ArrayList<>();
+                        }
+                        result.add(item);
+                    }
+                }
+            }
+        }
+
+        return result == null ? Collections.emptyList() : result;
+    }
+
     public List<Entity> fastCollidingEntities(AxisAlignedBB bb) {
         return this.fastCollidingEntities(bb, null);
     }
@@ -4207,7 +4244,7 @@ public class Level implements Metadatable {
         if (block == null)
             return VOID_BLOCK_COLOR;
 
-        //在z轴存在高度差的地方，颜色变深或变浅
+        //where there is a height difference along the z axis, the color gets darker or lighter
         color = block.getColor().toAwtColor();
 
         var up = block.getSide(BlockFace.UP);
@@ -4358,15 +4395,14 @@ public class Level implements Metadatable {
     public void requestChunk(int x, int z, Player player) {
         Preconditions.checkArgument(player.getLoaderId() > 0, player.getName() + " has no chunk loader");
         long index = Level.chunkHash(x, z);
-        var casLock = new AtomicBoolean(false);
-        Int2ObjectNonBlockingMap<Player> playerInt2ObjectMap = this.chunkSendQueue.computeIfAbsent(index, (key) -> {
-            if (casLock.weakCompareAndSetVolatile(false, true)) {
-                return new Int2ObjectNonBlockingMap<>();
-            } else {
-                return null;
+        synchronized (this.chunkSendQueue) {
+            Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            if (players == null) {
+                players = new Int2ObjectNonBlockingMap<>();
+                this.chunkSendQueue.put(index, players);
             }
-        });
-        Objects.requireNonNull(playerInt2ObjectMap).put(player.getLoaderId(), player);
+            players.put(player.getLoaderId(), player);
+        }
     }
 
     private void sendChunk(int x, int z, long index, BedrockPacket packet) {
@@ -4395,14 +4431,24 @@ public class Level implements Metadatable {
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
-            final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
+            final Int2ObjectNonBlockingMap<Player> players;
+            synchronized (this.chunkSendQueue) {
+                players = this.chunkSendQueue.get(index);
+            }
             if (players != null) {
                 IChunk chunk = this.getChunk(x, z);
                 if (chunk != null && chunk.getChunkState().canSend()) {
+                    final Int2ObjectNonBlockingMap<Player> playersToSend;
+                    synchronized (this.chunkSendQueue) {
+                        playersToSend = this.chunkSendQueue.remove(index);
+                    }
+                    if (playersToSend == null) {
+                        continue;
+                    }
                     final var pair = this.requireProvider().requestChunkData(x, z);
                     final var chunkData = pair.first();
                     try {
-                        for (Player player : Objects.requireNonNull(players).values()) {
+                        for (Player player : playersToSend.values()) {
                             if (player.isConnected()) {
                                 final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
                                 networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
@@ -4423,7 +4469,6 @@ public class Level implements Metadatable {
                     } finally {
                         chunkData.release();
                     }
-                    this.chunkSendQueue.remove(index);
                 } else if (!this.chunkGenerationQueue.containsKey(index)) {
                     this.generateChunk(x, z, true);
                 }
@@ -4501,8 +4546,6 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 该区块是否在使用中，出生点区块，tick区域中的区块，以及存在{@link ChunkLoader}的区块都被看做正在使用
-     * <p>
      * Whether the chunk is in use, spawn chunks, chunks in the tick area, and chunks with {@link ChunkLoader} are considered in use
      *
      * @param x the chunk x
@@ -4514,8 +4557,6 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 该区块是否在使用中，出生点区块，tick区域中的区块，以及存在{@link ChunkLoader}的区块都被看做正在使用
-     * <p>
      * Whether the chunk is in use, spawn chunks, chunks in the tick area, and chunks with {@link ChunkLoader} are considered in use
      *
      * @param hash chunk hash value from {@link #chunkHash(int, int)}
@@ -5024,8 +5065,6 @@ public class Level implements Metadatable {
     private final AtomicBoolean inGarbageCollectionProcess = new AtomicBoolean(false);
 
     /**
-     * 异步执行服务器内存垃圾收集
-     * <p>
      * Run server memory garbage collection asynchronously
      */
     public void doLevelGarbageCollection(boolean force) {
@@ -5222,11 +5261,14 @@ public class Level implements Metadatable {
         packet.setRotation(org.cloudburstmc.math.vector.Vector3f.from(pitch, yaw, headYaw));
         if (entity.riding != null) {
             packet.setRidingRuntimeID(entity.riding.getId());
-            packet.setPositionMode(MovePlayerPacket.PositionMode.ONLY_HEAD_ROT);
+            packet.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         } else {
-            packet.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
+            packet.setPositionMode(PositionMode.NORMAL);
         }
-        packet.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
+        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
+        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
+
+        packet.setTeleportData(teleportData);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }
@@ -5264,7 +5306,7 @@ public class Level implements Metadatable {
             packet.getFlags().add(MoveActorDeltaPacket.Flag.ON_GROUND);
         }
 
-        packet.setData(data);
+        packet.setMoveData(data);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }

@@ -116,7 +116,7 @@ public abstract class VillageStructure extends JigsawStructure {
     @Override
     protected void postProcessStructurePiece(String structureName, BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
         liftPieceAboveWater(blockManager, jigsaws);
-        if (structureName.contains("lamp")) {
+        if (isDecorPiece(structureName)) {
             shiftWholePieceToTerrain(blockManager, jigsaws);
             int lampHeightOffset = getLampHeightOffset(structureName);
             if (lampHeightOffset != 0) {
@@ -227,6 +227,10 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected int getLampHeightOffset(String structureName) {
         return 0;
+    }
+
+    protected boolean isDecorPiece(String structureName) {
+        return structureName.contains("lamp") || structureName.contains("_decoration_");
     }
 
     protected void liftPieceAboveWater(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {

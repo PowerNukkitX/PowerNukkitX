@@ -49,8 +49,9 @@ public interface Inventory {
     Item getItem(int index);
 
     /**
-     * 获取该库存指定索引处的未克隆的物品<p/>
-     * 若调用方保证不会修改此方法返回的Item对象，则使用此方法将降低特定场景下Item::clone()造成的性能开销
+     * Gets the uncloned item at the specified index of this inventory.<p/>
+     * If the caller guarantees it will not modify the Item object returned by this method, using it reduces the
+     * performance overhead of Item::clone() in certain scenarios.
      *
      * @param index the index
      * @return the item
@@ -58,7 +59,7 @@ public interface Inventory {
     @ApiStatus.Internal
     @DoNotModify
     default Item getUnclonedItem(int index) {
-        //你需要覆写它来实现
+        //you need to override it to implement
         return getItem(index);
     }
 
@@ -189,7 +190,14 @@ public interface Inventory {
     /**
      * Decrease the item count in the slot index.
      */
-    void decreaseCount(int slot);
+    default void decreaseCount(int slot) {
+        this.decreaseCount(slot, 1);
+    }
+
+    /**
+     * Decrease the item count in the slot index by a specific amount.
+     */
+    void decreaseCount(int slot, int amount);
 
 
     /**

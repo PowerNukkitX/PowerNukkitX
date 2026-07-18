@@ -38,6 +38,7 @@ import org.powernukkitx.entity.components.NameableComponent;
 import org.powernukkitx.entity.item.EntityEnderCrystal;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BVector3;
@@ -181,43 +182,44 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         } else {
             super.kill();
             close();
-            if (!isRevived()) {
-                int y = getLevel().getHighestBlockAt(Vector2.ZERO);
-                getLevel().setBlock(new Vector3(0, y + 1, 0), Block.get(Block.DRAGON_EGG));
-                for (BlockFace face : BlockFace.getHorizontals()) {
-                    Block torch = BlockTorch.PROPERTIES.getBlockState(TORCH_FACING_DIRECTION.createValue(TorchFacingDirection.getByTorchDirection(face))).toBlock();
-                    getLevel().setBlock(new Vector3(0, y - 1, 0).getSide(face), torch);
-
+            if(this.getLevel().getDimension() == Level.DIMENSION_THE_END) {
+                if (!isRevived()) {
+                    int y = getLevel().getHighestBlockAt(Vector2.ZERO);
+                    getLevel().setBlock(new Vector3(0, y + 1, 0), Block.get(Block.DRAGON_EGG));
+                    for (BlockFace face : BlockFace.getHorizontals()) {
+                        Block torch = BlockTorch.PROPERTIES.getBlockState(TORCH_FACING_DIRECTION.createValue(TorchFacingDirection.getByTorchDirection(face))).toBlock();
+                        getLevel().setBlock(new Vector3(0, y - 1, 0).getSide(face), torch);
+                    }
                 }
-            }
 
-            for (int y = getLevel().getMinHeight(); y < getLevel().getHighestBlockAt(0, 0); y++) {
-                if (getLevel().getBlock(0, y, 0) instanceof BlockBedrock) {
-                    for (int i = -2; i <= 2; i++) {
-                        for (int j = -1; j <= 1; j++) {
-                            if (!(i == 0 && j == 0)) {
-                                getLevel().setBlock(new Vector3(i, y + 1, j), Block.get(Block.END_PORTAL));
-                                getLevel().setBlock(new Vector3(j, y + 1, i), Block.get(Block.END_PORTAL));
+                for (int y = getLevel().getMinHeight(); y < getLevel().getHighestBlockAt(0, 0); y++) {
+                    if (getLevel().getBlock(0, y, 0) instanceof BlockBedrock) {
+                        for (int i = -2; i <= 2; i++) {
+                            for (int j = -1; j <= 1; j++) {
+                                if (!(i == 0 && j == 0)) {
+                                    getLevel().setBlock(new Vector3(i, y + 1, j), Block.get(Block.END_PORTAL));
+                                    getLevel().setBlock(new Vector3(j, y + 1, i), Block.get(Block.END_PORTAL));
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
                 }
-            }
 
-            for (int i = 0; i < 20; i++) {
-                Vector3 origin = Vector3.ZERO;
-                double angleIncrement = 360.0 / 20;
-                double angle = Math.toRadians(i * angleIncrement);
-                double particleX = origin.getX() + Math.cos(angle) * 96;
-                double particleZ = origin.getZ() + Math.sin(angle) * 96;
-                Block dest = getLevel().getBlock(new Vector3(particleX, 75, particleZ));
-                if (!(dest instanceof BlockEndGateway)) {
-                    Arrays.stream(BlockFace.values()).forEach(face -> getLevel().setBlock(dest.up().getSide(face), Block.get(Block.BEDROCK)));
-                    Arrays.stream(BlockFace.values()).forEach(face -> getLevel().setBlock(dest.down().getSide(face), Block.get(Block.BEDROCK)));
-                    getLevel().setBlock(dest, Block.get(Block.END_GATEWAY));
-                    break;
-                } else continue;
+                for (int i = 0; i < 20; i++) {
+                    Vector3 origin = Vector3.ZERO;
+                    double angleIncrement = 360.0 / 20;
+                    double angle = Math.toRadians(i * angleIncrement);
+                    double particleX = origin.getX() + Math.cos(angle) * 96;
+                    double particleZ = origin.getZ() + Math.sin(angle) * 96;
+                    Block dest = getLevel().getBlock(new Vector3(particleX, 75, particleZ));
+                    if (!(dest instanceof BlockEndGateway)) {
+                        Arrays.stream(BlockFace.values()).forEach(face -> getLevel().setBlock(dest.up().getSide(face), Block.get(Block.BEDROCK)));
+                        Arrays.stream(BlockFace.values()).forEach(face -> getLevel().setBlock(dest.down().getSide(face), Block.get(Block.BEDROCK)));
+                        getLevel().setBlock(dest, Block.get(Block.END_GATEWAY));
+                        break;
+                    }
+                }
             }
         }
     }
@@ -355,3 +357,4 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         }
     }
 }
+

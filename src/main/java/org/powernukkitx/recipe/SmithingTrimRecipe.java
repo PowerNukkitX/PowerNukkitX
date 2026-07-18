@@ -1,7 +1,9 @@
 package org.powernukkitx.recipe;
 
-import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.SmithingTrimRecipePayload;
+import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 
 /**
  * The type Smithing recipe for trim equipment.
@@ -37,14 +39,14 @@ public class SmithingTrimRecipe extends BaseRecipe {
         return RecipeType.SMITHING_TRIM;
     }
 
-    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTrimRecipe toNetwork() {
-        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTrimRecipe.of(
-                this.getRecipeId(),
-                this.getIngredients().getFirst().toNetwork(),
-                this.getIngredients().get(1).toNetwork(),
-                this.getIngredients().getLast().toNetwork(),
-                "smithing_table",
-                this.netId
-        );
+    public SmithingTrimRecipePayload toNetwork() {
+        final SmithingTrimRecipePayload payload = new SmithingTrimRecipePayload();
+        payload.setRecipeId(this.getRecipeId());
+        payload.setTemplateIngredient(this.getIngredients().getFirst().toNetwork());
+        payload.setBaseIngredient(this.getIngredients().get(1).toNetwork());
+        payload.setAdditionIngredient(this.getIngredients().getLast().toNetwork());
+        payload.setTag("smithing_table");
+        payload.setNetId(new RecipeNetId(this.netId));
+        return payload;
     }
 }

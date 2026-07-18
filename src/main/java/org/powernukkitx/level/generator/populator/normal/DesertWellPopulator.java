@@ -7,9 +7,10 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.ObjectDesertWell;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.math.Vector3;
 
-public class DesertWellPopulator extends Populator {
+public class DesertWellPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_desert_well";
 
@@ -17,6 +18,8 @@ public class DesertWellPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

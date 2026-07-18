@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Getter
-public class Scoreboard implements IScoreboard{
+public class Scoreboard implements IScoreboard {
     protected String objectiveName;
     protected String displayName;
     protected String criteriaName;

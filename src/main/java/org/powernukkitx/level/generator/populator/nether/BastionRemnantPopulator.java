@@ -8,12 +8,13 @@ import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.bastion.BastionStructure;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.ChunkVector2;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
-public class BastionRemnantPopulator extends Populator {
+public class BastionRemnantPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "nether_bastion_remnant";
     protected static final int MAX_DISTANCE = NetherComplexPlacement.REGION_SIZE_CHUNKS;
@@ -91,6 +92,8 @@ public class BastionRemnantPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         if (!chunk.isNether()) {
             return;

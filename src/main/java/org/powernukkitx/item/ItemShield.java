@@ -19,8 +19,6 @@ public class ItemShield extends ItemTool {
     }
 
     /**
-     * 为自定义盾牌提供的构造函数
-     * <p>
      * Constructor for custom shield
      *
      * @param id    the id

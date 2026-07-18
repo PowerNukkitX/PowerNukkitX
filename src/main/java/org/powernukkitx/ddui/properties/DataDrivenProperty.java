@@ -4,7 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.ddui.DataDrivenScreen;
 import lombok.Getter;
 import lombok.Setter;
-import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DynamicValueType;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
  */
 public abstract class DataDrivenProperty<T, K> {
 
-    public abstract DataStorePropertyValueType getType();
+    public abstract DynamicValueType getType();
 
     @Getter
     protected final ObjectProperty parent;

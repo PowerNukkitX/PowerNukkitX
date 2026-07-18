@@ -6,6 +6,7 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.trailruins.TrailRuinsStructure;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.registry.Registries;
@@ -17,7 +18,7 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
  * @author Buddelbubi
  * @since 2026/03/31
  */
-public class TrailRuinsPopulator extends Populator {
+public class TrailRuinsPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_trail_ruins";
 
@@ -32,6 +33,8 @@ public class TrailRuinsPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

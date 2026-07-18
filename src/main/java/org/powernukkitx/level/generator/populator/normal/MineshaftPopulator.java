@@ -12,9 +12,10 @@ import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStart;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.registry.Registries;
 
-public class MineshaftPopulator extends Populator {
+public class MineshaftPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_mineshaft";
 
@@ -22,6 +23,8 @@ public class MineshaftPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

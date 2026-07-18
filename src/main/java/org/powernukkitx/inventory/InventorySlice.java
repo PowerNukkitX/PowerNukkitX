@@ -250,11 +250,15 @@ public class InventorySlice implements Inventory {
 
     @Override
     public void decreaseCount(int slot) {
-        // check whether the index is in the range
+        this.decreaseCount(slot, 1);
+    }
+
+    @Override
+    public void decreaseCount(int slot, int amount) {
         if (slot < 0 || slot >= getSize()) {
             throw new IllegalArgumentException("Slot index " + slot + " out of range");
         }
-        rawInv.decreaseCount(slot + startSlot);
+        rawInv.decreaseCount(slot + startSlot, amount);
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.powernukkitx.event.player.EntityFreezeEvent;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.AxisAlignedBB;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector2;
 import org.powernukkitx.math.Vector2f;
@@ -100,6 +101,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (!this.isImmobile()) {
             // Dealing with gravity
             handleGravity();
+            handleWallClimbing();
             if (needsRecalcMovement) {
                 // Handling collision box extrusion movement
                 handleCollideMovement(currentTick);
@@ -109,6 +111,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             handleGroundFrictionMovement();
             handlePassableBlockFrictionMovement();
         }
+        this.inBubbleColumn = false;
     }
 
     @Override
@@ -196,10 +199,18 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             this.fallingTick = 0;
             return;
         }
-        // Gravity is always there
-        this.motionY -= this.getGravity();
+        if (!this.inBubbleColumn) {
+            this.motionY -= this.getGravity();
+        }
         if (!this.onGround && this.hasWaterAt(getFootHeight())) {
             // Landing water
+            resetFallDistance();
+        }
+    }
+
+    protected void handleWallClimbing() {
+        if (this.isWallClimbing()) {
+            this.motionY = NukkitMath.clamp(this.motionY, -2, 2);
             resetFallDistance();
         }
     }
@@ -240,7 +251,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return;
         final double factor = getPassableBlockFrictionFactor();
         this.motionX *= factor;
-        this.motionY *= factor;
+        if (!this.inBubbleColumn) {
+            this.motionY *= factor;
+        }
         this.motionZ *= factor;
 
         if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
@@ -300,6 +313,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleFloatingMovement() {
+        if (this.inBubbleColumn) return;
         if (this.hasWaterAt(0)) {
             this.motionY += this.getGravity() * getFloatingForceFactor();
         }

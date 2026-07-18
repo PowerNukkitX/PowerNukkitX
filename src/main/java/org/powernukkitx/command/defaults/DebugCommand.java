@@ -1,5 +1,13 @@
 package org.powernukkitx.command.defaults;
 
+import it.unimi.dsi.fastutil.Pair;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeConsolidatedFeatureData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionChunkGenData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.BlockAir;
@@ -8,10 +16,6 @@ import org.powernukkitx.command.data.CommandEnum;
 import org.powernukkitx.command.data.CommandParameter;
 import org.powernukkitx.command.tree.ParamList;
 import org.powernukkitx.command.utils.CommandLogger;
-import org.powernukkitx.ddui.CustomForm;
-import org.powernukkitx.ddui.Observable;
-import org.powernukkitx.ddui.element.options.SliderElementOptions;
-import org.powernukkitx.ddui.element.options.TextFieldOptions;
 import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.inventory.fake.FakeInventory;
 import org.powernukkitx.inventory.fake.FakeInventoryType;
@@ -21,13 +25,13 @@ import org.powernukkitx.item.ItemFilledMap;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
-import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.biome.OverworldBiomePicker;
 import org.powernukkitx.level.generator.biome.result.OverworldBiomeResult;
 import org.powernukkitx.level.structure.AbstractStructure;
 import org.powernukkitx.level.structure.JeStructure;
 import org.powernukkitx.level.structure.StructureAPI;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.LongTag;
 import org.powernukkitx.plugin.InternalPlugin;
@@ -39,20 +43,11 @@ import org.powernukkitx.scheduler.TaskHandler;
 import org.powernukkitx.utils.GameLoop;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.TextFormat;
-import it.unimi.dsi.fastutil.Pair;
-import org.cloudburstmc.nbt.NBTInputStream;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeConsolidatedFeatureData;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionChunkGenData;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
-import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import static org.powernukkitx.math.NukkitMath.formatNanos;
 
@@ -132,7 +127,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "chunk" -> handleChunk(sender, result.getValue());
             case "item" -> handleItem(sender, result.getValue());
             case "reload" -> handleReload(sender, result.getValue(), log);
-            case "ddui" -> exampleDDUI(sender);
+//            case "ddui" -> exampleDDUI(sender);
             case "toggle" -> handleToggle(sender, result.getValue(), log);
             case "tps" -> handleTps(sender, result.getValue(), log);
             case "genrate" -> handleGenRate(sender);
@@ -439,95 +434,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 pm.reloadPlugin(plugin);
             }
         }
-        return 1;
-    }
-
-    private int exampleDDUI(CommandSender sender) {
-        if (!sender.isPlayer()) return 0;
-
-        var server = sender.getServer();
-
-        Observable<String> name = new Observable<>("");
-        Observable<String> bio = new Observable<>("");
-        Observable<Long> age = new Observable<>(18L);
-        Observable<String> ageGroup = new Observable<>("Adult");
-        Observable<Long> difficulty = new Observable<>(3L);
-
-        CustomForm form = new CustomForm("My Form")
-                .label("Personal informations")
-                .textField("Name", name, TextFieldOptions.builder()
-                        .description("Max 10 characters")
-                        .build())
-                .textField("Biography", bio, TextFieldOptions.builder()
-                        .description("This is your biography. You can write anything you want here.")
-                        .build())
-                .slider("Age", 1L, 100L, age)
-                .textField("Age Group", ageGroup, TextFieldOptions.builder()
-                        .description("Automatically set based on age")
-                        .disabled(true)
-                        .build())
-                .slider("Difficulty",
-                        1L, 5L,
-                        difficulty,
-                        SliderElementOptions.builder()
-                                .description("1 = Peaceful - 5 = Hardcore")
-                                .build()
-                )
-                .button("Reset", player -> CompletableFuture.runAsync(() -> {
-                    name.setValue("");
-                    bio.setValue("");
-                    age.setValue(18L);
-                    difficulty.setValue(3L);
-                }));
-        form.button("Confirm", player -> {
-                    player.sendMessage("Confirmed successfully!");
-                    String _name = name.getValue();
-                    String _bio = bio.getValue();
-                    long _age = age.getValue();
-                    long _difficulty = difficulty.getValue();
-                    player.sendMessage("Name: " + _name);
-                    player.sendMessage("Biography: " + _bio);
-                    player.sendMessage("Age: " + _age + " (" + ageGroup.getValue() + ")");
-                    player.sendMessage("Difficulty: " + _difficulty);
-
-                    form.close(player);
-                })
-                .closeButton();
-
-        name.subscribe(value -> {
-            String normalized = value.length() > 10 ? value.substring(0, 10) : value;
-            server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
-                if (!normalized.equals(value)) {
-                    name.setValue(normalized);
-                }
-            });
-
-            return null;
-        });
-
-        age.subscribe(value -> {
-            CompletableFuture.runAsync(() -> {
-                //Kid: 1 - 12
-                //Teen: 13 - 17
-                //Adult: 18 - 64
-                //Senior: 65+
-
-                if (value <= 12) {
-                    ageGroup.setValue("Kid");
-                } else if (value <= 17) {
-                    ageGroup.setValue("Teen");
-                } else if (value <= 64) {
-                    ageGroup.setValue("Adult");
-                } else {
-                    ageGroup.setValue("Senior");
-                }
-            });
-
-            return null;
-        });
-
-
-        form.show(sender.asPlayer());
         return 1;
     }
 

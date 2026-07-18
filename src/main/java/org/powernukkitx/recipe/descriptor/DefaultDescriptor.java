@@ -1,7 +1,8 @@
 package org.powernukkitx.recipe.descriptor;
 
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.NameDescriptor;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
 import org.powernukkitx.item.Item;
-import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 
 public class DefaultDescriptor implements ItemDescriptor {
@@ -37,10 +38,9 @@ public class DefaultDescriptor implements ItemDescriptor {
     }
 
     @Override
-    public ItemDescriptorWithCount toNetwork() {
-        final org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DefaultDescriptor descriptor =
-                new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DefaultDescriptor(this.item.getItemDefinition(), this.item.getDamage());
-        return new ItemDescriptorWithCount(descriptor, this.getCount());
+    public RecipeIngredient toNetwork() {
+        final NameDescriptor descriptor = new NameDescriptor(this.item.getItemDefinition(), this.item.getDamage());
+        return new RecipeIngredient(descriptor, this.getCount());
     }
 
     @Override

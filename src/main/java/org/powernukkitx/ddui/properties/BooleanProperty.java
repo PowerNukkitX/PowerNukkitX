@@ -1,6 +1,6 @@
 package org.powernukkitx.ddui.properties;
 
-import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DynamicValueType;
 
 /**
  * A property that holds a {@code boolean} value.
@@ -11,8 +11,8 @@ import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
 public class BooleanProperty extends DataDrivenProperty<Boolean, Boolean> {
 
     @Override
-    public DataStorePropertyValueType getType() {
-        return DataStorePropertyValueType.BOOL;
+    public DynamicValueType getType() {
+        return DynamicValueType.BOOLEAN;
     }
 
     public BooleanProperty(String name, boolean value) {

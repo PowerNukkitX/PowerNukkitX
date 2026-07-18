@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
  * @author MagicDroidX
  */
 @Slf4j
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class PluginManager {
 
     private final Server server;

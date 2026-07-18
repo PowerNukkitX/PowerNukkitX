@@ -15,6 +15,7 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
@@ -27,7 +28,7 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 
 import static org.powernukkitx.block.BlockID.*;
 
-public class PillagerOutpostPopulator extends Populator {
+public class PillagerOutpostPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_pillager_outpost";
 
@@ -79,6 +80,8 @@ public class PillagerOutpostPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
