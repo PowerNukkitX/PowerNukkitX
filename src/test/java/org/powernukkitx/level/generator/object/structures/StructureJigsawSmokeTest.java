@@ -48,13 +48,13 @@ public class StructureJigsawSmokeTest {
         level = ServerMockFixture.level;
         level.getChunk(0, 0, true);
         // Loads the real vanilla structure NBT so full jigsaw assembly can resolve pieces.
-        safe("structure-registry-init", () -> {
+        safe(() -> {
             Registries.STRUCTURE.init();
             return null;
         });
     }
 
-    private static Object safe(String label, Supplier<Object> action) {
+    private static Object safe(Supplier<Object> action) {
         CHECKED.incrementAndGet();
         try {
             return action.get();
@@ -63,8 +63,8 @@ public class StructureJigsawSmokeTest {
         }
     }
 
-    private static void safe(String label, Runnable action) {
-        safe(label, () -> {
+    private static void safe(Runnable action) {
+        safe(() -> {
             action.run();
             return null;
         });
@@ -78,27 +78,27 @@ public class StructureJigsawSmokeTest {
         BoundingBox d = new BoundingBox(new BlockVector3(5, 5, 5), new BlockVector3(1, 1, 1));
         BoundingBox e = new BoundingBox(0, 0, 16, 16);
 
-        safe("bb.intersects", () -> a.intersects(b));
-        safe("bb.intersects-coords", () -> a.intersects(1, 1, 3, 3));
-        safe("bb.expand", () -> a.expand(b));
-        safe("bb.move", () -> a.move(1, 1, 1));
-        safe("bb.moved", () -> a.moved(-1, -1, -1));
-        safe("bb.isInside", () -> a.isInside(new BlockVector3(3, 3, 3)));
-        safe("bb.length", a::getLength);
-        safe("bb.xspan", a::getXSpan);
-        safe("bb.yspan", a::getYSpan);
-        safe("bb.zspan", a::getZSpan);
-        safe("bb.tag", a::createTag);
-        safe("bb.clone", a::clone);
-        safe("bb.toString", a::toString);
-        safe("bb.minmax", () -> a.getMinX() + a.getMinY() + a.getMinZ() + a.getMaxX() + a.getMaxY() + a.getMaxZ());
-        safe("bb.unknown", BoundingBox::getUnknownBox);
-        safe("bb.createProper", () -> BoundingBox.createProper(8, 8, 8, 0, 0, 0));
+        safe(() -> a.intersects(b));
+        safe(() -> a.intersects(1, 1, 3, 3));
+        safe(() -> a.expand(b));
+        safe(() -> a.move(1, 1, 1));
+        safe(() -> a.moved(-1, -1, -1));
+        safe(() -> a.isInside(new BlockVector3(3, 3, 3)));
+        safe(a::getLength);
+        safe(a::getXSpan);
+        safe(a::getYSpan);
+        safe(a::getZSpan);
+        safe(a::createTag);
+        safe(a::clone);
+        safe(a::toString);
+        safe(() -> a.getMinX() + a.getMinY() + a.getMinZ() + a.getMaxX() + a.getMaxY() + a.getMaxZ());
+        safe(BoundingBox::getUnknownBox);
+        safe(() -> BoundingBox.createProper(8, 8, 8, 0, 0, 0));
         for (BlockFace face : BlockFace.values()) {
-            safe("bb.orient." + face, () -> BoundingBox.orientBox(0, 0, 0, 1, 1, 1, 3, 3, 3, face));
+            safe(() -> BoundingBox.orientBox(0, 0, 0, 1, 1, 1, 3, 3, 3, face));
         }
         // touch the other constructed boxes so their fields are read
-        safe("bb.others", () -> b.getXSpan() + c.getYSpan() + d.getZSpan() + e.x0);
+        safe(() -> b.getXSpan() + c.getYSpan() + d.getZSpan() + e.x0);
 
         assertTrue(CHECKED.get() > 0);
     }
@@ -112,20 +112,20 @@ public class StructureJigsawSmokeTest {
 
         Xoroshiro128 random = new Xoroshiro128(1234L);
 
-        safe("pool.name", pool::getName);
-        safe("pool.fallback", withFallback::getFallback);
-        safe("pool.entries", () -> pool.entries.length);
-        safe("entry.name", weighted::structureName);
-        safe("entry.weight", weighted::weight);
-        safe("entry.projection", defaulted::projection);
-        safe("pool.randomEntry", () -> pool.getRandomEntry(random));
-        safe("pool.structureKey", () -> pool.getStructureKey(random));
-        safe("pool.randomStructure", () -> pool.getRandomStructure(random));
+        safe(pool::getName);
+        safe(withFallback::getFallback);
+        safe(() -> pool.entries.length);
+        safe(weighted::structureName);
+        safe(weighted::weight);
+        safe(defaulted::projection);
+        safe(() -> pool.getRandomEntry(random));
+        safe(() -> pool.getStructureKey(random));
+        safe(() -> pool.getRandomStructure(random));
 
         StructurePoolCollection collection = new StructurePoolCollection();
-        safe("collection.put", () -> collection.put(pool.getName(), pool));
-        safe("collection.get", () -> collection.get(pool.getName()));
-        safe("collection.size", collection::size);
+        safe(() -> collection.put(pool.getName(), pool));
+        safe(() -> collection.get(pool.getName()));
+        safe(collection::size);
 
         assertTrue(CHECKED.get() > 0);
     }
@@ -135,14 +135,14 @@ public class StructureJigsawSmokeTest {
         Xoroshiro128 random = new Xoroshiro128(99L);
         List<Integer> small = new ArrayList<>(List.of(1, 2, 3));
         List<Integer> big = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-        safe("shuffle.small", () -> NukkitCollections.shuffle(small, random));
-        safe("shuffle.big", () -> NukkitCollections.shuffle(big, random));
+        safe(() -> NukkitCollections.shuffle(small, random));
+        safe(() -> NukkitCollections.shuffle(big, random));
 
         StructureHelper helper = new StructureHelper(level, new BlockVector3(0, 0, 0));
-        safe("lava.spread-vec", () -> LiquidUpdater.lavaSpread(helper, new BlockVector3(4, 70, 4)));
-        safe("lava.spread-coords", () -> LiquidUpdater.lavaSpread(helper, 4, 70, 4));
+        safe(() -> LiquidUpdater.lavaSpread(helper, new BlockVector3(4, 70, 4)));
+        safe(() -> LiquidUpdater.lavaSpread(helper, 4, 70, 4));
         // spread far outside a loaded chunk hits the early-return guard
-        safe("lava.spread-unloaded", () -> LiquidUpdater.lavaSpread(helper, 9_000_000, 70, 9_000_000));
+        safe(() -> LiquidUpdater.lavaSpread(helper, 9_000_000, 70, 9_000_000));
 
         assertTrue(CHECKED.get() > 0);
     }
@@ -152,20 +152,20 @@ public class StructureJigsawSmokeTest {
         StructureHelper helper = new StructureHelper(level, new BlockVector3(0, 64, 0));
         Xoroshiro128 random = new Xoroshiro128(7L);
 
-        safe("helper.origin", helper::getOrigin);
-        safe("helper.fill", () -> helper.fill(new BlockVector3(0, 0, 0), new BlockVector3(2, 2, 2),
+        safe(helper::getOrigin);
+        safe(() -> helper.fill(new BlockVector3(0, 0, 0), new BlockVector3(2, 2, 2),
                 org.powernukkitx.block.BlockCobblestone.PROPERTIES.getDefaultState()));
-        safe("helper.fill-inout", () -> helper.fill(new BlockVector3(0, 0, 0), new BlockVector3(3, 3, 3),
+        safe(() -> helper.fill(new BlockVector3(0, 0, 0), new BlockVector3(3, 3, 3),
                 org.powernukkitx.block.BlockCobblestone.PROPERTIES.getDefaultState(),
                 org.powernukkitx.block.BlockDirt.PROPERTIES.getDefaultState()));
 
         java.util.Map<org.powernukkitx.block.BlockState, Integer> weights = new java.util.HashMap<>();
         helper.addRandomBlock(weights, 3, org.powernukkitx.block.BlockDirt.PROPERTIES.getDefaultState());
         helper.addRandomBlock(weights, 1, org.powernukkitx.block.BlockCobblestone.PROPERTIES.getDefaultState());
-        safe("helper.randomBlock", () -> helper.getRandomBlock(random, weights));
-        safe("helper.setRandomBlock", () -> helper.setBlockWithRandomBlock(new BlockVector3(1, 1, 1), random, weights));
-        safe("helper.fillRandom", () -> helper.fillWithRandomBlock(new BlockVector3(0, 0, 0), new BlockVector3(1, 1, 1), random, weights));
-        safe("helper.getBlockAt", () -> helper.getBlockAt(0, 0, 0));
+        safe(() -> helper.getRandomBlock(random, weights));
+        safe(() -> helper.setBlockWithRandomBlock(new BlockVector3(1, 1, 1), random, weights));
+        safe(() -> helper.fillWithRandomBlock(new BlockVector3(0, 0, 0), new BlockVector3(1, 1, 1), random, weights));
+        safe(() -> helper.getBlockAt(0, 0, 0));
 
         assertTrue(CHECKED.get() > 0);
     }
@@ -173,25 +173,24 @@ public class StructureJigsawSmokeTest {
     @Test
     void jigsawPlaceRunsForEveryStructure() {
         List<JigsawStructure> structures = new ArrayList<>();
-        safe("new.plains", () -> structures.add(new PlainsVillageStructure()));
-        safe("new.desert", () -> structures.add(new DesertVillageStructure()));
-        safe("new.savanna", () -> structures.add(new SavannaVillageStructure()));
-        safe("new.taiga", () -> structures.add(new TaigaVillageStructure()));
-        safe("new.snowy", () -> structures.add(new SnowyVillageStructure()));
-        safe("new.bastion", () -> structures.add(new BastionStructure()));
-        safe("new.trialchambers", () -> structures.add(new TrialChambersStructure()));
-        safe("new.ancientcity", () -> structures.add(new AncientCityStructure()));
-        safe("new.trailruins", () -> structures.add(new TrailRuinsStructure()));
+        safe(() -> structures.add(new PlainsVillageStructure()));
+        safe(() -> structures.add(new DesertVillageStructure()));
+        safe(() -> structures.add(new SavannaVillageStructure()));
+        safe(() -> structures.add(new TaigaVillageStructure()));
+        safe(() -> structures.add(new SnowyVillageStructure()));
+        safe(() -> structures.add(new BastionStructure()));
+        safe(() -> structures.add(new TrialChambersStructure()));
+        safe(() -> structures.add(new AncientCityStructure()));
+        safe(() -> structures.add(new TrailRuinsStructure()));
 
         for (int y = 0; y < structures.size(); y++) {
             JigsawStructure structure = structures.get(y);
             long seed = 0xABCDEFL + y;
-            String name = structure.getClass().getSimpleName();
-            safe(name + ".entryPool", structure::getEntryPool);
-            safe(name + ".poolCollection", structure::getStructurePoolCollection);
+            safe(() -> structure.getEntryPool());
+            safe(() -> structure.getStructurePoolCollection());
             // A fresh origin per structure keeps their footprints from overlapping.
             StructureHelper helper = new StructureHelper(level, new BlockVector3(y * 512, 64, 0));
-            safe(name + ".place", () -> structure.place(helper, new Xoroshiro128(seed)));
+            safe(() -> structure.place(helper, new Xoroshiro128(seed)));
         }
 
         assertTrue(CHECKED.get() > 0);

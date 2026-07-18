@@ -45,7 +45,6 @@ public class BlockFamilySmokeTest {
         Assertions.assertFalse(states.isEmpty(), "no block states registered");
 
         Item boneMeal = Item.get(ItemID.BONE_MEAL);
-        Item probe = Item.get("minecraft:diamond_pickaxe");
 
         int checked = 0;
         int driven = 0;
@@ -74,7 +73,7 @@ public class BlockFamilySmokeTest {
                 Block placed = level.getBlock(center);
                 checked++;
 
-                if (drive(placed, boneMeal, probe, center)) {
+                if (drive(placed, boneMeal)) {
                     driven++;
                 }
             } catch (Throwable t) {
@@ -109,7 +108,7 @@ public class BlockFamilySmokeTest {
     }
 
     /** @return true if the block matched at least one family and a method was invoked. */
-    private boolean drive(Block b, Item boneMeal, Item probe, Vector3 c) {
+    private boolean drive(Block b, Item boneMeal) {
         boolean matched = false;
 
         // Generic redstone surface - many blocks answer power queries.

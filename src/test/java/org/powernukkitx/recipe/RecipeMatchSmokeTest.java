@@ -210,13 +210,14 @@ final class RecipeMatchSmokeTest {
         for (SmeltingRecipe recipe : set) {
             Item in = safeGet(() -> recipe.getInput().toItem());
             if (in == null || in.isNull()) continue;
-            switch (recipe) {
-                case FurnaceRecipe f -> safe(() -> recipes.findFurnaceRecipe(in.clone()));
-                case BlastFurnaceRecipe b -> safe(() -> recipes.findBlastFurnaceRecipe(in.clone()));
-                case SmokerRecipe s -> safe(() -> recipes.findSmokerRecipe(in.clone()));
-                case CampfireRecipe c -> safe(() -> recipes.findCampfireRecipe(in.clone()));
-                default -> {
-                }
+            if (recipe instanceof BlastFurnaceRecipe) {
+                safe(() -> recipes.findBlastFurnaceRecipe(in.clone()));
+            } else if (recipe instanceof SmokerRecipe) {
+                safe(() -> recipes.findSmokerRecipe(in.clone()));
+            } else if (recipe instanceof CampfireRecipe) {
+                safe(() -> recipes.findCampfireRecipe(in.clone()));
+            } else if (recipe instanceof FurnaceRecipe) {
+                safe(() -> recipes.findFurnaceRecipe(in.clone()));
             }
             if (++done >= 3) return;
         }
