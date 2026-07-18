@@ -30,6 +30,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginType;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
@@ -39,6 +40,10 @@ import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
 import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
 import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangeEntityScore;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangeFakePlayerScore;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangePlayerScore;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.RemoveScore;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
@@ -147,6 +152,7 @@ import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.permission.PermissibleBase;
 import org.powernukkitx.permission.Permission;
@@ -1103,7 +1109,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * state that is otherwise only touched by the tick. {@code NetworkPacketHandler} routes every
      * gameplay packet of a spawned player through here so handling is serialized with the tick
      * instead of racing it; only handlers flagged
-     * {@link org.powernukkitx.network.process.PacketHandler#runsOnNetworkThread()} and the pre-spawn login
+     * {@link PacketHandler#runsOnNetworkThread()} and the pre-spawn login
      * sequence are dispatched immediately on the netty thread.
      */
     protected void handlePacket(BedrockPacket packet) {
@@ -4715,7 +4721,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.formWindows.entrySet()
             .stream()
             .filter(f -> f.getValue().equals(form))
-            .map(Map.Entry::getKey)
+            .map(Entry::getKey)
             .findFirst()
             .ifPresent(id -> {
                 final ServerSettingsResponsePacket packet = new ServerSettingsResponsePacket(); // Exploiting some (probably unintended) protocol features here
@@ -5041,7 +5047,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     private void returnItemsFromInventory(Inventory inventory) {
         String invName = inventory.getClass().getSimpleName();
-        for (Map.Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
+        for (Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
             int slot = entry.getKey();
             Item item = entry.getValue();
             if (item.isNull()) {
@@ -5714,8 +5720,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         final SetScorePacket packet = new SetScorePacket();
         packet.setRemove(true);
         var networkInfo = line.toNetworkInfo();
-        if (networkInfo != null)
-            packet.getScoreInfo().add(networkInfo);
+        if (networkInfo != null) {
+            packet.getScoreInfo().add(switch (networkInfo) {
+                case RemoveScore ignored -> ignored;
+                case ChangePlayerScore changePlayerScore -> {
+                    final RemoveScore score = new RemoveScore();
+                    score.setScoreboardId(changePlayerScore.getScoreboardId());
+                    score.setObjectiveName(changePlayerScore.getObjectiveName());
+                    yield score;
+                }
+                case ChangeEntityScore changeEntityScore -> {
+                    final RemoveScore score = new RemoveScore();
+                    score.setScoreboardId(changeEntityScore.getScoreboardId());
+                    score.setObjectiveName(changeEntityScore.getObjectiveName());
+                    yield score;
+                }
+                case ChangeFakePlayerScore changeFakePlayerScore -> {
+                    final RemoveScore score = new RemoveScore();
+                    score.setScoreboardId(changeFakePlayerScore.getScoreboardId());
+                    score.setObjectiveName(changeFakePlayerScore.getObjectiveName());
+                    yield score;
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + networkInfo);
+            });
+        }
         this.sendPacket(packet);
 
         var scorer = new PlayerScorer(this);
@@ -6102,7 +6130,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             Map<String, CommandDataVersions> filtered = getStringCommandDataVersionsMap(data);
 
             if (!filtered.isEmpty()) {
-                final List<org.cloudburstmc.protocol.bedrock.data.command.CommandData> commandData = new ObjectArrayList<>();
+                final List<CommandData> commandData = new ObjectArrayList<>();
                 for (CommandDataVersions value : filtered.values()) {
                     commandData.addAll(value.toNetwork());
                 }
@@ -6116,7 +6144,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private @NotNull Map<String, CommandDataVersions> getStringCommandDataVersionsMap(Map<String, CommandDataVersions> data) {
         Map<String, CommandDataVersions> filtered = new HashMap<>();
 
-        for (Map.Entry<String, CommandDataVersions> entry : data.entrySet()) {
+        for (Entry<String, CommandDataVersions> entry : data.entrySet()) {
             CommandDataVersions versions = entry.getValue();
             if (versions == null) continue;
 
