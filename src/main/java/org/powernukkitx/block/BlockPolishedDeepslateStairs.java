@@ -1,11 +1,19 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPolishedDeepslateStairs extends BlockStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_DEEPSLATE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
+            .hardness(3.5)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,7 +25,7 @@ public class BlockPolishedDeepslateStairs extends BlockStairs {
     }
 
     public BlockPolishedDeepslateStairs(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -25,28 +33,4 @@ public class BlockPolishedDeepslateStairs extends BlockStairs {
         return "Polished Deepslate Stairs";
     }
 
-    @Override
-    public double getHardness() {
-        return 3.5;
     }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-}

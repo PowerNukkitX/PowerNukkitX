@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.entity.Entity;
@@ -26,24 +28,21 @@ import static org.powernukkitx.block.property.CommonBlockProperties.REDSTONE_SIG
  */
 
 public abstract class BlockPressurePlateBase extends BlockFlowable implements RedstoneComponent {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(true)
+            .build();
     protected float onPitch;
     protected float offPitch;
 
     public BlockPressurePlateBase(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockPressurePlateBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     protected abstract int computeRedstoneStrength();
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
 
     @Override
     public double getMinX() {

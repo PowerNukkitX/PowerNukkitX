@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.item.Item;
@@ -15,8 +17,14 @@ import static org.powernukkitx.block.property.CommonBlockProperties.CORAL_FAN_DI
 
 
 public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .build();
     public BlockCoralFan(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCoralFan(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -111,11 +119,7 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
         return true;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {

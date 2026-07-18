@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.block.BlockFromToEvent;
@@ -25,6 +27,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.powernukkitx.block.property.CommonBlockProperties.LIQUID_DEPTH;
 
 public abstract class BlockLiquid extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(100d)
+            .resistance(500)
+            .canPassThrough(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeReplaced(true)
+            .build();
     private static final byte CAN_FLOW_DOWN = 1;
     private static final byte CAN_FLOW = 0;
     private static final byte BLOCKED = -1;
@@ -33,7 +43,11 @@ public abstract class BlockLiquid extends BlockTransparent {
     private final Long2ByteMap flowCostVisited = new Long2ByteOpenHashMap();
 
     public BlockLiquid(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
+    }
+
+    public BlockLiquid(BlockState state, BlockDefinition definition) {
+        super(state, definition);
     }
 
     @Override
@@ -61,11 +75,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         return false;
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public boolean isSolid() {
         return false;
@@ -76,11 +86,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         return false;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public AxisAlignedBB getBoundingBox() {
         return null;
@@ -428,16 +434,6 @@ public abstract class BlockLiquid extends BlockTransparent {
         return cost;
     }
 
-    @Override
-    public double getHardness() {
-        return 100d;
-    }
-
-    @Override
-    public double getResistance() {
-        return 500;
-    }
-
     private boolean[] getOptimalFlowDirections(Block westBlock, Block eastBlock, Block northBlock, Block southBlock,
                                                Block westBottomBlock, Block eastBottomBlock, Block northBottomBlock, Block southBottomBlock) {
         int[] flowCost = new int[]{
@@ -514,11 +510,7 @@ public abstract class BlockLiquid extends BlockTransparent {
      */
     public abstract BlockLiquid getLiquidWithNewDepth(int depth);
 
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
@@ -550,16 +542,6 @@ public abstract class BlockLiquid extends BlockTransparent {
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     /**

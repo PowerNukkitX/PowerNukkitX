@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonPropertyMap;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
@@ -19,10 +21,18 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CA
  * @author CreeperFace
  */
 public abstract class BlockRedstoneDiode extends BlockFlowable implements RedstoneComponent, Faceable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .canBeActivated(true)
+            .build();
     protected boolean isPowered = false;
 
     public BlockRedstoneDiode(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockRedstoneDiode(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -182,11 +192,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return this.y + 0.125;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     protected boolean isAlternateInput(Block block) {
         return block.isPowerSource();
     }
@@ -209,11 +215,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return !this.isPowered() ? 0 : (getFacing() == side ? this.getRedstoneSignal() : 0);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     public boolean isPowered() {
         return isPowered;
     }

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
@@ -11,6 +13,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockLapisOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(LAPIS_ORE);
+    public static final BlockDefinition DEFINITION = BlockOre.DEFINITION.toBuilder()
+            .toolTier(ItemTool.TIER_STONE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,7 +27,7 @@ public class BlockLapisOre extends BlockOre {
     }
 
     public BlockLapisOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -53,11 +58,7 @@ public class BlockLapisOre extends BlockOre {
         }
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
-    }
-
+    
     @Override
     protected @Nullable String getRawMaterial() {
         return ItemID.LAPIS_LAZULI;
