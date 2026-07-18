@@ -125,11 +125,11 @@ public final class SetupWizardSupport {
                 || normalized.equals("true")
                 || normalized.equals("yes")
                 || normalized.equals("on")
-                || !normalized.isEmpty()
+                || (!normalized.isEmpty()
                 && !normalized.equals("false")
                 && !normalized.equals("0")
                 && !normalized.equals("no")
-                && !normalized.equals("off");
+                && !normalized.equals("off"));
     }
 
     private static String normalize(String input) {
