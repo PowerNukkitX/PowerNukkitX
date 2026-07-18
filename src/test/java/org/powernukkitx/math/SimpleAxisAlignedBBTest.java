@@ -158,20 +158,13 @@ public class SimpleAxisAlignedBBTest {
     @Test
     void immutableInterfaceThrows() {
         AxisAlignedBB immutable = new AxisAlignedBB() {
-            @Override
-            public double getMinX() { return 0; }
-            @Override
-            public double getMinY() { return 0; }
-            @Override
-            public double getMinZ() { return 0; }
-            @Override
-            public double getMaxX() { return 1; }
-            @Override
-            public double getMaxY() { return 1; }
-            @Override
-            public double getMaxZ() { return 1; }
-            @Override
-            public AxisAlignedBB clone() { return this; }
+            @Override public double getMinX() { return 0; }
+            @Override public double getMinY() { return 0; }
+            @Override public double getMinZ() { return 0; }
+            @Override public double getMaxX() { return 1; }
+            @Override public double getMaxY() { return 1; }
+            @Override public double getMaxZ() { return 1; }
+            @Override public AxisAlignedBB clone() { return this; }
         };
         Assertions.assertThrows(UnsupportedOperationException.class, () -> immutable.setMinX(1));
         Assertions.assertThrows(UnsupportedOperationException.class, () -> immutable.setMaxZ(1));
