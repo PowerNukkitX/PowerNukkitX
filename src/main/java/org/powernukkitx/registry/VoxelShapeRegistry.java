@@ -127,9 +127,9 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
         for (int z = 0; z < resZ; z++) {
             for (int y = 0; y < resY; y++) {
                 for (int x = 0; x < resX; x++) {
-                    float midX = (xCoords.get(x) + xCoords.get(x + 1)) / 2.0f; // xCoords already normalized to 0-1
-                    float midY = (yCoords.get(y) + yCoords.get(y + 1)) / 2.0f;
-                    float midZ = (zCoords.get(z) + zCoords.get(z + 1)) / 2.0f;
+                    float midX = (xCoords.get(x) + xCoords.get(x + 1)) / 32.0f; // Scale to 0-1 range for check
+                    float midY = (yCoords.get(y) + yCoords.get(y + 1)) / 32.0f;
+                    float midZ = (zCoords.get(z) + zCoords.get(z + 1)) / 32.0f;
 
                     if (isInside(midX, midY, midZ, boxes)) {
                         bitSet.set(x + (y * resX) + (z * resX * resY));
