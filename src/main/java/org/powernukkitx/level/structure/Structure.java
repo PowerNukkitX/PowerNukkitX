@@ -155,9 +155,9 @@ public class Structure extends AbstractStructure {
         Preconditions.checkArgument(blockIndices.get(1).size() == sizeX * sizeY * sizeZ, "size of layer1 incorrect, it should be" + sizeX * sizeY * sizeZ);
 
         @SuppressWarnings("unchecked")
-        List<IntTag> layer0 = (List<IntTag>) (List) blockIndices.get(0).getAll();
+        List<IntTag> layer0 = ((ListTag<IntTag>) blockIndices.get(0)).getAll();
         @SuppressWarnings("unchecked")
-        List<IntTag> layer1 = (List<IntTag>) (List) blockIndices.get(1).getAll();
+        List<IntTag> layer1 = ((ListTag<IntTag>) blockIndices.get(1)).getAll();
         CompoundTag palette = structureNBT.getCompound("palette").getCompound("default");
         CompoundTag blockEntityNBT = palette.getCompound("block_position_data");
         List<BlockState> blockPalette = palette.getList("block_palette", CompoundTag.class).getAll().stream().map(ItemHelper::getBlockStateHelper).toList();
