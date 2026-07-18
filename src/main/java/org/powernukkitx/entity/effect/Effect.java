@@ -1,6 +1,7 @@
 package org.powernukkitx.entity.effect;
 
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.registry.Registries;
 
 import java.awt.*;
@@ -200,6 +201,37 @@ public abstract class Effect implements Cloneable {
     }
 
     public void apply(Entity entity, double tickCount) {
+
+    }
+
+    /**
+     * Checks whether this effect can be applied to the given entity.
+     * <p>
+     * Subclasses should override this to define entities that are immune to the effect.
+     *
+     * @param entity the entity the effect is about to be applied to
+     * @return {@code true} if the entity can receive this effect, {@code false} if it is immune.
+     */
+    public boolean canBeApplied(Entity entity) {
+        return true;
+    }
+
+    /**
+     * Called when the entity carrying this effect dies.
+     *
+     * @param entity the dying entity
+     */
+    public void onDeath(Entity entity) {
+
+    }
+
+    /**
+     * Called after the entity carrying this effect has been damaged.
+     *
+     * @param entity the damaged entity
+     * @param source the damage event that was applied
+     */
+    public void onHurt(Entity entity, EntityDamageEvent source) {
 
     }
 
