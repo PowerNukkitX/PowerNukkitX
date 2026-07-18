@@ -7,10 +7,11 @@ import org.powernukkitx.math.Vector3;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 3D随机漫游
+ * 3D random roam
  */
 
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class HomeboundSpaceRandomRoamExecutor extends FlatRandomRoamExecutor {
 
     protected int maxYRoamRange;

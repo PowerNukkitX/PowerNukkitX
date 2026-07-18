@@ -1,7 +1,10 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
+import org.powernukkitx.command.selector.args.impl.R;
 import org.powernukkitx.inventory.CreativeOutputInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.SmeltingInventory;
@@ -38,7 +41,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         int sourceStackNetworkId = action.getSource().getStackNetworkId();
         int destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
-        int count = action.getCount();
+        int count = action.getAmount();
         var sourItem = source.getUnclonedItem(sourceSlot);
         if (sourItem.isNull()) {
             log.debug("transfer an air item is not allowed");
@@ -64,19 +67,18 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                 }
                 destination.setItem(destinationSlot, sourItem, false);
                 return context.success(List.of(new ItemStackResponseContainerInfo(
-                        destination.getContainerEnumName(destinationSlot),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        destination.toNetworkSlot(destinationSlot),
-                                        destination.toNetworkSlot(destinationSlot),
-                                        sourItem.getCount(),
-                                        sourItem.getNetId(),
-                                        sourItem.getCustomName(),
-                                        sourItem.getDamage(),
-                                        ""
-                                )
-                        ),
-                        action.getDestination().getFullContainerName()
+                    destination.getContainerEnumName(destinationSlot),
+                    Lists.newArrayList(
+                        new ItemStackResponseSlotInfo(
+                            destination.toNetworkSlot(destinationSlot),
+                            destination.toNetworkSlot(destinationSlot),
+                            sourItem.getCount(),
+                            new ItemStackNetId(sourItem.getNetId()),
+                            new RedactableString(sourItem.getCustomName(), ""),
+                            sourItem.getDamage()
+                        )
+                    ),
+                    action.getDestination().getFullContainerName()
                 )));
             }
         }
@@ -152,7 +154,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         }
 
         // Drop furnace experience when player takes item out of the result slot
-        if(source instanceof SmeltingInventory inventory) {
+        if (source instanceof SmeltingInventory inventory) {
             if (sourceSlot == SmeltingInventory.SLOT_RESULT && (sourItem.isNull() || sourItem.getCount() > 0)) {
                 var holder = inventory.getHolder();
                 holder.dropXp();
@@ -160,41 +162,39 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         }
 
         var destItemStackResponseSlot =
-                new ItemStackResponseContainerInfo(
-                        destination.getContainerEnumName(destinationSlot),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        destination.toNetworkSlot(destinationSlot),
-                                        destination.toNetworkSlot(destinationSlot),
-                                        resultDestItem.getCount(),
-                                        resultDestItem.getNetId(),
-                                        resultDestItem.getCustomName(),
-                                        resultDestItem.getDamage(),
-                                        ""
-                                )
-                        ),
-                        action.getDestination().getFullContainerName()
-                );
+            new ItemStackResponseContainerInfo(
+                destination.getContainerEnumName(destinationSlot),
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        destination.toNetworkSlot(destinationSlot),
+                        destination.toNetworkSlot(destinationSlot),
+                        resultDestItem.getCount(),
+                        new ItemStackNetId(resultDestItem.getNetId()),
+                        new RedactableString(resultDestItem.getCustomName(), ""),
+                        resultDestItem.getDamage()
+                    )
+                ),
+                action.getDestination().getFullContainerName()
+            );
         // CREATED_OUTPUT does not require a source response
         if (source instanceof CreativeOutputInventory) {
             return context.success(List.of(destItemStackResponseSlot));
         } else {
             return context.success(List.of(
-                    new ItemStackResponseContainerInfo(
-                            source.getContainerEnumName(sourceSlot),
-                            Lists.newArrayList(
-                                    new ItemStackResponseSlotInfo(
-                                            source.toNetworkSlot(sourceSlot),
-                                            source.toNetworkSlot(sourceSlot),
-                                            resultSourItem.getCount(),
-                                            resultSourItem.getNetId(),
-                                            resultSourItem.getCustomName(),
-                                            resultSourItem.getDamage(),
-                                            ""
-                                    )
-                            ),
-                            action.getSource().getFullContainerName()
-                    ), destItemStackResponseSlot));
+                new ItemStackResponseContainerInfo(
+                    source.getContainerEnumName(sourceSlot),
+                    Lists.newArrayList(
+                        new ItemStackResponseSlotInfo(
+                            source.toNetworkSlot(sourceSlot),
+                            source.toNetworkSlot(sourceSlot),
+                            resultSourItem.getCount(),
+                            new ItemStackNetId(resultSourItem.getNetId()),
+                            new RedactableString(resultSourItem.getCustomName(), ""),
+                            resultSourItem.getDamage()
+                        )
+                    ),
+                    action.getSource().getFullContainerName()
+                ), destItemStackResponseSlot));
         }
     }
 }

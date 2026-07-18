@@ -1,13 +1,13 @@
 package org.powernukkitx.registry;
 
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeGroupInfoPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemCategory;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.utils.BlockColor;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CraftingCatalogGroup;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -44,14 +44,14 @@ import java.util.Map;
  */
 @Slf4j
 public final class RegistryCache {
-    private static final byte[] MAGIC          = {'P', 'N', 'X', 'C'};
-    private static final byte   SCHEMA_VERSION = 1;
+    private static final byte[] MAGIC = {'P', 'N', 'X', 'C'};
+    private static final byte SCHEMA_VERSION = 1;
 
-    private static final byte SECTION_ITEM_RUNTIMEID     = 1;
+    private static final byte SECTION_ITEM_RUNTIMEID = 1;
     private static final byte SECTION_BLOCK_STATE_COLORS = 2;
-    private static final byte SECTION_CREATIVE           = 3;
-    private static final byte SECTION_RECIPE_PACKET      = 4;
-    private static final byte SECTION_BIOME              = 5;
+    private static final byte SECTION_CREATIVE = 3;
+    private static final byte SECTION_RECIPE_PACKET = 4;
+    private static final byte SECTION_BIOME = 5;
 
     private byte[] itemRtIdBytes;
     private byte[] blockColorBytes;
@@ -59,7 +59,8 @@ public final class RegistryCache {
     private byte[] recipePktBytes;
     private byte[] biomeBytes;
 
-    private RegistryCache() {}
+    private RegistryCache() {
+    }
 
     /**
      * Try to load a valid cache from {@code cachePath}.
@@ -69,7 +70,7 @@ public final class RegistryCache {
         if (!Files.exists(cachePath)) return null;
 
         try (DataInputStream in = new DataInputStream(
-                new BufferedInputStream(Files.newInputStream(cachePath)))) {
+            new BufferedInputStream(Files.newInputStream(cachePath)))) {
 
             byte[] magic = new byte[4];
             in.readFully(magic);
@@ -84,22 +85,22 @@ public final class RegistryCache {
             String cachedMcVersion = in.readUTF();
             if (!cachedMcVersion.equals(NetworkConstants.CODEC.getMinecraftVersion())) {
                 log.info("Registry cache: MC version changed ({} → {}), rebuilding",
-                        cachedMcVersion, NetworkConstants.CODEC.getMinecraftVersion());
+                    cachedMcVersion, NetworkConstants.CODEC.getMinecraftVersion());
                 return null;
             }
 
             RegistryCache cache = new RegistryCache();
             int sectionId;
             while ((sectionId = in.read()) != -1) {
-                int    len  = in.readInt();
+                int len = in.readInt();
                 byte[] data = new byte[len];
                 in.readFully(data);
                 switch ((byte) sectionId) {
-                    case SECTION_ITEM_RUNTIMEID     -> cache.itemRtIdBytes  = data;
+                    case SECTION_ITEM_RUNTIMEID -> cache.itemRtIdBytes = data;
                     case SECTION_BLOCK_STATE_COLORS -> cache.blockColorBytes = data;
-                    case SECTION_CREATIVE           -> cache.creativeBytes   = data;
-                    case SECTION_RECIPE_PACKET      -> cache.recipePktBytes  = data;
-                    case SECTION_BIOME              -> cache.biomeBytes      = data;
+                    case SECTION_CREATIVE -> cache.creativeBytes = data;
+                    case SECTION_RECIPE_PACKET -> cache.recipePktBytes = data;
+                    case SECTION_BIOME -> cache.biomeBytes = data;
                     default -> log.debug("Registry cache: unknown section id {}, skipping", sectionId);
                 }
             }
@@ -120,8 +121,8 @@ public final class RegistryCache {
 
     private boolean isComplete() {
         return itemRtIdBytes != null && blockColorBytes != null
-                && creativeBytes != null && recipePktBytes != null
-                && biomeBytes != null;
+            && creativeBytes != null && recipePktBytes != null
+            && biomeBytes != null;
     }
 
     public void restoreItemRuntimeId(ItemRuntimeIdRegistry reg) {
@@ -135,7 +136,7 @@ public final class RegistryCache {
     public void restoreBlockStateColors() {
         try {
             BlockStateRegistry.restoreColorsFromCache(
-                    new DataInputStream(new ByteArrayInputStream(blockColorBytes)));
+                new DataInputStream(new ByteArrayInputStream(blockColorBytes)));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -149,7 +150,9 @@ public final class RegistryCache {
         }
     }
 
-    /** Returns the raw CraftingDataPacket bytes to pass to {@link RecipeRegistry#init(byte[])}. */
+    /**
+     * Returns the raw CraftingDataPacket bytes to pass to {@link RecipeRegistry#init(byte[])}.
+     */
     public byte[] getRecipePktBytes() {
         return recipePktBytes;
     }
@@ -172,17 +175,17 @@ public final class RegistryCache {
             if (parent != null) Files.createDirectories(parent);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream(1 << 20); // 1 MB initial
-            DataOutputStream      out  = new DataOutputStream(baos);
+            DataOutputStream out = new DataOutputStream(baos);
 
             out.write(MAGIC);
             out.writeByte(SCHEMA_VERSION);
             out.writeUTF(NetworkConstants.CODEC.getMinecraftVersion());
 
-            writeSection(out, SECTION_ITEM_RUNTIMEID,     Registries.ITEM_RUNTIMEID::writeCache);
+            writeSection(out, SECTION_ITEM_RUNTIMEID, Registries.ITEM_RUNTIMEID::writeCache);
             writeSection(out, SECTION_BLOCK_STATE_COLORS, BlockStateRegistry::writeColorsToCache);
-            writeSection(out, SECTION_CREATIVE,           Registries.CREATIVE::writeCache);
-            writeSection(out, SECTION_RECIPE_PACKET,      Registries.RECIPE::writePktCache);
-            writeSection(out, SECTION_BIOME,              Registries.BIOME::writeCache);
+            writeSection(out, SECTION_CREATIVE, Registries.CREATIVE::writeCache);
+            writeSection(out, SECTION_RECIPE_PACKET, Registries.RECIPE::writePktCache);
+            writeSection(out, SECTION_BIOME, Registries.BIOME::writeCache);
 
             out.flush();
 
@@ -191,12 +194,12 @@ public final class RegistryCache {
             // start simultaneously and all try to write the cache at once.
             // All processes compute identical data, so last-writer-wins is safe.
             Path tmp = cachePath.resolveSibling(
-                    cachePath.getFileName() + ".tmp." + ProcessHandle.current().pid());
+                cachePath.getFileName() + ".tmp." + ProcessHandle.current().pid());
             Files.write(tmp, baos.toByteArray());
             try {
                 Files.move(tmp, cachePath,
-                        StandardCopyOption.REPLACE_EXISTING,
-                        StandardCopyOption.ATOMIC_MOVE);
+                    StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE);
             } catch (AtomicMoveNotSupportedException e) {
                 Files.move(tmp, cachePath, StandardCopyOption.REPLACE_EXISTING);
             } finally {
@@ -218,7 +221,7 @@ public final class RegistryCache {
     }
 
     private static void writeSection(DataOutputStream main, byte id, SectionWriter writer)
-            throws IOException {
+        throws IOException {
         ByteArrayOutputStream sectionBuf = new ByteArrayOutputStream(64 * 1024);
         writer.write(new DataOutputStream(sectionBuf));
         byte[] bytes = sectionBuf.toByteArray();
@@ -234,7 +237,7 @@ public final class RegistryCache {
         out.writeInt(map.size());
         for (var e : map.long2ObjectEntrySet()) {
             out.writeInt((int) e.getLongKey());
-            BlockColor c        = e.getValue();
+            BlockColor c = e.getValue();
             BlockColor.Tint tint = c.getTint();
             out.writeByte(c.getRed());
             out.writeByte(c.getGreen());
@@ -248,12 +251,12 @@ public final class RegistryCache {
         int size = in.readInt();
         BlockColor.Tint[] tints = BlockColor.Tint.values();
         for (int i = 0; i < size; i++) {
-            int hash         = in.readInt();
-            int r            = in.readByte() & 0xFF;
-            int g            = in.readByte() & 0xFF;
-            int b            = in.readByte() & 0xFF;
-            int a            = in.readByte() & 0xFF;
-            int tintOrdinal  = in.readByte();
+            int hash = in.readInt();
+            int r = in.readByte() & 0xFF;
+            int g = in.readByte() & 0xFF;
+            int b = in.readByte() & 0xFF;
+            int a = in.readByte() & 0xFF;
+            int tintOrdinal = in.readByte();
             BlockColor.Tint tint = (tintOrdinal == -1) ? null : tints[tintOrdinal];
             Block.VANILLA_BLOCK_COLOR_MAP.put((long) hash, new BlockColor(r, g, b, a, tint));
         }
@@ -262,36 +265,40 @@ public final class RegistryCache {
     // ======== creative item helpers (used by CreativeItemRegistry) ========
 
     static void writeCreativeGroups(DataOutputStream out,
-            Iterable<CraftingCatalogGroup> groups) throws IOException {
-        List<CraftingCatalogGroup> list = new ArrayList<>();
+                                    Iterable<CreativeGroupInfoPayload> groups) throws IOException {
+        List<CreativeGroupInfoPayload> list = new ArrayList<>();
         groups.forEach(list::add);
         out.writeInt(list.size());
-        for (CraftingCatalogGroup g : list) {
+        for (CreativeGroupInfoPayload g : list) {
             out.writeByte(g.getCreativeCategory().ordinal());
             out.writeUTF(g.getName());
             Item icon = Item.fromNetwork(g.getGroupIconItem());
             out.writeUTF(icon == null || icon.isNull() ? "" : icon.getId());
-            out.writeInt(icon == null || icon.isNull() ? 0  : icon.getDamage());
+            out.writeInt(icon == null || icon.isNull() ? 0 : icon.getDamage());
         }
     }
 
-    static List<CraftingCatalogGroup> readCreativeGroups(DataInputStream in) throws IOException {
+    static List<CreativeGroupInfoPayload> readCreativeGroups(DataInputStream in) throws IOException {
         int size = in.readInt();
-        List<CraftingCatalogGroup> result = new ArrayList<>(size);
+        List<CreativeGroupInfoPayload> result = new ArrayList<>(size);
         CreativeItemCategory[] cats = CreativeItemCategory.values();
         for (int i = 0; i < size; i++) {
-            int    catOrd  = in.readByte() & 0xFF;
-            String name    = in.readUTF();
-            String iconId  = in.readUTF();
-            int    iconDmg = in.readInt();
-            Item   icon    = iconId.isEmpty() ? Item.AIR : Item.get(iconId, iconDmg);
-            result.add(new CraftingCatalogGroup(cats[catOrd], name, icon.toNetwork()));
+            int catOrd = in.readByte() & 0xFF;
+            String name = in.readUTF();
+            String iconId = in.readUTF();
+            int iconDmg = in.readInt();
+            Item icon = iconId.isEmpty() ? Item.AIR : Item.get(iconId, iconDmg);
+            final CreativeGroupInfoPayload payload = new CreativeGroupInfoPayload();
+            payload.setCreativeCategory(cats[catOrd]);
+            payload.setName(name);
+            payload.setGroupIconItem(icon.toNetwork());
+            result.add(payload);
         }
         return result;
     }
 
     static void writeCategoryGroupIndexMap(DataOutputStream out,
-            Map<CreativeCategory, Map<String, Integer>> map) throws IOException {
+                                           Map<CreativeCategory, Map<String, Integer>> map) throws IOException {
         out.writeInt(map.size());
         for (var outer : map.entrySet()) {
             out.writeInt(outer.getKey().ordinal());
@@ -305,14 +312,14 @@ public final class RegistryCache {
     }
 
     static Map<CreativeCategory, Map<String, Integer>> readCategoryGroupIndexMap(DataInputStream in)
-            throws IOException {
-        int                                         outerSize = in.readInt();
-        Map<CreativeCategory, Map<String, Integer>> result    = new HashMap<>(outerSize);
-        CreativeCategory[]                          cats      = CreativeCategory.values();
+        throws IOException {
+        int outerSize = in.readInt();
+        Map<CreativeCategory, Map<String, Integer>> result = new HashMap<>(outerSize);
+        CreativeCategory[] cats = CreativeCategory.values();
         for (int i = 0; i < outerSize; i++) {
-            CreativeCategory     cat       = cats[in.readInt()];
-            int                  innerSize = in.readInt();
-            Map<String, Integer> inner     = new HashMap<>(innerSize);
+            CreativeCategory cat = cats[in.readInt()];
+            int innerSize = in.readInt();
+            Map<String, Integer> inner = new HashMap<>(innerSize);
             for (int j = 0; j < innerSize; j++) {
                 inner.put(in.readUTF(), in.readInt());
             }

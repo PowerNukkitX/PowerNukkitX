@@ -1,6 +1,7 @@
 package org.powernukkitx.recipe;
 
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ public abstract class CraftingRecipe extends BaseRecipe {
         super(id);
         this.priority = priority;
         this.netId = netId;
-        this.recipeUnlockingRequirement = recipeUnlockingRequirement == null ? new RecipeUnlockingRequirement(RecipeUnlockingRequirement.UnlockingContext.NONE) : recipeUnlockingRequirement;
+        this.recipeUnlockingRequirement = recipeUnlockingRequirement == null ? new RecipeUnlockingRequirement(RecipeUnlockingContext.NONE) : recipeUnlockingRequirement;
     }
 
 

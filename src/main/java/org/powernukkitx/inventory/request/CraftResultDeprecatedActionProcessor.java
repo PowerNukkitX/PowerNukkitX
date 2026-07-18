@@ -1,6 +1,9 @@
 package org.powernukkitx.inventory.request;
 
 
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftResultsDeprecatedAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.InputInventory;
 import org.powernukkitx.inventory.Inventory;
@@ -8,9 +11,6 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.recipe.RecipeType;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftResultsDeprecatedAction;
-import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
 import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
 
@@ -25,17 +25,17 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
 
     @Override
     public ItemStackRequestActionType getType() {
-        return ItemStackRequestActionType.CRAFT_RESULTS_DEPRECATED;
+        return ItemStackRequestActionType.CRAFT_RESULTS;
     }
 
     @Override
     public ActionResponse handle(CraftResultsDeprecatedAction action, Player player, ItemStackRequestContext context) {
         if (context.has(RECIPE_DATA_KEY) && ((Recipe) context.get(RECIPE_DATA_KEY)).getType() == RecipeType.MULTI) {
-            if (action.getResultItems().length == 0) {
+            if (action.getResultItemsDeprecated().length == 0) {
                 log.warn("Multi recipe result is missing!");
                 return context.error();
             }
-            Item resultItem = Item.fromNetwork(action.getResultItems()[0]);
+            Item resultItem = Item.fromNetwork(action.getResultItemsDeprecated()[0]);
             if (resultItem.isNull() || resultItem.getCount() <= 0 || resultItem.getCount() > resultItem.getMaxStackSize()) {
                 log.warn("Invalid multi recipe result {}!", resultItem);
                 return context.error();

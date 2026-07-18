@@ -4,7 +4,7 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.utils.Utils;
 
 /**
- * 实现这个接口的实体拥有变种属性
+ * Entities that implement this interface have a variant attribute.
  */
 
 
@@ -22,14 +22,14 @@ public interface EntityVariant extends EntityComponent {
     }
 
     /**
-     * 随机一个变种值
+     * Picks a random variant value.
      */
     default int randomVariant() {
         return getAllVariant()[Utils.rand(0, getAllVariant().length - 1)];
     }
 
     /**
-     * 定义全部可能的变种
+     * Defines all possible variants.
      */
     int[] getAllVariant();
 }

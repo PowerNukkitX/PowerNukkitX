@@ -13,7 +13,6 @@ import com.sun.jna.platform.win32.COM.WbemcliUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import oshi.SystemInfo;
-import oshi.driver.windows.wmi.Win32ComputerSystem;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
 import oshi.util.platform.windows.WmiQueryHandler;
@@ -160,7 +159,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         //Check Windows system parameters
         //Wmi virtual machine query can only be used on Windows. On Linux, this part can be omitted.
         if (System.getProperties().getProperty("os.name").toUpperCase(Locale.ENGLISH).contains("WINDOWS")) {
-            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
+            WbemcliUtil.WmiQuery<ComputerSystemEntry> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
             WbemcliUtil.WmiResult result = WmiQueryHandler.createInstance().queryWMI(computerSystemQuery);
             var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
             if (tmp != null && tmp.toString().equals("true")) {
@@ -294,7 +293,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                     (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
                     );
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Operating System & JVM Information
             {
@@ -315,7 +314,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 } catch (Exception ignore) {
 
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Network Information
             try {
@@ -333,7 +332,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                         sender.sendMessage(TextFormat.AQUA + "  " + each.getDisplayName());
                         sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s " + TextFormat.GRAY + String.join(", ", list));
                     }
-                    sender.sendMessage("");
+                    sender.sendMessage(" ");
                 }
             } catch (Exception ignored) {
                 sender.sendMessage(TextFormat.RED + "    Failed to get network info.");
@@ -347,7 +346,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN + Thread.getAllStackTraces().size());
                 sender.sendMessage(TextFormat.GOLD + "CPU Features: " + TextFormat.RESET + (cpu.getProcessorIdentifier().isCpu64bit() ? "64bit, " : "32bit, ") +
                         cpu.getProcessorIdentifier().getModel() + ", micro-arch: " + cpu.getProcessorIdentifier().getMicroarchitecture());
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Memory information
             {
@@ -393,7 +392,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage(TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed()) + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
                     sender.sendMessage(TextFormat.GRAY + "      " + each.getMemoryType() + ", " + each.getManufacturer());
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
         } else if (tpsMode) {
             int count = 1;

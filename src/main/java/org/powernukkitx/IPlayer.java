@@ -10,7 +10,7 @@ import java.util.UUID;
  * This player can be online or offline.</p>
  *
  * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author Fenxie Dama (javadoc) @ Nukkit Project
  * @see org.powernukkitx.Player
  * @see org.powernukkitx.OfflinePlayer
  * @since Nukkit 1.0 | Nukkit API 1.0.0
@@ -58,7 +58,7 @@ public interface IPlayer extends ServerOperator, Metadatable {
     /**
      * Returns if whitelist allows this player.
      *
-     * @return 这个玩家是否已加入白名单。<br>If whitelist allows this player.
+     * @return If whitelist allows this player.
      * @see org.powernukkitx.Server#isWhitelisted
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */

@@ -14,7 +14,7 @@ import org.powernukkitx.inventory.MinecartChestInventory;
 import org.powernukkitx.inventory.ShulkerBoxInventory;
 import lombok.Getter;
 
-//存储最近的玩家的Memory
+//Memory that stores the nearest player
 
 
 @Getter
