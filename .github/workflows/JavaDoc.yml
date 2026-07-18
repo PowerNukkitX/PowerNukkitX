@@ -37,4 +37,4 @@ jobs:
           name: github-pages
           path: build/docs/javadoc
 
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
