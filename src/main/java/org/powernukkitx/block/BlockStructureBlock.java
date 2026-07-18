@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.StructureBlockType;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -17,6 +19,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.STRUCTURE_BL
 
 public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder<BlockEntityStructBlock>, RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_BLOCK, STRUCTURE_BLOCK_TYPE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -29,7 +38,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     }
 
     public BlockStructureBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     public StructureBlockType getStructureBlockType() {
@@ -40,11 +49,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
         setPropertyValue(STRUCTURE_BLOCK_TYPE, type);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
@@ -81,16 +86,6 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     }
 
     @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
-    @Override
     public boolean canHarvestWithHand() {
         return false;
     }
@@ -98,16 +93,6 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
     }
 
     @Override

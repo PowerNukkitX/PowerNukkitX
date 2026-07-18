@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -25,6 +27,12 @@ import static org.powernukkitx.block.property.CommonBlockProperties.POWERED_BIT;
  */
 public class BlockObserver extends BlockSolid implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(OBSERVER, CommonBlockProperties.MINECRAFT_FACING_DIRECTION, POWERED_BIT);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3.5)
+            .resistance(17.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -36,7 +44,7 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
     }
 
     public BlockObserver(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -133,26 +141,6 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
     @Override
     public boolean canHarvestWithHand() {
         return false;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 17.5;
     }
 
     public boolean isPowered() {

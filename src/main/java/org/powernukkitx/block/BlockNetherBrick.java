@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,13 +11,19 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockNetherBrick extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_BRICK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     public BlockNetherBrick() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockNetherBrick(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -26,26 +34,6 @@ public class BlockNetherBrick extends BlockSolid {
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
@@ -9,6 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockBuddingAmethyst extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUDDING_AMETHYST);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(1.5)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
     private static final NukkitRandom RANDOM = new NukkitRandom();
 
     public BlockBuddingAmethyst() {
@@ -16,7 +24,7 @@ public class BlockBuddingAmethyst extends BlockSolid {
     }
 
     public BlockBuddingAmethyst(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -25,28 +33,8 @@ public class BlockBuddingAmethyst extends BlockSolid {
     }
 
     @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     @Override

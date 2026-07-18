@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
@@ -15,6 +17,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<BlockEntityMobSpawner> {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOB_SPAWNER);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(5)
+            .resistance(25)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -27,7 +38,7 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     public BlockMobSpawner(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -47,55 +58,23 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 25;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
+    
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
+    
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     public boolean setType(int networkId) {
         BlockEntity blockEntity = getLevel().getBlockEntity(this);
         if (blockEntity != null && blockEntity instanceof BlockEntityMobSpawner spawner) {

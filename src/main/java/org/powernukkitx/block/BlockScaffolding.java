@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityFallingBlock;
@@ -17,6 +19,15 @@ import static org.powernukkitx.block.property.CommonBlockProperties.STABILITY_CH
 
 public class BlockScaffolding extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCAFFOLDING, STABILITY, STABILITY_CHECK);
+    public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
+            .hardness(0.5)
+            .resistance(0)
+            .burnChance(60)
+            .burnAbility(60)
+            .canPassThrough(false)
+            .canBeClimbed(true)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -28,7 +39,7 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     public BlockScaffolding(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -147,38 +158,8 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 60;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 60;
-    }
-
-    @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeClimbed() {
-        return true;
     }
 
     @Override
@@ -221,11 +202,7 @@ public class BlockScaffolding extends BlockFallable {
         return this;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     @Override
     public boolean isTransparent() {
         return true;

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntityID;
@@ -11,6 +13,12 @@ import org.jetbrains.annotations.NotNull;
 public class BlockTrialSpawner extends Block implements BlockEntityHolder<BlockEntityTrialSpawner> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIAL_SPAWNER, CommonBlockProperties.OMINOUS, CommonBlockProperties.TRIAL_SPAWNER_STATE);
+    public static final BlockDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .hardness(50)
+            .resistance(50)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
      @Override
      public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -29,27 +37,7 @@ public class BlockTrialSpawner extends Block implements BlockEntityHolder<BlockE
     }
 
     public BlockTrialSpawner(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public double getHardness() {
-        return 50;
-    }
-
-    @Override
-    public double getResistance() {
-        return 50;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
+        super(blockstate, DEFINITION);
     }
 
     @Override

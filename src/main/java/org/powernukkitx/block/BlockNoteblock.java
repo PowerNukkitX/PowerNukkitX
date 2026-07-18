@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.shelf.AbstractBlockShelf;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -29,6 +31,12 @@ import javax.annotation.Nullable;
 public class BlockNoteblock extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityMusic> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(NOTEBLOCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.8)
+            .resistance(0.8)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -41,7 +49,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public BlockNoteblock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -49,11 +57,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         return "Note Block";
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
+    
     @Override
     @NotNull
     public Class<? extends BlockEntityMusic> getBlockEntityClass() {
@@ -64,21 +68,6 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     @NotNull
     public String getBlockEntityType() {
         return BlockEntity.MUSIC;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.8;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.8;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     /**

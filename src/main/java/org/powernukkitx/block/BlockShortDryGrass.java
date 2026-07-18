@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.particle.BoneMealParticle;
@@ -8,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockShortDryGrass extends BlockFlowable implements Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SHORT_DRY_GRASS);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeReplaced(true)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -20,14 +26,10 @@ public class BlockShortDryGrass extends BlockFlowable implements Supportable {
     }
 
     public BlockShortDryGrass(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;
@@ -42,11 +44,7 @@ public class BlockShortDryGrass extends BlockFlowable implements Supportable {
         return false;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {

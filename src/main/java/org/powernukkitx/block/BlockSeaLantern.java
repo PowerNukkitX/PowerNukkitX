@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -10,6 +12,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockSeaLantern extends BlockTransparent {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SEA_LANTERN);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.3)
+            .resistance(1.5)
+            .lightEmission(15)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,27 +28,12 @@ public class BlockSeaLantern extends BlockTransparent {
     }
 
     public BlockSeaLantern(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Sea Lantern";
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.3;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 15;
     }
 
     @Override

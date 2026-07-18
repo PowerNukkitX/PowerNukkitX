@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityEnchantTable;
@@ -20,6 +22,14 @@ import javax.annotation.Nullable;
 public class BlockEnchantingTable extends BlockTransparent implements BlockEntityHolder<BlockEntityEnchantTable> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(ENCHANTING_TABLE);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(5)
+            .resistance(6000)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .lightEmission(7)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -32,7 +42,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     public BlockEnchantingTable(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -53,33 +63,8 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6000;
-    }
-
-    @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 7;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override
@@ -87,11 +72,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return getY() + 12 / 16.0;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         CompoundTag nbt = new CompoundTag();

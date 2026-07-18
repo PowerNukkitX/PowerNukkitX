@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -19,6 +21,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityFurnace> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3.5)
+            .resistance(17.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .lightEmission(13)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -31,7 +41,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     }
 
     public BlockLitFurnace(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -49,31 +59,6 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     @NotNull
     public String getBlockEntityType() {
         return BlockEntity.FURNACE;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 17.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 13;
     }
 
     @Override
@@ -125,11 +110,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
         return new ItemBlock(Block.get(BlockID.FURNACE));
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean hasComparatorInputOverride() {
         return true;

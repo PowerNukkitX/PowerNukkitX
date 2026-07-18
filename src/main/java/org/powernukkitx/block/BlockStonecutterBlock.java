@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -19,6 +21,13 @@ import java.util.function.Supplier;
 public class BlockStonecutterBlock extends BlockTransparent implements Faceable, BlockInventoryHolder {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3.5)
+            .resistance(17.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -31,7 +40,7 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     }
 
     public BlockStonecutterBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -61,27 +70,13 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
         return true;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             player.addWindow(getInventory());
         }
         return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 17.5;
     }
 
     @Override
@@ -92,16 +87,6 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
     @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     @Override

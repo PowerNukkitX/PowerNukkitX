@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.copper.chain.AbstractBlockCopperChain;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -32,6 +34,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.TOGGLE_BIT;
 
 public class BlockBell extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityBell> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BELL, ATTACHMENT, DIRECTION, CommonBlockProperties.TOGGLE_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1)
+            .resistance(25)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -44,7 +53,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     public BlockBell(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -162,11 +171,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         return recalculateBoundingBox().expand(0.000001, 0.000001, 0.000001);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null && isNotActivate(player)) return false;
@@ -415,29 +420,10 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         return 1;
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
+    
     @Override
     public boolean canHarvestWithHand() {
         return false;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 25;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
 }

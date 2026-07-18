@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -11,6 +13,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockJigsaw extends BlockSolid implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(JIGSAW, CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.ROTATION);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,7 +29,7 @@ public class BlockJigsaw extends BlockSolid implements Faceable {
     }
 
     public BlockJigsaw(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -36,25 +43,11 @@ public class BlockJigsaw extends BlockSolid implements Faceable {
     }
 
     @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
+    
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));

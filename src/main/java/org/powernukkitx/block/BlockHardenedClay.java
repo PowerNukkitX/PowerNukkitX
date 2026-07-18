@@ -1,10 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHardenedClay extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(HARDENED_CLAY);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.25)
+            .resistance(7)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,27 +24,7 @@ public class BlockHardenedClay extends BlockSolid {
     }
 
     public BlockHardenedClay(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.25;
-    }
-
-    @Override
-    public double getResistance() {
-        return 7;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
+        super(blockstate, DEFINITION);
     }
 
     @Override

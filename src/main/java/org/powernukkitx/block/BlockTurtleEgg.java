@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.block.property.enums.CrackedState;
@@ -44,6 +46,12 @@ import static org.powernukkitx.block.property.enums.TurtleEggCount.FOUR_EGG;
 
 public class BlockTurtleEgg extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(TURTLE_EGG, CRACKED_STATE, TURTLE_EGG_COUNT);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(0.5)
+            .resistance(2.5)
+            .canPassThrough(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -55,7 +63,7 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     public BlockTurtleEgg(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -71,16 +79,6 @@ public class BlockTurtleEgg extends BlockFlowable {
         setPropertyValue(CRACKED_STATE, cracks);
     }
 
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
     public TurtleEggCount getEggCount() {
         return getPropertyValue(TURTLE_EGG_COUNT);
     }
@@ -89,11 +87,7 @@ public class BlockTurtleEgg extends BlockFlowable {
         setPropertyValue(TURTLE_EGG_COUNT, eggCount);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.getBlock() != null && Objects.equals(item.getBlockId(), TURTLE_EGG) && (player == null || !player.isSneaking())) {
@@ -332,11 +326,7 @@ public class BlockTurtleEgg extends BlockFlowable {
         return 1;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     @Override
     public boolean canBeFlowedInto() {
         return false;

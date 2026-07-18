@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.block.BlockGrowEvent;
@@ -19,6 +21,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.GROWING_PLAN
 
 public class BlockCaveVines extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES, GROWING_PLANT_AGE);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -30,7 +36,7 @@ public class BlockCaveVines extends BlockTransparent {
     }
 
     public BlockCaveVines(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -38,11 +44,7 @@ public class BlockCaveVines extends BlockTransparent {
         return "Cave Vines";
     }
 
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
+    
     @Override
     public boolean isTransparent() {
         return true;
@@ -58,11 +60,7 @@ public class BlockCaveVines extends BlockTransparent {
         else return block.up().isSolid() || block.up() instanceof BlockCaveVines;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

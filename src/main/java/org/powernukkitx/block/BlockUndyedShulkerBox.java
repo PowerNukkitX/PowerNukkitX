@@ -5,6 +5,8 @@
  */
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityShulkerBox;
@@ -31,9 +33,17 @@ import java.util.Set;
 
 public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEntityHolder<BlockEntityShulkerBox> {
     public static final BlockProperties PROPERTIES = new BlockProperties(UNDYED_SHULKER_BOX, Set.of(BlockTags.PNX_SHULKERBOX));
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(10)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .build();
 
     public BlockUndyedShulkerBox(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -52,26 +62,6 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     @NotNull
     public String getBlockEntityType() {
         return BlockEntity.SHULKER_BOX;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -185,16 +175,6 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         }
 
         return ContainerInventory.calculateRedstone(be.getInventory());
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     @Override

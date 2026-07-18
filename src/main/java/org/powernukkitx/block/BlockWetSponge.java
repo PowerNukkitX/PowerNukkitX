@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -15,6 +17,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockWetSponge extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(WET_SPONGE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.6)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_HOE)
+            .build();
 
     @Override
     @NotNull
@@ -27,22 +34,7 @@ public class BlockWetSponge extends BlockSolid {
     }
 
     public BlockWetSponge(BlockState state) {
-        super(state);
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        super(state, DEFINITION);
     }
 
     @Override

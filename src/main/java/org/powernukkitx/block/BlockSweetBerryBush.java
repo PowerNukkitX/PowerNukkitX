@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -24,13 +26,19 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockSweetBerryBush extends BlockFlowable implements Supportable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SWEET_BERRY_BUSH, CommonBlockProperties.GROWTH);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .burnChance(30)
+            .burnAbility(60)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     public BlockSweetBerryBush() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockSweetBerryBush(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -41,21 +49,6 @@ public class BlockSweetBerryBush extends BlockFlowable implements Supportable {
     @Override
     public String getName() {
         return "Sweet Berry Bush";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 30;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 60;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override
@@ -202,8 +195,4 @@ public class BlockSweetBerryBush extends BlockFlowable implements Supportable {
         return new ItemSweetBerries();
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.math.BlockFace;
@@ -16,6 +18,12 @@ import static org.powernukkitx.block.property.CommonBlockProperties.INFINIBURN_B
 
 public class BlockBedrock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEDROCK, INFINIBURN_BIT);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -27,7 +35,7 @@ public class BlockBedrock extends BlockSolid {
     }
 
     public BlockBedrock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     public boolean getBurnIndefinitely() {
@@ -39,16 +47,6 @@ public class BlockBedrock extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
-    @Override
     public String getName() {
         return "Bedrock";
     }
@@ -56,16 +54,6 @@ public class BlockBedrock extends BlockSolid {
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
     }
 
     @Override

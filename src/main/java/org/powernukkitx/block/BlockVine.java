@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
@@ -26,6 +28,16 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockVine extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(VINE, CommonBlockProperties.VINE_DIRECTION_BITS);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .resistance(1)
+            .toolType(ItemTool.TYPE_AXE)
+            .canPassThrough(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeClimbed(true)
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -37,7 +49,7 @@ public class BlockVine extends BlockTransparent {
     }
 
     public BlockVine(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -46,32 +58,7 @@ public class BlockVine extends BlockTransparent {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
     public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeClimbed() {
         return true;
     }
 
@@ -349,21 +336,6 @@ public class BlockVine extends BlockTransparent {
             case EAST -> 0x08;
             default -> 0x01;
         };
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     @Override

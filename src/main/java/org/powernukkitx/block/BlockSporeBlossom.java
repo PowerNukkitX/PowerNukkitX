@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.math.BlockFace;
@@ -10,6 +12,10 @@ import javax.annotation.Nullable;
 
 public class BlockSporeBlossom extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPORE_BLOSSOM);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,7 +27,7 @@ public class BlockSporeBlossom extends BlockTransparent {
     }
 
     public BlockSporeBlossom(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -42,13 +48,5 @@ public class BlockSporeBlossom extends BlockTransparent {
         return false;
     }
 
-    @Override
-    public double getHardness() {
-        return 0;
+    
     }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-}

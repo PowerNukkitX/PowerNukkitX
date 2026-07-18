@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -25,6 +27,9 @@ import java.util.Objects;
 public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockEntityHolder<BlockEntityDecoratedPot> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .build();
 
     @Override
     @NotNull
@@ -37,7 +42,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     }
 
     public BlockDecoratedPot(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     public String getName() {
@@ -87,11 +92,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     @Override
     public boolean canBeFlowedInto() {
         return false;

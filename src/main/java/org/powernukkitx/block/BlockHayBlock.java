@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
@@ -13,6 +15,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockHayBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(HAY_BLOCK, CommonBlockProperties.DEPRECATED, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.5)
+            .resistance(0.5)
+            .toolType(ItemTool.TYPE_HOE)
+            .burnChance(60)
+            .burnAbility(20)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -24,32 +33,7 @@ public class BlockHayBlock extends BlockSolid {
     }
 
     public BlockHayBlock(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 60;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        super(blockstate, DEFINITION);
     }
 
     @Override

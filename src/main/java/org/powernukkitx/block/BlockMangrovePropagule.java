@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.level.StructureGrowEvent;
 import org.powernukkitx.item.Item;
@@ -22,6 +24,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.PROPAGULE_ST
 public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Pollinable, Supportable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_PROPAGULE, HANGING, PROPAGULE_STAGE);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
     private static final int FULLY_GROWN_HANGING_STAGE = 4;
     private static final int SAPLING_TREE_STAGE = 1;
 
@@ -36,7 +42,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     public BlockMangrovePropagule(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -69,11 +75,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         setPropertyValue(PROPAGULE_STAGE, Math.max(0, Math.min(FULLY_GROWN_HANGING_STAGE, stage)));
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!item.isFertilizer() || !canStay()) {
@@ -188,8 +190,4 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         return 1;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

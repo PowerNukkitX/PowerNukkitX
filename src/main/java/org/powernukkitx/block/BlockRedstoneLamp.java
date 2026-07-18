@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
 import org.powernukkitx.item.Item;
@@ -19,6 +21,11 @@ import javax.annotation.Nullable;
 public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_LAMP);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.3D)
+            .resistance(1.5D)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -30,27 +37,12 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
     }
 
     public BlockRedstoneLamp(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Redstone Lamp";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.3D;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5D;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override

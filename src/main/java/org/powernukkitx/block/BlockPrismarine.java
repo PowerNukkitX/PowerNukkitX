@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.enums.PrismarineBlockType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -9,6 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockPrismarine extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(30)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull
@@ -21,22 +29,7 @@ public class BlockPrismarine extends BlockSolid {
     }
 
     public BlockPrismarine(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 30;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -64,11 +57,7 @@ public class BlockPrismarine extends BlockSolid {
         };
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean canHarvestWithHand() {
         return false;

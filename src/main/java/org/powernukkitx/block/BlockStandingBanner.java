@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityBanner;
@@ -25,6 +27,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.GROUND_SIGN_
 @Slf4j
 public class BlockStandingBanner extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBanner> {
     public static final BlockProperties PROPERTIES = new BlockProperties(STANDING_BANNER, GROUND_SIGN_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1)
+            .resistance(5)
+            .toolType(ItemTool.TYPE_AXE)
+            .canPassThrough(true)
+            .breaksWhenMoved(true)
+            .build();
 
     @Override
     @NotNull
@@ -37,7 +46,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     public BlockStandingBanner(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -53,21 +62,6 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     }
 
     @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
     public String getName() {
         return "Banner";
     }
@@ -77,11 +71,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         return null;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
+    
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -190,11 +180,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         setDirection(face.getCompassRoseDirection());
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
+    
     public DyeColor getDyeColor() {
         if (this.level != null) {
             BlockEntityBanner blockEntity = getBlockEntity();

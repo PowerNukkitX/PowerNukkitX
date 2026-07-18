@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -18,6 +20,14 @@ import org.jetbrains.annotations.NotNull;
 public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND, CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.5)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .lightEmission(1)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -30,7 +40,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     public BlockBrewingStand(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -39,32 +49,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
     public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getLightLevel() {
         return 1;
     }
 
@@ -123,11 +108,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return true;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean isSolid() {
         return false;
