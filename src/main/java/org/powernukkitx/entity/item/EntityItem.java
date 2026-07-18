@@ -237,7 +237,9 @@ public class EntityItem extends Entity {
             }*/
 
             String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
-            if (Objects.equals(bid, BlockID.FLOWING_WATER) || Objects.equals(bid, BlockID.WATER)
+            if (this.inBubbleColumn) {
+                hasUpdate = true;
+            } else if (Objects.equals(bid, BlockID.FLOWING_WATER) || Objects.equals(bid, BlockID.WATER)
                     || Objects.equals(bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_WATER)
                     || Objects.equals(bid, BlockID.WATER)
             ) {
@@ -270,10 +272,12 @@ public class EntityItem extends Entity {
             }
 
             this.motionX *= friction;
-            this.motionY *= 1 - this.getDrag();
+            if (!this.inBubbleColumn) {
+                this.motionY *= 1 - this.getDrag();
+            }
             this.motionZ *= friction;
 
-            if (this.onGround) {
+            if (this.onGround && !this.inBubbleColumn) {
                 this.motionY *= -0.5;
             }
 
@@ -297,7 +301,8 @@ public class EntityItem extends Entity {
             }
         }
 
-        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+        return hasUpdate || !this.onGround || this.isInsideOfWaterPhysics()
+                || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
     @Override

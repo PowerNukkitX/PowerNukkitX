@@ -55,14 +55,20 @@ public class CraftLoomActionProcessor implements ItemStackRequestActionProcessor
         if (dye instanceof ItemDye itemDye) {
             dyeColor = itemDye.getDyeColor();
         }
+        int times = Math.max(1, action.getNumCrafts());
+        if (times > banner.getCount() || times > dye.getCount()) {
+            return context.error();
+        }
         ItemBanner result = (ItemBanner) banner.clone();
-        result.setCount(action.getNumCrafts());
+        result.setCount(times);
         if (patternType != null) {
             result.addPattern(new BannerPattern(patternType, dyeColor));
         } else {
             result.setBaseColor(dyeColor);
         }
         player.getCreativeOutputInventory().setItem(result);
+        loomInventory.decreaseCount(0, times);
+        loomInventory.decreaseCount(1, times);
         return null;
     }
 }

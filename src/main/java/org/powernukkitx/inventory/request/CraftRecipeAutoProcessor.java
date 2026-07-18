@@ -7,6 +7,8 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemTagDescri
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.NameDescriptor;
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.AutoCraftRecipeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.Player;
@@ -18,8 +20,10 @@ import org.powernukkitx.recipe.descriptor.InvalidDescriptor;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.ItemTags;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
-import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.findAllConsumeActions;
 
 @Slf4j
 public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor<AutoCraftRecipeAction> {
@@ -106,5 +110,16 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             return Item.fromNetwork(itemData).equals(item, true, false);
         }
         return false;
+    }
+
+    private static List<ConsumeAction> findAllConsumeActions(ItemStackRequestAction[] actions, int startIndex) {
+        var found = new ArrayList<ConsumeAction>();
+        for (int i = startIndex; i < actions.length; i++) {
+            var action = actions[i];
+            if (action instanceof ConsumeAction consumeAction) {
+                found.add(consumeAction);
+            }
+        }
+        return found;
     }
 }
