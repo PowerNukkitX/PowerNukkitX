@@ -1,0 +1,60 @@
+package org.powernukkitx.command.defaults;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.Server;
+import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.data.CommandParameter;
+import org.powernukkitx.command.tree.ParamList;
+import org.powernukkitx.command.tree.node.PlayersNode;
+import org.powernukkitx.command.utils.CommandLogger;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+import org.cloudburstmc.protocol.bedrock.packet.StopSoundPacket;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+
+public class StopSoundCommand extends VanillaCommand {
+
+    public StopSoundCommand(String name) {
+        super(name, "commands.stopsound.description");
+        this.setPermission("nukkit.command.stopsound");
+        this.getCommandParameters().clear();
+        this.addCommandParameters("default", new CommandParameter[]{
+                CommandParameter.newType("player", false, CommandParamType.SELECTION, new PlayersNode()),
+                CommandParameter.newType("sound", true, CommandParamType.ID)
+        });
+        this.enableParamTree();
+    }
+
+    @Override
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        List<Player> targets = list.getResult(0);
+        targets = targets.stream().filter(Objects::nonNull).toList();
+        if (targets.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
+        String sound = "";
+
+        if (list.hasResult(1)) {
+            sound = list.getResult(1);
+        }
+        final StopSoundPacket packet = new StopSoundPacket();
+        packet.setSoundName(sound);
+        if (sound.isEmpty()) {
+            packet.setStopAllSounds(true);
+        }
+        Server.broadcastPacket(targets, packet);
+        String players_str = targets.stream().map(Player::getName).collect(Collectors.joining(" "));
+        if (packet.isStopAllSounds()) {
+            log.addSuccess("commands.stopsound.success.all", players_str).output();
+        } else {
+            log.addSuccess("commands.stopsound.success", sound, players_str).output();
+        }
+        return 1;
+    }
+}

@@ -1,0 +1,178 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.enums.BambooLeafSize;
+import org.powernukkitx.block.property.enums.WoodType;
+import org.powernukkitx.event.block.BlockGrowEvent;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemBlock;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.particle.BoneMealParticle;
+import org.powernukkitx.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+
+public class BlockBambooSapling extends BlockSapling {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_SAPLING, CommonBlockProperties.AGE_BIT);
+
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockBambooSapling() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockBambooSapling(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    public WoodType getWoodType() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return "Bamboo Sapling";
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (isSupportInvalid()) {
+                level.useBreakOn(this, null, null, true);
+            } else {
+                Block up = up();
+                if (up.getId().equals(BAMBOO)) {
+                    BlockBamboo upperBamboo = (BlockBamboo) up;
+                    BlockBamboo newState = new BlockBamboo();
+                    newState.setThick(upperBamboo.isThick());
+                    level.setBlock(this, newState, true, true);
+                }
+            }
+            return type;
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+            Block up = up();
+            if (!isAge() && up.isAir() && level.getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL && ThreadLocalRandom.current().nextInt(3) == 0) {
+                BlockBamboo newState = new BlockBamboo();
+                newState.setBambooLeafSize(BambooLeafSize.SMALL_LEAVES);
+                BlockGrowEvent blockGrowEvent = new BlockGrowEvent(up, newState);
+                level.getServer().getPluginManager().callEvent(blockGrowEvent);
+                if (!blockGrowEvent.isCancelled()) {
+                    Block finalState = blockGrowEvent.getNewState();
+                    finalState.setLevel(this.level)
+                            .setX(this.x)
+                            .setY(up.y)
+                            .setZ(this.z);
+                    finalState.place(toItem(), up, this, BlockFace.DOWN, 0.5, 0.5, 0.5, null);
+                }
+            }
+            return type;
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        if (isSupportInvalid()) {
+            return false;
+        }
+
+        if (this.getLevelBlock() instanceof BlockLiquid || this.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
+            return false;
+        }
+
+        this.level.setBlock(this, this, true, true);
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (item.isFertilizer()) {
+            boolean success = false;
+            Block block = this.up();
+            if (block.isAir()) {
+                success = grow(block);
+            }
+
+            if (success) {
+                if (player != null && !player.isCreative()) {
+                    item.count--;
+                }
+
+                level.addParticle(new BoneMealParticle(this));
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    public boolean grow(Block up) {
+        BlockBamboo bamboo = new BlockBamboo();
+        bamboo.setLevel(this.level)
+                .setX(this.x)
+                .setY(this.y)
+                .setZ(this.z);
+        return bamboo.grow(up);
+    }
+
+    private boolean isSupportInvalid() {
+        return switch (down().getId()) {
+            case BAMBOO, DIRT, GRASS_BLOCK, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK, MUD, MUDDY_MANGROVE_ROOTS -> false;
+            default -> true;
+        };
+    }
+
+    @Override
+    public double getResistance() {
+        return 5;
+    }
+
+    /**
+     * Alias age == 0 | age == false | !age
+     */
+    public boolean isAge() {
+        return getPropertyValue(CommonBlockProperties.AGE_BIT);
+    }
+
+    public void setAge(boolean isAge) {
+        setPropertyValue(CommonBlockProperties.AGE_BIT, isAge);
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemBlock(new BlockBamboo());
+    }
+
+    @Override
+    public double getMinX() {
+        return x + 0.125;
+    }
+
+    @Override
+    public double getMaxX() {
+        return x + 0.875;
+    }
+
+    @Override
+    public double getMinZ() {
+        return z + 0.125;
+    }
+
+    @Override
+    public double getMaxZ() {
+        return z + 0.875;
+    }
+
+    @Override
+    public double getMaxY() {
+        return y + 0.875;
+    }
+}

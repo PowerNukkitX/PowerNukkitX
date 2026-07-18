@@ -1,0 +1,41 @@
+package org.powernukkitx.inventory.request;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.registry.Registries;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftCreativeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+
+/**
+ * Allay Project 2023/7/26
+ *
+ * @author daoge_cmd | CoolLoong
+ */
+@Slf4j
+public class CraftCreativeActionProcessor implements ItemStackRequestActionProcessor<CraftCreativeAction> {
+    public static final String CRAFT_CREATIVE_KEY = "craft_creative_key";
+
+    @Override
+    public ItemStackRequestActionType getType() {
+        return ItemStackRequestActionType.CRAFT_CREATIVE;
+    }
+
+    @Override
+    public ActionResponse handle(CraftCreativeAction action, Player player, ItemStackRequestContext context) {
+        var item = Registries.CREATIVE.get(action.getCreativeItemNetId());
+        if (!player.isCreative()) {
+            log.warn("This player {} is get createitems in non-creative mode, which may be a hacker!",player.getName());
+            return context.error();
+        }
+        if (item == null) {
+            log.warn("Unknown creative item network id: {}", action.getCreativeItemNetId());
+            return context.error();
+        }
+        item = item.clone().autoAssignStackNetworkId();
+        item.setCount(item.getMaxStackSize());
+        player.getCreativeOutputInventory().setItem(item);
+        //Picking up something from the creation inventory does not require a response
+        context.put(CRAFT_CREATIVE_KEY, true);
+        return null;
+    }
+}

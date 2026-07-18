@@ -1,0 +1,73 @@
+package org.powernukkitx.entity.ai.controller;
+
+import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.EntityPhysical;
+import org.powernukkitx.entity.mob.EntitySlime;
+import org.powernukkitx.entity.passive.EntityRabbit;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+
+/**
+ * 处理陆地行走实体运动
+ * todo: 有待解耦
+ */
+
+
+public class HoppingController extends WalkController {
+
+    protected int moveCooldown = 0;
+
+    protected int currentJumpCoolDown = 0;
+
+    public HoppingController(int moveCooldown) {
+        this.moveCooldown = moveCooldown;
+    }
+
+    @Override
+    public boolean control(EntityIntelligent entity) {
+        currentJumpCoolDown++;
+        if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection() && currentJumpCoolDown > moveCooldown) {
+            //clone防止异步导致的NPE
+            Vector3 direction = entity.getMoveDirectionEnd().clone();
+            var speed = entity.getMovementSpeed();
+            if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
+                entity.setDataFlag(ActorFlags.MOVING, false);
+                return false;
+            }
+            var relativeVector = direction.clone().setComponents(direction.x - entity.x,
+                    direction.y - entity.y, direction.z - entity.z);
+            var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
+            if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
+                entity.setDataFlag(ActorFlags.MOVING, false);
+                return false;
+            }
+            var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
+            var k = speed / xzLength * 0.33;
+            var dx = relativeVector.x * k;
+            var dz = relativeVector.z * k;
+            var dy = 0.0d;
+            if (entity.isOnGround()) {
+                double diffY = entity.getScale();
+                dy += entity.getJumpingMotion(diffY);
+                Sound jumpSound = entity instanceof EntityRabbit ? Sound.MOB_RABBIT_HOP : entity instanceof EntitySlime ? Sound.JUMP_SLIME : null;
+                if(jumpSound != null) entity.getLevel().addSound(entity, jumpSound);
+                entity.setDataProperty(ActorDataTypes.CLIENT_EVENT, 2);
+                currentJumpCoolDown = 0;
+            }
+            entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
+            entity.setDataFlag(ActorFlags.MOVING, true);
+            if (xzLength < speed) {
+                needNewDirection(entity);
+                return false;
+            }
+            return true;
+        } else {
+            entity.setDataFlag(ActorFlags.MOVING, false);
+            return false;
+        }
+    }
+
+
+}

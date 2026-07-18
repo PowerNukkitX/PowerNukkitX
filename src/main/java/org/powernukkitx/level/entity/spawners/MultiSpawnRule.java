@@ -1,0 +1,55 @@
+package org.powernukkitx.level.entity.spawners;
+
+import org.powernukkitx.block.Block;
+import org.powernukkitx.level.entity.condition.Condition;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+
+public abstract class MultiSpawnRule extends SpawnRule {
+
+    private String entityId;
+    private int herdMin, herdMax, weight;
+
+    private final ObjectArraySet<SpawnRule> spawnRules;
+
+    protected MultiSpawnRule(Condition[] conditions, SpawnRule... spawnRules) {
+        super("", conditions);
+        this.spawnRules = new ObjectArraySet<>(spawnRules);
+    }
+
+    @Override
+    public boolean evaluate(Block block) {
+        for(Condition condition : conditions) {
+            if(!condition.evaluate(block)) return false;
+        }
+        for(SpawnRule rule : spawnRules) {
+            if(rule.evaluate(block)) {
+                this.entityId = rule.getEntityId();
+                this.herdMin = rule.getHerdMin();
+                this.herdMax = rule.getHerdMax();
+                this.weight = rule.getWeight();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String getEntityId() {
+        return entityId;
+    }
+
+    @Override
+    public int getHerdMin() {
+        return herdMin;
+    }
+
+    @Override
+    public int getHerdMax() {
+        return herdMax;
+    }
+
+    @Override
+    public int getWeight() {
+        return weight;
+    }
+}
