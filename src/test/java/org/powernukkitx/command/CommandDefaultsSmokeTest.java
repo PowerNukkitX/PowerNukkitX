@@ -16,7 +16,15 @@ public class CommandDefaultsSmokeTest {
 
     @Test
     void defaultCommandsBuildAndExposeMetadata() {
-        Server server = Mockito.mock(Server.class, Mockito.RETURNS_DEEP_STUBS);
+        Server server = Mockito.mock(Server.class);
+        // setDefaultCommands() only touches getSettings().debugSettings().command() - stub
+        // that one chain explicitly instead of RETURNS_DEEP_STUBS, whose lazy stubbing can
+        // leak Mockito state into other tests sharing the JVM fork.
+        org.powernukkitx.config.ServerSettings settings = Mockito.mock(org.powernukkitx.config.ServerSettings.class);
+        org.powernukkitx.config.category.DebugSettings debug = Mockito.mock(org.powernukkitx.config.category.DebugSettings.class);
+        Mockito.when(server.getSettings()).thenReturn(settings);
+        Mockito.when(settings.debugSettings()).thenReturn(debug);
+        Mockito.when(debug.command()).thenReturn(false);
         try (MockedStatic<Server> mocked = Mockito.mockStatic(Server.class)) {
             mocked.when(Server::getInstance).thenReturn(server);
 

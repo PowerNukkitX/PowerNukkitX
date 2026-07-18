@@ -54,6 +54,18 @@ public final class ServerMockFixture {
     }
 
     static {
+        // Another test in the same fork may have left Mockito state dirty (unfinished
+        // stubbing / inline-mock registrations). Flush it so our when(...) calls bind to
+        // the right invocations and don't inherit a foreign mock's behaviour.
+        try {
+            org.mockito.Mockito.framework().clearInlineMocks();
+        } catch (Throwable ignore) {
+        }
+        try {
+            org.mockito.Mockito.validateMockitoUsage();
+        } catch (Throwable ignore) {
+        }
+
         Registries.ENTITY.init();
         Profession.init();
         Registries.BLOCKENTITY.init();
@@ -145,7 +157,8 @@ public final class ServerMockFixture {
         when(server.getScoreboardManager()).thenReturn(null);
         try {
             final PositionTrackingService positionTrackingService =
-                    new PositionTrackingService(new File(PowerNukkitX.DATA_PATH, "services/position_tracking_db"));
+                    new PositionTrackingService(new File(PowerNukkitX.DATA_PATH,
+                            "services/position_tracking_db_" + ProcessHandle.current().pid()));
             when(server.getPositionTrackingService()).thenReturn(positionTrackingService);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
