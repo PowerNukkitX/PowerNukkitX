@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemCategory;
 import org.powernukkitx.registry.CreativeGroupsRegistry;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
 
 /**
  * Stages custom creative groups for runtime registration.

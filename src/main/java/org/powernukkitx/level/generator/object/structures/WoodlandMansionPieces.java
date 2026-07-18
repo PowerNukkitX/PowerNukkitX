@@ -1,5 +1,7 @@
 package org.powernukkitx.level.generator.object.structures;
 
+import com.google.common.collect.Lists;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.enums.LeverDirection;
 import org.powernukkitx.block.property.enums.MinecraftCardinalDirection;
@@ -20,8 +22,6 @@ import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.StructureRotationUtil;
 import org.powernukkitx.utils.random.RandomSourceProvider;
-import com.google.common.collect.Lists;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,11 @@
 package org.powernukkitx.level.structure;
 
+import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockStructureVoid;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -17,12 +23,6 @@ import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.ArrayList;
 import java.util.Arrays;

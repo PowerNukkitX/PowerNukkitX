@@ -1,9 +1,12 @@
 package org.powernukkitx.recipe;
 
+import lombok.ToString;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.MultiRecipePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
+import org.jetbrains.annotations.NotNull;
+import org.powernukkitx.command.selector.args.impl.R;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
-import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -53,10 +56,10 @@ public class MultiRecipe implements Recipe {
         return netId;
     }
 
-    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.MultiRecipe toNetwork() {
-        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.MultiRecipe.of(
-                this.id,
-                this.netId
-        );
+    public MultiRecipePayload toNetwork() {
+        final MultiRecipePayload payload = new MultiRecipePayload();
+        payload.setMultiRecipeUUID(this.id);
+        payload.setNetId(new RecipeNetId(this.netId));
+        return payload;
     }
 }

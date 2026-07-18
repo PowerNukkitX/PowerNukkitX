@@ -1,5 +1,7 @@
 package org.powernukkitx.level.structure;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockStructureVoid;
@@ -7,8 +9,6 @@ import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 public abstract class AbstractStructure {
     protected static final BlockState STATE_AIR = BlockAir.STATE;

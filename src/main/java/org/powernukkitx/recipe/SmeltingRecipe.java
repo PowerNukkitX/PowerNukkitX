@@ -1,12 +1,12 @@
 package org.powernukkitx.recipe;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ShapelessRecipePayload;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.RecipeRegistry;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.CraftingDataEntryType;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
-import java.util.Collections;
 import java.util.UUID;
 
 public abstract class SmeltingRecipe extends BaseRecipe {
@@ -26,18 +26,17 @@ public abstract class SmeltingRecipe extends BaseRecipe {
         return this.results.getFirst();
     }
 
-    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe toNetwork() {
-        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe.of(
-                CraftingDataEntryType.SHAPELESS_RECIPE,
-                this.getRecipeId(),
-                Collections.singletonList(this.getInput().toNetwork()),
-                Collections.singletonList(this.getResult().toNetwork()),
-                UUID.randomUUID(),
-                this.getRecipeIdTag(),
-                0,
-                RecipeRegistry.FURNACE_RECIPE_NET_ID_COUNTER++,
-                RecipeUnlockingRequirement.INVALID
-        );
+    public ShapelessRecipePayload toNetwork() {
+        final ShapelessRecipePayload payload = new ShapelessRecipePayload();
+        payload.setRecipeId(this.getRecipeId());
+        payload.getIngredients().add(this.getInput().toNetwork());
+        payload.getResults().add(this.getResult().toNetwork());
+        payload.setUuid( UUID.randomUUID());
+        payload.setTag(this.getRecipeIdTag());
+        payload.setPriority(0);
+        payload.setUnlockingRequirement(RecipeUnlockingRequirement.INVALID);
+        payload.setNetId(new RecipeNetId( RecipeRegistry.FURNACE_RECIPE_NET_ID_COUNTER++));
+        return payload;
     }
 
     public abstract String getRecipeIdTag();

@@ -1,5 +1,7 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.item.Item;
@@ -21,7 +23,7 @@ import java.util.List;
 public class MineBlockActionProcessor implements ItemStackRequestActionProcessor<MineBlockAction> {
     @Override
     public ItemStackRequestActionType getType() {
-        return ItemStackRequestActionType.MINE_BLOCK;
+        return ItemStackRequestActionType.SCREEN_HUD_MINE_BLOCK;
     }
 
     @Nullable
@@ -29,7 +31,7 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
     public ActionResponse handle(MineBlockAction action, Player player, ItemStackRequestContext context) {
         HumanInventory inventory = player.getInventory();
         int heldItemIndex = inventory.getHeldItemIndex();
-        if (heldItemIndex != action.getHotbarSlot()) {
+        if (heldItemIndex != action.getSlot()) {
             log.warn("The held Item Index on the server side does not match the client side!");
             return context.error();
         }
@@ -44,35 +46,34 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
             int id = ContainerId.INVENTORY;
             InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
             inventorySlotPacket.setContainerID(id);
-            inventorySlotPacket.setSlot(action.getHotbarSlot());
+            inventorySlotPacket.setSlot(action.getSlot());
             inventorySlotPacket.setItem(itemInHand.toNetwork());
             inventorySlotPacket.setFullContainerName(
-                    new FullContainerName(
-                            ContainerEnumName.HOTBAR_CONTAINER,
-                            id
-                    )
+                new FullContainerName(
+                    ContainerEnumName.HOTBAR_CONTAINER,
+                    id
+                )
             );
             player.sendPacket(inventorySlotPacket);
         }
         var itemStackResponseSlot =
-                new ItemStackResponseContainerInfo(
-                        inventory.getContainerEnumName(heldItemIndex),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        inventory.toNetworkSlot(heldItemIndex),
-                                        inventory.toNetworkSlot(heldItemIndex),
-                                        itemInHand.getCount(),
-                                        itemInHand.getNetId(),
-                                        itemInHand.getCustomName(),
-                                        itemInHand.getDamage(),
-                                        ""
-                                )
-                        ),
-                        new FullContainerName(
-                                inventory.getContainerEnumName(heldItemIndex),
-                                null
-                        )
-                );
+            new ItemStackResponseContainerInfo(
+                inventory.getContainerEnumName(heldItemIndex),
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        inventory.toNetworkSlot(heldItemIndex),
+                        inventory.toNetworkSlot(heldItemIndex),
+                        itemInHand.getCount(),
+                        new ItemStackNetId(itemInHand.getNetId()),
+                        new RedactableString(itemInHand.getCustomName(), ""),
+                        itemInHand.getDamage()
+                    )
+                ),
+                new FullContainerName(
+                    inventory.getContainerEnumName(heldItemIndex),
+                    null
+                )
+            );
         return context.success(List.of(itemStackResponseSlot));
     }
 }
