@@ -1,12 +1,13 @@
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-  <a href="https://powernukkitx.org"><img src=".github/logo.png" alt="PowerNukkitX Logo"></a>
+  <a href="https://powernukkitx.org"><img src=".github/logo.png" alt="PowerNukkitX Logo" width="100"></a>
 </p>
 
 <p align="center">
   <strong>A Minecraft Bedrock Edition Server Software, open source and written in java</strong>
 </p>
-<!-- markdownlint-enable MD033 -->
+
+<p align="center">
 
 ![Version](https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000)
 [![Minecraft](https://img.shields.io/badge/minecraft-v26.30%20(Bedrock)-56383E)](https://www.minecraft.net/en-us/article/minecraft-26-30-bedrock-changelog)
@@ -16,6 +17,9 @@
 [![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://docs.powernukkitx.org)
 [![Codecov](https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3)](https://codecov.io/github/PowerNukkitX/PowerNukkitX)
 [![License: LGPL-3](https://img.shields.io/badge/License-LGPL--3-yellow.svg)](https://www.gnu.org/licenses/lgpl-3.0.html)
+
+</p>
+<!-- markdownlint-enable MD033 -->
 
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
 
