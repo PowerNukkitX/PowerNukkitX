@@ -2899,6 +2899,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             this.drainInboundPackets();
 
+            // Draining packets can execute a command (e.g. kicking yourself) that closes this
+            // player synchronously, nulling the inventory. Bail out before touching any further
+            // player state in this tick, otherwise getInventory() below throws an NPE.
+            if (!this.loggedIn) {
+                return true;
+            }
+
             if (this.pendingClose != null) {
                 final String closeReason = this.pendingClose;
                 this.pendingClose = null;
