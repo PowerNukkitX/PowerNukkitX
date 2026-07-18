@@ -28,6 +28,10 @@ public class BlockSandstone extends BlockSolid {
         super(state, DEFINITION);
     }
 
+    public BlockSandstone(BlockState state, BlockDefinition definition) {
+        super(state, definition);
+    }
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

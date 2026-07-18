@@ -26,6 +26,10 @@ public class BlockGoldOre extends BlockOre {
         super(blockstate, DEFINITION);
     }
 
+    public BlockGoldOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Gold Ore";

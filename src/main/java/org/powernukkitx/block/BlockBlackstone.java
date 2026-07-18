@@ -23,6 +23,10 @@ public class BlockBlackstone extends BlockSolid {
         super(blockState, DEFINITION);
     }
 
+    public BlockBlackstone(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     @NotNull
     public BlockProperties getProperties() {

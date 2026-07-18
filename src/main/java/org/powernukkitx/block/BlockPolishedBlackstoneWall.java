@@ -28,6 +28,10 @@ public class BlockPolishedBlackstoneWall extends BlockWallBase {
         super(blockstate, DEFINITION);
     }
 
+    public BlockPolishedBlackstoneWall(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Polished Blackstone Wall";

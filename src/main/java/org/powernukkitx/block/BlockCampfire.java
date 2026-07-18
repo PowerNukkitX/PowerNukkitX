@@ -61,6 +61,10 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         super(blockstate, DEFINITION);
     }
 
+    public BlockCampfire(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     @NotNull
     public BlockProperties getProperties() {

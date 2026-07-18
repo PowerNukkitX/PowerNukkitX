@@ -30,6 +30,10 @@ public class BlockDirt extends BlockSolid implements Natural {
         super(blockState, DEFINITION);
     }
 
+    public BlockDirt(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     @NotNull
     public BlockProperties getProperties() {

@@ -27,6 +27,10 @@ public class BlockWoodenDoor extends BlockDoor {
         super(blockState, DEFINITION);
     }
 
+    public BlockWoodenDoor(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         return "Wood Door Block";

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.block.BlockSpreadEvent;
@@ -19,6 +21,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockMycelium extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
+    public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
+            .hardness(0.6)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -30,27 +38,12 @@ public class BlockMycelium extends BlockDirt {
     }
 
     public BlockMycelium(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Mycelium";
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
     }
 
     @Override
@@ -82,16 +75,6 @@ public class BlockMycelium extends BlockDirt {
             }
         }
         return 0;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-    
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

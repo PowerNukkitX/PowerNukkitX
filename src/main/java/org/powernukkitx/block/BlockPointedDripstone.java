@@ -60,6 +60,10 @@ public class BlockPointedDripstone extends BlockFallable {
         super(blockstate, DEFINITION);
     }
 
+    public BlockPointedDripstone(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Pointed Drip Stone";

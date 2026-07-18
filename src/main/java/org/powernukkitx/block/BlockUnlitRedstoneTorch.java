@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
 import org.powernukkitx.item.Item;
@@ -11,6 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockUnlitRedstoneTorch extends BlockTorch implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(UNLIT_REDSTONE_TORCH, CommonBlockProperties.TORCH_FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockTorch.DEFINITION.toBuilder()
+            .lightEmission(0)
+            .tickRate(2)
+            .build();
 
     @Override
     @NotNull
@@ -23,7 +29,7 @@ public class BlockUnlitRedstoneTorch extends BlockTorch implements RedstoneCompo
     }
 
     public BlockUnlitRedstoneTorch(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -31,11 +37,7 @@ public class BlockUnlitRedstoneTorch extends BlockTorch implements RedstoneCompo
         return "Unlit Redstone Torch";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 0;
-    }
-
+    
     @Override
     public int getWeakPower(BlockFace side) {
         return 0;
@@ -99,8 +101,4 @@ public class BlockUnlitRedstoneTorch extends BlockTorch implements RedstoneCompo
         return this.level.isSidePowered(side, face);
     }
 
-    @Override
-    public int tickRate() {
-        return 2;
     }
-}

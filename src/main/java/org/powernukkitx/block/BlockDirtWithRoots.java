@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -16,6 +18,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockDirtWithRoots extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT_WITH_ROOTS);
+    public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
+            .hardness(0.5)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -27,22 +35,12 @@ public class BlockDirtWithRoots extends BlockDirt {
     }
 
     public BlockDirtWithRoots(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Dirt With Roots";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
     }
 
     @Override
@@ -78,16 +76,6 @@ public class BlockDirtWithRoots extends BlockDirt {
         }
 
         return false;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
     }
 
     @Override

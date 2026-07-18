@@ -1,9 +1,13 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 public class BlockChiseledPolishedBlackstone extends BlockBlackstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_POLISHED_BLACKSTONE);
+    public static final BlockDefinition DEFINITION = BlockBlackstone.DEFINITION.toBuilder()
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -15,7 +19,7 @@ public class BlockChiseledPolishedBlackstone extends BlockBlackstone {
     }
 
     public BlockChiseledPolishedBlackstone(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -23,8 +27,4 @@ public class BlockChiseledPolishedBlackstone extends BlockBlackstone {
         return "Chiseled Polished Blackstone";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

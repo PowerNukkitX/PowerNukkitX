@@ -49,6 +49,10 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         super(blockstate, DEFINITION);
     }
 
+    public BlockBeehive(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Beehive";

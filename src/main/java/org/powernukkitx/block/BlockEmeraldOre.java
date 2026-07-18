@@ -31,6 +31,10 @@ public class BlockEmeraldOre extends BlockOre {
         super(blockstate, DEFINITION);
     }
 
+    public BlockEmeraldOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Emerald Ore";

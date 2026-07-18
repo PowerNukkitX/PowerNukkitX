@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.WoodType;
 import org.powernukkitx.item.Item;
@@ -22,6 +24,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.UPDATE_BIT;
 public class BlockMangroveLeaves extends BlockLeaves {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
+    public static final BlockDefinition DEFINITION = BlockLeaves.DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -34,7 +39,7 @@ public class BlockMangroveLeaves extends BlockLeaves {
     }
 
     public BlockMangroveLeaves(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -73,11 +78,7 @@ public class BlockMangroveLeaves extends BlockLeaves {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!item.isFertilizer() || !down().isAir()) {

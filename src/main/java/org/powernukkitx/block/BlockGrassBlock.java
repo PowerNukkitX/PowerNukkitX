@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.block.BlockFadeEvent;
@@ -21,6 +23,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockGrassBlock extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_BLOCK);
+    public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
+            .resistance(0.6)
+            .isFertilizable(true)
+            .build();
 
     @Override
     @NotNull
@@ -29,14 +35,10 @@ public class BlockGrassBlock extends BlockDirt {
     }
 
     public BlockGrassBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public double getResistance() {
-        return 0.6;
-    }
-
+    
     @Override
     public String getName() {
         return "Grass Block";
@@ -125,21 +127,13 @@ public class BlockGrassBlock extends BlockDirt {
         return 0;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{Block.get(DIRT).toItem()};
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-
+    
     @Override
     public BlockColor getColor() {
         BlockColor color = BlockColor.FOLIAGE_BLOCK_COLOR.clone();

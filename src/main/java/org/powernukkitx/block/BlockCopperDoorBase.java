@@ -25,6 +25,10 @@ public abstract class BlockCopperDoorBase extends BlockDoor implements Oxidizabl
         super(blockState, DEFINITION);
     }
 
+    public BlockCopperDoorBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM && !isTop()) {
