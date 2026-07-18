@@ -1,0 +1,50 @@
+name: Docker image CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+
+    - name: Build image for tag
+      uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+      with:
+        context: ${{ github.workspace }}
+        push: false
+        load: true
+        file: ${{ github.workspace }}/docker/Dockerfile
+        tags: local-powernukkitx
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Test if it runs the server properly
+      run: |
+        docker run -d --name pnx-test local-powernukkitx
+        ok=false
+        for _ in $(seq 1 90); do
+          if docker logs pnx-test 2>&1 | grep -q "Done ("; then
+            ok=true
+            break
+          fi
+          if [ -z "$(docker ps -q -f name=pnx-test)" ]; then
+            echo "Container exited before the server finished starting."
+            break
+          fi
+          sleep 2
+        done
+        docker logs pnx-test
+        docker rm -f pnx-test >/dev/null 2>&1 || true
+        if [ "$ok" != "true" ]; then
+          echo "Server did not start successfully."
+          exit 1
+        fi
