@@ -215,7 +215,6 @@ public class EventConstructSmokeTest {
     @Test
     void entityEvents() {
         Entity e0 = safeEntity();
-        Item[] drops = new Item[]{item};
 
         poke(new org.powernukkitx.event.entity.EntitySpawnEvent(e0), e -> e.getEntity());
         poke(new org.powernukkitx.event.entity.EntityDespawnEvent(e0), e -> e.getEntity());

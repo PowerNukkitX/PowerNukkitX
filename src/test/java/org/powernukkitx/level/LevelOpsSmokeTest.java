@@ -76,21 +76,19 @@ public class LevelOpsSmokeTest {
     void blockGetSetAndQueries() {
         Vector3 pos = new Vector3(1, 70, 1);
         BlockState stone = firstSolidState();
-        int checked = 0;
-        try {
-            level.setBlock(pos, stone.toBlock());
-            level.getBlock(pos);
-            level.getBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-            level.getBiomeId(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-            level.getFullLight(pos);
-            level.getBlockLightAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-            level.getBlockSkyLightAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
-            level.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ());
-            level.getChunk(pos.getChunkX(), pos.getChunkZ(), true);
-            checked++;
-        } catch (Throwable ignore) {
-        }
-        Assertions.assertTrue(checked >= 0);
+
+        // setBlock + readback must round-trip; the remaining queries are exercised
+        // tolerantly for coverage and are not asserted.
+        Assertions.assertTrue(level.setBlock(pos, stone.toBlock()));
+        Assertions.assertEquals(stone.getIdentifier(), level.getBlock(pos).getBlockState().getIdentifier());
+
+        safe(() -> level.getBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
+        safe(() -> level.getBiomeId(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
+        safe(() -> level.getFullLight(pos));
+        safe(() -> level.getBlockLightAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
+        safe(() -> level.getBlockSkyLightAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
+        safe(() -> level.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ()));
+        safe(() -> level.getChunk(pos.getChunkX(), pos.getChunkZ(), true));
     }
 
     @Test

@@ -53,42 +53,49 @@ class ObjectAndFeatureSmokeTest {
         });
     }
 
+    private int col;
+
+    private int nextCol(int step) {
+        col += step;
+        return col;
+    }
+
     @Test
     void objectsAndStructuresGenerate() {
         int y = 70;
-        int col = 0;
+        col = 0;
         // no-arg object generators
-        driveObject(new ObjectAzaleaTree(), col += 4, y, 0);
-        driveObject(new ObjectBigMushroom(), col += 4, y, 0);
-        driveObject(new ObjectBigSpruceTree(), col += 4, y, 0);
-        driveObject(new ObjectCherryTree(), col += 4, y, 0);
-        driveObject(new ObjectDarkOakTree(), col += 4, y, 0);
-        driveObject(new ObjectEndGateway(), col += 4, y, 0);
-        driveObject(new ObjectEndIsland(), col += 4, y, 0);
-        driveObject(new ObjectExitPortal(), col += 4, y, 0);
-        driveObject(new ObjectFallenTree(), col += 4, y, 0);
-        driveObject(new ObjectFancyOakTree(), col += 4, y, 0);
-        driveObject(new ObjectJungleBush(), col += 4, y, 0);
-        driveObject(new ObjectMangroveTree(), col += 4, y, 0);
-        driveObject(new ObjectObsidianPillar(), col += 4, y, 0);
-        driveObject(new ObjectPaleOakTree(), col += 4, y, 0);
-        driveObject(new ObjectSavannaTree(), col += 4, y, 0);
-        driveObject(new ObjectSmallSpruceTree(), col += 4, y, 0);
-        driveObject(new ObjectSwampOakTree(2, 4), col += 4, y, 0);
+        driveObject(new ObjectAzaleaTree(), nextCol(4), y, 0);
+        driveObject(new ObjectBigMushroom(), nextCol(4), y, 0);
+        driveObject(new ObjectBigSpruceTree(), nextCol(4), y, 0);
+        driveObject(new ObjectCherryTree(), nextCol(4), y, 0);
+        driveObject(new ObjectDarkOakTree(), nextCol(4), y, 0);
+        driveObject(new ObjectEndGateway(), nextCol(4), y, 0);
+        driveObject(new ObjectEndIsland(), nextCol(4), y, 0);
+        driveObject(new ObjectExitPortal(), nextCol(4), y, 0);
+        driveObject(new ObjectFallenTree(), nextCol(4), y, 0);
+        driveObject(new ObjectFancyOakTree(), nextCol(4), y, 0);
+        driveObject(new ObjectJungleBush(), nextCol(4), y, 0);
+        driveObject(new ObjectMangroveTree(), nextCol(4), y, 0);
+        driveObject(new ObjectObsidianPillar(), nextCol(4), y, 0);
+        driveObject(new ObjectPaleOakTree(), nextCol(4), y, 0);
+        driveObject(new ObjectSavannaTree(), nextCol(4), y, 0);
+        driveObject(new ObjectSmallSpruceTree(), nextCol(4), y, 0);
+        driveObject(new ObjectSwampOakTree(2, 4), nextCol(4), y, 0);
         // parameterized-only object generators
-        driveObject(new ObjectJungleTree(4, 10), col += 4, y, 0);
-        driveObject(new ObjectJungleBigTree(10, 20), col += 4, y, 0);
-        driveObject(new ObjectSmallPaleOakTree(4, 6), col += 4, y, 0);
+        driveObject(new ObjectJungleTree(4, 10), nextCol(4), y, 0);
+        driveObject(new ObjectJungleBigTree(10, 20), nextCol(4), y, 0);
+        driveObject(new ObjectSmallPaleOakTree(4, 6), nextCol(4), y, 0);
         // alternate constructor flavours
-        driveObject(new ObjectMangroveTree(true), col += 4, y, 0);
-        driveObject(new ObjectFancyOakTree(5, 2, 4), col += 4, y, 0);
+        driveObject(new ObjectMangroveTree(true), nextCol(4), y, 0);
+        driveObject(new ObjectFancyOakTree(5, 2, 4), nextCol(4), y, 0);
 
         // structures
-        driveObject(new ObjectDesertWell(), col += 6, y, 0);
-        driveObject(new ObjectDesertPyramid(), col += 24, y, 0);
-        driveObject(new ObjectJungleTemple(), col += 24, y, 0);
-        driveObject(new ObjectMonsterRoom(), col += 8, y, 0);
-        driveObject(new ObjectSwampHut(), col += 12, y, 0);
+        driveObject(new ObjectDesertWell(), nextCol(6), y, 0);
+        driveObject(new ObjectDesertPyramid(), nextCol(24), y, 0);
+        driveObject(new ObjectJungleTemple(), nextCol(24), y, 0);
+        driveObject(new ObjectMonsterRoom(), nextCol(8), y, 0);
+        driveObject(new ObjectSwampHut(), nextCol(12), y, 0);
 
         assertTrue(checked > 0, "expected at least one object driven");
     }
