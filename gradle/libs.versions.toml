@@ -21,8 +21,8 @@ org-bitbucket-b-c-jose4j                        = "0.9.6"
 org-cloudburstmc-netty-netty-transport-raknet   = "1.0.0.CR3-SNAPSHOT"
 org-jetbrains-annotations                       = "24.1.0"
 org-jline-jline-reader                          = "4.3.1"
-org-jline-jline-terminal                        = "3.25.0"
-org-jline-jline-terminal-jna                    = "3.25.0"
+org-jline-jline-terminal                        = "4.3.1"
+org-jline-jline-terminal-jni                    = "4.3.1"
 org-junit-jupiter-junit-jupiter                 = "5.10.1"
 org-junit-platform-launcher                     = "1.10.1"
 org-lz4-lz4-java                                = "1.10.2"
@@ -69,7 +69,7 @@ netty-kqueue         = { module = "io.netty:netty-transport-classes-kqueue",    
 consoleappender      = { module = "net.minecrell:terminalconsoleappender",          version.ref = "net-minecrell-terminalconsoleappender"           }
 jline-reader         = { module = "org.jline:jline-reader",                         version.ref = "org-jline-jline-reader"                          }
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
-jline-terminaljna    = { module = "org.jline:jline-terminal-jna",                   version.ref = "org-jline-jline-terminal-jna"                    }
+jline-terminaljni    = { module = "org.jline:jline-terminal-jni",                   version.ref = "org-jline-jline-terminal-jni"                    }
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine",         version.ref = "org-junit-jupiter-junit-jupiter"                 }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher",  version.ref = "org-junit-platform-launcher"                     }
@@ -83,7 +83,7 @@ rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",    
 bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection",   version.ref = "bedrock-protocol"                                }
 
 [bundles]
-terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
+terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljni",    "consoleappender"   ]
 test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator"              ]
 netty           = ["netty-epoll",      "netty-kqueue"                                                   ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
