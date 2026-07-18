@@ -1,0 +1,18 @@
+package org.powernukkitx.item;
+
+import org.powernukkitx.utils.DyeColor;
+
+public class ItemRedDye extends ItemDye {
+    public ItemRedDye() {
+        super(RED_DYE);
+    }
+
+    @Override
+    public DyeColor getDyeColor() {
+        return DyeColor.RED;
+    }
+
+    @Override
+    public void setDamage(int meta) {
+    }
+}
