@@ -23,6 +23,9 @@ public class BlockPortal extends BlockFlowable implements Faceable {
             .lightEmission(11)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(false)
             .build();
 
     @Override
@@ -43,11 +46,7 @@ public class BlockPortal extends BlockFlowable implements Faceable {
         return "Nether Portal Block";
     }
 
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
@@ -70,16 +69,6 @@ public class BlockPortal extends BlockFlowable implements Faceable {
             }
         }
         return result;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

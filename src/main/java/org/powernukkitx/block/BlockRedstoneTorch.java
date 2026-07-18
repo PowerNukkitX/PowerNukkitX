@@ -21,6 +21,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
     public static final BlockDefinition DEFINITION = BlockTorch.DEFINITION.toBuilder()
             .lightEmission(7)
             .tickRate(2)
+            .isPowerSource(true)
             .build();
 
     @Override
@@ -130,10 +131,4 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         return this.level.isSidePowered(side, face);
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
-    
 }

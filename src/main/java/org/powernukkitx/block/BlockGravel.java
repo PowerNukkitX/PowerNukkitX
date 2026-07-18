@@ -18,6 +18,7 @@ public class BlockGravel extends BlockFallable implements Natural {
             .hardness(0.6)
             .resistance(3)
             .toolType(ItemTool.TYPE_SHOVEL)
+            .canSilkTouch(true)
             .build();
 
     public BlockGravel() {
@@ -71,8 +72,4 @@ public class BlockGravel extends BlockFallable implements Natural {
         return new Item[]{ toItem() };
     }
     
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

@@ -40,6 +40,8 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(1.5)
             .resistance(1.5)
+            .isSolid(false)
+            .waterloggingLevel(1)
             .build();
     public boolean sticky = false;
 
@@ -83,11 +85,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         return BlockEntity.PISTON_ARM;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
@@ -375,11 +373,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     public class BlocksCalculator {
         private static int MOVE_BLOCK_LIMIT = 12;
 

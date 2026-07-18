@@ -12,6 +12,7 @@ public class BlockPolishedGranite extends BlockSolid {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -27,8 +28,4 @@ public class BlockPolishedGranite extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

@@ -11,6 +11,7 @@ public class BlockHoneycombBlock extends BlockSolid {
             .hardness(0.6)
             .resistance(0.6)
             .toolType(ItemTool.TYPE_HANDS_ONLY)
+            .canHarvestWithHand(true)
             .build();
 
     public BlockHoneycombBlock() {
@@ -21,11 +22,7 @@ public class BlockHoneycombBlock extends BlockSolid {
         super(blockState, DEFINITION);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
+    
     @Override
     public String getName() {
         return "Honeycomb Block";

@@ -16,6 +16,7 @@ public class BlockMuddyMangroveRoots extends BlockSolid implements Natural {
             .hardness(0.7)
             .resistance(0.7)
             .toolTier(ItemTool.TYPE_SHOVEL)
+            .isTransparent(true)
             .build();
 
     public BlockMuddyMangroveRoots() {
@@ -36,11 +37,7 @@ public class BlockMuddyMangroveRoots extends BlockSolid implements Natural {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
+    
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(CommonBlockProperties.PILLAR_AXIS);
     }

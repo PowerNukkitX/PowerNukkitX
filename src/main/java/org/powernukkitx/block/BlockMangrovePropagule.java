@@ -27,6 +27,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeActivated(true)
             .isFertilizable(true)
+            .waterloggingLevel(1)
             .build();
     private static final int FULLY_GROWN_HANGING_STAGE = 4;
     private static final int SAPLING_TREE_STAGE = 1;
@@ -185,9 +186,5 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         return !isHanging() || getStage() >= FULLY_GROWN_HANGING_STAGE ? super.getDrops(item) : Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     }

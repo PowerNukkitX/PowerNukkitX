@@ -44,6 +44,7 @@ public class BlockPointedDripstone extends BlockFallable {
             .canBePushed(false)
             .canBePulled(false)
             .canBeActivated(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -85,11 +86,7 @@ public class BlockPointedDripstone extends BlockFallable {
         return getPropertyValue(DRIPSTONE_THICKNESS);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness() == DripstoneThickness.TIP) {

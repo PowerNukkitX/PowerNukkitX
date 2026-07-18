@@ -28,6 +28,8 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(13)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .hasComparatorInputOverride(true)
             .build();
 
     @Override
@@ -114,12 +116,6 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
         return new ItemBlock(Block.get(BlockID.FURNACE));
     }
 
-    
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
     @Override
     public int getComparatorInputOverride() {
         BlockEntityFurnace blockEntity = getBlockEntity();
@@ -131,11 +127,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
         return super.getComparatorInputOverride();
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public BlockFace getBlockFace() {
         return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));

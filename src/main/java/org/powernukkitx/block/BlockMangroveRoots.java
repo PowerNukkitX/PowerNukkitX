@@ -14,6 +14,7 @@ public class BlockMangroveRoots extends BlockTransparent {
             .hardness(0.7)
             .resistance(0.7)
             .burnChance(5)
+            .waterloggingLevel(1)
             .build();
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -33,11 +34,7 @@ public class BlockMangroveRoots extends BlockTransparent {
         return "Mangrove Roots";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         return level.setBlock(this, this);

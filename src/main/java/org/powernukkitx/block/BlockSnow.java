@@ -16,6 +16,8 @@ public class BlockSnow extends BlockSolid {
             .resistance(1)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canBeActivated(true)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockSnow() {
@@ -47,17 +49,6 @@ public class BlockSnow extends BlockSolid {
         }
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShovel()) {

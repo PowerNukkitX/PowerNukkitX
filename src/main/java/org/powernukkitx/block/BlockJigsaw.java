@@ -17,6 +17,7 @@ public class BlockJigsaw extends BlockSolid implements Faceable {
             .hardness(-1)
             .resistance(18000000)
             .canBePushed(false)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -37,11 +38,7 @@ public class BlockJigsaw extends BlockSolid implements Faceable {
         return "Jigsaw";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;

@@ -12,6 +12,7 @@ public class BlockHardenedClay extends BlockSolid {
             .resistance(7)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -31,8 +32,4 @@ public class BlockHardenedClay extends BlockSolid {
         super(blockstate, definition);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

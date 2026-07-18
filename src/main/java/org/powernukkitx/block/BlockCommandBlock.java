@@ -25,6 +25,8 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
             .resistance(6000000)
             .canBePushed(false)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .hasComparatorInputOverride(true)
             .build();
 
     @Override
@@ -45,11 +47,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         super(blockstate, definition);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
@@ -131,11 +129,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         return super.onUpdate(type);
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         return Math.min(this.getOrCreateBlockEntity().getSuccessCount(), 0xf);

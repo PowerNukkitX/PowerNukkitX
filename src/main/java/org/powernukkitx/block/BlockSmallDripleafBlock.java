@@ -22,6 +22,7 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
             .toolType(ItemTool.TYPE_SHEARS)
             .canBeActivated(true)
             .isFertilizable(true)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -60,12 +61,6 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         this.setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, isUpperBlock);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         BlockSmallDripleafBlock dripleaf = new BlockSmallDripleafBlock();

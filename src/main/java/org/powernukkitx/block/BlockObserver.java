@@ -32,6 +32,8 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
             .resistance(17.5)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .isPowerSource(true)
             .build();
 
     @Override
@@ -73,11 +75,7 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
         return true;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getStrongPower(BlockFace side) {
         return isPowered() && side == getBlockFace() ? 15 : 0;
@@ -138,11 +136,7 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
         level.scheduleUpdate(this, 2);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     public boolean isPowered() {
         return getPropertyValue(POWERED_BIT);
     }

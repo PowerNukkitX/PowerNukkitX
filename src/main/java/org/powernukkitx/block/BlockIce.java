@@ -19,6 +19,8 @@ public class BlockIce extends BlockTransparent {
             .resistance(2.5)
             .toolType(ItemTool.TYPE_PICKAXE)
             .burnChance(-1)
+            .friction(0.98)
+            .canSilkTouch(true)
             .build();
 
     public BlockIce() {
@@ -43,12 +45,6 @@ public class BlockIce extends BlockTransparent {
         return PROPERTIES;
     }
 
-    @Override
-    public double getFrictionFactor() {
-        return 0.98;
-    }
-
-    
     @Override
     public boolean onBreak(Item item) {
         if (level.getDimension() == Level.DIMENSION_NETHER 
@@ -80,12 +76,6 @@ public class BlockIce extends BlockTransparent {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    
     @Override
     public int getLightFilter() {
         return 2;

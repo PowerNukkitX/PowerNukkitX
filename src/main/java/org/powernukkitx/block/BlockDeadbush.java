@@ -20,6 +20,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     public static final BlockProperties PROPERTIES = new BlockProperties(DEADBUSH);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeReplaced(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -41,11 +42,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
         return "Dead Bush";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (isSupportValid(down())) {

@@ -16,6 +16,8 @@ public class BlockGildedBlackstone extends BlockSolid {
             .hardness(1.5)
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -65,15 +67,4 @@ public class BlockGildedBlackstone extends BlockSolid {
         return new Item[] { Item.get(ItemID.GOLD_NUGGET, 0, random.nextInt(2, 6)) };
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
     }

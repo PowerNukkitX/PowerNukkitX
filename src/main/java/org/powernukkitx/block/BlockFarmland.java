@@ -20,6 +20,7 @@ public class BlockFarmland extends BlockTransparent {
             .hardness(0.6)
             .resistance(3)
             .toolType(ItemTool.TYPE_SHOVEL)
+            .isTransparent(true)
             .build();
 
     @Override
@@ -129,11 +130,7 @@ public class BlockFarmland extends BlockTransparent {
         return true;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
+    
     public int getMoistureAmount() {
         return getPropertyValue(CommonBlockProperties.MOISTURIZED_AMOUNT);
     }

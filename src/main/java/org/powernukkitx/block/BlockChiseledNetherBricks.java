@@ -12,6 +12,7 @@ public class BlockChiseledNetherBricks extends Block {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,8 +33,4 @@ public class BlockChiseledNetherBricks extends Block {
         return "Chiseled Nether Bricks";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

@@ -17,6 +17,8 @@ public class BlockPowderSnow extends BlockTransparent {
             .hardness(0.25)
             .resistance(0.1)
             .canPassThrough(true)
+            .isTransparent(true)
+            .isSolid(false)
             .build();
 
     public BlockPowderSnow() {
@@ -32,22 +34,12 @@ public class BlockPowderSnow extends BlockTransparent {
         return "Powder Snow";
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;

@@ -13,6 +13,8 @@ public class BlockStonecutter extends BlockSolid {
             .resistance(17.5)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -33,13 +35,5 @@ public class BlockStonecutter extends BlockSolid {
         return "Stonecutter";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    
     }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-}

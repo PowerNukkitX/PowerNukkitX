@@ -1,5 +1,7 @@
 package org.powernukkitx.block.copper.golem;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -15,6 +17,9 @@ import org.jetbrains.annotations.NotNull;
 //TODO: wait for minecraft wiki to add blockentity data strucutre for copper golem statue
 public class BlockCopperGolemStatue extends AbstractBlockCopperGolemStatue {
     public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_GOLEM_STATUE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = AbstractBlockCopperGolemStatue.DEFINITION.toBuilder()
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -26,7 +31,11 @@ public class BlockCopperGolemStatue extends AbstractBlockCopperGolemStatue {
     }
 
     public BlockCopperGolemStatue(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCopperGolemStatue(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -34,11 +43,7 @@ public class BlockCopperGolemStatue extends AbstractBlockCopperGolemStatue {
         return "Copper Golem Statue";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(this, 0);

@@ -37,6 +37,7 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
             .resistance(15)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
+            .waterloggingLevel(1)
             .build();
 
     private static final double THICKNESS = 0.1875;
@@ -70,11 +71,7 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return "Oak Trapdoor";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMinX() {
         return this.x + getRelativeBoundingBox().getMinX();

@@ -13,6 +13,7 @@ public class BlockGlass extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0.3)
             .resistance(0.3)
+            .canSilkTouch(true)
             .build();
 
     @Override
@@ -42,9 +43,5 @@ public class BlockGlass extends BlockTransparent {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
 }

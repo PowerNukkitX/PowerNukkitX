@@ -23,6 +23,7 @@ public class BlockCartographyTable extends BlockSolid implements BlockInventoryH
             .toolType(ItemTool.TYPE_AXE)
             .burnChance(5)
             .canBeActivated(true)
+            .canHarvestWithHand(true)
             .build();
 
     @Override
@@ -43,12 +44,6 @@ public class BlockCartographyTable extends BlockSolid implements BlockInventoryH
         return "Cartography Table";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-    
-    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;

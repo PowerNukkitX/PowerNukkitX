@@ -16,6 +16,7 @@ public class BlockClay extends BlockSolid implements Natural {
             .hardness(0.6)
             .resistance(3)
             .toolType(ItemTool.TYPE_SHOVEL)
+            .canSilkTouch(true)
             .build();
 
     public BlockClay() {
@@ -45,8 +46,4 @@ public class BlockClay extends BlockSolid implements Natural {
         };
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

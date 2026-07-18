@@ -39,6 +39,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
             .resistance(1.5D)
             .toolType(ItemTool.TYPE_PICKAXE)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
             .build();
 
     private static final List<Location> manualOverrides = new ArrayList<>();
@@ -261,11 +262,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
         return true;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         InventoryHolder blockEntity = getBlockEntity();

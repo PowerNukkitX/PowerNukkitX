@@ -13,6 +13,7 @@ public class BlockResin extends BlockSolid {
             .resistance(0)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -28,8 +29,4 @@ public class BlockResin extends BlockSolid {
         super(state, DEFINITION);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

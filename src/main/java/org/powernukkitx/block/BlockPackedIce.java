@@ -11,6 +11,7 @@ public class BlockPackedIce extends BlockIce {
     public static final BlockDefinition DEFINITION = BlockIce.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_PICKAXE)
             .burnChance(0)
+            .isTransparent(false)
             .build();
 
     @Override
@@ -48,13 +49,6 @@ public class BlockPackedIce extends BlockIce {
         return true;
     }
 
-    
-    @Override
-    public boolean isTransparent() {
-        return false;
-    }
-
-    
     @Override
     public int getLightFilter() {
         return 15;

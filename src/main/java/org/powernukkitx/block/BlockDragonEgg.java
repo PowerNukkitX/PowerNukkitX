@@ -26,6 +26,8 @@ public class BlockDragonEgg extends BlockFallable {
             .lightEmission(1)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
+            .isTransparent(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -45,16 +47,6 @@ public class BlockDragonEgg extends BlockFallable {
     @Override
     public String getName() {
         return "Dragon Egg";
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

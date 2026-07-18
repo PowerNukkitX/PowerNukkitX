@@ -1,5 +1,7 @@
 package org.powernukkitx.block.copper.bars;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
@@ -19,6 +21,15 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  */
 public class BlockCopperBars extends BlockCopperBarBase implements BlockConnectable {
     public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_BARS);
+    public static final BlockDefinition DEFINITION = BlockCopperBarBase.DEFINITION.toBuilder()
+            .hardness(5)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .isSolid(false)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -30,7 +41,11 @@ public class BlockCopperBars extends BlockCopperBarBase implements BlockConnecta
     }
 
     public BlockCopperBars(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCopperBars(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -39,49 +54,15 @@ public class BlockCopperBars extends BlockCopperBarBase implements BlockConnecta
     }
 
     @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     /**
      * @see BlockThin
      */
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

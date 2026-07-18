@@ -24,6 +24,9 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
             .canBeActivated(true)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
             .build();
     protected boolean isPowered = false;
 
@@ -33,16 +36,6 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     public BlockRedstoneDiode(BlockState blockstate, BlockDefinition definition) {
         super(blockstate, definition);
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override
@@ -170,11 +163,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
                 this.level.getStrongPower(pos, side))) : 0;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     protected boolean shouldBePowered() {
         return this.calculateInputStrength() > 0;
     }

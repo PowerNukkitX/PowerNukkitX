@@ -12,6 +12,7 @@ public class BlockCrackedDeepslateBricks extends BlockSolid {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,10 +33,4 @@ public class BlockCrackedDeepslateBricks extends BlockSolid {
         return "Cracked Deepslate Bricks";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
     }

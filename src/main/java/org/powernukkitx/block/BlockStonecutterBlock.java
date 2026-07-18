@@ -27,6 +27,8 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -77,16 +79,6 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
             player.addWindow(getInventory());
         }
         return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

@@ -11,6 +11,7 @@ public class BlockTuffBricks extends BlockSolid {
             .hardness(1.5)
             .resistance(6)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -31,8 +32,4 @@ public class BlockTuffBricks extends BlockSolid {
         return "Tuff Bricks";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

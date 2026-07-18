@@ -30,6 +30,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.REDSTONE_SIG
 public abstract class BlockPressurePlateBase extends BlockFlowable implements RedstoneComponent {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(true)
+            .isPowerSource(true)
+            .waterloggingLevel(1)
             .build();
     protected float onPitch;
     protected float offPitch;
@@ -74,20 +76,12 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return isActivated() ? this.y + 0.03125 : this.y + 0.0625;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     public boolean isActivated() {
         return getRedstonePower() == 0;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     public static boolean isSupportValid(Block block, BlockFace blockFace) {
         return BlockLever.isSupportValid(block, blockFace) || block instanceof BlockFence;
     }

@@ -13,6 +13,7 @@ public class BlockQuartzBlock extends BlockSolid {
             .resistance(4)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -33,8 +34,4 @@ public class BlockQuartzBlock extends BlockSolid {
         super(blockstate, definition);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

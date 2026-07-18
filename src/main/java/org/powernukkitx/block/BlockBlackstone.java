@@ -13,6 +13,7 @@ public class BlockBlackstone extends BlockSolid {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockBlackstone() {
@@ -38,10 +39,4 @@ public class BlockBlackstone extends BlockSolid {
         return "Blackstone";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
     }

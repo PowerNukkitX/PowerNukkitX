@@ -26,6 +26,8 @@ public class BlockCake extends BlockTransparent {
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockCake(BlockState blockState) {
@@ -47,11 +49,7 @@ public class BlockCake extends BlockTransparent {
         return PROPERTIES;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMinX() {
         return this.x + (1 + getBiteCount() * 2) / 16;
@@ -135,11 +133,7 @@ public class BlockCake extends BlockTransparent {
         return (7 - this.getBiteCount()) * 2;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     public int getBiteCount() {
         return getPropertyValue(BITE_COUNTER);
     }

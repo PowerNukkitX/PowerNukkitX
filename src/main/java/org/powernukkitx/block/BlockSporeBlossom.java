@@ -15,6 +15,7 @@ public class BlockSporeBlossom extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0)
             .resistance(0)
+            .isSolid(false)
             .build();
 
     @Override
@@ -43,10 +44,4 @@ public class BlockSporeBlossom extends BlockTransparent {
         return false;
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    
     }

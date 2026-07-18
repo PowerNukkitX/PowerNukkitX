@@ -18,6 +18,7 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
             .canPassThrough(true)
             .canBePushed(false)
             .canBePulled(false)
+            .isSolid(false)
             .build();
 
     @Override
@@ -59,8 +60,4 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
     }
 
     
-    @Override
-    public boolean isSolid() {
-        return false;
     }
-}

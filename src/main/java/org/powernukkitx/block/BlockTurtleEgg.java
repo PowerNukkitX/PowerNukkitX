@@ -51,6 +51,10 @@ public class BlockTurtleEgg extends BlockFlowable {
             .resistance(2.5)
             .canPassThrough(false)
             .canBeActivated(true)
+            .canSilkTouch(true)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -126,11 +130,7 @@ public class BlockTurtleEgg extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public double getMinX() {
         return x + (3.0 / 16);
@@ -314,22 +314,6 @@ public class BlockTurtleEgg extends BlockFlowable {
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

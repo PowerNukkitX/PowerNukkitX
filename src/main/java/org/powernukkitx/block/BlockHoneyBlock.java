@@ -23,6 +23,8 @@ public class BlockHoneyBlock extends BlockSolid {
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
             .hardness(0)
             .resistance(0)
+            .canStickBlocks(true)
+            .hasEntityCollision(true)
             .build();
 
     @Override
@@ -43,11 +45,7 @@ public class BlockHoneyBlock extends BlockSolid {
         return "Honey Block";
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         if (!entity.onGround && entity.motionY <= 0.08 &&
@@ -124,8 +122,4 @@ public class BlockHoneyBlock extends BlockSolid {
         }
     }
 
-    @Override
-    public boolean canSticksBlock() {
-        return true;
     }
-}

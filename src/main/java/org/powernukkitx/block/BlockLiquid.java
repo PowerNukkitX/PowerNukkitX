@@ -34,6 +34,10 @@ public abstract class BlockLiquid extends BlockTransparent {
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeReplaced(true)
+            .isSolid(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(true)
+            .walkThroughExtraCost(20)
             .build();
     private static final byte CAN_FLOW_DOWN = 1;
     private static final byte CAN_FLOW = 0;
@@ -50,11 +54,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         super(state, definition);
     }
 
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
+    
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return null;
@@ -65,19 +65,9 @@ public abstract class BlockLiquid extends BlockTransparent {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
-    }
-
     
     @Override
-    public boolean isSolid() {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
@@ -575,8 +565,4 @@ public abstract class BlockLiquid extends BlockTransparent {
         return 2;
     }
 
-    @Override
-    public int getWalkThroughExtraCost() {
-        return 20;
     }
-}

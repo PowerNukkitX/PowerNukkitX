@@ -26,6 +26,7 @@ public class BlockNetherrack extends BlockSolid {
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)
             .isFertilizable(true)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockNetherrack() {
@@ -78,12 +79,6 @@ public class BlockNetherrack extends BlockSolid {
             return true;
         }
 
-        return false;
-    }
-
-    
-    @Override
-    public boolean canHarvestWithHand() {
         return false;
     }
 

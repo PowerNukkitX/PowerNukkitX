@@ -37,6 +37,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)
+            .canBeFlowedInto(true)
             .build();
 
     protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
@@ -184,11 +185,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
         return !ev.isCancelled() && this.getLevel().setBlock(this, ev.getNewState(), true, true);
     }
 
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
+    
     @Override
     @NotNull
     public String getItemId() {

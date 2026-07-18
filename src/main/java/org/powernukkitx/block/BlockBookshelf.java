@@ -18,6 +18,7 @@ public class BlockBookshelf extends BlockSolid {
             .toolType(ItemTool.TYPE_AXE)
             .burnChance(30)
             .burnAbility(20)
+            .canSilkTouch(true)
             .build();
 
     public BlockBookshelf() {
@@ -49,8 +50,4 @@ public class BlockBookshelf extends BlockSolid {
         };
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

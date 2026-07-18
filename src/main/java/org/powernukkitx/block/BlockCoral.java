@@ -17,6 +17,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.LIQUID_DEPTH
 
 public abstract class BlockCoral extends BlockFlowable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .waterloggingLevel(2)
             .build();
     public static final int TYPE_TUBE = 0;
     public static final int TYPE_BRAIN = 1;
@@ -40,11 +41,7 @@ public abstract class BlockCoral extends BlockFlowable {
         this.getLevel().setBlock(this, deadBlock, true, true);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

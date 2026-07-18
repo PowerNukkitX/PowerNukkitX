@@ -36,6 +36,10 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
             DIRECTION, ATTACHED_BIT, POWERED_BIT);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .canPassThrough(false)
+            .isSolid(false)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -267,11 +271,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
         this.setPropertyValue(DIRECTION, direction);
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getWeakPower(BlockFace face) {
         return isPowered() ? 15 : 0;
@@ -283,25 +283,11 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

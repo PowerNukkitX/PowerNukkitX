@@ -28,6 +28,9 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
             .canBePushed(false)
             .canBePulled(false)
             .breaksWhenMoved(false)
+            .canBeFlowedInto(false)
+            .dropExp(5)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -56,11 +59,7 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public int getDropExp() {
-        return 5;
-    }
-
+    
     @Override
     @NotNull public Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
         return BlockEntitySculkShrieker.class;
@@ -91,18 +90,8 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
         }
     }
 
-    
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

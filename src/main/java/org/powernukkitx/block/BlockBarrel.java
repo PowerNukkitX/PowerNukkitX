@@ -30,6 +30,7 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
             .resistance(12.5)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
             .build();
 
     public BlockBarrel() {
@@ -137,11 +138,7 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
         setPropertyValue(OPEN_BIT, open);
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityBarrel blockEntity = getBlockEntity();

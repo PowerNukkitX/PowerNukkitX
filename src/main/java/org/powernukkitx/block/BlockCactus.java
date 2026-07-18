@@ -30,6 +30,8 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
             .resistance(2)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
+            .hasEntityCollision(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockCactus(BlockState state) {
@@ -43,16 +45,6 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
     }
 
     @Override

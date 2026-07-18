@@ -28,6 +28,7 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
             .resistance(0)
             .canBeActivated(true)
             .isFertilizable(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -52,11 +53,7 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
         return "Azalea";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal

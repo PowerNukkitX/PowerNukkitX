@@ -38,6 +38,8 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             .burnAbility(100)
             .canBeActivated(true)
             .isFertilizable(true)
+            .hasEntityCollision(true)
+            .waterloggingLevel(2)
             .build();
 
     public BlockBigDripleaf() {
@@ -88,11 +90,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return true;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block below = block.down();
@@ -212,11 +210,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return 0;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         if (!isHead() || getTilt() != BigDripleafTilt.NONE || entity instanceof EntityProjectile) return;

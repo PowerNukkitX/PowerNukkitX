@@ -17,6 +17,8 @@ public class BlockInvisibleBedrock extends BlockSolid {
             .resistance(18000000)
             .canBePushed(false)
             .canBePulled(false)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -35,16 +37,6 @@ public class BlockInvisibleBedrock extends BlockSolid {
     @Override
     public String getName() {
         return "Invisible Bedrock";
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

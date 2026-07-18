@@ -33,6 +33,9 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             .burnChance(5)
             .burnAbility(20)
             .canBeActivated(true)
+            .canSilkTouch(true)
+            .canHarvestWithHand(true)
+            .hasComparatorInputOverride(true)
             .build();
 
     @Override
@@ -164,16 +167,6 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
@@ -204,11 +197,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         return getPropertyValue(HONEY_LEVEL) == HONEY_LEVEL.getMax();
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         return getHoneyLevel();

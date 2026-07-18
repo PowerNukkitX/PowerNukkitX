@@ -18,6 +18,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.CORAL_FAN_DI
 
 public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .waterloggingLevel(1)
             .build();
     public BlockCoralFan(BlockState blockstate) {
         super(blockstate, DEFINITION);
@@ -27,11 +28,7 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
         super(blockstate, definition);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     public boolean isDead() {
         return false;
     }

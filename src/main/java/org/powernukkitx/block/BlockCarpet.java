@@ -18,6 +18,7 @@ public abstract class BlockCarpet extends BlockFlowable {
             .hardness(0.1)
             .resistance(0.5)
             .canPassThrough(false)
+            .waterloggingLevel(1)
             .build();
     public BlockCarpet(BlockState blockState) {
         super(blockState, DEFINITION);
@@ -30,12 +31,6 @@ public abstract class BlockCarpet extends BlockFlowable {
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

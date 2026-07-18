@@ -35,6 +35,9 @@ public abstract class BlockVinesNether extends BlockTransparent {
             .canBeClimbed(true)
             .canBeActivated(true)
             .isFertilizable(true)
+            .isSolid(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(true)
             .build();
     /**
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.
@@ -332,21 +335,6 @@ public abstract class BlockVinesNether extends BlockTransparent {
     @Override
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

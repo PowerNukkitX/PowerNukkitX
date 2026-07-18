@@ -12,6 +12,7 @@ public class BlockIronBlock extends BlockSolid {
             .resistance(10)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,8 +33,4 @@ public class BlockIronBlock extends BlockSolid {
         return "Iron Block";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

@@ -42,6 +42,9 @@ public class BlockSnowLayer extends BlockFallable {
             .toolType(ItemTool.TYPE_SHOVEL)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
+            .canHarvestWithHand(false)
+            .isTransparent(true)
+            .canBeFlowedInto(true)
             .build();
 
     @Override
@@ -284,21 +287,6 @@ public class BlockSnowLayer extends BlockFallable {
             default -> 4;
         };
         return new Item[]{Item.get(ItemID.SNOWBALL, 0, amount)};
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
     }
 
     @Override

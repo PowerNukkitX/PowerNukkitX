@@ -26,6 +26,9 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
             .canPassThrough(false)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(false)
             .build();
 
     @Override
@@ -67,24 +70,10 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
         return player != null && player.isCreative();
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
         return this;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

@@ -38,6 +38,8 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     /**
@@ -123,12 +125,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         }
 
         return 0;
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override
@@ -275,12 +271,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
             return new Item[]{toItem(), itemFrame.getItem().clone()};
         }
         return new Item[]{toItem()};
-    }
-
-    
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
     }
 
     @Override

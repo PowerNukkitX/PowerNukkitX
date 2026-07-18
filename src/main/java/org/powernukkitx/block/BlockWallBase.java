@@ -35,6 +35,8 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
             .hardness(2)
             .resistance(30)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .isSolid(false)
+            .waterloggingLevel(1)
             .build();
     private static final double MIN_POST_BB = 5.0 / 16;
     private static final double MAX_POST_BB = 11.0 / 16;
@@ -47,21 +49,13 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         super(blockstate, definition);
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     private boolean shouldBeTall(Block above, BlockFace face) {
         return switch (above.getId()) {
             case AIR, SKULL -> false;

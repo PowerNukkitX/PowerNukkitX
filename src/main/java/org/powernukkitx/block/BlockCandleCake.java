@@ -22,6 +22,8 @@ public class BlockCandleCake extends BlockTransparent {
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockCandleCake(BlockState blockState) {
@@ -51,11 +53,7 @@ public class BlockCandleCake extends BlockTransparent {
         return PROPERTIES;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMinX() {
         return this.x + (1 + blockstate.specialValue() * 2) / 16d;
@@ -141,10 +139,4 @@ public class BlockCandleCake extends BlockTransparent {
         return 14;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
-    
     }

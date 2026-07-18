@@ -18,6 +18,8 @@ public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent 
             .resistance(10)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .isPowerSource(true)
             .build();
 
     @Override
@@ -59,18 +61,10 @@ public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent 
         return true;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getWeakPower(BlockFace face) {
         return 15;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

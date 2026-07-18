@@ -12,6 +12,7 @@ public class BlockDripstoneBlock extends BlockSolid {
             .resistance(1)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,11 +33,7 @@ public class BlockDripstoneBlock extends BlockSolid {
         return "Dripstone Block";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isLavaResistant() {
         return true;

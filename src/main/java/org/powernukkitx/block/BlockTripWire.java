@@ -30,6 +30,8 @@ public class BlockTripWire extends BlockTransparent {
             .hardness(0)
             .resistance(0)
             .canPassThrough(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -48,17 +50,6 @@ public class BlockTripWire extends BlockTransparent {
     @Override
     public String getName() {
         return "Tripwire";
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

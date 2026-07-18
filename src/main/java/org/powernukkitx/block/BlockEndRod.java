@@ -26,6 +26,8 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
             .resistance(0)
             .toolType(ItemTool.TYPE_PICKAXE)
             .lightEmission(14)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -64,16 +66,6 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
     @Override
     public double getMaxZ() {
         return this.z + 0.6;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

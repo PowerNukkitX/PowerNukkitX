@@ -27,6 +27,9 @@ public abstract class BlockLichen extends BlockTransparent {
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeReplaced(true)
+            .isSolid(false)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(1)
             .build();
     public static final NukkitRandom RANDOM = new NukkitRandom();
 
@@ -104,24 +107,10 @@ public abstract class BlockLichen extends BlockTransparent {
         return super.onUpdate(type);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean canHarvest(Item item) {
         return item.isAxe() || item.isShears();
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

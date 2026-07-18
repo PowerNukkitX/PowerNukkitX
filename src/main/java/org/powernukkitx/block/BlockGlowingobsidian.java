@@ -17,6 +17,7 @@ public class BlockGlowingobsidian extends BlockSolid {
             .lightEmission(12)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -52,8 +53,4 @@ public class BlockGlowingobsidian extends BlockSolid {
         }
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

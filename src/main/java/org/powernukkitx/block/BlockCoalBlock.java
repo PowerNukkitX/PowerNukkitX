@@ -14,6 +14,7 @@ public class BlockCoalBlock extends BlockSolid {
             .toolTier(ItemTool.TIER_WOODEN)
             .burnChance(5)
             .burnAbility(5)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -35,8 +36,4 @@ public class BlockCoalBlock extends BlockSolid {
     }
 
     
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

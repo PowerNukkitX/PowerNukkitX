@@ -19,6 +19,7 @@ public class BlockIronBars extends BlockThin {
             .resistance(10)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -37,12 +38,6 @@ public class BlockIronBars extends BlockThin {
     @Override
     public String getName() {
         return "Iron Bars";
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

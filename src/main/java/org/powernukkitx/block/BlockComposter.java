@@ -30,6 +30,8 @@ public class BlockComposter extends BlockSolid {
             .resistance(0.6)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
     private static final Object2IntMap<String> compostableItems = new Object2IntOpenHashMap<>();
     private static final Object2IntMap<BlockState> compostableBlocks = new Object2IntOpenHashMap<>();
@@ -65,21 +67,13 @@ public class BlockComposter extends BlockSolid {
         return "Composter";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         return getPropertyValue(COMPOSTER_FILL_LEVEL);

@@ -27,6 +27,11 @@ public class BlockScaffolding extends BlockFallable {
             .canPassThrough(false)
             .canBeClimbed(true)
             .canBeActivated(true)
+            .isTransparent(true)
+            .isSolid(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -158,16 +163,6 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return new SimpleAxisAlignedBB(x, y + (2.0 / 16), z, x + 1, y + 1, z + 1);
     }
@@ -177,11 +172,7 @@ public class BlockScaffolding extends BlockFallable {
         entity.resetFallDistance();
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public AxisAlignedBB getBoundingBox() {
         return this;
@@ -200,17 +191,6 @@ public class BlockScaffolding extends BlockFallable {
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
-    }
-
-    
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

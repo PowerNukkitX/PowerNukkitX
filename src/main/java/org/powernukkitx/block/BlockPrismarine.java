@@ -16,6 +16,7 @@ public class BlockPrismarine extends BlockSolid {
             .resistance(30)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -59,12 +60,6 @@ public class BlockPrismarine extends BlockSolid {
             case BlockDarkPrismarine ignored -> PrismarineBlockType.DARK;
             default -> PrismarineBlockType.DEFAULT;
         };
-    }
-
-    
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

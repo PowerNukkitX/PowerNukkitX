@@ -24,6 +24,8 @@ public class BlockCaveVines extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0)
             .canBeActivated(true)
+            .isTransparent(true)
+            .isSolid(false)
             .build();
 
     @Override
@@ -46,17 +48,6 @@ public class BlockCaveVines extends BlockTransparent {
     @Override
     public String getName() {
         return "Cave Vines";
-    }
-
-    
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     public static boolean isValidSupport(Block block) {

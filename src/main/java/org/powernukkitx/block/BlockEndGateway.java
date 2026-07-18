@@ -26,6 +26,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
             .lightEmission(15)
             .canBePushed(false)
             .canBePulled(false)
+            .hasEntityCollision(true)
             .build();
 
     @Override
@@ -79,11 +80,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
         return false;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));

@@ -15,6 +15,7 @@ public class BlockCryingObsidian extends BlockSolid {
             .lightEmission(10)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -35,10 +36,4 @@ public class BlockCryingObsidian extends BlockSolid {
         return "Crying Obsidian";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
 }

@@ -14,6 +14,8 @@ public class BlockSlime extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0)
             .resistance(0)
+            .canStickBlocks(true)
+            .isSolid(true)
             .build();
 
     @Override
@@ -39,16 +41,6 @@ public class BlockSlime extends BlockTransparent {
     @Override
     public int getLightFilter() {
         return 1;
-    }
-
-    @Override
-    public boolean canSticksBlock() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return true;
     }
 
     @Override

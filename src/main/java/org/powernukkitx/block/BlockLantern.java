@@ -23,6 +23,8 @@ public class BlockLantern extends BlockFlowable {
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(15)
             .canPassThrough(false)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -111,12 +113,6 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
-    @Override
     public double getMinX() {
         return x + (5.0 / 16);
     }
@@ -161,8 +157,4 @@ public class BlockLantern extends BlockFlowable {
         setPropertyValue(HANGING, hanging);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

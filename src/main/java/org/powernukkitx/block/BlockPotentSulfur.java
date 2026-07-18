@@ -19,6 +19,7 @@ public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<B
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -54,11 +55,7 @@ public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<B
         return result;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public @NotNull Class<? extends BlockEntityPotentSulfur> getBlockEntityClass() {
         return BlockEntityPotentSulfur.class;

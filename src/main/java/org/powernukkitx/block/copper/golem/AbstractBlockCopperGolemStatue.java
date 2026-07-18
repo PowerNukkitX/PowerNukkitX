@@ -1,5 +1,7 @@
 package org.powernukkitx.block.copper.golem;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -26,18 +28,18 @@ import static org.powernukkitx.blockentity.BlockEntityCopperGolemStatue.CopperPo
  * @since 1.21.110
  */
 public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent implements Oxidizable, Waxable, Faceable, BlockEntityHolder<BlockEntityCopperGolemStatue> {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3)
+            .resistance(6)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .build();
     public AbstractBlockCopperGolemStatue(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
+    public AbstractBlockCopperGolemStatue(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -72,16 +74,6 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
     @Override
     public int onUpdate(int type) {
         return Oxidizable.super.onUpdate(type);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

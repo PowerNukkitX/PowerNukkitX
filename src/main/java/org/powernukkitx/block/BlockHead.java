@@ -27,6 +27,9 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
             .toolType(ItemTool.TYPE_PICKAXE)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
+            .isSolid(false)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockHead(BlockState blockState) {
@@ -49,24 +52,10 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
         return BlockEntitySkull.class;
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
     }
 
     @Override
