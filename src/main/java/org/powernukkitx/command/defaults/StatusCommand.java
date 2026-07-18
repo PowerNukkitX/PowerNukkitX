@@ -13,7 +13,6 @@ import com.sun.jna.platform.win32.COM.WbemcliUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import oshi.SystemInfo;
-import oshi.driver.windows.wmi.Win32ComputerSystem;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
 import oshi.util.platform.windows.WmiQueryHandler;
@@ -160,7 +159,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         //Check Windows system parameters
         //Wmi virtual machine query can only be used on Windows. On Linux, this part can be omitted.
         if (System.getProperties().getProperty("os.name").toUpperCase(Locale.ENGLISH).contains("WINDOWS")) {
-            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
+            WbemcliUtil.WmiQuery<ComputerSystemEntry> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
             WbemcliUtil.WmiResult result = WmiQueryHandler.createInstance().queryWMI(computerSystemQuery);
             var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
             if (tmp != null && tmp.toString().equals("true")) {
