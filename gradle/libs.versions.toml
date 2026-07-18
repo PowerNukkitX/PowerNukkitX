@@ -80,7 +80,7 @@ jmh-generator        = { module = "org.openjdk.jmh:jmh-generator-annprocess",   
 snappy               = { module = "org.xerial.snappy:snappy-java",                  version.ref = "org-xerial-snappy-snappy-java"                   }
 rng-simple           = { module = "org.apache.commons:commons-rng-simple",          version.ref = "commons-rng"                                     }
 rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",        version.ref = "commons-rng"                                     }
-bedrock-connection   = { module = "org.cloudburstmc.protocol:bedrock-connection",   version.ref = "bedrock-protocol"                                }
+bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection",   version.ref = "bedrock-protocol"                                }
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
