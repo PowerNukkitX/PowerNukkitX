@@ -45,12 +45,13 @@ class SetupWizardSupportTest {
     }
 
     @Test
-    void parsesYesNoAndReturnsNullForInvalidInput() {
+    void parsesYesNoAndFallsBackToDefaultForInvalidInput() {
         assertTrue(SetupWizardSupport.parseYesNoOrDefault("", true));
         assertFalse(SetupWizardSupport.parseYesNoOrDefault("", false));
         assertTrue(SetupWizardSupport.parseYesNoOrDefault("YES", false));
         assertFalse(SetupWizardSupport.parseYesNoOrDefault("n", true));
-        assertNull(SetupWizardSupport.parseYesNoOrDefault("maybe", true));
+        assertTrue(SetupWizardSupport.parseYesNoOrDefault("maybe", true));
+        assertFalse(SetupWizardSupport.parseYesNoOrDefault("maybe", false));
     }
 
     @Test

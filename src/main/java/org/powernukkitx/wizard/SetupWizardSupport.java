@@ -70,18 +70,15 @@ public final class SetupWizardSupport {
         return maxPlayers;
     }
 
-    public static Boolean parseYesNoOrDefault(String input, boolean defaultValue) {
+    public static boolean parseYesNoOrDefault(String input, boolean defaultValue) {
         String normalized = normalize(input).toLowerCase(Locale.ENGLISH);
-        if (normalized.isEmpty()) {
-            return defaultValue;
-        }
         if (normalized.equals("y") || normalized.equals("yes")) {
             return true;
         }
         if (normalized.equals("n") || normalized.equals("no")) {
             return false;
         }
-        return null;
+        return defaultValue;
     }
 
     public static List<String> parseCommaSeparatedNames(String input) {
