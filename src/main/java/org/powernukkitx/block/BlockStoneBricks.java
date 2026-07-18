@@ -27,6 +27,10 @@ public class BlockStoneBricks extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockStoneBricks(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

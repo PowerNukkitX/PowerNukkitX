@@ -30,6 +30,10 @@ public class BlockFlowingWater extends BlockLiquid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockFlowingWater(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Flowing Water";

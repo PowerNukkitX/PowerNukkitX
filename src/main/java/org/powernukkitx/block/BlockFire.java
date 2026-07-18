@@ -52,6 +52,10 @@ public class BlockFire extends BlockFlowable {
         super(blockstate, DEFINITION);
     }
 
+    public BlockFire(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     public int getAge() {
         return getPropertyValue(AGE_16);
     }

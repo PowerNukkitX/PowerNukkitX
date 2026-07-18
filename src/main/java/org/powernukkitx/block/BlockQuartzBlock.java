@@ -29,6 +29,10 @@ public class BlockQuartzBlock extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockQuartzBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

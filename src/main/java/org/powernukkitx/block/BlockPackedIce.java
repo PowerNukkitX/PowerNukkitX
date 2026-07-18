@@ -26,6 +26,10 @@ public class BlockPackedIce extends BlockIce {
         super(blockstate, DEFINITION);
     }
 
+    public BlockPackedIce(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Packed Ice";

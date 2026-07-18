@@ -44,6 +44,10 @@ public class BlockCandle extends BlockFlowable {
         super(blockstate, DEFINITION);
     }
 
+    public BlockCandle(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     public Block toCakeForm() {
         return new BlockCandleCake();
     }

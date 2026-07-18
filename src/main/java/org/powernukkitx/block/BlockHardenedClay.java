@@ -27,6 +27,10 @@ public class BlockHardenedClay extends BlockSolid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockHardenedClay(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

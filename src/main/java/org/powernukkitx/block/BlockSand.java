@@ -31,6 +31,10 @@ public class BlockSand extends BlockFallable implements Natural {
         super(blockState, DEFINITION);
     }
 
+    public BlockSand(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         if (this instanceof BlockRedSand) {

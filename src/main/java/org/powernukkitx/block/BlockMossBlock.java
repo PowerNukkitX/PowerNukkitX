@@ -38,6 +38,10 @@ public class BlockMossBlock extends BlockSolid implements Natural {
         super(blockstate, DEFINITION);
     }
 
+    public BlockMossBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Moss";

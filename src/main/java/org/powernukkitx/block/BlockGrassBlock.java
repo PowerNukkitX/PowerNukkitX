@@ -38,6 +38,10 @@ public class BlockGrassBlock extends BlockDirt {
         super(blockstate, DEFINITION);
     }
 
+    public BlockGrassBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     
     @Override
     public String getName() {

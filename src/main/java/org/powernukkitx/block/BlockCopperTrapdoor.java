@@ -33,6 +33,10 @@ public class BlockCopperTrapdoor extends BlockTrapdoor implements Oxidizable, Wa
         super(blockstate, DEFINITION);
     }
 
+    public BlockCopperTrapdoor(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Copper Trapdoor";

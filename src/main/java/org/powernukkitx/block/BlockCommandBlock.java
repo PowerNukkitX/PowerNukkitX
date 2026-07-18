@@ -41,6 +41,10 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         super(blockstate, DEFINITION);
     }
 
+    public BlockCommandBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

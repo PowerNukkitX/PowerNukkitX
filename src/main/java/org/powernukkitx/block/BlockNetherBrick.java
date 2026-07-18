@@ -26,6 +26,10 @@ public class BlockNetherBrick extends BlockSolid {
         super(blockState, DEFINITION);
     }
 
+    public BlockNetherBrick(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         return "Nether Brick";

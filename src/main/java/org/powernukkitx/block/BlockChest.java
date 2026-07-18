@@ -52,6 +52,10 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         super(blockstate, DEFINITION);
     }
 
+    public BlockChest(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     @NotNull
     public Class<? extends BlockEntityChest> getBlockEntityClass() {

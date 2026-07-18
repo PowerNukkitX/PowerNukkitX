@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
@@ -17,6 +19,10 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
 
     public BlockThin(BlockState blockState) {
         super(blockState);
+    }
+
+    public BlockThin(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override

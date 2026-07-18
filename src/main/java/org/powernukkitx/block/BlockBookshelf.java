@@ -28,6 +28,10 @@ public class BlockBookshelf extends BlockSolid {
         super(blockState, DEFINITION);
     }
 
+    public BlockBookshelf(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;

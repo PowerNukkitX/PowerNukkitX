@@ -23,6 +23,10 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         super(blockState, DEFINITION);
     }
 
+    public BlockAzaleaLeaves(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         return "Azalea Leaves";

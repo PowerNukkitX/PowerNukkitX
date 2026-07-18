@@ -23,6 +23,10 @@ public class BlockPolishedBlackstone extends BlockBlackstone {
         super(blockstate, DEFINITION);
     }
 
+    public BlockPolishedBlackstone(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Polished Blackstone";

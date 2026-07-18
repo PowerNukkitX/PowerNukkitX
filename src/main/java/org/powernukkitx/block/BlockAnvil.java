@@ -53,6 +53,10 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
         super(blockstate, DEFINITION);
     }
 
+    public BlockAnvil(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     public Damage getAnvilDamage() {
         return switch (this) {
             case BlockChippedAnvil ignored -> Damage.SLIGHTLY_DAMAGED;

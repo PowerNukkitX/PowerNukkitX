@@ -45,6 +45,10 @@ public class BlockFlowingLava extends BlockLiquid {
         super(blockstate, DEFINITION);
     }
 
+    public BlockFlowingLava(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     
     @Override
     public String getName() {

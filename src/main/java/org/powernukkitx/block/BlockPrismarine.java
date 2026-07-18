@@ -32,6 +32,10 @@ public class BlockPrismarine extends BlockSolid {
         super(blockState, DEFINITION);
     }
 
+    public BlockPrismarine(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         return switch (getPrismarineBlockType()) {
