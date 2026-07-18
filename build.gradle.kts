@@ -86,7 +86,8 @@ configurations.all {
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = ENCODING
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
-    options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000"))
+    options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000", "-nowarn"))
+    options.isWarnings = false
 }
 
 java {
@@ -160,9 +161,7 @@ tasks.compileJava {
     options.compilerArgs.addAll(listOf(
         "-Xpkginfo:always",
         "-parameters",
-        "-Xlint:-options",
-        "-Xlint:deprecation",
-        "-Xlint:unchecked"
+        "-Xlint:-options"
     ))
     options.isIncremental = true
     options.isFork = true
@@ -252,7 +251,7 @@ tasks.named<ShadowJar>("shadowJar") {
 
     manifest {
         attributes(
-            "Main-Class" to "cn.nukkit.JarStart",
+            "Main-Class" to "org.powernukkitx.JarStart",
             "Implementation-Version" to project.version,
             "Implementation-Title" to project.name,
             "Multi-Release" to "true"
