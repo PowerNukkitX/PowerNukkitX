@@ -3304,6 +3304,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void sendMessage(String message) {
+        if (message.isEmpty()) {
+            log.warn("{} attempted to send an empty message", name);
+            return;
+        }
+        
         final MessageOnly messageOnly = new MessageOnly();
         messageOnly.setMessage(this.server.getLanguage().tr(message));
 
