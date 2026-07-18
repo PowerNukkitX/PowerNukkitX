@@ -25,11 +25,11 @@ public class ParamTree {
     private String[] args;
 
     /**
-     * 从给定的命令中初始化命令节点树，其中每个参数类型{@link CommandParamType CommandParamType}会对应一个默认的参数节点,或者使用<br>
+     * Initializes the command node tree from the given command, where each parameter type {@link CommandParamType CommandParamType} maps to a default parameter node, or you can use<br>
      * {@link CommandParameter#newType(String, CommandParamType, IParamNode)}<br>
      * {@link CommandParameter#newEnum(String, boolean, CommandEnum, IParamNode)}<br>
-     * 初始化指定的命令节点。
-     * 应该在命令构造函数中commandParameters初始化完毕后调用Command::enableParamTree()，形如<br>
+     * to initialize a specific command node.
+     * Command::enableParamTree() should be called after commandParameters has been initialized in the command constructor, for example<br>
      * <pre>
      *   public TestCommand(String name) {
      *       super(name, description, usage, aliases);
@@ -44,7 +44,7 @@ public class ParamTree {
      *
      * @param command the command
      */
-    //todo 优化建树和遍历
+    //todo optimize tree building and traversal
     public ParamTree(Command command) {
         this.command = command;
         final var root = new HashMap<String, ParamList>();
@@ -98,12 +98,12 @@ public class ParamTree {
     }
 
     /**
-     * 从给定输入参数匹配该命令节点树对应命令的命令重载，并且解析对应参数。<br>
-     * 返回值是一个{@link Map.Entry},它是成功匹配的命令重载，对应{@link Command#getCommandParameters()}  commandParameters}。<br>
-     * 其Key对应commandParameters中的Key,值是一个{@link ParamList} 其中每个节点与commandParameters的Value一一对应，并且是解析之后的结果。
+     * Matches a command overload of the command represented by this node tree against the given input arguments, and parses the corresponding parameters.<br>
+     * The return value is a {@link Map.Entry} representing the successfully matched command overload, corresponding to {@link Command#getCommandParameters()}  commandParameters}.<br>
+     * Its Key matches the Key in commandParameters, and its value is a {@link ParamList} whose nodes correspond one-to-one with the Value in commandParameters and hold the parsed results.
      *
-     * @param sender 命令发送者
-     * @param args   命令的参数
+     * @param sender the command sender
+     * @param args   the command arguments
      */
     public @Nullable Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
         this.args = args;
@@ -119,7 +119,7 @@ public class ParamTree {
                 list.nodeIndex = i;
                 final var node = list.get(i);
                 while (!node.hasResult()) {
-                    if (list.getIndex() >= args.length) {//参数用完
+                    if (list.getIndex() >= args.length) {//arguments exhausted
                         if (node.isOptional()) break f2;
                         list.getIndexAndIncrement();
                         node.error();
@@ -132,12 +132,12 @@ public class ParamTree {
                 }
             }
             if (list.getError() == Integer.MIN_VALUE) {
-                if (entry.getValue().getIndex() < args.length) {//没用完参数
+                if (entry.getValue().getIndex() < args.length) {//arguments not fully consumed
                     entry.getValue().getIndexAndIncrement();
                     entry.getValue().error();
                     error.add(entry.getValue());
                 } else {
-                    result = Map.entry(entry.getKey(), list);//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
+                    result = Map.entry(entry.getKey(), list);//success condition: the command chain length equals the argument count and all required parameters in the chain have results
                     break;
                 }
             } else {
@@ -145,7 +145,7 @@ public class ParamTree {
             }
         }
 
-        if (result == null) {//全部不成功
+        if (result == null) {//none matched
             final var list = error.stream().max(Comparator.comparingInt(ParamList::getError)).orElseGet(() -> {
                 var defaultList = new ParamList(this);
                 defaultList.error();

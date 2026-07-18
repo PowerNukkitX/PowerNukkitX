@@ -28,7 +28,7 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     };
 
     /**
-     * 存储常加载区域的根目录
+     * Root directory storing the ticking areas
      */
     protected Path filePath;
     //               row     column

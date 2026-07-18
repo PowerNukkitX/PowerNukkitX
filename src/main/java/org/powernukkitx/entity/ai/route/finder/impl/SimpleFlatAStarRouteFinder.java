@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 /**
- * 标准A*寻路实现
+ * Standard A* pathfinding implementation
  */
 
 
@@ -32,10 +32,10 @@ import java.util.PriorityQueue;
 @Setter
 public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
-    //这些常量是为了避免开方运算而设置的
-    //直接移动成本
+    //These constants are set to avoid square root operations
+    //Straight move cost
     protected final static int DIRECT_MOVE_COST = 10;
-    //倾斜移动成本
+    //Diagonal move cost
     protected final static int OBLIQUE_MOVE_COST = 14;
 
     protected final PriorityQueue<Node> openList = new PriorityQueue<>();
@@ -60,7 +60,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     protected boolean enableFloydSmooth = true;
 
-    //寻路最大深度
+    //Maximum pathfinding depth
     protected int currentSearchDepth = 100;
 
     protected int maxSearchDepth = 100;
@@ -96,25 +96,25 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.searching = true;
         this.interrupt = false;
         var currentReachable = true;
-        //若实体未处于active状态，则关闭路径平滑
+        //If the entity is not active, disable path smoothing
         this.setEnableFloydSmooth(this.entity.isActive());
-        //清空openList和closeList
+        //Clear openList and closeList
         openList.clear();
         closeList.clear();
         closeHashSet.clear();
-        //重置寻路深度
+        //Reset the pathfinding depth
         currentSearchDepth = maxSearchDepth;
 
-        //将起点放置到closeList中，以开始寻路
-        //起点没有父节点，且我们不需要计算他的代价
+        //Put the start point into closeList to begin pathfinding
+        //The start point has no parent node, and we don't need to calculate its cost
         Node currentNode = new Node(start, null, 0, 0);
         var tmpNode = new Node(start, null, 0, 0);
         closeList.add(tmpNode);
         closeHashSet.add(tmpNode.getVector3());
 
-        //若当前寻路点没有到达终点
+        //While the current pathfinding point has not reached the target
         while (!isPositionOverlap(currentNode.getVector3(), target)) {
-            //检查是否被中断了
+            //Check whether it was interrupted
             if (this.isInterrupt()) {
                 currentSearchDepth = 0;
                 this.searching = false;
@@ -122,9 +122,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 this.reachable = false;
                 return false;
             }
-            //将当前节点周围的有效节点放入openList中
+            //Put the valid nodes around the current node into openList
             putNeighborNodeIntoOpen(currentNode);
-            //若未超出寻路深度，则获取代价最小的一个node并将其设置为currentNode
+            //If the pathfinding depth is not exceeded, get the lowest-cost node and set it as currentNode
             if (openList.peek() != null && currentSearchDepth-- > 0) {
                 closeList.add(currentNode = openList.poll());
                 closeHashSet.add(currentNode.getVector3());
@@ -136,27 +136,27 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        //因为在前面是否到达终点的检查中我们只粗略检查了坐标的floor值
-        //所以说这里我们还需要将其精确指向到终点
+        //Because the earlier "reached target" check only roughly compared the floored coordinates,
+        //here we still need to point it precisely at the target
         Node targetNode = currentNode;
         if (!currentNode.getVector3().equals(target)) {
             targetNode = new Node(target, currentNode, 0, 0);
         }
 
-        //如果无法到达，则取最接近终点的一个Node作为尾节点
+        //If unreachable, take the Node closest to the target as the tail node
         Node reachableNode = null;
         reachableTarget = currentReachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
         List<Node> findingPath = currentReachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
-        //使用floyd平滑路径
+        //Smooth the path using Floyd
         if (enableFloydSmooth)
             findingPath = floydSmooth(findingPath);
 
-        //清空上次的寻路结果
+        //Clear the previous pathfinding result
         this.resetNodes();
-        //重置Node指针
+        //Reset the Node pointer
         this.setNodeIndex(0);
 
-        //写入结果
+        //Write the result
         this.addNode(findingPath);
 
         if (EntityAI.checkDebugOption(EntityAI.DebugOption.ROUTE)) {
@@ -174,7 +174,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 获取指定位置的方块的移动Cost
+     * Get the move cost of the block at the given position
      *
      * @param level
      * @param pos
@@ -185,9 +185,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 将一个节点周围的有效节点放入OpenList中
+     * Put the valid nodes around a node into the OpenList
      *
-     * @param node 节点
+     * @param node the node
      */
     protected void putNeighborNodeIntoOpen(@NotNull Node node) {
         boolean N, E, S, W;
@@ -282,8 +282,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        //我们不允许实体在上下坡的时候斜着走，因为这容易导致实体卡脚（原版也是这个逻辑）
-        //接触水的时候就不需要这么判断了
+        //We don't allow entities to move diagonally while going up or down slopes, because it easily causes them to get stuck (vanilla uses this logic too)
+        //When touching water this check is no longer needed
         if (N && E && (((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, -1);
             if (!existInCloseList(vec)) {
@@ -381,20 +381,20 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 计算当前点到终点的代价H
-     * 默认使用对角线+直线距离
+     * Calculate the cost H from the current point to the target
+     * By default uses diagonal + straight-line distance
      */
     protected int calH(Vector3 start, Vector3 target) {
-        //使用DIRECT_MOVE_COST和OBLIQUE_MOVE_COST计算代价
-        //计算对角线距离
+        //Calculate the cost using DIRECT_MOVE_COST and OBLIQUE_MOVE_COST
+        //Calculate the diagonal distance
         int obliqueCost = (int) (Math.abs(Math.min(target.x - start.x, target.z - start.z)) * OBLIQUE_MOVE_COST);
-        //计算剩余直线距离
+        //Calculate the remaining straight-line distance
         int directCost = (int) ((Math.abs(Math.max(target.x - start.x, target.z - start.z)) - Math.abs(Math.min(target.x - start.x, target.z - start.z))) * DIRECT_MOVE_COST);
         return obliqueCost + directCost + (int) (Math.abs(target.y - start.y) * DIRECT_MOVE_COST);
     }
 
     /**
-     * 获取目标坐标最高有效点（沿Y轴往下检查）
+     * Get the highest valid point at the target coordinate (checking downwards along the Y axis)
      */
     public Block getHighestUnder(Vector3 vector3, int limit) {
         if (limit > 0) {
@@ -414,14 +414,14 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 指定位置是否可作为一个有效的节点
+     * Whether the given position can serve as a valid node
      */
     protected boolean evalPos(Vector3 pos) {
         return evalPos.evalPos(entity, pos);
     }
 
     /**
-     * 指定方块上面是否可作为一个有效的节点
+     * Whether the space above the given block can serve as a valid node
      */
     protected boolean evalStandingBlock(Block block) {
         return evalPos.evalStandingBlock(entity, block);
@@ -429,7 +429,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     /**
      * @param vector3
-     * @return 指定坐标可到达的最高点 (limit=4)
+     * @return the highest reachable point at the given coordinate (limit=4)
      */
     protected int getAvailableHorizontalOffset(Vector3 vector3) {
         var block = getHighestUnder(vector3, 4);
@@ -444,7 +444,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 指定两个Node之间是否有障碍物
+     * Whether there is an obstacle between the two given Nodes
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
@@ -454,7 +454,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 使用Floyd算法平滑A*路径
+     * Smooth the A* path using the Floyd algorithm
      */
     protected List<Node> floydSmooth(List<Node> array) {
         int current = 0;
@@ -480,9 +480,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 将Node链转换成List<Node>样式的路径信息
+     * Convert the Node chain into path information in List<Node> form
      *
-     * @param end 列表尾节点
+     * @param end the tail node of the list
      */
     @SuppressWarnings("null")
     protected List<Node> getPathRoute(@Nullable Node end) {
@@ -503,7 +503,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 获取接近指定坐标的最近的Node
+     * Get the Node closest to the given coordinate
      */
     protected Node getNearestNodeFromCloseList(Vector3 vector3) {
         double min = Double.MAX_VALUE;
@@ -519,8 +519,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 坐标是否重叠了 <br/>
-     * 此方法只会比较坐标的floorX、floorY、floorZ
+     * Whether the coordinates overlap <br/>
+     * This method only compares the floorX, floorY and floorZ of the coordinates
      */
     protected boolean isPositionOverlap(Vector3 vector2, Vector3 vector2_) {
         return vector2.getFloorX() == vector2_.getFloorX()

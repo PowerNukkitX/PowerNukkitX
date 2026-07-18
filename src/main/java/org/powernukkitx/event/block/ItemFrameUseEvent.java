@@ -12,8 +12,6 @@ import javax.annotation.Nullable;
 
 
 /**
- * 物品展示框被使用的事件，会在放置物品，旋转物品，掉落物品时调用
- * <p>
  * The event that the item display box is used will be called when an item is placed, rotated, or dropped
  */
 
@@ -39,7 +37,6 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     }
 
     /**
-     * 获取使用物品展示框的玩家
      * Gets player.
      *
      * @return the player
@@ -49,8 +46,6 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     }
 
     /**
-     * 获取被使用的物品展示框
-     * <p>
      * Gets item frame.
      *
      * @return the item frame
@@ -60,8 +55,6 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     }
 
     /**
-     * 获取操作中的物品，例如放置物品到物品展示框，获取该物品
-     * <p>
      * Get the item in action, e.g. place the item in the item display box and get the item
      *
      * @return the item
@@ -71,8 +64,6 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     }
 
     /**
-     * 获取操作类型，掉落，放置，选择
-     * <p>
      * Get operation type, drop, place, select
      *
      * @return the action

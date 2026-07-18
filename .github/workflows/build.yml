@@ -11,6 +11,7 @@ on:
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
       - '.github/**'
+      - 'gradle/**'
 
 jobs:
   build:

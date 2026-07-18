@@ -5,7 +5,7 @@ import org.powernukkitx.entity.EntityIntelligent;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 控制实体在水中扑腾的控制器
+ * Controller that makes entities flounder around in water
  */
 
 

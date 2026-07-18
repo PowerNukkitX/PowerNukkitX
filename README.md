@@ -1,21 +1,24 @@
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-  <a href="https://powernukkitx.org"><img src=".github/logo.png" alt="PowerNukkitX Logo"></a>
+  <a href="https://powernukkitx.org"><img src=".github/logo.png" alt="PowerNukkitX Logo" width="150"></a>
 </p>
 
 <p align="center">
   <strong>A Minecraft Bedrock Edition Server Software, open source and written in java</strong>
 </p>
-<!-- markdownlint-enable MD033 -->
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000)
-[![Minecraft](https://img.shields.io/badge/minecraft-v26.30%20(Bedrock)-56383E)](https://www.minecraft.net/en-us/article/minecraft-26-30-bedrock-changelog)
-[![Protocol](https://img.shields.io/badge/protocol-1001-blue)](https://github.com/Mojang/bedrock-protocol-docs)
-[![Action](https://img.shields.io/badge/action-all%20builds-FF9B21)](https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess)
-[![Discord](https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord)](https://discord.com/invite/XXus4FB6qf)
-[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://docs.powernukkitx.org)
-[![Codecov](https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3)](https://codecov.io/github/PowerNukkitX/PowerNukkitX)
-[![License: LGPL-3](https://img.shields.io/badge/License-LGPL--3-yellow.svg)](https://www.gnu.org/licenses/lgpl-3.0.html)
+<p align="center">
+  <img src="https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000" alt="Version">
+  <img src="https://img.shields.io/badge/minecraft-v26.30%20(Bedrock)-56383E" alt="Minecraft">
+  <img src="https://img.shields.io/badge/protocol-1001-blue" alt="Protocol">
+  <img src="https://img.shields.io/badge/action-all%20builds-FF9B21" alt="Action">
+  <img src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" alt="Discord">
+  <img src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" alt="Documentation">
+  <img src="https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3" alt="Codecov">
+  <img src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" alt="License">
+</p>
+
+<!-- markdownlint-enable MD033 -->
 
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
 

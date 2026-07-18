@@ -4,7 +4,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 
 /**
- * 注意做好sign和standing_sign方块的映射关系，物品通过this.block指定，方块通过toItem指定
+ * Make sure to keep the mapping between the sign and standing_sign blocks correct: the item is specified via this.block and the block via toItem.
  */
 public abstract class ItemSign extends Item {
     protected ItemSign(String id) {

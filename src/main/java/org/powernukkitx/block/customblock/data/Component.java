@@ -66,7 +66,7 @@ public class Component implements NBTData {
         }
         if (displayName != null) {
             this.result.putCompound("minecraft:display_name", new CompoundTag()
-                    .putString("value", displayName));//todo 验证
+                    .putString("value", displayName));//todo verify
         }
         if (lightEmission != null) {
             this.result.putCompound("minecraft:light_emission", new CompoundTag()

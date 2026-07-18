@@ -15,11 +15,11 @@ public abstract class EnchantmentBow extends Enchantment {
     }
 
     /**
-     * 当弓箭射击时被调用
+     * Called when the bow is shot
      *
-     * @param user       使用弓的实体
-     * @param projectile 箭实体
-     * @param bow        弓物品
+     * @param user       the entity using the bow
+     * @param projectile the arrow entity
+     * @param bow        the bow item
      */
     public void onBowShoot(EntityLiving user, EntityProjectile projectile, ItemBow bow) {
 

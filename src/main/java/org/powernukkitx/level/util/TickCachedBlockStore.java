@@ -3,7 +3,7 @@ package org.powernukkitx.level.util;
 import org.powernukkitx.block.Block;
 
 /**
- * 实现此接口的区块应该拥有一个能够并行访问的方块缓存，通常每tick都会调用clear。
+ * A chunk implementing this interface should hold a block cache that can be accessed concurrently; clear is usually called every tick.
  */
 public interface TickCachedBlockStore {
     void clearCachedStore();
@@ -13,7 +13,7 @@ public interface TickCachedBlockStore {
     Block getFromCachedStore(int x, int y, int z, int layer);
 
     /**
-     * 同computeIfAbsent
+     * Same as computeIfAbsent
      */
     Block computeFromCachedStore(int x, int y, int z, int layer, CachedBlockComputer cachedBlockComputer);
 

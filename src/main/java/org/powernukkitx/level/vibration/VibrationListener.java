@@ -5,47 +5,47 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.math.Vector3;
 
 /**
- * 振动监听器
+ * A vibration listener
  */
 
 
 public interface VibrationListener {
 
     /**
-     * 返回振动监听器的位置
+     * Returns the position of the vibration listener
      *
      * @return Vector3
      */
     Vector3 getListenerVector();
 
     /**
-     * 是否响应此振动
-     * 若响应，将会从声波源发射声波到监听器位置，并在到达时调用 onVibrationArrive() 方法
-     * 请注意，若此方法被调用，则声波必定可到达
+     * Whether to respond to this vibration
+     * If it responds, a sound wave will be emitted from the sound source to the listener position, and onVibrationArrive() will be called when it arrives
+     * Note that if this method is called, the sound wave is guaranteed to be able to arrive
      *
-     * @param event 振动事件
+     * @param event the vibration event
      * @return boolean
      */
     boolean onVibrationOccur(VibrationEvent event);
 
     /**
-     * 声波到达事件
+     * Sound wave arrival event
      *
-     * @param event 振动事件
+     * @param event the vibration event
      */
     void onVibrationArrive(VibrationEvent event);
 
     /**
-     * 返回振动监听半径
+     * Returns the vibration listening radius
      *
      * @return double
      */
     double getListenRange();
 
     /**
-     * 是否是实体
-     * 若为实体，则在发送声波粒子时会使用实体专属的nbt tag
-     * 若不是，则将此监听器作为方块处理（eg: 潜声传感器）
+     * Whether it is an entity
+     * If it is an entity, the entity-specific nbt tag will be used when sending sound wave particles
+     * If not, this listener is treated as a block (eg: sculk sensor)
      *
      * @return boolean
      */
@@ -54,7 +54,7 @@ public interface VibrationListener {
     }
 
     /**
-     * 在 isEntity() 为true的前提下,返回此振动监听器对应实体对象
+     * Returns the entity object corresponding to this vibration listener, on the premise that isEntity() is true
      *
      * @return Entity
      */

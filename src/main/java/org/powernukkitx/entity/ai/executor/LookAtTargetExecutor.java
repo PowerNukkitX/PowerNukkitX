@@ -7,7 +7,7 @@ import org.powernukkitx.math.Vector3;
 
 public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
 
-    //指示执行器应该从哪个Memory获取目标位置
+    //indicates which Memory the executor should get the target position from
     protected MemoryType<? extends Vector3> memory;
     protected int duration;
     protected int currentTick;

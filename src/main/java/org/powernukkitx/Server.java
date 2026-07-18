@@ -1905,12 +1905,8 @@ public class Server {
         buffer.putLong(uniqueId.getMostSignificantBits());
         buffer.putLong(uniqueId.getLeastSignificantBits());
         byte[] array = buffer.array();
-        byte[] bytes = playerDataDB.get(array);
-        if (bytes == null) {
-            playerDataDB.put(nameBytes, array);
-        }
-        boolean xboxAuthEnabled = this.settings.baseSettings().xboxAuth();
-        if (!xboxAuthEnabled) {
+        byte[] existing = playerDataDB.get(nameBytes);
+        if (existing == null || !Arrays.equals(existing, array)) {
             playerDataDB.put(nameBytes, array);
         }
     }

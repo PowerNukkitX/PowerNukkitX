@@ -5,8 +5,6 @@ import org.powernukkitx.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 封装了一些涉及控制器的方法.
- * <p>
  * Involving some methods about controller.
  */
 

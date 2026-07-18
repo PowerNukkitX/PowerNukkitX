@@ -4,7 +4,7 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.utils.Utils;
 
 /**
- * 实现这个接口的实体拥有次要变种属性
+ * Entities that implement this interface have a mark variant attribute.
  */
 
 
@@ -22,14 +22,14 @@ public interface EntityMarkVariant extends EntityComponent {
     }
 
     /**
-     * 随机一个变种值
+     * Picks a random mark variant value.
      */
     default int randomMarkVariant() {
         return getAllMarkVariant()[Utils.rand(0, getAllMarkVariant().length - 1)];
     }
 
     /**
-     * 定义全部可能的变种
+     * Defines all possible variants.
      */
     int[] getAllMarkVariant();
 }

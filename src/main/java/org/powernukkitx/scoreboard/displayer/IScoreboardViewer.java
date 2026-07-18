@@ -5,40 +5,40 @@ import org.powernukkitx.scoreboard.IScoreboard;
 import org.powernukkitx.scoreboard.IScoreboardLine;
 
 /**
- * 计分板观察者 (eg: Player)
- * 此接口用于抽象服务端到客户端的协议层方法
+ * A scoreboard viewer (eg: Player)
+ * This interface abstracts the protocol-layer methods from server to client.
  */
 
 
 public interface IScoreboardViewer {
     /**
-     * 在指定槽位显示计分板
-     * @param scoreboard 目标计分板
-     * @param slot 目标槽位
+     * Displays the scoreboard in the specified slot
+     * @param scoreboard the target scoreboard
+     * @param slot the target slot
      */
     void display(IScoreboard scoreboard, DisplaySlot slot);
 
     /**
-     * 清除指定槽位的显示内容
-     * @param slot 目标槽位
+     * Clears the display content of the specified slot
+     * @param slot the target slot
      */
     void hide(DisplaySlot slot);
 
     /**
-     * 通知观察者计分板已删除（若计分板在任意显示槽位中，则会一并清除槽位）
-     * @param scoreboard 目标计分板
+     * Notifies the viewer that the scoreboard has been removed (if the scoreboard is in any display slot, that slot is cleared as well)
+     * @param scoreboard the target scoreboard
      */
     void removeScoreboard(IScoreboard scoreboard);
 
     /**
-     * 通知观察者指定计分板上的指定行已删除
-     * @param line 目标行
+     * Notifies the viewer that the specified line on the specified scoreboard has been removed
+     * @param line the target line
      */
     void removeLine(IScoreboardLine line);
 
     /**
-     * 向观察者发送指定行的新分数
-     * @param line 目标行
+     * Sends the viewer the new score for the specified line
+     * @param line the target line
      */
     void updateScore(IScoreboardLine line);
 }

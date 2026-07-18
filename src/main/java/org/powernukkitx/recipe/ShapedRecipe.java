@@ -233,7 +233,7 @@ public class ShapedRecipe extends CraftingRecipe {
                 startRow = row;
                 break;
             }
-            // 发现全部都是空气，直接返回空数组
+            // All slots turned out to be air, so just return an empty array
             if (row == inputs.length - 1) {
                 input.setCol(0);
                 input.setRow(0);

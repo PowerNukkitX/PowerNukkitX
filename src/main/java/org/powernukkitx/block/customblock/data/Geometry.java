@@ -22,8 +22,6 @@ public class Geometry implements NBTData {
     }
 
     /**
-     * 控制模型对应骨骼是否显示
-     * <p>
      * Control the visibility that the bone of geometry
      */
     public Geometry boneVisibility(@NotNull String boneName, boolean isVisibility) {
@@ -34,8 +32,6 @@ public class Geometry implements NBTData {
     }
 
     /**
-     * 控制模型对应骨骼是否显示
-     * <p>
      * Control the visibility that the bone of geometry
      */
     public Geometry boneVisibility(@NotNull String boneName, String condition) {

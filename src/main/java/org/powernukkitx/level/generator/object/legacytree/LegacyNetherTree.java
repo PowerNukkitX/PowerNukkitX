@@ -21,7 +21,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
     }
 
     private boolean checkY(BlockManager level, int y) {
-        // 防止长出顶部
+        // prevent growing out the top
         if (level.isNether()) {
             return y > 126;
         } else if (level.isOverWorld()) {
@@ -34,7 +34,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
 
     @Override
     public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
-        if (checkY(level, y)) { // 防止长出下界顶部基岩层
+        if (checkY(level, y)) { // prevent growing into the nether's top bedrock layer
             return;
         }
 
@@ -43,7 +43,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
         double blankArea = -3;
         int mid = (int) (1 - blankArea / 2);
         for (int yy = y - 3 + treeHeight; yy <= y + this.treeHeight - 1; ++yy) {
-            if (checkY(level, yy)) { // 防止长出下界顶部基岩层
+            if (checkY(level, yy)) { // prevent growing into the nether's top bedrock layer
                 continue;
             }
 
@@ -79,7 +79,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
         }
 
         for (int yy = y - 4 + treeHeight; yy <= y + this.treeHeight - 3; ++yy) {
-            if (checkY(level, yy)) { // 防止长出下界顶部基岩层
+            if (checkY(level, yy)) { // prevent growing into the nether's top bedrock layer
                 continue;
             }
 
@@ -127,7 +127,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
     protected void placeTrunk(BlockManager level, int x, int y, int z, RandomSourceProvider random, int trunkHeight) {
         level.setBlockStateAt(x, y, z, getTrunkBlockState());
         for (int yy = 0; yy < trunkHeight; ++yy) {
-            if (checkY(level, y + yy)) { // 防止长出下界顶部基岩层
+            if (checkY(level, y + yy)) { // prevent growing into the nether's top bedrock layer
                 continue;
             }
             Block b = level.getBlockIfCachedOrLoaded(x, y + yy, z);

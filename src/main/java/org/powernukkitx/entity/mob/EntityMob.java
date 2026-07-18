@@ -36,8 +36,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
     /**
-     * 不同难度下实体空手能造成的伤害.
-     * <p>
      * The damage that can be caused by the entity's empty hand at different difficulties.
      */
     protected float[] diffHandDamage;
@@ -124,7 +122,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         }
 
         if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent && !(entityDamageByEntityEvent.getDamager() instanceof EntityCreeper)) {
-            //更新仇恨目标
+            //Update the aggro target
             getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
 

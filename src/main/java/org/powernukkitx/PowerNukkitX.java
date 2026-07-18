@@ -48,7 +48,7 @@ import static org.powernukkitx.utils.Utils.dynamic;
  * The launcher class of PNX, including the {@code main} function.
  *
  * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author Fenxie Dama (javadoc) @ Nukkit Project
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Slf4j
@@ -176,6 +176,10 @@ public class PowerNukkitX {
             log.info("First-time setup detected. Running setup wizard...");
             try (SetupWizard wizard = new SetupWizard()) {
                 wizardConfig = wizard.run(language, false, autoAcceptLicense, serverName, port);
+                if (wizardConfig != null && !wizardConfig.isLicenseAccepted()) {
+                    log.error("Setup wizard did not accept the license. Startup cancelled.");
+                    return;
+                }
                 if (wizardConfig != null && wizardConfig.getLanguage() != null) {
                     language = wizardConfig.getLanguage();
                 }
@@ -194,12 +198,12 @@ public class PowerNukkitX {
                     boolean accepted = wizard.acceptLicense(false);
                     if (!accepted) {
                         System.out.println("License not accepted. Exiting.");
-                        System.exit(1);
+                        return;
                     }
                 }
             } catch (Exception e) {
                 log.error("Failed to display license acceptance dialog", e);
-                System.exit(1);
+                return;
             }
             wizardConfig = new WizardConfig();
             if (serverName != null && !serverName.isEmpty()) {

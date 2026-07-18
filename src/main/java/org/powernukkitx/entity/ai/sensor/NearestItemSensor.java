@@ -8,7 +8,7 @@ import org.powernukkitx.entity.item.EntityItem;
 import org.powernukkitx.item.Item;
 import lombok.Getter;
 
-//存储最近的玩家的Memory
+//Memory that stores the nearest player
 
 
 @Getter
@@ -39,7 +39,7 @@ public class NearestItemSensor implements ISensor {
         EntityItem item = null;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
-        //寻找范围内最近的玩家
+        //Find the nearest player within range
         for (Entity e : entity.getLevel().getEntities()) {
             if(e instanceof EntityItem entityItem) {
                 if(itemClass.isAssignableFrom(entityItem.getItem().getClass())) {

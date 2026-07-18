@@ -54,7 +54,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         } else return i;
     };
     /**
-     * 缓存着配方数据包
+     * Caches the crafting data packet
      */
     private static CraftingDataPacket PACKET = null;
     private final VanillaRecipeParser vanillaRecipeParser = new VanillaRecipeParser();

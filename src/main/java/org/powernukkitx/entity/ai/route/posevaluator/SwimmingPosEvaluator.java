@@ -10,7 +10,7 @@ import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 用于游泳实体的坐标评估器
+ * Position evaluator for swimming entities
  */
 
 
@@ -27,13 +27,13 @@ public class SwimmingPosEvaluator implements IPosEvaluator {
     }
 
     /**
-     * 指定实体在指定坐标上能否不发生碰撞
-     * 对于空间中的移动做了特别的优化
+     * Determines whether the entity can occupy the given position without colliding.
+     * Specially optimized for movement through open space.
      */
     protected boolean isPassable(EntityIntelligent entity, Vector3 vector3) {
         double radius = (entity.getWidth() * entity.getScale()) * 0.5 + 0.1;
         float height = entity.getHeight() * entity.getScale();
-        // 原版中不会贴地飞行
+        // In vanilla, entities don't fly hugging the ground
         AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY() - height * 0.5, vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
         return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
     }

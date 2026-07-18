@@ -92,7 +92,7 @@ public class Scores extends CachedSimpleSelectorArgument {
             boolean reversed = ParseUtils.checkReversed(condition);
             if (reversed) condition = condition.substring(1);
             if (condition.contains("..")) {
-                //条件为一个区间
+                //condition is a range
                 int min = Integer.MIN_VALUE;
                 int max = Integer.MAX_VALUE;
                 var splittedScoreScope = StringUtils.fastSplit(SCORE_SCOPE_SEPARATOR, condition);
@@ -106,7 +106,7 @@ public class Scores extends CachedSimpleSelectorArgument {
                 }
                 conditions.add(new ScoreCondition(objectiveName, min, max, reversed));
             } else {
-                //条件为单个数字
+                //condition is a single number
                 int score = Integer.parseInt(condition);
                 conditions.add(new ScoreCondition(objectiveName, score, score, reversed));
             }

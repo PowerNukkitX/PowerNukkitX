@@ -6,7 +6,7 @@ package org.powernukkitx;
  * and interrupt them one by one.</p>
  *
  * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author Fenxie Dama (javadoc) @ Nukkit Project
  * @see org.powernukkitx.scheduler.AsyncWorker
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */

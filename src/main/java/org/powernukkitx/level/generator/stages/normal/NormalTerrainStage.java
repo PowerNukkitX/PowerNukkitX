@@ -13,10 +13,11 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateStage;
 import org.powernukkitx.level.generator.densityfunction.DensityCommon;
 import org.powernukkitx.level.generator.holder.NormalObjectHolder;
+import org.powernukkitx.level.generator.material.Aquifer;
 import org.powernukkitx.level.generator.material.MultiMaterial;
 import org.powernukkitx.utils.random.NukkitRandom;
 
-import java.util.ArrayDeque;
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 
 @SuppressWarnings("PMD.ExcessiveParameterList")
 public class NormalTerrainStage extends GenerateStage {
@@ -55,7 +56,7 @@ public class NormalTerrainStage extends GenerateStage {
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunk.getX(), chunk.getZ()));
         final DensityCommon.CellFunctionContext functionContext = new DensityCommon.CellFunctionContext(chunkCache);
         final int cellYCount = ((cellMaxY - cellMinY) / CELL_HEIGHT) + 1;
-        final int[][] mandatoryTopY = new int[16][16];
+        final int[] mandatoryTopY = new int[256];
         for (int x = 0; x < 16; x++) {
             final int worldX = chunkBaseX + x;
             for (int z = 0; z < 16; z++) {
@@ -64,7 +65,7 @@ public class NormalTerrainStage extends GenerateStage {
                         terrainHolder.getPreliminarySurfaceUpperBound()
                                 .compute(functionContext.set(worldX, 0, worldZ))
                 );
-                mandatoryTopY[x][z] = Math.min(maxY, Math.max(SEA_LEVEL, upper));
+                mandatoryTopY[(x << 4) | z] = Math.min(maxY, Math.max(SEA_LEVEL, upper));
             }
         }
 
@@ -73,7 +74,7 @@ public class NormalTerrainStage extends GenerateStage {
             chunk.batchProcess(unsafeChunk -> {
                 final boolean[] queued = new boolean[CELL_X_COUNT * cellYCount * CELL_Z_COUNT];
                 final boolean[] solidMandatoryCells = new boolean[queued.length];
-                final ArrayDeque<Integer> queue = new ArrayDeque<>();
+                final IntArrayFIFOQueue queue = new IntArrayFIFOQueue();
 
                 for (int cellYIndex = 0; cellYIndex < cellYCount; cellYIndex++) {
                     final int cellY = cellMinY + cellYIndex * CELL_HEIGHT;
@@ -117,7 +118,7 @@ public class NormalTerrainStage extends GenerateStage {
                 }
 
                 while (!queue.isEmpty()) {
-                    final int cellIndex = queue.removeFirst();
+                    final int cellIndex = queue.dequeueInt();
                     final int cellXIndex = cellIndex % CELL_X_COUNT;
                     final int cellZIndex = (cellIndex / CELL_X_COUNT) % CELL_Z_COUNT;
                     final int cellYIndex = cellIndex / (CELL_X_COUNT * CELL_Z_COUNT);
@@ -185,6 +186,7 @@ public class NormalTerrainStage extends GenerateStage {
             int cellZ
     ) {
         boolean hasNonAir = false;
+        final Aquifer aquifer = terrainHolder.getAquifer().get();
         for (int localX = 0; localX < CELL_XZ_SIZE; localX++) {
             final int x = cellX + localX;
             final int worldX = chunkBaseX + x;
@@ -202,7 +204,7 @@ public class NormalTerrainStage extends GenerateStage {
                             generatedState = DEEPSLATE;
                         }
                         unsafeChunk.setBlockState(x, y, z, generatedState, 0);
-                        if (terrainHolder.getAquifer().get().shouldScheduleFluidUpdate()) {
+                        if (aquifer.shouldScheduleFluidUpdate()) {
                             level.scheduleUpdate(generatedState.toBlock(new Position(worldX, y, worldZ, level)), 10);
                         }
                         if (generatedState != BlockAir.STATE) {
@@ -218,7 +220,7 @@ public class NormalTerrainStage extends GenerateStage {
         return hasNonAir;
     }
 
-    private static boolean shouldGenerateMandatoryCell(int[][] mandatoryTopY, int cellX, int cellY, int cellZ) {
+    private static boolean shouldGenerateMandatoryCell(int[] mandatoryTopY, int cellX, int cellY, int cellZ) {
         if (cellY + CELL_HEIGHT - 1 <= SEA_LEVEL) {
             return true;
         }
@@ -226,7 +228,7 @@ public class NormalTerrainStage extends GenerateStage {
             final int x = cellX + localX;
             for (int localZ = 0; localZ < CELL_XZ_SIZE; localZ++) {
                 final int z = cellZ + localZ;
-                if (cellY <= mandatoryTopY[x][z]) {
+                if (cellY <= mandatoryTopY[(x << 4) | z]) {
                     return true;
                 }
             }
@@ -272,7 +274,7 @@ public class NormalTerrainStage extends GenerateStage {
     }
 
     private static void enqueueCell(
-            ArrayDeque<Integer> queue,
+            IntArrayFIFOQueue queue,
             boolean[] queued,
             int cellXIndex,
             int cellYIndex,
@@ -289,11 +291,11 @@ public class NormalTerrainStage extends GenerateStage {
             return;
         }
         queued[index] = true;
-        queue.addLast(index);
+        queue.enqueue(index);
     }
 
     private static void enqueueNeighbors(
-            ArrayDeque<Integer> queue,
+            IntArrayFIFOQueue queue,
             boolean[] queued,
             int cellXIndex,
             int cellYIndex,

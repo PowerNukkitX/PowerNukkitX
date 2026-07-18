@@ -22,7 +22,7 @@ public class PNXWorldHandle implements WorldHandle {
         if (!s.startsWith("minecraft:")) {
             s = "minecraft:" + s;
         }
-        //修正部分属性缺失以能正确获取对应基岩版映射
+        //fix some missing properties so the corresponding Bedrock mapping can be retrieved correctly
         switch (s) {
             case "minecraft:water" -> s = "minecraft:water[level=0]";
             case "minecraft:lava" -> s = "minecraft:lava[level=0]";
@@ -84,12 +84,12 @@ public class PNXWorldHandle implements WorldHandle {
             jeBlockAttributes.putIfAbsent("west", "false");
         }
         var bedrockBlockState = MappingRegistries.BLOCKS.getPNXBlock(jeBlockState);
-        //若未获取到属性，排除掉含水再次尝试
+        //if not found, retry ignoring the waterlogged property
         if (bedrockBlockState == null) {
             jeBlockState.setEqualsIgnoreWaterlogged(true);
             bedrockBlockState = MappingRegistries.BLOCKS.getPNXBlock(jeBlockState);
         }
-        //排除所有属性再次尝试
+        //retry ignoring all properties
         if (bedrockBlockState == null) {
             jeBlockState.setEqualsIgnoreAttributes(true);
             bedrockBlockState = MappingRegistries.BLOCKS.getPNXBlock(jeBlockState);

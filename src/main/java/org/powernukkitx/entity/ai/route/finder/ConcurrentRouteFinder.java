@@ -8,15 +8,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 并行路径查找抽象类 <br/>
- * 实现了此类的寻路器应当提供完整的异步寻路支持 <br/>
- * PNX中未使用此寻路方案，但保留以提供API <br/>
+ * Abstract class for concurrent pathfinding <br/>
+ * A pathfinder implementing this class should provide full asynchronous pathfinding support <br/>
+ * This pathfinding approach is not used in PNX, but is kept to provide an API <br/>
  */
 
 
 public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
 
-    //同步访问锁
+    //synchronized access lock
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public ConcurrentRouteFinder(IPosEvaluator blockEvaluator) {
@@ -51,7 +51,7 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 线程安全地获取查找到的路径信息（cloned）
+     * Thread-safely get the found path information (cloned)
      */
     @Override
     public ArrayList<Node> getRoute() {
@@ -120,7 +120,7 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
         this.currentIndex = index;
     }
 
-    //异步查找路径
+    //asynchronously search for a path
     public CompletableFuture<Void> asyncSearch() {
         return CompletableFuture.runAsync(this::search);
     }

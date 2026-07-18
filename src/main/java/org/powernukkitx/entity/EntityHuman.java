@@ -102,7 +102,7 @@ public class EntityHuman extends EntityHumanType {
     }
 
     /**
-     * 偏移客户端传输玩家位置的y轴误差
+     * Offsets the y-axis error in the player position sent by the client
      *
      * @return the base offset
      */
@@ -205,7 +205,7 @@ public class EntityHuman extends EntityHumanType {
         //handle human entity freeze
         var collidedWithPowderSnow = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId().equals(Block.POWDER_SNOW));
         if (this.getFreezingTicks() < 140 && collidedWithPowderSnow) {
-            if (getFreezingTicks() == 0) {//玩家疾跑进来要设置为非疾跑，统一为默认速度0.1
+            if (getFreezingTicks() == 0) {//players sprinting in must be set to non-sprinting, unified to the default speed 0.1
                 this.setSprinting(false);
             }
             this.addFreezingTicks(1);

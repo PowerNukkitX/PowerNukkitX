@@ -12,129 +12,129 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 管理，储存一批计分板 <br>
- * 此接口面向/scoreboard命令，若只是想要显示信息，请直接操作scoreboard对象
+ * Manages and stores a group of scoreboards. <br>
+ * This interface targets the /scoreboard command; if you only want to display information, operate on the scoreboard object directly.
  */
 
 
 public interface IScoreboardManager {
     /**
-     * 添加一个计分板
-     * @param scoreboard 目标计分板
-     * @return 是否添加成功（返回false若计分板已存在或者事件被撤销）
+     * Adds a scoreboard.
+     * @param scoreboard the target scoreboard
+     * @return whether it was added successfully (returns false if the scoreboard already exists or the event was cancelled)
      */
     boolean addScoreboard(IScoreboard scoreboard);
 
     /**
-     * 删除一个计分板
-     * @param scoreboard 目标计分板
-     * @return 是否删除成功（返回false若计分板已存在或者事件被撤销）
+     * Removes a scoreboard.
+     * @param scoreboard the target scoreboard
+     * @return whether it was removed successfully (returns false if the scoreboard does not exist or the event was cancelled)
      */
     boolean removeScoreboard(IScoreboard scoreboard);
 
     /**
-     * 删除一个计分板
-     * @param objectiveName 目标计分板标识名称
-     * @return 是否删除成功（返回false若计分板已存在或者事件被撤销）
+     * Removes a scoreboard.
+     * @param objectiveName the target scoreboard's identifier name
+     * @return whether it was removed successfully (returns false if the scoreboard does not exist or the event was cancelled)
      */
     boolean removeScoreboard(String objectiveName);
 
     /**
-     * 获取计分板对象（若存在）
-     * @param objectiveName 目标计分板标识名称
-     * @return 计分板对象
+     * Gets a scoreboard object (if it exists).
+     * @param objectiveName the target scoreboard's identifier name
+     * @return the scoreboard object
      */
     @Nullable IScoreboard getScoreboard(String objectiveName);
 
     /**
-     * 获取所有计分板对象
-     * @return 所有计分板对象
+     * Gets all scoreboard objects.
+     * @return all scoreboard objects
      */
     Map<String, IScoreboard> getScoreboards();
 
     /**
-     * 检查是否存在指定计分板
-     * @param scoreboard 指定计分板
-     * @return 是否存在
+     * Checks whether the specified scoreboard exists.
+     * @param scoreboard the specified scoreboard
+     * @return whether it exists
      */
     boolean containScoreboard(IScoreboard scoreboard);
 
     /**
-     * 检查是否存在指定计分板
-     * @param name 指定计分板标识名称
-     * @return 是否存在
+     * Checks whether the specified scoreboard exists.
+     * @param name the specified scoreboard's identifier name
+     * @return whether it exists
      */
     boolean containScoreboard(String name);
 
     /**
-     * 获取显示槽位信息
-     * @return 显示槽位信息
+     * Gets the display slot information.
+     * @return the display slot information
      */
     Map<DisplaySlot, IScoreboard> getDisplay();
 
     /**
-     * 获取指定显示槽位的计分板（若存在）
-     * @param slot 指定槽位
-     * @return 计分板对象
+     * Gets the scoreboard in the specified display slot (if it exists).
+     * @param slot the specified slot
+     * @return the scoreboard object
      */
     @Nullable IScoreboard getDisplaySlot(DisplaySlot slot);
 
     /**
-     * 设置指定槽位显示计分板
-     * 若形参scoreboard为null,则清除指定槽位内容
-     * @param slot 指定槽位
-     * @param scoreboard 计分板对象
+     * Sets the scoreboard displayed in the specified slot.
+     * If the scoreboard parameter is null, clears the content of the specified slot.
+     * @param slot the specified slot
+     * @param scoreboard the scoreboard object
      */
     void setDisplay(DisplaySlot slot, @Nullable IScoreboard scoreboard);
 
     /**
-     * 获取所有观察者
-     * @return 所有观察者
+     * Gets all viewers.
+     * @return all viewers
      */
     Set<IScoreboardViewer> getViewers();
 
     /**
-     * 添加一个观察者
-     * @param viewer 目标观察者
-     * @return 是否添加成功
+     * Adds a viewer.
+     * @param viewer the target viewer
+     * @return whether it was added successfully
      */
     boolean addViewer(IScoreboardViewer viewer);
 
     /**
-     * 删除一个观察者（若存在）
-     * @param viewer 目标观察者
-     * @return 是否删除成功
+     * Removes a viewer (if it exists).
+     * @param viewer the target viewer
+     * @return whether it was removed successfully
      */
     boolean removeViewer(IScoreboardViewer viewer);
 
     /**
-     * 服务端内部方法
+     * Server-internal method.
      */
     void onPlayerJoin(Player player);
 
     /**
-     * 服务端内部方法
+     * Server-internal method.
      */
     void beforePlayerQuit(Player player);
 
     /**
-     * 服务端内部方法
+     * Server-internal method.
      */
     void onEntityDead(EntityLiving entity);
 
     /**
-     * 获取计分板存储器实例
-     * @return 存储器实例
+     * Gets the scoreboard storage instance.
+     * @return the storage instance
      */
     IScoreboardStorage getStorage();
 
     /**
-     * 通过存储器保存计分板信息
+     * Saves the scoreboard information through the storage.
      */
     void save();
 
     /**
-     * 从存储器重新读取计分板信息
+     * Re-reads the scoreboard information from the storage.
      */
     void read();
 }

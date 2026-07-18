@@ -39,7 +39,7 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     }
 
     /**
-     * 获取当前的参数链解析在哪个下标发生了错误(下标从0开始)
+     * Gets the index at which the current parameter chain parsing failed (index starts at 0)
      *
      * @return the error index
      */
@@ -48,7 +48,7 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     }
 
     /**
-     * 获取当前的参数链解析了几个参数(下标从1开始)
+     * Gets how many parameters the current parameter chain has parsed (index starts at 1)
      *
      * @return the index
      */
@@ -64,7 +64,7 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     }
 
     /**
-     * 获取指定索引处参数节点的值。
+     * Gets the value of the parameter node at the specified index.
      */
     public <E> E getResult(int index) {
         return this.get(index).get();
@@ -98,9 +98,9 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     }
 
     /**
-     * 如果是可选命令{@link IParamNode#isOptional()}节点，请在获取值{@link #getResult(int)}之前调用该方法判断是否存在
+     * If this is an optional {@link IParamNode#isOptional()} node, call this method before retrieving the value {@link #getResult(int)} to check whether it exists
      *
-     * @return 指定索引处的参数节点是否存在值
+     * @return whether the parameter node at the specified index has a value
      */
     public boolean hasResult(int index) {
         return index < this.size() && index > -1 && this.get(index).hasResult();

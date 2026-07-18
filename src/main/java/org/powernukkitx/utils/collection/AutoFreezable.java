@@ -8,25 +8,25 @@ public interface AutoFreezable {
 
     /**
      * this.temperature += temperature; <br/>
-     * 带有沸点检查，没有绝对零度检查！
-     * @param temperature 温度变化量
+     * Includes a boiling point check, but no absolute zero check!
+     * @param temperature the amount of temperature change
      */
     void warmer(int temperature);
 
     /**
      * this.temperature -= temperature; <br/>
-     * 带有绝对零度检查，没有沸点检查！
-     * @param temperature 温度变化量
+     * Includes an absolute zero check, but no boiling point check!
+     * @param temperature the amount of temperature change
      */
     void colder(int temperature);
 
     /**
-     * 强制冻结数组
+     * Forcibly freezes the array.
      */
     void freeze();
 
     /**
-     * 强制深度冻结数组
+     * Forcibly deep-freezes the array.
      */
     void deepFreeze();
 

@@ -33,28 +33,26 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
     protected final int coolDownTick;
     protected final int pullBowTick;
     /**
-     * 用来指定特定的攻击目标.
-     * <p>
      * Used to specify a specific attack target.
      **/
     protected Entity target;
     /**
-     * 用来射击的物品
+     * The item used for shooting
      */
     protected Supplier<Item> item;
     private int tick1;//control the coolDownTick
     private int tick2;//control the pullBowTick
 
     /**
-     * 射击执行器
+     * The shooting executor
      *
      * @param item              the item
-     * @param memory            用于读取攻击目标的记忆<br>Used to read the memory of the attack target
-     * @param speed             移动向攻击目标的速度<br>The speed of movement towards the attacking target
-     * @param maxShootDistance  允许射击的最大距离，只有在这个距离内才能射击<br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
-     * @param clearDataWhenLose 失去目标时清空记忆<br>Clear your memory when you lose your target
-     * @param coolDownTick      攻击冷却时间(单位tick)<br>Attack cooldown (tick)
-     * @param pullBowTick       每次攻击动画用时(单位tick)<br>Attack Animation time(tick)
+     * @param memory            used to read the memory of the attack target
+     * @param speed             the speed of movement towards the attacking target
+     * @param maxShootDistance  the maximum distance at which it is permissible to shoot, and only at this distance can be fired
+     * @param clearDataWhenLose clear the memory when the target is lost
+     * @param coolDownTick      attack cooldown (tick)
+     * @param pullBowTick       animation time per attack (tick)
      */
     public BowShootExecutor(Supplier<Item> item, MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullBowTick) {
         this.item = item;
@@ -84,7 +82,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         if (!this.target.getPosition().equals(newTarget.getPosition())) {
-            //更新目标
+            //update the target
             target = newTarget;
         }
 
@@ -92,12 +90,12 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         Location clone = this.target.getLocation();
         boolean canSee = entity.hasLineOfSight(target);
         if (entity.distanceSquared(target) > maxShootDistanceSquared || !canSee) {
-            //更新寻路target
+            //update the pathfinding target
             setRouteTarget(entity, clone);
         } else {
             setRouteTarget(entity, null);
         }
-        //更新视线target
+        //update the line-of-sight target
         setLookTarget(entity, clone);
 
         if (tick2 == 0 && tick1 > coolDownTick && canSee) {
@@ -125,7 +123,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        //reset the speed
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
@@ -139,7 +137,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        //reset the speed
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);

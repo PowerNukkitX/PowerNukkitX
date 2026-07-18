@@ -48,7 +48,7 @@ public record PNXBlockStateDelegate(org.powernukkitx.block.BlockState innerBlock
 //        }
         //todo support properties
         var name = innerBlockState.getIdentifier();
-        //对于一些特殊方块的HACK
+        //HACK for some special blocks
         return switch (name) {
             case "minecraft:snow_layer" -> "minecraft:snow";
             case "minecraft:snow" -> "minecraft:snow_block";

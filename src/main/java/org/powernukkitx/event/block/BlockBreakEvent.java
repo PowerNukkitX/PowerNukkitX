@@ -64,8 +64,6 @@ public class BlockBreakEvent extends BlockEvent implements Cancellable {
     }
 
     /**
-     * 返回块是否可能在小于计算的时间内被破坏。通常创造玩家是true。
-     * <p>
      * Returns whether the block may be broken in less than the amount of time calculated. This is usually true for creative players.
      *
      * @return the insta break

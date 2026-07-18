@@ -87,9 +87,9 @@ public final class PlayerChunkManager {
     };
 
     private final Player player;
-    //保存着上tick已经发送的全部区块hash值
+    //holds all chunk hash values already sent in the previous tick
     private final @NotNull LongOpenHashSet sentChunks;
-    //保存着这tick将要发送的全部区块hash值
+    //holds all chunk hash values to be sent this tick
     private final @NotNull LongOpenHashSet inRadiusChunks;
     private final int trySendChunkCountPerTick;
     private final LongArrayPriorityQueue chunkSendQueue;

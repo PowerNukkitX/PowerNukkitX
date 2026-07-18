@@ -52,7 +52,7 @@ public abstract class ContainerInventory extends BaseInventory {
     }
 
     /**
-     * 若返回为true,则在inventory打开和关闭时会发生振动事件 (InventoryHolder为Vector3子类的前提下)
+     * If this returns true, a vibration event is emitted when the inventory is opened and closed (provided the InventoryHolder is a subclass of Vector3).
      *
      * @return boolean
      */

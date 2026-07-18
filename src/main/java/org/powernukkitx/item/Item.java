@@ -740,8 +740,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 设置物品的自定义名字
-     * <p>
      * Set custom names for items
      *
      * @param name
@@ -770,8 +768,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 清除物品的自定义名称
-     * <p>
      * Clear custom name for item
      *
      * @return
@@ -796,8 +792,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 定义物品的Lore信息
-     * <p>
      * Get the Lore information of the item
      *
      * @return
@@ -820,8 +814,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * 设置物品的Lore信息
-     * <p>
      * Set the Lore information of the item
      *
      * @param lines the lines

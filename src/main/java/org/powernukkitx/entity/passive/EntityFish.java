@@ -16,7 +16,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import java.util.Set;
 
 /**
- * 所有鱼的基类
+ * Base class for all fish.
  */
 public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
@@ -24,7 +24,7 @@ public abstract class EntityFish extends EntityAnimal implements EntitySwimmable
         super(chunk, nbt);
     }
 
-    //移除搁浅音效很不对味
+    //removing the stranded sound effect feels off
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(

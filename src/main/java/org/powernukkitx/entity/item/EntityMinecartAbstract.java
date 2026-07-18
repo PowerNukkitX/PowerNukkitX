@@ -237,12 +237,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 }
             }
 
-            //使矿车通知漏斗更新而不是漏斗来检测矿车
-            //通常情况下，矿车的数量远远少于漏斗，所以说此举能大福提高性能
+            //Let the minecart notify the hopper to update instead of the hopper detecting the minecart
+            //Usually there are far fewer minecarts than hoppers, so this greatly improves performance
             if (this instanceof InventoryHolder holder) {
                 var pickupArea = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
                 checkPickupHopper(pickupArea, holder);
-                //漏斗矿车会自行拉取物品!
+                //Hopper minecarts pull items on their own!
                 if (!(this instanceof EntityHopperMinecart)) {
                     var pushArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
                     checkPushHopper(pushArea, holder);
@@ -426,20 +426,20 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     /**
-     * 检查邻近的漏斗并通知它输出物品
+     * Check neighboring hoppers and notify them to output items
      *
-     * @param pushArea 漏斗输出范围
-     * @return 是否有漏斗被通知
+     * @param pushArea the hopper output range
+     * @return whether any hopper was notified
      */
     private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
         return notifyHopper(pushArea, holder, true);
     }
 
     /**
-     * 检查邻近的漏斗并通知它获取物品
+     * Check neighboring hoppers and notify them to pull items
      *
-     * @param pickupArea 漏斗拉取范围
-     * @return 是否有漏斗被通知
+     * @param pickupArea the hopper pull range
+     * @return whether any hopper was notified
      */
     private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
         return notifyHopper(pickupArea, holder, false);

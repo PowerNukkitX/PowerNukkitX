@@ -50,7 +50,7 @@ public class RegisteredListener {
         }
         try {
             executor.execute(listener, event);
-        } catch (IllegalAccessError | NoSuchMethodError e) { // 动态编译的字节码调用失败时的逃生门
+        } catch (IllegalAccessError | NoSuchMethodError e) { // escape hatch for when the dynamically compiled bytecode call fails
             if (executor instanceof CompiledExecutor compiledExecutor) {
                 executor = new MethodEventExecutor(compiledExecutor.getOriginMethod());
                 executor.execute(listener, event);
