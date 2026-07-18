@@ -205,6 +205,18 @@ public abstract class Effect implements Cloneable {
     }
 
     /**
+     * Checks whether this effect can be applied to the given entity.
+     * <p>
+     * Subclasses should override this to define entities that are immune to the effect.
+     *
+     * @param entity the entity the effect is about to be applied to
+     * @return {@code true} if the entity can receive this effect, {@code false} if it is immune.
+     */
+    public boolean canBeApplied(Entity entity) {
+        return true;
+    }
+
+    /**
      * Called when the entity carrying this effect dies.
      *
      * @param entity the dying entity

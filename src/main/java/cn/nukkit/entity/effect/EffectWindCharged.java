@@ -2,6 +2,9 @@ package cn.nukkit.entity.effect;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.mob.EntityCreaking;
+import cn.nukkit.entity.mob.EntityEnderDragon;
+import cn.nukkit.entity.mob.EntityWither;
 import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.math.Vector3;
 import org.cloudburstmc.protocol.bedrock.data.ParticleType;
@@ -16,6 +19,14 @@ public class EffectWindCharged extends Effect {
 
     public EffectWindCharged() {
         super(EffectType.WIND_CHARGED, "%effect.windCharged", new Color(189, 201, 255), true);
+    }
+
+    @Override
+    public boolean canBeApplied(Entity entity) {
+        if (entity instanceof EntityWither || entity instanceof EntityEnderDragon) {
+            return false;
+        }
+        return !(entity instanceof EntityCreaking creaking && creaking.getCreakingHeart() != null);
     }
 
     @Override

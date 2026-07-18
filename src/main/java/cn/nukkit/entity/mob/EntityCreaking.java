@@ -36,6 +36,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import lombok.Getter;
 import lombok.Setter;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
@@ -72,6 +73,7 @@ public class EntityCreaking extends EntityMob {
         return Set.of("creaking", "monster", "mob");
     }
 
+    @Getter
     @Setter
     protected BlockEntityCreakingHeart creakingHeart;
 

@@ -951,7 +951,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void addEffect(Effect effect) {
-        if (effect == null) {
+        if (effect == null || !effect.canBeApplied(this)) {
             return;
         }
 
