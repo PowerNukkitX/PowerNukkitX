@@ -93,7 +93,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
         }
 
         var bytes = Files.readAllBytes(file.toPath());
-        //使用java nio bytebuffer以获得更好性能
+        //use a java nio bytebuffer for better performance
         byteBuffer = ByteBuffer.allocateDirect(bytes.length);
         byteBuffer.put(bytes);
         byteBuffer.flip();

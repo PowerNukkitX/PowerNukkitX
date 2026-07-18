@@ -15,7 +15,7 @@ public abstract class TestEventHandler<T extends Event> {
         Preconditions.checkArgument(type instanceof ParameterizedType, "Type must be a parameterized type");
         ParameterizedType parameterizedType = (ParameterizedType) type;
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        Preconditions.checkArgument(actualTypeArguments.length == 1, "Number of type arguments must be 1");    // 设置结果
+        Preconditions.checkArgument(actualTypeArguments.length == 1, "Number of type arguments must be 1");    // set the result
         Type actualTypeArgument = actualTypeArguments[0];
         Preconditions.checkArgument(actualTypeArgument instanceof Class<?>, "Type must be a class type");
         this.actualType = (Class<T>) actualTypeArgument;

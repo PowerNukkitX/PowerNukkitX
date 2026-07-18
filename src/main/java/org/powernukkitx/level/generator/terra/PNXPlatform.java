@@ -79,7 +79,7 @@ public class PNXPlatform extends AbstractPlatform {
     public boolean reload() {
         getTerraConfig().load(this);
         getRawConfigRegistry().clear();
-        // TODO: 2022/2/14 支持重载配置
+        // TODO: 2022/2/14 support reloading the config
         return getRawConfigRegistry().loadAll(this);
     }
 

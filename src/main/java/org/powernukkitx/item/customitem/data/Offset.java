@@ -4,8 +4,6 @@ import org.powernukkitx.math.Vector3f;
 
 
 /**
- * Offset代表RenderOffsets中的偏移量对象
- * <p>
  * This represents the offset object in RenderOffsets
  */
 

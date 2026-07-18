@@ -48,7 +48,7 @@ import static org.powernukkitx.utils.Utils.dynamic;
  * The launcher class of PNX, including the {@code main} function.
  *
  * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author Fenxie Dama (javadoc) @ Nukkit Project
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Slf4j

@@ -10,8 +10,8 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 /**
- * 处理陆地行走实体运动
- * todo: 有待解耦
+ * Handles movement of land-walking entities
+ * todo: needs to be decoupled
  */
 
 
@@ -29,7 +29,7 @@ public class HoppingController extends WalkController {
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection() && currentJumpCoolDown > moveCooldown) {
-            //clone防止异步导致的NPE
+            //clone to prevent NPE caused by asynchronous access
             Vector3 direction = entity.getMoveDirectionEnd().clone();
             var speed = entity.getMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
