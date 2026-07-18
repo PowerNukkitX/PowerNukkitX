@@ -18,6 +18,8 @@
 
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.event.block.BlockExplosionPrimeEvent;
@@ -42,6 +44,15 @@ import java.util.Objects;
 
 public class BlockRespawnAnchor extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(RESPAWN_ANCHOR, CommonBlockProperties.RESPAWN_ANCHOR_CHARGE);
+    public static final BlockDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .hardness(50)
+            .resistance(1200)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_DIAMOND)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -53,7 +64,7 @@ public class BlockRespawnAnchor extends Block {
     }
 
     public BlockRespawnAnchor(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -128,26 +139,6 @@ public class BlockRespawnAnchor extends Block {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_DIAMOND;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1200;
-    }
-
-    @Override
-    public double getHardness() {
-        return 50;
-    }
-
-    @Override
     public int getLightLevel() {
         return switch (getCharge()) {
             case 0 -> 0;
@@ -173,21 +164,6 @@ public class BlockRespawnAnchor extends Block {
 
     @Override
     public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
         return false;
     }
 

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.item.Item;
@@ -14,13 +16,18 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockDirt extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .resistance(0.5)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .canBeActivated(true)
+            .build();
 
     public BlockDirt() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockDirt(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -30,26 +37,12 @@ public class BlockDirt extends BlockSolid implements Natural {
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
-    }
-
-    @Override
     public double getHardness() {
         //Although the hardness on the wiki is 0.5, after testing, a hardness of 0.6 is more suitable for the vanilla
         return 0.6;
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
 

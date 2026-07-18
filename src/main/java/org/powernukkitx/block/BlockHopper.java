@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -33,6 +35,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.TOGGLE_BIT;
  */
 public class BlockHopper extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
     public static final BlockProperties PROPERTIES = new BlockProperties(HOPPER, CommonBlockProperties.FACING_DIRECTION, TOGGLE_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3)
+            .resistance(24)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -45,7 +54,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     }
 
     public BlockHopper(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -63,16 +72,6 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
     @Override
     public String getName() {
         return "Hopper Block";
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 24;
     }
 
     @Override
@@ -116,11 +115,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         return player.addWindow(blockEntity.getInventory()) != -1;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean hasComparatorInputOverride() {
         return true;
@@ -170,16 +165,6 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         }
 
         return 0;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     @Override

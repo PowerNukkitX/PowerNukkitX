@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -33,6 +35,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockCrafter extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityCrafter> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTER, CommonBlockProperties.CRAFTING, CommonBlockProperties.ORIENTATION, CommonBlockProperties.TRIGGERED_BIT);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .resistance(1.5D)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .canBeActivated(true)
+            .build();
 
     private static final List<Location> manualOverrides = new ArrayList<>();
 
@@ -43,7 +50,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
     }
 
     public BlockCrafter(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -60,21 +67,6 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
     @Override
     public String getName() {
         return "Crafter";
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5D;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityJukebox;
@@ -17,6 +19,10 @@ import javax.annotation.Nullable;
  */
 public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockEntityJukebox> {
     public static final BlockProperties PROPERTIES = new BlockProperties(JUKEBOX);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -28,7 +34,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     public BlockJukebox(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -46,21 +52,13 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
         return BlockEntity.JUKEBOX;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         BlockEntityJukebox jukebox = getOrCreateBlockEntity();

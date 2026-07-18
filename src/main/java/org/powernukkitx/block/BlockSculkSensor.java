@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySculkSensor;
 import org.powernukkitx.level.Level;
@@ -16,6 +18,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.SCULK_SENSOR
  */
 public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR, SCULK_SENSOR_PHASE);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .breaksWhenMoved(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -27,7 +33,7 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     }
 
     public BlockSculkSensor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -88,16 +94,6 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
 
     @Override
     public boolean isSolid(BlockFace side) {
-        return false;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
         return false;
     }
 

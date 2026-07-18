@@ -1,10 +1,17 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSoulSoil extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SOIL);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1)
+            .resistance(1)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,27 +23,12 @@ public class BlockSoulSoil extends BlockSolid {
     }
 
     public BlockSoulSoil(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Soul Soil";
-    }
-
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
     }
 
     @Override

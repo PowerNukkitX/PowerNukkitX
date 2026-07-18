@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.event.block.FarmLandDecayEvent;
 import org.powernukkitx.item.Item;
@@ -14,6 +16,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockFarmland extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(FARMLAND, CommonBlockProperties.MOISTURIZED_AMOUNT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.6)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -25,27 +32,12 @@ public class BlockFarmland extends BlockTransparent {
     }
 
     public BlockFarmland(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Farmland";
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
     }
 
     @Override

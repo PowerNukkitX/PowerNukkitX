@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMovingBlock;
@@ -12,6 +14,11 @@ import javax.annotation.Nullable;
 
 public class BlockMovingBlock extends BlockTransparent implements BlockEntityHolder<BlockEntityMovingBlock> {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOVING_BLOCK);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .canPassThrough(true)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -23,7 +30,7 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
     }
 
     public BlockMovingBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -47,25 +54,11 @@ public class BlockMovingBlock extends BlockTransparent implements BlockEntityHol
     }
 
     @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public  boolean canBePulled() {
-        return false;
-    }
-
-    @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
+    
     @Override
     public boolean isSolid() {
         return false;

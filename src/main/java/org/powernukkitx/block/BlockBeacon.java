@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityBeacon;
@@ -16,6 +18,15 @@ import javax.annotation.Nullable;
 
 public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<BlockEntityBeacon> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEACON);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3)
+            .resistance(15)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .lightEmission(15)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -28,7 +39,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     public BlockBeacon(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -43,11 +54,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         return BlockEntity.BEACON;
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
+    
     @Override
     public double calculateBreakTime(@NotNull Item item) {
         return calculateBreakTime(item, null);
@@ -59,30 +66,11 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
     public String getName() {
         return "Beacon";
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -101,13 +89,5 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
+    
     }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-}

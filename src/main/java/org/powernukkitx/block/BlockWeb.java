@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemString;
@@ -8,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockWeb extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WEB);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(4)
+            .resistance(20)
+            .toolType(ItemTool.TYPE_SWORD)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -19,22 +26,7 @@ public class BlockWeb extends BlockFlowable {
     }
 
     public BlockWeb(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public double getHardness() {
-        return 4;
-    }
-
-    @Override
-    public double getResistance() {
-        return 20;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SWORD;
+        super(blockstate, DEFINITION);
     }
 
     @Override

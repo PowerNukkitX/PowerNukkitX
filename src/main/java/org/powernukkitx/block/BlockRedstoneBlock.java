@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -11,6 +13,12 @@ import javax.annotation.Nullable;
 
 public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_BLOCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(5)
+            .resistance(10)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,22 +30,7 @@ public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent 
     }
 
     public BlockRedstoneBlock(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -45,11 +38,7 @@ public class BlockRedstoneBlock extends BlockSolid implements RedstoneComponent 
         return "Redstone Block";
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.block.BlockRedstoneEvent;
 import org.powernukkitx.item.Item;
@@ -32,6 +34,9 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIPWIRE_HOOK,
             DIRECTION, ATTACHED_BIT, POWERED_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .canPassThrough(false)
+            .build();
 
     @Override
     @NotNull
@@ -44,7 +49,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     public BlockTripwireHook(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
     }
 
     @Override
@@ -302,8 +307,4 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
         return false;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.MinecraftCardinalDirection;
@@ -41,13 +43,22 @@ import static org.powernukkitx.block.property.CommonBlockProperties.EXTINGUISHED
 @Slf4j
 public class BlockCampfire extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAMPFIRE, EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(5)
+            .resistance(2)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBePushed(true)
+            .canBePulled(false)
+            .breaksWhenMoved(true)
+            .canBeActivated(true)
+            .build();
 
     public BlockCampfire() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockCampfire(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -71,21 +82,6 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
     @Override
     public int getLightLevel() {
         return isExtinguished() ? 0 : 15;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2;
-    }
-
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     @Override
@@ -174,11 +170,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.FIRE, 1);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -304,18 +296,4 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return super.getComparatorInputOverride();
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
     }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return true;
-    }
-}

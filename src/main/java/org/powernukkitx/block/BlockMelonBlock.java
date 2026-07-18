@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemMelonSlice;
 import org.powernukkitx.item.ItemTool;
@@ -10,6 +12,13 @@ import java.util.Random;
 
 public class BlockMelonBlock extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MELON_BLOCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1)
+            .resistance(5)
+            .toolType(ItemTool.TYPE_AXE)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,22 +30,12 @@ public class BlockMelonBlock extends BlockSolid implements Natural {
     }
 
     public BlockMelonBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Melon Block";
-    }
-
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
     }
 
     @Override
@@ -54,23 +53,11 @@ public class BlockMelonBlock extends BlockSolid implements Natural {
         };
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
+    
     @Override
     public boolean canSilkTouch() {
         return true;
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
+    
     }
-
-    @Override
-    public  boolean sticksToPiston() {
-        return false;
-    }
-}

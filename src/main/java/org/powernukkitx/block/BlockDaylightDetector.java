@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -21,6 +23,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDaylightDetector extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -32,7 +39,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     public BlockDaylightDetector(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
     }
 
     @Override
@@ -50,31 +57,19 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         return BlockEntityDaylightDetector.class;
     }
 
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
+    
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -20,6 +22,16 @@ import javax.annotation.Nullable;
 public class BlockEnderChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(ENDER_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(22.5)
+            .resistance(3000)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .lightEmission(7)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -32,14 +44,10 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     }
 
     public BlockEnderChest(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     @NotNull
     public String getBlockEntityType() {
@@ -52,11 +60,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         return BlockEntityEnderChest.class;
     }
 
-    @Override
-    public int getLightLevel() {
-        return 7;
-    }
-
+    
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -65,21 +69,6 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     @Override
     public String getName() {
         return "Ender Chest";
-    }
-
-    @Override
-    public double getHardness() {
-        return 22.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3000;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -146,11 +135,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         return true;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
@@ -160,16 +145,6 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         } else {
             return Item.EMPTY_ARRAY;
         }
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
     }
 
     @Override

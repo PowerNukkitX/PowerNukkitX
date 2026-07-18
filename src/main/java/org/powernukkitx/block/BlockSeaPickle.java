@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -23,6 +25,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.DEAD_BIT;
 
 public class BlockSeaPickle extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SEA_PICKLE, CLUSTER_COUNT, DEAD_BIT);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     @Override
     @NotNull
@@ -35,7 +41,7 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     public BlockSeaPickle(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -116,11 +122,7 @@ public class BlockSeaPickle extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
 
@@ -188,8 +190,4 @@ public class BlockSeaPickle extends BlockFlowable {
         return new Item[]{new ItemBlock(new BlockSeaPickle(), 0, getPropertyValue(CLUSTER_COUNT))};
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
@@ -10,6 +12,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockGildedBlackstone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(GILDED_BLACKSTONE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,7 +28,7 @@ public class BlockGildedBlackstone extends BlockSolid {
     }
 
     public BlockGildedBlackstone(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -29,11 +36,7 @@ public class BlockGildedBlackstone extends BlockSolid {
         return "Gilded Blackstone";
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (!item.isPickaxe() || item.getTier() < ItemTool.TIER_WOODEN) {
@@ -72,13 +75,5 @@ public class BlockGildedBlackstone extends BlockSolid {
         return false;
     }
 
-    @Override
-    public double getHardness() {
-        return 1.5;
+    
     }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -10,13 +12,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockObsidian extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(OBSIDIAN);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .resistance(6000)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_DIAMOND)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     public BlockObsidian() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockObsidian(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -30,25 +39,11 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_DIAMOND;
-    }
-
-    @Override
     public double getHardness() {
         return 35; //TODO Should be 50 but the break time calculation is broken
     }
 
-    @Override
-    public double getResistance() {
-        return 6000;
-    }
-
+    
     @Override
     public boolean onBreak(Item item) {
         //destroy the nether portal
@@ -70,16 +65,6 @@ public class BlockObsidian extends BlockSolid {
         if (update) {
             onBreak(Item.AIR);
         }
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public  boolean canBePulled() {
-        return false;
     }
 
     @Override

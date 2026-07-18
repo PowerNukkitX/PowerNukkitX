@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
@@ -18,6 +20,10 @@ public class BlockHoneyBlock extends BlockSolid {
     private static final Random RANDOM = new Random();
 
     public static final BlockProperties PROPERTIES = new BlockProperties(HONEY_BLOCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -29,22 +35,12 @@ public class BlockHoneyBlock extends BlockSolid {
     }
 
     public BlockHoneyBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Honey Block";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
     }
 
     @Override

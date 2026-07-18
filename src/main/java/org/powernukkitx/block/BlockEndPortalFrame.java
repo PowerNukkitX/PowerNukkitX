@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -26,6 +28,14 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(END_PORTAL_FRAME,
             MINECRAFT_CARDINAL_DIRECTION,
             END_PORTAL_EYE_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(-1)
+            .resistance(3600000)
+            .lightEmission(1)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -37,22 +47,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     }
 
     public BlockEndPortalFrame(BlockState blockstate) {
-        super(blockstate);
-    }
-    
-    @Override
-    public double getResistance() {
-        return 3600000;
-    }
-
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 1;
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -76,16 +71,6 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public  boolean canBePulled() {
-        return false;
-    }
-
-    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
@@ -95,11 +80,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         return this.isEndPortalEye() ? 15 : 0;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!this.isEndPortalEye() && player != null && item.getId().equals(Item.ENDER_EYE)) {

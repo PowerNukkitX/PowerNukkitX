@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.Attachment;
@@ -21,6 +23,13 @@ import java.util.function.Supplier;
 
 public class BlockGrindstone extends BlockTransparent implements Faceable, BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRINDSTONE, CommonBlockProperties.ATTACHMENT, CommonBlockProperties.DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -33,22 +42,12 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
     }
 
     public BlockGrindstone(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Grindstone";
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     @Override
@@ -64,16 +63,6 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
     @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
     }
 
     @Override
@@ -199,11 +188,7 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
         );
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemSnowball;
@@ -9,13 +11,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockSnow extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNOW);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.6)
+            .resistance(1)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .canBeActivated(true)
+            .build();
 
     public BlockSnow() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockSnow(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -26,21 +34,6 @@ public class BlockSnow extends BlockSolid {
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
     }
 
     @Override
@@ -64,11 +57,7 @@ public class BlockSnow extends BlockSolid {
         return true;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShovel()) {

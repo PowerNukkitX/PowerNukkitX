@@ -1,5 +1,9 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.item.ItemTool;
+
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.enums.CauldronLiquid;
@@ -37,6 +41,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.FILL_LEVEL;
 public class BlockCauldron extends BlockSolid implements BlockEntityHolder<BlockEntityCauldron> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CAULDRON, CAULDRON_LIQUID, FILL_LEVEL);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2)
+            .resistance(10)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -49,7 +60,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     public BlockCauldron(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -67,26 +78,6 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     @Override
     public String getName() {
         return getCauldronLiquid() == CauldronLiquid.LAVA ? "Lava Cauldron" : "Cauldron Block";
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     public boolean isFull() {
@@ -549,11 +540,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean hasComparatorInputOverride() {
         return true;

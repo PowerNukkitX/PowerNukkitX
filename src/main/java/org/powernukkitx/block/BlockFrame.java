@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityItemFrame;
@@ -30,6 +32,13 @@ import static org.powernukkitx.math.BlockFace.AxisDirection.POSITIVE;
 
 public class BlockFrame extends BlockTransparent implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.25)
+            .canPassThrough(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .build();
 
     /**
      * Per-position lock to prevent concurrent interactions (left-click + right-click, or multiple players)
@@ -52,7 +61,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     }
 
     public BlockFrame(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -112,11 +121,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         return 0;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int getWaterloggingLevel() {
         return 1;
@@ -268,11 +273,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         return new Item[]{toItem()};
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
+    
     @Override
     public boolean hasComparatorInputOverride() {
         return true;
@@ -291,21 +292,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     public BlockFace getFacing() {
         return getBlockFace();
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.25;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     @Override

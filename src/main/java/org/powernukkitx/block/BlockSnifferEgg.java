@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.CrackedState;
@@ -18,6 +20,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockSnifferEgg extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNIFFER_EGG, CommonBlockProperties.CRACKED_STATE);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.5)
+            .resistance(0.5)
+            .build();
     private static final int REGULAR_HATCH_TIME_TICKS = 24000;
     private static final int BOOSTED_HATCH_TIME_TICKS = 12000;
     private static final int RANDOM_HATCH_OFFSET_TICKS = 300;
@@ -32,7 +38,7 @@ public class BlockSnifferEgg extends BlockTransparent {
     }
 
     public BlockSnifferEgg(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     public String getName() {
@@ -45,16 +51,6 @@ public class BlockSnifferEgg extends BlockTransparent {
 
     public void setCracks(CrackedState cracks) {
         setPropertyValue(CommonBlockProperties.CRACKED_STATE, cracks);
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
     }
 
     @Override

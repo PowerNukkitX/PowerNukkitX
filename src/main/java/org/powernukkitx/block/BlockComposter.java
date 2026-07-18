@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.block.ComposterEmptyEvent;
 import org.powernukkitx.event.block.ComposterFillEvent;
@@ -23,6 +25,12 @@ import static org.powernukkitx.block.property.CommonBlockProperties.COMPOSTER_FI
 
 public class BlockComposter extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER, COMPOSTER_FILL_LEVEL);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.6)
+            .resistance(0.6)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .build();
     private static final Object2IntMap<String> compostableItems = new Object2IntOpenHashMap<>();
     private static final Object2IntMap<BlockState> compostableBlocks = new Object2IntOpenHashMap<>();
     public static final Item OUTPUT_ITEM = new ItemBoneMeal();
@@ -49,32 +57,12 @@ public class BlockComposter extends BlockSolid {
     }
 
     public BlockComposter(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Composter";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

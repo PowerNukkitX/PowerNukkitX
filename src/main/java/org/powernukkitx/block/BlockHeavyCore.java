@@ -1,11 +1,22 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHeavyCore extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(HEAVY_CORE);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(10)
+            .resistance(30)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canPassThrough(false)
+            .canBePulled(false)
+            .breaksWhenMoved(false)
+            .build();
 
     @Override
     @NotNull
@@ -18,7 +29,7 @@ public class BlockHeavyCore extends BlockFlowable {
     }
 
     public BlockHeavyCore(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -51,34 +62,10 @@ public class BlockHeavyCore extends BlockFlowable {
         return this.z + 0.75;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     @Override
     public String getName() {
         return "Heavy Core";
-    }
-
-    @Override
-    public double getResistance() {
-        return 30;
-    }
-
-    @Override
-    public double getHardness() {
-        return 10;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -86,18 +73,10 @@ public class BlockHeavyCore extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return false;
-    }
-
+    
     @Override
     public int getWaterloggingLevel() {
         return 1;
     }
 
-    @Override
-    public boolean canBePulled() {
-        return false;
     }
-}

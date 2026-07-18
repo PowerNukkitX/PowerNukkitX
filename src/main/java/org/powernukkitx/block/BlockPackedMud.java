@@ -1,9 +1,15 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPackedMud extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_MUD);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1)
+            .resistance(3)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -15,7 +21,7 @@ public class BlockPackedMud extends BlockSolid {
     }
 
     public BlockPackedMud(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -23,13 +29,5 @@ public class BlockPackedMud extends BlockSolid {
         return "Packed Mud";
     }
 
-    @Override
-    public double getHardness() {
-        return 1;
+    
     }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-}

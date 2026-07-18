@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemStick;
@@ -16,6 +18,9 @@ import java.util.Random;
  */
 public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEADBUSH);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -28,7 +33,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
 
     public BlockDeadbush(BlockState blockState) {
         // Dead bushes can't have meta. Also stops the server from throwing an exception with the block palette.
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -40,13 +45,7 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     public int getWaterloggingLevel() {
         return 1;
     }
-    
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
 
-    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (isSupportValid(down())) {

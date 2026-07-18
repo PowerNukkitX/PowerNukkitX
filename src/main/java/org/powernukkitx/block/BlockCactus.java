@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
@@ -23,9 +25,15 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS,
             AGE_16);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.4)
+            .resistance(2)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
 
     public BlockCactus(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
     }
 
     public BlockCactus() {
@@ -35,16 +43,6 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.4;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2;
     }
 
     @Override
@@ -183,16 +181,6 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
         return new Item[]{
                 Item.get(BlockID.CACTUS, 0, 1)
         };
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     public int getAge() {
