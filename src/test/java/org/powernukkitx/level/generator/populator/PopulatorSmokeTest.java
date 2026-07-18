@@ -81,7 +81,7 @@ public class PopulatorSmokeTest {
      * Pulls the registered populator keys out of the registry's static map via reflection -
      * the registry exposes no public listing method.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.AvoidAccessibilityAlteration"})
     private List<String> registeredNames() {
         List<String> names = new ArrayList<>();
         try {
