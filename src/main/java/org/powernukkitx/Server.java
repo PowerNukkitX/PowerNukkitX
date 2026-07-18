@@ -232,10 +232,6 @@ public class Server {
     private PlayerMetadataStore playerMetadata;
     private LevelMetadataStore levelMetadata;
     private NetworkInterface network;
-    /**
-     * @deprecated
-     */
-    private int serverAuthoritativeMovementMode = 0;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicks = 6000;
     private BaseLang baseLang;
@@ -437,12 +433,6 @@ public class Server {
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
 
-        this.serverAuthoritativeMovementMode = switch (this.settings.gameplaySettings().serverAuthoritativeMovement()) {
-            case "client-auth" -> 0;
-            case "server-auth" -> 1;
-            case "server-auth-with-rewind" -> 2;
-            default -> throw new IllegalArgumentException();
-        };
         this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
@@ -3128,10 +3118,6 @@ public class Server {
             return this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
     }
 
-    @Deprecated
-    public int getServerAuthoritativeMovement() {
-        return serverAuthoritativeMovementMode;
-    }
     // endregion
 
     // region threading

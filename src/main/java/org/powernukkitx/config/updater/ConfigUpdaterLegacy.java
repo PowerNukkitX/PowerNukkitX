@@ -168,8 +168,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .pvp(oldProp.get(LegacyServerPropertiesKeys.PVP, game.pvp()))
                 .difficulty(oldProp.get(LegacyServerPropertiesKeys.DIFFICULTY, game.difficulty()))
                 .forceResources(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES, game.forceResources()))
-                .allowClientPacks(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, game.allowClientPacks()))
-                .serverAuthoritativeMovement(oldProp.get(LegacyServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT, game.serverAuthoritativeMovement()));
+                .allowClientPacks(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, game.allowClientPacks()));
 
         misc.enableTerra(oldProp.get(LegacyServerPropertiesKeys.USE_TERRA, misc.enableTerra()));
 

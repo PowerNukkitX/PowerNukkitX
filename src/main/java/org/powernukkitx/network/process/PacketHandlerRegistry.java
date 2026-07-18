@@ -43,7 +43,6 @@ public class PacketHandlerRegistry {
         register(MobEquipmentPacket.class, new MobEquipmentHandler());
         register(ModalFormResponsePacket.class, new ModalFormResponseHandler());
         register(MoveActorAbsolutePacket.class, new MoveActorAbsoluteHandler());
-        register(MovePlayerPacket.class, new MovePlayerHandler());
         register(NpcRequestPacket.class, new NpcRequestHandler());
         register(PacketViolationWarningPacket.class, new PacketViolationWarningHandler());
         register(PlayerActionPacket.class, new PlayerActionHandler());
