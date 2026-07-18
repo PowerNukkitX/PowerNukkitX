@@ -43,7 +43,7 @@ public class SetupWizard implements AutoCloseable {
     private boolean portProvidedByArg = false;
 
     public SetupWizard() throws IOException {
-        this.interactive = !SetupWizardSupport.isAutomatedEnvironment();
+        this.interactive = System.console() != null && !SetupWizardSupport.isAutomatedEnvironment();
         this.unicodeOutput = supportsUnicodeOutput();
         this.terminal = TerminalBuilder.builder()
                 .system(true)
