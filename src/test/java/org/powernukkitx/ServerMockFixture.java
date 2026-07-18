@@ -32,9 +32,10 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Minimal but real server + level fixture. Boots every registry, wires a heavily
@@ -88,10 +89,13 @@ public final class ServerMockFixture {
         SimpleCommandMap simpleCommandMap = mock(SimpleCommandMap.class);
 
         ServerScheduler serverScheduler = new ServerScheduler();
-        when(server.getScheduler()).thenReturn(serverScheduler);
-        when(banList.getEntires()).thenReturn(new LinkedHashMap<>());
-        when(server.getIPBans()).thenReturn(banList);
-        when(server.getLanguage()).thenReturn(new BaseLang("eng", "src/main/resources/language"));
+        // doReturn(...).when(mock) form is used throughout instead of when(mock.x()) - it
+        // does not rely on Mockito's thread-local "last invocation" progress, so a foreign
+        // dangling stubbing leaked by another test in the same JVM fork can't derail us.
+        doReturn(serverScheduler).when(server).getScheduler();
+        doReturn(new LinkedHashMap<>()).when(banList).getEntires();
+        doReturn(banList).when(server).getIPBans();
+        doReturn(new BaseLang("eng", "src/main/resources/language")).when(server).getLanguage();
 
         try {
             FieldUtils.writeDeclaredStaticField(Server.class, "instance", server, true);
@@ -106,13 +110,13 @@ public final class ServerMockFixture {
             it.saveDefaults();
             it.load(true);
         });
-        when(server.getSettings()).thenReturn(serverSettings);
-        when(server.getApiVersion()).thenReturn("1.0.0");
-        when(simpleCommandMap.getCommands()).thenReturn(java.util.Collections.emptyMap());
+        doReturn(serverSettings).when(server).getSettings();
+        doReturn("1.0.0").when(server).getApiVersion();
+        doReturn(java.util.Collections.emptyMap()).when(simpleCommandMap).getCommands();
 
         TestPluginManager pluginManager = new TestPluginManager(server, simpleCommandMap);
         pluginManager.registerInterface(JavaPluginLoader.class);
-        when(server.getPluginManager()).thenReturn(pluginManager);
+        doReturn(pluginManager).when(server).getPluginManager();
         pluginManager.loadInternalPlugin();
 
         FreezableArrayManager freezableArrayManager = new FreezableArrayManager(
@@ -125,41 +129,41 @@ public final class ServerMockFixture {
                 serverSettings.performanceSettings().melting(),
                 serverSettings.performanceSettings().singleOperation(),
                 serverSettings.performanceSettings().batchOperation());
-        when(server.getFreezableArrayManager()).thenReturn(freezableArrayManager);
+        doReturn(freezableArrayManager).when(server).getFreezableArrayManager();
 
-        when(server.getMotd()).thenReturn("PNX");
-        when(server.getOnlinePlayers()).thenReturn(new HashMap<>());
-        when(server.getGamemode()).thenReturn(1);
-        when(server.getName()).thenReturn("PNX");
-        when(server.getNukkitVersion()).thenReturn("1.0.0");
-        when(server.getGitCommit()).thenReturn("1.0.0");
-        when(server.getMaxPlayers()).thenReturn(100);
-        when(server.hasWhitelist()).thenReturn(false);
-        when(server.getPort()).thenReturn(19132);
-        when(server.getIp()).thenReturn("127.0.0.1");
+        doReturn("PNX").when(server).getMotd();
+        doReturn(new HashMap<>()).when(server).getOnlinePlayers();
+        doReturn(1).when(server).getGamemode();
+        doReturn("PNX").when(server).getName();
+        doReturn("1.0.0").when(server).getNukkitVersion();
+        doReturn("1.0.0").when(server).getGitCommit();
+        doReturn(100).when(server).getMaxPlayers();
+        doReturn(false).when(server).hasWhitelist();
+        doReturn(19132).when(server).getPort();
+        doReturn("127.0.0.1").when(server).getIp();
 
         final QueryRegenerateEvent queryRegenerateEvent = new QueryRegenerateEvent(server);
-        when(server.getQueryInformation()).thenReturn(queryRegenerateEvent);
-        when(server.getNetwork()).thenCallRealMethod();
-        when(server.getAutoSave()).thenReturn(false);
-        when(server.getTick()).thenReturn(1);
-        when(server.getViewDistance()).thenReturn(4);
-        when(server.getBaseTps()).thenReturn(20);
-        when(server.getLevelTickExecutor()).thenReturn(java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
+        doReturn(queryRegenerateEvent).when(server).getQueryInformation();
+        doCallRealMethod().when(server).getNetwork();
+        doReturn(false).when(server).getAutoSave();
+        doReturn(1).when(server).getTick();
+        doReturn(4).when(server).getViewDistance();
+        doReturn(20).when(server).getBaseTps();
+        doReturn(java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "fixture-level-tick");
             t.setDaemon(true);
             return t;
-        }));
+        })).when(server).getLevelTickExecutor();
 
         ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-        when(server.getComputeThreadPool()).thenReturn(pool);
-        when(server.getCommandMap()).thenReturn(simpleCommandMap);
-        when(server.getScoreboardManager()).thenReturn(null);
+        doReturn(pool).when(server).getComputeThreadPool();
+        doReturn(simpleCommandMap).when(server).getCommandMap();
+        doReturn(null).when(server).getScoreboardManager();
         try {
             final PositionTrackingService positionTrackingService =
                     new PositionTrackingService(new File(PowerNukkitX.DATA_PATH,
                             "services/position_tracking_db_" + ProcessHandle.current().pid()));
-            when(server.getPositionTrackingService()).thenReturn(positionTrackingService);
+            doReturn(positionTrackingService).when(server).getPositionTrackingService();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -189,8 +193,8 @@ public final class ServerMockFixture {
 
         HashMap<Integer, Level> levels = new HashMap<>();
         levels.put(1, level);
-        when(server.getLevels()).thenReturn(levels);
-        when(server.getDefaultLevel()).thenReturn(level);
+        doReturn(levels).when(server).getLevels();
+        doReturn(level).when(server).getDefaultLevel();
     }
 
     /** Force class-load / static-init. */
