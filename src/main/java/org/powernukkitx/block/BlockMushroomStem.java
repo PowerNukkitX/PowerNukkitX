@@ -1,0 +1,27 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.item.Item;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockMushroomStem extends BlockMushroomBlock {
+    public static final BlockProperties PROPERTIES = new BlockProperties(MUSHROOM_STEM, CommonBlockProperties.HUGE_MUSHROOM_BITS);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockMushroomStem() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockMushroomStem(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return Item.EMPTY_ARRAY;
+    }
+}

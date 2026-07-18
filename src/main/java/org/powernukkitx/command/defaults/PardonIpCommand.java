@@ -1,0 +1,48 @@
+package org.powernukkitx.command.defaults;
+
+import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.data.CommandParameter;
+import org.powernukkitx.command.tree.ParamList;
+import org.powernukkitx.command.utils.CommandLogger;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class PardonIpCommand extends VanillaCommand {
+
+    public PardonIpCommand(String name) {
+        super(name, "unban an IP");
+        this.setPermission("nukkit.command.unban.ip");
+        this.setAliases(new String[]{"unbanip", "unban-ip", "pardonip"});
+        this.commandParameters.clear();
+        this.commandParameters.put("default", new CommandParameter[]{
+                CommandParameter.newType("ip", CommandParamType.ID)
+        });
+        this.enableParamTree();
+    }
+
+    @Override
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        String value = result.getValue().getResult(0);
+        if (Pattern.matches("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$", value)) {
+            sender.getServer().getIPBans().remove(value);
+            try {
+                sender.getServer().getNetwork().unblockAddress(InetAddress.getByName(value));
+            } catch (UnknownHostException e) {
+                log.addError("commands.unbanip.invalid").output();
+                return 0;
+            }
+            log.addSuccess("commands.unbanip.success", value).output(true);
+            return 1;
+        } else {
+            log.addError("commands.unbanip.invalid").output();
+        }
+        return 0;
+    }
+}

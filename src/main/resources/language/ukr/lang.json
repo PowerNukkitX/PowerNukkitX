@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Не вдалося забрати жодного ефекту в {%0}, оскільки у гравця їх немає",
   "commands.effect.notFound": "Немає ефекту моба з ідентифікатором {%0}",
   "commands.effect.success": "Ефект {%0} * {%1} надано {%2} на {%3} c",
+  "commands.effect.success.infinite": "Надавав {%2} ефект {%0} * {%1} протягом нескінченного часу",
   "commands.effect.success.removed": "Забрано ефект {%0} у {%1}",
   "commands.effect.success.removed.all": "Забрано всі ефекти у {%0}",
   "commands.enchant.cantCombine": "{%0} не можна поєднати з {%1}",
