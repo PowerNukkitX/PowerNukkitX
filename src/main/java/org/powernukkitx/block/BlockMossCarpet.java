@@ -26,6 +26,10 @@ public class BlockMossCarpet extends BlockCarpet {
         super(blockstate, DEFINITION);
     }
 
+    public BlockMossCarpet(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Moss Carpet";

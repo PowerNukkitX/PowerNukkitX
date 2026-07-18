@@ -29,6 +29,10 @@ public class BlockIce extends BlockTransparent {
         super(blockState, DEFINITION);
     }
 
+    public BlockIce(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         return "Ice";

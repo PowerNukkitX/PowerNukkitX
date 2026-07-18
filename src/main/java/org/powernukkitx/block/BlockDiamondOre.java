@@ -31,6 +31,10 @@ public class BlockDiamondOre extends BlockOre {
         super(blockstate, DEFINITION);
     }
 
+    public BlockDiamondOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     protected @Nullable String getRawMaterial() {
         return ItemID.DIAMOND;

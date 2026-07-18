@@ -27,6 +27,10 @@ public class BlockLightBlock0 extends BlockTransparent {
         super(blockstate, DEFINITION);
     }
 
+    public BlockLightBlock0(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Light Block";

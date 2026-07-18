@@ -44,6 +44,10 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
         super(blockstate, DEFINITION);
     }
 
+    public BlockLitFurnace(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Burning Furnace";

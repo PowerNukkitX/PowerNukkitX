@@ -51,6 +51,10 @@ public abstract class BlockLeaves extends BlockTransparent {
         super(blockState, DEFINITION);
     }
 
+    public BlockLeaves(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     public abstract WoodType getType();
 
     @Override

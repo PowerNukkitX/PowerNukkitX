@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -8,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_REDSTONE_LAMP);
+    public static final BlockDefinition DEFINITION = BlockRedstoneLamp.DEFINITION.toBuilder()
+            .lightEmission(15)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -19,7 +24,7 @@ public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
     }
 
     public BlockLitRedstoneLamp(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -27,11 +32,7 @@ public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
         return "Lit Redstone Lamp";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.REDSTONE_LAMP));

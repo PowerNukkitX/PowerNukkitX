@@ -28,6 +28,10 @@ public class BlockGlass extends BlockTransparent {
         super(blockState, DEFINITION);
     }
 
+    public BlockGlass(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         return "Glass";

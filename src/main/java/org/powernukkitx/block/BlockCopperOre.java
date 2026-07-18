@@ -28,6 +28,10 @@ public class BlockCopperOre extends BlockOre {
         super(blockstate, DEFINITION);
     }
 
+    public BlockCopperOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Copper Ore";

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 
 import org.jetbrains.annotations.NotNull;
 
@@ -7,6 +9,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.TORCH_FACING
 
 public class BlockSoulTorch extends BlockTorch {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_TORCH, TORCH_FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockTorch.DEFINITION.toBuilder()
+            .lightEmission(10)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -18,7 +23,7 @@ public class BlockSoulTorch extends BlockTorch {
     }
 
     public BlockSoulTorch(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -26,8 +31,4 @@ public class BlockSoulTorch extends BlockTorch {
         return "Soul Torch";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 10;
     }
-}

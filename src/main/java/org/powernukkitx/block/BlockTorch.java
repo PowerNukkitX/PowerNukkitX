@@ -37,6 +37,10 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         super(blockstate, DEFINITION);
     }
 
+    public BlockTorch(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Torch";

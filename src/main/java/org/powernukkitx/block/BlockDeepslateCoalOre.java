@@ -1,9 +1,14 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDeepslateCoalOre extends BlockCoalOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_COAL_ORE);
+    public static final BlockDefinition DEFINITION = BlockCoalOre.DEFINITION.toBuilder()
+            .hardness(4.5)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -15,7 +20,7 @@ public class BlockDeepslateCoalOre extends BlockCoalOre {
     }
 
     public BlockDeepslateCoalOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -23,8 +28,4 @@ public class BlockDeepslateCoalOre extends BlockCoalOre {
         return "Deepslate Coal Ore";
     }
 
-    @Override
-    public double getHardness() {
-        return 4.5;
     }
-}

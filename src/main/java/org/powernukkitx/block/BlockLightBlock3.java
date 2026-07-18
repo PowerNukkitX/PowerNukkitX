@@ -1,9 +1,14 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLightBlock3 extends BlockLightBlock0 {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIGHT_BLOCK_3);
+    public static final BlockDefinition DEFINITION = BlockLightBlock0.DEFINITION.toBuilder()
+            .lightEmission(3)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -15,12 +20,8 @@ public class BlockLightBlock3 extends BlockLightBlock0 {
     }
 
     public BlockLightBlock3(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public int getLightLevel() {
-        return 3;
-    }
-
+    
 }

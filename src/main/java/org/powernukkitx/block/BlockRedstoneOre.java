@@ -32,6 +32,10 @@ public class BlockRedstoneOre extends BlockOre {
         super(blockstate, DEFINITION);
     }
 
+    public BlockRedstoneOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     
     @Override
     public String getName() {

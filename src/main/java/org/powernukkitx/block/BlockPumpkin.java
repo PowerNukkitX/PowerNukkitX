@@ -35,6 +35,10 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
         super(blockstate, DEFINITION);
     }
 
+    public BlockPumpkin(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Pumpkin";

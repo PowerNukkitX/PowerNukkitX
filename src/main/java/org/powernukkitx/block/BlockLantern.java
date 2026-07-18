@@ -38,6 +38,10 @@ public class BlockLantern extends BlockFlowable {
         super(blockstate, DEFINITION);
     }
 
+    public BlockLantern(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Lantern";

@@ -30,6 +30,10 @@ public class BlockLapisOre extends BlockOre {
         super(blockstate, DEFINITION);
     }
 
+    public BlockLapisOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Lapis Ore";

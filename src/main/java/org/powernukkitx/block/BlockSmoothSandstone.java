@@ -1,9 +1,15 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSmoothSandstone extends BlockSandstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_SANDSTONE);
+    public static final BlockDefinition DEFINITION = BlockSandstone.DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(6)
+            .build();
 
     @Override
     @NotNull
@@ -16,16 +22,8 @@ public class BlockSmoothSandstone extends BlockSandstone {
     }
 
     public BlockSmoothSandstone(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
+    
     }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-}

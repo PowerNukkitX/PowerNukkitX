@@ -24,6 +24,10 @@ public class BlockWoodenButton extends BlockButton {
         super(blockState, DEFINITION);
     }
 
+    public BlockWoodenButton(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     public String getName() {
         return "Oak Button";

@@ -39,6 +39,10 @@ public class BlockCaveVines extends BlockTransparent {
         super(blockstate, DEFINITION);
     }
 
+    public BlockCaveVines(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getName() {
         return "Cave Vines";

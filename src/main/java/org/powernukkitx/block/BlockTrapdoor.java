@@ -55,6 +55,10 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         super(blockState, DEFINITION);
     }
 
+    public BlockTrapdoor(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
+    }
+
     @Override
     @NotNull
     public BlockProperties getProperties() {

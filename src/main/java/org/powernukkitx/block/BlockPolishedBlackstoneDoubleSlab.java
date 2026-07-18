@@ -27,6 +27,10 @@ public class BlockPolishedBlackstoneDoubleSlab extends BlockDoubleSlabBase {
         super(blockstate, DEFINITION);
     }
 
+    public BlockPolishedBlackstoneDoubleSlab(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
+    }
+
     @Override
     public String getSlabName() {
         return "Polished Blackstone";
