@@ -75,6 +75,7 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return false;
     }
