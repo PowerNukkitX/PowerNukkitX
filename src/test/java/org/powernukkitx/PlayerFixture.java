@@ -25,6 +25,10 @@ public final class PlayerFixture {
     private PlayerFixture() {
     }
 
+    // Cloudburst's IdentityData/IdentityClaims have package-private constructors and no
+    // public factory, so reflection is the only way to build a test identity without a
+    // real network login. This is intentional test-only scaffolding.
+    @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
     public static synchronized TestPlayer get() {
         if (player != null) {
             return player;
@@ -58,7 +62,7 @@ public final class PlayerFixture {
             player.setLevel(ServerMockFixture.level);
             return player;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

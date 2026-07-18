@@ -100,7 +100,7 @@ public final class ServerMockFixture {
         try {
             FieldUtils.writeDeclaredStaticField(Server.class, "instance", server, true);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
 
         final ServerSettings serverSettings = ConfigManager.create(ServerSettings.class, it -> {
@@ -165,7 +165,7 @@ public final class ServerMockFixture {
                             "services/position_tracking_db_" + ProcessHandle.current().pid()));
             doReturn(positionTrackingService).when(server).getPositionTrackingService();
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         doNothing().when(server).sendRecipeList(any());
 
@@ -181,7 +181,7 @@ public final class ServerMockFixture {
 
             FileUtils.copyDirectory(new File("src/test/resources/level"), levelDir);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(levelDir)));
 
