@@ -1,58 +1,24 @@
-<p align="right">
-<img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/ru.svg">
-</p>
+![Русский](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/ru.svg)
 
-<p align="center">
-    <a href="https://powernukkitx.com">
-      <img src="https://docs.powernukkitx.org/img/PNX_LOGO_sm.png" width=20%>
-    </a>
-    <p align="center">
-        <strong>
-            Серверное программное обеспечение для Minecraft Bedrock Edition, с открытым исходным кодом, написанное на Java
-        </strong>
-    </p>
-</p>
+[![PowerNukkitX Logo](https://docs.powernukkitx.org/img/PNX_LOGO_sm.png)](https://powernukkitx.org)
 
-<p align="center">
-   <img alt="Version" src="https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/45400537384333-Minecraft-Bedrock-Edition-26-20-Changelog">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v26.20%20(Bedrock)-56383E" />
-   </a>
-   <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Protocol" src="https://img.shields.io/badge/protocol-975-blue" />
-   </a>
-   <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
-      <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
-   </a>
-   <a href="https://discord.com/invite/XXus4FB6qf">
-      <img alt="Discord" src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" />
-   </a>
-   <a href="https://docs.powernukkitx.org" target="_blank">
-      <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
-   </a>
-   <a href="https://codecov.io/github/PowerNukkitX/PowerNukkitX" > 
-      <img alt="Codecov" src="https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3"/> 
-   </a>
-   <a href="https://www.gnu.org/licenses/lgpl-3.0.html" target="_blank">
-      <img alt="License: LGPL-3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
-   </a>
-</p>
+**Серверное программное обеспечение для Minecraft Bedrock Edition, с открытым исходным кодом, написанное на Java**
 
-<p align="center">
-    <a href="README.md">
-        <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/eng.svg">
-    </a>
-    <a href="README_FR.md">
-        <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/fr.svg">
-    </a>
-    <a href="README_TR.md">
-        <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/tr.svg">
-    </a>
-</p>
+![Version](https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000)
+[![Minecraft](https://img.shields.io/badge/minecraft-v26.20%20(Bedrock)-56383E)](https://feedback.minecraft.net/hc/en-us/articles/45400537384333-Minecraft-Bedrock-Edition-26-20-Changelog)
+[![Protocol](https://img.shields.io/badge/protocol-975-blue)](https://github.com/Mojang/bedrock-protocol-docs)
+[![Action](https://img.shields.io/badge/action-all%20builds-FF9B21)](https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess)
+[![Discord](https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord)](https://discord.com/invite/XXus4FB6qf)
+[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://docs.powernukkitx.org)
+[![Codecov](https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3)](https://codecov.io/github/PowerNukkitX/PowerNukkitX)
+[![License: LGPL-3](https://img.shields.io/badge/License-LGPL--3-yellow.svg)](https://www.gnu.org/licenses/lgpl-3.0.html)
 
-<br>
+[![English](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/eng.svg)](README.md)
+[![Français](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/fr.svg)](README_FR.md)
+[![Türkçe](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/tr.svg)](README_TR.md)
 
 **Универсальное, сильно кастомизируемое стороннее программное обеспечение для Minecraft: Bedrock Edition.**
+
 - 🪄 **Кастомные Предметы, Блоки, Сущности**
 - 🤖 **Встроенный ИИ фреймворк**
 - 🪴 **Terra Генератор**
@@ -73,22 +39,20 @@ java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java
 ```
 
 ## Сообщество & Помощь
-Посетите наш [Discord](https://discord.gg/apwd7uauZg) сервер для общения с другими пользователями и разработчиками  
+
+Посетите наш [Discord](https://discord.gg/apwd7uauZg) сервер для общения с другими пользователями и разработчиками
 Для общения на русском пишите в чат #non-english
-
-
 
 ## 🤝 Участие в разработке PowerNukkitX
 
-Contributions, issues и feature requests приветствуются!<br />Посмотрите [страницу issues](https://github.com/PowerNukkitX/PowerNukkitX/issues). Так же рекомендуем посмотреть [гайд для контрибьюторов](.github/CONTRIBUTING.md).
+Contributions, issues и feature requests приветствуются!
+Посмотрите [страницу issues](https://github.com/PowerNukkitX/PowerNukkitX/issues). Так же рекомендуем посмотреть [гайд для контрибьюторов](.github/CONTRIBUTING.md).
 
-<a href="https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX" />
-</a>
+[![Contributors](https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX)](https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors)
 
-## Поставьте ⭐️ если этот проект помог вам!
+## Поставьте ⭐️ если этот проект помог вам
 
-[![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg?variant=adaptive)]()
+[![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg?variant=adaptive)](https://starchart.cc/PowerNukkitX/PowerNukkitX)
 
 ## 📝 Информация о лицензии
 

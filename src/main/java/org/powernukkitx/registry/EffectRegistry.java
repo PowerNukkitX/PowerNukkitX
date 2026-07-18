@@ -58,7 +58,7 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
             if (fastConstructor == null) return null;
             return (Effect) fastConstructor.invoke();
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

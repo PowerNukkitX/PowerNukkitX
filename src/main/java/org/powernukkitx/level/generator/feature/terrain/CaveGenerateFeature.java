@@ -18,6 +18,7 @@ import java.util.Set;
 
 import static org.powernukkitx.level.Level.CHUNK_SIZE;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class CaveGenerateFeature extends GenerateFeature {
 
     public static final String NAME = "minecraft:overworld_cave";

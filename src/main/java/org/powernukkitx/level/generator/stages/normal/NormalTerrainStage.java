@@ -18,6 +18,7 @@ import org.powernukkitx.utils.random.NukkitRandom;
 
 import java.util.ArrayDeque;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class NormalTerrainStage extends GenerateStage {
 
     private static final long STONE_HASH = BlockStone.PROPERTIES.getDefaultState().blockStateHash();

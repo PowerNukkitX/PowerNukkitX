@@ -23,7 +23,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
 
     protected ByteBuffer byteBuffer;
     protected byte[] sha256;
-    protected String encryptionKey = "";
+    protected String encryptionKey = ""; // nosemgrep - empty default, real key is set at runtime
 
 
     public ZippedResourcePack(File file) {
