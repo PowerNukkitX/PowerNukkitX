@@ -87,7 +87,7 @@ jobs:
         with:
           context: .
           push: true
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           tags: |
             powernukkitx/server:${{ steps.tag-name.outputs.TAG_NAME }}
             ghcr.io/powernukkitx/server:${{ steps.tag-name.outputs.TAG_NAME }}
@@ -98,7 +98,7 @@ jobs:
         with:
           context: .
           push: true
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           tags: |
             powernukkitx/server:${{ steps.version.outputs.MAJOR }}
             ghcr.io/powernukkitx/server:${{ steps.version.outputs.MAJOR }}
@@ -109,7 +109,7 @@ jobs:
         with:
           context: .
           push: true
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           tags: |
             powernukkitx/server:${{ steps.version.outputs.MINOR }}
             ghcr.io/powernukkitx/server:${{ steps.version.outputs.MINOR }}
@@ -120,7 +120,7 @@ jobs:
         with:
           context: .
           push: true
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           tags: |
             powernukkitx/server:latest
             ghcr.io/powernukkitx/server:latest

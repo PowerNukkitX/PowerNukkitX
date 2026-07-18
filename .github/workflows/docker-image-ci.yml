@@ -22,7 +22,7 @@ jobs:
         context: ${{ github.workspace }}
         push: false
         load: true
-        file: ${{ github.workspace }}/Dockerfile
+        file: ${{ github.workspace }}/docker/Dockerfile
         tags: local-powernukkitx
         cache-from: type=gha
         cache-to: type=gha,mode=max
