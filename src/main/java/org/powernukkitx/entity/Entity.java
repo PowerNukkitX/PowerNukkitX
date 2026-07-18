@@ -5147,6 +5147,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
+    public boolean isMoving() {
+        return getDataFlag(ActorFlags.MOVING);
+    }
+
     private Vec3 applyCollisionOffsets(double dx, double dy, double dz, AxisAlignedBB box, List<AxisAlignedBB> list) {
         for (AxisAlignedBB bb : list) {
             dy = bb.calculateYOffset(box, dy);
