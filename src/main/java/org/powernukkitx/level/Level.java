@@ -4972,11 +4972,6 @@ public class Level implements Metadatable {
                     int X = getHashX(index);
                     int Z = getHashZ(index);
 
-                    // trySave=true - let unloadChunk write the current block entity
-                    // contents unconditionally. The old path saved through the
-                    // hasChanged-filtered batch save, so a concurrent autosave could
-                    // clear the dirty flag after a take and leave stale chest data on
-                    // disk, duplicating the item on the next reload.
                     if (this.unloadChunk(X, Z, true, true)) {
                         this.unloadQueue.remove(index);
                         unloaded++;
