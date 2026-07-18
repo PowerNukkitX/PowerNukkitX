@@ -5,6 +5,7 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 
 ;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class NoiseGeneratorImprovedD {
     private static final double[] GRAD_X = new double[]{1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, -1.0D, 0.0D};
     private static final double[] GRAD_Y = new double[]{1.0D, 1.0D, -1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D};

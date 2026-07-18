@@ -38,7 +38,7 @@ public class MultipleExecutor implements IBehaviorExecutor {
                 try {
                     return (Boolean) task.get();
                 } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }).reduce(false, (a, b) -> a || b)).get();
         } catch (InterruptedException | ExecutionException e) {

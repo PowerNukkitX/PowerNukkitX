@@ -3304,6 +3304,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void sendMessage(String message) {
+        if (message.isEmpty()) {
+            log.warn("{} attempted to send an empty message", name);
+            return;
+        }
+        
         final MessageOnly messageOnly = new MessageOnly();
         messageOnly.setMessage(this.server.getLanguage().tr(message));
 
@@ -3617,6 +3622,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param fadeout  淡出时间
      */
     public void sendActionBar(String title, int fadein, int duration, int fadeout) {
+        this.setTitleAnimationTimes(fadein, duration, fadeout);
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.ACTIONBAR);
         pk.setTitleText(Strings.nullToEmpty(title));
@@ -3649,6 +3655,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
 
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
+        this.setTitleAnimationTimes(fadein, duration, fadeout);
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.ACTIONBAR_TEXT_OBJECT);
         pk.setTitleText(text == null ? "" : text.toRawText());

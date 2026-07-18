@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class HomeboundSpaceRandomRoamExecutor extends FlatRandomRoamExecutor {
 
     protected int maxYRoamRange;

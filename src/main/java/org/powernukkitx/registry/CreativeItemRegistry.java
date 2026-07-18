@@ -144,7 +144,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

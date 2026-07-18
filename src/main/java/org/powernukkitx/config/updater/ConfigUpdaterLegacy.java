@@ -23,6 +23,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 
 @Slf4j
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
     private final String version = "2.0.0";
 
@@ -55,7 +56,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
             );
             settings.setAccessible(false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
 
         LegacyServerSettings legacyNukkit = ConfigManager.create(LegacyServerSettings.class, it -> {

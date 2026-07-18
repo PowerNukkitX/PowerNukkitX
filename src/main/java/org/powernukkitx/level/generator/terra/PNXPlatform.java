@@ -35,7 +35,7 @@ public class PNXPlatform extends AbstractPlatform {
         try {
             Registries.GENERATOR.register("terra", TerraGenerator.class);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         DATA_PATH = new File("./terra");
         if (!DATA_PATH.exists()) {
