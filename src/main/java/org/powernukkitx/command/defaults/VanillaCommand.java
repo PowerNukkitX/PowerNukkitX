@@ -3,7 +3,7 @@ package org.powernukkitx.command.defaults;
 import org.powernukkitx.command.Command;
 
 /**
- * 代表原版命令的基类
+ * Base class representing a vanilla command
  *
  * @author MagicDroidX (Nukkit Project)
  */

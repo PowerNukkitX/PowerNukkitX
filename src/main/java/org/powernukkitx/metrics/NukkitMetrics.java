@@ -103,7 +103,7 @@ public class NukkitMetrics {
                 return pnxCliVersion = "Invalid PNX-CLI path";
             }
 
-            var process = new ProcessBuilder(cliPath, "-V").start();
+            var process = new ProcessBuilder(cliPath, "-V").start(); // nosemgrep - cliPath is an admin-set, validated executable, run without a shell
             process.waitFor(10, TimeUnit.MICROSECONDS);
             var content = new String(process.getInputStream().readAllBytes()).replace("\n", "");
             if (content.isBlank() || !content.contains(".")) {

@@ -1,9 +1,9 @@
 package org.powernukkitx.recipe;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ContainerMixDataEntry;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemPotion;
 import org.powernukkitx.registry.RecipeRegistry;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.ContainerMixDataEntry;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class ContainerRecipe extends MixRecipe {
 
     public ContainerRecipe(String recipeId, Item input, Item ingredient, Item output) {
         super(recipeId == null ? RecipeRegistry.computeRecipeIdWithItem(List.of(output), List.of(input, ingredient), RecipeType.CONTAINER) : recipeId,
-                input, ingredient, output);
+            input, ingredient, output);
     }
 
     @Override
@@ -31,10 +31,10 @@ public class ContainerRecipe extends MixRecipe {
     }
 
     public ContainerMixDataEntry toNetwork() {
-        return new ContainerMixDataEntry(
-                this.getInput().getRuntimeId(),
-                this.getIngredient().getRuntimeId(),
-                this.getResult().getRuntimeId()
-        );
+        final ContainerMixDataEntry entry = new ContainerMixDataEntry();
+        entry.setFromItemId(this.getInput().getRuntimeId());
+        entry.setReagentItemId(this.getIngredient().getRuntimeId());
+        entry.setOutputItemId(this.getResult().getRuntimeId());
+        return entry;
     }
 }

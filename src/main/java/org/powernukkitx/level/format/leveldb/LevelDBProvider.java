@@ -364,7 +364,7 @@ public class LevelDBProvider implements LevelProvider {
                         }
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
                 data.set(byteBuf.copy());
                 subChunkCountRef.set(total);

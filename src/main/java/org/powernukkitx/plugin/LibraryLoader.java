@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 /**
  * @since 15-12-13
  */
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class LibraryLoader {
 
     private static final File BASE_FOLDER = new File("./libraries");

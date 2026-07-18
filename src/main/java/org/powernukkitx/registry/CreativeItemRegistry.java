@@ -1,13 +1,5 @@
 package org.powernukkitx.registry;
 
-import org.powernukkitx.Server;
-import org.powernukkitx.block.BlockState;
-import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemID;
-import org.powernukkitx.item.customitem.data.CreativeCategory;
-import org.powernukkitx.item.customitem.data.CreativeGroup;
-import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.utils.MapParsingUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.netty.util.internal.EmptyArrays;
@@ -17,10 +9,19 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CraftingCatalogGroup;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
 import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeGroupInfoPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemCategory;
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemEntryPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemNetId;
 import org.jetbrains.annotations.NotNull;
+import org.powernukkitx.block.BlockState;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.customitem.data.CreativeCategory;
+import org.powernukkitx.item.customitem.data.CreativeGroup;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.MapParsingUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -47,8 +48,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
-    static final ObjectLinkedOpenHashSet<CraftingCatalogGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
-    public static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
+    static final ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> GROUPS = new ObjectLinkedOpenHashSet<>();
+    public static final ObjectLinkedOpenHashSet<CreativeItemEntryPayload> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
 
@@ -57,7 +58,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     public static int LAST_ITEMS_INDEX = -1;
     public static int LAST_NATURE_INDEX = -1;
     private static final Function<String, RuntimeException> CREATIVE_ITEMS_ERROR =
-            field -> new IllegalArgumentException("Invalid creative_items data: " + field);
+        field -> new IllegalArgumentException("Invalid creative_items data: " + field);
 
     @Override
     public void init() {
@@ -75,7 +76,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 String name = (String) tag.get("name");
                 Map iconMap = (Map) tag.get("icon");
                 Item icon = Item.get((String) iconMap.get("id"));
-                CraftingCatalogGroup group = new CraftingCatalogGroup(CreativeItemCategory.values()[creativeCategory], name, icon.toNetwork());
+                CreativeGroupInfoPayload group = new CreativeGroupInfoPayload();
+                group.setCreativeCategory(CreativeItemCategory.values()[creativeCategory]);
+                group.setName(name);
+                group.setGroupIconItem(icon.toNetwork());
                 GROUPS.add(group);
 
                 CreativeCategory category = CreativeCategory.fromID(creativeCategory);
@@ -128,13 +132,19 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     INTERNAL_DIFF_ITEM.put(i, item.clone());
                     item.setBlockUnsafe(null);
                 }
-                ITEM_DATA.add(new CreativeItemData(item.toNetwork(), i, groupIndex));
+
+                final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
+                entryPayload.setCreativeNetId(new CreativeItemNetId(i));
+                entryPayload.setItemInstance(item.toNetwork());
+                entryPayload.setGroupIndex(groupIndex);
+
+                ITEM_DATA.add(entryPayload);
                 register(i, item);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -227,9 +237,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
         } catch (Exception e) {
             log.warn(
-                    "Failed to resolve creative group index for '{}': {}",
-                    id,
-                    e.getMessage()
+                "Failed to resolve creative group index for '{}': {}",
+                id,
+                e.getMessage()
             );
         }
 
@@ -283,7 +293,11 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
         }
-        ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey(), groupIndex));
+        final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
+        entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
+        entryPayload.setItemInstance(value.toNetwork());
+        entryPayload.setGroupIndex(groupIndex);
+        ITEM_DATA.add(entryPayload);
     }
 
     @Override
@@ -292,7 +306,11 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         } else {
-            ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey(), CreativeItemRegistry.LAST_ITEMS_INDEX));
+            final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
+            entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
+            entryPayload.setItemInstance(value.toNetwork());
+            entryPayload.setGroupIndex(CreativeItemRegistry.LAST_ITEMS_INDEX);
+            ITEM_DATA.add(entryPayload);
         }
     }
 
@@ -312,15 +330,15 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
     }
 
-    public ObjectLinkedOpenHashSet<CraftingCatalogGroup> getCreativeGroups() {
+    public ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> getCreativeGroups() {
         return GROUPS;
     }
 
-    public ObjectLinkedOpenHashSet<CraftingCatalogGroup> getGroupList() {
+    public ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> getGroupList() {
         return GROUPS;
     }
 
-    public ObjectLinkedOpenHashSet<CreativeItemData> getCreativeItemData() {
+    public ObjectLinkedOpenHashSet<CreativeItemEntryPayload> getCreativeItemData() {
         return ITEM_DATA;
     }
 
@@ -415,9 +433,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             log.warn("Unknown creative group '{}'", groupName);
         } catch (Exception e) {
             log.warn(
-                    "Failed to resolve creative group index from group name '{}': {}",
-                    identifier,
-                    e.getMessage()
+                "Failed to resolve creative group index from group name '{}': {}",
+                identifier,
+                e.getMessage()
             );
         }
 
@@ -507,7 +525,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         out.writeInt(LAST_NATURE_INDEX);
         RegistryCache.writeCategoryGroupIndexMap(out, CATEGORY_GROUP_INDEX_MAP);
 
-        List<CreativeItemData> dataList = new ArrayList<>(ITEM_DATA);
+        List<CreativeItemEntryPayload> dataList = new ArrayList<>(ITEM_DATA);
         out.writeInt(MAP.size());
         int di = 0;
         for (var e : MAP.int2ObjectEntrySet()) {
@@ -540,7 +558,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     void restoreCache(DataInputStream in) throws IOException {
         if (isLoad.getAndSet(true)) return;
 
-        List<CraftingCatalogGroup> groups = RegistryCache.readCreativeGroups(in);
+        List<CreativeGroupInfoPayload> groups = RegistryCache.readCreativeGroups(in);
         GROUPS.addAll(groups);
 
         LAST_CONSTRUCTION_INDEX = in.readInt();
@@ -557,7 +575,12 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             String id = in.readUTF();
 
             if (id.isEmpty()) {
-                ITEM_DATA.add(new CreativeItemData(Item.AIR.toNetwork(), index, groupId));
+                final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
+                entryPayload.setCreativeNetId(new CreativeItemNetId(index));
+                entryPayload.setItemInstance(Item.AIR.toNetwork());
+                entryPayload.setGroupIndex(groupId);
+
+                ITEM_DATA.add(entryPayload);
                 MAP.put(index, Item.AIR);
                 continue;
             }
@@ -587,7 +610,12 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 item.setBlockUnsafe(null);
             }
 
-            ITEM_DATA.add(new CreativeItemData(item.toNetwork(), index, groupId));
+            final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
+            entryPayload.setCreativeNetId(new CreativeItemNetId(index));
+            entryPayload.setItemInstance(item.toNetwork());
+            entryPayload.setGroupIndex(groupId);
+
+            ITEM_DATA.add(entryPayload);
             MAP.put(index, item);
         }
     }

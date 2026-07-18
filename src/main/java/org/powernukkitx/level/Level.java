@@ -1,5 +1,9 @@
 package org.powernukkitx.level;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.move.MoveActorDeltaData;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -95,7 +99,6 @@ import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
-import org.cloudburstmc.protocol.bedrock.data.MoveActorDeltaData;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
@@ -353,7 +356,7 @@ public class Level implements Metadatable {
     public long tickRateTimeNanos = 0;
     public int tickRateCounter = 0;
     /**
-     * 当tps过低的时候，tps优化延迟会上升，计算密集型任务应当每隔此tick才运行一次
+     * When the tps is too low, the tps optimization delay rises; compute-intensive tasks should only run once every this many ticks
      */
     public int tickRateOptDelay = 1;
     public GameRules gameRules;
@@ -546,12 +549,10 @@ public class Level implements Metadatable {
     }
 
     public static int chunkBlockHash(int x, int y, int z) {
-        return (x << 13) | (z << 9) | (y + 64); // 为适配384世界，y需要额外的1bit来存储
+        return (x << 13) | (z << 9) | (y + 64); // to support 384-height worlds, y needs an extra bit for storage
     }
 
     /**
-     * 获取chunkX从chunk hash
-     * <p>
      * Get chunkX from chunk hash
      *
      * @param hash the hash
@@ -562,8 +563,6 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 获取chunkZ从chunk hash
-     * <p>
      * Get chunkZ from chunk hash
      *
      * @param hash the hash
@@ -1197,8 +1196,8 @@ public class Level implements Metadatable {
                 nextTimeSendTick = currentTick + 30 * 20;
             }
 
-            // 检查突出区块（玩家附近3x3区块）
-            if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
+            // check highlighted chunks (the 3x3 chunks around players)
+            if ((currentTick & 127) == 0) { // checking once every 127 ticks is reasonable
                 highLightChunks.clear();
                 for (var player : this.players.values()) {
                     if (player.isOnline()) {
@@ -1881,9 +1880,9 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 立即对围绕指定位置的方块发送neighborChange更新
+     * Immediately sends a neighborChange update to the blocks surrounding the specified position
      *
-     * @param pos 指定位置
+     * @param pos the specified position
      */
     public void neighborChangeAroundImmediately(Vector3 pos) {
         for (var face : BlockFace.values()) {
@@ -4038,7 +4037,7 @@ public class Level implements Metadatable {
         if (block == null)
             return VOID_BLOCK_COLOR;
 
-        //在z轴存在高度差的地方，颜色变深或变浅
+        //where there is a height difference along the z axis, the color gets darker or lighter
         color = block.getColor().toAwtColor();
 
         var up = block.getSide(BlockFace.UP);
@@ -4322,8 +4321,6 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 该区块是否在使用中，出生点区块，tick区域中的区块，以及存在{@link ChunkLoader}的区块都被看做正在使用
-     * <p>
      * Whether the chunk is in use, spawn chunks, chunks in the tick area, and chunks with {@link ChunkLoader} are considered in use
      *
      * @param x the chunk x
@@ -4335,8 +4332,6 @@ public class Level implements Metadatable {
     }
 
     /**
-     * 该区块是否在使用中，出生点区块，tick区域中的区块，以及存在{@link ChunkLoader}的区块都被看做正在使用
-     * <p>
      * Whether the chunk is in use, spawn chunks, chunks in the tick area, and chunks with {@link ChunkLoader} are considered in use
      *
      * @param hash chunk hash value from {@link #chunkHash(int, int)}
@@ -4842,8 +4837,6 @@ public class Level implements Metadatable {
     private final AtomicBoolean inGarbageCollectionProcess = new AtomicBoolean(false);
 
     /**
-     * 异步执行服务器内存垃圾收集
-     * <p>
      * Run server memory garbage collection asynchronously
      */
     public void doLevelGarbageCollection(boolean force) {
@@ -5040,11 +5033,14 @@ public class Level implements Metadatable {
         packet.setRotation(org.cloudburstmc.math.vector.Vector3f.from(pitch, yaw, headYaw));
         if (entity.riding != null) {
             packet.setRidingRuntimeID(entity.riding.getId());
-            packet.setPositionMode(MovePlayerPacket.PositionMode.ONLY_HEAD_ROT);
+            packet.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         } else {
-            packet.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
+            packet.setPositionMode(PositionMode.NORMAL);
         }
-        packet.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
+        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
+        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
+
+        packet.setTeleportData(teleportData);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }
@@ -5082,7 +5078,7 @@ public class Level implements Metadatable {
             packet.getFlags().add(MoveActorDeltaPacket.Flag.ON_GROUND);
         }
 
-        packet.setData(data);
+        packet.setMoveData(data);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }
