@@ -71,7 +71,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             return false;
         } else {
             var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-            //更新视线target
+            //update the look target
             entity.setLookTarget(target.getLocation());
             entity.setMoveTarget(target.getLocation());
             return true;

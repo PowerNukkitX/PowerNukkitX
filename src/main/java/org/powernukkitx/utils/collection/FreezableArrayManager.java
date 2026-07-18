@@ -9,46 +9,46 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * FreezableArrayManager负责管理所有AutoFreezable的ByteArrayWrapper<br/>
- * 这包括计算温度，冻结和解冻
+ * FreezableArrayManager is responsible for managing all AutoFreezable ByteArrayWrappers.<br/>
+ * This includes computing temperatures, freezing and thawing.
  */
 public class FreezableArrayManager {
     protected ConcurrentHashMap<Integer, WeakConcurrentSet<AutoFreezable>> tickArrayMap;
     public final boolean enable;
     public final int cycleTick;
     /**
-     * 最大工作时间，如果一直压缩超出这个时间就会放弃接下来其他数组的压缩（冻结）
+     * Maximum working time; if compression keeps running past this time, the compression (freezing) of the remaining arrays is abandoned.
      */
     private int maxCompressionTime = 50;
     private final AtomicInteger currentArrayId = new AtomicInteger(0);
     private int currentTick;
 
     /**
-     * 默认温度，新创建的数组温度等于此温度
+     * Default temperature; a newly created array's temperature equals this value.
      */
     private final int defaultTemperature;
     /**
-     * 冰点，当可冻结数组的温度低于冰点时有可能被冻结
+     * Freezing point; when a freezable array's temperature drops below the freezing point, it may be frozen.
      */
     private final int freezingPoint;
     /**
-     * 绝对零度，任何可冻结数组的温度都不应该低于此温度，等于此温度的可冻结数组有可能被深度冻结
+     * Absolute zero; no freezable array's temperature should ever drop below this value, and a freezable array at exactly this temperature may be deep-frozen.
      */
     private final int absoluteZero;
     /**
-     * 沸点，一个可冻结数组的温度无论如何加热都不能高于此温度
+     * Boiling point; a freezable array's temperature can never rise above this value no matter how much it is heated.
      */
     private final int boilingPoint;
     /**
-     * 熔化热，解冻后的数组温度会等于熔化热
+     * Heat of fusion; a thawed array's temperature is set to this value.
      */
     private final int meltingHeat;
     /**
-     * 单次数组读写操作升温
+     * Temperature rise for a single array read/write operation.
      */
     private final int singleOperationHeat;
     /**
-     * 一次批量数组读写操作升温
+     * Temperature rise for a batch array read/write operation.
      */
     private final int batchOperationHeat;
 
@@ -163,9 +163,9 @@ public class FreezableArrayManager {
         var dt = currentTick % cycleTick;
         var set = tickArrayMap.get(dt);
         if (set == null) return;
-        // 冻结数组
+        // freeze arrays
         var start = System.currentTimeMillis();
-        // 清理死引用
+        // clean up dead references
         CompletableFuture.runAsync(() -> set.parallelForeach(e -> {
             if (e == null) return;
             int temp = e.getTemperature();

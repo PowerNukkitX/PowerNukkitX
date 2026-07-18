@@ -324,10 +324,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 这个值越大，这个方块本身越容易起火
-     * 返回-1,这个方块不能被点燃
-     * <p>
-     * The higher this value, the more likely the block itself is to catch fire
+     * The higher this value, the more likely the block itself is to catch fire.
+     * Returns -1 if this block cannot be ignited.
      *
      * @return the burn chance
      */
@@ -336,8 +334,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 这个值越大，越有可能被旁边的火焰引燃
-     * <p>
      * The higher this value, the more likely it is to be ignited by the fire next to it
      */
     public int getBurnAbility() {
@@ -378,9 +374,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 获取走过这个方块所需要的额外代价，通常用于水、浆果丛等难以让实体经过的方块
+     * Gets the extra cost of walking through this block, usually used for water, berry bushes and other blocks that are hard for entities to pass through.
      *
-     * @return 走过这个方块所需要的额外代价
+     * @return the extra cost of walking through this block
      */
     public int getWalkThroughExtraCost() {
         return 0;
@@ -586,35 +582,35 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * @return 方块是否可以被活塞推动
+     * @return whether the block can be pushed by a piston
      */
     public boolean canBePushed() {
         return true;
     }
 
     /**
-     * @return 方块是否可以被活塞拉动
+     * @return whether the block can be pulled by a piston
      */
     public boolean canBePulled() {
         return true;
     }
 
     /**
-     * @return 当被活塞移动时是否会被破坏
+     * @return whether the block is destroyed when moved by a piston
      */
     public boolean breaksWhenMoved() {
         return false;
     }
 
     /**
-     * @return 是否可以粘在粘性活塞上
+     * @return whether the block can stick to a sticky piston
      */
     public boolean sticksToPiston() {
         return true;
     }
 
     /**
-     * @return 被活塞移动的时候是否可以粘住其他方块。eg:粘液块，蜂蜜块
+     * @return whether the block can stick other blocks when moved by a piston. e.g. slime block, honey block
      */
     public boolean canSticksBlock() {
         return false;
@@ -633,9 +629,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 控制挖掘方块的最低工具级别(木质、石质...)
+     * Controls the minimum tool tier required to mine the block (wood, stone...)
      *
-     * @return 挖掘方块的最低工具级别
+     * @return the minimum tool tier required to mine the block
      */
     public int getToolTier() {
         return 0;
@@ -1745,23 +1741,23 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 将方块克隆到指定位置<p/>
-     * 此方法会连带克隆方块实体<p/>
-     * 注意，此方法会先清除指定位置的方块为空气再进行克隆
+     * Clones the block to the given position.<p/>
+     * This method also clones the block entity along with it.<p/>
+     * Note that this method first clears the block at the target position to air before cloning.
      *
-     * @param pos    要克隆到的位置
-     * @param update 是否需要更新克隆的方块
-     * @return 是否克隆成功
+     * @param pos    the position to clone to
+     * @param update whether the cloned block needs to be updated
+     * @return whether the clone succeeded
      */
     @SuppressWarnings("null")
     public boolean cloneTo(Position pos, boolean update) {
-        //清除旧方块
+        //clear the old block
         level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
             var clonedBlock = this.clone();
             clonedBlock.position(pos);
             CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
-            //方块实体要求direct=true
+            //block entities require direct=true
             return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, false, update, tag) != null;
         } else {
             return pos.level.setBlock(pos, this.layer, this.clone(), true, update);

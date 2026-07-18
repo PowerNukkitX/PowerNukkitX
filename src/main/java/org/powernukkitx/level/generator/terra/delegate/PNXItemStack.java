@@ -26,7 +26,7 @@ public record PNXItemStack(org.powernukkitx.item.Item innerItem) implements Item
         return new PNXItemMeta(innerItem);
     }
 
-    // TODO: 2022/2/14 确认setItemMeta的用途，当前实现可能造成附魔混乱
+    // TODO: 2022/2/14 confirm the purpose of setItemMeta; the current implementation may cause enchantment corruption
     @Override
     public void setItemMeta(ItemMeta itemMeta) {
         final var tmp = (PNXItemMeta) itemMeta;

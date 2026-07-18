@@ -19,7 +19,7 @@ public class WildcardTargetStringNode extends StringNode {
 
     @Override
     public void fill(String arg) {
-        //WILDCARD_TARGET不可能解析错误
+        //WILDCARD_TARGET can never fail to parse
         this.value = arg;
     }
 

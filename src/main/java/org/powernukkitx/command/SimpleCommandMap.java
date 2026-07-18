@@ -348,10 +348,10 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     /**
-     * 解析给定文本，从中分割参数
+     * Parses the given text and splits the arguments out of it
      *
      * @param cmdLine the cmd line
-     * @return 参数数组
+     * @return the array of arguments
      */
     public static ArrayList<String> parseArguments(String cmdLine) {
         StringBuilder sb = new StringBuilder(cmdLine);
