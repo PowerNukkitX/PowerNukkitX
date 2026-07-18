@@ -1,5 +1,9 @@
 package org.powernukkitx.level;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.move.MoveActorDeltaData;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -95,7 +99,6 @@ import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
-import org.cloudburstmc.protocol.bedrock.data.MoveActorDeltaData;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
@@ -5040,11 +5043,14 @@ public class Level implements Metadatable {
         packet.setRotation(org.cloudburstmc.math.vector.Vector3f.from(pitch, yaw, headYaw));
         if (entity.riding != null) {
             packet.setRidingRuntimeID(entity.riding.getId());
-            packet.setPositionMode(MovePlayerPacket.PositionMode.ONLY_HEAD_ROT);
+            packet.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         } else {
-            packet.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
+            packet.setPositionMode(PositionMode.NORMAL);
         }
-        packet.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
+        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
+        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
+
+        packet.setTeleportData(teleportData);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }
@@ -5082,7 +5088,7 @@ public class Level implements Metadatable {
             packet.getFlags().add(MoveActorDeltaPacket.Flag.ON_GROUND);
         }
 
-        packet.setData(data);
+        packet.setMoveData(data);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }

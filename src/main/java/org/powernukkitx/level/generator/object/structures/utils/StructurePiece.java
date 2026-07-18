@@ -1,5 +1,6 @@
 package org.powernukkitx.level.generator.object.structures.utils;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockProperties;
@@ -13,7 +14,6 @@ import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.StructureRotationUtil;
 import org.powernukkitx.utils.random.RandomSourceProvider;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;

@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.experimental.UtilityClass;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -45,10 +45,10 @@ public class SkinUtils {
         return new PersonaPieceTint(pieceType, colors);
     }
 
-    public boolean isValid(SerializedSkin skin) {
+    public boolean isValid(Skin skin) {
         return skin.getSkinId() != null && !skin.getSkinId().trim().isEmpty() && skin.getSkinId().length() < 100 &&
                 skin.getSkinData() != null && skin.getSkinData().getWidth() >= 32 && skin.getSkinData().getHeight() >= 32 &&
-                skin.getSkinData().getImage().length >= SerializedSkin.SINGLE_SKIN_SIZE &&
+                skin.getSkinData().getImage().length >= Skin.SINGLE_SKIN_SIZE &&
                 (skin.getPlayFabId() == null || skin.getPlayFabId().length() < 100) &&
                 (skin.getCapeId() == null || skin.getCapeId().length() < 100) &&
                 (skin.getSkinColor() == null || skin.getSkinColor().length() < 100) &&

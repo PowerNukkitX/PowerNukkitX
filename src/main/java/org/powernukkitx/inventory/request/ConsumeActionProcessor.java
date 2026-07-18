@@ -1,5 +1,7 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
@@ -27,27 +29,27 @@ import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.GRID
 public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<ConsumeAction> {
 
     private static final Set<ContainerEnumName> SERVER_CONSUMED_CONTAINERS = Set.of(
-            ContainerEnumName.ANVIL_INPUT_CONTAINER,
-            ContainerEnumName.ANVIL_MATERIAL_CONTAINER,
-            ContainerEnumName.GRINDSTONE_INPUT_CONTAINER,
-            ContainerEnumName.GRINDSTONE_ADDITIONAL_CONTAINER,
-            ContainerEnumName.CARTOGRAPHY_INPUT_CONTAINER,
-            ContainerEnumName.CARTOGRAPHY_ADDITIONAL_CONTAINER,
-            ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER,
-            ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER,
-            ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER,
-            ContainerEnumName.LOOM_INPUT_CONTAINER,
-            ContainerEnumName.LOOM_DYE_CONTAINER,
-            ContainerEnumName.LOOM_MATERIAL_CONTAINER,
-            ContainerEnumName.ENCHANTING_INPUT_CONTAINER,
-            ContainerEnumName.ENCHANTING_MATERIAL_CONTAINER,
-            ContainerEnumName.TRADE2_INGREDIENT1_CONTAINER,
-            ContainerEnumName.TRADE2_INGREDIENT2_CONTAINER
+        ContainerEnumName.ANVIL_INPUT_CONTAINER,
+        ContainerEnumName.ANVIL_MATERIAL_CONTAINER,
+        ContainerEnumName.GRINDSTONE_INPUT_CONTAINER,
+        ContainerEnumName.GRINDSTONE_ADDITIONAL_CONTAINER,
+        ContainerEnumName.CARTOGRAPHY_INPUT_CONTAINER,
+        ContainerEnumName.CARTOGRAPHY_ADDITIONAL_CONTAINER,
+        ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER,
+        ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER,
+        ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER,
+        ContainerEnumName.LOOM_INPUT_CONTAINER,
+        ContainerEnumName.LOOM_DYE_CONTAINER,
+        ContainerEnumName.LOOM_MATERIAL_CONTAINER,
+        ContainerEnumName.ENCHANTING_INPUT_CONTAINER,
+        ContainerEnumName.ENCHANTING_MATERIAL_CONTAINER,
+        ContainerEnumName.TRADE2_INGREDIENT1_CONTAINER,
+        ContainerEnumName.TRADE2_INGREDIENT2_CONTAINER
     );
 
     @Override
     public ActionResponse handle(ConsumeAction action, Player player, ItemStackRequestContext context) {
-        var count = action.getCount();
+        var count = action.getAmount();
         if (count == 0) {
             log.warn("cannot consume 0 items!");
 
@@ -60,24 +62,23 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         Item item = sourceContainer.getItem(slot);
         ContainerEnumName sourceContainerType = containerName.getContainerName();
         boolean serverConsumed = SERVER_CONSUMED_CONTAINERS.contains(sourceContainerType)
-                || (sourceContainerType == ContainerEnumName.CRAFTING_INPUT_CONTAINER && Boolean.TRUE.equals(context.get(GRID_CONSUMED_KEY)));
+            || (sourceContainerType == ContainerEnumName.CRAFTING_INPUT_CONTAINER && Boolean.TRUE.equals(context.get(GRID_CONSUMED_KEY)));
         if (serverConsumed) {
             return context.success(List.of(
-                    new ItemStackResponseContainerInfo(
-                            sourceContainer.getContainerEnumName(slot),
-                            Lists.newArrayList(
-                                    new ItemStackResponseSlotInfo(
-                                            sourceContainer.toNetworkSlot(slot),
-                                            sourceContainer.toNetworkSlot(slot),
-                                            item.getCount(),
-                                            item.getNetId(),
-                                            item.getCustomName(),
-                                            item.getDamage(),
-                                            ""
-                                    )
-                            ),
-                            containerName
-                    )
+                new ItemStackResponseContainerInfo(
+                    sourceContainer.getContainerEnumName(slot),
+                    Lists.newArrayList(
+                        new ItemStackResponseSlotInfo(
+                            sourceContainer.toNetworkSlot(slot),
+                            sourceContainer.toNetworkSlot(slot),
+                            item.getCount(),
+                            new ItemStackNetId(item.getNetId()),
+                            new RedactableString(item.getCustomName(), ""),
+                            item.getDamage()
+                        )
+                    ),
+                    containerName
+                )
             ));
         }
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
@@ -117,21 +118,20 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         }
 
         return context.success(List.of(
-                new ItemStackResponseContainerInfo(
-                        containerEnumName,
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        sourceContainer.toNetworkSlot(slot),
-                                        sourceContainer.toNetworkSlot(slot),
-                                        item.getCount(),
-                                        item.getNetId(),
-                                        item.getCustomName(),
-                                        item.getDamage(),
-                                        ""
-                                )
-                        ),
-                        containerName
-                )
+            new ItemStackResponseContainerInfo(
+                containerEnumName,
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        sourceContainer.toNetworkSlot(slot),
+                        sourceContainer.toNetworkSlot(slot),
+                        item.getCount(),
+                        new ItemStackNetId(item.getNetId()),
+                        new RedactableString(item.getCustomName(), ""),
+                        item.getDamage()
+                    )
+                ),
+                containerName
+            )
         ));
     }
 
