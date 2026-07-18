@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD033 -->
 <p align="center">
   <a href="https://powernukkitx.org"><img src=".github/logo.png" alt="PowerNukkitX Logo"></a>
 </p>
@@ -5,6 +6,7 @@
 <p align="center">
   <strong>A Minecraft Bedrock Edition Server Software, open source and written in java</strong>
 </p>
+<!-- markdownlint-enable MD033 -->
 
 ![Version](https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000)
 [![Minecraft](https://img.shields.io/badge/minecraft-v26.30%20(Bedrock)-56383E)](https://www.minecraft.net/en-us/article/minecraft-26-30-bedrock-changelog)
