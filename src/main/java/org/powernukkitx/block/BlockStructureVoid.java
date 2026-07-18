@@ -23,6 +23,8 @@ public class BlockStructureVoid extends BlockSolid {
             .canPassThrough(true)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
+            .isSolid(false)
             .build();
 
     @Override
@@ -43,21 +45,13 @@ public class BlockStructureVoid extends BlockSolid {
         return "Structure Void";
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
     
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public AxisAlignedBB getBoundingBox() {
         return null;

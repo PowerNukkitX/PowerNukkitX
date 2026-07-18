@@ -27,6 +27,12 @@ public class BlockBubbleColumn extends BlockTransparent {
             .resistance(500)
             .canPassThrough(true)
             .canBeReplaced(true)
+            .canHarvestWithHand(false)
+            .isSolid(false)
+            .canBePlaced(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(2)
             .build();
 
     private static final double DOWNWARD_MAX_MOTION = -0.3;
@@ -56,17 +62,6 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
 
     @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
@@ -83,17 +78,6 @@ public class BlockBubbleColumn extends BlockTransparent {
 
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean canBePlaced() {
-        return false;
-    }
-
-    
-    @Override
-    public boolean isSolid() {
         return false;
     }
 
@@ -173,16 +157,6 @@ public class BlockBubbleColumn extends BlockTransparent {
         this.getLevel().setBlock(this, 1, new BlockFlowingWater(), true, false);
         this.getLevel().setBlock(this, this, true, true);
         return true;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

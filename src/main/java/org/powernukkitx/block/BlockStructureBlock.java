@@ -25,6 +25,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
             .canBePushed(false)
             .canBePulled(false)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -85,11 +86,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
         return getStructureBlockType().name() + "Structure Block";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();

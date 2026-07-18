@@ -29,6 +29,8 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -50,21 +52,13 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
         return "Grindstone";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockGrindstone());
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));

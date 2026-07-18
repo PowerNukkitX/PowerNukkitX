@@ -22,6 +22,7 @@ public class BlockSeagrass extends BlockFlowable {
             .canBeReplaced(true)
             .canBeActivated(true)
             .isFertilizable(true)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -125,13 +126,6 @@ public class BlockSeagrass extends BlockFlowable {
         }
     }
 
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockSeagrass(), 0);

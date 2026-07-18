@@ -33,6 +33,8 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
             .toolType(ItemTool.TYPE_AXE)
             .canPassThrough(true)
             .breaksWhenMoved(true)
+            .isSolid(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -73,12 +75,6 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return null;
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override
@@ -197,8 +193,4 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         return DyeColor.WHITE;
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
     }
-}

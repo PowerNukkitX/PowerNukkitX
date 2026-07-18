@@ -36,6 +36,8 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             .resistance(12.5)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -72,12 +74,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     @Override
     public String getName() {
         return "Chest";
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override
@@ -237,11 +233,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         return true;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityChest blockEntity = getBlockEntity();

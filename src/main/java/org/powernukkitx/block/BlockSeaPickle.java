@@ -28,6 +28,7 @@ public class BlockSeaPickle extends BlockFlowable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeActivated(true)
             .isFertilizable(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -166,11 +167,7 @@ public class BlockSeaPickle extends BlockFlowable {
         return super.onActivate(item, player, blockFace, fx, fy, fz);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public int getLightLevel() {
         if (isDead()) {

@@ -18,6 +18,8 @@ public class BlockIronChain extends BlockTransparent {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -52,12 +54,6 @@ public class BlockIronChain extends BlockTransparent {
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
     @Override
     public double getMinX() {
         return x + 7/16.0;
@@ -78,10 +74,4 @@ public class BlockIronChain extends BlockTransparent {
         return z + 9/16.0;
     }
 
-    
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-    
 }

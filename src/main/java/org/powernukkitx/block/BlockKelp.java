@@ -22,6 +22,7 @@ public class BlockKelp extends BlockFlowable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeActivated(true)
             .isFertilizable(true)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -171,10 +172,4 @@ public class BlockKelp extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    
     }

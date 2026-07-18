@@ -51,6 +51,11 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             .canBePulled(false)
             .breaksWhenMoved(true)
             .canBeActivated(true)
+            .canSilkTouch(true)
+            .canHarvestWithHand(true)
+            .hasEntityCollision(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockCampfire() {
@@ -88,21 +93,13 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return isExtinguished() ? 0 : 15;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{Item.get(ItemID.CHARCOAL, 0, 2)};
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (down().getProperties() == PROPERTIES) {
@@ -145,11 +142,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return true;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         if (isExtinguished()) {
@@ -246,11 +239,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return false;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMaxY() {
         return y + 0.4371948;
@@ -284,11 +273,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return "Campfire";
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityCampfire blockEntity = getBlockEntity();

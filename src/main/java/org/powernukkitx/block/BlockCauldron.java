@@ -47,6 +47,10 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .isTransparent(true)
+            .hasEntityCollision(true)
+            .hasComparatorInputOverride(true)
             .build();
 
     @Override
@@ -540,32 +544,18 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
-    
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
     @Override
     public int getComparatorInputOverride() {
         return getFillLevel();
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
+    
     @Override
     public int getLightFilter() {
         return 3;
@@ -576,11 +566,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
         return getCauldronLiquid() == CauldronLiquid.LAVA ? 15 : 0;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return shrink(0.3, 0.3, 0.3);

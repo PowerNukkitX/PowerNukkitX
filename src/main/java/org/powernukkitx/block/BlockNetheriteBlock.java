@@ -13,6 +13,7 @@ public class BlockNetheriteBlock extends BlockSolid {
             .resistance(1200)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_DIAMOND)
+            .canHarvestWithHand(false)
             .build();
     public BlockNetheriteBlock() {
         super(PROPERTIES.getDefaultState());
@@ -32,11 +33,7 @@ public class BlockNetheriteBlock extends BlockSolid {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isLavaResistant() {
         return true;

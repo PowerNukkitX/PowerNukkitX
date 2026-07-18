@@ -18,6 +18,7 @@ public class BlockGrassPath extends BlockGrassBlock {
     public static final BlockDefinition DEFINITION = BlockGrassBlock.DEFINITION.toBuilder()
             .hardness(0.65)
             .resistance(0.65)
+            .isTransparent(true)
             .build();
 
     public BlockGrassPath() {
@@ -64,8 +65,4 @@ public class BlockGrassPath extends BlockGrassBlock {
         return false;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
     }
-}

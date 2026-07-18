@@ -15,6 +15,7 @@ public class BlockTuff extends BlockSolid {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockTuff() {
@@ -39,8 +40,4 @@ public class BlockTuff extends BlockSolid {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

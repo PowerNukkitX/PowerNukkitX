@@ -37,6 +37,11 @@ public class BlockVine extends BlockTransparent {
             .sticksToPiston(false)
             .canBeClimbed(true)
             .canBeReplaced(true)
+            .canSilkTouch(true)
+            .isSolid(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -58,31 +63,12 @@ public class BlockVine extends BlockTransparent {
     }
 
     @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
         entity.onGround = true;
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -338,8 +324,4 @@ public class BlockVine extends BlockTransparent {
         };
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

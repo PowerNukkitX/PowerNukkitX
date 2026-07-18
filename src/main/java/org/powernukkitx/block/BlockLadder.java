@@ -24,6 +24,9 @@ public class BlockLadder extends BlockTransparent implements Faceable {
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeClimbed(true)
+            .isSolid(false)
+            .hasEntityCollision(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -46,26 +49,11 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     private double offMinX;
     private double offMinZ;
     private double offMaxX;

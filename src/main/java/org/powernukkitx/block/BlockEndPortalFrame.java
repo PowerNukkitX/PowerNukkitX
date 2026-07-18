@@ -35,6 +35,9 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
             .canBePushed(false)
             .canBePulled(false)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -50,11 +53,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         super(blockstate, DEFINITION);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public String getName() {
         return "End Portal Frame";
@@ -70,11 +69,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         return this.y + (this.isEndPortalEye() ? 1 : 0.8125);
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         return this.isEndPortalEye() ? 15 : 0;
@@ -144,11 +139,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         return block.getId().equals(this.getId()) && (block.blockstate.specialValue() - 4) == (x == -2 ? 3 : x == 2 ? 1 : z == -2 ? 0 : z == 2 ? 2 : -1);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(this, 0);

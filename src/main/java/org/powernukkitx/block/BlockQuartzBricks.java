@@ -12,6 +12,7 @@ public class BlockQuartzBricks extends BlockSolid {
             .resistance(4)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,8 +33,4 @@ public class BlockQuartzBricks extends BlockSolid {
         return "Quartz Bricks";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

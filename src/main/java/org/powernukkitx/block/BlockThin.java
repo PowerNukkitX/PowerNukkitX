@@ -16,18 +16,16 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  */
 
 public abstract class BlockThin extends BlockTransparent implements BlockConnectable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .isSolid(false)
+            .build();
 
     public BlockThin(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     public BlockThin(BlockState blockState, BlockDefinition definition) {
         super(blockState, definition);
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

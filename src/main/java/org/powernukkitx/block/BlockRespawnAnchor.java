@@ -52,6 +52,8 @@ public class BlockRespawnAnchor extends Block {
             .canBePushed(false)
             .canBePulled(false)
             .canBeActivated(true)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -155,16 +157,6 @@ public class BlockRespawnAnchor extends Block {
             return type;
         }
         return super.onUpdate(type);
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

@@ -11,6 +11,8 @@ public class BlockBlueIce extends BlockPackedIce {
             .hardness(2.8)
             .resistance(14)
             .lightEmission(4)
+            .friction(0.989)
+            .isTransparent(false)
             .build();
 
     public BlockBlueIce() {
@@ -28,16 +30,6 @@ public class BlockBlueIce extends BlockPackedIce {
     @Override
     public String getName() {
         return "Blue Ice";
-    }
-    
-    @Override
-    public double getFrictionFactor() {
-        return 0.989;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return false;
     }
 
     }

@@ -18,6 +18,7 @@ public class BlockObsidian extends BlockSolid {
             .toolTier(ItemTool.TIER_DIAMOND)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockObsidian() {
@@ -67,8 +68,4 @@ public class BlockObsidian extends BlockSolid {
         }
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

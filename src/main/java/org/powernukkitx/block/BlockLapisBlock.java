@@ -12,6 +12,7 @@ public class BlockLapisBlock extends BlockSolid {
             .resistance(5)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,8 +33,4 @@ public class BlockLapisBlock extends BlockSolid {
         return "Lapis Lazuli Block";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

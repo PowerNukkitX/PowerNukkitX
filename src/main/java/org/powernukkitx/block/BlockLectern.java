@@ -32,6 +32,9 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
             .resistance(12.5)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .isPowerSource(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -65,21 +68,13 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         return BlockEntity.LECTERN;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMaxY() {
         return y + 0.89999;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         int power = 0;
@@ -135,11 +130,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         return true;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     public boolean isActivated() {
         return getPropertyValue(CommonBlockProperties.POWERED_BIT);
     }

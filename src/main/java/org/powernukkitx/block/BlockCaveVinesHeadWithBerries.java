@@ -13,6 +13,7 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES_HEAD_WITH_BERRIES, GROWING_PLANT_AGE);
     public static final BlockDefinition DEFINITION = BlockCaveVines.DEFINITION.toBuilder()
             .lightEmission(14)
+            .isTransparent(true)
             .build();
 
     @Override
@@ -33,12 +34,6 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
         return "Cave Vines Head With Berries";
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{Item.get(ItemID.GLOW_BERRIES)};

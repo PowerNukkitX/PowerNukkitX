@@ -40,6 +40,9 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .hasEntityCollision(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -161,11 +164,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         }
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return recalculateBoundingBox().expand(0.000001, 0.000001, 0.000001);
@@ -413,17 +412,6 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockBell());
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
 }

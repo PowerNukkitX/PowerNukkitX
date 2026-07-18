@@ -33,6 +33,9 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
             .resistance(2.5d)
             .breaksWhenMoved(true)
             .canBeActivated(true)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -179,21 +182,6 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     @Override
     public int getStrongPower(BlockFace side) {
         return !isPowerOn() ? 0 : getLeverOrientation().getFacing() == side ? 15 : 0;
-    }
-
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

@@ -13,6 +13,7 @@ public class BlockEmeraldBlock extends BlockSolid {
             .resistance(30)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_IRON)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -33,8 +34,4 @@ public class BlockEmeraldBlock extends BlockSolid {
         return "Emerald Block";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

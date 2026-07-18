@@ -26,6 +26,7 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
             .toolType(ItemTool.TYPE_AXE)
             .canBePushed(false)
             .canBePulled(false)
+            .hasComparatorInputOverride(true)
             .build();
 
     @Override
@@ -106,11 +107,7 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
         return BlockEntityID.CREAKING_HEART;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityCreakingHeart entityCreakingHeart = getOrCreateBlockEntity();

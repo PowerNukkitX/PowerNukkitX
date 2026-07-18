@@ -41,6 +41,9 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -74,11 +77,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         return "Hopper Block";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         BlockFace facing = face.getOpposite();
@@ -113,12 +112,6 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         BlockEntityHopper blockEntity = getOrCreateBlockEntity();
 
         return player.addWindow(blockEntity.getInventory()) != -1;
-    }
-
-    
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
     }
 
     @Override
@@ -167,11 +160,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         return 0;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());

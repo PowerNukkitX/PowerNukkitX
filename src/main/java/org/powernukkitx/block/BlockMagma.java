@@ -23,6 +23,7 @@ public class BlockMagma extends BlockSolid {
             .resistance(30)
             .toolType(ItemTool.TYPE_PICKAXE)
             .lightEmission(3)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockMagma() {
@@ -88,9 +89,5 @@ public class BlockMagma extends BlockSolid {
         return 0;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
 }

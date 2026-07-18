@@ -15,6 +15,7 @@ public class BlockGlassPane extends BlockThin {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0.3)
             .resistance(1.5)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -39,13 +40,6 @@ public class BlockGlassPane extends BlockThin {
         return "Glass Pane";
     }
 
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;

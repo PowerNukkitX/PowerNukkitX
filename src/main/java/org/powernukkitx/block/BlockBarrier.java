@@ -20,6 +20,7 @@ public class BlockBarrier extends BlockSolid {
             .hardness(-1)
             .resistance(18000000)
             .canBePushed(false)
+            .waterloggingLevel(1)
             .build();
 
     public BlockBarrier() {
@@ -40,11 +41,7 @@ public class BlockBarrier extends BlockSolid {
         return PROPERTIES;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();

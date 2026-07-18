@@ -23,6 +23,7 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -53,11 +54,7 @@ public class BlockNetherreactor extends BlockSolid implements BlockEntityHolder<
         return "Nether Reactor Core";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe()) {

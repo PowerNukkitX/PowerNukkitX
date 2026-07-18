@@ -18,6 +18,7 @@ public class BlockMelonBlock extends BlockSolid implements Natural {
             .toolType(ItemTool.TYPE_AXE)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
+            .canSilkTouch(true)
             .build();
 
     @Override
@@ -53,11 +54,4 @@ public class BlockMelonBlock extends BlockSolid implements Natural {
         };
     }
 
-    
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    
     }

@@ -14,6 +14,7 @@ public class BlockFletchingTable extends BlockSolid {
             .resistance(12.5)
             .toolType(ItemTool.TYPE_AXE)
             .burnChance(5)
+            .canHarvestWithHand(true)
             .build();
 
     @Override
@@ -34,8 +35,4 @@ public class BlockFletchingTable extends BlockSolid {
         return "Fletching Table";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
     }
-}

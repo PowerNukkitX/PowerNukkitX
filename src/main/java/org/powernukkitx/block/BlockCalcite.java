@@ -13,6 +13,7 @@ public class BlockCalcite extends BlockSolid {
             .resistance(0.75)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockCalcite() {
@@ -33,8 +34,4 @@ public class BlockCalcite extends BlockSolid {
         return "Calcite";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

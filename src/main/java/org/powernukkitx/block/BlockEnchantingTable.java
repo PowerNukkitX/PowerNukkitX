@@ -29,6 +29,8 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(7)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -62,11 +64,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return BlockEntityEnchantTable.class;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMaxY() {
         return getY() + 12 / 16.0;
@@ -111,11 +109,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         return true;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

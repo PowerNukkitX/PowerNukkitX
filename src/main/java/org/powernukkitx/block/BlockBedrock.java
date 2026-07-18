@@ -23,6 +23,7 @@ public class BlockBedrock extends BlockSolid {
             .resistance(18000000)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -56,8 +57,4 @@ public class BlockBedrock extends BlockSolid {
         return player != null && player.isCreative();
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

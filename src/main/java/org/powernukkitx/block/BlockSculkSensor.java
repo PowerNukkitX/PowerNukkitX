@@ -21,6 +21,9 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
             .breaksWhenMoved(false)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -51,11 +54,7 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
         return BlockEntity.SCULK_SENSOR;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getStrongPower(BlockFace side) {
         return super.getStrongPower(side);
@@ -97,17 +96,9 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
         return false;
     }
 
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
+    
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

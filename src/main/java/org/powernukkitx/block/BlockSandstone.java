@@ -13,6 +13,7 @@ public class BlockSandstone extends BlockSolid {
             .resistance(0.8)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,8 +33,4 @@ public class BlockSandstone extends BlockSolid {
         super(state, definition);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

@@ -16,6 +16,7 @@ public class BlockSeaLantern extends BlockTransparent {
             .hardness(0.3)
             .resistance(1.5)
             .lightEmission(15)
+            .canSilkTouch(true)
             .build();
 
     @Override
@@ -48,8 +49,4 @@ public class BlockSeaLantern extends BlockTransparent {
         return new Item[]{Item.get(ItemID.PRISMARINE_CRYSTALS, 0, count)};
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

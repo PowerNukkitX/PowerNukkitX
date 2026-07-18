@@ -26,6 +26,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
             .canBePushed(false)
             .canBePulled(false)
             .canBeActivated(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -68,12 +69,6 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     @Override
     public String getName() {
         return "Beacon";
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

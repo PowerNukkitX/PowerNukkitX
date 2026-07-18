@@ -14,6 +14,9 @@ public class BlockWeb extends BlockFlowable {
             .hardness(4)
             .resistance(20)
             .toolType(ItemTool.TYPE_SWORD)
+            .canHarvestWithHand(false)
+            .diffusesSkyLight(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -29,11 +32,7 @@ public class BlockWeb extends BlockFlowable {
         super(blockstate, DEFINITION);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
@@ -54,13 +53,5 @@ public class BlockWeb extends BlockFlowable {
         }
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    
     }
-
-    @Override
-    public boolean diffusesSkyLight() {
-        return true;
-    }
-}

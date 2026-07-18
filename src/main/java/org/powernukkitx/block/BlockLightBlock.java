@@ -13,6 +13,9 @@ public class BlockLightBlock extends BlockTransparent {
             .resistance(0)
             .canPassThrough(true)
             .canBeReplaced(true)
+            .canHarvestWithHand(false)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(2)
             .build();
 
     @Override
@@ -41,22 +44,6 @@ public class BlockLightBlock extends BlockTransparent {
     @Override
     public AxisAlignedBB getBoundingBox() {
         return null;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     }

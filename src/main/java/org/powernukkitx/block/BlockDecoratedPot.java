@@ -29,6 +29,8 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     public static final BlockProperties PROPERTIES = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -92,21 +94,11 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         return BlockFace.fromHorizontalIndex(getPropertyValue(CommonBlockProperties.DIRECTION));
     }
 
-    
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (item != null && item.hasEnchantment(Enchantment.ID_SILK_TOUCH) && isShatteringTool(item)) {

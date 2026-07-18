@@ -27,6 +27,9 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
             .hardness(0.2)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
+            .isSolid(false)
+            .isPowerSource(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -61,13 +64,6 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         return BlockEntityDaylightDetector.class;
     }
 
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    
     @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
@@ -133,11 +129,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         return getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL);
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     public boolean isInverted() {
         return false;
     }
@@ -203,12 +195,6 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         }
 
         return Math.max(0, bestSignal);
-    }
-
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

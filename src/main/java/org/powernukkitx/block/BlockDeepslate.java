@@ -18,6 +18,8 @@ public class BlockDeepslate extends BlockSolid {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -38,11 +40,7 @@ public class BlockDeepslate extends BlockSolid {
         return "Deepslate";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
@@ -67,8 +65,4 @@ public class BlockDeepslate extends BlockSolid {
         return new Item[]{Item.get(BlockID.COBBLED_DEEPSLATE)};
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

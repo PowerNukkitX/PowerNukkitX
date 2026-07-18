@@ -27,6 +27,10 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(1)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .isSolid(false)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -48,11 +52,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return "Brewing Stand";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
 
@@ -108,12 +108,6 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return true;
     }
 
-    
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
     @Override
     public double getMinX() {
         return this.x + 7 / 16.0;
@@ -139,11 +133,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return this.z + 1 - 7 / 16.0;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntity blockEntity = this.level.getBlockEntity(this);
@@ -155,11 +145,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return super.getComparatorInputOverride();
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     @NotNull
     public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {

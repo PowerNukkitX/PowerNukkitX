@@ -12,6 +12,7 @@ public class BlockMossyCobblestone extends BlockSolid {
             .resistance(10)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -32,8 +33,4 @@ public class BlockMossyCobblestone extends BlockSolid {
         return "Mossy Cobblestone";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

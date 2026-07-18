@@ -44,6 +44,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -81,12 +82,6 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     public double getMaxY() {
         return this.y + 0.5625;
     }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {

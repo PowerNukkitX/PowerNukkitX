@@ -34,6 +34,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
             .canBePushed(false)
             .sticksToPiston(false)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
             .build();
     public BlockLodestone() {
         super(PROPERTIES.getDefaultState());
@@ -116,10 +117,4 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         return PROPERTIES;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
     }

@@ -11,6 +11,8 @@ public class BlockSoulSoil extends BlockSolid {
             .hardness(1)
             .resistance(1)
             .toolType(ItemTool.TYPE_SHOVEL)
+            .canHarvestWithHand(true)
+            .isSoulSpeedCompatible(true)
             .build();
 
     @Override
@@ -31,13 +33,5 @@ public class BlockSoulSoil extends BlockSolid {
         return "Soul Soil";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
+    
     }
-
-    @Override
-    public boolean isSoulSpeedCompatible() {
-        return true;
-    }
-}

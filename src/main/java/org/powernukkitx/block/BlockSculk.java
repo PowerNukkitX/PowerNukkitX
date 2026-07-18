@@ -17,6 +17,8 @@ public class BlockSculk extends BlockSolid {
             .resistance(0.2)
             .toolType(ItemTool.TYPE_HOE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .dropExp(1)
             .build();
 
     @Override
@@ -54,13 +56,5 @@ public class BlockSculk extends BlockSolid {
         }
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    
     }
-
-    @Override
-    public int getDropExp() {
-        return 1;
-    }
-}

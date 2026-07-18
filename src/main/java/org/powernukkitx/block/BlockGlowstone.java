@@ -22,6 +22,7 @@ public class BlockGlowstone extends BlockTransparent {
             .burnChance(0)
             .burnAbility(0)
             .lightEmission(15)
+            .canSilkTouch(true)
             .build();
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -56,8 +57,4 @@ public class BlockGlowstone extends BlockTransparent {
         };
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

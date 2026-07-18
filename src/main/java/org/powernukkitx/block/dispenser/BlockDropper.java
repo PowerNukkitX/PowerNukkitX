@@ -1,5 +1,7 @@
 package org.powernukkitx.block.dispenser;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -15,6 +17,12 @@ import static org.powernukkitx.block.property.CommonBlockProperties.TRIGGERED_BI
 public class BlockDropper extends BlockDispenser {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DROPPER, FACING_DIRECTION, TRIGGERED_BIT);
+    public static final BlockDefinition DEFINITION = BlockDispenser.DEFINITION.toBuilder()
+            .hardness(3.5)
+            .resistance(3.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull
@@ -27,7 +35,7 @@ public class BlockDropper extends BlockDispenser {
     }
 
     public BlockDropper(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -57,23 +65,4 @@ public class BlockDropper extends BlockDispenser {
         return new DropperDispenseBehavior();
     }
 
-    @Override
-    public double getResistance() {
-        return 3.5;
     }
-
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-}

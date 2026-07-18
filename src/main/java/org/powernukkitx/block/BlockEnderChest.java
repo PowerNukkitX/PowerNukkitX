@@ -31,6 +31,9 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
             .canBePushed(false)
             .canBePulled(false)
             .canBeActivated(true)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -58,12 +61,6 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     @NotNull
     public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
         return BlockEntityEnderChest.class;
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override
@@ -145,16 +142,6 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         } else {
             return Item.EMPTY_ARRAY;
         }
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
 
     @Override

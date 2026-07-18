@@ -18,6 +18,8 @@ public class BlockQuartzOre extends BlockSolid {
             .resistance(5)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -66,13 +68,5 @@ public class BlockQuartzOre extends BlockSolid {
         return new NukkitRandom().nextInt(1, 5);
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    
     }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-}

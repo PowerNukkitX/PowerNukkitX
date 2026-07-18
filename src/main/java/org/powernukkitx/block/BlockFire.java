@@ -37,6 +37,7 @@ public class BlockFire extends BlockFlowable {
             .lightEmission(15)
             .canBeReplaced(true)
             .tickRate(30)
+            .hasEntityCollision(true)
             .build();
 
     @Override
@@ -64,11 +65,7 @@ public class BlockFire extends BlockFlowable {
         setPropertyValue(AGE_16, age);
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public String getName() {
         return "Fire Block";

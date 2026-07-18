@@ -24,6 +24,7 @@ public class BlockSmithingTable extends BlockSolid implements BlockInventoryHold
             .toolType(ItemTool.TYPE_AXE)
             .burnChance(5)
             .canBeActivated(true)
+            .canHarvestWithHand(true)
             .build();
 
     @Override
@@ -61,11 +62,7 @@ public class BlockSmithingTable extends BlockSolid implements BlockInventoryHold
         return true;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
+    
     @Override
     public Supplier<Inventory> blockInventorySupplier() {
         return () -> new SmithingInventory(this);

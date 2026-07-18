@@ -16,6 +16,7 @@ public class BlockEndStone extends BlockSolid {
             .resistance(9)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -40,8 +41,4 @@ public class BlockEndStone extends BlockSolid {
         return "End Stone";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

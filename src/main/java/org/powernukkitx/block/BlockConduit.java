@@ -22,6 +22,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
             .resistance(15)
             .toolType(ItemTool.TYPE_PICKAXE)
             .lightEmission(15)
+            .waterloggingLevel(2)
             .build();
 
     public BlockConduit() {
@@ -55,11 +56,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         return BlockEntity.CONDUIT;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (item.isBlock() && Objects.equals(item.getBlockId(), CONDUIT) && target.getId().equals(CONDUIT)) {

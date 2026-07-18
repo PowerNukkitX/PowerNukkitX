@@ -16,6 +16,8 @@ public class BlockHeavyCore extends BlockFlowable {
             .canPassThrough(false)
             .canBePulled(false)
             .breaksWhenMoved(false)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -66,17 +68,6 @@ public class BlockHeavyCore extends BlockFlowable {
     @Override
     public String getName() {
         return "Heavy Core";
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     }

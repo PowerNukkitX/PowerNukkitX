@@ -25,6 +25,8 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
             .canBePushed(false)
             .canBePulled(false)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -62,19 +64,6 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
         return Item.EMPTY_ARRAY;
     }
 
-    
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    
     public boolean setType(int networkId) {
         BlockEntity blockEntity = getLevel().getBlockEntity(this);
         if (blockEntity != null && blockEntity instanceof BlockEntityMobSpawner spawner) {

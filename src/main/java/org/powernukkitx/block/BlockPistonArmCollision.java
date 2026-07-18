@@ -21,6 +21,7 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
             .resistance(1.5)
             .canBePushed(false)
             .canBePulled(false)
+            .isSolid(false)
             .build();
 
     @Override
@@ -95,11 +96,7 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

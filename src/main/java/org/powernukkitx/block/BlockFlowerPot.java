@@ -23,6 +23,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
             .canBeActivated(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockFlowerPot() {
@@ -39,11 +40,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return PROPERTIES;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public String getName() {
         return "Flower Pot";

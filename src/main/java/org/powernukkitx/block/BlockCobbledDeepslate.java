@@ -12,6 +12,7 @@ public class BlockCobbledDeepslate extends BlockSolid {
             .resistance(6.0)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -36,8 +37,4 @@ public class BlockCobbledDeepslate extends BlockSolid {
         return "Cobbled Deepslate";
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-}

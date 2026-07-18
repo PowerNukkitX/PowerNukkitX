@@ -57,6 +57,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
             .toolType(ItemTool.TYPE_PICKAXE)
             .sticksToPiston(true)
             .breaksWhenMoved(false)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -360,8 +361,4 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return BlockFace.fromHorizontalIndex(this.getBlockState().specialValue() & 0x07);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

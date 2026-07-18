@@ -35,6 +35,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             .toolType(ItemTool.TYPE_HOE)
             .burnChance(0)
             .burnAbility(15)
+            .isPowerSource(true)
             .build();
 
     @Override
@@ -65,11 +66,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return BlockEntity.TARGET;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getWeakPower(BlockFace face) {
         BlockEntityTarget target = getBlockEntity();

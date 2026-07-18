@@ -23,6 +23,7 @@ public class BlockSnifferEgg extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0.5)
             .resistance(0.5)
+            .canSilkTouch(true)
             .build();
     private static final int REGULAR_HATCH_TIME_TICKS = 24000;
     private static final int BOOSTED_HATCH_TIME_TICKS = 12000;
@@ -155,11 +156,7 @@ public class BlockSnifferEgg extends BlockTransparent {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
     @Override
     public BlockSnifferEgg clone() {
         return (BlockSnifferEgg) super.clone();

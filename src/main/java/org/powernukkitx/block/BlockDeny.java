@@ -17,6 +17,7 @@ public class BlockDeny extends BlockSolid {
             .resistance(18000000)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockDeny() {
@@ -37,11 +38,7 @@ public class BlockDeny extends BlockSolid {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {

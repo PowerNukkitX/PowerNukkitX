@@ -40,6 +40,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .isSolid(false)
+            .hasComparatorInputOverride(true)
+            .maxStackSize(1)
+            .waterloggingLevel(1)
             .build();
 
     public BlockUndyedShulkerBox(BlockState blockState) {
@@ -68,11 +73,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return BlockEntity.SHULKER_BOX;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     public Item getShulkerBox() {
         return new ItemBlock(this);
     }
@@ -142,11 +143,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
@@ -165,11 +162,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return block instanceof BlockAir || block instanceof BlockLiquid || block instanceof BlockFlowable;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityShulkerBox be = getBlockEntity();
@@ -181,18 +174,10 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return ContainerInventory.calculateRedstone(be.getInventory());
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public int getItemMaxStackSize() {
-        return 1;
     }
-}

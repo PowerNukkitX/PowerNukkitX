@@ -18,6 +18,7 @@ public class BlockWaterlily extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WATERLILY);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
+            .canBeFlowedInto(false)
             .build();
 
     @Override
@@ -99,8 +100,4 @@ public class BlockWaterlily extends BlockFlowable {
     }
 
     
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
-}

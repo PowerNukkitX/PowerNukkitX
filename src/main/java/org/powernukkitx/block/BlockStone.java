@@ -16,6 +16,8 @@ public class BlockStone extends BlockSolid {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -30,16 +32,6 @@ public class BlockStone extends BlockSolid {
 
     public BlockStone(BlockState blockState) {
         super(blockState, DEFINITION);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
 
     @Override
