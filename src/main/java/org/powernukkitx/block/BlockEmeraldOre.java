@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemEmerald;
 import org.powernukkitx.item.ItemID;
@@ -12,6 +14,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockEmeraldOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(EMERALD_ORE);
+    public static final BlockDefinition DEFINITION = BlockOre.DEFINITION.toBuilder()
+            .toolTier(ItemTool.TIER_IRON)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -23,7 +28,7 @@ public class BlockEmeraldOre extends BlockOre {
     }
 
     public BlockEmeraldOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -36,11 +41,7 @@ public class BlockEmeraldOre extends BlockOre {
         return ItemID.EMERALD;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_IRON;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {

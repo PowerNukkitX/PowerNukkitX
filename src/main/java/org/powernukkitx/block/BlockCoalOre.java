@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +11,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockCoalOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(COAL_ORE);
+    public static final BlockDefinition DEFINITION = BlockOre.DEFINITION.toBuilder()
+            .hardness(3)
+            .resistance(3)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,7 +27,7 @@ public class BlockCoalOre extends BlockOre {
     }
 
     public BlockCoalOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -33,23 +40,11 @@ public class BlockCoalOre extends BlockOre {
         return ItemID.COAL;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public int getDropExp() {
         return ThreadLocalRandom.current().nextInt(3);
     }
 
-    @Override
-    public double getResistance() {
-        return 3;
+    
     }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-}

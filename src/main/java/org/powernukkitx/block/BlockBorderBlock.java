@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -12,6 +14,12 @@ import javax.annotation.Nullable;
 
 public class BlockBorderBlock extends BlockWallBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(BORDER_BLOCK, CommonBlockProperties.WALL_CONNECTION_TYPE_EAST, CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH, CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH, CommonBlockProperties.WALL_CONNECTION_TYPE_WEST, CommonBlockProperties.WALL_POST_BIT);
+    public static final BlockDefinition DEFINITION = BlockWallBase.DEFINITION.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -23,37 +31,12 @@ public class BlockBorderBlock extends BlockWallBase {
     }
 
     public BlockBorderBlock(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Border Block";
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public  boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

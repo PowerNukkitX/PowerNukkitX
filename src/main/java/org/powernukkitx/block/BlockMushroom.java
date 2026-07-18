@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.level.StructureGrowEvent;
 import org.powernukkitx.item.Item;
@@ -16,9 +18,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BlockMushroom extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     public BlockMushroom(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockMushroom(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -42,11 +54,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
         return false;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
@@ -91,28 +99,9 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
         return block.getId().equals(MYCELIUM) || block.getId().equals(PODZOL) || block instanceof BlockNylium || (!block.isTransparent() && this.level.getFullLight(this) < 13);
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
     protected abstract ObjectBigMushroom.MushroomType getType();
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;

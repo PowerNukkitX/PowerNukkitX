@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.Attachment;
 import org.powernukkitx.block.property.enums.WallConnectionType;
@@ -29,11 +31,20 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
 
 @Slf4j
 public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(30)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
     private static final double MIN_POST_BB = 5.0 / 16;
     private static final double MAX_POST_BB = 11.0 / 16;
 
     public BlockWallBase(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockWallBase(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -44,16 +55,6 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 30;
     }
 
     @Override
@@ -430,13 +431,5 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return getConnectionType(face) != WallConnectionType.NONE;
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+    
     }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

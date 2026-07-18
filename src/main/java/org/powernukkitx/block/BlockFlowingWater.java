@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
@@ -11,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockFlowingWater extends BlockLiquid {
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_WATER, CommonBlockProperties.LIQUID_DEPTH);
+    public static final BlockDefinition DEFINITION = BlockLiquid.DEFINITION.toBuilder()
+            .tickRate(5)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,7 +27,7 @@ public class BlockFlowingWater extends BlockLiquid {
     }
 
     public BlockFlowingWater(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -71,11 +76,7 @@ public class BlockFlowingWater extends BlockLiquid {
         }
     }
 
-    @Override
-    public int tickRate() {
-        return 5;
-    }
-
+    
     @Override
     public boolean usesWaterLogging() {
         return true;

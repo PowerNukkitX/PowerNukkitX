@@ -1,11 +1,19 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockCherryLog extends BlockLog {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_LOG, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = BlockLog.DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(10)
+            .burnChance(5)
+            .burnAbility(5)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,27 +25,7 @@ public class BlockCherryLog extends BlockLog {
     }
 
     public BlockCherryLog(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 5;
+        super(blockState, DEFINITION);
     }
 
     @Override

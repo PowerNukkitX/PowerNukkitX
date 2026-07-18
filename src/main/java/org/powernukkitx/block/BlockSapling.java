@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.WoodType;
 import org.powernukkitx.event.level.StructureGrowEvent;
@@ -25,8 +27,16 @@ import static org.powernukkitx.block.property.CommonBlockProperties.AGE_BIT;
  * @author Angelic47 (Nukkit Project)
  */
 public abstract class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Supportable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
     public BlockSapling(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockSapling(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public abstract WoodType getWoodType();
@@ -54,11 +64,7 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
         return false;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
@@ -252,9 +258,5 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
         return block.getId().equals(this.getId()) && ((BlockSapling) block).getWoodType() == type;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-
+    
 }

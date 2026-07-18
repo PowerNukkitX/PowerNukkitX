@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -8,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockResinClump extends BlockLichen {
     public static final BlockProperties PROPERTIES = new BlockProperties(RESIN_CLUMP, CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
+    public static final BlockDefinition DEFINITION = BlockLichen.DEFINITION.toBuilder()
+            .toolType(ItemTool.TYPE_NONE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -19,17 +24,7 @@ public class BlockResinClump extends BlockLichen {
     }
 
     public BlockResinClump(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_NONE;
+        super(blockstate, DEFINITION);
     }
 
     @Override

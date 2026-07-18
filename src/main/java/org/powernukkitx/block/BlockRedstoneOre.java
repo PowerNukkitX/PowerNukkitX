@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
@@ -13,6 +15,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockRedstoneOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_ORE);
+    public static final BlockDefinition DEFINITION = BlockOre.DEFINITION.toBuilder()
+            .toolTier(ItemTool.TIER_IRON)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -24,14 +29,10 @@ public class BlockRedstoneOre extends BlockOre {
     }
 
     public BlockRedstoneOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_IRON;
-    }
-
+    
     @Override
     public String getName() {
         return "Redstone Ore";

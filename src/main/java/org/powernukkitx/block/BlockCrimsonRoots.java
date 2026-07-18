@@ -1,9 +1,14 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonRoots extends BlockHanging implements BlockFlowerPot.FlowerPotBlock, Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_ROOTS);
+    public static final BlockDefinition DEFINITION = BlockHanging.DEFINITION.toBuilder()
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -15,14 +20,10 @@ public class BlockCrimsonRoots extends BlockHanging implements BlockFlowerPot.Fl
     }
 
     public BlockCrimsonRoots(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;

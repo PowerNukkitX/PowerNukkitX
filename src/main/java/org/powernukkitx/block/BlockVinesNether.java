@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
@@ -24,11 +26,25 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author joserobjr
  */
 public abstract class BlockVinesNether extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .canPassThrough(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeClimbed(true)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
     /**
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.
      */
     public BlockVinesNether(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockVinesNether(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     /**
@@ -324,21 +340,6 @@ public abstract class BlockVinesNether extends BlockTransparent {
     }
 
     @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public boolean canBeClimbed() {
-        return true;
-    }
-
-    @Override
     public boolean canBeFlowedInto() {
         return true;
     }
@@ -373,37 +374,9 @@ public abstract class BlockVinesNether extends BlockTransparent {
         return y+ (15/16.0);
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    public  boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-    @Override
+        @Override
     public BlockVinesNether clone() {
         return (BlockVinesNether) super.clone();
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

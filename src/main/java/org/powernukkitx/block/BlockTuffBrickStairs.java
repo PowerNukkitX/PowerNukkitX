@@ -1,11 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockTuffBrickStairs extends BlockStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties(TUFF_BRICK_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
+            .hardness(1.5)
+            .resistance(6)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,7 +24,7 @@ public class BlockTuffBrickStairs extends BlockStairs {
     }
 
     public BlockTuffBrickStairs(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -25,23 +32,4 @@ public class BlockTuffBrickStairs extends BlockStairs {
         return "Tuff Brick Stairs";
     }
 
-    @Override
-    public double getResistance() {
-        return 6;
     }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

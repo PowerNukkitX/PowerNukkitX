@@ -1,11 +1,17 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCobbledDeepslateDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(COBBLED_DEEPSLATE_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
+            .hardness(3.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,7 +23,7 @@ public class BlockCobbledDeepslateDoubleSlab extends BlockDoubleSlabBase {
     }
 
     public BlockCobbledDeepslateDoubleSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -30,13 +36,5 @@ public class BlockCobbledDeepslateDoubleSlab extends BlockDoubleSlabBase {
         return BlockCobbledDeepslateSlab.PROPERTIES.getDefaultState();
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+    
     }
-
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-}
