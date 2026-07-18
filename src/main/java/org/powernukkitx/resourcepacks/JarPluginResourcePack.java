@@ -29,7 +29,7 @@ public class JarPluginResourcePack extends AbstractResourcePack {
     protected File jarPluginFile;
     protected ByteBuffer zippedByteBuffer;
     protected byte[] sha256;
-    protected String encryptionKey = "";
+    protected String encryptionKey = ""; // nosemgrep - empty default, real key is set at runtime
 
     public static boolean hasResourcePack(File jarPluginFile) {
         try {

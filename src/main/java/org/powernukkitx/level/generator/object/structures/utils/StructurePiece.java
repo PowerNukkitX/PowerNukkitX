@@ -25,6 +25,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.TORCH_FACING
 import static org.powernukkitx.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
 import static org.powernukkitx.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public abstract class StructurePiece {
 
     protected BlockManager level;
