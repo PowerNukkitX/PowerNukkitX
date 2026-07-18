@@ -1,6 +1,4 @@
-![English](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/eng.svg)
-
-[![PowerNukkitX Logo](https://docs.powernukkitx.org/img/PNX_LOGO_sm.png)](https://powernukkitx.org)
+[![PowerNukkitX Logo](.github/logo.png)](https://powernukkitx.org)
 
 **A Minecraft Bedrock Edition Server Software, open source and written in java**
 
@@ -12,10 +10,6 @@
 [![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://docs.powernukkitx.org)
 [![Codecov](https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3)](https://codecov.io/github/PowerNukkitX/PowerNukkitX)
 [![License: LGPL-3](https://img.shields.io/badge/License-LGPL--3-yellow.svg)](https://www.gnu.org/licenses/lgpl-3.0.html)
-
-[![Français](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/fr.svg)](README_FR.md)
-[![Русский](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/ru.svg)](README_RU.md)
-[![Türkçe](https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/tr.svg)](README_TR.md)
 
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
 
