@@ -294,7 +294,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                     (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
                     );
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Operating System & JVM Information
             {
@@ -315,7 +315,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 } catch (Exception ignore) {
 
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Network Information
             try {
@@ -333,7 +333,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                         sender.sendMessage(TextFormat.AQUA + "  " + each.getDisplayName());
                         sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s " + TextFormat.GRAY + String.join(", ", list));
                     }
-                    sender.sendMessage("");
+                    sender.sendMessage(" ");
                 }
             } catch (Exception ignored) {
                 sender.sendMessage(TextFormat.RED + "    Failed to get network info.");
@@ -347,7 +347,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN + Thread.getAllStackTraces().size());
                 sender.sendMessage(TextFormat.GOLD + "CPU Features: " + TextFormat.RESET + (cpu.getProcessorIdentifier().isCpu64bit() ? "64bit, " : "32bit, ") +
                         cpu.getProcessorIdentifier().getModel() + ", micro-arch: " + cpu.getProcessorIdentifier().getMicroarchitecture());
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Memory information
             {
@@ -393,7 +393,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage(TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed()) + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
                     sender.sendMessage(TextFormat.GRAY + "      " + each.getMemoryType() + ", " + each.getManufacturer());
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
         } else if (tpsMode) {
             int count = 1;
