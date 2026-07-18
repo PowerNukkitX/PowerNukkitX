@@ -32,6 +32,6 @@ public class BlockAncientDebris extends BlockSolid {
 
     @Override
     public String getName() {
-        return "Ancient Derbris";
+        return "Ancient Debris";
     }
 }
