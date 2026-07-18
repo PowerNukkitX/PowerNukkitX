@@ -1029,14 +1029,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             if (allowEfficiency && efficiencyLevel > 0) {
                 speedMultiplier += efficiencyLevel * efficiencyLevel + 1;
             }
+        }
 
-            if (hasConduitPower) {
-                hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
-            }
+        if (hasConduitPower) {
+            hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
+        }
 
-            if (hasteEffectLevel > 0) {
-                speedMultiplier *= 1 + (0.2 * hasteEffectLevel);
-            }
+        if (hasteEffectLevel > 0) {
+            speedMultiplier *= 1 + (0.2 * hasteEffectLevel);
         }
 
         if (miningFatigueLevel > 0) {
