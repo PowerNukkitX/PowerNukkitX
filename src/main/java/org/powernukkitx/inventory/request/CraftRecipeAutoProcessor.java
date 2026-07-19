@@ -35,10 +35,10 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
     @Nullable
     @Override
     public ActionResponse handle(AutoCraftRecipeAction action, Player player, ItemStackRequestContext context) {
-        Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetId().getRawId());
+        var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetId().getRawId());
         if (recipe == null) {
             log.debug("Rejecting auto craft request for unknown recipe network id {} (recipe registry {})",
-                    action.getRecipeNetworkId(), Registries.RECIPE.isEnabled() ? "enabled" : "disabled");
+                    action.getRecipeNetId().getRawId(), Registries.RECIPE.isEnabled() ? "enabled" : "disabled");
             return context.error();
         }
 
