@@ -200,6 +200,11 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         }
         int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
         Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetId().getRawId());
+        if (recipe == null) {
+            log.debug("Rejecting craft request for unknown recipe network id {} (recipe registry {})",
+                    action.getRecipeNetId().getRawId(), Registries.RECIPE.isEnabled() ? "enabled" : "disabled");
+            return context.error();
+        }
         Input input = craft.getInput();
         Item[][] data = input.getData();
         ArrayList<Item> items = new ArrayList<>();

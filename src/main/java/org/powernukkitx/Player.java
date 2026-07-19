@@ -259,6 +259,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Vector3 sleeping = null;
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
+    /** Wall-clock gate for the async chunk-order run in {@link #checkNetwork()}. */
+    private long lastChunkOrderRunMillis;
     protected Vector3 newPosition = null;
     protected int chunkRadius;
     protected int viewDistance;
@@ -937,6 +939,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     protected void handleMovement(Location clientPos) {
+        if (!this.firstMove
+                && this.chunk != null && this.chunk.getChunkState().canSend()
+                && clientPos.x == this.x && clientPos.y == this.y && clientPos.z == this.z
+                && clientPos.yaw == this.yaw && clientPos.pitch == this.pitch && clientPos.headYaw == this.headYaw) {
+            return;
+        }
+        this.positionChanged = true;
         if (this.firstMove) this.firstMove = false;
         boolean invalidMotion = false;
         var revertPos = this.getLocation().clone();
@@ -2918,7 +2927,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             while (!this.clientMovements.isEmpty()) {
-                this.positionChanged = true;
                 this.handleMovement(this.clientMovements.poll());
             }
 
@@ -3106,7 +3114,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
-            CompletableFuture.runAsync(playerChunkManager::tick, this.server.getComputeThreadPool());
+            this.nextChunkOrderRun = 0;
+            // Vanilla cadence is one run per 20 Hz tick;
+            // gate by wall clock to keep that cadence at any tick rate.
+            long now = System.currentTimeMillis();
+            if (now - this.lastChunkOrderRunMillis >= 50) {
+                this.lastChunkOrderRunMillis = now;
+                CompletableFuture.runAsync(playerChunkManager::tick, this.server.getComputeThreadPool());
+            }
         }
 
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
