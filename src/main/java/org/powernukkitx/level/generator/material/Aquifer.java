@@ -16,6 +16,7 @@ import org.powernukkitx.utils.random.Xoroshiro128;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public final class Aquifer {
     public static final double FLOWING_UPDATE_SIMILARITY = similarity(100, 144);
 

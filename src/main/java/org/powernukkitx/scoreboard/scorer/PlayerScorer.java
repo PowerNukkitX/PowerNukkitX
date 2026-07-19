@@ -1,11 +1,12 @@
 package org.powernukkitx.scoreboard.scorer;
 
+import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangePlayerScore;
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ScorePacketEntryAction;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.scoreboard.IScoreboard;
 import org.powernukkitx.scoreboard.IScoreboardLine;
-import lombok.Getter;
-import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 
 import java.util.UUID;
 
@@ -37,8 +38,8 @@ public class PlayerScorer implements IScorer {
     }
 
     @Override
-    public ScoreInfo.IdentityDefinitionType getScorerType() {
-        return ScoreInfo.IdentityDefinitionType.PLAYER;
+    public ScorePacketEntryAction getScorerType() {
+        return ScorePacketEntryAction.CHANGE_PLAYER;
     }
 
     @Override
@@ -60,16 +61,17 @@ public class PlayerScorer implements IScorer {
     }
 
     @Override
-    public ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+    public ChangePlayerScore toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
         if (uuid == null) return null;
-        return Server.getInstance().getPlayer(uuid).isPresent() ?
-                new ScoreInfo(
-                        line.getLineId(),
-                        scoreboard.getObjectiveName(),
-                        line.getScore(),
-                        this.getScorerType(),
-                        Server.getInstance().getPlayer(uuid).get().getId()
-                )
-                : null;
+        if (Server.getInstance().getPlayer(uuid).isPresent()) {
+            final ChangePlayerScore score = new ChangePlayerScore();
+            score.setScoreboardId(line.getLineId());
+            score.setObjectiveName(scoreboard.getObjectiveName());
+            score.setScoreValue(line.getScore());
+            score.setPlayerUniqueId(Server.getInstance().getPlayer(uuid).get().getId());
+            return score;
+        } else {
+            return null;
+        }
     }
 }

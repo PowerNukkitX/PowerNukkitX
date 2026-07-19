@@ -47,8 +47,6 @@ public class GameplaySettings extends OkaeriConfig {
     boolean forceResources = false;
     @Comment("pnx.settings.gameplay.allowClientPacks")
     boolean allowClientPacks = true;
-    @Comment("pnx.settings.gameplay.serverAuthoritativeMovement")
-    String serverAuthoritativeMovement = "server-auth";
     @Comment("pnx.settings.gameplay.allowVibrantVisuals")
     boolean allowVibrantVisuals = true;
     @Comment("pnx.settings.gameplay.experiments")

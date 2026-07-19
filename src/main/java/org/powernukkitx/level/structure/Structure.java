@@ -1,5 +1,11 @@
 package org.powernukkitx.level.structure;
 
+import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockStructureVoid;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -17,12 +23,6 @@ import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,8 +154,10 @@ public class Structure extends AbstractStructure {
         Preconditions.checkArgument(blockIndices.get(0).size() == sizeX * sizeY * sizeZ, "size of layer0 incorrect, it should be" + sizeX * sizeY * sizeZ);
         Preconditions.checkArgument(blockIndices.get(1).size() == sizeX * sizeY * sizeZ, "size of layer1 incorrect, it should be" + sizeX * sizeY * sizeZ);
 
-        List<IntTag> layer0 = blockIndices.get(0).getAll();
-        List<IntTag> layer1 = blockIndices.get(1).getAll();
+        @SuppressWarnings("unchecked")
+        List<IntTag> layer0 = ((ListTag<IntTag>) blockIndices.get(0)).getAll();
+        @SuppressWarnings("unchecked")
+        List<IntTag> layer1 = ((ListTag<IntTag>) blockIndices.get(1)).getAll();
         CompoundTag palette = structureNBT.getCompound("palette").getCompound("default");
         CompoundTag blockEntityNBT = palette.getCompound("block_position_data");
         List<BlockState> blockPalette = palette.getList("block_palette", CompoundTag.class).getAll().stream().map(ItemHelper::getBlockStateHelper).toList();

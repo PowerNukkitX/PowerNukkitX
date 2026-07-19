@@ -1,7 +1,7 @@
 package org.powernukkitx.scoreboard;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ScoreInfo;
 import org.powernukkitx.scoreboard.scorer.IScorer;
-import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 
 public interface IScoreboardLine {
 

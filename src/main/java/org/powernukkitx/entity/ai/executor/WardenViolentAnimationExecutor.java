@@ -19,7 +19,7 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
         currentTick++;
         if (currentTick > duration) return false;
         else {
-            //更新视线target
+            //update the look target
             if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
                 entity.setLookTarget(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET));
             return true;

@@ -93,8 +93,6 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条命令成功执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色白色
-     * <p>
      * Add a message that the command was successfully executed, the parameters can be plain text or the client's multilingual text key.<br>Default output color white
      *
      * @param key    the key
@@ -112,8 +110,6 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条命令错误执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
-     * <p>
      * Add a command error message, either plain text or the client's multilingual text key.<br>Default output color red
      *
      * @param message the message
@@ -124,12 +120,10 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条命令执行失败的错误消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
-     * <p>
      * Add a command execution failure error message, either plain text or the client's multilingual text key.<br>Default output color red
      *
-     * @param key    语言文本key/错误信息
-     * @param params 语言文本参数/空
+     * @param key    the language text key / error message
+     * @param params the language text parameters / empty
      * @return the command logger
      */
     public CommandLogger addError(String key, String... params) {
@@ -138,8 +132,6 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条消息，参数可以是纯文本，也可以是客户端，服务端，以及{@link org.powernukkitx.lang.PluginI18n PluginI18n}中的多语言文本，默认输出颜色红色
-     * <p>
      * Add a message, the parameters can be plain text, or client-side, server-side, and multilingual text in {@link org.powernukkitx.lang.PluginI18n PluginI18n}, default output color red
      *
      * @param key the key
@@ -150,8 +142,6 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条消息，参数可以是纯文本，也可以是客户端，服务端，以及{@link org.powernukkitx.lang.PluginI18n PluginI18n}中的多语言文本，默认输出颜色红色
-     * <p>
      * Add a message, the parameters can be plain text, or client-side, server-side, and multilingual text in {@link org.powernukkitx.lang.PluginI18n PluginI18n}, default output color red
      *
      * @param key    the key
@@ -177,11 +167,9 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
-     * <p>
      * Add a default command format error message that will alert the command sender of an error at the specified index
      *
-     * @param errorIndex 发生错误的参数索引
+     * @param errorIndex the index of the argument where the error occurred
      */
     public CommandLogger addSyntaxErrors(int errorIndex) {
         if (sender instanceof ConsoleCommandSender) {
@@ -191,9 +179,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条目标选择器没有匹配目标的错误信息
-     * <p>
-     * Add an error message that the target selector matches too many targets
+     * Add an error message that the target selector matched no targets
      */
     public CommandLogger addNoTargetMatch() {
         this.addError("commands.generic.noTargetMatch", CommandOutputContainer.EMPTY_STRING);
@@ -201,7 +187,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条目标选择器匹配目标过多的错误信息
+     * Add an error message that the target selector matched too many targets
      */
     public CommandLogger addTooManyTargets() {
         this.addError("commands.generic.tooManyTargets", CommandOutputContainer.EMPTY_STRING);
@@ -209,12 +195,10 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
-     * <p>
      * Add an error message that the parameter is too small, prompting the command sender to specify a location where the minimum value of the parameter cannot be less than minimum
      *
-     * @param errorIndex 发生错误的参数索引
-     * @param minimum    允许的最小值
+     * @param errorIndex the index of the argument where the error occurred
+     * @param minimum    the minimum allowed value
      */
     public CommandLogger addNumTooSmall(int errorIndex, int minimum) {
         this.addError("commands.generic.num.tooSmall", args[errorIndex], " " + minimum);
@@ -222,12 +206,10 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条Double参数过大的错误信息，会提示命令发送者指定位置的参数最大值不能超过maximum
-     * <p>
      * Add a Double parameter too large error message, which will prompt the command sender to specify that the maximum value of the parameter at the location cannot exceed maximum
      *
-     * @param errorIndex 发生错误的参数索引
-     * @param maximum    允许的最大值
+     * @param errorIndex the index of the argument where the error occurred
+     * @param maximum    the maximum allowed value
      */
     public CommandLogger addDoubleTooBig(int errorIndex, double maximum) {
         this.addError("commands.generic.double.tooBig", args[errorIndex], " " + maximum);
@@ -235,12 +217,10 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条Double参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
-     * <p>
      * Add a Double parameter is too small error message, which will prompt the command sender to specify the minimum value of the parameter at the location cannot be less than minimum
      *
-     * @param errorIndex 发生错误的参数索引
-     * @param minimum    允许的最小值
+     * @param errorIndex the index of the argument where the error occurred
+     * @param minimum    the minimum allowed value
      */
     public CommandLogger addDoubleTooSmall(int errorIndex, double minimum) {
         this.addError("commands.generic.double.tooSmall", args[errorIndex], " " + minimum);
@@ -248,9 +228,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条无法访问世界外的方块的错误信息
-     * <p>
-     * Add an error message about not being able to access squares outside the world
+     * Add an error message about not being able to access blocks outside the world
      *
      * @return the command logger
      */
@@ -260,14 +238,14 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出{@link #outputContainer}中的所有信息.
+     * Output all messages in {@link #outputContainer}.
      */
     public void output() {
         this.output(false);
     }
 
     /**
-     * 输出{@link #outputContainer}中的所有信息.
+     * Output all messages in {@link #outputContainer}.
      *
      * @param broadcast the broadcast
      */
@@ -283,7 +261,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 标记{@link #outputContainer}的成功数量
+     * Set the success count of {@link #outputContainer}
      *
      * @param successCount the success count
      * @return the command logger
@@ -294,13 +272,11 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出给指定目标一条反馈信息
-     * <p>
      * Output a feedback message to the specified receiver
      *
-     * @param receiver 命令目标
+     * @param receiver the command target
      * @param key      the key
-     * @param params   给命令目标的反馈信息参数
+     * @param params   the feedback message parameters for the command target
      */
     public void outputObjectWhisper(Player receiver, String key, String... params) {
         if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
@@ -309,13 +285,11 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出给指定目标一条反馈信息
-     * <p>
      * Output a feedback message to the specified receiver
      *
-     * @param rawtext  给命令目标的反馈信息
-     * @param receiver 命令目标
-     * @param params   给命令目标的反馈信息参数
+     * @param rawtext  the feedback message for the command target
+     * @param receiver the command target
+     * @param params   the feedback message parameters for the command target
      */
     public void outputObjectWhisper(Player receiver, String rawtext, Object... params) {
         if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {

@@ -210,6 +210,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public boolean closed = false;
     public boolean noClip = false;
     /**
+     * Set by {@link BlockBubbleColumn} on every tick the entity is inside a column, and cleared once the entity's
+     * physics have consumed it. While it is set, the column owns the entity's vertical motion.
+     */
+    public boolean inBubbleColumn = false;
+    /**
      * spawned by server
      * <p>
      * player's UUID is sent by client,so this value cannot be used in Player
@@ -312,7 +317,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * Create an entity from the network id
      *
-     * @param type 网络ID<br> network id
+     * @param type network id
      * @param pos  the pos
      * @param args the args
      * @return the entity
@@ -327,7 +332,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * Create an entity from the network id
      *
-     * @param type  网络ID<br> network id
+     * @param type  network id
      * @param chunk the chunk
      * @param nbt   the nbt
      * @param args  the args
@@ -969,7 +974,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void addEffect(Effect effect) {
-        if (effect == null) {
+        if (effect == null || !effect.canBeApplied(this)) {
             return;
         }
 
@@ -1906,8 +1911,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param x       x
      * @param y       y
      * @param z       z
-     * @param yaw     左右旋转
-     * @param pitch   上下旋转
+     * @param yaw     left/right rotation
+     * @param pitch   up/down rotation
      * @param headYaw headYaw
      */
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
@@ -4332,6 +4337,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * Planned removal: after behavior parity is complete (>= 2026-09-05).
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
+    @SuppressWarnings("removal")
     public float getSpeedMultiplier() {
         if (isCustomEntity()) {
             Float sm = meta().getSpeedMultiplier(CustomEntityComponents.DEFAULT_MOVEMENT_MULTIPLIER);
@@ -4965,6 +4971,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
 
     protected boolean hasWaterAt(float height, boolean tickCached) {
+        return hasWaterAt(height, tickCached, false);
+    }
+
+    /**
+     * Whether the entity is in water for the purpose of <em>physics</em>, counting a bubble column as the water it is
+     * (the water sits on layer 1 of the column block). {@link #isInsideOfWater()} deliberately excludes columns
+     * because it also drives breathing, and a water-breathing mob suffocates in a bubble column rather than breathing
+     * in it.
+     */
+    public boolean isInsideOfWaterPhysics() {
+        return hasWaterAt(this.getEyeHeight(), false, true);
+    }
+
+    /**
+     * @param bubbleColumnCountsAsWater see {@link #isInsideOfWaterPhysics()}
+     */
+    protected boolean hasWaterAt(float height, boolean tickCached, boolean bubbleColumnCountsAsWater) {
         double y = this.y + height;
         Block block = tickCached ?
                 this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z))) :
@@ -4972,7 +4995,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         boolean layer1 = false;
         Block block1 = tickCached ? block.getTickCachedLevelBlockAtLayer(1) : block.getLevelBlockAtLayer(1);
-        if (!(block instanceof BlockBubbleColumn) && (
+        if ((bubbleColumnCountsAsWater || !(block instanceof BlockBubbleColumn)) && (
                 block instanceof BlockFlowingWater
                         || (layer1 = block1 instanceof BlockFlowingWater))) {
             BlockFlowingWater water = (BlockFlowingWater) (layer1 ? block1 : block);
@@ -5123,6 +5146,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         // TODO: vehicle collision events (first we need to spawn them!)
         return true;
+    }
+
+    public boolean isMoving() {
+        return getDataFlag(ActorFlags.MOVING);
     }
 
     private Vec3 applyCollisionOffsets(double dx, double dy, double dz, AxisAlignedBB box, List<AxisAlignedBB> list) {
@@ -5346,6 +5373,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return;
         }
 
+        this.inBubbleColumn = false;
+
         boolean needsRecalcCurrent = true;
         if (this instanceof EntityPhysical entityPhysical) {
             needsRecalcCurrent = entityPhysical.needsRecalcMovement;
@@ -5481,7 +5510,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param yaw     the yaw
      * @param pitch   the pitch
      * @param headYaw the head yaw
-     * @return 切换地图失败会返回false
+     * @return false if switching the map fails
      */
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch, double headYaw) {
         this.setRotation(yaw, pitch, headYaw);
@@ -5573,11 +5602,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
-     * 设置一个运动向量(会使得实体移动这个向量的距离，非精准移动)<p/>
-     * <p>
      * Set a motion vector (will make the entity move the distance of this vector, not move precisely)
      *
-     * @param motion 运动向量<br>a motion vector
+     * @param motion a motion vector
      * @return boolean
      */
     public boolean setMotion(Vector3 motion) {
@@ -6032,11 +6059,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     /**
      * Play the animation of this entity to a specified group of players
-     * <p>
-     * 向指定玩家群体播放此实体的动画
      *
-     * @param animation 动画对象 Animation objects
-     * @param players   可视玩家 Visible Player
+     * @param animation Animation objects
+     * @param players   Visible Player
      */
     public void playAnimation(EntityAnimation animation, Collection<Player> players) {
         var pk = animation.toNetwork();
@@ -6052,12 +6077,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     /**
      * Play the action animation of this entity to a specified group of players
-     * <p>
-     * 向指定玩家群体播放此实体的action动画
      *
      * @param action      the action
      * @param swingSource the swing source
-     * @param players     可视玩家 Visible Player
+     * @param players     Visible Player
      */
     public void playActionAnimation(AnimatePacket.Action action, ActorSwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();

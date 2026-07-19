@@ -113,7 +113,7 @@ public class EntityFishingHook extends SlenderProjectile {
         hasUpdate = super.onUpdate(currentTick);
 
         boolean inWater = this.isInsideOfWater();
-        if (inWater) {//防止鱼钩沉底 水中的阻力
+        if (inWater) {//Prevent the hook from sinking to the bottom - water resistance
             this.motionX = 0;
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
@@ -163,16 +163,16 @@ public class EntityFishingHook extends SlenderProjectile {
 
     @Override
     protected void updateMotion() {
-        //正确的浮力
+        //Correct buoyancy
         if (this.isInsideOfWater() && this.getY() < this.getWaterHeight() - 2) {
             this.motionX = 0;
             this.motionY += getGravity();
             this.motionZ = 0;
-        } else if (this.isInsideOfWater() && this.getY() >= this.getWaterHeight() - 2) {//防止鱼钩上浮超出水面
+        } else if (this.isInsideOfWater() && this.getY() >= this.getWaterHeight() - 2) {//Prevent the hook from floating up above the water surface
             this.motionX = 0;
             this.motionZ = 0;
             this.motionY = 0;
-        } else {//处理不在水中的情况
+        } else {//Handle the case where it is not in water
             super.updateMotion();
         }
     }
@@ -243,7 +243,7 @@ public class EntityFishingHook extends SlenderProjectile {
         if (this.shootingEntity instanceof Player player && this.caught) {
             Item item = Fishing.getFishingResult(this.rod);
             int experience = ThreadLocalRandom.current().nextInt(3) + 1;
-            Vector3 pos = new Vector3(this.x, this.getWaterHeight(), this.z); //实体生成在水面上
+            Vector3 pos = new Vector3(this.x, this.getWaterHeight(), this.z); //Entity spawns on the water surface
             Vector3 motion = player.subtract(pos).multiply(0.1);
             motion.y += Math.sqrt(player.distance(pos)) * 0.08;
 

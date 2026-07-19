@@ -1,7 +1,7 @@
 package org.powernukkitx.recipe.descriptor;
 
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
 import org.powernukkitx.item.Item;
-import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 import java.util.Objects;
 
@@ -45,10 +45,10 @@ public class DeferredDescriptor implements ItemDescriptor {
     }
 
     @Override
-    public ItemDescriptorWithCount toNetwork() {
+    public RecipeIngredient toNetwork() {
         final org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DeferredDescriptor descriptor =
                 new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DeferredDescriptor(this.fullName, this.auxValue);
-        return new ItemDescriptorWithCount(descriptor, this.count);
+        return new RecipeIngredient(descriptor, this.count);
     }
 
     public boolean equals(final Object o) {

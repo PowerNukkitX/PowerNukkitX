@@ -1,5 +1,6 @@
 package org.powernukkitx.item;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.level.Level;
@@ -21,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class ItemFilledMap extends Item {
@@ -124,21 +126,21 @@ public class ItemFilledMap extends Item {
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
         final ClientboundMapItemDataPacket packet = new ClientboundMapItemDataPacket();
-        packet.getTrackedEntityIds().add(this.getMapId());
+        packet.getCreationMapIDs().add(this.getMapId());
         packet.setMapID(this.getMapId());
         packet.setDimension(DimensionType.from(player.getLevel().getDimension()));
         packet.setMapOrigin(Vector3i.from(player.getFloorX(), player.getFloorY(), player.getFloorZ()));
         packet.setScale(scale);
-        packet.setTextureHeight(128);
-        packet.setTextureWidth(128);
+        packet.setHeight(128);
+        packet.setWidth(128);
 
-        final List<Integer> pixels = new IntArrayList();
+        final IntList pixels = new IntArrayList();
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
                 pixels.add((int) Utils.toABGR(this.image.getRGB(y, x)));
             }
         }
-        packet.setPixels(pixels.stream().mapToInt(Integer::intValue).toArray());
+        packet.setPixels(pixels);
 
         player.sendPacketImmediately(packet);
     }

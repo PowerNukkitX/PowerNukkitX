@@ -18,7 +18,7 @@ jobs:
       name: github-pages
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-java@v5
         with:
@@ -30,11 +30,11 @@ jobs:
       - name: Build Javadoc
         run: ./gradlew javadoc
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           name: github-pages
           path: build/docs/javadoc
 
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
