@@ -3,7 +3,7 @@
 # Requires Docker v17.05
 
 # Use Temurin JDK image for intermediate build
-FROM eclipse-temurin:26-jdk AS build
+FROM eclipse-temurin:25-jdk AS build
 
 # Build from source and create artifact
 WORKDIR /src
@@ -21,7 +21,7 @@ RUN git submodule update --init
 RUN ./gradlew shadowJar --no-daemon --no-configuration-cache
 
 # Use Temurin JDK image for runtime. Some server/plugin paths expect JDK tooling.
-FROM eclipse-temurin:26-jdk AS run
+FROM eclipse-temurin:25-jdk AS run
 
 # Copy artifact from build image
 COPY --from=build /src/build/powernukkitx.jar /app/powernukkitx.jar
@@ -55,4 +55,4 @@ WORKDIR /data
 
 # Run app
 ENTRYPOINT ["java"]
-CMD [ "-Dfile.encoding=UTF-8", "-Djansi.passthrough=true", "-Dterminal.ansi=true", "-XX:+UseZGC", "-XX:+UseStringDeduplication", "--add-opens","java.base/java.lang=ALL-UNNAMED", "--add-opens","java.base/java.io=ALL-UNNAMED", "--add-opens","java.base/java.net=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow", "--enable-final-field-mutation=ALL-UNNAMED", "-cp","/app/powernukkitx.jar:./libs/*", "org.powernukkitx.PowerNukkitX" ]
+CMD [ "-Dfile.encoding=UTF-8", "-Djansi.passthrough=true", "-Dterminal.ansi=true", "-XX:+UseZGC", "-XX:+UseStringDeduplication", "--add-opens","java.base/java.lang=ALL-UNNAMED", "--add-opens","java.base/java.io=ALL-UNNAMED", "--add-opens","java.base/java.net=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow", "-cp","/app/powernukkitx.jar:./libs/*", "org.powernukkitx.PowerNukkitX" ]
