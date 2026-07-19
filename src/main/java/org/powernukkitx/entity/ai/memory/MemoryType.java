@@ -88,7 +88,9 @@ public final class MemoryType<Data> {
 
     public void forceEncode(Entity entity, Object data) {
         if (codec != null) {
-            codec.encode((Data) data, entity.getNbt());
+            @SuppressWarnings("unchecked")
+            var castedData = (Data) data;
+            codec.encode(castedData, entity.getNbt());
         }
     }
 

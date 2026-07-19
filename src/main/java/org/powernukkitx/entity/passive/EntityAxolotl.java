@@ -84,6 +84,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     );
 
     @Override
+    @SuppressWarnings("unchecked")
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
