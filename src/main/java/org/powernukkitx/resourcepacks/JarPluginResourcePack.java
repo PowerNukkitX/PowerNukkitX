@@ -19,7 +19,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
- * 此类描述了放在jar插件文件内assets/resource_pack目录的资源包相关文件
+ * This class describes the resource pack files placed in the assets/resource_pack directory inside a jar plugin file.
  */
 
 
@@ -29,7 +29,7 @@ public class JarPluginResourcePack extends AbstractResourcePack {
     protected File jarPluginFile;
     protected ByteBuffer zippedByteBuffer;
     protected byte[] sha256;
-    protected String encryptionKey = "";
+    protected String encryptionKey = ""; // nosemgrep - empty default, real key is set at runtime
 
     public static boolean hasResourcePack(File jarPluginFile) {
         try {

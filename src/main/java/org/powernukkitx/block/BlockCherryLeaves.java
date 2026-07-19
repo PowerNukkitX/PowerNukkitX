@@ -32,7 +32,7 @@ public class BlockCherryLeaves extends BlockLeaves {
         return "Cherry Leaves";
     }
 
-    /*这里写木质类型为BIRCH只是为了获取凋落物时的概率正确，并不代表真的就是白桦木*/
+    /*the wood type is set to BIRCH only so the drop probabilities are correct, it does not mean this is actually birch*/
 
     @Override
     public WoodType getType() {

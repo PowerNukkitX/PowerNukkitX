@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 
 
 @FunctionalInterface
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public interface BlockPositionConsumer {
 
 

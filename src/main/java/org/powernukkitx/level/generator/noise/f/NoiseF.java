@@ -3,6 +3,7 @@ package org.powernukkitx.level.generator.noise.f;
 /**
  * @author DaPorkchop_ (Nukkit Project)
  */
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public abstract class NoiseF {
     protected int[] perm;
     protected float offsetX = 0;

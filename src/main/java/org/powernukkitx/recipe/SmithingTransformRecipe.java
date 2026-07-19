@@ -18,10 +18,12 @@
 
 package org.powernukkitx.recipe;
 
+import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.SmithingTransformRecipePayload;
+import org.jetbrains.annotations.NotNull;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Smithing recipe for upgrade equipment.
@@ -69,15 +71,15 @@ public class SmithingTransformRecipe extends BaseRecipe {
         return ingredients.get(2);
     }
 
-    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTransformRecipe toNetwork() {
-        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTransformRecipe.of(
-                this.getRecipeId(),
-                this.getTemplate().toNetwork(),
-                this.getBase().toNetwork(),
-                this.getAddition().toNetwork(),
-                this.getResult().toNetwork(),
-                "smithing_table",
-                this.netId
-        );
+    public SmithingTransformRecipePayload toNetwork() {
+        final SmithingTransformRecipePayload payload = new SmithingTransformRecipePayload();
+        payload.setRecipeId(this.getRecipeId());
+        payload.setTemplateIngredient(this.getTemplate().toNetwork());
+        payload.setBaseIngredient(this.getBase().toNetwork());
+        payload.setAdditionIngredient(this.getAddition().toNetwork());
+        payload.setResult(this.getResult().toNetwork());
+        payload.setTag("smithing_table");
+        payload.setNetId(new RecipeNetId(this.netId));
+        return payload;
     }
 }

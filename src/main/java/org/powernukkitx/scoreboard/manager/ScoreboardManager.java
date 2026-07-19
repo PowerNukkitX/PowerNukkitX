@@ -115,10 +115,10 @@ public class ScoreboardManager implements IScoreboardManager{
     }
 
     /**
-     * 你可能会对这里的代码感到疑惑
-     * 这里其实是为了规避玩家下线导致的“玩家离线”计分项
-     * 我们在玩家下线时，删除其他在线玩家显示槽位中的“玩家离线”
-     * 并在其重新连接上服务器时加回去
+     * You may be confused by the code here.
+     * This actually exists to work around the "player offline" score entry caused by a player logging off.
+     * When a player logs off, we remove the "player offline" entry from other online players' display slots
+     * and add it back when they reconnect to the server.
      */
 
     @Override
@@ -161,7 +161,7 @@ public class ScoreboardManager implements IScoreboardManager{
 
     @Override
     public void read() {
-        //新建一个列表避免迭代冲突
+        //create a new list to avoid iteration conflicts
         new ArrayList<>(this.scoreboards.values()).forEach(this::removeScoreboard);
         this.display.forEach((slot, scoreboard) -> setDisplay(slot, null));
 

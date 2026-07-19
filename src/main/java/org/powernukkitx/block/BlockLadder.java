@@ -142,7 +142,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
             var oppositeB = this.getLevel().getBlock(target.add(face.getUnitVector()));
             var targetBlock = this.getLevel().getBlock(target.add(face.getUnitVector().multiply(2)));
             if (isSupportValid(targetBlock, opposite)) {
-                //不设置damage是因为level#useItemOn中有逻辑设置
+                //damage is not set here because there is logic in level#useItemOn that sets it
                 this.getLevel().setBlock(oppositeB, this, true, false);
                 return true;
             }
@@ -150,7 +150,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
         if (face.getHorizontalIndex() == -1 || !isSupportValid(target, face)) {
             return false;
         }
-        //不设置damage是因为level#useItemOn中有逻辑设置
+        //damage is not set here because there is logic in level#useItemOn that sets it
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }

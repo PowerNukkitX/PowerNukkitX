@@ -1,5 +1,14 @@
 package org.powernukkitx.entity;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.skin.AnimatedTextureType;
+import org.cloudburstmc.protocol.bedrock.data.skin.AnimationData;
+import org.cloudburstmc.protocol.bedrock.data.skin.AnimationExpressionType;
+import org.cloudburstmc.protocol.bedrock.data.skin.ImageData;
+import org.cloudburstmc.protocol.bedrock.data.skin.PersonaPieceData;
+import org.cloudburstmc.protocol.bedrock.data.skin.PersonaPieceTintData;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.data.human.Skin;
 import org.powernukkitx.inventory.HumanEnderChestInventory;
@@ -17,17 +26,6 @@ import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
-import org.cloudburstmc.protocol.bedrock.data.skin.AnimatedTextureType;
-import org.cloudburstmc.protocol.bedrock.data.skin.AnimationData;
-import org.cloudburstmc.protocol.bedrock.data.skin.AnimationExpressionType;
-import org.cloudburstmc.protocol.bedrock.data.skin.ImageData;
-import org.cloudburstmc.protocol.bedrock.data.skin.PersonaPieceData;
-import org.cloudburstmc.protocol.bedrock.data.skin.PersonaPieceTintData;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -48,7 +46,7 @@ public interface IHuman extends InventoryHolder {
             }
 
             if (human.nbt.containsCompound("Skin")) {
-                final SerializedSkin.Builder builder = SerializedSkin.builder();
+                final org.cloudburstmc.protocol.bedrock.data.skin.Skin.Builder builder = org.cloudburstmc.protocol.bedrock.data.skin.Skin.builder();
 
                 final CompoundTag skinTag = nbtMap.getCompound("Skin");
                 if (!skinTag.contains("Transparent")) {
@@ -117,12 +115,12 @@ public interface IHuman extends InventoryHolder {
                         int height = animationTag.getInt("ImageHeight");
                         int expression = animationTag.getInt("AnimationExpression");
                         animations.add(
-                                new AnimationData(
-                                        ImageData.of(width, height, image),
-                                        AnimatedTextureType.from(type),
-                                        frames,
-                                        AnimationExpressionType.from(expression)
-                                )
+                            new AnimationData(
+                                ImageData.of(width, height, image),
+                                AnimatedTextureType.from(type),
+                                frames,
+                                AnimationExpressionType.from(expression)
+                            )
                         );
                     }
                     builder.animations(animations);
@@ -138,13 +136,13 @@ public interface IHuman extends InventoryHolder {
                     final List<PersonaPieceData> personaPieces = new ObjectArrayList<>();
                     for (CompoundTag piece : pieces.getAll()) {
                         personaPieces.add(
-                                new PersonaPieceData(
-                                        piece.getString("PieceId"),
-                                        piece.getString("PieceType"),
-                                        piece.getString("PackId"),
-                                        piece.getBoolean("IsDefault"),
-                                        piece.getString("ProductId")
-                                )
+                            new PersonaPieceData(
+                                piece.getString("PieceId"),
+                                piece.getString("PieceType"),
+                                piece.getString("PackId"),
+                                piece.getBoolean("IsDefault"),
+                                piece.getString("ProductId")
+                            )
                         );
                     }
                     builder.personaPieces(personaPieces);
@@ -154,10 +152,10 @@ public interface IHuman extends InventoryHolder {
                     ListTag<CompoundTag> tintColors = skinTag.getList("PieceTintColors", CompoundTag.class);
                     for (CompoundTag tintColor : tintColors.getAll()) {
                         pieceTintColors.add(
-                                new PersonaPieceTintData(
-                                        tintColor.getString("PieceType"),
-                                        tintColor.getList("Colors", StringTag.class).getAll().stream().map(StringTag::parseValue).toList()
-                                )
+                            new PersonaPieceTintData(
+                                tintColor.getString("PieceType"),
+                                tintColor.getList("Colors", StringTag.class).getAll().stream().map(StringTag::parseValue).toList()
+                            )
                         );
                     }
                     builder.tintColors(pieceTintColors);
@@ -167,16 +165,16 @@ public interface IHuman extends InventoryHolder {
             }
 
             if (this.getSkin() == null) {
-                this.setSkin(new Skin(SerializedSkin.builder().skinData(ImageData.EMPTY).build()));
+                this.setSkin(new Skin(org.cloudburstmc.protocol.bedrock.data.skin.Skin.builder().skinData(ImageData.EMPTY).build()));
             }
             this.setUniqueId(Utils.dataToUUID(String.valueOf(human.getId()).getBytes(StandardCharsets.UTF_8),
-                    this.getSkin().getSkin().getSkinData().getImage(), human.getNameTag().getBytes(StandardCharsets.UTF_8)));
+                this.getSkin().getSkin().getSkinData().getImage(), human.getNameTag().getBytes(StandardCharsets.UTF_8)));
         }
 
         this.setInventories(new Inventory[]{
-                new HumanInventory(this),
-                new HumanOffHandInventory(this),
-                new HumanEnderChestInventory(this)
+            new HumanInventory(this),
+            new HumanOffHandInventory(this),
+            new HumanEnderChestInventory(this)
         });
 
         final CompoundTag nbtMap = human.getNbt();
@@ -238,35 +236,35 @@ public interface IHuman extends InventoryHolder {
         var serializedSkin = skin.getSkin();
         if (serializedSkin != null) {
             CompoundTag skinTag = new CompoundTag()
-                    .putByteArray("Data", serializedSkin.getSkinData().getImage())
-                    .putInt("SkinImageWidth", serializedSkin.getSkinData().getWidth())
-                    .putInt("SkinImageHeight", serializedSkin.getSkinData().getHeight())
-                    .putString("ModelId", serializedSkin.getSkinId())
-                    .putString("CapeId", serializedSkin.getCapeId())
-                    .putByteArray("CapeData", serializedSkin.getCapeData().getImage())
-                    .putInt("CapeImageWidth", serializedSkin.getCapeData().getWidth())
-                    .putInt("CapeImageHeight", serializedSkin.getCapeData().getHeight())
-                    .putByteArray("SkinResourcePatch", serializedSkin.getSkinResourcePatch().getBytes(StandardCharsets.UTF_8))
-                    .putByteArray("GeometryData", serializedSkin.getGeometryData().getBytes(StandardCharsets.UTF_8))
-                    .putByteArray("SkinAnimationData", serializedSkin.getAnimationData().getBytes(StandardCharsets.UTF_8))
-                    .putBoolean("PremiumSkin", serializedSkin.isPremium())
-                    .putBoolean("PersonaSkin", serializedSkin.isPersona())
-                    .putBoolean("CapeOnClassicSkin", serializedSkin.isCapeOnClassic())
-                    .putString("ArmSize", serializedSkin.getArmSize())
-                    .putString("SkinColor", serializedSkin.getSkinColor())
-                    .putBoolean("IsTrustedSkin", skin.isTrusted());
+                .putByteArray("Data", serializedSkin.getSkinData().getImage())
+                .putInt("SkinImageWidth", serializedSkin.getSkinData().getWidth())
+                .putInt("SkinImageHeight", serializedSkin.getSkinData().getHeight())
+                .putString("ModelId", serializedSkin.getSkinId())
+                .putString("CapeId", serializedSkin.getCapeId())
+                .putByteArray("CapeData", serializedSkin.getCapeData().getImage())
+                .putInt("CapeImageWidth", serializedSkin.getCapeData().getWidth())
+                .putInt("CapeImageHeight", serializedSkin.getCapeData().getHeight())
+                .putByteArray("SkinResourcePatch", serializedSkin.getSkinResourcePatch().getBytes(StandardCharsets.UTF_8))
+                .putByteArray("GeometryData", serializedSkin.getGeometryData().getBytes(StandardCharsets.UTF_8))
+                .putByteArray("SkinAnimationData", serializedSkin.getAnimationData().getBytes(StandardCharsets.UTF_8))
+                .putBoolean("PremiumSkin", serializedSkin.isPremium())
+                .putBoolean("PersonaSkin", serializedSkin.isPersona())
+                .putBoolean("CapeOnClassicSkin", serializedSkin.isCapeOnClassic())
+                .putString("ArmSize", serializedSkin.getArmSize())
+                .putString("SkinColor", serializedSkin.getSkinColor())
+                .putBoolean("IsTrustedSkin", skin.isTrusted());
 
             List<AnimationData> animations = serializedSkin.getAnimations();
             if (!animations.isEmpty()) {
                 ListTag<CompoundTag> animationsTag = new ListTag<>();
                 for (AnimationData animation : animations) {
                     animationsTag.add(new CompoundTag()
-                            .putFloat("Frames", animation.getFrames())
-                            .putInt("Type", animation.getTextureType().ordinal())
-                            .putInt("ImageWidth", animation.getImage().getWidth())
-                            .putInt("ImageHeight", animation.getImage().getHeight())
-                            .putInt("AnimationExpression", animation.getExpressionType().ordinal())
-                            .putByteArray("Image", animation.getImage().getImage()));
+                        .putFloat("Frames", animation.getFrames())
+                        .putInt("Type", animation.getTextureType().ordinal())
+                        .putInt("ImageWidth", animation.getImage().getWidth())
+                        .putInt("ImageHeight", animation.getImage().getHeight())
+                        .putInt("AnimationExpression", animation.getExpressionType().ordinal())
+                        .putByteArray("Image", animation.getImage().getImage()));
                 }
                 skinTag.putList("AnimatedImageData", animationsTag);
             }
@@ -276,10 +274,10 @@ public interface IHuman extends InventoryHolder {
                 ListTag<CompoundTag> piecesTag = new ListTag<>();
                 for (PersonaPieceData piece : personaPieces) {
                     piecesTag.add(new CompoundTag().putString("PieceId", piece.getId())
-                            .putString("PieceType", piece.getType())
-                            .putString("PackId", piece.getPackId())
-                            .putBoolean("IsDefault", piece.isDefault())
-                            .putString("ProductId", piece.getProductId()));
+                        .putString("PieceType", piece.getType())
+                        .putString("PackId", piece.getPackId())
+                        .putBoolean("IsDefault", piece.isDefault())
+                        .putString("ProductId", piece.getProductId()));
                 }
                 skinTag.putList("PersonaPieces", piecesTag);
             }
@@ -290,8 +288,8 @@ public interface IHuman extends InventoryHolder {
                     ListTag<StringTag> colors = new ListTag<>();
                     colors.setAll(tint.getColors().stream().map(StringTag::new).collect(Collectors.toList()));
                     tintsTag.add(new CompoundTag()
-                            .putString("PieceType", tint.getType())
-                            .putList("Colors", colors));
+                        .putString("PieceType", tint.getType())
+                        .putList("Colors", colors));
                 }
                 skinTag.putList("PieceTintColors", tintsTag);
             }
