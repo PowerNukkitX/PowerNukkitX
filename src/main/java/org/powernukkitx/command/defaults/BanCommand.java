@@ -1,0 +1,44 @@
+package org.powernukkitx.command.defaults;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.data.CommandParameter;
+import org.powernukkitx.command.tree.ParamList;
+import org.powernukkitx.command.utils.CommandLogger;
+import org.powernukkitx.event.player.PlayerKickEvent;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+
+import java.util.Map;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class BanCommand extends VanillaCommand {
+
+    public BanCommand(String name) {
+        super(name, "commands.ban.description", "%commands.ban.usage");
+        this.setPermission("nukkit.command.ban.player");
+        this.commandParameters.clear();
+        this.commandParameters.put("default",
+                new CommandParameter[]{
+                        CommandParameter.newType("player", CommandParamType.ID),
+                        CommandParameter.newType("reason", true, CommandParamType.ID)
+                });
+        this.enableParamTree();
+    }
+
+    @Override
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        String name = list.getResult(0);
+        String reason = list.getResult(1);
+        sender.getServer().getNameBans().addBan(name, reason, null, sender.getName());
+
+        Player player = sender.getServer().getPlayerExact(name);
+        if (player != null) {
+            player.kick(PlayerKickEvent.Reason.NAME_BANNED, (!reason.isEmpty()) ? "Banned by admin. Reason: " + reason : "Banned by admin");
+        }
+        log.addSuccess("commands.ban.success", player != null ? player.getViewableName(sender) : name).output(true);
+        return 1;
+    }
+}
