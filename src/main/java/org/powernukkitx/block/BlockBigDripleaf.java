@@ -256,7 +256,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         if (!isHead()) {
-            //杆没有碰撞箱
+            //the stem has no collision box
 //            var face = this.getBlockFace().getOpposite();
             return /*new SimpleAxisAlignedBB(
                     0.3125,
@@ -285,7 +285,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         var bb = getBoundingBox();
-        //使方块碰撞检测箱的maxY向上取整，使当实体站在方块上面的时候可以触发碰撞
+        //round the block collision box maxY up so that collision can be triggered when an entity stands on top of the block
         if (isHead())
             bb.setMaxY(Math.ceil(bb.getMaxY()));
         return bb;

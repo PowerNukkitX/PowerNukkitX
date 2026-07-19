@@ -408,8 +408,6 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 使用附魔标识符来获取附魔，原版附魔可以不加命名空间，但是自定义附魔必须加上命名空间才能获取
-     * <p>
      * Gets enchantment.
      *
      * @param name Enchantment Identifier
@@ -504,7 +502,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 自定义附魔使用的构造函数
+     * Constructor used by custom enchantments
      *
      * @param name   The translation key without the "%enchantment." suffix
      * @param rarity How rare this enchantment is
@@ -519,7 +517,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 获取该附魔的标识符，只有自定义附魔才有
+     * Gets the identifier of this enchantment, which only custom enchantments have
      *
      * @return the identifier
      */
@@ -528,8 +526,6 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 获取该附魔在物品描述中的Lore,被自定义附魔用于添加描述,代表物品附魔描述中的一行
-     * <p>
      * Get the enchantment in the item description Lore, which is used by the custom enchantment to add a description, representing a line in the item's enchantment description
      *
      * @return the lore
@@ -632,13 +628,13 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 当实体盔甲具有附魔时触发
+     * Triggered when the entity's armor has this enchantment
      * <p>
-     * 覆写该方法提供当实体被攻击时盔甲提供的保护值
+     * Override this method to provide the protection value the armor grants when the entity is attacked
      * <p>
-     * 目前只生效于{@link org.powernukkitx.entity.EntityHumanType HumanType} 和 {@link org.powernukkitx.entity.mob.EntityMob EntityMob}
+     * Currently only effective for {@link org.powernukkitx.entity.EntityHumanType HumanType} and {@link org.powernukkitx.entity.mob.EntityMob EntityMob}
      *
-     * @param event 该实体被攻击的事件
+     * @param event the event of this entity being attacked
      * @return the protection factor
      */
     public float getProtectionFactor(EntityDamageEvent event) {
@@ -646,13 +642,13 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 当实体武器具有附魔时触发
+     * Triggered when the entity's weapon has this enchantment
      * <p>
-     * 覆写该方法提供当实体使用附魔武器攻击所增益的攻击力
+     * Override this method to provide the bonus attack damage granted when the entity attacks with an enchanted weapon
      * <p>
-     * 目前只生效于{@link org.powernukkitx.Player Player} 和 使用了{@link org.powernukkitx.entity.ai.executor.MeleeAttackExecutor MeleeAttackExecutor}行为的实体
+     * Currently only effective for {@link org.powernukkitx.Player Player} and entities using the {@link org.powernukkitx.entity.ai.executor.MeleeAttackExecutor MeleeAttackExecutor} behavior
      *
-     * @param target 攻击的目标实体
+     * @param target the target entity being attacked
      * @param damager the entity that deals the damage
      * @return the damage value
      */
@@ -699,9 +695,9 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 当实体entity穿着附魔盔甲，被实体attacker攻击时触发
+     * Triggered when the entity, wearing enchanted armor, is attacked by the attacker entity
      * <p>
-     * 覆写该方法实现该过程中的逻辑
+     * Override this method to implement the logic for this process
      *
      * @param attacker the attacker
      * @param entity   the entity
@@ -713,7 +709,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * 目前没有任何作用
+     * Currently has no effect
      *
      * @param attacker the attacker
      * @param entity   the entity

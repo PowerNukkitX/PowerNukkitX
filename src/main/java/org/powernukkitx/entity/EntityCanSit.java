@@ -4,7 +4,7 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 /**
- * 可坐下实体接口<p>
+ * Interface for entities that can sit.<p>
  */
 
 

@@ -20,6 +20,7 @@ import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.recipe.SmithingTransformRecipe;
 import org.powernukkitx.recipe.UserDataShapelessRecipe;
 import org.powernukkitx.recipe.SmithingTrimRecipe;
+import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
@@ -72,10 +73,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     @Override
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
         Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
-        if (action.getRecipeNetworkId() >= EnchantmentHelper.ENCH_RECIPEID) {  //handle ench recipe
-            EnchantmentHelper.ItemEnchantOptionWithEntry enchantOptionWithEntry = EnchantmentHelper.RECIPE_MAP.get(action.getRecipeNetworkId());
+        if (action.getRecipeNetId().getRawId() >= EnchantmentHelper.ENCH_RECIPEID) {  //handle ench recipe
+            EnchantmentHelper.ItemEnchantOptionWithEntry enchantOptionWithEntry = EnchantmentHelper.RECIPE_MAP.get(action.getRecipeNetId().getRawId());
             if (enchantOptionWithEntry == null) {
-                log.error("Can't find enchant recipe from netId {}", action.getRecipeNetworkId());
+                log.error("Can't find enchant recipe from netId {}", action.getRecipeNetId());
                 return context.error();
             }
             final ItemEnchantOption enchantOptionData = enchantOptionWithEntry.getOption();
@@ -106,15 +107,15 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     inventory.decreaseCount(1, lapisCost);
                 }
                 player.getCreativeOutputInventory().setItem(item);
-                EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetworkId());
+                EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetId().getRawId());
                 player.regenerateEnchantmentSeed();
                 context.put(ENCH_RECIPE_KEY, true);
             }
             return null;
-        } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
-            CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
+        } else if (action.getRecipeNetId().getRawId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
+            CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetId().getRawId());
             if (tradeRecipe == null) {
-                log.error("Can't find trade recipe from netId {}", action.getRecipeNetworkId());
+                log.error("Can't find trade recipe from netId {}", action.getRecipeNetId());
                 return context.error();
             }
             if (action.getNumberOfRequestedCrafts() < 1) {
@@ -198,7 +199,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             craft = player.getCraftingGrid();
         }
         int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
-        Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
+        Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetId().getRawId());
         Input input = craft.getInput();
         Item[][] data = input.getData();
         ArrayList<Item> items = new ArrayList<>();
@@ -217,7 +218,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             } else if (recipe instanceof SmithingTransformRecipe smithingTransformRecipe) {
                 return handleSmithingUpgrade(smithingTransformRecipe, player, context);
             }
-            log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
+            log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
         } else {
             Inventory craftInventory = (Inventory) craft;
@@ -277,7 +278,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         ItemDescriptor expectEquipment = recipe.getBase();
         ItemDescriptor expectIngredient = recipe.getAddition();
         ItemDescriptor expectTemplate = recipe.getTemplate();
-        boolean match = expectEquipment.match(equipment);
+        boolean match;
+        if (expectEquipment instanceof DefaultDescriptor dd) {
+            match = equipment.getId().equals(dd.getItem().getId());
+        } else {
+            match = expectEquipment.match(equipment);
+        }
         match &= expectIngredient.match(ingredient);
         match &= expectTemplate.match(template);
         if (match) {
@@ -285,6 +291,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             CompoundTag tag = equipment.getNbt();
             if (tag != null) {
                 result.setNbt(tag);
+            }
+            if (equipment.getDamage() > 0) {
+                result.setDamage(equipment.getDamage());
             }
             player.getCreativeOutputInventory().setItem(result);
             smithingInventory.decreaseCount(0, 1);

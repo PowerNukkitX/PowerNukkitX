@@ -1,7 +1,7 @@
 package org.powernukkitx.recipe.descriptor;
 
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
 import org.powernukkitx.item.Item;
-import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 
 public interface ItemDescriptor extends Cloneable {
@@ -18,5 +18,5 @@ public interface ItemDescriptor extends Cloneable {
         return false;
     }
 
-    ItemDescriptorWithCount toNetwork();
+    RecipeIngredient toNetwork();
 }

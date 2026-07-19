@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     private static final String SUFFIX = "_spawn_egg";
     private static final String PLACEHOLDER_ID = "pnx:auto_spawn_egg";

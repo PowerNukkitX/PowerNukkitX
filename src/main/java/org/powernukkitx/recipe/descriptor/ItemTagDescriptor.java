@@ -1,8 +1,8 @@
 package org.powernukkitx.recipe.descriptor;
 
-import org.powernukkitx.tags.ItemTags;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
 import org.powernukkitx.item.Item;
-import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
+import org.powernukkitx.tags.ItemTags;
 
 import java.util.Objects;
 
@@ -32,8 +32,8 @@ public class ItemTagDescriptor implements ItemDescriptor {
     }
 
     @Override
-    public ItemDescriptorWithCount toNetwork() {
-        return new ItemDescriptorWithCount(
+    public RecipeIngredient toNetwork() {
+        return new RecipeIngredient(
                 new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemTagDescriptor(this.itemTag),
                 this.count
         );

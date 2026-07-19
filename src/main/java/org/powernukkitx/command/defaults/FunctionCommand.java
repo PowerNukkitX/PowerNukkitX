@@ -19,7 +19,7 @@ public class FunctionCommand extends VanillaCommand {
         this.setPermission("nukkit.command.function");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("name", false, CommandEnum.FUNCTION_FILE)//todo 找到CommandParamType.FILE_PATH自动补全的工作原理
+                CommandParameter.newEnum("name", false, CommandEnum.FUNCTION_FILE)//todo figure out how CommandParamType.FILE_PATH autocompletion works
         });
         this.enableParamTree();
     }

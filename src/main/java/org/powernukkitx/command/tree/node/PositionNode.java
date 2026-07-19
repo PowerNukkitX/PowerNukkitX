@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  * @since PowerNukkitX 1.19.50
  */
 /**
- * 坐标节点基类
+ * Base class for coordinate nodes
  */
 public abstract class PositionNode extends ParamNode<Position> {
     private final Pattern pattern;

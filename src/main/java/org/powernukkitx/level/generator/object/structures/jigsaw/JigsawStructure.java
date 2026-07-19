@@ -1,5 +1,7 @@
 package org.powernukkitx.level.generator.object.structures.jigsaw;
 
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockJigsaw;
 import org.powernukkitx.block.BlockState;
@@ -11,18 +13,16 @@ import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePool;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
-import org.powernukkitx.registry.Registries;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.random.RandomSourceProvider;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -373,6 +373,7 @@ public abstract class JigsawStructure {
             case ROTATE_90 -> rotateCounterClockwise(face);
             case ROTATE_180 -> rotateClockwise(rotateClockwise(face));
             case ROTATE_270 -> rotateClockwise(face);
+            default -> throw new IllegalStateException("invalid rotate face: " + face);
         };
     }
 

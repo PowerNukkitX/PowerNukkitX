@@ -20,6 +20,7 @@ import java.util.List;
  * @since 11/02/2026
  */
 @Slf4j
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public abstract class SimpleConfig {
 
     private final File configFile;
