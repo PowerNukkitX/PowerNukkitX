@@ -25,7 +25,7 @@ org-jline-jline-terminal                        = "4.3.1"
 org-jline-jline-terminal-jni                    = "4.3.1"
 org-junit-jupiter-junit-jupiter                 = "6.1.1"
 org-junit-platform-launcher                     = "6.1.1"
-org-lz4-lz4-java                                = "1.11.1"
+at-yawk-lz4-java                                = "1.11.1"
 org-mockito-mockito-junit-jupiter               = "5.23.0"
 org-openjdk-jmh-jmh-core                        = "1.37"
 org-openjdk-jmh-jmh-generator-annprocess        = "1.37"
@@ -73,7 +73,7 @@ jline-terminaljni    = { module = "org.jline:jline-terminal-jni",               
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine",         version.ref = "org-junit-jupiter-junit-jupiter"                 }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher",  version.ref = "org-junit-platform-launcher"                     }
-lz4                  = { module = "at.yawk.lz4:lz4-java",                           version.ref = "org-lz4-lz4-java"                                }
+lz4                  = { module = "at.yawk.lz4:lz4-java",                           version.ref = "at-yawk-lz4-java"                                }
 mockito              = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "org-mockito-mockito-junit-jupiter"               }
 jmh-core             = { module = "org.openjdk.jmh:jmh-core",                       version.ref = "org-openjdk-jmh-jmh-core"                        }
 jmh-generator        = { module = "org.openjdk.jmh:jmh-generator-annprocess",       version.ref = "org-openjdk-jmh-jmh-generator-annprocess"        }
