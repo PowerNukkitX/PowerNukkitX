@@ -1,0 +1,47 @@
+package org.powernukkitx.event.vehicle;
+
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.item.EntityVehicle;
+import org.powernukkitx.event.HandlerList;
+
+/**
+ * Is called when an entity damages a vehicle
+ *
+ * @author TrainmasterHD
+ * @since 09.09.2019
+ */
+
+public final class VehicleDamageByEntityEvent extends VehicleDamageEvent {
+
+    private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
+
+    private final Entity attacker;
+
+    /**
+     * Constructor for the VehicleDamageByEntityEvent
+     *
+     * @param vehicle  the damaged vehicle
+     * @param attacker the attacking vehicle
+     * @param damage   the caused damage on the vehicle
+     */
+
+    public VehicleDamageByEntityEvent(final EntityVehicle vehicle, final Entity attacker, final double damage) {
+        super(vehicle, damage);
+
+        this.attacker = attacker;
+    }
+
+    /**
+     * Returns the attacking entity
+     *
+     * @return attacking entity
+     */
+
+    public Entity getAttacker() {
+        return attacker;
+    }
+}
