@@ -72,10 +72,10 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
         boolean changed;
 
         if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
-            //从容器中拉取物品
+            //Pull items from the container
             changed = pullItems(this, this);
         } else {
-            //收集掉落物
+            //Collect dropped items
             changed = pickupItems(this, this, pickupArea);
         }
 
@@ -125,6 +125,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return false;
     }

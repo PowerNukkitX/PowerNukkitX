@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
  * The default position and location are (0, 0, 0) in the server's default level if not overridden.
  *
  * @author MagicDroidX (code) @ Nukkit Project
- * @author 粉鞋大妈 (javadoc) @ Nukkit Project
+ * @author Fenxie Dama (javadoc) @ Nukkit Project
  * @author smartcmd (code) @ PowerNukkitX Project
  * @see org.powernukkitx.command.CommandExecutor#onCommand
  * @since Nukkit 1.0 | Nukkit API 1.0.0

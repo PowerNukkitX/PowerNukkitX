@@ -259,6 +259,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Vector3 sleeping = null;
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
+    /** Wall-clock gate for the async chunk-order run in {@link #checkNetwork()}. */
+    private long lastChunkOrderRunMillis;
     protected Vector3 newPosition = null;
     protected int chunkRadius;
     protected int viewDistance;
@@ -937,6 +939,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     protected void handleMovement(Location clientPos) {
+        if (!this.firstMove
+                && this.chunk != null && this.chunk.getChunkState().canSend()
+                && clientPos.x == this.x && clientPos.y == this.y && clientPos.z == this.z
+                && clientPos.yaw == this.yaw && clientPos.pitch == this.pitch && clientPos.headYaw == this.headYaw) {
+            return;
+        }
+        this.positionChanged = true;
         if (this.firstMove) this.firstMove = false;
         boolean invalidMotion = false;
         var revertPos = this.getLocation().clone();
@@ -2895,6 +2904,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             this.drainInboundPackets();
 
+            // Draining may close the player synchronously (e.g. self-kick), nulling the
+            // inventory; bail out before the getInventory() access below throws an NPE.
+            if (!this.loggedIn) {
+                return true;
+            }
+
             if (this.pendingClose != null) {
                 final String closeReason = this.pendingClose;
                 this.pendingClose = null;
@@ -2908,7 +2923,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             while (!this.clientMovements.isEmpty()) {
-                this.positionChanged = true;
                 this.handleMovement(this.clientMovements.poll());
             }
 
@@ -3096,7 +3110,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
-            CompletableFuture.runAsync(playerChunkManager::tick, this.server.getComputeThreadPool());
+            this.nextChunkOrderRun = 0;
+            // Vanilla cadence is one run per 20 Hz tick;
+            // gate by wall clock to keep that cadence at any tick rate.
+            long now = System.currentTimeMillis();
+            if (now - this.lastChunkOrderRunMillis >= 50) {
+                this.lastChunkOrderRunMillis = now;
+                CompletableFuture.runAsync(playerChunkManager::tick, this.server.getComputeThreadPool());
+            }
         }
 
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
@@ -3300,6 +3321,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void sendMessage(String message) {
+        if (message.isEmpty()) {
+            log.warn("{} attempted to send an empty message", name);
+            return;
+        }
+        
         final MessageOnly messageOnly = new MessageOnly();
         messageOnly.setMessage(this.server.getLanguage().tr(message));
 
@@ -3607,12 +3633,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Send an actionbar text above the player's item bar.
      *
-     * @param title    消息
-     * @param fadein   淡入时间
-     * @param duration 持续时间
-     * @param fadeout  淡出时间
+     * @param title    the message
+     * @param fadein   the fade-in time
+     * @param duration the display duration
+     * @param fadeout  the fade-out time
      */
     public void sendActionBar(String title, int fadein, int duration, int fadeout) {
+        this.setTitleAnimationTimes(fadein, duration, fadeout);
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.ACTIONBAR);
         pk.setTitleText(Strings.nullToEmpty(title));
@@ -3645,6 +3672,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
 
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
+        this.setTitleAnimationTimes(fadein, duration, fadeout);
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.ACTIONBAR_TEXT_OBJECT);
         pk.setTitleText(text == null ? "" : text.toRawText());
@@ -4323,7 +4351,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * The implementation of setExperience is used to set the level
      *
-     * @param level 等级
+     * @param level the level
      */
     public void sendExperienceLevel(int level) {
         if (this.spawned) {

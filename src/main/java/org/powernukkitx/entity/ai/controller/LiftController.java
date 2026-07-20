@@ -4,7 +4,7 @@ import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 
 /**
- * 为飞行生物提供升力的运动控制器
+ * A movement controller that provides lift for flying creatures
  */
 
 

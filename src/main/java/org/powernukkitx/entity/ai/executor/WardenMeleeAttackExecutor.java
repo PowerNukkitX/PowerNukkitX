@@ -38,14 +38,14 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         if (entity.getMovementSpeed() != speed)
             entity.setMovementSpeed(speed);
-        //获取目标位置（这个clone很重要）
+        //get the target position (this clone is important)
         Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (!target.isAlive()) return false;
         this.coolDown = calCoolDown(entity, target);
         Vector3 clonedTarget = target.getLocation();
-        //更新寻路target
+        //update the pathfinding target
         setRouteTarget(entity, clonedTarget);
-        //更新视线target
+        //update the look target
         setLookTarget(entity, clonedTarget);
 
         var floor = clonedTarget.floor();
@@ -89,7 +89,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        //reset speed
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
     }
@@ -98,7 +98,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        //reset speed
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
     }
