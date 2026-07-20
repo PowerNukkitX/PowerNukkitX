@@ -539,8 +539,11 @@ public class LevelDBProvider implements LevelProvider {
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
             CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
-                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
+                // Clear the dirty flag before serializing so a change made
+                // mid-save (e.g. taking an item from a chest) re-marks the chunk
+                // dirty and gets persisted on the next save instead of being lost.
                 chunk.setChanged(false);
+                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
             }), Server.getInstance().getComputeThreadPool()).join();
             helper.write(batch);
             helper.close();
