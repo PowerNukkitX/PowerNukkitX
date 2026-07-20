@@ -120,7 +120,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
                     if ((x == -2 || x == 2) && (z == -2 || z == 2))
                         continue;
                     if (x == -2 || x == 2 || z == -2 || z == 2) {
-                        if (!this.checkFrame(this.getLevel().getBlock(centerSpot.add(x, 0, z)))) {
+                        if (!this.checkFrame(this.getLevel().getBlock(centerSpot.add(x, 0, z)), x, z)) {
                             return;
                         }
                     }
@@ -155,12 +155,19 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         return new Vector3(minX + 2, this.getFloorY(), minZ + 2);
     }
 
-    private boolean checkFrame(Block block) {
-        return block.getId().equals(this.getId()) && ((BlockEndPortalFrame) block).isEndPortalEye();
+    private boolean checkFrame(Block block, int x, int z) {
+        if (!(block instanceof BlockEndPortalFrame frame) || !frame.isEndPortalEye()) {
+            return false;
+        }
+        return frame.getBlockFace() == expectedFace(x, z);
     }
 
-    private boolean checkFrame(Block block, int x, int z) {
-        return block.getId().equals(this.getId()) && (block.blockstate.specialValue() - 4) == (x == -2 ? 3 : x == 2 ? 1 : z == -2 ? 0 : z == 2 ? 2 : -1);
+    // Frames must face toward the portal center: west edge points east, north edge points south, etc.
+    private BlockFace expectedFace(int x, int z) {
+        if (x == -2) return BlockFace.EAST;
+        if (x == 2) return BlockFace.WEST;
+        if (z == -2) return BlockFace.SOUTH;
+        return BlockFace.NORTH;
     }
 
     @Override
