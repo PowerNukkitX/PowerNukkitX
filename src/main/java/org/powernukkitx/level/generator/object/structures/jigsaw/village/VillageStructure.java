@@ -10,10 +10,12 @@ import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.block.BlockJigsaw;
 import org.powernukkitx.block.BlockSnow;
 import org.powernukkitx.block.BlockSnowLayer;
+import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.blockentity.BlockEntityChest;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
@@ -24,19 +26,33 @@ import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.JigsawStructure;
 import org.powernukkitx.level.structure.PNXStructure;
+import org.powernukkitx.level.village.Village;
+import org.powernukkitx.level.village.VillageDwellers;
+import org.powernukkitx.level.village.VillageInfo;
+import org.powernukkitx.level.village.VillageManager;
+import org.powernukkitx.level.village.VillagePlayers;
+import org.powernukkitx.level.village.VillagePoi;
+import org.powernukkitx.level.village.VillagePoiGroup;
+import org.powernukkitx.level.village.VillagePois;
+import org.powernukkitx.level.village.PoiType;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.block.BlockState;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.powernukkitx.utils.random.Xoroshiro128;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import static org.powernukkitx.block.BlockID.*;
 
@@ -68,10 +84,12 @@ public abstract class VillageStructure extends JigsawStructure {
     @Override
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
+        List<VillageDwellers.Actor> actors = new ArrayList<>();
         Level level = helper.getLevel();
         helper.addHook(() -> {
             populatePendingChestLoot(level);
         });
+        UUID villageUuid = registerVillage(helper, helper.getOrigin());
         helper.applySubChunkUpdate();
 
         placedBlocks.stream()
@@ -93,7 +111,11 @@ public abstract class VillageStructure extends JigsawStructure {
                     new Position(spawnX + 0.5, safeY, spawnZ + 0.5, level)
             );
             if (villager != null) {
+                if (villager instanceof EntityVillagerV2 villageDweller) {
+                    villageDweller.setVillageUuid(villageUuid);
+                }
                 villager.spawnToAll();
+                actors.add(createDwellerActor(villager, level.getCurrentTick()));
             }
             jigsawSumX += spawnX;
             jigsawSumZ += spawnZ;
@@ -109,7 +131,52 @@ public abstract class VillageStructure extends JigsawStructure {
                     new Position(centerX + 0.5, golemY, centerZ + 0.5, level));
             if (golem != null) {
                 golem.spawnToAll();
+                actors.add(createDwellerActor(golem, level.getCurrentTick()));
             }
+        }
+
+        updateVillageDwellers(level, villageUuid, actors);
+    }
+
+    private static VillageDwellers.Actor createDwellerActor(Entity entity, long tick) {
+        return new VillageDwellers.Actor(entity.getId(), entity.asBlockVector3(), tick, null);
+    }
+
+    private static UUID registerVillage(BlockManager blockManager, BlockVector3 origin) {
+        Level level = blockManager.getLevel();
+        AxisAlignedBB bounds = blockManager.getBounds();
+        BlockVector3 min = new BlockVector3((int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMinZ());
+        BlockVector3 max = new BlockVector3((int) bounds.getMaxX(), (int) bounds.getMaxY(), (int) bounds.getMaxZ());
+        long tick = level.getCurrentTick();
+        String identity = level.getName() + ':' + level.getDimension() + ':' + origin.x + ':' + origin.y + ':' + origin.z;
+        UUID uuid = UUID.nameUUIDFromBytes(identity.getBytes(StandardCharsets.UTF_8));
+        VillageInfo info = new VillageInfo(0, 0, true, tick, tick, min, max, tick, (byte) 1, min, max);
+        List<VillagePoi> poi = blockManager.getBlocks().stream()
+                .map(VillageStructure::createPoi)
+                .filter(Objects::nonNull)
+                .toList();
+        List<VillagePoiGroup> poiGroups = poi.isEmpty() ? List.of() : List.of(new VillagePoiGroup(-1, poi));
+        Village village = new Village(uuid,
+                new VillageDwellers(List.of()),
+                info,
+                new VillagePlayers(new ListTag<>(Tag.TAG_Compound)),
+                new VillagePois(poiGroups),
+                null);
+        level.getVillageManager().addVillage(village);
+        return uuid;
+    }
+
+    private static VillagePoi createPoi(Block block) {
+        PoiType type = VillageManager.getPoiType(block);
+        return type == null ? null : new VillagePoi(type, block.asBlockVector3());
+    }
+
+    private static void updateVillageDwellers(Level level, UUID uuid, List<VillageDwellers.Actor> actors) {
+        Village village = level.getVillageManager().getVillage(uuid);
+        if (village != null) {
+            level.getVillageManager().addVillage(new Village(village.uuid(),
+                    new VillageDwellers(List.of(new VillageDwellers.Dweller(actors))),
+                    village.info(), village.players(), village.pois(), village.raid()));
         }
     }
 

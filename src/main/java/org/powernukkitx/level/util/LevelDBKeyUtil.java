@@ -3,6 +3,8 @@ package org.powernukkitx.level.util;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.DimensionEnum;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Allay Project 8/22/2023
  *
@@ -183,5 +185,9 @@ public enum LevelDBKeyUtil {
 
     public byte[] getGlobalKey() {
         return new byte[] { this.encoded };
+    }
+
+    public static byte[] getGlobalKey(String key) {
+        return key.getBytes(StandardCharsets.UTF_8);
     }
 }

@@ -115,6 +115,7 @@ public class LevelDBProvider implements LevelProvider {
         CompoundTag dp = this.storage.readWorldDynamicProperties();
         this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
         this.worldDynamicPropertiesDirty = false;
+        this.level.getVillageManager().load(this.storage.readVillages(getDimensionData()));
     }
 
     @UsedByReflection
@@ -583,6 +584,7 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void saveLevelData() {
         flushWorldDynamicProperties();
+        storage.writeVillages(getDimensionData(), level.getVillageManager().getVillages());
         writeLevelDat(path, getDimensionData(), this.levelDat);
     }
 
