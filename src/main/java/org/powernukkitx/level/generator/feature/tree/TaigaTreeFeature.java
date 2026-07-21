@@ -52,7 +52,9 @@ public class TaigaTreeFeature extends GriddedFeature {
                     int cx = x + (chunk.getX() << 4);
                     int cz = z + (chunk.getZ() << 4);
                     if(chunk.getBiomeId(x, y, z) == BiomeID.COLD_TAIGA) {
-                        if(object.getBlockAt(cx, y+1, cz).isAir()) {
+                        // root holds trunks placed by super.apply this pass - checking object would read
+                        // the uncommitted level and bury the tree's lowest log under snow
+                        if(root.getCachedBlock(cx, y+1, cz).isAir()) {
                             object.setBlockStateAt(cx, y + 1, cz, SNOW_LAYER);
                         }
                     }

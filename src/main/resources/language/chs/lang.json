@@ -64,7 +64,6 @@
   "pnx.settings.base.deprecatedVerbose": "是否提示插件事件过期的信息",
   "pnx.settings.base.asyncWorkers": "服务器scheduler使用的异步线程数量,auto代表自动选择",
   "pnx.settings.base.installSpark": "服务器是否安装spark监控插件",
-  "pnx.settings.base.waterdogpe": "服务器是否开启waterdogpe兼容模式",
   "pnx.settings.base.autosave": "服务器自动保存的tick周期",
   "pnx.settings.base.saveUnknownBlock": "是否保存未知的方块,例如未被注册的自定义方块",
   "pnx.settings.network": "服务器的网络配置",
