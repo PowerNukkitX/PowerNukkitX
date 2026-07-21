@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
 import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockState;
-import org.powernukkitx.block.BlockStructureVoid;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
@@ -42,7 +41,6 @@ import java.util.concurrent.CompletableFuture;
 @ToString
 public class Structure extends AbstractStructure {
     private static final int FORMAT_VERSION = 1;
-    public static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
 
     private final BlockState[][][][] blockStates;
     private final Map<Vector3, CompoundTag> blockEntities;
@@ -170,12 +168,12 @@ public class Structure extends AbstractStructure {
             for (int ly = 0; ly < sizeY; ly++) {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     if (layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
-                        blockStates[0][lx][ly][lz] = STATE_AIR;
+                        blockStates[0][lx][ly][lz] = STATE_STRUCTURE_VOID;
                     } else {
                         blockStates[0][lx][ly][lz] = blockPalette.get(layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
                     }
                     if (layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
-                        blockStates[1][lx][ly][lz] = STATE_AIR;
+                        blockStates[1][lx][ly][lz] = STATE_STRUCTURE_VOID;
                     } else {
                         blockStates[1][lx][ly][lz] = blockPalette.get(layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
                     }
@@ -234,11 +232,8 @@ public class Structure extends AbstractStructure {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     BlockState l0 = blockStates[0][lx][ly][lz];
                     BlockState l1 = blockStates[1][lx][ly][lz];
-                    if (l0.equals(STRUCTURE_VOID_DEFAULT_STATE)) l0 = STATE_AIR;
-                    if (l1.equals(STRUCTURE_VOID_DEFAULT_STATE)) l1 = STATE_AIR;
-                    if (l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
-                    if (l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
-
+                    if (l0 != null && l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
+                    if (l1 != null && l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
                 }
             }
         }
@@ -377,7 +372,7 @@ public class Structure extends AbstractStructure {
                 for (int y = 0; y < this.sizeY; y++) {
                     for (int z = 0; z < this.sizeZ; z++) {
                         BlockState state = this.blockStates[layer][x][y][z];
-                        if (state != null && !state.equals(STRUCTURE_VOID_DEFAULT_STATE) && !blockStateToIndex.containsKey(state)) {
+                        if (state != null && state != STATE_STRUCTURE_VOID && !blockStateToIndex.containsKey(state)) {
                             blockStateToIndex.put(state, paletteIndex++);
                             uniqueBlockStates.add(state);
                         }
@@ -395,7 +390,7 @@ public class Structure extends AbstractStructure {
             for (int y = 0; y < this.sizeY; y++) {
                 for (int z = 0; z < this.sizeZ; z++) {
                     BlockState state = this.blockStates[0][x][y][z];
-                    if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
+                    if (state == null || state == STATE_STRUCTURE_VOID) {
                         layer0List.add(new IntTag(-1));
                     } else {
                         layer0List.add(new IntTag(blockStateToIndex.get(state)));
@@ -411,7 +406,7 @@ public class Structure extends AbstractStructure {
             for (int y = 0; y < this.sizeY; y++) {
                 for (int z = 0; z < this.sizeZ; z++) {
                     BlockState state = this.blockStates[1][x][y][z];
-                    if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
+                    if (state == null || state == STATE_STRUCTURE_VOID) {
                         layer1List.add(new IntTag(-1));
                     } else {
                         layer1List.add(new IntTag(blockStateToIndex.get(state)));
@@ -638,9 +633,8 @@ public class Structure extends AbstractStructure {
 
     private static boolean hasTransformableState(BlockState state) {
         return state != STATE_AIR
-                && state != STATE_STRUCTURE_VOID
                 && state != STATE_UNKNOWN
-                && !state.equals(STRUCTURE_VOID_DEFAULT_STATE);
+                && state != STATE_STRUCTURE_VOID;
     }
 
     private CompoundTag rotateBlockEntityData(CompoundTag blockPositionData, Rotation rotation) {
