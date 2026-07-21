@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 
 @Slf4j
 public class Palette<V> {
@@ -57,9 +58,9 @@ public class Palette<V> {
         this.addToPalette(first);
     }
 
-    public boolean anyMatch(java.util.function.Predicate<V> predicate) {
-        for (int i = 0, size = this.palette.size(); i < size; i++) {
-            if (predicate.test(this.palette.get(i))) {
+    public boolean anyMatch(Predicate<V> predicate) {
+        for (V v : this.palette) {
+            if (predicate.test(v)) {
                 return true;
             }
         }
