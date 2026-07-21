@@ -340,7 +340,7 @@ public class StructureRotationUtil {
     /**
      * Mirror a block state across the Z axis (swap north and south facing while keeping east/west).
      * Expressed as a 180° rotation of the X mirror, since two perpendicular reflections compose into
-     * a half-turn - this reuses the (well tested) rotation logic and keeps chirality correct.
+     * a half-turn - this reuses the rotation logic and keeps chirality correct.
      */
     public static BlockState mirrorZ(BlockState state) {
         return clockwise180(mirrorX(state));
