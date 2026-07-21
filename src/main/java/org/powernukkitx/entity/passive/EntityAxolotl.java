@@ -86,9 +86,8 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     @Override
     @SuppressWarnings("unchecked")
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -115,8 +114,8 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                                 ),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new PlaySoundExecutor(Sound.MOB_AXOLOTL_SPLASH), all(
                                 entity -> getAirTicks() == 399
@@ -174,8 +173,8 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                                 Entity::isInsideOfWater,
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
@@ -198,8 +197,8 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                                 }
                             }
                         }
-                ),
-                Set.of(
+                )
+                .controllers(
                         new LookController(true, true),
                         new ConditionalController(
                                 Pair.of(Entity::isInsideOfWater, new DiveController()),
@@ -207,15 +206,14 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                                 Pair.of(entity -> !entity.isInsideOfWater(), new WalkController()),
                                 Pair.of(entity -> !entity.isInsideOfWater(), new FluctuateController())
                         )
-                ),
-                new ConditionalAStarRouteFinder(
+                )
+                .routeFinder(new ConditionalAStarRouteFinder(
                         this,
                         Pair.of(ent -> !ent.isInsideOfWater(), new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)),
                         Pair.of(Entity::isInsideOfWater, new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
                         )
-                ),
-                this
-        );
+                ))
+                .build();
     }
 
     @Override

@@ -80,12 +80,11 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERDRAGON_GROWL), new RandomSoundEvaluator(), 2, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new PerchingExecutor(), entity -> getMemoryStorage().get(CoreMemoryTypes.FORCE_PERCHING), 5, 1),
                         new Behavior(new StrafeExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
@@ -100,15 +99,14 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY)
                         ), 2, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(512, 0, 20),
                         new NearestEntitySensor(EntityEnderCrystal.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 192, 0, 10)
-                ),
-                Set.of(new SpaceMoveController(), new LookController(), new LiftController()),
-                new EnderDragonRouteFinder(new EnderDragonPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(), new LiftController())
+                .routeFinder(new EnderDragonRouteFinder(new EnderDragonPosEvaluator(), this))
+                .build();
     }
 
     @Override

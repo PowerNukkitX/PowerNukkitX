@@ -2,6 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+pnx-gamedata                                    = "r-26_u3-SNAPSHOT"
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 fastreflection                                  = "1.0.3"
 com-github-oshi-oshi-core                       = "7.4.1"
@@ -41,6 +42,7 @@ disruptor                                       = "4.0.0"
 bedrock-protocol                                = "3.0.0.Beta7-Debug-SNAPSHOT"
 
 [libraries]
+pnxgamedata          = { module = "org.powernukkitx:gamedata",                      version.ref = "pnx-gamedata"                                    }
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
 libdeflate           = { module = "org.powernukkitx:libdeflate-java",               version.ref = "libdeflate-java"                                 }
 fastreflection       = { module = "me.sunlan:fast-reflection",                      version.ref = "fastreflection"                                  }
