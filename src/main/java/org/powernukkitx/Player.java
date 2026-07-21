@@ -221,6 +221,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
     private static final byte PLAYER_FLAG_SLEEP = 0x2;
+    private static final long POST_TELEPORT_GRACE_MS = 1000L;
     /// static fields
     public boolean playedBefore;
     public boolean spawned = false;
@@ -1165,20 +1166,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             || Math.abs(this.getHeadYaw() - newPosition.headYaw) > rotationUpdateThreshold;
 
         boolean shouldHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
-        if (shouldHandle) {
-            // Hack: ignore erroneous positions received right after teleportation
-            long now = System.currentTimeMillis();
-            if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
-                double teleportDistance = newPosition.distance(lastTeleportMessage.left());
-                if (teleportDistance < movementDistanceThreshold) {
-                    // Ignore this movement as it is probably due to post-teleport desynchronization
-                    return;
-                }
+
+        if (!shouldHandle) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+
+        if (lastTeleportMessage != null && now - lastTeleportMessage.right() < POST_TELEPORT_GRACE_MS) {
+            Location teleportDestination = lastTeleportMessage.left();
+            double destinationDistance = newPosition.distance(teleportDestination);
+
+            if (destinationDistance > movementDistanceThreshold) {
+                return;
             }
-            this.newPosition = newPosition;
-            if (!this.clientMovements.offer(newPosition)) {
-                log.warn("Failed to enqueue movement task for player {} at position {}", this.getName(), newPosition);
-            }
+        }
+
+        this.newPosition = newPosition;
+        if (!this.clientMovements.offer(newPosition)) {
+            log.warn("Failed to enqueue movement task for player {} at position {}", this.getName(), newPosition);
         }
     }
 
@@ -1186,7 +1192,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
             boolean recentlyTeleported = lastTeleportMessage != null
-                && (System.currentTimeMillis() - lastTeleportMessage.right()) < 1000;
+                    && System.currentTimeMillis() - lastTeleportMessage.right() < POST_TELEPORT_GRACE_MS;
             //Handling saturation updates
             if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0 && !recentlyTeleported) {
                 //UpdateFoodExpLevel
@@ -4615,17 +4621,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isOnline()) {
             return false;
         }
-        Location from = this.getLocation();
-        this.lastTeleportMessage = Pair.of(from, System.currentTimeMillis());
 
+        Location from = this.getLocation();
         Location to = location;
-        //event
+
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
             this.server.getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             to = event.getTo();
         }
+
+        this.lastTeleportMessage = Pair.of(
+                to.clone(),
+                System.currentTimeMillis()
+        );
 
         //remove inventory, ride,sign editor
         for (Inventory window : new ArrayList<>(this.windows.keySet())) {
