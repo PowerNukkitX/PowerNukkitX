@@ -158,9 +158,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new DoorExecutor(), all(
                                 entity -> {
                                     Block block = getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK_2);
@@ -186,8 +185,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 ), 2, 1, 1200
                         ),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 1, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(entity -> {
                             setMoveTarget(null);
                             setLookTarget(getTradeInventory().getViewers().stream().findFirst().get());
@@ -236,8 +235,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 2, 1
                         ),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         entity -> {
                             if (getLevel().getTick() % 120 == 0) {
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
@@ -336,11 +335,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         },
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK_2, 1, 0, 10),
                         new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
-                ),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true), new FluctuateController())
+                .routeFinder(new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this))
+                .build();
     }
 
     public float getFloatingHeight() {

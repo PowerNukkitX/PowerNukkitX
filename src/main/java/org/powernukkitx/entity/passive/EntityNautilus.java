@@ -487,9 +487,8 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     // TODO: Create dash attack behavior (retaliate)
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -505,8 +504,8 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new BreedingExecutor(16, 200, 0.25f),
                                 all(
@@ -563,8 +562,8 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
                                 },
                                 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new ISensor() {
                             @Override
                             public void sense(EntityIntelligent entity) {
@@ -581,15 +580,14 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
                                 return 60;
                             }
                         }
-                ),
-                Set.of(
+                )
+                .controllers(
                         new SpaceMoveController(),
                         new LookController(true, true),
                         new DiveController()
-                ),
-                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
+                .build();
     }
 
     @Override

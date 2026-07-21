@@ -90,25 +90,21 @@ public class EntityCreaking extends EntityMob {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
-                ),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new DoNothingExecutor(), new EntityCheckEvaluator(CoreMemoryTypes.STARING_PLAYER), 5, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_CREAKING_AMBIENT), all(new RandomSoundEvaluator(), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 4, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         new PlayerStaringCreakingSensor(40, 70, true),
                         new NearestPlayerCreakingSensor(40, 0, 0)
-                ),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override
