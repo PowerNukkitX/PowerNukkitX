@@ -247,6 +247,10 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
 
             for (Level level : server.getLevels().values()) {
+                float levelTps = level.getMeasuredTps();
+                if (levelTps <= 0) {
+                    levelTps = level.getBaseTickGameLoop().getTps();
+                }
                 sender.sendMessage(
                         TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
                                 TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
@@ -255,7 +259,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                 " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
                                 (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
                                 (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "") +
-                                (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
+                                (level.getBaseTickGameLoop().isRunning() ? " (" + getTPSColor(levelTps) + NukkitMath.round(levelTps, 2) + " TPS, " + NukkitMath.formatNanos((long) (level.getBaseTickGameLoop().getMSPT() * 1_000_000f)) + ")" : "")
                 );
             }
         } else if (fullMode){
@@ -418,10 +422,12 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
     }
 
     private TextFormat getTPSColor(float tps) {
+        float target = Math.max(1, Server.getInstance().getBaseTps());
+        float ratio = tps / target;
         TextFormat tpsColor = TextFormat.GREEN;
-        if (tps < 12) {
+        if (ratio < 0.60f) {
             tpsColor = TextFormat.RED;
-        } else if (tps < 17) {
+        } else if (ratio < 0.85f) {
             tpsColor = TextFormat.GOLD;
         }
         return tpsColor;
@@ -448,11 +454,11 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             currentCount++;
             float currentTps = Server.getInstance().getTicksPerSecond();
 
-            sender.sendMessage(TextFormat.GRAY + "[" + currentCount + "]" + getTPSColor(currentTps) + " Current TPS: " + currentTps);
+            sender.sendMessage(TextFormat.GRAY + "[" + currentCount + "]" + getTPSColor(currentTps) + " Current TPS: " + NukkitMath.round(currentTps, 2));
             tpsSum += currentTps;
             if (currentCount >= count) {
                 var averageTps = (tpsSum / count);
-                sender.sendMessage(TextFormat.GOLD + "Average TPS: " + getTPSColor(averageTps));
+                sender.sendMessage(TextFormat.GOLD + "Average TPS: " + getTPSColor(averageTps) + NukkitMath.round(averageTps, 2));
                 this.cancel();
             }
         }

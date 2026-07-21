@@ -601,9 +601,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 Effect effect = Effect.get(e.getByte("Id"));
                 if (effect == null) continue;
 
-                effect.setAmplifier(e.getByte("Amplifier"))
-                        .setDuration(e.getInt("Duration"))
-                        .setVisible(e.getBoolean("ShowParticles"));
+                effect.setAmplifier(e.getByte("Amplifier") & 0xFF)
+                    .setDuration(e.getInt("Duration"))
+                    .setVisible(e.getBoolean("ShowParticles"));
 
                 this.addEffect(effect);
             }

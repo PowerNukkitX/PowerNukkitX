@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings("unchecked")
 public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static volatile boolean enabled = true;
     private static int RECIPE_COUNT = 0;
     public static final Comparator<Item> recipeComparator = (i1, i2) -> {
         int i = MinecraftNamespaceComparator.compareFNV(i1.getId(), i2.getId());
@@ -395,6 +396,32 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         this.init(null);
     }
 
+    /**
+     * Whether the recipe registry is enabled. When disabled via
+     * {@code gameplay-settings.enable-recipes}, the registry contains no recipes,
+     * clients receive an empty recipe book and all lookups return {@code null}/empty.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Initializes the registry in disabled state: no recipes are loaded, but all
+     * internal structures and the (empty) crafting packet are valid so consumers
+     * and plugin API calls behave gracefully.
+     */
+    public void initDisabled() {
+        if (isLoad.getAndSet(true)) return;
+        enabled = false;
+        for (RecipeType type : RecipeType.values()) {
+            recipeMaps.computeIfAbsent(type, t -> new Int2ObjectArrayMap<>());
+        }
+        CraftingDataPacket pk = new CraftingDataPacket();
+        pk.setClearRecipes(true);
+        PACKET = pk;
+        log.info("Recipe registry disabled by gameplay settings; clients will receive an empty recipe book");
+    }
+
     public void init(byte[] pktBytes) {
         if (isLoad.getAndSet(true)) return;
         log.info("Loading recipes...");
@@ -428,11 +455,19 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         recipeXpMap.clear();
         allRecipeMaps.clear();
         networkIdRecipeMap.clear();
-        init();
+        if (enabled) {
+            init();
+        } else {
+            initDisabled();
+        }
     }
 
     @Override
     public void register(String key, Recipe recipe) throws RegisterException {
+        if (!enabled) {
+            log.debug("Ignoring recipe registration for {} because the recipe registry is disabled by gameplay settings", key);
+            return;
+        }
         if (recipe instanceof CraftingRecipe craftingRecipe) {
             Item item = recipe.getResults().getFirst();
             UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(item.getId()), String.valueOf(item.getDamage()), String.valueOf(item.getCount()), Arrays.toString(item.getNbtBytes()));

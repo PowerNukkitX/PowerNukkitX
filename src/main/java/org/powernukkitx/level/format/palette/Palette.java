@@ -15,7 +15,6 @@ import org.powernukkitx.utils.SemVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NBTInputStream;
@@ -32,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Slf4j
 public class Palette<V> {
@@ -181,19 +181,23 @@ public class Palette<V> {
     }
 
     public void readFromStoragePersistent(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
+        readFromStoragePersistent(byteBuf, deserializer, null);
+    }
+
+    public void readFromStoragePersistent(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer, Supplier<String> locationHint) {
         try (final ByteBufInputStream bufInputStream = new ByteBufInputStream(byteBuf)) {
             final BitArrayVersion bversion = readBitArrayVersion(byteBuf);
             if (bversion == BitArrayVersion.V0) {
                 this.bitArray = bversion.createArray(ChunkSection.SIZE, null);
                 this.clearPalette();
-                addBlockPalette(byteBuf, deserializer);
+                addBlockPalette(byteBuf, deserializer, locationHint);
                 this.onResize(BitArrayVersion.V2);
                 return;
             }
             readWords(byteBuf, bversion);
             final int paletteSize = byteBuf.readIntLE();
             for (int i = 0; i < paletteSize; i++) {
-                addBlockPalette(byteBuf, deserializer);
+                addBlockPalette(byteBuf, deserializer, locationHint);
             }
         } catch (IOException e) {
             log.error("Failed to read palette from storage", e);
@@ -266,7 +270,8 @@ public class Palette<V> {
     }
 
     @SuppressWarnings("unchecked")
-    protected void addBlockPalette(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) throws IOException {
+    protected void addBlockPalette(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer, Supplier<String> locationHint) throws IOException {
+        byteBuf.markReaderIndex();
         try (final ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
             NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
@@ -275,14 +280,8 @@ public class Palette<V> {
             builder.remove("version");
             blockTag = builder.build();
             final int blockRuntimeId = HashUtils.fnv1a_32_nbt(blockTag);
-            final Pair<Integer, SemVersion> p = Pair.of(blockRuntimeId, null);
 
             final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
-
-            if (p == null) {
-                this.addToPalette(unknownState);
-                return;
-            }
 
             V resultingBlockState = unknownState;
 
@@ -296,16 +295,12 @@ public class Palette<V> {
 
             boolean isBlockOutdated = false;
 
-            if (p.left() == null) {     // is blockStateHash null
+            V currentState = deserializer.deserialize(blockRuntimeId);
+            if (blockRuntimeId != -2 && Objects.equals(currentState, unknownState)) {
+                byteBuf.resetReaderIndex();
                 isBlockOutdated = true;
             } else {
-                V currentState = deserializer.deserialize(blockRuntimeId);
-                if (blockRuntimeId != -2 && Objects.equals(currentState, unknownState)) {
-                    byteBuf.resetReaderIndex();
-                    isBlockOutdated = true;
-                } else {
-                    resultingBlockState = currentState;
-                }
+                resultingBlockState = currentState;
             }
 
             if (isBlockOutdated) {
@@ -323,16 +318,25 @@ public class Palette<V> {
 
                     resultingBlockState = deserializer.deserialize(hash);
 
-                    // we send a warning if the resultingBlockState is null or unknown after updating it.
-                    // this way the only possibility is that the block hash is not represented in block_palette.nbt
                     if (resultingBlockState == null || Objects.equals(resultingBlockState, unknownState)) {
-                        resultingBlockState = unknownState;
-                        log.debug("Block State updating failed, blockHash: {}, oldBlockState: {}, newBlockState: {}, blockTag: {}", HashUtils.fnv1a_32_nbt(oldBlockNbt), oldBlockNbt, newBlockNbt, blockTag);
+                        final NbtMap preservedTag = newBlockNbt.toBuilder()
+                                .putInt("version", version)
+                                .build();
+                        resultingBlockState = (V) BlockState.makeUnknownBlockState(hash, preservedTag);
+
+                        if (log.isDebugEnabled()) {
+                            final String name = newBlockNbt.getString("name");
+                            if (!name.isEmpty()) {
+                                final String location = locationHint != null ? locationHint.get() : "<unknown>";
+                                log.debug("Block state did not resolve after updating; preserved as unknown. name: '{}', hash: {}, location: {}, originalState: {}, updatedState: {}",
+                                    name, hash, location, oldBlockNbt, newBlockNbt);
+                            }
+                        }
                     }
                 }
             }
 
-            if (Objects.equals(resultingBlockState, unknownState)) {
+            if (resultingBlockState instanceof BlockState bs && bs.getIdentifier().equals(BlockID.UNKNOWN)) {
                 boolean replaceWithUnknown = Server.getInstance().getSettings().baseSettings().saveUnknownBlock();
                 if (replaceWithUnknown) {
                     this.addToPalette(resultingBlockState);

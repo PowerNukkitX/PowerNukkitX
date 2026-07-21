@@ -19,7 +19,7 @@
 @if "%DEBUG%"=="" @echo off
 @rem ##########################################################################
 @rem
-@rem  gradlew startup script for Windows
+@rem  Gradle startup script for Windows
 @rem
 @rem ##########################################################################
 
@@ -51,7 +51,7 @@ echo. 1>&2
 echo Please set the JAVA_HOME variable in your environment to match the 1>&2
 echo location of your Java installation. 1>&2
 
-"%COMSPEC%" /c exit 1
+"%COMSPEC%" /c exit 1 & goto :exitWithErrorLevel
 
 :findJavaFromJavaHome
 set JAVA_HOME=%JAVA_HOME:"=%
@@ -65,14 +65,14 @@ echo. 1>&2
 echo Please set the JAVA_HOME variable in your environment to match the 1>&2
 echo location of your Java installation. 1>&2
 
-"%COMSPEC%" /c exit 1
+"%COMSPEC%" /c exit 1 & goto :exitWithErrorLevel
 
 :execute
 @rem Setup the command line
 
 
 
-@rem Execute gradlew
+@rem Execute Gradle
 @rem endlocal doesn't take effect until after the line is parsed and variables are expanded
 @rem which allows us to clear the local environment before executing the java command
 endlocal & "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %* & call :exitWithErrorLevel

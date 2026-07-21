@@ -207,7 +207,9 @@ public class RouteTree {
             current.add(node);
         }
         if (node.isExecutable()) {
-            result.add(new ArrayList<>(current));
+            if (!node.isSuggestHidden()) {
+                result.add(new ArrayList<>(current));
+            }
         }
         for (RouteNode child : node.getChildren()) {
             collectPaths(child, current, result);

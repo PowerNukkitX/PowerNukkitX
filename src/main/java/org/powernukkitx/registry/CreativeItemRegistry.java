@@ -47,6 +47,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
     static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static volatile boolean enabled = true;
 
     static final ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> GROUPS = new ObjectLinkedOpenHashSet<>();
     public static final ObjectLinkedOpenHashSet<CreativeItemEntryPayload> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
@@ -190,6 +191,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Add an item to {@link CreativeItemRegistry}
      */
     public void addCreativeItem(Item item) {
+        if (!enabled) return;
         int i = MAP.lastIntKey();
         try {
             this.register(i + 1, item.clone());
@@ -202,6 +204,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Add an item to {@link CreativeItemRegistry} with a specific group index.
      */
     public void addCreativeItem(Item item, int groupIndex) {
+        if (!enabled) return;
         int i = MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1;
         try {
             this.register(i, item.clone(), groupIndex);
@@ -290,6 +293,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Register a creative item and specify its group index directly.
      */
     public void register(Integer key, Item value, int groupIndex) throws RegisterException {
+        if (!enabled) return;
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
         }
@@ -302,6 +306,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     @Override
     public void register(Integer key, Item value) throws RegisterException {
+        if (!enabled) return;
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
@@ -378,7 +383,31 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         isLoad.set(false);
         MAP.clear();
         INTERNAL_DIFF_ITEM.clear();
-        init();
+        if (enabled) {
+            init();
+        } else {
+            initDisabled();
+        }
+    }
+
+    /**
+     * Whether the creative inventory registry is enabled. When disabled via
+     * {@code gameplay-settings.enable-creative-inventory}, the registry is empty
+     * and clients receive an empty creative inventory.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Initializes the registry in disabled state: no creative items or groups are
+     * loaded, so clients receive an empty creative inventory. All lookups return
+     * {@code null}/empty results.
+     */
+    public void initDisabled() {
+        if (isLoad.getAndSet(true)) return;
+        enabled = false;
+        log.info("Creative inventory registry disabled by gameplay settings; clients will receive an empty creative inventory");
     }
 
     public int resolveGroupIndexFromBlockDefinition(String identifier, CompoundTag nbt) {
