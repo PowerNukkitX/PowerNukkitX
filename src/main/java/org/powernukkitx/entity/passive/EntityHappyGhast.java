@@ -619,9 +619,8 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                             new AnimalGrowExecutor(),
                             all(
@@ -632,8 +631,8 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                             ),
                             1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior( // Return home if too far
                             new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultFlyingSpeed() * 8f, true),
                             entity -> {
@@ -695,8 +694,8 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                             ),
                         1, 1, 100
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(56, 0, 20),
                     // Ensure HOME memory exists + stays valid
                     new ISensor() {
@@ -712,18 +711,17 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                             return 60;
                         }
                     }
-                ),
-                Set.of(
+                )
+                .controllers(
                     new SpaceMoveController(),
                     new LookController(
                             () -> this.canMove(),
                             () -> this.canMove()
                     ),
                     new LiftController()
-                ),
-                new SimpleSpaceAStarRouteFinder(new HoveringPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new HoveringPosEvaluator(), this))
+                .build();
     }
 
     @Override

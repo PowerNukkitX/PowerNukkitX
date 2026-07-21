@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * 用于未实现AI的实体，作为占位符使用
+ * Used as a placeholder for entities that have not implemented AI
  */
 
 

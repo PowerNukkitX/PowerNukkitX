@@ -1,9 +1,9 @@
 package org.powernukkitx.network.process;
 
-import org.powernukkitx.network.process.handler.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.powernukkitx.network.process.handler.*;
 
 import java.util.Map;
 
@@ -43,7 +43,6 @@ public class PacketHandlerRegistry {
         register(MobEquipmentPacket.class, new MobEquipmentHandler());
         register(ModalFormResponsePacket.class, new ModalFormResponseHandler());
         register(MoveActorAbsolutePacket.class, new MoveActorAbsoluteHandler());
-        //register(MovePlayerPacket.class, new MovePlayerHandler()); Unused since idk
         register(NpcRequestPacket.class, new NpcRequestHandler());
         //register(PacketViolationWarningPacket.class, new PacketViolationWarningHandler()); Unused?
         register(PlayerActionPacket.class, new PlayerActionHandler());
@@ -54,8 +53,6 @@ public class PacketHandlerRegistry {
         register(RequestAbilityPacket.class, new RequestAbilityHandler());
         register(RequestPermissionsPacket.class, new RequestPermissionsHandler());
         register(RespawnPacket.class, new RespawnHandler());
-        register(ServerboundDataStorePacket.class, new ServerboundDataStoreHandler());
-        register(ServerboundDataDrivenScreenClosedPacket.class, new ServerboundDataDrivenScreenClosedHandler());
         register(ServerSettingsRequestPacket.class, new ServerSettingsRequestHandler());
         register(ServerboundDiagnosticsPacket.class, new ServerboundDiagnosticsHandler());
         register(SetDifficultyPacket.class, new SetDifficultyHandler());

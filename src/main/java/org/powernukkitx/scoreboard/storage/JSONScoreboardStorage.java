@@ -1,24 +1,30 @@
 package org.powernukkitx.scoreboard.storage;
 
-import org.powernukkitx.scoreboard.data.DisplaySlot;
+import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.ObjectiveSortOrder;
 import org.powernukkitx.scoreboard.IScoreboard;
 import org.powernukkitx.scoreboard.IScoreboardLine;
 import org.powernukkitx.scoreboard.Scoreboard;
 import org.powernukkitx.scoreboard.ScoreboardLine;
+import org.powernukkitx.scoreboard.data.DisplaySlot;
 import org.powernukkitx.scoreboard.scorer.EntityScorer;
 import org.powernukkitx.scoreboard.scorer.FakeScorer;
 import org.powernukkitx.scoreboard.scorer.IScorer;
 import org.powernukkitx.scoreboard.scorer.PlayerScorer;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.MapParsingUtils;
-import lombok.Getter;
-import org.cloudburstmc.protocol.bedrock.data.ObjectiveSortOrder;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Function;
 
 
@@ -118,9 +124,9 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
             line.put("score", e.getScore());
             line.put("scorerType", e.getScorer().getScorerType().name());
             line.put("name", switch (e.getScorer().getScorerType()) {
-                case PLAYER -> ((PlayerScorer) e.getScorer()).getUuid().toString();
-                case ENTITY -> ((EntityScorer) e.getScorer()).getEntityUuid().toString();
-                case FAKE_PLAYER -> ((FakeScorer) e.getScorer()).getFakeName();
+                case CHANGE_PLAYER -> ((PlayerScorer) e.getScorer()).getUuid().toString();
+                case CHANGE_ENTITY -> ((EntityScorer) e.getScorer()).getEntityUuid().toString();
+                case CHANGE_FAKE_PLAYER -> ((FakeScorer) e.getScorer()).getFakeName();
                 default -> null;
             });
             lines.add(line);
@@ -149,7 +155,9 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         Object linesObj = map.get("lines");
         if (!(linesObj instanceof List)) return scoreboard;
 
-        for (Map<String, Object> line : (List<Map<String, Object>>) linesObj) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> linesList = (List<Map<String, Object>>) linesObj;
+        for (Map<String, Object> line : linesList) {
             if (!line.containsKey("score") || !line.containsKey("scorerType")) continue;
             int score = ((Number) line.get("score")).intValue();
             String scorerType = Objects.toString(line.get("scorerType"), null);

@@ -17,6 +17,7 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
@@ -28,7 +29,7 @@ import org.powernukkitx.registry.Registries;
 
 import java.util.Random;
 
-public class IglooPopulator extends Populator {
+public class IglooPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_igloo";
 
@@ -47,6 +48,8 @@ public class IglooPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

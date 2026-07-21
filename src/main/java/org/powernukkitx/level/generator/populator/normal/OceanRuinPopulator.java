@@ -16,6 +16,7 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
@@ -29,7 +30,7 @@ import java.util.List;
 
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
-public class OceanRuinPopulator extends Populator {
+public class OceanRuinPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_ocean_ruin";
 
@@ -126,6 +127,8 @@ public class OceanRuinPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
@@ -182,7 +185,7 @@ public class OceanRuinPopulator extends Populator {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
                 }
-                if(block.getFloorY() <= SEA_LEVEL) {
+                if(block.getFloorY() < SEA_LEVEL) {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }

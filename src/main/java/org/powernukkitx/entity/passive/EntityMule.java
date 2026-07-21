@@ -347,9 +347,8 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new AnimalGrowExecutor(),
                                 all(
@@ -360,8 +359,8 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.2f, 18, 8, true, 80, true, 10),
                                 all(
@@ -405,18 +404,17 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
                                 (entity -> true),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

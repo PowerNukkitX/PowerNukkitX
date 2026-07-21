@@ -116,7 +116,7 @@ public abstract class VillageStructure extends JigsawStructure {
     @Override
     protected void postProcessStructurePiece(String structureName, BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
         liftPieceAboveWater(blockManager, jigsaws);
-        if (structureName.contains("lamp")) {
+        if (isDecorPiece(structureName)) {
             shiftWholePieceToTerrain(blockManager, jigsaws);
             int lampHeightOffset = getLampHeightOffset(structureName);
             if (lampHeightOffset != 0) {
@@ -227,6 +227,10 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected int getLampHeightOffset(String structureName) {
         return 0;
+    }
+
+    protected boolean isDecorPiece(String structureName) {
+        return structureName.contains("lamp") || structureName.contains("_decoration_");
     }
 
     protected void liftPieceAboveWater(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
@@ -442,9 +446,10 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected int getTerrainY(Level level, int x, int z) {
         int height = level.getHeightMap(x, z);
-        while (isReplaceableTerrainCover(level.getBlock(x, height, z))
+        while (height > level.getMinHeight()
+                && (isReplaceableTerrainCover(level.getBlock(x, height, z))
                 || level.getBlock(x, height, z).canBeReplaced()
-                || level.getBlock(x, height, z).isTransparent()) {
+                || level.getBlock(x, height, z).isTransparent())) {
             height--;
         }
         return height;

@@ -1,8 +1,8 @@
 package org.powernukkitx.recipe.descriptor;
 
-import org.powernukkitx.item.Item;
 import lombok.Value;
-import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
+import org.powernukkitx.item.Item;
 
 @Value
 public class ComplexAliasDescriptor implements ItemDescriptor {
@@ -29,9 +29,9 @@ public class ComplexAliasDescriptor implements ItemDescriptor {
     }
 
     @Override
-    public ItemDescriptorWithCount toNetwork() {
+    public RecipeIngredient toNetwork() {
         final org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ComplexAliasDescriptor descriptor =
-                new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ComplexAliasDescriptor(this.name);
-        return new ItemDescriptorWithCount(descriptor, this.getCount());
+            new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ComplexAliasDescriptor(this.name);
+        return new RecipeIngredient(descriptor, this.getCount());
     }
 }

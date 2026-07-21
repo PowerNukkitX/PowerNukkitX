@@ -1,5 +1,6 @@
 package org.powernukkitx.registry;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.powernukkitx.Server;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
@@ -29,7 +30,6 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 import org.cloudburstmc.protocol.bedrock.packet.CraftingDataPacket;
 
 import java.io.DataOutputStream;
@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings("unchecked")
 public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static volatile boolean enabled = true;
     private static int RECIPE_COUNT = 0;
     public static final Comparator<Item> recipeComparator = (i1, i2) -> {
         int i = MinecraftNamespaceComparator.compareFNV(i1.getId(), i2.getId());
@@ -54,7 +55,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         } else return i;
     };
     /**
-     * 缓存着配方数据包
+     * Caches the crafting data packet
      */
     private static CraftingDataPacket PACKET = null;
     private final VanillaRecipeParser vanillaRecipeParser = new VanillaRecipeParser();
@@ -354,11 +355,11 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         StringBuilder builder = new StringBuilder();
         Optional<Item> first = results.stream().findFirst();
         first.ifPresent(item -> builder.append(new Identifier(item.getId()).getPath())
-                .append('_')
-                .append(item.getCount())
-                .append('_')
-                .append(item.isBlock() ? item.getBlockUnsafe().getBlockState().specialValue() : item.getDamage())
-                .append("_from_"));
+            .append('_')
+            .append(item.getCount())
+            .append('_')
+            .append(item.isBlock() ? item.getBlockUnsafe().getBlockState().specialValue() : item.getDamage())
+            .append("_from_"));
         int limit = 5;
         for (var des : inputs) {
             if ((limit--) == 0) {
@@ -369,11 +370,11 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             } else if (des instanceof DefaultDescriptor def) {
                 Item item = def.getItem();
                 builder.append(new Identifier(item.getId()).getPath())
-                        .append('_')
-                        .append(item.getCount())
-                        .append('_')
-                        .append(item.getDamage() != 0 ? item.getDamage() : item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0)
-                        .append("_and_");
+                    .append('_')
+                    .append(item.getCount())
+                    .append('_')
+                    .append(item.getDamage() != 0 ? item.getDamage() : item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0)
+                    .append("_and_");
             }
         }
         String r = builder.toString();
@@ -393,6 +394,32 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     @Override
     public void init() {
         this.init(null);
+    }
+
+    /**
+     * Whether the recipe registry is enabled. When disabled via
+     * {@code gameplay-settings.enable-recipes}, the registry contains no recipes,
+     * clients receive an empty recipe book and all lookups return {@code null}/empty.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Initializes the registry in disabled state: no recipes are loaded, but all
+     * internal structures and the (empty) crafting packet are valid so consumers
+     * and plugin API calls behave gracefully.
+     */
+    public void initDisabled() {
+        if (isLoad.getAndSet(true)) return;
+        enabled = false;
+        for (RecipeType type : RecipeType.values()) {
+            recipeMaps.computeIfAbsent(type, t -> new Int2ObjectArrayMap<>());
+        }
+        CraftingDataPacket pk = new CraftingDataPacket();
+        pk.setClearRecipes(true);
+        PACKET = pk;
+        log.info("Recipe registry disabled by gameplay settings; clients will receive an empty recipe book");
     }
 
     public void init(byte[] pktBytes) {
@@ -428,11 +455,19 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         recipeXpMap.clear();
         allRecipeMaps.clear();
         networkIdRecipeMap.clear();
-        init();
+        if (enabled) {
+            init();
+        } else {
+            initDisabled();
+        }
     }
 
     @Override
     public void register(String key, Recipe recipe) throws RegisterException {
+        if (!enabled) {
+            log.debug("Ignoring recipe registration for {} because the recipe registry is disabled by gameplay settings", key);
+            return;
+        }
         if (recipe instanceof CraftingRecipe craftingRecipe) {
             Item item = recipe.getResults().getFirst();
             UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(item.getId()), String.valueOf(item.getDamage()), String.valueOf(item.getCount()), Arrays.toString(item.getNbtBytes()));
@@ -447,11 +482,11 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         ++RECIPE_COUNT;
         switch (recipe) {
             case CraftingRecipe craftingRecipe ->
-                    this.networkIdRecipeMap.put(craftingRecipe.getNetId(), craftingRecipe);
+                this.networkIdRecipeMap.put(craftingRecipe.getNetId(), craftingRecipe);
             case SmithingTransformRecipe smithingTransformRecipe ->
-                    this.networkIdRecipeMap.put(smithingTransformRecipe.getNetId(), smithingTransformRecipe);
+                this.networkIdRecipeMap.put(smithingTransformRecipe.getNetId(), smithingTransformRecipe);
             case SmithingTrimRecipe smithingTrimRecipe ->
-                    this.networkIdRecipeMap.put(smithingTrimRecipe.getNetId(), smithingTrimRecipe);
+                this.networkIdRecipeMap.put(smithingTrimRecipe.getNetId(), smithingTrimRecipe);
             case MultiRecipe multiRecipe -> this.networkIdRecipeMap.put(multiRecipe.getNetId(), multiRecipe);
             default -> {
 
@@ -481,28 +516,28 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
         for (Recipe netIdRecipe : this.getNetworkIdRecipeMap().values()) {
             switch (netIdRecipe) {
-                case ShapelessRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
-                case StonecutterRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
-                case ShapedRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
-                case MultiRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
-                case SmithingTransformRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
-                case SmithingTrimRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
+                case ShapelessRecipe recipe -> pk.getShapelessRecipes().add(recipe.toNetwork());
+                case StonecutterRecipe recipe -> pk.getShapelessRecipes().add(recipe.toNetwork());
+                case ShapedRecipe recipe -> pk.getShapedRecipes().add(recipe.toNetwork());
+                case MultiRecipe recipe -> pk.getMultiRecipes().add(recipe.toNetwork());
+                case SmithingTransformRecipe recipe -> pk.getSmithingTransformRecipes().add(recipe.toNetwork());
+                case SmithingTrimRecipe recipe -> pk.getSmithingTrimRecipes().add(recipe.toNetwork());
                 default -> {
                 }
             }
         }
 
         for (FurnaceRecipe recipe : getFurnaceRecipeMap()) {
-            pk.getCraftingEntries().add(recipe.toNetwork());
+            pk.getShapelessRecipes().add(recipe.toNetwork());
         }
         for (SmokerRecipe recipe : getSmokerRecipeMap()) {
-            pk.getCraftingEntries().add(recipe.toNetwork());
+            pk.getShapelessRecipes().add(recipe.toNetwork());
         }
         for (BlastFurnaceRecipe recipe : getBlastFurnaceRecipeMap()) {
-            pk.getCraftingEntries().add(recipe.toNetwork());
+            pk.getShapelessRecipes().add(recipe.toNetwork());
         }
         for (CampfireRecipe recipe : getCampfireRecipeMap()) {
-            pk.getCraftingEntries().add(recipe.toNetwork());
+            pk.getShapelessRecipes().add(recipe.toNetwork());
         }
         for (BrewingRecipe recipe : getBrewingRecipeMap()) {
             pk.getPotionMixes().add(recipe.toNetwork());
@@ -558,9 +593,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     continue;
                 }
                 register(new BrewingRecipe(
-                        inputItem,
-                        reagentItem,
-                        outputItem
+                    inputItem,
+                    reagentItem,
+                    outputItem
                 ));
             }
 
@@ -573,9 +608,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 String outputId = (String) containerMix.get("outputId");
 
                 this.register(new ContainerRecipe(
-                        Item.get(inputId),
-                        Item.get(reagentId),
-                        Item.get(outputId)
+                    Item.get(inputId),
+                    Item.get(reagentId),
+                    Item.get(outputId)
                 ));
             }
 
@@ -607,16 +642,16 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         String recipeId = (String) recipe.get("id");
 
                         ItemDescriptor baseDescriptor = parseDescription(
-                                (Map<String, Object>) recipe.get("base"),
-                                ParseType.SMITHING_TABLE
+                            (Map<String, Object>) recipe.get("base"),
+                            ParseType.SMITHING_TABLE
                         );
                         ItemDescriptor additionDescriptor = parseDescription(
-                                (Map<String, Object>) recipe.get("addition"),
-                                ParseType.SMITHING_TABLE
+                            (Map<String, Object>) recipe.get("addition"),
+                            ParseType.SMITHING_TABLE
                         );
                         ItemDescriptor templateDescriptor = parseDescription(
-                                (Map<String, Object>) recipe.get("template"),
-                                ParseType.SMITHING_TABLE
+                            (Map<String, Object>) recipe.get("template"),
+                            ParseType.SMITHING_TABLE
                         );
 
                         int netId = (int) ((double) recipe.get("netId"));
@@ -625,21 +660,21 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             String itemId = (String) result.get("id");
                             int count = (int) ((double) result.get("count"));
                             this.register(new SmithingTransformRecipe(
-                                    recipeId,
-                                    netId,
-                                    Item.get(itemId, 0, count),
-                                    baseDescriptor,
-                                    additionDescriptor,
-                                    templateDescriptor
+                                recipeId,
+                                netId,
+                                Item.get(itemId, 0, count),
+                                baseDescriptor,
+                                additionDescriptor,
+                                templateDescriptor
                             ));
                         } else {    // is smithing trim recipe
                             this.register(new SmithingTrimRecipe(
-                                    recipeId,
-                                    netId,
-                                    baseDescriptor,
-                                    additionDescriptor,
-                                    templateDescriptor,
-                                    "smithing_table"
+                                recipeId,
+                                netId,
+                                baseDescriptor,
+                                additionDescriptor,
+                                templateDescriptor,
+                                "smithing_table"
                             ));
                         }
                     }
@@ -664,12 +699,12 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         }
 
                         this.register(new StonecutterRecipe(
-                                recipeId,
-                                uuid,
-                                netId,
-                                priority,
-                                primaryResult.toItem(),
-                                ingredients.getFirst().toItem()
+                            recipeId,
+                            uuid,
+                            netId,
+                            priority,
+                            primaryResult.toItem(),
+                            ingredients.getFirst().toItem()
                         ));
                     }
                     case "cartography_table" -> {
@@ -693,12 +728,12 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         }
 
                         this.register(new CartographyRecipe(
-                                recipeId,
-                                uuid,
-                                netId,
-                                priority,
-                                primaryResult.toItem(),
-                                ingredients
+                            recipeId,
+                            uuid,
+                            netId,
+                            priority,
+                            primaryResult.toItem(),
+                            ingredients
                         ));
                     }
 
@@ -739,25 +774,25 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                 Map<String, Object> ingredientData = (Map<String, Object>) inputData.getValue();
 
                                 ingredients.put(
-                                        patternKey,
-                                        parseDescription(
-                                                ingredientData,
-                                                inputParseType
-                                        )
+                                    patternKey,
+                                    parseDescription(
+                                        ingredientData,
+                                        inputParseType
+                                    )
                                 );
                             }
                             this.register(new ShapedRecipe(
-                                    recipeId,
-                                    new ShapedRecipe.Data(uuid,
-                                            netId,
-                                            priority
-                                    ),
-                                    primaryResult.toItem(),
-                                    shape,
-                                    ingredients,
-                                    extraResults,
-                                    false,
-                                    RecipeUnlockingRequirement.INVALID
+                                recipeId,
+                                new ShapedRecipe.Data(uuid,
+                                    netId,
+                                    priority
+                                ),
+                                primaryResult.toItem(),
+                                shape,
+                                ingredients,
+                                extraResults,
+                                false,
+                                RecipeUnlockingRequirement.INVALID
                             ));
                         } else {    // is shapeless recipe
 
@@ -771,23 +806,23 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             int type = ((Number) recipe.get("type")).intValue();
                             if (type == RecipeType.USER_DATA_SHAPELESS_RECIPE.networkType) {
                                 this.register(new UserDataShapelessRecipe(
-                                        recipeId,
-                                        uuid,
-                                        netId,
-                                        priority,
-                                        primaryResult.toItem(),
-                                        ingredients,
-                                        RecipeUnlockingRequirement.INVALID
+                                    recipeId,
+                                    uuid,
+                                    netId,
+                                    priority,
+                                    primaryResult.toItem(),
+                                    ingredients,
+                                    RecipeUnlockingRequirement.INVALID
                                 ));
                             } else {
                                 this.register(new ShapelessRecipe(
-                                        recipeId,
-                                        uuid,
-                                        netId,
-                                        priority,
-                                        primaryResult.toItem(),
-                                        ingredients,
-                                        RecipeUnlockingRequirement.INVALID
+                                    recipeId,
+                                    uuid,
+                                    netId,
+                                    priority,
+                                    primaryResult.toItem(),
+                                    ingredients,
+                                    RecipeUnlockingRequirement.INVALID
                                 ));
                             }
                         }
@@ -839,23 +874,23 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
         // Allow to rename without crafting
         register(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false),
-                10002,
-                Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false))));
+            10002,
+            Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false))));
         register(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 2, 1, EmptyArrays.EMPTY_BYTES, false),
-                10003,
-                Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 2, 1, EmptyArrays.EMPTY_BYTES, false))));
+            10003,
+            Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 2, 1, EmptyArrays.EMPTY_BYTES, false))));
         register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false),
-                10004,
-                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false))));
+            10004,
+            Collections.singletonList(Item.get(ItemID.FILLED_MAP, 0, 1, EmptyArrays.EMPTY_BYTES, false))));
         register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 3, 1, EmptyArrays.EMPTY_BYTES, false),
-                10005,
-                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 3, 1, EmptyArrays.EMPTY_BYTES, false))));
+            10005,
+            Collections.singletonList(Item.get(ItemID.FILLED_MAP, 3, 1, EmptyArrays.EMPTY_BYTES, false))));
         register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 4, 1, EmptyArrays.EMPTY_BYTES, false),
-                10006,
-                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 4, 1, EmptyArrays.EMPTY_BYTES, false))));
+            10006,
+            Collections.singletonList(Item.get(ItemID.FILLED_MAP, 4, 1, EmptyArrays.EMPTY_BYTES, false))));
         register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false),
-                10007,
-                Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false))));
+            10007,
+            Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false))));
     }
 
     private void registerFurnaceRecipe(String block, Item outputItem, List<ItemDescriptor> ingredients, Config furnaceXpConfig) {
@@ -1025,13 +1060,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
         return switch (craftingBlock) {
             case "crafting_table", "deprecated" ->
-                    new ShapelessRecipe(id, uuid, netId, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
+                new ShapelessRecipe(id, uuid, netId, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
             case "shulker_box" ->
-                    new UserDataShapelessRecipe(id, uuid, netId, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
+                new UserDataShapelessRecipe(id, uuid, netId, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
             case "stonecutter" ->
-                    new StonecutterRecipe(id, uuid, netId, priority, resultItem, itemDescriptors.get(0).toItem(), recipeUnlockingRequirement);
+                new StonecutterRecipe(id, uuid, netId, priority, resultItem, itemDescriptors.get(0).toItem(), recipeUnlockingRequirement);
             case "cartography_table" ->
-                    new CartographyRecipe(id, uuid, netId, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
+                new CartographyRecipe(id, uuid, netId, priority, resultItem, itemDescriptors, recipeUnlockingRequirement);
             default -> null;
         };
     }

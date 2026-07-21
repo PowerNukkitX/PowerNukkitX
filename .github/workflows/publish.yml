@@ -27,7 +27,7 @@ jobs:
       is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
       title: ${{ steps.meta.outputs.title }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: true
@@ -37,7 +37,7 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -101,7 +101,7 @@ jobs:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: powernukkitx.jar
           path: build/powernukkitx.jar
@@ -119,7 +119,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -139,7 +139,7 @@ jobs:
           echo "protocol_version=$PROTOCOL_VERSION" >> $GITHUB_OUTPUT
           echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: powernukkitx.jar
           path: build
@@ -190,7 +190,7 @@ jobs:
             echo "" >> "$FILE"
 
             echo "$COMPARE" | jq -r '
-              .commits | reverse | .[].commit.message | split("\n")[0]
+              .commits | map(.commit.message | split("\n")[0]) | sort | .[]
             ' > /tmp/commits.txt
 
             LAST_SECTION=""
@@ -310,7 +310,7 @@ jobs:
             echo "### ✨ Changes since $LAST" >> release-notes.md
             echo "" >> release-notes.md
             gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}" \
-              --jq '.commits | reverse | .[] | "- \(.commit.message | split("\n")[0])"' \
+              --jq '.commits | map(.commit.message | split("\n")[0]) | sort | .[] | "- \(.)"' \
               >> release-notes.md 2>/dev/null || true
           fi
 

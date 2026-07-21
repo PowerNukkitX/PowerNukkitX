@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * 存放一些AI框架的全局参数
+ * Holds some global parameters of the AI framework.
  */
 
 
@@ -13,7 +13,7 @@ public final class EntityAI {
 
     private static final Set<DebugOption> debugOptions = EnumSet.noneOf(DebugOption.class);
 
-    private EntityAI() {/*不能实例化*/}
+    private EntityAI() {/*cannot be instantiated*/}
 
     public static void setDebugOption(DebugOption option, boolean open) {
         if (open) debugOptions.add(option);
@@ -48,15 +48,15 @@ public final class EntityAI {
 
     public enum DebugOption {
         /**
-         * 显示路径点
+         * Show route waypoints.
          */
         ROUTE,
         /**
-         * 在生物名称tag中显示behavior状态
+         * Show the behavior state in the mob's name tag.
          */
         BEHAVIOR,
         /**
-         * 允许使用木棍右击生物查询memory状态
+         * Allow right-clicking a mob with a stick to query its memory state.
          */
         MEMORY
     }

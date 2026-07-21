@@ -95,7 +95,7 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

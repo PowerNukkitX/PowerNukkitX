@@ -11,38 +11,38 @@ import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 用于标准陆地行走实体的方块评估器
+ * Block evaluator for standard land-walking entities
  */
 
 
 public class WalkingPosEvaluator implements IPosEvaluator {
     @Override
     public boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
-        //居中坐标
+        //Centered coordinate
         var blockCenter = block.add(0.5, 1, 0.5);
-        //检查是否可到达
+        //Check whether it is reachable
         if (!isPassable(entity, blockCenter))
             return false;
-        if (entity.hasWaterAt(0) && blockCenter.getY() - entity.getY() > 1)//实体在水中不能移动到一格高以上的方块
+        if (entity.hasWaterAt(0) && blockCenter.getY() - entity.getY() > 1)//An entity in water can't move to a block more than one block high
             return false;
-        //TODO: 检查碰头
-        //脚下不能是伤害性方块
+        //TODO: check for head collision
+        //The block underfoot must not be a damaging block
         if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.LAVA || block.getId() == Block.CACTUS)
             return false;
-        //不能是栏杆
+        //Must not be a fence
         if (block instanceof BlockFence || block instanceof BlockFenceGate)
             return false;
-        //水特判
+        //Special case for water
         if (block.getId() == Block.WATER || block.getId() == Block.FLOWING_WATER)
             return true;
-        //必须可以站立
+        //Must be standable
         return !block.canPassThrough();
     }
 
     /**
-     * 指定实体在指定坐标上能否不发生碰撞
+     * Determines whether the entity can occupy the given position without colliding.
      */
-    //todo: 此方法会造成大量开销，原因是碰撞检查，有待优化
+    //todo: this method is very expensive due to the collision check, needs optimization
     protected boolean isPassable(EntityIntelligent entity, Vector3 vector3) {
         double radius = (entity.getWidth() * entity.getScale()) / 2;
         float height = entity.getHeight() * entity.getScale();
@@ -53,22 +53,22 @@ public class WalkingPosEvaluator implements IPosEvaluator {
             // D     P     E
             // |           |
             // F --- G --- H
-            // 在P点一次通过的可能性最大，所以优先检测
+            // Passing through at point P in one go is most likely, so check it first
             byte collisionInfo = Utils.hasCollisionTickCachedBlocksWithInfo(entity.level, bb);
             if (collisionInfo == 0) {
                 return true;
             }
-            // 将实体碰撞箱分别对齐A B C D E F G H处，检测是否能通过
+            // Align the entity's collision box to A B C D E F G H respectively and check whether it can pass
             var dr = radius - 0.5;
             for (int i = -1; i <= 1; i++) {
-                // collisionInfo & 0b110000：获取x轴的碰撞信息，3为在大于中心的方向膨胀，1为小于中心的方向碰撞，0为没有碰撞
-                // -2：是为了将3转换为1，1转换为-1，0转换为-2
-                // 然后进行判断，如果i的值跟上面的值相等，说明此方向已经100%会碰撞了，不需要再检测
+                // collisionInfo & 0b110000: get the x-axis collision info, 3 means collision on the side greater than center, 1 means collision on the side less than center, 0 means no collision
+                // -2: converts 3 to 1, 1 to -1, and 0 to -2
+                // then check: if i equals the value above, that direction is 100% going to collide, so no need to check further
                 if (((collisionInfo & 0b110000) >> 4) - 2 == i) continue;
                 for (int j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0) continue; // P点已经被检测过了
-                    if ((collisionInfo & 0b000011) - 2 == j) continue; // 获取z轴的碰撞信息并比较
-                    // 由于已经缓存了方块，检测速度还是可以接受的
+                    if (i == 0 && j == 0) continue; // point P has already been checked
+                    if ((collisionInfo & 0b000011) - 2 == j) continue; // get the z-axis collision info and compare
+                    // since the blocks are already cached, the check speed is still acceptable
                     if (!Utils.hasCollisionTickCachedBlocks(entity.level, bb.clone().offset(i * dr, 0, j * dr))) {
                         return true;
                     }

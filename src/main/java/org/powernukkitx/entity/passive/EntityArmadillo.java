@@ -131,9 +131,8 @@ public class EntityArmadillo extends EntityAnimal {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new LoveTimeoutExecutor(20 * 30),
                             e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -149,8 +148,8 @@ public class EntityArmadillo extends EntityAnimal {
                             ),
                         1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
                         new UnrollingExecutor(), 
                             entity -> getRollState() == RollState.ROLLED_UP_UNROLLING,
@@ -213,18 +212,17 @@ public class EntityArmadillo extends EntityAnimal {
                             entity -> getRollState() == RollState.UNROLLED,
                         1, 1
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                     new WalkController(),
                     new LookController(true, true),
                     new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

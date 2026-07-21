@@ -69,6 +69,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
     public enum Action {
         LEFT_CLICK_BLOCK,
         RIGHT_CLICK_BLOCK,
+        RIGHT_HOLD_BLOCK,
         LEFT_CLICK_AIR,
         RIGHT_CLICK_AIR,
         PHYSICAL

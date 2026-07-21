@@ -6,6 +6,7 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.ObjectSwampHut;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.registry.Registries;
@@ -13,7 +14,7 @@ import org.powernukkitx.tags.BiomeTags;
 
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
-public class SwampHutPopulator extends Populator {
+public class SwampHutPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_swamp_hut";
 
@@ -28,6 +29,8 @@ public class SwampHutPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

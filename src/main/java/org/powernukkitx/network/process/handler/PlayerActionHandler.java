@@ -1,33 +1,23 @@
 package org.powernukkitx.network.process.handler;
 
-import org.powernukkitx.AdventureSettings;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.PlayerActionType;
+import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerActionPacket;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFrame;
 import org.powernukkitx.block.BlockLectern;
-import org.powernukkitx.event.player.PlayerHackDetectedEvent;
-import org.powernukkitx.event.player.PlayerJumpEvent;
-import org.powernukkitx.event.player.PlayerKickEvent;
-import org.powernukkitx.event.player.PlayerToggleFlightEvent;
-import org.powernukkitx.event.player.PlayerToggleGlideEvent;
-import org.powernukkitx.event.player.PlayerToggleSneakEvent;
 import org.powernukkitx.event.player.PlayerToggleSpinAttackEvent;
-import org.powernukkitx.event.player.PlayerToggleSprintEvent;
-import org.powernukkitx.event.player.PlayerToggleSwimEvent;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.BlockFace;
-import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.PlayerActionType;
-import org.cloudburstmc.protocol.bedrock.packet.MovePlayerPacket;
-import org.cloudburstmc.protocol.bedrock.packet.PlayerActionPacket;
 
 import java.util.Objects;
 
@@ -60,6 +50,15 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                     blockFrame.getBlockEntity().dropItem(playerHandle.player);
                 }
             }
+            case PlayerActionType.GET_UPDATED_BLOCK -> {
+                //TODO
+            }
+            case PlayerActionType.DROP_ITEM -> {
+                //TODO
+            }
+            case PlayerActionType.START_SLEEPING -> {
+
+            }
             case PlayerActionType.STOP_SLEEPING -> player.stopSleep();
             case PlayerActionType.RESPAWN -> {
                 if (!player.spawned || player.isAlive() || !player.isOnline()) {
@@ -67,22 +66,23 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                 }
                 playerHandle.respawn();
             }
-            case PlayerActionType.CHANGE_DIMENSION_ACK ->
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.NORMAL);
+            case PlayerActionType.CHANGE_DIMENSION_ACK -> {
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.NORMAL);
+            }
             case PlayerActionType.START_SPIN_ATTACK -> {
                 if (!Objects.equals(player.getInventory().getItemInMainHand().getId(), ItemID.TRIDENT)) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                     break;
                 }
 
                 int riptideLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
                 if (riptideLevel < 1) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                     break;
                 }
 
                 if (!(player.isTouchingWater() || (player.getLevel().isRaining() && player.getLevel().canBlockSeeSky(player)))) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                     break;
                 }
 
@@ -90,7 +90,7 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                 player.getServer().getPluginManager().callEvent(playerToggleSpinAttackEvent);
 
                 if (playerToggleSpinAttackEvent.isCancelled()) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.PositionMode.RESPAWN);
+                    player.sendPosition(player, player.yaw, player.pitch, PositionMode.RESPAWN);
                 } else {
                     player.setSpinAttacking(true);
 

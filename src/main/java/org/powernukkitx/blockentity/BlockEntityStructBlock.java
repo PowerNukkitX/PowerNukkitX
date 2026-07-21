@@ -1,5 +1,13 @@
 package org.powernukkitx.blockentity;
 
+import com.google.common.base.Strings;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.AnimationMode;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.StructureBlockType;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.StructureRedstoneSaveMode;
+import org.cloudburstmc.protocol.bedrock.packet.StructureBlockUpdatePacket;
+import org.jetbrains.annotations.NotNull;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.inventory.Inventory;
@@ -10,14 +18,6 @@ import org.powernukkitx.level.structure.Structure;
 import org.powernukkitx.level.structure.StructureAPI;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import com.google.common.base.Strings;
-import org.cloudburstmc.protocol.bedrock.data.structure.AnimationMode;
-import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
-import org.cloudburstmc.protocol.bedrock.data.structure.StructureBlockType;
-import org.cloudburstmc.protocol.bedrock.data.structure.StructureRedstoneSaveMode;
-import org.cloudburstmc.protocol.bedrock.packet.StructureBlockUpdatePacket;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
@@ -238,7 +238,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         this.data = editorData.getStructureBlockType();
         this.dataField = editorData.getDataField();
         this.ignoreEntities = editorData.getStructureSettings().isShouldIgnoreEntities();
-        this.includePlayers = editorData.isShouldPlayersBeIncluded();
+        this.includePlayers = editorData.isShouldIncludePlayers();
         this.integrity = editorData.getStructureSettings().getIntegrityValue();
         this.mirror = editorData.getStructureSettings().getMirror();
         this.redstoneSaveMode = editorData.getRedstoneSaveMode();
@@ -246,7 +246,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         this.rotation = editorData.getStructureSettings().getRotation();
         this.seed = editorData.getStructureSettings().getIntegritySeed();
         this.showBoundingBox = editorData.isShouldShowBoundingBox();
-        this.structureName = editorData.getStructureName();
+        this.structureName = editorData.getStructureName().getUnredacted();
         this.offset = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureOffset());
         this.size = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureSize());
 

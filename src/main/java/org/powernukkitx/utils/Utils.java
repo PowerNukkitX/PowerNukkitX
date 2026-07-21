@@ -329,7 +329,7 @@ public class Utils {
             }
             return existing;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

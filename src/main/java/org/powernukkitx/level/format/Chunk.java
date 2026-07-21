@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.StampedLock;
@@ -58,6 +59,12 @@ public class Chunk implements IChunk {
     protected final AtomicLong changes;
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
+    /**
+     * Live entity count. The non-blocking map computes size()/isEmpty() by summing a
+     * striped counter, which is too slow for the per-chunk-per-tick emptiness checks
+     * in {@code Level.tickChunks}.
+     */
+    protected final AtomicInteger entityCount = new AtomicInteger();
     protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
     protected final BlockUpdateScheduler blockUpdateScheduler;
@@ -514,7 +521,9 @@ public class Chunk implements IChunk {
 
     @Override
     public void addEntity(Entity entity) {
-        this.entities.put(entity.getId(), entity);
+        if (this.entities.put(entity.getId(), entity) == null) {
+            this.entityCount.incrementAndGet();
+        }
         if (!(entity instanceof Player) && this.isInit) {
             this.setChanged();
         }
@@ -525,12 +534,19 @@ public class Chunk implements IChunk {
         if (entity.getId() < 0) return;
         if (this.entities != null) {
             synchronized (this.entities) {
-                this.entities.remove(entity.getId());
+                if (this.entities.remove(entity.getId()) != null) {
+                    this.entityCount.decrementAndGet();
+                }
                 if (!(entity instanceof Player) && this.isInit) {
                     this.setChanged();
                 }
             }
         }
+    }
+
+    @Override
+    public boolean hasEntities() {
+        return this.entityCount.get() > 0;
     }
 
     @Override

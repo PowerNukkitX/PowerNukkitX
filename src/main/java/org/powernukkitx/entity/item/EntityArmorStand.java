@@ -91,6 +91,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
+    protected boolean shouldStopMotionWhenImmobile() {
+        return false;
+    }
+
+    @Override
     public boolean isPersistent() {
         return true;
     }
@@ -563,7 +568,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (hasWaterAt(getHeight() / 2f)) {
             return 0.25f;
         }
-        return 0f;
+        return 0.91f;
     }
 
     @Override

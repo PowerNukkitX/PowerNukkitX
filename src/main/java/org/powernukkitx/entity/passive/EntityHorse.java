@@ -395,9 +395,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -413,8 +412,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new BreedingExecutor(16, 200, 0.25f),
                                 all(
@@ -466,18 +465,17 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                                 (entity -> true),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

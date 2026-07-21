@@ -3,7 +3,7 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.EntityPhysical;
+import org.powernukkitx.entity.item.EntityBoat;
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.event.block.BlockFromToEvent;
 import org.powernukkitx.item.Item;
@@ -18,9 +18,17 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 public class BlockBubbleColumn extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
+
+    private static final double DOWNWARD_MAX_MOTION = -0.3;
+    private static final double DOWNWARD_MAX_EXIT_MOTION = -0.9;
+    private static final double DOWNWARD_ACCELERATION = 0.03;
+    private static final double UPWARD_MIN_MOTION = 0.7;
+    private static final double UPWARD_MAX_EXIT_MOTION = 1.8;
+    private static final double UPWARD_ACCELERATION = 0.08;
+    private static final double UPWARD_EXIT_ACCELERATION = 0.1;
+
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
@@ -53,12 +61,12 @@ public class BlockBubbleColumn extends BlockTransparent {
     public boolean canBeFlowedInto() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
-    
+
     @Override
     public Item toItem() {
         return Item.AIR;
@@ -68,7 +76,7 @@ public class BlockBubbleColumn extends BlockTransparent {
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }
-    
+
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
@@ -105,33 +113,55 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
 
     @Override
+    public double getPassableBlockFrictionFactor() {
+        final Block water = getTickCachedLevelBlockAtLayer(1);
+        return water instanceof BlockLiquid ? water.getPassableBlockFrictionFactor() : super.getPassableBlockFrictionFactor();
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
-        if (entity.canBeMovedByCurrents()) {
-            if (up().isAir()) {
-                if (isDragDown()) {
-                    entity.motionY = Math.max(-0.9, entity.motionY - 0.03);
-                } else {
-                    if (entity instanceof EntityPhysical entityPhysical && entity.motionY < -entityPhysical.getGravity() * 8) {
-                        entity.motionY = -entityPhysical.getGravity() * 2;
-                    }
-                    entity.motionY = Math.min(1.8, entity.motionY + 0.1);
-                }
-                
-                ThreadLocalRandom random = ThreadLocalRandom.current();
-                for(int i = 0; i < 2; ++i) {
-                    level.addParticle(new WaterSplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
-                    level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
-                }
-                
+        if (!entity.canBeMovedByCurrents()) return;
+
+        final boolean surface = up().isAir();
+
+        if (surface) {
+            spawnColumnParticles();
+        }
+
+        if (entity instanceof final EntityBoat boat) {
+            boat.onBubbleColumn(isDragDown());
+            if (!boat.isDraggedUnder()) return;
+        }
+
+        if (entity instanceof Player) return;
+
+        entity.inBubbleColumn = true;
+
+        final double motionY = Math.max(entity.motionY, DOWNWARD_MAX_MOTION);
+
+        if (surface) {
+            if (isDragDown()) {
+                entity.motionY = Math.max(DOWNWARD_MAX_EXIT_MOTION, motionY - DOWNWARD_ACCELERATION);
             } else {
-                if (isDragDown()) {
-                    entity.motionY = Math.max(-0.3, entity.motionY - 0.3);
-                } else {
-                    entity.motionY = Math.min(0.7, entity.motionY + 0.06);
-                }
+                entity.motionY = Math.min(UPWARD_MAX_EXIT_MOTION, motionY + UPWARD_EXIT_ACCELERATION);
             }
-            entity.motionChanged = true;
-            entity.resetFallDistance();
+        } else {
+            if (isDragDown()) {
+                entity.motionY = Math.max(DOWNWARD_MAX_MOTION, motionY - DOWNWARD_ACCELERATION);
+            } else {
+                entity.motionY = Math.min(UPWARD_MIN_MOTION, motionY + UPWARD_ACCELERATION);
+            }
+        }
+
+        entity.motionChanged = true;
+        entity.resetFallDistance();
+    }
+
+    private void spawnColumnParticles() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 0; i < 2; ++i) {
+            level.addParticle(new WaterSplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
+            level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
         }
     }
 
@@ -144,7 +174,7 @@ public class BlockBubbleColumn extends BlockTransparent {
         this.getLevel().setBlock(this, this, true, true);
         return true;
     }
-    
+
     @Override
     public double getHardness() {
         return 100;

@@ -7,11 +7,12 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.ancientcity.AncientCityStructure;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
-public class AncientCityPopulator extends Populator {
+public class AncientCityPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_ancient_city";
     private static final int GENERATION_Y = -51;
@@ -28,6 +29,8 @@ public class AncientCityPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         if (!chunk.isOverWorld()) {
             return;

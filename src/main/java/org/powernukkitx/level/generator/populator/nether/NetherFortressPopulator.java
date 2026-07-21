@@ -10,6 +10,7 @@ import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStart;
 import org.powernukkitx.level.generator.populator.Populator;
+import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.ChunkVector2;
 import org.powernukkitx.utils.random.NukkitRandom;
@@ -17,7 +18,7 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 
 import java.util.List;
 
-public class NetherFortressPopulator extends Populator {
+public class NetherFortressPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "nether_nether_fortress";
     protected static final int MAX_DISTANCE = NetherComplexPlacement.REGION_SIZE_CHUNKS;
@@ -88,6 +89,8 @@ public class NetherFortressPopulator extends Populator {
 
     @Override
     public void apply(ChunkGenerateContext context) {
+        if(!shouldGenerateStructures(context)) return;
+
         IChunk chunk = context.getChunk();
         if (!chunk.isNether()) {
             return;

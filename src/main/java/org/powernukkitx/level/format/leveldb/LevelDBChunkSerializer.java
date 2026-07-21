@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Allay Project 8/23/2023
@@ -212,14 +213,22 @@ public class LevelDBChunkSerializer {
                                 Arrays.fill(palettes, new BlockPalette(BlockAir.STATE, new ReferenceArrayList<>(16), BitArrayVersion.V2));
                                 section = new ChunkSection((byte) ySection, palettes);
                             }
+                            final int sectionY = ySection;
                             for (int layer = 0; layer < layers; layer++) {
+                                final int currentLayer = layer;
+                                final Supplier<String> locationHint = log.isDebugEnabled()
+                                        ? () -> "level=" + builder.getLevelProvider().getName()
+                                                + " dim=" + dimensionInfo.getDimensionName()
+                                                + " chunk=(" + builder.getChunkX() + "," + builder.getChunkZ() + ")"
+                                                + " sectionY=" + sectionY + " layer=" + currentLayer
+                                        : null;
                                 section.blockLayer()[layer].readFromStoragePersistent(byteBuf, hash -> {
                                     BlockState blockState = Registries.BLOCKSTATE.get(hash);
                                     if (blockState == null) {
                                         return BlockUnknown.PROPERTIES.getDefaultState();
                                     }
                                     return blockState;
-                                });
+                                }, locationHint);
                             }
                             sections[ySection - minSectionY] = section;
                     }

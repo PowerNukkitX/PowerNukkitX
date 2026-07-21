@@ -345,9 +345,8 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -371,8 +370,8 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10),
                                 all(
@@ -416,17 +415,16 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
                                 (entity -> true),
                                 1, 1
                         )
-                ),
-                Set.of(
-                        new NearestPlayerSensor(8, 0, 20)),
-                Set.of(
+                )
+                .sensors(
+                        new NearestPlayerSensor(8, 0, 20))
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }
