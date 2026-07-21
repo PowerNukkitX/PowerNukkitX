@@ -8,6 +8,10 @@ import org.powernukkitx.block.Block;
 public interface TickCachedBlockStore {
     void clearCachedStore();
 
+    default boolean isCachedStoreEmpty() {
+        return false;
+    }
+
     void saveIntoCachedStore(Block block, int x, int y, int z, int layer);
 
     Block getFromCachedStore(int x, int y, int z, int layer);

@@ -123,6 +123,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -733,10 +734,11 @@ public class Level implements Metadatable {
         this.scheduler.mainThreadHeartbeat(this.getTick() + 10000);
         this.server.getLevels().remove(this.levelId);
         LevelProvider levelProvider = this.provider.get();
+        if (levelProvider != null && this.getAutoSave()) {
+            this.save(true);
+        }
+        this.scheduler.close();
         if (levelProvider != null) {
-            if (this.getAutoSave()) {
-                this.save(true);
-            }
             levelProvider.close();
         }
         this.provider.set(null);
@@ -1077,21 +1079,21 @@ public class Level implements Metadatable {
         if (chunkLoadersIndex != null) {
             ChunkLoader oldLoader = chunkLoadersIndex.remove(loaderId);
             if (oldLoader != null) {
-                if (chunkLoadersIndex.isEmpty()) {
+                boolean becameEmpty = chunkLoadersIndex.isEmpty();
+                if (becameEmpty) {
                     this.chunkLoaders.remove(chunkHash);
-                    return this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload);
                 }
 
                 synchronized (this.loaders) {
                     int count = this.loaderCounter.get(loaderId);
-                    if (--count == 0) {
+                    if (--count <= 0) {
                         this.loaderCounter.remove(loaderId);
                         this.loaders.remove(loaderId);
                     } else {
                         this.loaderCounter.put(loaderId, count);
                     }
                 }
-                return true;
+                return becameEmpty ? this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload) : true;
             }
             return false;
         }
@@ -1137,8 +1139,14 @@ public class Level implements Metadatable {
             return;
         }
         synchronized (this.tickCachedBlocks) {
-            for (var each : tickCachedBlocks.values()) {
-                each.clearCachedStore();
+            var iterator = tickCachedBlocks.values().iterator();
+            while (iterator.hasNext()) {
+                var each = iterator.next();
+                if (each.isCachedStoreEmpty()) {
+                    iterator.remove();
+                } else {
+                    each.clearCachedStore();
+                }
             }
         }
     }
@@ -1943,11 +1951,9 @@ public class Level implements Metadatable {
     /** Per-chunk tick work: entity update scheduling, scheduled block updates, random ticks. */
     private void tickChunk(IChunk chunk, int tickSpeed) {
         if (chunk.hasEntities()) {
-            CompletableFuture.runAsync(() -> {
-                for (Entity entity : chunk.getEntities().values()) {
-                    entity.scheduleUpdate();
-                }
-            });
+            for (Entity entity : chunk.getEntities().values()) {
+                entity.scheduleUpdate();
+            }
         }
 
         chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
@@ -2671,20 +2677,34 @@ public class Level implements Metadatable {
 
         int minY = getDimensionData().getMinHeight();
         int maxY = getDimensionData().getMaxHeight();
+        int lcx = x & 0xF;
+        int lcz = z & 0xF;
+        UnsafeChunk unsafeChunk = chunk.isFinished() ? null : new UnsafeChunk((Chunk) chunk);
         int level = 15;
 
-        for (int _y = maxY; _y >= minY; _y--) {
-            Block block = getBlock(x, _y, z);
-            if (!block.isTransparent()) {
+        int _y = maxY;
+        for (; _y >= minY; _y--) {
+            BlockState state = unsafeChunk == null
+                    ? chunk.getBlockState(lcx, _y, lcz, 0)
+                    : unsafeChunk.getBlockState(lcx, _y, lcz, 0);
+            int packed = BlockLightProperties.packed(state);
+            if (!BlockLightProperties.isTransparent(packed)) {
                 level = 0;
-            } else if (block.diffusesSkyLight()) {
+            } else if (BlockLightProperties.diffusesSkyLight(packed)) {
                 level--;
             } else {
-                level -= block.getLightLevel();
+                level -= BlockLightProperties.lightLevel(packed);
             }
-            if (level <= 0) level = 0;
             //if(_y != height && !block.canPassThrough() && block.up().canPassThrough()) addSkyLightUpdate(x, _y+1, z); ToDo: Light Spread
-            setBlockSkyLightAt(x, _y, z, level);
+            if (level <= 0) {
+                level = 0;
+                break;
+            }
+            chunk.setBlockSkyLight(lcx, _y, lcz, level);
+        }
+
+        for (; _y >= minY; _y--) {
+            chunk.setBlockSkyLight(lcx, _y, lcz, 0);
         }
     }
 
@@ -4614,8 +4634,15 @@ public class Level implements Metadatable {
 
 
     public CompletableFuture<IChunk> getChunkAsync(int chunkX, int chunkZ, boolean create) {
+        long index = Level.chunkHash(chunkX, chunkZ);
+        LevelProvider levelProvider = this.provider.get();
+        if (levelProvider != null) {
+            IChunk loaded = levelProvider.getLoadedChunk(index);
+            if (loaded != null) {
+                return CompletableFuture.completedFuture(loaded);
+            }
+        }
         return CompletableFuture.supplyAsync(() -> {
-            long index = Level.chunkHash(chunkX, chunkZ);
             IChunk chunk = this.requireProvider().getLoadedChunk(index);
             if (chunk == null) {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
@@ -5024,37 +5051,83 @@ public class Level implements Metadatable {
         }
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
-            final IChunk chunk = this.getChunk(x, z, true);
-            if (chunk != null && chunk.getChunkState().canSend()) {
-                this.chunkGenerationQueue.remove(index);
-                log.warn("generateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
-                        x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("generateChunk guard triggered"));
-                return;
+            final AtomicBoolean released = new AtomicBoolean(false);
+            boolean scheduled = false;
+            try {
+                final IChunk chunk = this.getChunk(x, z, true);
+                if (chunk == null) {
+                    return;
+                }
+                if (chunk.getChunkState().canSend()) {
+                    log.warn("generateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
+                            x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("generateChunk guard triggered"));
+                    return;
+                }
+                this.generator.asyncGenerate(chunk, (c) -> {
+                    if (released.compareAndSet(false, true)) {
+                        GENERATED_CHUNK_COUNT.incrementAndGet();
+                        chunkGenerationQueue.remove(c.getChunk().getIndex());
+                    }
+                });
+                scheduled = true;
+            } finally {
+                if (!scheduled && released.compareAndSet(false, true)) {
+                    this.chunkGenerationQueue.remove(index);
+                }
             }
-            this.generator.asyncGenerate(chunk, (c) -> {
-                GENERATED_CHUNK_COUNT.incrementAndGet();
-                chunkGenerationQueue.remove(c.getChunk().getIndex());
-            });
         }
     }
 
     public void syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
-        if (isChunkGenerating(x, z) && getChunk(x, z, false).getChunkState() == ChunkState.NEW)
-            removeFromGenerateList(x, z);
-        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
-            IChunk chunk = this.getChunk(x, z, true);
-            if (chunk != null && chunk.getChunkState().canSend()) {
-                this.chunkGenerationQueue.remove(index);
-                log.warn("syncGenerateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
-                        x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("syncGenerateChunk guard triggered"));
-                return;
-            }
-            this.generator.syncGenerate(chunk);
-            GENERATED_CHUNK_COUNT.incrementAndGet();
-            chunkGenerationQueue.remove(index);
+        if (isChunkGenerating(x, z)) {
+            IChunk generating = this.getChunk(x, z, false);
+            if (generating != null && generating.getChunkState() == ChunkState.NEW)
+                removeFromGenerateList(x, z);
         }
-        while (isChunkGenerating(x, z));
+        if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
+            try {
+                IChunk chunk = this.getChunk(x, z, true);
+                if (chunk == null) {
+                    return;
+                }
+                if (chunk.getChunkState().canSend()) {
+                    log.warn("syncGenerateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
+                            x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("syncGenerateChunk guard triggered"));
+                    return;
+                }
+                this.generator.syncGenerate(chunk);
+                GENERATED_CHUNK_COUNT.incrementAndGet();
+            } finally {
+                chunkGenerationQueue.remove(index);
+            }
+            return;
+        }
+        awaitChunkGeneration(x, z);
+    }
+
+    private void awaitChunkGeneration(int x, int z) {
+        final long deadline = System.currentTimeMillis() + 30000L;
+        try {
+            ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker() {
+                @Override
+                public boolean block() throws InterruptedException {
+                    Thread.sleep(1);
+                    return isReleasable();
+                }
+
+                @Override
+                public boolean isReleasable() {
+                    return !isChunkGenerating(x, z) || System.currentTimeMillis() >= deadline;
+                }
+            });
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
+        if (isChunkGenerating(x, z)) {
+            log.warn("Timed out after 30s waiting for the generation of chunk ({}, {}) in level '{}'", x, z, getFolderName());
+        }
     }
 
     private void removeFromGenerateList(int x, int z) {
@@ -5073,12 +5146,16 @@ public class Level implements Metadatable {
             //gcBlockInventoryMetaData
             for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
                 String key = entry.getKey();
-                String[] split = key.split(":");
+                String[] split = key.split(":", 4);
+                if (split.length < 4) {
+                    continue;
+                }
+                String metadataKey = split[3];
                 Map<Plugin, MetadataValue> value = entry.getValue();
-                if (split[3].equals(BlockInventoryHolder.KEY) && value.containsKey(InternalPlugin.INSTANCE)) {
-                    Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                if (metadataKey.equals(BlockInventoryHolder.KEY) && value.containsKey(InternalPlugin.INSTANCE)) {
+                    Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), false);
                     if (!(block instanceof BlockInventoryHolder)) {
-                        this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
+                        this.getBlockMetadata().removeMetadata(block, metadataKey, InternalPlugin.INSTANCE);
                     }
                 }
             }
