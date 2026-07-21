@@ -279,6 +279,7 @@ public class ItemBuilder {
     }
 
     private void applyDataDrivenShorthand(ItemDataDrivenBuilder builder) {
+        // Components
         if (name != null && !name.isBlank()) builder.name(name);
         if (icon != null && !icon.isBlank()) builder.icon(icon);
         builder.maxStackSize(maxStackSize);
@@ -290,12 +291,18 @@ public class ItemBuilder {
         if (useDuration > 0) builder.useDuration(useDuration);
         if (nutrition > 0) builder.food(nutrition, saturation);
         if (canAlwaysEat) builder.canAlwaysEat(true);
-        if (creativeCategory != null) builder.creativeCategory(creativeCategory);
-        if (creativeGroup != null) builder.creativeGroup(creativeGroup);
         if (blockStateName != null && !blockStateName.isBlank()) builder.block(blockStateName);
         if (cooldownTicks > 0) builder.cooldown(cooldownCategory, cooldownTicks);
         if (equipSlot != null && !equipSlot.isBlank()) builder.equippable(equipSlot);
         if (enchantValue > 0) builder.enchantable(enchantValue, enchantSlot);
+
+        // Properties
+        if (creativeCategory != null && !creativeCategory.isBlank()) {
+            builder.creativeCategory(creativeCategory);
+        }
+        if (creativeGroup != null && !creativeGroup.isBlank()) {
+            builder.creativeGroup(creativeGroup);
+        }
     }
 
     private void applyLegacyShorthand(ItemLegacyBuilder builder) {

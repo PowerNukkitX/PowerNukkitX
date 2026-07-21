@@ -11,6 +11,12 @@ import java.util.*;
  * This is the modern approach for custom items, using Bedrock's full component system.
  * Each component is serialized individually and can be inspected/modified at runtime.
  * <p>
+ * The builder separates:
+ * <ul>
+ *   <li><b>Components</b> - Bedrock item components (minecraft:icon, minecraft:max_stack_size, etc.)</li>
+ *   <li><b>Properties</b> - Server-side properties (creative_category, is_hidden_in_commands, etc.)</li>
+ * </ul>
+ * <p>
  * Example:
  * <pre>{@code
  * ItemDataDrivenDefinition def = ItemDataDrivenBuilder.create("myplugin:my_sword")
@@ -28,6 +34,9 @@ import java.util.*;
 public class ItemDataDrivenBuilder {
     private final String identifier;
     private final Map<ItemComponentIds, ItemComponent> components = new LinkedHashMap<>();
+    private final CompoundTag properties = new CompoundTag();
+
+    // Shorthand component values
     private String name = "";
     private String icon = "";
     private int maxStackSize = 64;
@@ -40,14 +49,17 @@ public class ItemDataDrivenBuilder {
     private float nutrition = 0;
     private float saturation = 0;
     private boolean canAlwaysEat = false;
-    private String creativeCategory = "nature";
-    private String creativeGroup = "";
     private String blockStateName = "";
     private int cooldownTicks = 0;
     private String cooldownCategory = "";
-    private String slot = "";
+    private String equipSlot = "";
     private int enchantValue = 0;
     private String enchantSlot = "";
+
+    // Shorthand property values
+    private String creativeCategory = "";
+    private String creativeGroup = "";
+    private boolean hiddenInCommands = false;
 
     private ItemDataDrivenBuilder(String identifier) {
         this.identifier = identifier;
@@ -64,7 +76,7 @@ public class ItemDataDrivenBuilder {
         return new ItemDataDrivenBuilder(identifier);
     }
 
-    // ---- Shorthand methods ----
+    // ---- Component shorthand methods ----
 
     public ItemDataDrivenBuilder name(String name) {
         this.name = name;
@@ -127,16 +139,6 @@ public class ItemDataDrivenBuilder {
         return this;
     }
 
-    public ItemDataDrivenBuilder creativeCategory(String category) {
-        this.creativeCategory = category;
-        return this;
-    }
-
-    public ItemDataDrivenBuilder creativeGroup(String group) {
-        this.creativeGroup = group;
-        return this;
-    }
-
     public ItemDataDrivenBuilder block(String blockStateName) {
         this.blockStateName = blockStateName;
         return this;
@@ -149,7 +151,7 @@ public class ItemDataDrivenBuilder {
     }
 
     public ItemDataDrivenBuilder equippable(String slot) {
-        this.slot = slot;
+        this.equipSlot = slot;
         return this;
     }
 
@@ -159,38 +161,111 @@ public class ItemDataDrivenBuilder {
         return this;
     }
 
+    // ---- Property shorthand methods ----
+
+    /**
+     * Set the creative category (construction, nature, items, equipment).
+     */
+    public ItemDataDrivenBuilder creativeCategory(String category) {
+        this.creativeCategory = category;
+        return this;
+    }
+
+    /**
+     * Set the creative group.
+     */
+    public ItemDataDrivenBuilder creativeGroup(String group) {
+        this.creativeGroup = group;
+        return this;
+    }
+
+    /**
+     * Hide from /give and /replaceitem commands.
+     */
+    public ItemDataDrivenBuilder hiddenInCommands(boolean hidden) {
+        this.hiddenInCommands = hidden;
+        return this;
+    }
+
     // ---- Generic component methods ----
 
+    /**
+     * Add or replace a Bedrock component.
+     */
     public ItemDataDrivenBuilder component(ItemComponent component) {
         components.put(component.getId(), component);
         return this;
     }
 
+    /**
+     * Remove a Bedrock component by ID.
+     */
     public ItemDataDrivenBuilder removeComponent(ItemComponentIds id) {
         components.remove(id);
         return this;
     }
 
+    /**
+     * Check if a Bedrock component is present.
+     */
     public boolean hasComponent(ItemComponentIds id) {
         return components.containsKey(id);
     }
 
+    /**
+     * Get a Bedrock component by ID.
+     */
     @SuppressWarnings("unchecked")
     public <T extends ItemComponent> T getComponent(ItemComponentIds id) {
         return (T) components.get(id);
+    }
+
+    // ---- Generic property methods ----
+
+    /**
+     * Add a server-side property.
+     */
+    public ItemDataDrivenBuilder property(String key, int value) {
+        properties.putInt(key, value);
+        return this;
+    }
+
+    /**
+     * Add a server-side property.
+     */
+    public ItemDataDrivenBuilder property(String key, String value) {
+        properties.putString(key, value);
+        return this;
+    }
+
+    /**
+     * Add a server-side property.
+     */
+    public ItemDataDrivenBuilder property(String key, boolean value) {
+        properties.putBoolean(key, value);
+        return this;
+    }
+
+    /**
+     * Add a server-side property.
+     */
+    public ItemDataDrivenBuilder property(String key, CompoundTag value) {
+        properties.putCompound(key, value);
+        return this;
     }
 
     // ---- Build ----
 
     public ItemDataDrivenDefinition build() {
         CompoundTag componentsNbt = buildComponents();
-        return new ItemDataDrivenDefinition(identifier, componentsNbt);
+        CompoundTag propertiesNbt = buildProperties();
+        return new ItemDataDrivenDefinition(identifier, componentsNbt, propertiesNbt);
     }
 
     private CompoundTag buildComponents() {
         CompoundTag comp = new CompoundTag();
 
-        // Apply shorthand values
+        // Apply shorthand component values
         applyIconComponent(comp);
         applyDisplayNameComponent(comp);
         applyMaxStackSizeComponent(comp);
@@ -201,7 +276,6 @@ public class ItemDataDrivenBuilder {
         applyDamageComponent(comp);
         applyUseDurationComponent(comp);
         applyFoodComponent(comp);
-        applyCreativeCategoryComponent(comp);
         applyBlockComponent(comp);
         applyCooldownComponent(comp);
         applyEquippableComponent(comp);
@@ -216,6 +290,23 @@ public class ItemDataDrivenBuilder {
         }
 
         return comp;
+    }
+
+    private CompoundTag buildProperties() {
+        CompoundTag props = new CompoundTag();
+
+        // Apply shorthand property values
+        if (creativeCategory != null && !creativeCategory.isBlank()) {
+            props.putInt("creative_category", getCategoryId(creativeCategory));
+        }
+        if (creativeGroup != null && !creativeGroup.isBlank()) {
+            props.putString("creative_group", creativeGroup);
+        }
+        if (hiddenInCommands) {
+            props.putByte("is_hidden_in_commands", (byte) 1);
+        }
+
+        return props;
     }
 
     private void applyIconComponent(CompoundTag comp) {
@@ -289,13 +380,6 @@ public class ItemDataDrivenBuilder {
         }
     }
 
-    private void applyCreativeCategoryComponent(CompoundTag comp) {
-        comp.putCompound("minecraft:creative_category",
-                new CompoundTag()
-                        .putString("category", creativeCategory)
-                        .putString("group", creativeGroup));
-    }
-
     private void applyBlockComponent(CompoundTag comp) {
         if (blockStateName != null && !blockStateName.isBlank()) {
             comp.putCompound("minecraft:block",
@@ -313,9 +397,9 @@ public class ItemDataDrivenBuilder {
     }
 
     private void applyEquippableComponent(CompoundTag comp) {
-        if (slot != null && !slot.isBlank()) {
+        if (equipSlot != null && !equipSlot.isBlank()) {
             comp.putCompound("minecraft:equippable",
-                    new CompoundTag().putString("slot", slot));
+                    new CompoundTag().putString("slot", equipSlot));
         }
     }
 
@@ -326,5 +410,15 @@ public class ItemDataDrivenBuilder {
                             .putInt("value", enchantValue)
                             .putString("slot", enchantSlot));
         }
+    }
+
+    private static int getCategoryId(String category) {
+        return switch (category.toLowerCase(Locale.ROOT)) {
+            case "construction" -> 1;
+            case "nature" -> 2;
+            case "items" -> 3;
+            case "equipment" -> 4;
+            default -> 3;
+        };
     }
 }
