@@ -154,9 +154,12 @@ public class PlayerSessionHolder {
         packet.setMessages(new DisconnectPacketMessages(message, ""));
 
         InetSocketAddress address = (InetSocketAddress) this.getSession().getSocketAddress();
-
-        log.info(TextFormat.AQUA + "[Network session disconnected: " + address.getAddress().getHostAddress() + ":" + address.getPort() + "] - " + message);
-
+        
+        String name = (this.player != null ? this.player.getName() : "Unknown");
+        
+        log.info(TextFormat.AQUA + name + TextFormat.WHITE + "["
+                + address.getAddress().getHostAddress() + ":" + address.getPort()
+                + "] - " + message);
         this.session.sendPacketImmediately(packet);
     }
 
