@@ -32,6 +32,7 @@ import org.powernukkitx.inventory.InventorySlice;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemShield;
 import org.powernukkitx.item.ItemTurtleHelmet;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -403,6 +404,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                     this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animatePacket);
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
+                }
+
+                Enchantment[] weaponEnchantments = event.getWeaponEnchantments();
+                if (weaponEnchantments != null) {
+                    double enchantmentBonus = 0;
+                    for (Enchantment enchantment : weaponEnchantments) {
+                        enchantmentBonus += enchantment.getDamageBonus(this, damager);
+                    }
+                    if (enchantmentBonus > 0) {
+                        final AnimatePacket magicCritPacket = new AnimatePacket();
+                        magicCritPacket.setTargetRuntimeID(this.getId());
+                        magicCritPacket.setAction(AnimatePacket.Action.MAGIC_CRITICAL_HIT);
+                        magicCritPacket.setData(55f);
+
+                        this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), magicCritPacket);
+                    }
                 }
 
                 if (damager.isOnFire() && !(damager instanceof Player)) {
