@@ -10,7 +10,7 @@ import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
-public class FlowerForestFoliageFeature extends CountGenerateFeature {
+public class FlowerForestFoliageFeature extends CountGenerateFeature implements Supportable {
 
     public static final String NAME = "minecraft:flower_forest_first_foliage_feature";
 
@@ -97,8 +97,7 @@ public class FlowerForestFoliageFeature extends CountGenerateFeature {
     }
 
     public boolean isSupportValid(Block support) {
-        // BlockGrassPath extends BlockGrassBlock, so exclude it - flowers must not grow on village paths
-        return support instanceof BlockGrassBlock && !(support instanceof BlockGrassPath);
+        return isSupportGrass(support);
     }
 
     @Override

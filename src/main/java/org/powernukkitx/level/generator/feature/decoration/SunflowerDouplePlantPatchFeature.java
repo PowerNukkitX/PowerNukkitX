@@ -10,7 +10,7 @@ import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
-public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature {
+public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature implements Supportable {
 
     private final static BlockState SUNFLOWER_LOWER = BlockSunflower.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(false));
     private final static BlockState SUNFLOWER_UPPER = BlockSunflower.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
@@ -60,8 +60,7 @@ public class SunflowerDouplePlantPatchFeature extends CountGenerateFeature {
     }
 
     public boolean isSupportValid(Block support) {
-        // BlockGrassPath extends BlockGrassBlock, so exclude it - plants must not grow on village paths
-        return support instanceof BlockGrassBlock && !(support instanceof BlockGrassPath);
+        return isSupportGrass(support);
     }
 
     @Override

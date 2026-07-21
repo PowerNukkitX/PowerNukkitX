@@ -13,7 +13,7 @@ import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BiomeTags;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
-public class ForestFlowerFoliageFeature extends CountGenerateFeature {
+public class ForestFlowerFoliageFeature extends CountGenerateFeature implements Supportable {
 
     public static final String NAME = "minecraft:forest_first_foliage_feature";
 
@@ -84,8 +84,7 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
     }
 
     public boolean isSupportValid(Block support) {
-        // BlockGrassPath extends BlockGrassBlock, so exclude it - flowers must not grow on village paths
-        return support instanceof BlockGrassBlock && !(support instanceof BlockGrassPath) &&
+        return isSupportGrass(support) &&
                 Registries.BIOME.containsTag(BiomeTags.FOREST, support.getLevel().getBiomeId(
                         support.getFloorX(),
                         support.getFloorY(),
