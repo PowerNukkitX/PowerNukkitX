@@ -152,6 +152,7 @@ import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.network.primitiveshape.PrimitiveShapes;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.permission.PermissibleBase;
@@ -5983,7 +5984,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public List<Integer> sendDebugShape(ShapeDataPayload... shapes) {
+    public List<Integer> sendPrimitiveShape(ShapeDataPayload... shapes) {
         List<Integer> ids = new ArrayList<>();
 
         for (ShapeDataPayload shapeDataPayload : shapes) {
@@ -5999,7 +6000,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return ids;
     }
 
-    public int sendDebugShape(ShapeDataPayload shape) {
+    public int sendPrimitiveShape(ShapeDataPayload shape) {
         final int id = this.shapeIds.getAndIncrement();
         shape.setNetworkId(id);
 
@@ -6010,7 +6011,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return id;
     }
 
-    public void updateDebugShape(int id, ShapeDataPayload shape) {
+    public void updatePrimitiveShape(int id, ShapeDataPayload shape) {
         shape.setNetworkId(id);
 
         final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
@@ -6019,9 +6020,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(packet);
     }
 
-    public void removeDebugShape(int id) {
+    public void removePrimitiveShape(int id) {
         final ShapeDataPayload shape = new ShapeDataPayload();
         shape.setNetworkId(id);
+        shape.setExtraShapeData(PrimitiveShapes.REMOVAL_EXTRA);
 
         final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
         packet.getShapes().add(shape);
@@ -6029,12 +6031,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(packet);
     }
 
-    public void clearDebugShapes() {
+    public void clearPrimitiveShapes() {
         List<ShapeDataPayload> shapes = new ArrayList<>();
 
         for (int i = 0; i < shapeIds.get(); i++) {
             final ShapeDataPayload shape = new ShapeDataPayload();
             shape.setNetworkId(i);
+            shape.setExtraShapeData(PrimitiveShapes.REMOVAL_EXTRA);
             shapes.add(shape);
         }
 
