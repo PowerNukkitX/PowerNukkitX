@@ -23,6 +23,7 @@ import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
+import org.powernukkitx.utils.StructureRotationUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -506,7 +507,7 @@ public class Structure extends AbstractStructure {
                             }
                         }
 
-                        rotatedStates[layer][rx][y][rz] = state;
+                        rotatedStates[layer][rx][y][rz] = rotateBlockState(state, rotation);
                     }
                 }
             }
@@ -577,7 +578,7 @@ public class Structure extends AbstractStructure {
                             }
                         }
 
-                        mirroredStates[layer][mx][y][mz] = state;
+                        mirroredStates[layer][mx][y][mz] = mirrorBlockState(state, mirror);
                     }
                 }
             }
@@ -609,6 +610,37 @@ public class Structure extends AbstractStructure {
 
         return new Structure(mirroredStates, mirroredBlockEntities, mirroredEntities,
                 sizeX, sizeY, sizeZ, x, y, z);
+    }
+
+    private static BlockState rotateBlockState(BlockState state, Rotation rotation) {
+        if (state == null || !hasTransformableState(state)) {
+            return state;
+        }
+        return switch (rotation) {
+            case ROTATE_90 -> StructureRotationUtil.counterclockwise90(state);
+            case ROTATE_180 -> StructureRotationUtil.clockwise180(state);
+            case ROTATE_270 -> StructureRotationUtil.clockwise90(state);
+            default -> state;
+        };
+    }
+
+    private static BlockState mirrorBlockState(BlockState state, Mirror mirror) {
+        if (state == null || !hasTransformableState(state)) {
+            return state;
+        }
+        return switch (mirror) {
+            case X -> StructureRotationUtil.mirrorX(state);
+            case Z -> StructureRotationUtil.mirrorZ(state);
+            case XZ -> StructureRotationUtil.clockwise180(state);
+            default -> state;
+        };
+    }
+
+    private static boolean hasTransformableState(BlockState state) {
+        return state != STATE_AIR
+                && state != STATE_STRUCTURE_VOID
+                && state != STATE_UNKNOWN
+                && !state.equals(STRUCTURE_VOID_DEFAULT_STATE);
     }
 
     private CompoundTag rotateBlockEntityData(CompoundTag blockPositionData, Rotation rotation) {
