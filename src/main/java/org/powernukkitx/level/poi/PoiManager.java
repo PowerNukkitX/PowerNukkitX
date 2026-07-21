@@ -7,8 +7,8 @@ import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
+import org.powernukkitx.utils.ChunkPos;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Per-level point-of-interest index (vanilla {@code PoiManager} transposed).
@@ -90,17 +92,17 @@ public class PoiManager {
     }
 
     public Optional<PoiRecord> findClosest(Predicate<PoiType> typePredicate, Vector3 center, int radius, Occupancy occupancy) {
-        return getInRange(typePredicate, center, radius, occupancy).stream()
+        return getInRange(typePredicate, center, radius, occupancy)
                 .min(Comparator.comparingDouble(record -> record.getPos().distanceSquared(center)));
     }
 
-    public List<PoiRecord> getInRange(Predicate<PoiType> typePredicate, Vector3 center, int radius, Occupancy occupancy) {
+    public Stream<PoiRecord> getInSquare(Predicate<PoiType> typePredicate, Vector3 center, int radius, Occupancy occupancy) {
         List<PoiRecord> result = new ArrayList<>();
         DimensionData dimension = level.getDimensionData();
+        int chunkRadius = (radius >> 4) + 1;
         int centerX = center.getFloorX();
         int centerY = center.getFloorY();
         int centerZ = center.getFloorZ();
-        int chunkRadius = (radius >> 4) + 1;
         int centerChunkX = centerX >> 4;
         int centerChunkZ = centerZ >> 4;
         int minChunkX = centerChunkX - chunkRadius;
@@ -122,13 +124,24 @@ public class PoiManager {
                 }
             }
         }
-        for (PoiRecord record : candidates) {
+        return ChunkPos.rangeClosed(ChunkPos.containing(center), chunkRadius).flatMap(chunkPos -> getInChunk(typePredicate, chunkPos.x(), chunkPos.z(), occupancy)).filter((record) -> {
             BlockVector3 pos = record.getPos();
-            if (Math.abs(pos.x - centerX) <= radius && Math.abs(pos.y - centerY) <= radius && Math.abs(pos.z - centerZ) <= radius) {
-                result.add(record);
-            }
-        }
-        return result;
+            return Math.abs(pos.x - center.x) <= radius && Math.abs(pos.z - center.z) <= radius;
+        });
+    }
+
+
+    public Stream<PoiRecord> getInRange(final Predicate<PoiType> predicate, final Vector3 center, final int radius, final Occupancy occupancy) {
+        int radiusSqr = radius * radius;
+        return this.getInSquare(predicate, center, radius, occupancy).filter((r) -> r.getPos().distanceSquared(center) <= radiusSqr);
+    }
+    public Stream<PoiRecord> getInChunk(Predicate<PoiType> typePredicate, int chunkX, int chunkZ, Occupancy occupancy) {
+        DimensionData dimension = level.getDimensionData();
+        return IntStream.rangeClosed(dimension.getMinSectionY(), dimension.getMaxSectionY())
+                .boxed()
+                .map(sectionY -> getOrScan(chunkX, sectionY, chunkZ))
+                .filter(section -> section != null && !section.isEmpty())
+                .flatMap(section -> section.getRecords(typePredicate, occupancy));
     }
 
     public Optional<PoiType> getType(BlockVector3 pos) {

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * POI index of one 16x16x16 chunk section. Keyed by section-relative position,
@@ -170,5 +171,9 @@ public final class PoiSection {
             section.addLoaded(pos, type, recordTag.getInt("freeTickets"));
         }
         return section;
+    }
+
+    public Stream<? extends PoiRecord> getRecords(Predicate<PoiType> typePredicate, PoiManager.Occupancy occupancy) {
+        return byType.entrySet().stream().filter(entry -> typePredicate.test(entry.getKey())).flatMap(entry -> entry.getValue().stream()).filter(occupancy.getTest());
     }
 }
