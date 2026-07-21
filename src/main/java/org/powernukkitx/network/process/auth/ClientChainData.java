@@ -52,7 +52,7 @@ public class ClientChainData {
         if (map.isEmpty()) {
             return null;
         }
-        if (!map.containsKey("ClientRandomId") || !(map.get("ClientRandomId") instanceof Long clientRandomId)) {
+        if (!map.containsKey("ClientRandomId") || !(map.get("ClientRandomId") instanceof Number clientRandomId)) {
             return null;
         }
         if (!map.containsKey("CompatibleWithClientSideChunkGen") ||
@@ -141,12 +141,17 @@ public class ClientChainData {
                         map.get("Waterdog_IP").toString(),
                         map.get("Waterdog_XUID").toString()
                 );
-        if (!map.containsKey("ClientEditorConnectionIntent")) {
-            return null;
+        final int clientEditorConnectionIntent;
+        if (map.containsKey("ClientEditorConnectionIntent")) {
+            if (!(map.get("ClientEditorConnectionIntent") instanceof Number intent)) {
+                return null;
+            }
+            clientEditorConnectionIntent = intent.intValue();
+        } else {
+            clientEditorConnectionIntent = 0;
         }
-        final int clientEditorConnectionIntent = ((Number) map.get("ClientEditorConnectionIntent")).intValue();
         return new ClientChainData(
-                clientRandomId,
+                clientRandomId.longValue(),
                 compatibleWithClientSideChunkGen,
                 currentInputMode,
                 defaultInputMode,

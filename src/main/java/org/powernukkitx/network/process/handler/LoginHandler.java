@@ -67,19 +67,27 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
-        if (xboxAuthRequired && (packet.getToken() == null || packet.getToken().isEmpty())) {
+        final String token = packet.getToken();
+        if (isBlank(token)) {
             holder.disconnect(notAuthenticated);
             return;
         }
 
         try {
-            final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
+            final ChainValidationResult result = EncryptionUtils.validateToken(type, token);
             if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
                 holder.disconnect(notAuthenticated);
                 return;
             }
 
             final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
+            if (!isValidIdentityClaims(identityClaims)) {
+                holder.disconnect(notAuthenticated);
+                return;
+            }
+            final String playerName = identityClaims.extraData.displayName;
+            final String playerNameKey = playerName.toLowerCase(Locale.ENGLISH);
+
             final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
             server.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -92,12 +100,12 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 return;
             }
 
-            if (!server.isWhitelisted(identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH))) {
+            if (!server.isWhitelisted(playerNameKey)) {
                 holder.disconnect(DisconnectFailReason.NOT_ALLOWED);
                 return;
             }
 
-            var entry = server.getNameBans().getEntires().get(identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH));
+            var entry = server.getNameBans().getEntires().get(playerNameKey);
             if (entry != null) {
                 String reason = entry.getReason();
                 holder.disconnect(DisconnectFailReason.UNKNOWN, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
@@ -138,9 +146,26 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
     }
 
+    private static boolean isValidIdentityClaims(ChainValidationResult.IdentityClaims identityClaims) {
+        if (identityClaims == null || identityClaims.extraData == null) {
+            return false;
+        }
+        if (isBlank(identityClaims.extraData.displayName) || identityClaims.extraData.displayName.length() > 32) {
+            return false;
+        }
+        return !isBlank(identityClaims.identityPublicKey);
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
     private ClientJwtValidationResult validateClientJwt(LoginPacket packet, PublicKey identityPublicKey) {
+        if (identityPublicKey == null) {
+            return ClientJwtValidationResult.INVALID;
+        }
         final String clientJwt = packet.getClientJwt();
-        if (clientJwt == null || clientJwt.isEmpty()) {
+        if (isBlank(clientJwt)) {
             return ClientJwtValidationResult.INVALID;
         }
         try {
