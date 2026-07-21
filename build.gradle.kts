@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
+    implementation(libs.pnxgamedata)
     implementation(libs.bedrock.connection)
     implementation(libs.commonslang3)
     implementation(libs.caffeine)
