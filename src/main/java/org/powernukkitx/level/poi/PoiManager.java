@@ -48,8 +48,6 @@ public class PoiManager {
         }
     }
 
-    private static final String EXTRA_DATA_KEY = "PNXPoi";
-
     private final Level level;
     private final ConcurrentHashMap<Long, PoiSection> sections = new ConcurrentHashMap<>();
 
@@ -72,7 +70,7 @@ public class PoiManager {
         if (oldType == newType) {
             return;
         }
-        PoiSection section = sections.get(sectionKey(x >> 4, y >> 4, z >> 4));
+        PoiSection section = this.sections.get(sectionKey(x >> 4, y >> 4, z >> 4));
         if (section == null) {
             return;
         }
@@ -93,7 +91,7 @@ public class PoiManager {
 
     public Optional<PoiRecord> findClosest(Predicate<PoiType> typePredicate, Vector3 center, int radius, Occupancy occupancy) {
         return getInRange(typePredicate, center, radius, occupancy).stream()
-                .min(Comparator.comparingDouble(record -> distanceSquared(record.getPos(), center)));
+                .min(Comparator.comparingDouble(record -> record.getPos().distanceSquared(center)));
     }
 
     public List<PoiRecord> getInRange(Predicate<PoiType> typePredicate, Vector3 center, int radius, Occupancy occupancy) {
@@ -105,12 +103,16 @@ public class PoiManager {
         int chunkRadius = (radius >> 4) + 1;
         int centerChunkX = centerX >> 4;
         int centerChunkZ = centerZ >> 4;
+        int minChunkX = centerChunkX - chunkRadius;
+        int maxChunkX = centerChunkX + chunkRadius;
+        int minChunkZ = centerChunkZ - chunkRadius;
+        int maxChunkZ = centerChunkZ + chunkRadius;
         int minSectionY = Math.max(dimension.getMinSectionY(), (centerY - radius) >> 4);
         int maxSectionY = Math.min(dimension.getMaxSectionY(), (centerY + radius) >> 4);
 
         List<PoiRecord> candidates = new ArrayList<>();
-        for (int chunkX = centerChunkX - chunkRadius; chunkX <= centerChunkX + chunkRadius; chunkX++) {
-            for (int chunkZ = centerChunkZ - chunkRadius; chunkZ <= centerChunkZ + chunkRadius; chunkZ++) {
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 for (int sectionY = minSectionY; sectionY <= maxSectionY; sectionY++) {
                     PoiSection section = getOrScan(chunkX, sectionY, chunkZ);
                     if (section == null || section.isEmpty()) {
@@ -152,7 +154,7 @@ public class PoiManager {
     }
 
     public void release(BlockVector3 pos) {
-        PoiSection section = sections.get(sectionKey(pos.x >> 4, pos.y >> 4, pos.z >> 4));
+        PoiSection section = this.sections.get(sectionKey(pos.x >> 4, pos.y >> 4, pos.z >> 4));
         if (section != null) {
             PoiRecord record = section.get(pos.x & 0xF, pos.y & 0xF, pos.z & 0xF);
             if (record != null) {
@@ -167,41 +169,6 @@ public class PoiManager {
     }
 
     /**
-     * Writes the dirty sections of a chunk into its extra data compound so they are
-     * persisted with the chunk (called from the chunk serializer). Sections never
-     * loaded into the manager keep their previously stored data untouched.
-     */
-    public void flushToChunk(int chunkX, int chunkZ, @Nullable CompoundTag extraData) {
-        if (extraData == null) {
-            return;
-        }
-        DimensionData dimension = level.getDimensionData();
-        CompoundTag poiTag = extraData.contains(EXTRA_DATA_KEY) ? extraData.getCompound(EXTRA_DATA_KEY) : new CompoundTag();
-        boolean changed = false;
-        for (int sectionY = dimension.getMinSectionY(); sectionY <= dimension.getMaxSectionY(); sectionY++) {
-            PoiSection section = sections.get(sectionKey(chunkX, sectionY, chunkZ));
-            if (section == null || !section.isDirty()) {
-                continue;
-            }
-            section.clearDirty();
-            String key = "s" + sectionY;
-            if (section.isEmpty()) {
-                poiTag.remove(key);
-            } else {
-                poiTag.putCompound(key, section.pack());
-            }
-            changed = true;
-        }
-        if (changed) {
-            if (poiTag.getTags().isEmpty()) {
-                extraData.remove(EXTRA_DATA_KEY);
-            } else {
-                extraData.putCompound(EXTRA_DATA_KEY, poiTag);
-            }
-        }
-    }
-
-    /**
      * Idempotent claim used to re-validate an entity memory (e.g. after a chunk reload).
      */
     public boolean ensureTicket(BlockVector3 pos) {
@@ -211,29 +178,13 @@ public class PoiManager {
 
     private @Nullable PoiSection getOrScan(int chunkX, int sectionY, int chunkZ) {
         long key = sectionKey(chunkX, sectionY, chunkZ);
-        PoiSection existing = sections.get(key);
+        PoiSection existing = this.sections.get(key);
         if (existing != null) {
             return existing;
         }
-        IChunk chunk = level.getChunkIfLoaded(chunkX, chunkZ);
+        IChunk chunk = this.level.getChunkIfLoaded(chunkX, chunkZ);
         if (chunk == null) {
             return null;
-        }
-        return sections.computeIfAbsent(key, k -> loadSection(chunk, chunkX, sectionY, chunkZ));
-    }
-
-    private PoiSection loadSection(IChunk chunk, int chunkX, int sectionY, int chunkZ) {
-        CompoundTag extraData = chunk.getExtraData();
-        if (extraData != null && extraData.contains(EXTRA_DATA_KEY)) {
-            CompoundTag poiTag = extraData.getCompound(EXTRA_DATA_KEY);
-            String key = "s" + sectionY;
-            if (poiTag.contains(key)) {
-                PoiSection section = PoiSection.unpack(poiTag.getCompound(key));
-                if (!section.isValid()) {
-                    refresh(chunk, chunkX, sectionY, chunkZ, section);
-                }
-                return section;
-            }
         }
         return scan(chunk, chunkX, sectionY, chunkZ);
     }
@@ -247,7 +198,7 @@ public class PoiManager {
         for (PoiRecord record : section.allRecords()) {
             old.put(record.getPos(), record);
         }
-        section.clearRecords();
+        this.sections.remove(sectionKey(chunkX, sectionY, chunkZ));
         PoiSection scanned = scan(chunk, chunkX, sectionY, chunkZ);
         for (PoiRecord record : scanned.allRecords()) {
             PoiRecord previous = old.get(record.getPos());
@@ -289,12 +240,5 @@ public class PoiManager {
             // onBlockChange keeps the section consistent from here on
         }
         return section;
-    }
-
-    private static double distanceSquared(BlockVector3 pos, Vector3 center) {
-        double dx = pos.x + 0.5 - center.x;
-        double dy = pos.y + 0.5 - center.y;
-        double dz = pos.z + 0.5 - center.z;
-        return dx * dx + dy * dy + dz * dz;
     }
 }

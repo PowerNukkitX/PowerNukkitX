@@ -74,10 +74,6 @@ public class LevelDBChunkSerializer {
             serializeHeightAndBiome(writeBatch, unsafeChunk);
             serializeLight(writeBatch, unsafeChunk);
             serializeBlockTicks(unsafeChunk);
-            if (unsafeChunk.getProvider() != null && unsafeChunk.getProvider().getLevel() != null) {
-                unsafeChunk.getProvider().getLevel().getPoiManager()
-                        .flushToChunk(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getExtraData());
-            }
             writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), this.writeBigEndian(unsafeChunk.getExtraData()));
         });
 
