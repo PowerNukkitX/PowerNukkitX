@@ -20,8 +20,6 @@ import java.util.stream.Stream;
  * with a per-type inverted index for fast type queries. Instances are read from
  * AI worker threads and written from the main thread, hence the coarse lock.
  * <p>
- * Sections serialize to NBT ({@link #pack()} / {@link #unpack(CompoundTag)}) and are
- * persisted inside the chunk's extra data. {@code dirty} tracks unsaved changes
  * (including ticket moves); {@code valid} is false when the stored data cannot be
  * trusted (format change) and the section must be rebuilt from the blocks.
  */
@@ -136,41 +134,6 @@ public final class PoiSection {
 
     public void setValid(boolean valid) {
         this.valid = valid;
-    }
-
-    public synchronized CompoundTag pack() {
-        CompoundTag tag = new CompoundTag();
-        tag.putByte("Version", FORMAT_VERSION);
-        tag.putBoolean("Valid", valid);
-        ListTag<CompoundTag> list = new ListTag<>();
-        for (PoiRecord record : records.values()) {
-            list.add(new CompoundTag()
-                    .putInt("x", record.getPos().x)
-                    .putInt("y", record.getPos().y)
-                    .putInt("z", record.getPos().z)
-                    .putString("type", record.getType().name())
-                    .putInt("freeTickets", record.getFreeTickets()));
-        }
-        tag.putList("Records", list);
-        return tag;
-    }
-
-    /**
-     * Records whose type is unknown (removed profession/plugin) are dropped; a format
-     * version mismatch yields an invalid section that will be rebuilt from the blocks.
-     */
-    public static PoiSection unpack(CompoundTag tag) {
-        boolean sameVersion = tag.getByte("Version") == FORMAT_VERSION;
-        PoiSection section = new PoiSection(sameVersion && tag.getBoolean("Valid"));
-        for (CompoundTag recordTag : tag.getList("Records", CompoundTag.class).getAll()) {
-            PoiType type = PoiTypeRegistry.byName(recordTag.getString("type"));
-            if (type == null) {
-                continue;
-            }
-            BlockVector3 pos = new BlockVector3(recordTag.getInt("x"), recordTag.getInt("y"), recordTag.getInt("z"));
-            section.addLoaded(pos, type, recordTag.getInt("freeTickets"));
-        }
-        return section;
     }
 
     public Stream<? extends PoiRecord> getRecords(Predicate<PoiType> typePredicate, PoiManager.Occupancy occupancy) {
