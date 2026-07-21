@@ -69,7 +69,8 @@ public class ScatterPlainsFlowerFeature extends CountGenerateFeature {
     }
 
     public boolean isSupportValid(Block support) {
-        return support instanceof BlockGrassBlock;
+        // BlockGrassPath extends BlockGrassBlock, so exclude it - flowers must not grow on village paths
+        return support instanceof BlockGrassBlock && !(support instanceof BlockGrassPath);
     }
 
     @Override
