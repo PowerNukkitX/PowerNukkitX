@@ -101,12 +101,10 @@ public class Structure extends AbstractStructure {
                     blockStates[1][lx][ly][lz] = dimension.getBlockStateAt(x + lx, y + ly, z + lz, 1);
                     final BlockEntity blockEntity = dimension.getBlockEntity(new Vector3(x + lx, y + ly, z + lz));
                     if (blockEntity != null) {
-                        CompoundTag blockEntityData = blockEntity.getCleanedNBT();
-                        if (blockEntityData == null) {
-                            blockEntityData = new CompoundTag();
-                        }
+                        blockEntity.saveNBT();
+                        final CompoundTag blockEntityData = blockEntity.getNbt().copy();
                         blockEntityData.putString("id", blockEntity.getSaveId());
-                        CompoundTag blockPositionData = new CompoundTag();
+                        final CompoundTag blockPositionData = new CompoundTag();
                         blockPositionData.putCompound("block_entity_data", blockEntityData);
                         blockEntities.put(new Vector3(lx, ly, lz), blockPositionData);
                     }
@@ -249,25 +247,41 @@ public class Structure extends AbstractStructure {
         preparePlace(pos, blockManager);
         blockManager.applySubChunkUpdate();
 
+        final int deltaX = pos.getFloorX() - this.x;
+        final int deltaY = pos.getFloorY() - this.y;
+        final int deltaZ = pos.getFloorZ() - this.z;
+
         for (var entry : blockEntities.entrySet()) {
-            int newPosX = (entry.getKey().getFloorX() + pos.getFloorX());
-            int newPosY = (entry.getKey().getFloorY() + pos.getFloorY());
-            int newPosZ = (entry.getKey().getFloorZ() + pos.getFloorZ());
-
-            final BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
-            if (blockEntity != null) {
-                blockEntity.getLevel().removeBlockEntity(blockEntity);
-            }
-
-            final CompoundTag oldNbt = entry.getValue().getCompound("block_entity_data");
-            if (oldNbt.getString("id").isEmpty()) {
+            final CompoundTag storedData = entry.getValue().getCompound("block_entity_data");
+            if (storedData.getString("id").isEmpty()) {
                 continue;
             }
-            oldNbt.putInt("x", newPosX);
-            oldNbt.putInt("y", newPosY);
-            oldNbt.putInt("z", newPosZ);
 
-            BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(newPosX, newPosY, newPosZ, pos.getLevel()), oldNbt);
+            final int newPosX = storedData.contains("x") ?
+                storedData.getInt("x") + deltaX : entry.getKey().getFloorX() + pos.getFloorX();
+            final int newPosY = storedData.contains("y") ?
+                storedData.getInt("y") + deltaY : entry.getKey().getFloorY() + pos.getFloorY();
+            final int newPosZ = storedData.contains("z") ?
+                storedData.getInt("z") + deltaZ : entry.getKey().getFloorZ() + pos.getFloorZ();
+
+            final BlockEntity existing = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
+            if (existing != null) {
+                existing.getLevel().removeBlockEntity(existing);
+            }
+
+            final CompoundTag newNbt = storedData.copy();
+            newNbt.putInt("x", newPosX);
+            newNbt.putInt("y", newPosY);
+            newNbt.putInt("z", newPosZ);
+
+            if (newNbt.contains("pairx")) {
+                newNbt.putInt("pairx", newNbt.getInt("pairx") + deltaX);
+            }
+            if (newNbt.contains("pairz")) {
+                newNbt.putInt("pairz", newNbt.getInt("pairz") + deltaZ);
+            }
+
+            BlockEntity.createBlockEntity(newNbt.getString("id"), new Position(newPosX, newPosY, newPosZ, pos.getLevel()), newNbt);
         }
 
         if(!includeEntities) {
@@ -442,11 +456,11 @@ public class Structure extends AbstractStructure {
 
         nbt.putCompound("structure", structureNBT);
 
-        // Set structure_world_origin (using 0, 0, 0)
+        // Set structure_world_origin to the world position the structure was captured at
         ListTag<IntTag> originList = new ListTag<>();
-        originList.add(new IntTag(0));
-        originList.add(new IntTag(0));
-        originList.add(new IntTag(0));
+        originList.add(new IntTag(this.x));
+        originList.add(new IntTag(this.y));
+        originList.add(new IntTag(this.z));
         nbt.putList("structure_world_origin", originList);
 
         return nbt;
@@ -521,7 +535,7 @@ public class Structure extends AbstractStructure {
                 }
             }
 
-            rotatedBlockEntities.put(new Vector3(rx, y, rz), entry.getValue());
+            rotatedBlockEntities.put(new Vector3(rx, y, rz), rotateBlockEntityData(entry.getValue(), rotation));
         }
 
         List<CompoundTag> rotatedEntities = new ArrayList<>(entities);
@@ -588,12 +602,80 @@ public class Structure extends AbstractStructure {
                 }
             }
 
-            mirroredBlockEntities.put(new Vector3(mx, y, mz), entry.getValue());
+            mirroredBlockEntities.put(new Vector3(mx, y, mz), mirrorBlockEntityData(entry.getValue(), mirror));
         }
 
         List<CompoundTag> mirroredEntities = new ArrayList<>(entities);
 
         return new Structure(mirroredStates, mirroredBlockEntities, mirroredEntities,
                 sizeX, sizeY, sizeZ, x, y, z);
+    }
+
+    private CompoundTag rotateBlockEntityData(CompoundTag blockPositionData, Rotation rotation) {
+        final CompoundTag copy = blockPositionData.copy();
+        final CompoundTag data = copy.getCompound("block_entity_data");
+        if (data.contains("x") && data.contains("z")) {
+            rotateCoordPair(data, "x", "z", rotation);
+        }
+        if (data.contains("pairx") && data.contains("pairz")) {
+            rotateCoordPair(data, "pairx", "pairz", rotation);
+        }
+        return copy;
+    }
+
+    private void rotateCoordPair(CompoundTag data, String xKey, String zKey, Rotation rotation) {
+        final int relX = data.getInt(xKey) - this.x;
+        final int relZ = data.getInt(zKey) - this.z;
+        int rx = relX;
+        int rz = relZ;
+        switch (rotation) {
+            case ROTATE_90 -> {
+                rx = relZ;
+                rz = sizeX - 1 - relX;
+            }
+            case ROTATE_180 -> {
+                rx = sizeX - 1 - relX;
+                rz = sizeZ - 1 - relZ;
+            }
+            case ROTATE_270 -> {
+                rx = sizeZ - 1 - relZ;
+                rz = relX;
+            }
+            default -> {
+            }
+        }
+        data.putInt(xKey, this.x + rx);
+        data.putInt(zKey, this.z + rz);
+    }
+
+    private CompoundTag mirrorBlockEntityData(CompoundTag blockPositionData, Mirror mirror) {
+        final CompoundTag copy = blockPositionData.copy();
+        final CompoundTag data = copy.getCompound("block_entity_data");
+        if (data.contains("x") && data.contains("z")) {
+            mirrorCoordPair(data, "x", "z", mirror);
+        }
+        if (data.contains("pairx") && data.contains("pairz")) {
+            mirrorCoordPair(data, "pairx", "pairz", mirror);
+        }
+        return copy;
+    }
+
+    private void mirrorCoordPair(CompoundTag data, String xKey, String zKey, Mirror mirror) {
+        final int relX = data.getInt(xKey) - this.x;
+        final int relZ = data.getInt(zKey) - this.z;
+        int mx = relX;
+        int mz = relZ;
+        switch (mirror) {
+            case X -> mx = sizeX - 1 - relX;
+            case Z -> mz = sizeZ - 1 - relZ;
+            case XZ -> {
+                mx = sizeX - 1 - relX;
+                mz = sizeZ - 1 - relZ;
+            }
+            default -> {
+            }
+        }
+        data.putInt(xKey, this.x + mx);
+        data.putInt(zKey, this.z + mz);
     }
 }
