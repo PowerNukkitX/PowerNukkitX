@@ -117,16 +117,15 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVa
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new LoveTimeoutExecutor(20 * 30),
                             e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
                         3, 1
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
                         new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
@@ -151,18 +150,17 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVa
                             (entity -> true),
                         1, 1
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                     new HoppingController(5),
                     new LookController(true, true),
                     new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

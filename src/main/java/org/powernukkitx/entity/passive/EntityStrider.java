@@ -484,9 +484,8 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -502,8 +501,8 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new PlaySoundExecutor(Sound.MOB_STRIDER_IDLE), new RandomSoundEvaluator(), 8, 1),
                         new Behavior(
@@ -572,19 +571,18 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                                 (entity -> true),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new FollowEntitySensor(6f, 2f),
                         new StriderLavaSensor(24, 200),
                         new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true)
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }
