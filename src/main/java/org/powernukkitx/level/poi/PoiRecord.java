@@ -22,7 +22,7 @@ public final class PoiRecord {
         this.pos = pos;
         this.type = type;
         this.setDirty = setDirty;
-        this.freeTickets = Math.max(0, Math.min(freeTickets, type.maxTickets()));
+        this.freeTickets = Math.clamp(freeTickets, 0, type.maxTickets());
     }
 
     public BlockVector3 getPos() {
