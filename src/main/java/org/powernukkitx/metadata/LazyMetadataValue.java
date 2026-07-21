@@ -1,7 +1,7 @@
 package org.powernukkitx.metadata;
 
 import org.powernukkitx.plugin.Plugin;
-import com.dfsek.terra.lib.commons.lang3.Validate;
+import org.apache.commons.lang3.Validate;
 
 import java.lang.ref.SoftReference;
 import java.util.concurrent.Callable;
