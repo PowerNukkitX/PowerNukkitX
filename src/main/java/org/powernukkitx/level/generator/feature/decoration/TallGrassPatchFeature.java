@@ -1,8 +1,6 @@
 package org.powernukkitx.level.generator.feature.decoration;
 
 import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockID;
-import org.powernukkitx.block.BlockSnowLayer;
 import org.powernukkitx.block.BlockShortGrass;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Position;
@@ -18,7 +16,6 @@ import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.
 public class TallGrassPatchFeature extends SurfaceGenerateFeature {
 
     private static final BlockState STATE = BlockShortGrass.PROPERTIES.getDefaultState();
-    private static final BlockState SNOW_LAYER_STATE = BlockSnowLayer.PROPERTIES.getDefaultState();
 
     public static final String NAME = "minecraft:scatter_tall_grass_feature";
 
@@ -49,7 +46,7 @@ public class TallGrassPatchFeature extends SurfaceGenerateFeature {
 
         BlockManager manager = new BlockManager(chunk.getLevel());
         Block above = manager.getBlockIfCachedOrLoaded(worldX, y + 1, worldZ);
-        if (!above.isAir() && !above.getId().equals(BlockID.SNOW_LAYER)) {
+        if (!above.isAir()) {
             return;
         }
 
@@ -60,13 +57,6 @@ public class TallGrassPatchFeature extends SurfaceGenerateFeature {
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
-        if (manager.getBlockIdAt(x, y, z).equals(BlockID.SNOW_LAYER)) {
-            if (manager.getBlockIdAt(x, y, z, 1).equals(BlockID.AIR)) {
-                manager.setBlockStateAt(x, y, z, SNOW_LAYER_STATE);
-                manager.getLevel().setBlockStateAt(x, y, z, 1, STATE);
-            }
-            return;
-        }
         manager.setBlockStateAt(x, y, z, STATE);
     }
 
