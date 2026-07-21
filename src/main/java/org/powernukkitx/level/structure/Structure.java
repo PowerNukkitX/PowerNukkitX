@@ -99,14 +99,16 @@ public class Structure extends AbstractStructure {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     blockStates[0][lx][ly][lz] = dimension.getBlockStateAt(x + lx, y + ly, z + lz, 0);
                     blockStates[1][lx][ly][lz] = dimension.getBlockStateAt(x + lx, y + ly, z + lz, 1);
-                    BlockEntity blockEntity = dimension.getBlockEntity(new Vector3(x + lx, y + ly, z + lz));
+                    final BlockEntity blockEntity = dimension.getBlockEntity(new Vector3(x + lx, y + ly, z + lz));
                     if (blockEntity != null) {
-                        // Vanilla save the original position data for block entity (and entity),
-                        // which is useless as when we place the structure in different position,
-                        // the old position data is not useful anymore. However, we still save it
-                        // to follow the vanilla behavior for best compatibility.
-                        blockEntity.saveNBT();
-                        blockEntities.put(new Vector3(lx, ly, lz), blockEntity.getCleanedNBT().putString("id", blockEntity.getSaveId()));
+                        CompoundTag blockEntityData = blockEntity.getCleanedNBT();
+                        if (blockEntityData == null) {
+                            blockEntityData = new CompoundTag();
+                        }
+                        blockEntityData.putString("id", blockEntity.getSaveId());
+                        CompoundTag blockPositionData = new CompoundTag();
+                        blockPositionData.putCompound("block_entity_data", blockEntityData);
+                        blockEntities.put(new Vector3(lx, ly, lz), blockPositionData);
                     }
                 }
             }
@@ -252,12 +254,15 @@ public class Structure extends AbstractStructure {
             int newPosY = (entry.getKey().getFloorY() + pos.getFloorY());
             int newPosZ = (entry.getKey().getFloorZ() + pos.getFloorZ());
 
-            BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
+            final BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
             if (blockEntity != null) {
                 blockEntity.getLevel().removeBlockEntity(blockEntity);
             }
 
-            CompoundTag oldNbt = entry.getValue().getCompound("block_entity_data");
+            final CompoundTag oldNbt = entry.getValue().getCompound("block_entity_data");
+            if (oldNbt.getString("id").isEmpty()) {
+                continue;
+            }
             oldNbt.putInt("x", newPosX);
             oldNbt.putInt("y", newPosY);
             oldNbt.putInt("z", newPosZ);
