@@ -232,10 +232,17 @@ public final class PlayerChunkManager {
                     player.level.registerChunkLoader(player, chunkX, chunkZ, false);
                     chunkReadyToSend.enqueue(chunkHash);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    chunkLoadingQueue.remove(chunkHash);
+                    enqueue.add(chunkHash);
                     log.warn("Chunk loading interrupted for chunk ({}, {})", chunkX, chunkZ, e);
                 } catch (ExecutionException e) {
+                    chunkLoadingQueue.remove(chunkHash);
+                    enqueue.add(chunkHash);
                     log.warn("Chunk loading execution failed for chunk ({}, {})", chunkX, chunkZ, e);
                 } catch (TimeoutException e) {
+                    chunkLoadingQueue.remove(chunkHash);
+                    enqueue.add(chunkHash);
                     log.warn("Timeout while loading chunk ({} {})", chunkX, chunkZ);
                 }
             } else {
