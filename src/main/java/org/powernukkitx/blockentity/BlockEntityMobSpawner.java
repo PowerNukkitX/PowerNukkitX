@@ -242,10 +242,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        if (this.level == null) {
-            return false;
-        }
-        return Objects.equals(level.getBlockIdAt((int) x, (int) y, (int) z), Block.MOB_SPAWNER);
+        return isValid() && Objects.equals(level.getBlockIdAt((int) x, (int) y, (int) z), Block.MOB_SPAWNER);
     }
 
     public int getSpawnEntityType() {
