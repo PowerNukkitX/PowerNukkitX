@@ -7,6 +7,7 @@ import java.lang.ref.Cleaner;
  * Registers a resource for cleanup when the CleanerHandle is garbage collected.
  * @param <RESOURCE> The type of resource to manage (must be AutoCloseable)
  */
+@SuppressWarnings("PMD.SingularField")
 public final class CleanerHandle<RESOURCE extends AutoCloseable> {
     private static final Cleaner CLEANER = Cleaner.create();
     private final Cleaner.Cleanable cleanable;
@@ -24,7 +25,7 @@ public final class CleanerHandle<RESOURCE extends AutoCloseable> {
             try {
                 this.resource.close();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }
     }

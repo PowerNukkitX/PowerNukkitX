@@ -107,7 +107,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             return REGISTRY.get(key.toLowerCase(Locale.ENGLISH)).getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

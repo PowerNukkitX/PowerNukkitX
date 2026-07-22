@@ -58,10 +58,8 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 4), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 5, 1),
                         new Behavior(
                                 new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE),
@@ -93,8 +91,8 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                                 }
                         ), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(new NearestPlayerSensor(16, 0, 20),
+                )
+                .sensors(new NearestPlayerSensor(16, 0, 20),
                         new NearestEntitySensor(EntityCat.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),
                         new NearestEntitySensor(EntityOcelot.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),
                         entity -> {
@@ -109,11 +107,10 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                             if ((attacker == null || (attacker instanceof Player player && !player.isSurvival()) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true) && memoryStorage.get(CoreMemoryTypes.EXPLODE_CANCELLABLE)) {
                                 memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
                             }
-                        }),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                        })
+                .controllers(new WalkController(), new LookController(true, true), new FluctuateController())
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     private boolean hasClearLineOfSight(Entity target) {

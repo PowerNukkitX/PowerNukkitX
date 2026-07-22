@@ -36,24 +36,30 @@ public class PlayerKickEvent extends PlayerEvent implements Cancellable {
 
     protected final Reason reason;
     protected final String reasonString;
+    protected final String disconnectScreenMessage;
 
     public PlayerKickEvent(Player player, Reason reason, TextContainer quitMessage) {
-        this(player, reason, reason.toString(), quitMessage);
+        this(player, reason, reason.toString(), reason.toString(), quitMessage);
     }
 
     public PlayerKickEvent(Player player, Reason reason, String quitMessage) {
         this(player, reason, new TextContainer(quitMessage));
     }
 
-    public PlayerKickEvent(Player player, Reason reason, String reasonString, TextContainer quitMessage) {
+    public PlayerKickEvent(Player player, Reason reason, String reasonString, String disconnectScreenMessage, TextContainer quitMessage) {
         this.player = player;
         this.quitMessage = quitMessage;
         this.reason = reason;
+        this.disconnectScreenMessage = disconnectScreenMessage;
         this.reasonString = reasonString;
     }
 
     public String getReason() {
         return reasonString;
+    }
+
+    public String getDisconnectScreenMessage() {
+        return disconnectScreenMessage;
     }
 
     public Reason getReasonEnum() {

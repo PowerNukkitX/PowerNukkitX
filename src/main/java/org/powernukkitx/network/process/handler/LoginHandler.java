@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
 import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
@@ -26,6 +26,16 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.jwt.consumer.JwtContext;
 import org.jose4j.lang.JoseException;
+import org.powernukkitx.Player;
+import org.powernukkitx.Server;
+import org.powernukkitx.event.player.PlayerPreLoginEvent;
+import org.powernukkitx.network.NetworkConstants;
+import org.powernukkitx.network.process.PacketHandler;
+import org.powernukkitx.network.process.PlayerSessionHolder;
+import org.powernukkitx.network.process.SessionState;
+import org.powernukkitx.network.process.auth.ClientChainData;
+import org.powernukkitx.network.process.auth.ClientSkinData;
+import org.powernukkitx.utils.SkinUtils;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -93,6 +103,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 server.getPluginManager().callEvent(sessionFailEvent);
 
                 holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+            final boolean unsignedAllowed = server.getProxyAuthProvider() != null
+                    && server.getProxyAuthProvider().isUnsignedLoginAllowed();
+            if (xboxAuthRequired && !result.signed() && !unsignedAllowed) {
+                holder.disconnect(notAuthenticated);
                 return;
             }
 
@@ -193,7 +207,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             if (clientChainData == null) {
                 return ClientJwtValidationResult.INVALID;
             }
-            final SerializedSkin skin = ClientSkinData.readSkin(claims);
+            final Skin skin = ClientSkinData.readSkin(claims);
             if (skin == null || !SkinUtils.isValid(skin)) {
                 return ClientJwtValidationResult.INVALID;
             }
@@ -213,7 +227,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
         boolean valid;
         ClientChainData clientChainData;
-        SerializedSkin skin;
+        Skin skin;
     }
 
     private void enableEncryption(ChainValidationResult.IdentityClaims claims, PlayerSessionHolder holder) {

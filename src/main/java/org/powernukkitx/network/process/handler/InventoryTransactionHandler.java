@@ -23,6 +23,7 @@ import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
+import org.powernukkitx.item.ItemFireworkRocket;
 import org.powernukkitx.item.ItemMace;
 import org.powernukkitx.item.ItemSpear;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -82,7 +83,11 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                         Item item = player.getInventory().getItemInMainHand();
 
                         int ticksUsed = player.getLevel().getTick() - lastUseTick;
-                        if (!item.onRelease(player, ticksUsed)) {
+                        if (item.isEdible() && ticksUsed >= item.getUsingTicks()) {
+                            if (item.onUse(player, ticksUsed)) {
+                                item.afterUse(player);
+                            }
+                        } else if (!item.onRelease(player, ticksUsed)) {
                             player.getInventory().sendContents(player);
                         }
 
@@ -362,8 +367,12 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                     return;
                 }
                 if (interactEvent.isCancelled() && (consumeEvent == null || !consumeEvent.isBypassInteract())) {
-                    if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
+                    if (interactEvent.getItem() != null && interactEvent.getItem().isWearable()) {
                         player.getInventory().sendArmorContents(player);
+                    }
+                    // Client predicts the elytra boost locally, so we resync its motion to undo it
+                    if (interactEvent.getItem() instanceof ItemFireworkRocket && player.isGliding()) {
+                        player.setMotion(player.getMotion());
                     }
                     player.getInventory().sendSlot(transaction.getSlot(), player);
                     return;

@@ -173,6 +173,6 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior(EntityID.CHEST_MINECART));
         registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior(EntityID.HOPPER_MINECART));
         registerBehavior(ItemID.TNT_MINECART, new MinecartDispenseBehavior(EntityID.TNT_MINECART));
-        //TODO: 命令方块矿车
+        //TODO: command block minecart
     }
 }

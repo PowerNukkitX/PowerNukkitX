@@ -61,6 +61,8 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
         }
         player.addExperience(event.getExperienceDropped());
         player.getCreativeOutputInventory().setItem(event.getResultItem());
+        inventory.clear(0, false);
+        inventory.clear(1, false);
         return null;
     }
 

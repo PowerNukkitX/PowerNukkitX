@@ -51,21 +51,19 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_GHAST_MOAN), new RandomSoundEvaluator(), 2, 1),
                         new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 200, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new GhastShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 64, true, 60, 10), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 2, 1),
                         new Behavior(new GhastShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 28, true, 60, 10), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 1, 1)
-                ),
-                Set.of(new NearestPlayerSensor(64, 0, 20)),
-                Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
-                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
-                this
-        );
+                )
+                .sensors(new NearestPlayerSensor(64, 0, 20))
+                .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
+                .build();
     }
 
     @Override

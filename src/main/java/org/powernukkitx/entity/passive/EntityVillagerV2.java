@@ -158,9 +158,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new DoorExecutor(), all(
                                 entity -> {
                                     Block block = getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK_2);
@@ -177,7 +176,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ), 3, 1, 1, false
                         ),
-                        //生长
+                        //grow
                         new Behavior(
                                 new AnimalGrowExecutor(),
                                 all(
@@ -186,8 +185,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 ), 2, 1, 1200
                         ),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 1, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(entity -> {
                             setMoveTarget(null);
                             setLookTarget(getTradeInventory().getViewers().stream().findFirst().get());
@@ -236,8 +235,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 2, 1
                         ),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         entity -> {
                             if (getLevel().getTick() % 120 == 0) {
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
@@ -336,11 +335,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         },
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK_2, 1, 0, 10),
                         new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
-                ),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true), new FluctuateController())
+                .routeFinder(new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this))
+                .build();
     }
 
     public float getFloatingHeight() {
@@ -704,7 +702,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     /**
-     * 获取村民职业id对应的displayName硬编码
+     * Gets the hardcoded displayName corresponding to the villager profession id.
      */
     private String getProfessionName(int profession) {
         return switch (profession) {
@@ -727,7 +725,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     /**
-     * @return 村民的职业id
+     * @return the villager's profession id
      */
     public int getProfession() {
         return profession;
@@ -753,23 +751,23 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     /**
-     * 这个方法插件一般不用
+     * This method is generally not used by plugins.
      */
     public void setTradingPlayer(Long eid) {
         this.setDataProperty(ActorDataTypes.TRADE_TARGET, eid);
     }
 
     /**
-     * @return 该村民是否可以交易
+     * @return whether this villager can trade
      */
     public boolean canTrade() {
         return canTrade;
     }
 
     /**
-     * 设置村民是否可以交易
+     * Sets whether the villager can trade.
      *
-     * @param canTrade true 可以交易
+     * @param canTrade true if trading is allowed
      */
     public void setCanTrade(boolean canTrade) {
         this.canTrade = canTrade;
@@ -777,14 +775,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     /**
-     * @return 交易UI的显示名称
+     * @return the display name of the trading UI
      */
     public String getDisplayName() {
         return displayName;
     }
 
     /**
-     * @param displayName 设置交易UI的显示名称
+     * @param displayName the display name of the trading UI to set
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -792,14 +790,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     /**
-     * @return 该村民的交易等级
+     * @return the villager's trade tier
      */
     public int getTradeTier() {
         return tradeTier;
     }
 
     /**
-     * @param tradeTier <p>村民的交易等级(1-{@link EntityVillagerV2#maxTradeTier})</p>
+     * @param tradeTier <p>the villager's trade tier (1-{@link EntityVillagerV2#maxTradeTier})</p>
      */
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
@@ -851,14 +849,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     /**
-     * @return 村民所允许的最大交易等级
+     * @return the maximum trade tier allowed for the villager
      */
     public int getMaxTradeTier() {
         return maxTradeTier;
     }
 
     /**
-     * @param maxTradeTier 设置村民所允许的最大交易等级
+     * @param maxTradeTier the maximum trade tier to allow for the villager
      */
     public void setMaxTradeTier(int maxTradeTier) {
         this.maxTradeTier = maxTradeTier;
@@ -873,14 +871,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     /**
-     * @return 村民当前的经验值
+     * @return the villager's current experience value
      */
     public int getTradeExp() {
         return tradeExp;
     }
 
     /**
-     * @param tradeExp 设置村民当前的经验值
+     * @param tradeExp the villager's current experience value to set
      */
     public void setTradeExp(int tradeExp) {
         this.tradeExp = tradeExp;

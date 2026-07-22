@@ -84,6 +84,7 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean canBePushed() {
         return false;
     }

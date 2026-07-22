@@ -1,5 +1,6 @@
 package org.powernukkitx.level.generator.populator.normal;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.level.format.IChunk;
@@ -11,7 +12,6 @@ import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.Xoroshiro128;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 public class WoodlandMansionPopulator extends Populator implements PopulatorStructure {
 

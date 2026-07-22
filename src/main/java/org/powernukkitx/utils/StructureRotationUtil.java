@@ -1,5 +1,6 @@
 package org.powernukkitx.utils;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockJigsaw;
 import org.powernukkitx.block.BlockState;
@@ -12,7 +13,6 @@ import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.block.property.type.EnumPropertyType;
 import org.powernukkitx.math.BlockFace;
 import lombok.experimental.UtilityClass;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.EnumMap;
 
@@ -151,7 +151,9 @@ public class StructureRotationUtil {
                 if (rotatedWallConnections != null) {
                     WallConnectionType rotatedConnection = getRotatedWallConnection(type, rotatedWallConnections);
                     if (rotatedConnection != null) {
-                        states.set(idx, ((EnumPropertyType<WallConnectionType>) type).createValue(rotatedConnection));
+                        @SuppressWarnings("unchecked")
+                        var rotated = ((EnumPropertyType<WallConnectionType>) type).createValue(rotatedConnection);
+                        states.set(idx, rotated);
                     }
                 }
             }

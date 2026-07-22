@@ -34,6 +34,9 @@ public class CommandContext {
     public <T> T getArg(@NotNull String name) {
         return (T) arguments.get(name);
     }
+    public <T> T getArg(@NotNull String name, T fallback) {
+        return (T) arguments.getOrDefault(name, fallback);
+    }
 
     public boolean hasArg(@NotNull String name) {
         return arguments.containsKey(name);

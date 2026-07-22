@@ -32,6 +32,7 @@ import org.powernukkitx.inventory.InventorySlice;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemShield;
 import org.powernukkitx.item.ItemTurtleHelmet;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -405,6 +406,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
                 }
 
+                Enchantment[] weaponEnchantments = event.getWeaponEnchantments();
+                if (weaponEnchantments != null) {
+                    double enchantmentBonus = 0;
+                    for (Enchantment enchantment : weaponEnchantments) {
+                        enchantmentBonus += enchantment.getDamageBonus(this, damager);
+                    }
+                    if (enchantmentBonus > 0) {
+                        final AnimatePacket magicCritPacket = new AnimatePacket();
+                        magicCritPacket.setTargetRuntimeID(this.getId());
+                        magicCritPacket.setAction(AnimatePacket.Action.MAGIC_CRITICAL_HIT);
+                        magicCritPacket.setData(55f);
+
+                        this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), magicCritPacket);
+                    }
+                }
+
                 if (damager.isOnFire() && !(damager instanceof Player)) {
                     this.setOnFire(2 * this.server.getDifficulty());
                 }
@@ -422,6 +439,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             this.attackTime = source.getAttackCooldown();
             this.attackTimeByShieldKb = false;
             this.scheduleUpdate();
+
+            for (Effect effect : List.copyOf(this.getEffects().values())) {
+                effect.onHurt(this, source);
+            }
 
             return true;
         } else {
@@ -491,6 +512,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops(weapon));
         this.server.getPluginManager().callEvent(ev);
+
+        for (Effect effect : List.copyOf(this.getEffects().values())) {
+            effect.onDeath(this);
+        }
 
         var manager = this.server.getScoreboardManager();
         // This will be null in the test environment, so it is necessary to check for null values.
@@ -933,6 +958,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return attackTimeBefore;
     }
 
+    @SuppressWarnings("removal")
     public void recalcMovementSpeedFromEffects() {
         float base = this.getMovementSpeedDefault() * this.getSprintMultiplier();
         float mul = 1.0f;

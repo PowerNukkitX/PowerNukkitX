@@ -1,6 +1,9 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
+import org.powernukkitx.command.selector.args.impl.R;
 import org.powernukkitx.inventory.Inventory;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -52,36 +55,34 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
         source.setItem(sourceSlot, destinationItem, false);
         destination.setItem(destinationSlot, sourceItem, false);
         return context.success(List.of(
-                new ItemStackResponseContainerInfo(
-                        source.getContainerEnumName(sourceSlot),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        source.toNetworkSlot(sourceSlot),
-                                        source.toNetworkSlot(sourceSlot),
-                                        destinationItem.getCount(),
-                                        destinationItem.getNetId(),
-                                        destinationItem.getCustomName(),
-                                        destinationItem.getDamage(),
-                                        ""
-                                )
-                        ),
-                        sourceContainerName
+            new ItemStackResponseContainerInfo(
+                source.getContainerEnumName(sourceSlot),
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        source.toNetworkSlot(sourceSlot),
+                        source.toNetworkSlot(sourceSlot),
+                        destinationItem.getCount(),
+                        new ItemStackNetId(destinationItem.getNetId()),
+                        new RedactableString(destinationItem.getCustomName(), ""),
+                        destinationItem.getDamage()
+                    )
                 ),
-                new ItemStackResponseContainerInfo(
-                        destination.getContainerEnumName(destinationSlot),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        destination.toNetworkSlot(destinationSlot),
-                                        destination.toNetworkSlot(destinationSlot),
-                                        sourceItem.getCount(),
-                                        sourceItem.getNetId(),
-                                        sourceItem.getCustomName(),
-                                        sourceItem.getDamage(),
-                                        ""
-                                )
-                        ),
-                        destinationContainerName
-                )
+                sourceContainerName
+            ),
+            new ItemStackResponseContainerInfo(
+                destination.getContainerEnumName(destinationSlot),
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        destination.toNetworkSlot(destinationSlot),
+                        destination.toNetworkSlot(destinationSlot),
+                        sourceItem.getCount(),
+                        new ItemStackNetId(sourceItem.getNetId()),
+                        new RedactableString(sourceItem.getCustomName(), ""),
+                        sourceItem.getDamage()
+                    )
+                ),
+                destinationContainerName
+            )
         ));
     }
 }

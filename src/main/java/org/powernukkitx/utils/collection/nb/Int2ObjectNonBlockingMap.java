@@ -80,6 +80,7 @@ import java.util.function.Function;
 
 
 @NonComputationAtomic
+@SuppressWarnings("PMD.CompareObjectsWithEquals")
 public class Int2ObjectNonBlockingMap<TypeV>
         extends AbstractMap<Integer, TypeV>
         implements ConcurrentMap<Integer, TypeV>, Cloneable, Serializable {
@@ -104,7 +105,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
             _val_1_handler = MethodHandles.lookup().in(Int2ObjectNonBlockingMap.class)
                     .findVarHandle(Int2ObjectNonBlockingMap.class, "_val_1", Object.class);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e); // Should never happen
+            throw new IllegalStateException(e); // Should never happen
         }
     }
 

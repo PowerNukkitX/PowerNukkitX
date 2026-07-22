@@ -19,7 +19,7 @@ import java.util.Arrays;
 @Getter
 public class CircleMovementExecutor implements EntityControl, IBehaviorExecutor {
 
-    //指示执行器应该从哪个Memory获取目标位置
+    //indicates which Memory the executor should get the target position from
     protected MemoryType<? extends Vector3> memory;
     protected float speed;
     protected boolean updateRouteImmediatelyWhenTargetChange;

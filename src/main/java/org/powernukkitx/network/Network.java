@@ -43,8 +43,11 @@ import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
 
+import java.net.BindException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
@@ -97,15 +100,23 @@ public class Network implements NetworkInterface {
         EventLoopGroup eventloopgroup;
         if (Epoll.isAvailable()) {
             oclass = EpollDatagramChannel.class;
-            eventloopgroup = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
+            @SuppressWarnings("deprecation")
+            var group = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
+            eventloopgroup = group;
         } else if (KQueue.isAvailable()) {
             oclass = KQueueDatagramChannel.class;
-            eventloopgroup = new KQueueEventLoopGroup(nettyThreadNumber, threadFactory);
+            @SuppressWarnings("deprecation")
+            var group = new KQueueEventLoopGroup(nettyThreadNumber, threadFactory);
+            eventloopgroup = group;
         } else {
             oclass = NioDatagramChannel.class;
-            eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
+            @SuppressWarnings("deprecation")
+            var group = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
+            eventloopgroup = group;
         }
         InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
+
+        checkPortAvailable(bindAddress);
 
         final BedrockCodec codec = NetworkConstants.CODEC;
 
@@ -166,6 +177,18 @@ public class Network implements NetworkInterface {
                 .bind(bindAddress)
                 .awaitUninterruptibly()
                 .channel();
+    }
+
+    // Verifies the UDP port is free before RakNet binds, so the server refuses to start when another process holds it.
+    private void checkPortAvailable(InetSocketAddress address) {
+        try (DatagramSocket testSocket = new DatagramSocket(null)) {
+            testSocket.setReuseAddress(false);
+            testSocket.bind(address);
+        } catch (BindException e) {
+            throw new IllegalStateException("Server port " + address.getPort() + " is already in use by another process. Startup aborted.", e);
+        } catch (SocketException e) {
+            throw new IllegalStateException("Failed to verify availability of server port " + address.getPort() + ".", e);
+        }
     }
 
     /**

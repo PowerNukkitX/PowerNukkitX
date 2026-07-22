@@ -107,7 +107,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
                 GenericParameter.CHAINED_COMMAND.get(true)
         });
-        /*todo 暂时没实现，因为我也不知道这个blockStates填什么
+        /*todo not implemented yet, because I don't know what to put in this blockStates
         this.addCommandParameters("if-unless-block-blockStates", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Block", "block")),
@@ -598,7 +598,7 @@ public class ExecuteCommand extends VanillaCommand {
                 int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
                 String range = list.getResult(5);
                 if (range.contains("..")) {
-                    //条件为一个区间
+                    //condition is a range
                     int min = Integer.MIN_VALUE;
                     int max = Integer.MAX_VALUE;
                     var splittedScoreScope = StringUtils.fastSplit(SCORE_SCOPE_SEPARATOR, range);
@@ -612,7 +612,7 @@ public class ExecuteCommand extends VanillaCommand {
                     }
                     matched = targetScore >= min && targetScore <= max;
                 } else {
-                    //条件为单个数字
+                    //condition is a single number
                     int score = Integer.parseInt(range);
                     matched = targetScore == score;
                 }

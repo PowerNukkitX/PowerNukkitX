@@ -1,22 +1,5 @@
 package org.powernukkitx.network.process;
 
-import org.powernukkitx.Player;
-import org.powernukkitx.PlayerHandle;
-import org.powernukkitx.Server;
-import org.powernukkitx.block.customblock.CustomBlockDefinition;
-import org.powernukkitx.config.category.network.RateLimitSettings;
-import org.powernukkitx.entity.data.property.EntityProperty;
-import org.powernukkitx.event.player.PlayerCreationEvent;
-import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.network.protocol.types.TrimData;
-import org.powernukkitx.network.process.pack.InternalPackManager;
-import org.powernukkitx.registry.ItemRegistry;
-import org.powernukkitx.registry.ItemRuntimeIdRegistry;
-import org.powernukkitx.registry.Registries;
-import org.powernukkitx.registry.VoxelShapeRegistry;
-import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
-import org.powernukkitx.utils.DefaultCameraPresets;
-import org.powernukkitx.utils.RuntimeBlockDefinitionRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -32,14 +15,36 @@ import org.cloudburstmc.protocol.bedrock.data.camera.CameraAimAssistPresetPacket
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
+import org.cloudburstmc.protocol.bedrock.data.payload.ServerTelemetryData;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
+import org.cloudburstmc.protocol.bedrock.data.payload.editor.ServerEditorConnectionPolicy;
+import org.cloudburstmc.protocol.bedrock.data.payload.experiment.Experiments;
+import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackIdVersion;
+import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackInfoData;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.utils.TextFormat;
+import org.powernukkitx.Player;
+import org.powernukkitx.PlayerHandle;
+import org.powernukkitx.Server;
+import org.powernukkitx.block.customblock.CustomBlockDefinition;
+import org.powernukkitx.config.category.network.RateLimitSettings;
+import org.powernukkitx.entity.data.property.EntityProperty;
+import org.powernukkitx.event.player.PlayerCreationEvent;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.network.process.pack.InternalPackManager;
+import org.powernukkitx.network.protocol.types.TrimData;
+import org.powernukkitx.registry.ItemRegistry;
+import org.powernukkitx.registry.ItemRuntimeIdRegistry;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.registry.VoxelShapeRegistry;
+import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
+import org.powernukkitx.utils.DefaultCameraPresets;
+import org.powernukkitx.utils.RuntimeBlockDefinitionRegistry;
 
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
@@ -112,10 +117,10 @@ public class PlayerSessionHolder {
             this.packetCounterForTicks++;
             if (this.packetCounter > this.rateLimitSettings.maxInboundPacketsPerSecond() && !this.disconnected) {
                 log.warn(
-                        "{}: exceeded the limit for the maximum packets per second (limit: {}, received: {}) ",
-                        this.player != null ? this.player.getName() : this.session.getSocketAddress(),
-                        this.rateLimitSettings.maxInboundPacketsPerSecond(),
-                        this.packetCounter
+                    "{}: exceeded the limit for the maximum packets per second (limit: {}, received: {}) ",
+                    this.player != null ? this.player.getName() : this.session.getSocketAddress(),
+                    this.rateLimitSettings.maxInboundPacketsPerSecond(),
+                    this.packetCounter
                 );
                 this.disconnect(DisconnectFailReason.UNKNOWN); // flooding
                 return false;
@@ -123,11 +128,11 @@ public class PlayerSessionHolder {
             if (this.packetCounterForTicks > this.rateLimitSettings.maxPacketsPerTick()) {
                 if (now - this.lastWarnTime >= WARN_TIME_INTERVAL_IN_MS) {
                     log.warn(
-                            "{}: exceeded the limit for the maximum packets per tick (limit: {}, received: {}, excess: {}) ",
-                            this.player != null ? this.player.getName() : this.session.getSocketAddress(),
-                            this.rateLimitSettings.maxPacketsPerTick(),
-                            this.packetCounterForTicks,
-                            this.packetCounterForTicks - this.rateLimitSettings.maxPacketsPerTick()
+                        "{}: exceeded the limit for the maximum packets per tick (limit: {}, received: {}, excess: {}) ",
+                        this.player != null ? this.player.getName() : this.session.getSocketAddress(),
+                        this.rateLimitSettings.maxPacketsPerTick(),
+                        this.packetCounterForTicks,
+                        this.packetCounterForTicks - this.rateLimitSettings.maxPacketsPerTick()
                     );
                     this.lastWarnTime = now;
                 }
@@ -166,23 +171,30 @@ public class PlayerSessionHolder {
     public void sendResourcePacksInfo(Server server) {
         final ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.getResourcePacks().addAll(Arrays.stream(server.getResourcePackManager().getResourceStack())
-                .map(resourcePack -> new ResourcePacksInfoPacket.Entry(
-                        resourcePack.getPackId(),
-                        resourcePack.getPackVersion(),
-                        resourcePack.getPackSize(),
-                        resourcePack.getEncryptionKey(),
-                        resourcePack.getSubPackName(),
-                        !resourcePack.getEncryptionKey().isEmpty() ? resourcePack.getPackId().toString() : "",
-                        resourcePack.usesScript(),
-                        resourcePack.isRaytracingCapable(),
-                        resourcePack.isAddonPack(),
-                        resourcePack.cdnUrl()
-                ))
-                .toList()
+            .map(resourcePack -> {
+                final PackInfoData packInfoData = new PackInfoData();
+                final PackIdVersion packIdVersion = new PackIdVersion();
+                packIdVersion.setPackUUID(resourcePack.getPackId());
+                packIdVersion.setPackVersion(resourcePack.getPackVersion());
+
+                packInfoData.setPackIdVersion(packIdVersion);
+                packInfoData.setPackSize(resourcePack.getPackSize());
+                packInfoData.setContentKey(resourcePack.getEncryptionKey());
+                packInfoData.setSubpackName(resourcePack.getSubPackName());
+                packInfoData.setContentIdentity(!resourcePack.getEncryptionKey().isEmpty() ? resourcePack.getPackId().toString() : "");
+                packInfoData.setHasScripts(resourcePack.usesScript());
+                packInfoData.setRayTracingCapable(resourcePack.isRaytracingCapable());
+                packInfoData.setAddonPack(resourcePack.isAddonPack());
+                packInfoData.setCdnUrl(resourcePack.cdnUrl());
+                return packInfoData;
+            })
+            .toList()
         );
         infoPacket.setResourcePackRequired(server.getForceResources());
-        infoPacket.setWorldTemplateUUID(new UUID(0L, 0L));
-        infoPacket.setWorldTemplateVersion("0.0.0");
+        final PackIdVersion packIdVersion = new PackIdVersion();
+        packIdVersion.setPackUUID(new UUID(0L, 0L));
+        packIdVersion.setPackVersion("0.0.0");
+        infoPacket.setWorldTemplateIdAndVersion(packIdVersion);
         infoPacket.setForceDisableVibrantVisuals(!server.allowVibrantVisuals());
         this.session.sendPacketImmediately(infoPacket);
     }
@@ -255,9 +267,9 @@ public class PlayerSessionHolder {
         packet.setRuntimeID(this.player.getId());
         packet.setGameType(GameType.from(Player.toNetworkGamemode(this.player.getGamemode())));
         packet.setPosition(Vector3f.from(
-                this.player.x,
-                (this.player.isOnGround() ? this.player.y + this.player.getEyeHeight() : this.player.y),
-                this.player.z
+            this.player.x,
+            (this.player.isOnGround() ? this.player.y + this.player.getEyeHeight() : this.player.y),
+            this.player.z
         ));
         packet.setRotation(Vector2f.from(this.player.getYaw(), this.player.getPitch()));
 
@@ -267,7 +279,7 @@ public class PlayerSessionHolder {
         packet.getSettings().getSpawnSettings().setUserDefinedBiomeName("plains");
         packet.getSettings().setGeneratorType(GeneratorType.OVERWORLD);
         packet.getSettings().setGameType(GameType.from(Player.toNetworkGamemode(server.getDefaultGamemode())));
-        packet.getSettings().setHardcoreModeEnabled(false);
+        packet.getSettings().setHardcore(false);
         packet.getSettings().setGameDifficulty(Difficulty.from(server.getDifficulty()));
         packet.getSettings().setDefaultSpawnBlockPosition(this.player.getSafeSpawn().toNetwork().toInt());
         packet.getSettings().setAchievementsDisabled(true);
@@ -276,19 +288,20 @@ public class PlayerSessionHolder {
         packet.getSettings().setExportedFromEditor(false);
         packet.getSettings().setDayCycleStopTime(-1);
         packet.getSettings().setEducationEditionOffer(EducationEditionOffer.NONE);
-        packet.getSettings().setAreEducationFeaturesEnabled(false);
-        packet.getSettings().setEducationProductionId("");
+        packet.getSettings().setEducationFeaturesEnabled(false);
+        packet.getSettings().setEducationProductID("");
         packet.getSettings().setRainLevel(0f);
         packet.getSettings().setLightningLevel(0f);
         packet.getSettings().setHasConfirmedPlatformLockedContent(false);
-        packet.getSettings().setWasMultiplayerIntendedToBeEnabled(true);
-        packet.getSettings().setWasLANBroadcastingIntendedToBeEnabled(false);
+        packet.getSettings().setMultiplayerGameIntent(true);
+        packet.getSettings().setLanBroadcastIntent(false);
         packet.getSettings().setXboxLiveBroadcastSetting(GamePublishSetting.PUBLIC);
         packet.getSettings().setPlatformBroadcastSetting(GamePublishSetting.PUBLIC);
         packet.getSettings().setCommandsEnabled(this.player.isEnableClientCommand());
         packet.getSettings().setTexturePacksRequired(server.getForceResources());
         packet.getSettings().getRuleData().getRulesList().addAll(this.player.getLevel().getGameRules().toNetwork());
-        packet.getSettings().getExperiments().addAll(server.getExperiments());
+        packet.getSettings().setExperiments(new Experiments());
+        packet.getSettings().getExperiments().getToggles().addAll(server.getExperiments());
         packet.getSettings().setWereAnyExperimentsEverToggled(!server.getExperiments().isEmpty());
         packet.getSettings().setHasBonusChestEnabled(false);
         packet.getSettings().setStartWithMapEnabled(false);
@@ -296,7 +309,7 @@ public class PlayerSessionHolder {
         packet.getSettings().setServerChunkTickRange(4);
         packet.getSettings().setHasLockedBehaviorPack(false);
         packet.getSettings().setHasLockedResourcePack(false);
-        packet.getSettings().setFromLockedWorldTemplate(false);
+        packet.getSettings().setFromLockedTemplate(false);
         packet.getSettings().setUseMsaGamertagsOnly(false);
         packet.getSettings().setFromWorldTemplate(false);
         packet.getSettings().setWorldTemplateOptionLocked(false);
@@ -309,25 +322,26 @@ public class PlayerSessionHolder {
         packet.getSettings().setLimitedWorldDepth(16);
         packet.getSettings().setNetherType(false);
         packet.getSettings().setEduSharedUriResource(EduSharedUriResource.EMPTY);
-        packet.getSettings().setForceExperimentalGameplay(OptionalBoolean.empty());
+        packet.getSettings().setOverrideForceExperimentalGameplay(OptionalBoolean.empty());
         packet.getSettings().setChatRestrictionLevel(ChatRestrictionLevel.NONE);
         packet.getSettings().setDisablePlayerInteractions(false);
+        packet.getSettings().setServerEditorConnectionPolicy(ServerEditorConnectionPolicy.VANILLA_ONLY);
 
-        packet.setLevelId("");
+        packet.setLevelID("");
         packet.setLevelName(server.getSubMotd());
         packet.setTemplateContentIdentity("");
         packet.setTrial(false);
         packet.setMovementSettings(new SyncedPlayerMovementSettings(
-                        ServerAuthMovementMode.SERVER_AUTHORITATIVE_V3,
-                        0,
-                        true
-                )
+                ServerAuthMovementMode.SERVER_AUTHORITATIVE_V3,
+                0,
+                true
+            )
         );
         packet.getBlockProperties().addAll(
-                Registries.BLOCK.getCustomBlockDefinitionList()
-                        .stream()
-                        .map(CustomBlockDefinition::toNetwork)
-                        .toList()
+            Registries.BLOCK.getCustomBlockDefinitionList()
+                .stream()
+                .map(CustomBlockDefinition::toNetwork)
+                .toList()
         );
         packet.setMultiplayerCorrelationId("");
         packet.setEnableItemStackNetManager(true);
@@ -335,10 +349,7 @@ public class PlayerSessionHolder {
         packet.setPlayerPropertyData(EntityProperty.getPlayerPropertyCache());
         packet.setWorldTemplateID(new UUID(0L, 0L));
         packet.setBlockNetworkIdsAreHashes(true);
-        packet.setServerID("");
-        packet.setScenarioID("");
-        packet.setWorldID("");
-        packet.setOwnerID("");
+        packet.setServerTelemetryData(new ServerTelemetryData());
         this.player.sendPacketImmediately(packet);
     }
 
@@ -356,20 +367,20 @@ public class PlayerSessionHolder {
             }
             final NbtMap components = tag.toNetwork();
             itemDefinitions.add(
-                    new SimpleItemDefinition(
-                            data.identifier(),
-                            data.runtimeId(),
-                            ItemVersion.from(data.version()),
-                            !components.isEmpty(),
-                            components
-                    )
+                new SimpleItemDefinition(
+                    data.identifier(),
+                    data.runtimeId(),
+                    ItemVersion.from(data.version()),
+                    !components.isEmpty(),
+                    components
+                )
             );
         }
         itemRegistryPacket.getItemData().addAll(itemDefinitions);
 
         final DefinitionRegistry<ItemDefinition> itemDefinitionRegistry = new SimpleDefinitionRegistry.Builder<ItemDefinition>()
-                .addAll(itemDefinitions)
-                .build();
+            .addAll(itemDefinitions)
+            .build();
         this.session.getPeer().getCodecHelper().setItemDefinitions(itemDefinitionRegistry);
 
         this.player.sendPacketImmediately(itemRegistryPacket);

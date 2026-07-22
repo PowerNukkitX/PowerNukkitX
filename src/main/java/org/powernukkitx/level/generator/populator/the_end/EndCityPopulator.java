@@ -1,5 +1,6 @@
 package org.powernukkitx.level.generator.populator.the_end;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
@@ -9,7 +10,6 @@ import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.Xoroshiro128;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 public class EndCityPopulator extends Populator implements PopulatorStructure {
 

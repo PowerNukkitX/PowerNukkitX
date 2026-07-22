@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackRequestId;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -48,7 +49,7 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
         PROCESSORS.put(ItemStackRequestActionType.CONSUME, new ConsumeActionProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_CREATIVE, new CraftCreativeActionProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_RECIPE, new CraftRecipeActionProcessor());
-        PROCESSORS.put(ItemStackRequestActionType.CRAFT_RESULTS_DEPRECATED, new CraftResultDeprecatedActionProcessor());
+        PROCESSORS.put(ItemStackRequestActionType.CRAFT_RESULTS, new CraftResultDeprecatedActionProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_RECIPE_AUTO, new CraftRecipeAutoProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CREATE, new CreateActionProcessor());
         PROCESSORS.put(ItemStackRequestActionType.DESTROY, new DestroyActionProcessor());
@@ -58,9 +59,9 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
         PROCESSORS.put(ItemStackRequestActionType.TAKE, new TakeActionProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_RECIPE_OPTIONAL, new CraftRecipeOptionalProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_REPAIR_AND_DISENCHANT, new CraftGrindstoneActionProcessor());
-        PROCESSORS.put(ItemStackRequestActionType.MINE_BLOCK, new MineBlockActionProcessor());
+        PROCESSORS.put(ItemStackRequestActionType.SCREEN_HUD_MINE_BLOCK, new MineBlockActionProcessor());
         PROCESSORS.put(ItemStackRequestActionType.CRAFT_LOOM, new CraftLoomActionProcessor());
-        PROCESSORS.put(ItemStackRequestActionType.BEACON_PAYMENT, new BeaconPaymentActionProcessor());
+        PROCESSORS.put(ItemStackRequestActionType.SCREEN_BEACON_PAYMENT, new BeaconPaymentActionProcessor());
     }
 
     @Override
@@ -87,7 +88,7 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
         for (var request : packet.getRequests()) {
             ItemStackRequestAction[] actions = request.getActions();
             ItemStackRequestContext context = new ItemStackRequestContext(request);
-            ItemStackResponseInfo itemStackResponse = new ItemStackResponseInfo(ItemStackNetResult.SUCCESS, request.getClientRequestId(), new ObjectArrayList<>());
+            ItemStackResponseInfo itemStackResponse = new ItemStackResponseInfo(ItemStackNetResult.SUCCESS, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>());
             Map<ContainerEnumName, ItemStackResponseContainerInfo> responseContainerMap = new LinkedHashMap<>();
             Set<Inventory> affectedInventories = new LinkedHashSet<>();
 
@@ -124,7 +125,7 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
 
                 if (response != null) {
                     if (!response.ok()) {
-                        responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, request.getClientRequestId(), new ObjectArrayList<>()));
+                        responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
                         break;
                     }
 
@@ -142,12 +143,12 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             }
 
             resyncInventories(player, affectedInventories);
-            itemStackResponse.getContainerInfo().addAll(responseContainerMap.values());
+            itemStackResponse.getContainers().addAll(responseContainerMap.values());
             responses.add(itemStackResponse);
         }
 
         for (var r : responses) {
-            for (var c : r.getContainerInfo()) {
+            for (var c : r.getContainers()) {
                 LinkedHashMap<Integer, ItemStackResponseSlotInfo> newItems = new LinkedHashMap<>();
                 for (var i : c.getSlots()) {
                     newItems.put(Objects.hash(i.getSlot(), i.getRequestedSlot()), i);
@@ -185,9 +186,9 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
 
             if (source != null) {
                 Inventory sourceInventory = NetworkMapping.getInventory(
-                        player,
-                        source.getFullContainerName().getContainerName(),
-                        source.getFullContainerName().getDynamicID()
+                    player,
+                    source.getFullContainerName().getContainerName(),
+                    source.getFullContainerName().getDynamicID()
                 );
                 if (sourceInventory != null) {
                     affected.add(sourceInventory);
@@ -196,9 +197,9 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
 
             if (destination != null) {
                 Inventory destinationInventory = NetworkMapping.getInventory(
-                        player,
-                        destination.getFullContainerName().getContainerName(),
-                        destination.getFullContainerName().getDynamicID()
+                    player,
+                    destination.getFullContainerName().getContainerName(),
+                    destination.getFullContainerName().getDynamicID()
                 );
                 if (destinationInventory != null) {
                     affected.add(destinationInventory);
@@ -239,24 +240,24 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             int sourceSlot = sourceInventory.fromNetworkSlot(transferResult.source.getSlot());
 
             Optional<Inventory> destinationInventory = transferResult.destination
-                    .map(destination -> NetworkMapping.getInventory(player, destination.getFullContainerName().getContainerName(), destination.getFullContainerName().getDynamicID()));
+                .map(destination -> NetworkMapping.getInventory(player, destination.getFullContainerName().getContainerName(), destination.getFullContainerName().getDynamicID()));
 
             Optional<Integer> destinationSlot = destinationInventory
-                    .flatMap(inventory -> transferResult.destination
-                            .map(destination -> inventory.fromNetworkSlot(destination.getSlot())));
+                .flatMap(inventory -> transferResult.destination
+                    .map(destination -> inventory.fromNetworkSlot(destination.getSlot())));
 
             Optional<Item> destinationItem = destinationSlot
-                    .flatMap(slot -> destinationInventory.flatMap(inventory -> Optional.of(inventory.getItem(slot))));
+                .flatMap(slot -> destinationInventory.flatMap(inventory -> Optional.of(inventory.getItem(slot))));
 
             PlayerTransferItemEvent transferEvent = new PlayerTransferItemEvent(
-                    player,
-                    transferResult.type,
-                    sourceInventory.getItem(sourceSlot),
-                    destinationItem.orElse(null),
-                    sourceSlot,
-                    destinationSlot.orElse(-1),
-                    sourceInventory,
-                    destinationInventory.orElse(null)
+                player,
+                transferResult.type,
+                sourceInventory.getItem(sourceSlot),
+                destinationItem.orElse(null),
+                sourceSlot,
+                destinationSlot.orElse(-1),
+                sourceInventory,
+                destinationInventory.orElse(null)
             );
 
             Server.getInstance().getPluginManager().callEvent(transferEvent);
@@ -268,28 +269,28 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
         private static TransferResult handleAction(ItemStackRequestAction action) {
             return switch (action) {
                 case TransferItemStackRequestAction transfer -> new TransferResult(
-                        transfer.getSource(),
-                        Optional.of(transfer.getDestination()),
-                        PlayerTransferItemEvent.Type.TRANSFER
+                    transfer.getSource(),
+                    Optional.of(transfer.getDestination()),
+                    PlayerTransferItemEvent.Type.TRANSFER
                 );
                 case SwapAction swap -> new TransferResult(
-                        swap.getSource(),
-                        Optional.of(swap.getDestination()),
-                        PlayerTransferItemEvent.Type.SWAP
+                    swap.getSource(),
+                    Optional.of(swap.getDestination()),
+                    PlayerTransferItemEvent.Type.SWAP
                 );
                 case DropAction drop -> new TransferResult(
-                        drop.getSource(),
-                        Optional.empty(),
-                        PlayerTransferItemEvent.Type.DROP
+                    drop.getSource(),
+                    Optional.empty(),
+                    PlayerTransferItemEvent.Type.DROP
                 );
                 default -> null;
             };
         }
 
         private record TransferResult(
-                ItemStackRequestSlotInfo source,
-                Optional<ItemStackRequestSlotInfo> destination,
-                PlayerTransferItemEvent.Type type
+            ItemStackRequestSlotInfo source,
+            Optional<ItemStackRequestSlotInfo> destination,
+            PlayerTransferItemEvent.Type type
         ) {
         }
     }

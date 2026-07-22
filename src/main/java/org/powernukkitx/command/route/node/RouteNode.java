@@ -40,6 +40,8 @@ public class RouteNode {
     private SenderType senderType = SenderType.ANY;
     private String permission;
     private String permissionMessage;
+    @Getter
+    private boolean optional;
 
     private Object suggest = null;
 
@@ -69,6 +71,20 @@ public class RouteNode {
      */
     public RouteNode then(RouteNode child) {
         child.parent = this;
+        switch (child.getType()) {
+            case LITERAL -> {
+                for (RouteNode child1 : this.children) {
+                    if (child1.getType() != NodeType.LITERAL) {
+                        throw new IllegalArgumentException("You cannot use literals when using arguments.");
+                    }
+                }
+            }
+            case ARGUMENT -> {
+                if(!children.isEmpty()) {
+                    throw new IllegalArgumentException("Cannot use multiple arguments in the same node.");
+                }
+            }
+        };
         children.add(child);
         return this;
     }
@@ -103,6 +119,14 @@ public class RouteNode {
     public RouteNode permission(String permission, String message) {
         this.permission = permission;
         this.permissionMessage = message;
+        return this;
+    }
+
+    /**
+     * Marks this node as optional in generated command parameters.
+     */
+    public RouteNode optional(boolean optional) {
+        this.optional = optional;
         return this;
     }
 

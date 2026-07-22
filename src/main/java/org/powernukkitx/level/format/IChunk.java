@@ -172,11 +172,11 @@ public interface IChunk {
     void populateSkyLight();
 
     /**
-     * 获取子区块中某个特定位置的生物群系id
+     * Gets the biome id at a specific position within the sub-chunk
      *
      * @param x 0~15
      * @param z 0~15
-     * @return 特定位置的生物群系id
+     * @return the biome id at the specific position
      */
     int getBiomeId(int x, int y, int z);
 
@@ -201,6 +201,10 @@ public interface IChunk {
     void removeBlockEntity(BlockEntity blockEntity);
 
     Map<Long, Entity> getEntities();
+
+    default boolean hasEntities() {
+        return !getEntities().isEmpty();
+    }
 
     void doMobSpawning();
 

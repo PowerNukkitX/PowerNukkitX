@@ -11,15 +11,13 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * 实体记忆是一个存储实体数据的类，同时如果实现了{@link IMemoryCodec}，实体记忆还可以被持久化存储以及链接实体元数据
- * <p>
  * Entity memory is a class that stores entity data, and if {@link IMemoryCodec} is implemented, entity memory can also be persistently stored and linked entity metadata
  */
 
 
 public final class MemoryType<Data> {
     /**
-     * 可持久化的记忆类型
+     * Persistable memory types
      */
 
     private static final Set<MemoryType<?>> PERSISTENT_MEMORIES = new HashSet<>();
@@ -52,8 +50,8 @@ public final class MemoryType<Data> {
     }
 
     /**
-     * @param identifier  此记忆类型的命名空间标识符
-     * @param defaultData 记忆未在实体记忆存储器中找到时返回的默认值
+     * @param identifier  the namespaced identifier of this memory type
+     * @param defaultData the default value returned when the memory is not found in the entity memory storage
      */
     public MemoryType(Identifier identifier, Supplier<Data> defaultData) {
         this.identifier = identifier;
@@ -81,16 +79,18 @@ public final class MemoryType<Data> {
     }
 
     /**
-     * 强制编码一个记忆<p/>
-     * 会将给定的data值强转到Data类型
+     * Forcibly encodes a memory<p/>
+     * Casts the given data value to the Data type
      *
-     * @param entity 目标实体
-     * @param data   数据
+     * @param entity the target entity
+     * @param data   the data
      */
 
     public void forceEncode(Entity entity, Object data) {
         if (codec != null) {
-            codec.encode((Data) data, entity.getNbt());
+            @SuppressWarnings("unchecked")
+            var castedData = (Data) data;
+            codec.encode(castedData, entity.getNbt());
         }
     }
 

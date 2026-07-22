@@ -13,7 +13,6 @@ import com.sun.jna.platform.win32.COM.WbemcliUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import oshi.SystemInfo;
-import oshi.driver.windows.wmi.Win32ComputerSystem;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
 import oshi.util.platform.windows.WmiQueryHandler;
@@ -160,7 +159,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         //Check Windows system parameters
         //Wmi virtual machine query can only be used on Windows. On Linux, this part can be omitted.
         if (System.getProperties().getProperty("os.name").toUpperCase(Locale.ENGLISH).contains("WINDOWS")) {
-            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
+            WbemcliUtil.WmiQuery<ComputerSystemEntry> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
             WbemcliUtil.WmiResult result = WmiQueryHandler.createInstance().queryWMI(computerSystemQuery);
             var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
             if (tmp != null && tmp.toString().equals("true")) {
@@ -248,6 +247,10 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
 
             for (Level level : server.getLevels().values()) {
+                float levelTps = level.getMeasuredTps();
+                if (levelTps <= 0) {
+                    levelTps = level.getBaseTickGameLoop().getTps();
+                }
                 sender.sendMessage(
                         TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
                                 TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
@@ -256,7 +259,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                 " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
                                 (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
                                 (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "") +
-                                (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
+                                (level.getBaseTickGameLoop().isRunning() ? " (" + getTPSColor(levelTps) + NukkitMath.round(levelTps, 2) + " TPS, " + NukkitMath.formatNanos((long) (level.getBaseTickGameLoop().getMSPT() * 1_000_000f)) + ")" : "")
                 );
             }
         } else if (fullMode){
@@ -294,7 +297,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                     (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
                     );
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Operating System & JVM Information
             {
@@ -315,7 +318,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 } catch (Exception ignore) {
 
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Network Information
             try {
@@ -333,7 +336,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                         sender.sendMessage(TextFormat.AQUA + "  " + each.getDisplayName());
                         sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s " + TextFormat.GRAY + String.join(", ", list));
                     }
-                    sender.sendMessage("");
+                    sender.sendMessage(" ");
                 }
             } catch (Exception ignored) {
                 sender.sendMessage(TextFormat.RED + "    Failed to get network info.");
@@ -347,7 +350,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN + Thread.getAllStackTraces().size());
                 sender.sendMessage(TextFormat.GOLD + "CPU Features: " + TextFormat.RESET + (cpu.getProcessorIdentifier().isCpu64bit() ? "64bit, " : "32bit, ") +
                         cpu.getProcessorIdentifier().getModel() + ", micro-arch: " + cpu.getProcessorIdentifier().getMicroarchitecture());
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
             // Memory information
             {
@@ -393,7 +396,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage(TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed()) + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
                     sender.sendMessage(TextFormat.GRAY + "      " + each.getMemoryType() + ", " + each.getManufacturer());
                 }
-                sender.sendMessage("");
+                sender.sendMessage(" ");
             }
         } else if (tpsMode) {
             int count = 1;
@@ -419,10 +422,12 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
     }
 
     private TextFormat getTPSColor(float tps) {
+        float target = Math.max(1, Server.getInstance().getBaseTps());
+        float ratio = tps / target;
         TextFormat tpsColor = TextFormat.GREEN;
-        if (tps < 12) {
+        if (ratio < 0.60f) {
             tpsColor = TextFormat.RED;
-        } else if (tps < 17) {
+        } else if (ratio < 0.85f) {
             tpsColor = TextFormat.GOLD;
         }
         return tpsColor;
@@ -449,11 +454,11 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             currentCount++;
             float currentTps = Server.getInstance().getTicksPerSecond();
 
-            sender.sendMessage(TextFormat.GRAY + "[" + currentCount + "]" + getTPSColor(currentTps) + " Current TPS: " + currentTps);
+            sender.sendMessage(TextFormat.GRAY + "[" + currentCount + "]" + getTPSColor(currentTps) + " Current TPS: " + NukkitMath.round(currentTps, 2));
             tpsSum += currentTps;
             if (currentCount >= count) {
                 var averageTps = (tpsSum / count);
-                sender.sendMessage(TextFormat.GOLD + "Average TPS: " + getTPSColor(averageTps));
+                sender.sendMessage(TextFormat.GOLD + "Average TPS: " + getTPSColor(averageTps) + NukkitMath.round(averageTps, 2));
                 this.cancel();
             }
         }
