@@ -319,7 +319,7 @@ public final class VillageManager {
         if (type == null) {
             return false;
         }
-        Village village = findVillageForClaim(position, type).orElse(null);
+        Village village = findVillageForClaim(position).orElse(null);
         if (village == null) {
             if (type != PoiType.HOME) {
                 return false;
@@ -416,7 +416,7 @@ public final class VillageManager {
                 .findFirst().orElse(null);
     }
 
-    private Optional<Village> findVillageForClaim(BlockVector3 position, PoiType type) {
+    private Optional<Village> findVillageForClaim(BlockVector3 position) {
         Optional<Village> containing = getVillageAt(position);
         if (containing.isPresent()) {
             return containing;
