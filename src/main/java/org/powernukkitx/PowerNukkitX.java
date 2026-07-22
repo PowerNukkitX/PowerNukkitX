@@ -21,9 +21,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,8 +73,16 @@ public class PowerNukkitX {
     public static int CHROME_DEBUG_PORT = -1;
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
+    private static FileChannel instanceLockChannel;
+    private static FileLock instanceLock;
+
     public static void main(String[] args) {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+
+        if (!acquireSingleInstanceLock()) {
+            log.error("Another PowerNukkitX server is already running in this directory. Only one instance per data directory is allowed.");
+            return;
+        }
 
         AtomicBoolean disableSentry = new AtomicBoolean(false);
         disableSentry.set(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
@@ -243,6 +255,40 @@ public class PowerNukkitX {
         }
         LogManager.shutdown();
         Runtime.getRuntime().halt(0); // force exit
+    }
+
+    // Holds an exclusive lock on server.lock so a second server started from the same directory or jar refuses to boot.
+    private static boolean acquireSingleInstanceLock() {
+        try {
+            Path lockPath = Paths.get(DATA_PATH, "server.lock");
+            instanceLockChannel = FileChannel.open(lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            instanceLock = instanceLockChannel.tryLock();
+            if (instanceLock == null) {
+                instanceLockChannel.close();
+                instanceLockChannel = null;
+                return false;
+            }
+            Runtime.getRuntime().addShutdownHook(new Thread(PowerNukkitX::releaseSingleInstanceLock));
+            return true;
+        } catch (OverlappingFileLockException e) {
+            return false;
+        } catch (IOException e) {
+            log.error("Failed to acquire single-instance lock", e);
+            return false;
+        }
+    }
+
+    private static void releaseSingleInstanceLock() {
+        try {
+            if (instanceLock != null) {
+                instanceLock.release();
+            }
+            if (instanceLockChannel != null) {
+                instanceLockChannel.close();
+            }
+        } catch (IOException e) {
+            // ignore, JVM is shutting down
+        }
     }
 
     private static boolean requiresShortTitle() {
