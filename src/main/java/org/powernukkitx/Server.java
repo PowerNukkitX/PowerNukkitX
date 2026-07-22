@@ -28,6 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.block.BlockComposter;
+import org.powernukkitx.block.BlockLightProperties;
 import org.powernukkitx.block.dispenser.DispenseBehaviorRegister;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.command.Command;
@@ -638,6 +639,8 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
         LevelProviderManager.addProvider("leveldb", LevelDBProvider.class);
+
+        BlockLightProperties.build();
 
         loadLevels();
 
