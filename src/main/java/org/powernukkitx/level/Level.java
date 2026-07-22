@@ -123,7 +123,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -5051,83 +5050,37 @@ public class Level implements Metadatable {
         }
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
-            final AtomicBoolean released = new AtomicBoolean(false);
-            boolean scheduled = false;
-            try {
-                final IChunk chunk = this.getChunk(x, z, true);
-                if (chunk == null) {
-                    return;
-                }
-                if (chunk.getChunkState().canSend()) {
-                    log.warn("generateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
-                            x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("generateChunk guard triggered"));
-                    return;
-                }
-                this.generator.asyncGenerate(chunk, (c) -> {
-                    if (released.compareAndSet(false, true)) {
-                        GENERATED_CHUNK_COUNT.incrementAndGet();
-                        chunkGenerationQueue.remove(c.getChunk().getIndex());
-                    }
-                });
-                scheduled = true;
-            } finally {
-                if (!scheduled && released.compareAndSet(false, true)) {
-                    this.chunkGenerationQueue.remove(index);
-                }
+            final IChunk chunk = this.getChunk(x, z, true);
+            if (chunk != null && chunk.getChunkState().canSend()) {
+                this.chunkGenerationQueue.remove(index);
+                log.warn("generateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
+                        x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("generateChunk guard triggered"));
+                return;
             }
+            this.generator.asyncGenerate(chunk, (c) -> {
+                GENERATED_CHUNK_COUNT.incrementAndGet();
+                chunkGenerationQueue.remove(c.getChunk().getIndex());
+            });
         }
     }
 
     public void syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
-        if (isChunkGenerating(x, z)) {
-            IChunk generating = this.getChunk(x, z, false);
-            if (generating != null && generating.getChunkState() == ChunkState.NEW)
-                removeFromGenerateList(x, z);
-        }
+        if (isChunkGenerating(x, z) && getChunk(x, z, false).getChunkState() == ChunkState.NEW)
+            removeFromGenerateList(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
-            try {
-                IChunk chunk = this.getChunk(x, z, true);
-                if (chunk == null) {
-                    return;
-                }
-                if (chunk.getChunkState().canSend()) {
-                    log.warn("syncGenerateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
-                            x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("syncGenerateChunk guard triggered"));
-                    return;
-                }
-                this.generator.syncGenerate(chunk);
-                GENERATED_CHUNK_COUNT.incrementAndGet();
-            } finally {
-                chunkGenerationQueue.remove(index);
+            IChunk chunk = this.getChunk(x, z, true);
+            if (chunk != null && chunk.getChunkState().canSend()) {
+                this.chunkGenerationQueue.remove(index);
+                log.warn("syncGenerateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
+                        x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("syncGenerateChunk guard triggered"));
+                return;
             }
-            return;
+            this.generator.syncGenerate(chunk);
+            GENERATED_CHUNK_COUNT.incrementAndGet();
+            chunkGenerationQueue.remove(index);
         }
-        awaitChunkGeneration(x, z);
-    }
-
-    private void awaitChunkGeneration(int x, int z) {
-        final long deadline = System.currentTimeMillis() + 30000L;
-        try {
-            ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker() {
-                @Override
-                public boolean block() throws InterruptedException {
-                    Thread.sleep(1);
-                    return isReleasable();
-                }
-
-                @Override
-                public boolean isReleasable() {
-                    return !isChunkGenerating(x, z) || System.currentTimeMillis() >= deadline;
-                }
-            });
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return;
-        }
-        if (isChunkGenerating(x, z)) {
-            log.warn("Timed out after 30s waiting for the generation of chunk ({}, {}) in level '{}'", x, z, getFolderName());
-        }
+        while (isChunkGenerating(x, z));
     }
 
     private void removeFromGenerateList(int x, int z) {
