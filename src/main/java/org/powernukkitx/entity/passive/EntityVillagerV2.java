@@ -6,6 +6,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockBed;
 import org.powernukkitx.block.BlockDoor;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.blockentity.BlockEntityBed;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.behavior.Behavior;
@@ -55,7 +56,6 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.level.ParticleEffect;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
-import org.powernukkitx.level.village.PoiType;
 import org.powernukkitx.level.village.VillageDwellers;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
@@ -242,19 +242,16 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         entity -> {
                             if (getLevel().getTick() % 120 == 0) {
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
-                                    getLevel().getVillageManager().findClosest(type -> type == PoiType.HOME, this, 48, true)
-                                            .ifPresent(poi -> {
-                                                BlockVector3 pos = poi.position();
-                                                if (getLevel().getBlock(pos.x, pos.y, pos.z) instanceof BlockBed bed && !bed.isOccupied()) {
-                                                    setBed(bed.getFootPart());
-                                                }
-                                            });
+                                    BlockBed bed = findNearestAvailableBed(48);
+                                    if (bed != null) {
+                                        setBed(bed);
+                                    }
                                 } else if (!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
                                     getLevel().getVillageManager().release(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3());
                                     this.nbt.remove("bed");
                                     getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                                 } else {
-                                    getLevel().getVillageManager().ensureTicket(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3());
+                                    getLevel().getVillageManager().ensureTicket(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3(), getId());
                                 }
                             }
                         },
@@ -296,7 +293,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                         setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
                                     }
                                 } else if (siteBlock != null) {
-                                    getLevel().getVillageManager().ensureTicket(siteBlock.asBlockVector3());
+                                    getLevel().getVillageManager().ensureTicket(siteBlock.asBlockVector3(), getId());
                                 }
 
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.SITE_BLOCK)) {
@@ -305,7 +302,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                         String requiredBlockId = getTradeExp() != 0 && currentProfession != null
                                             ? currentProfession.getBlockID() : null;
                                         boolean acquired = getLevel().getVillageManager()
-                                            .findClosestJobSite(this, requiredBlockId)
+                                            .findClosestJobSite(this, requiredBlockId, getVillageUuid())
                                             .map(poi -> {
                                                 BlockVector3 pos = poi.position();
                                                 return setProfessionBlock(getLevel().getBlock(pos.x, pos.y, pos.z));
@@ -380,7 +377,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public void setBed(BlockBed bed) {
-        if (bed.isBedValid() && getLevel().getVillageManager().takeAt(bed.getFootPart().asBlockVector3())) {
+        if (bed.isBedValid() && getLevel().getVillageManager().takeAt(bed.getFootPart().asBlockVector3(), getId())) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, bed);
             getLevel().getVillageManager().getVillageAt(bed.asBlockVector3()).ifPresent(village -> {
                 setVillageUuid(village.uuid());
@@ -396,10 +393,44 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         }
     }
 
+    private BlockBed findNearestAvailableBed(int radius) {
+        int minChunkX = (getFloorX() - radius) >> 4;
+        int maxChunkX = (getFloorX() + radius) >> 4;
+        int minChunkZ = (getFloorZ() - radius) >> 4;
+        int maxChunkZ = (getFloorZ() + radius) >> 4;
+        double maxDistanceSquared = (double) radius * radius;
+        double nearestDistanceSquared = Double.MAX_VALUE;
+        BlockBed nearestBed = null;
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                IChunk chunk = getLevel().getChunkIfLoaded(chunkX, chunkZ);
+                if (chunk == null) {
+                    continue;
+                }
+                for (var blockEntity : chunk.getBlockEntities().values()) {
+                    if (!(blockEntity instanceof BlockEntityBed bedEntity)) {
+                        continue;
+                    }
+                    double distanceSquared = distanceSquared(bedEntity);
+                    if (distanceSquared > maxDistanceSquared || distanceSquared >= nearestDistanceSquared) {
+                        continue;
+                    }
+                    if (getLevel().getBlock(bedEntity) instanceof BlockBed bed
+                            && !bed.isHeadPiece() && bed.isBedValid() && !bed.isOccupied()) {
+                        nearestDistanceSquared = distanceSquared;
+                        nearestBed = bed;
+                    }
+                }
+            }
+        }
+        return nearestBed;
+    }
+
     private void restoreBed(BlockBed bed) {
         BlockBed foot = bed.getFootPart();
         if (foot != null && foot.isBedValid()
-                && getLevel().getVillageManager().ensureTicket(foot.asBlockVector3())) {
+                && getLevel().getVillageManager().ensureTicket(foot.asBlockVector3(), getId())) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, foot);
         }
     }
@@ -774,7 +805,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         for (Profession profession : Profession.getProfessions().values()) {
             if (getTradeExp() != 0 && profession.getIndex() != getProfession()) continue;
             if (block.getId().equals(profession.getBlockID())) {
-                if (!getLevel().getVillageManager().takeAt(block.asBlockVector3())) return false;
+                if (!getLevel().getVillageManager().takeAt(block.asBlockVector3(), getId())) return false;
                 getMemoryStorage().put(CoreMemoryTypes.SITE_BLOCK, block);
                 getLevel().getVillageManager().getVillageAt(block.asBlockVector3())
                         .ifPresent(village -> setVillageUuid(village.uuid()));
@@ -800,10 +831,20 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.nbt.putString("villageUuid", villageUuid.toString());
     }
 
+    public void leaveVillage(UUID villageUuid) {
+        if (!villageUuid.equals(getVillageUuid())) {
+            return;
+        }
+        this.nbt.remove("villageUuid");
+        getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
+        getMemoryStorage().clear(CoreMemoryTypes.SITE_BLOCK);
+        setProfession(0, true);
+    }
+
     private void restoreProfessionBlock(Block block) {
         Profession profession = Profession.getProfession(getProfession());
         if (profession != null && block.getId().equals(profession.getBlockID())
-                && getLevel().getVillageManager().ensureTicket(block.asBlockVector3())) {
+                && getLevel().getVillageManager().ensureTicket(block.asBlockVector3(), getId())) {
             getMemoryStorage().put(CoreMemoryTypes.SITE_BLOCK, block);
         }
     }

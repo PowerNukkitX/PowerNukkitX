@@ -10,12 +10,10 @@ import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.block.BlockJigsaw;
 import org.powernukkitx.block.BlockSnow;
 import org.powernukkitx.block.BlockSnowLayer;
-import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.blockentity.BlockEntityChest;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
@@ -26,33 +24,19 @@ import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.JigsawStructure;
 import org.powernukkitx.level.structure.PNXStructure;
-import org.powernukkitx.level.village.Village;
-import org.powernukkitx.level.village.VillageDwellers;
-import org.powernukkitx.level.village.VillageInfo;
-import org.powernukkitx.level.village.VillageManager;
-import org.powernukkitx.level.village.VillagePlayers;
-import org.powernukkitx.level.village.VillagePoi;
-import org.powernukkitx.level.village.VillagePoiGroup;
-import org.powernukkitx.level.village.VillagePois;
-import org.powernukkitx.level.village.PoiType;
-import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.block.BlockState;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.powernukkitx.utils.random.Xoroshiro128;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 import static org.powernukkitx.block.BlockID.*;
 
@@ -84,17 +68,15 @@ public abstract class VillageStructure extends JigsawStructure {
     @Override
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
-        List<VillageDwellers.Actor> actors = new ArrayList<>();
         Level level = helper.getLevel();
         helper.addHook(() -> {
             populatePendingChestLoot(level);
         });
-        UUID villageUuid = registerVillage(helper, helper.getOrigin());
         helper.applySubChunkUpdate();
 
         placedBlocks.stream()
-                .filter(BlockUnknown.class::isInstance)
-                .forEach(block -> level.setBlock(block, BlockAir.STATE.toBlock(block), true, true));
+            .filter(BlockUnknown.class::isInstance)
+            .forEach(block -> level.setBlock(block, BlockAir.STATE.toBlock(block), true, true));
 
         int jigsawCount = 0;
         double jigsawSumX = 0, jigsawSumZ = 0;
@@ -107,15 +89,11 @@ public abstract class VillageStructure extends JigsawStructure {
             int spawnZ = block.getFloorZ();
             int safeY = findSafeSpawnY(level, spawnX, block.getFloorY(), spawnZ, 2);
             Entity villager = Entity.createEntity(
-                    Entity.VILLAGER_V2,
-                    new Position(spawnX + 0.5, safeY, spawnZ + 0.5, level)
+                Entity.VILLAGER_V2,
+                new Position(spawnX + 0.5, safeY, spawnZ + 0.5, level)
             );
             if (villager != null) {
-                if (villager instanceof EntityVillagerV2 villageDweller) {
-                    villageDweller.setVillageUuid(villageUuid);
-                }
                 villager.spawnToAll();
-                actors.add(createDwellerActor(villager, level.getCurrentTick()));
             }
             jigsawSumX += spawnX;
             jigsawSumZ += spawnZ;
@@ -128,55 +106,10 @@ public abstract class VillageStructure extends JigsawStructure {
             int baseY = level.getHighestBlockAt(centerX, centerZ) + 1;
             int golemY = findSafeSpawnY(level, centerX, baseY, centerZ, 3);
             Entity golem = Entity.createEntity(EntityID.IRON_GOLEM,
-                    new Position(centerX + 0.5, golemY, centerZ + 0.5, level));
+                new Position(centerX + 0.5, golemY, centerZ + 0.5, level));
             if (golem != null) {
                 golem.spawnToAll();
-                actors.add(createDwellerActor(golem, level.getCurrentTick()));
             }
-        }
-
-        updateVillageDwellers(level, villageUuid, actors);
-    }
-
-    private static VillageDwellers.Actor createDwellerActor(Entity entity, long tick) {
-        return new VillageDwellers.Actor(entity.getId(), entity.asBlockVector3(), tick, null);
-    }
-
-    private static UUID registerVillage(BlockManager blockManager, BlockVector3 origin) {
-        Level level = blockManager.getLevel();
-        AxisAlignedBB bounds = blockManager.getBounds();
-        BlockVector3 min = new BlockVector3((int) bounds.getMinX(), (int) bounds.getMinY(), (int) bounds.getMinZ());
-        BlockVector3 max = new BlockVector3((int) bounds.getMaxX(), (int) bounds.getMaxY(), (int) bounds.getMaxZ());
-        long tick = level.getCurrentTick();
-        String identity = level.getName() + ':' + level.getDimension() + ':' + origin.x + ':' + origin.y + ':' + origin.z;
-        UUID uuid = UUID.nameUUIDFromBytes(identity.getBytes(StandardCharsets.UTF_8));
-        VillageInfo info = new VillageInfo(0, 0, true, tick, tick, min, max, tick, (byte) 1, min, max);
-        List<VillagePoi> poi = blockManager.getBlocks().stream()
-                .map(VillageStructure::createPoi)
-                .filter(Objects::nonNull)
-                .toList();
-        List<VillagePoiGroup> poiGroups = poi.isEmpty() ? List.of() : List.of(new VillagePoiGroup(-1, poi));
-        Village village = new Village(uuid,
-                new VillageDwellers(List.of()),
-                info,
-                new VillagePlayers(new ListTag<>(Tag.TAG_Compound)),
-                new VillagePois(poiGroups),
-                null);
-        level.getVillageManager().addVillage(village);
-        return uuid;
-    }
-
-    private static VillagePoi createPoi(Block block) {
-        PoiType type = VillageManager.getPoiType(block);
-        return type == null ? null : new VillagePoi(type, block.asBlockVector3());
-    }
-
-    private static void updateVillageDwellers(Level level, UUID uuid, List<VillageDwellers.Actor> actors) {
-        Village village = level.getVillageManager().getVillage(uuid);
-        if (village != null) {
-            level.getVillageManager().addVillage(new Village(village.uuid(),
-                    new VillageDwellers(List.of(new VillageDwellers.Dweller(actors))),
-                    village.info(), village.players(), village.pois(), village.raid()));
         }
     }
 
@@ -257,8 +190,8 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected boolean isGenericVillageHouse(String structureName, String biome) {
         return structureName.contains("/houses/" + biome + "_small_house_")
-                || structureName.contains("/houses/" + biome + "_medium_house_")
-                || structureName.contains("/houses/" + biome + "_big_house_");
+            || structureName.contains("/houses/" + biome + "_medium_house_")
+            || structureName.contains("/houses/" + biome + "_big_house_");
     }
 
     protected void populatePendingChestLoot(Level level) {
@@ -355,9 +288,9 @@ public abstract class VillageStructure extends JigsawStructure {
         }
 
         Block anchor = blocks.stream()
-                .filter(block -> !(block instanceof BlockJigsaw))
-                .min(Comparator.comparingInt(Vector3::getFloorY))
-                .orElse(blocks.getFirst());
+            .filter(block -> !(block instanceof BlockJigsaw))
+            .min(Comparator.comparingInt(Vector3::getFloorY))
+            .orElse(blocks.getFirst());
 
         int targetY = getPlacementY(blockManager.getLevel(), anchor.getFloorX(), anchor.getFloorZ());
         int deltaY = targetY - anchor.getFloorY();
@@ -454,9 +387,9 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected boolean usesDirtSupports(String structureName) {
         return structureName.contains("_farm_")
-                || structureName.contains("_stable_")
-                || structureName.contains("_animal_pen_")
-                || structureName.contains("_accessory_");
+            || structureName.contains("_stable_")
+            || structureName.contains("_animal_pen_")
+            || structureName.contains("_accessory_");
     }
 
     protected void fillPieceSupports(BlockManager blockManager, BlockState supportState) {
@@ -498,10 +431,10 @@ public abstract class VillageStructure extends JigsawStructure {
                 }
 
                 blockManager.setBlockStateAt(
-                        x,
-                        y,
-                        z,
-                        supportState
+                    x,
+                    y,
+                    z,
+                    supportState
                 );
             }
         }
@@ -514,9 +447,9 @@ public abstract class VillageStructure extends JigsawStructure {
     protected int getTerrainY(Level level, int x, int z) {
         int height = level.getHeightMap(x, z);
         while (height > level.getMinHeight()
-                && (isReplaceableTerrainCover(level.getBlock(x, height, z))
-                || level.getBlock(x, height, z).canBeReplaced()
-                || level.getBlock(x, height, z).isTransparent())) {
+            && (isReplaceableTerrainCover(level.getBlock(x, height, z))
+            || level.getBlock(x, height, z).canBeReplaced()
+            || level.getBlock(x, height, z).isTransparent())) {
             height--;
         }
         return height;
@@ -561,159 +494,159 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected static class VillageChestLoot extends RandomizableContainer {
         static final VillageChestLoot ARMORER = create(false, 1, 5,
-                item(ItemID.IRON_INGOT, 0, 3, 1, 2),
-                item(ItemID.BREAD, 0, 4, 1, 4),
-                item(ItemID.IRON_HELMET, 1),
-                item(ItemID.EMERALD, 1)
+            item(ItemID.IRON_INGOT, 0, 3, 1, 2),
+            item(ItemID.BREAD, 0, 4, 1, 4),
+            item(ItemID.IRON_HELMET, 1),
+            item(ItemID.EMERALD, 1)
         );
         static final VillageChestLoot BUTCHER = create(false, 1, 5,
-                item(ItemID.EMERALD, 1),
-                item(ItemID.PORKCHOP, 0, 3, 1, 6),
-                item(WHEAT, 0, 3, 1, 6),
-                item(ItemID.BEEF, 0, 3, 1, 6),
-                item(ItemID.MUTTON, 0, 3, 1, 6),
-                item(ItemID.COAL, 0, 3, 1, 3)
+            item(ItemID.EMERALD, 1),
+            item(ItemID.PORKCHOP, 0, 3, 1, 6),
+            item(WHEAT, 0, 3, 1, 6),
+            item(ItemID.BEEF, 0, 3, 1, 6),
+            item(ItemID.MUTTON, 0, 3, 1, 6),
+            item(ItemID.COAL, 0, 3, 1, 3)
         );
         static final VillageChestLoot CARTOGRAPHER = create(true, 1, 5,
-                item(ItemID.EMPTY_MAP, 0, 3, 1, 10),
-                item(ItemID.PAPER, 0, 5, 1, 15),
-                item(ItemID.COMPASS, 0, 1, 1, 5),
-                item(ItemID.BREAD, 0, 4, 1, 15),
-                item(BlockID.OAK_SAPLING, 0, 2, 1, 5)
+            item(ItemID.EMPTY_MAP, 0, 3, 1, 10),
+            item(ItemID.PAPER, 0, 5, 1, 15),
+            item(ItemID.COMPASS, 0, 1, 1, 5),
+            item(ItemID.BREAD, 0, 4, 1, 15),
+            item(BlockID.OAK_SAPLING, 0, 2, 1, 5)
         );
         static final VillageChestLoot DESERT_HOUSE = create(true, 3, 8,
-                item(ItemID.CLAY_BALL, 1),
-                item(ItemID.DYE, 2, 1, 1, 1),
-                item(CACTUS, 0, 4, 1, 10),
-                item(WHEAT, 0, 7, 1, 10),
-                item(ItemID.BREAD, 0, 4, 1, 10),
-                item(ItemID.BOOK, 1),
-                item(DEADBUSH, 0, 3, 1, 2),
-                item(ItemID.EMERALD, 0, 3, 1, 1)
+            item(ItemID.CLAY_BALL, 1),
+            item(ItemID.DYE, 2, 1, 1, 1),
+            item(CACTUS, 0, 4, 1, 10),
+            item(WHEAT, 0, 7, 1, 10),
+            item(ItemID.BREAD, 0, 4, 1, 10),
+            item(ItemID.BOOK, 1),
+            item(DEADBUSH, 0, 3, 1, 2),
+            item(ItemID.EMERALD, 0, 3, 1, 1)
         );
         static final VillageChestLoot FLETCHER = create(false, 1, 5,
-                item(ItemID.EMERALD, 1),
-                item(ItemID.ARROW, 0, 3, 1, 2),
-                item(ItemID.FEATHER, 0, 3, 1, 6),
-                item(ItemID.EGG, 0, 3, 1, 2),
-                item(ItemID.FLINT, 0, 3, 1, 6),
-                item(ItemID.STICK, 0, 3, 1, 6)
+            item(ItemID.EMERALD, 1),
+            item(ItemID.ARROW, 0, 3, 1, 2),
+            item(ItemID.FEATHER, 0, 3, 1, 6),
+            item(ItemID.EGG, 0, 3, 1, 2),
+            item(ItemID.FLINT, 0, 3, 1, 6),
+            item(ItemID.STICK, 0, 3, 1, 6)
         );
         static final VillageChestLoot MASON = create(false, 1, 5,
-                item(ItemID.CLAY_BALL, 0, 3, 1, 1),
-                item(BlockID.FLOWER_POT, 1),
-                item(STONE, 0, 1, 1, 2),
-                item(STONE_BRICKS, 0, 1, 1, 2),
-                item(ItemID.BREAD, 0, 4, 1, 4),
-                item(ItemID.YELLOW_DYE, 1),
-                item(SMOOTH_STONE, 1),
-                item(ItemID.EMERALD, 1)
+            item(ItemID.CLAY_BALL, 0, 3, 1, 1),
+            item(BlockID.FLOWER_POT, 1),
+            item(STONE, 0, 1, 1, 2),
+            item(STONE_BRICKS, 0, 1, 1, 2),
+            item(ItemID.BREAD, 0, 4, 1, 4),
+            item(ItemID.YELLOW_DYE, 1),
+            item(SMOOTH_STONE, 1),
+            item(ItemID.EMERALD, 1)
         );
         static final VillageChestLoot PLAINS_HOUSE = create(true, 3, 8,
-                item(ItemID.GOLD_NUGGET, 0, 3, 1, 1),
-                item(DANDELION, 0, 1, 1, 2),
-                item(POPPY, 1),
-                item(ItemID.POTATO, 0, 7, 1, 10),
-                item(ItemID.BREAD, 0, 4, 1, 10),
-                item(ItemID.APPLE, 0, 5, 1, 10),
-                item(ItemID.BOOK, 1),
-                item(ItemID.FEATHER, 1),
-                item(ItemID.EMERALD, 0, 4, 1, 2),
-                item(BlockID.OAK_SAPLING, 0, 2, 1, 5)
+            item(ItemID.GOLD_NUGGET, 0, 3, 1, 1),
+            item(DANDELION, 0, 1, 1, 2),
+            item(POPPY, 1),
+            item(ItemID.POTATO, 0, 7, 1, 10),
+            item(ItemID.BREAD, 0, 4, 1, 10),
+            item(ItemID.APPLE, 0, 5, 1, 10),
+            item(ItemID.BOOK, 1),
+            item(ItemID.FEATHER, 1),
+            item(ItemID.EMERALD, 0, 4, 1, 2),
+            item(BlockID.OAK_SAPLING, 0, 2, 1, 5)
         );
         static final VillageChestLoot SAVANNA_HOUSE = create(true, 3, 8,
-                item(ItemID.GOLD_NUGGET, 0, 3, 1, 1),
-                item(SHORT_GRASS, 0, 1, 1, 5),
-                item(TALL_GRASS, 0, 1, 1, 5),
-                item(ItemID.BREAD, 0, 4, 1, 10),
-                item(ItemID.WHEAT_SEEDS, 0, 5, 1, 10),
-                item(ItemID.EMERALD, 0, 4, 1, 2),
-                item(ACACIA_SAPLING, 0, 2, 1, 10),
-                item(ItemID.SADDLE, 1),
-                item(TORCH, 0, 2, 1, 1),
-                item(ItemID.BUCKET, 1)
+            item(ItemID.GOLD_NUGGET, 0, 3, 1, 1),
+            item(SHORT_GRASS, 0, 1, 1, 5),
+            item(TALL_GRASS, 0, 1, 1, 5),
+            item(ItemID.BREAD, 0, 4, 1, 10),
+            item(ItemID.WHEAT_SEEDS, 0, 5, 1, 10),
+            item(ItemID.EMERALD, 0, 4, 1, 2),
+            item(ACACIA_SAPLING, 0, 2, 1, 10),
+            item(ItemID.SADDLE, 1),
+            item(TORCH, 0, 2, 1, 1),
+            item(ItemID.BUCKET, 1)
         );
         static final VillageChestLoot SHEPHERD = create(false, 1, 5,
-                item(WHITE_WOOL, 0, 8, 1, 6),
-                item(BlockID.BLACK_WOOL, 0, 3, 1, 3),
-                item(BlockID.GRAY_WOOL, 0, 3, 1, 2),
-                item(BROWN_WOOL, 0, 3, 1, 2),
-                item(LIGHT_GRAY_WOOL, 0, 3, 1, 2),
-                item(ItemID.EMERALD, 1),
-                item(ItemID.SHEARS, 1),
-                item(WHEAT, 0, 6, 1, 6)
+            item(WHITE_WOOL, 0, 8, 1, 6),
+            item(BlockID.BLACK_WOOL, 0, 3, 1, 3),
+            item(BlockID.GRAY_WOOL, 0, 3, 1, 2),
+            item(BROWN_WOOL, 0, 3, 1, 2),
+            item(LIGHT_GRAY_WOOL, 0, 3, 1, 2),
+            item(ItemID.EMERALD, 1),
+            item(ItemID.SHEARS, 1),
+            item(WHEAT, 0, 6, 1, 6)
         );
         static final VillageChestLoot SNOWY_HOUSE = create(true, 3, 8,
-                item(BLUE_ICE, 1),
-                item(SNOW, 0, 1, 1, 4),
-                item(ItemID.POTATO, 0, 7, 1, 10),
-                item(ItemID.BREAD, 0, 4, 1, 10),
-                item(ItemID.BEETROOT_SEEDS, 0, 5, 1, 10),
-                item(ItemID.BEETROOT_SOUP, 1),
-                item(BlockID.FURNACE, 1),
-                item(ItemID.EMERALD, 0, 4, 1, 1),
-                item(ItemID.SNOWBALL, 0, 7, 1, 10),
-                item(ItemID.COAL, 0, 4, 1, 5)
+            item(BLUE_ICE, 1),
+            item(SNOW, 0, 1, 1, 4),
+            item(ItemID.POTATO, 0, 7, 1, 10),
+            item(ItemID.BREAD, 0, 4, 1, 10),
+            item(ItemID.BEETROOT_SEEDS, 0, 5, 1, 10),
+            item(ItemID.BEETROOT_SOUP, 1),
+            item(BlockID.FURNACE, 1),
+            item(ItemID.EMERALD, 0, 4, 1, 1),
+            item(ItemID.SNOWBALL, 0, 7, 1, 10),
+            item(ItemID.COAL, 0, 4, 1, 5)
         );
         static final VillageChestLoot TAIGA_HOUSE = create(true, 3, 8,
-                item(ItemID.IRON_NUGGET, 0, 5, 1, 1),
-                item(FERN, 0, 1, 1, 2),
-                item(LARGE_FERN, 0, 1, 1, 2),
-                item(ItemID.POTATO, 0, 7, 1, 10),
-                item(ItemID.BREAD, 0, 4, 1, 10),
-                item(ItemID.PUMPKIN_SEEDS, 0, 5, 1, 5),
-                item(ItemID.PUMPKIN_PIE, 1),
-                item(ItemID.EMERALD, 0, 4, 1, 2),
-                item(SPRUCE_SAPLING, 0, 5, 1, 5),
-                item(ItemID.OAK_SIGN, 1, 1, 1, 1),
-                item(SPRUCE_LOG, 0, 5, 1, 10)
+            item(ItemID.IRON_NUGGET, 0, 5, 1, 1),
+            item(FERN, 0, 1, 1, 2),
+            item(LARGE_FERN, 0, 1, 1, 2),
+            item(ItemID.POTATO, 0, 7, 1, 10),
+            item(ItemID.BREAD, 0, 4, 1, 10),
+            item(ItemID.PUMPKIN_SEEDS, 0, 5, 1, 5),
+            item(ItemID.PUMPKIN_PIE, 1),
+            item(ItemID.EMERALD, 0, 4, 1, 2),
+            item(SPRUCE_SAPLING, 0, 5, 1, 5),
+            item(ItemID.OAK_SIGN, 1, 1, 1, 1),
+            item(SPRUCE_LOG, 0, 5, 1, 10)
         );
         static final VillageChestLoot TANNERY = create(true, 1, 5,
-                item(ItemID.LEATHER, 0, 3, 1, 1),
-                item(ItemID.LEATHER_CHESTPLATE, 0, 1, 1, 2),
-                item(ItemID.LEATHER_BOOTS, 0, 1, 1, 2),
-                item(ItemID.LEATHER_HELMET, 0, 1, 1, 2),
-                item(ItemID.BREAD, 0, 4, 1, 5),
-                item(ItemID.LEATHER_LEGGINGS, 0, 1, 1, 2),
-                item(ItemID.SADDLE, 1),
-                item(ItemID.EMERALD, 0, 4, 1, 1)
+            item(ItemID.LEATHER, 0, 3, 1, 1),
+            item(ItemID.LEATHER_CHESTPLATE, 0, 1, 1, 2),
+            item(ItemID.LEATHER_BOOTS, 0, 1, 1, 2),
+            item(ItemID.LEATHER_HELMET, 0, 1, 1, 2),
+            item(ItemID.BREAD, 0, 4, 1, 5),
+            item(ItemID.LEATHER_LEGGINGS, 0, 1, 1, 2),
+            item(ItemID.SADDLE, 1),
+            item(ItemID.EMERALD, 0, 4, 1, 1)
         );
         static final VillageChestLoot TEMPLE = create(false, 3, 8,
-                item(ItemID.REDSTONE, 0, 4, 1, 2),
-                item(ItemID.BREAD, 0, 4, 1, 7),
-                item(ItemID.ROTTEN_FLESH, 0, 4, 1, 7),
-                item(ItemID.DYE, 4, 4, 1, 1),
-                item(ItemID.GOLD_INGOT, 0, 4, 1, 1),
-                item(ItemID.EMERALD, 0, 4, 1, 1)
+            item(ItemID.REDSTONE, 0, 4, 1, 2),
+            item(ItemID.BREAD, 0, 4, 1, 7),
+            item(ItemID.ROTTEN_FLESH, 0, 4, 1, 7),
+            item(ItemID.DYE, 4, 4, 1, 1),
+            item(ItemID.GOLD_INGOT, 0, 4, 1, 1),
+            item(ItemID.EMERALD, 0, 4, 1, 1)
         );
         static final VillageChestLoot TOOLSMITH = create(false, 3, 8,
-                item(ItemID.DIAMOND, 0, 3, 1, 1),
-                item(ItemID.IRON_INGOT, 0, 5, 1, 5),
-                item(ItemID.GOLD_INGOT, 0, 3, 1, 1),
-                item(ItemID.BREAD, 0, 3, 1, 15),
-                item(ItemID.IRON_PICKAXE, 0, 1, 1, 5),
-                item(ItemID.COAL, 0, 3, 1, 1),
-                item(ItemID.STICK, 0, 3, 1, 20),
-                item(ItemID.IRON_SHOVEL, 0, 1, 1, 5)
+            item(ItemID.DIAMOND, 0, 3, 1, 1),
+            item(ItemID.IRON_INGOT, 0, 5, 1, 5),
+            item(ItemID.GOLD_INGOT, 0, 3, 1, 1),
+            item(ItemID.BREAD, 0, 3, 1, 15),
+            item(ItemID.IRON_PICKAXE, 0, 1, 1, 5),
+            item(ItemID.COAL, 0, 3, 1, 1),
+            item(ItemID.STICK, 0, 3, 1, 20),
+            item(ItemID.IRON_SHOVEL, 0, 1, 1, 5)
         );
         static final VillageChestLoot WEAPONSMITH = create(true, 3, 8,
-                item(ItemID.DIAMOND, 0, 3, 1, 3),
-                item(ItemID.IRON_INGOT, 0, 5, 1, 10),
-                item(ItemID.GOLD_INGOT, 0, 3, 1, 5),
-                item(ItemID.BREAD, 0, 3, 1, 15),
-                item(ItemID.APPLE, 0, 3, 1, 15),
-                item(ItemID.IRON_PICKAXE, 0, 1, 1, 5),
-                item(ItemID.IRON_SWORD, 0, 1, 1, 5),
-                item(ItemID.IRON_CHESTPLATE, 0, 1, 1, 5),
-                item(ItemID.IRON_HELMET, 0, 1, 1, 5),
-                item(ItemID.IRON_LEGGINGS, 0, 1, 1, 5),
-                item(ItemID.IRON_BOOTS, 0, 1, 1, 5),
-                item(BlockID.OBSIDIAN, 0, 7, 3, 5),
-                item(BlockID.OAK_SAPLING, 0, 7, 3, 5),
-                item(ItemID.SADDLE, 0, 1, 1, 3),
-                item(ItemID.IRON_HORSE_ARMOR, 1),
-                item(ItemID.GOLDEN_HORSE_ARMOR, 1),
-                item(ItemID.DIAMOND_HORSE_ARMOR, 1)
+            item(ItemID.DIAMOND, 0, 3, 1, 3),
+            item(ItemID.IRON_INGOT, 0, 5, 1, 10),
+            item(ItemID.GOLD_INGOT, 0, 3, 1, 5),
+            item(ItemID.BREAD, 0, 3, 1, 15),
+            item(ItemID.APPLE, 0, 3, 1, 15),
+            item(ItemID.IRON_PICKAXE, 0, 1, 1, 5),
+            item(ItemID.IRON_SWORD, 0, 1, 1, 5),
+            item(ItemID.IRON_CHESTPLATE, 0, 1, 1, 5),
+            item(ItemID.IRON_HELMET, 0, 1, 1, 5),
+            item(ItemID.IRON_LEGGINGS, 0, 1, 1, 5),
+            item(ItemID.IRON_BOOTS, 0, 1, 1, 5),
+            item(BlockID.OBSIDIAN, 0, 7, 3, 5),
+            item(BlockID.OAK_SAPLING, 0, 7, 3, 5),
+            item(ItemID.SADDLE, 0, 1, 1, 3),
+            item(ItemID.IRON_HORSE_ARMOR, 1),
+            item(ItemID.GOLDEN_HORSE_ARMOR, 1),
+            item(ItemID.DIAMOND_HORSE_ARMOR, 1)
         );
 
         private final boolean includesBundle;

@@ -7,11 +7,16 @@ import org.powernukkitx.nbt.tag.ListTag;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.ArrayList;
 
-public record VillageDwellers(List<Dweller> dwellers) {
-    public VillageDwellers {
-        dwellers = List.copyOf(dwellers);
+public final class VillageDwellers {
+    private final List<Dweller> dwellers;
+
+    public VillageDwellers(List<Dweller> dwellers) {
+        this.dwellers = new ArrayList<>(dwellers);
     }
+
+    public List<Dweller> dwellers() { return dwellers; }
 
     public static VillageDwellers fromCompound(CompoundTag tag) {
         return new VillageDwellers(tag.getList("Dwellers", CompoundTag.class).getAll().stream()
@@ -24,10 +29,14 @@ public record VillageDwellers(List<Dweller> dwellers) {
         return new CompoundTag().putList("Dwellers", dwellersTag);
     }
 
-    public record Dweller(List<Actor> actors) {
-        public Dweller {
-            actors = List.copyOf(actors);
+    public static final class Dweller {
+        private final List<Actor> actors;
+
+        public Dweller(List<Actor> actors) {
+            this.actors = new ArrayList<>(actors);
         }
+
+        public List<Actor> actors() { return actors; }
 
         public static Dweller fromCompound(CompoundTag tag) {
             return new Dweller(tag.getList("actors", CompoundTag.class).getAll().stream()
