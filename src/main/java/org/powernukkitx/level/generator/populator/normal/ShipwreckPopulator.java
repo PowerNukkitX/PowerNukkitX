@@ -1,4 +1,4 @@
-﻿package org.powernukkitx.level.generator.populator.normal;
+package org.powernukkitx.level.generator.populator.normal;
 
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
