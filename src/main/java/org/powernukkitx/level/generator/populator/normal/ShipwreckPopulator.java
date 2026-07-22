@@ -1,4 +1,4 @@
-package org.powernukkitx.level.generator.populator.normal;
+﻿package org.powernukkitx.level.generator.populator.normal;
 
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
@@ -96,13 +96,14 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
     };
 
     protected enum ShipwreckWood {
-        OAK(Block.OAK_LOG, Block.OAK_PLANKS, Block.OAK_STAIRS, Block.OAK_SLAB, Block.OAK_FENCE, Block.TRAPDOOR, Block.WOODEN_DOOR),
-        SPRUCE(Block.SPRUCE_LOG, Block.SPRUCE_PLANKS, Block.SPRUCE_STAIRS, Block.SPRUCE_SLAB, Block.SPRUCE_FENCE, Block.SPRUCE_TRAPDOOR, Block.SPRUCE_DOOR),
-        BIRCH(Block.BIRCH_LOG, Block.BIRCH_PLANKS, Block.BIRCH_STAIRS, Block.BIRCH_SLAB, Block.BIRCH_FENCE, Block.BIRCH_TRAPDOOR, Block.BIRCH_DOOR),
-        JUNGLE(Block.JUNGLE_LOG, Block.JUNGLE_PLANKS, Block.JUNGLE_STAIRS, Block.JUNGLE_SLAB, Block.JUNGLE_FENCE, Block.JUNGLE_TRAPDOOR, Block.JUNGLE_DOOR),
-        DARK_OAK(Block.DARK_OAK_LOG, Block.DARK_OAK_PLANKS, Block.DARK_OAK_STAIRS, Block.DARK_OAK_SLAB, Block.DARK_OAK_FENCE, Block.DARK_OAK_TRAPDOOR, Block.DARK_OAK_DOOR);
+        OAK(Block.STRIPPED_OAK_LOG, Block.OAK_PLANKS, Block.OAK_STAIRS, Block.OAK_SLAB, Block.OAK_FENCE, Block.TRAPDOOR, Block.WOODEN_DOOR),
+        SPRUCE(Block.STRIPPED_SPRUCE_LOG, Block.SPRUCE_PLANKS, Block.SPRUCE_STAIRS, Block.SPRUCE_SLAB, Block.SPRUCE_FENCE, Block.SPRUCE_TRAPDOOR, Block.SPRUCE_DOOR),
+        BIRCH(Block.STRIPPED_BIRCH_LOG, Block.BIRCH_PLANKS, Block.BIRCH_STAIRS, Block.BIRCH_SLAB, Block.BIRCH_FENCE, Block.BIRCH_TRAPDOOR, Block.BIRCH_DOOR),
+        JUNGLE(Block.STRIPPED_JUNGLE_LOG, Block.JUNGLE_PLANKS, Block.JUNGLE_STAIRS, Block.JUNGLE_SLAB, Block.JUNGLE_FENCE, Block.JUNGLE_TRAPDOOR, Block.JUNGLE_DOOR),
+        ACACIA(Block.STRIPPED_ACACIA_LOG, Block.ACACIA_PLANKS, Block.ACACIA_STAIRS, Block.ACACIA_SLAB, Block.ACACIA_FENCE, Block.ACACIA_TRAPDOOR, Block.ACACIA_DOOR),
+        DARK_OAK(Block.STRIPPED_DARK_OAK_LOG, Block.DARK_OAK_PLANKS, Block.DARK_OAK_STAIRS, Block.DARK_OAK_SLAB, Block.DARK_OAK_FENCE, Block.DARK_OAK_TRAPDOOR, Block.DARK_OAK_DOOR);
 
-        final String log;
+        final String strippedLog;
         final String planks;
         final String stairs;
         final String slab;
@@ -110,8 +111,8 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
         final String trapdoor;
         final String door;
 
-        ShipwreckWood(String log, String planks, String stairs, String slab, String fence, String trapdoor, String door) {
-            this.log = log;
+        ShipwreckWood(String strippedLog, String planks, String stairs, String slab, String fence, String trapdoor, String door) {
+            this.strippedLog = strippedLog;
             this.planks = planks;
             this.stairs = stairs;
             this.slab = slab;
@@ -123,25 +124,32 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
 
     protected static final List<Map<String, String>> WOOD_PALETTES = List.of(
             woodPalette(ShipwreckWood.OAK, ShipwreckWood.SPRUCE),
-            woodPalette(ShipwreckWood.JUNGLE, ShipwreckWood.SPRUCE),
-            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.JUNGLE),
-            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.OAK, ShipwreckWood.BIRCH),
+            woodPalette(ShipwreckWood.OAK, ShipwreckWood.DARK_OAK),
             woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.OAK),
             woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.JUNGLE),
             woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.DARK_OAK),
-            woodPalette(ShipwreckWood.OAK, ShipwreckWood.BIRCH)
+            woodPalette(ShipwreckWood.BIRCH, ShipwreckWood.OAK),
+            woodPalette(ShipwreckWood.BIRCH, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.JUNGLE, ShipwreckWood.OAK),
+            woodPalette(ShipwreckWood.JUNGLE, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.JUNGLE, ShipwreckWood.ACACIA),
+            woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.ACACIA),
+            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.JUNGLE),
+            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.ACACIA)
     );
 
     protected static Map<String, String> woodPalette(ShipwreckWood primary, ShipwreckWood secondary) {
         Map<String, String> mapping = new HashMap<>();
-        mapping.put(Block.OAK_LOG, primary.log);
+        mapping.put(Block.OAK_LOG, primary.strippedLog);
         mapping.put(Block.OAK_PLANKS, primary.planks);
         mapping.put(Block.OAK_STAIRS, primary.stairs);
         mapping.put(Block.OAK_SLAB, primary.slab);
         mapping.put(Block.OAK_FENCE, primary.fence);
         mapping.put(Block.TRAPDOOR, primary.trapdoor);
         mapping.put(Block.WOODEN_DOOR, primary.door);
-        mapping.put(Block.SPRUCE_LOG, secondary.log);
+        mapping.put(Block.SPRUCE_LOG, secondary.strippedLog);
         mapping.put(Block.SPRUCE_PLANKS, secondary.planks);
         mapping.put(Block.SPRUCE_STAIRS, secondary.stairs);
         mapping.put(Block.SPRUCE_SLAB, secondary.slab);
