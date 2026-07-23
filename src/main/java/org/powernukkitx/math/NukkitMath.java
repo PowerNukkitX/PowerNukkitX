@@ -83,7 +83,7 @@ public class NukkitMath {
             return round(nanos / 1_000_000d, 3) + " ms";
         }
         if (nanos >= 1_000L) {
-            return round(nanos / 1_000d, 2) + " µs";
+            return round(nanos / 1_000d, 2) + " us";
         }
         return nanos + " ns";
     }
