@@ -27,6 +27,7 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.powernukkitx.utils.RayTraceUtils;
 
 import javax.annotation.Nullable;
 import java.util.EnumMap;
@@ -285,11 +286,37 @@ public abstract class EntityProjectile extends Entity {
             if (this.isCollided && !this.hadCollision) { //collide with block
                 this.hadCollision = true;
 
+                Vector3 intendedEnd = new Vector3(
+                    position.x + motion.x,
+                    position.y + motion.y,
+                    position.z + motion.z
+                );
+
                 this.motionX = 0;
                 this.motionY = 0;
                 this.motionZ = 0;
 
-                this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ(), BlockFace.UP, this)));
+                RayTraceUtils.BlockRayTraceResult rayResult =
+                    RayTraceUtils.raytraceBlocks(this.getLevel(), position, intendedEnd);
+
+                BlockFace face;
+                int bx, by, bz;
+
+                if (rayResult != null) {
+                    face = rayResult.face() != null ? rayResult.face() : BlockFace.UP;
+                    bx = rayResult.x();
+                    by = rayResult.y();
+                    bz = rayResult.z();
+                } else {
+                    face = BlockFace.UP;
+                    bx = this.getFloorX();
+                    by = this.getFloorY();
+                    bz = this.getFloorZ();
+                }
+
+                MovingObjectPosition blockHitResult = MovingObjectPosition.fromBlock(bx, by, bz, face, this);
+
+                this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, blockHitResult));
                 onCollideWithBlock(position, motion);
                 addHitEffect();
                 return false;
