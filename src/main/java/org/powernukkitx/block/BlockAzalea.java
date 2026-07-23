@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.level.StructureGrowEvent;
 import org.powernukkitx.item.Item;
@@ -21,6 +23,13 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotBlock, Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -32,7 +41,11 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
     }
 
     public BlockAzalea(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockAzalea(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -40,26 +53,7 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
         return "Azalea";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
@@ -120,11 +114,7 @@ public class BlockAzalea extends BlockSolid implements BlockFlowerPot.FlowerPotB
         return new Item[]{toItem()};
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     public boolean isSameType(Vector3 pos) {
         Block block = this.level.getBlock(pos);
         return block.getId().equals(this.getId()) && block.getProperties() == this.getProperties();

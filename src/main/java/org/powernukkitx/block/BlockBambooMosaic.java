@@ -1,10 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBambooMosaic extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_MOSAIC);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2)
+            .resistance(15)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,30 +24,11 @@ public class BlockBambooMosaic extends BlockSolid {
     }
 
     public BlockBambooMosaic(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     public String getName() {
         return "Bamboo Mosaic";
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
     }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-}

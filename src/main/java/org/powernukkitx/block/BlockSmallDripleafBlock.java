@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -16,6 +18,12 @@ import javax.annotation.Nullable;
 
 public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SMALL_DRIPLEAF_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .toolType(ItemTool.TYPE_SHEARS)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -27,7 +35,7 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
     }
 
     public BlockSmallDripleafBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -51,16 +59,6 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
 
     public void setUpperBlock(boolean isUpperBlock) {
         this.setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, isUpperBlock);
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
     }
 
     @Override
@@ -111,11 +109,7 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         return super.onUpdate(type);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
@@ -156,8 +150,4 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
                 || blockHere instanceof BlockFlowingWater && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleafBlock) && (blockDown instanceof BlockDirt || blockDown instanceof BlockMossBlock);
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

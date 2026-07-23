@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
@@ -31,6 +33,12 @@ import static org.powernukkitx.block.property.CommonBlockProperties.AGE_16;
  */
 public class BlockFire extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FIRE, AGE_16);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .lightEmission(15)
+            .canBeReplaced(true)
+            .tickRate(30)
+            .hasEntityCollision(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -42,7 +50,11 @@ public class BlockFire extends BlockFlowable {
     }
 
     public BlockFire(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockFire(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public int getAge() {
@@ -53,31 +65,19 @@ public class BlockFire extends BlockFlowable {
         setPropertyValue(AGE_16, age);
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public String getName() {
         return "Fire Block";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return false;
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         if (!entity.hasEffect(EffectType.FIRE_RESISTANCE)) {
@@ -307,11 +307,7 @@ public class BlockFire extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public int tickRate() {
-        return 30;
-    }
-
+    
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;

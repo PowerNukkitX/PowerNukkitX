@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,7 +9,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.IN_WALL_BIT;
 import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static org.powernukkitx.block.property.CommonBlockProperties.OPEN_BIT;
 
-public class BlockCrimsonFenceGate extends BlockFenceGate {
+public class BlockCrimsonFenceGate extends BlockFenceGateNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FENCE_GATE,  IN_WALL_BIT, MINECRAFT_CARDINAL_DIRECTION, OPEN_BIT);
 
     @Override
@@ -19,23 +21,17 @@ public class BlockCrimsonFenceGate extends BlockFenceGate {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockCrimsonFenceGate(BlockState blockstate) {
-        super(blockstate);
+    public static final BlockDefinition DEFINITION = BlockFenceGateNonFlammable.DEFINITION.toBuilder()
+            .burnChance(-1)
+            .build();
+
+    public BlockCrimsonFenceGate(BlockState blockState) {
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Crimson Fence Gate";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return -1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 
     @Override

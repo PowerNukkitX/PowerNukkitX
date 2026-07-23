@@ -2,6 +2,7 @@ package org.powernukkitx.block.copper.lantern;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -16,23 +17,19 @@ import javax.annotation.Nullable;
  * @since 1.21.110
  */
 public abstract class AbstractBlockCopperLantern extends BlockLantern implements Oxidizable, Waxable {
+    public static final BlockDefinition DEFINITION = BlockLantern.DEFINITION.toBuilder()
+            .hardness(3.5)
+            .resistance(3.5)
+            .toolType(ItemTool.TYPE_NONE)
+            .canBeActivated(true)
+            .build();
+
     public AbstractBlockCopperLantern(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_NONE;
+    public AbstractBlockCopperLantern(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -44,11 +41,6 @@ public abstract class AbstractBlockCopperLantern extends BlockLantern implements
     @Override
     public int onUpdate(int type) {
         return Oxidizable.super.onUpdate(type);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

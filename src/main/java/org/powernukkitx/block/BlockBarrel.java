@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityBarrel;
@@ -23,13 +25,20 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OPEN_BIT;
 
 public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityBarrel> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BARREL, FACING_DIRECTION, OPEN_BIT);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2.5)
+            .resistance(12.5)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .build();
 
     public BlockBarrel() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockBarrel(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -107,26 +116,6 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 12.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(new BlockBarrel());
     }
@@ -149,11 +138,7 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
         setPropertyValue(OPEN_BIT, open);
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityBarrel blockEntity = getBlockEntity();

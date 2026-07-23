@@ -5,6 +5,8 @@
  */
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityShulkerBox;
@@ -31,9 +33,26 @@ import java.util.Set;
 
 public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEntityHolder<BlockEntityShulkerBox> {
     public static final BlockProperties PROPERTIES = new BlockProperties(UNDYED_SHULKER_BOX, Set.of(BlockTags.PNX_SHULKERBOX));
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(10)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .isSolid(false)
+            .hasComparatorInputOverride(true)
+            .maxStackSize(1)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockUndyedShulkerBox(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockUndyedShulkerBox(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -54,31 +73,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return BlockEntity.SHULKER_BOX;
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     public Item getShulkerBox() {
         return new ItemBlock(this);
     }
@@ -148,11 +143,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
@@ -171,11 +162,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return block instanceof BlockAir || block instanceof BlockLiquid || block instanceof BlockFlowable;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityShulkerBox be = getBlockEntity();
@@ -187,28 +174,10 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return ContainerInventory.calculateRedstone(be.getInventory());
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public int getItemMaxStackSize() {
-        return 1;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.block.BlockRedstoneEvent;
 import org.powernukkitx.item.Item;
@@ -32,6 +34,13 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIPWIRE_HOOK,
             DIRECTION, ATTACHED_BIT, POWERED_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .canPassThrough(false)
+            .isSolid(false)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull
@@ -44,7 +53,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     public BlockTripwireHook(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
     }
 
     @Override
@@ -262,11 +271,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
         this.setPropertyValue(DIRECTION, direction);
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getWeakPower(BlockFace face) {
         return isPowered() ? 15 : 0;
@@ -278,32 +283,14 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     }
 
     @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
     }
-}

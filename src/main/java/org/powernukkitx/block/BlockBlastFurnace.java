@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
@@ -7,6 +9,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CA
 public class BlockBlastFurnace extends BlockLitBlastFurnace {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(BLAST_FURNACE, MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockLitFurnace.DEFINITION.toBuilder()
+            .lightEmission(0)
+            .build();
 
     @Override
     @NotNull
@@ -19,7 +24,7 @@ public class BlockBlastFurnace extends BlockLitBlastFurnace {
     }
 
     public BlockBlastFurnace(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -27,8 +32,4 @@ public class BlockBlastFurnace extends BlockLitBlastFurnace {
         return "Blast Furnace";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 0;
     }
-}

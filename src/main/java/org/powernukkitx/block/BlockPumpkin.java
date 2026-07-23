@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -17,13 +19,24 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
 
 
     public static final BlockProperties PROPERTIES = new BlockProperties(PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1)
+            .resistance(1)
+            .toolType(ItemTool.TYPE_AXE)
+            .breaksWhenMoved(true)
+            .canBeActivated(true)
+            .build();
 
     public BlockPumpkin() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockPumpkin(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockPumpkin(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -37,30 +50,11 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
     }
 
     @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShears()) {
@@ -92,11 +86,7 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
         return true;
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
+    
     @Override
     public BlockFace getBlockFace() {
         return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));

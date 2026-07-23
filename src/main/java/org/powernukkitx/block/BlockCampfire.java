@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.MinecraftCardinalDirection;
@@ -41,13 +43,31 @@ import static org.powernukkitx.block.property.CommonBlockProperties.EXTINGUISHED
 @Slf4j
 public class BlockCampfire extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityCampfire> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAMPFIRE, EXTINGUISHED, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(5)
+            .resistance(2)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBePushed(true)
+            .canBePulled(false)
+            .breaksWhenMoved(true)
+            .canBeActivated(true)
+            .canSilkTouch(true)
+            .canHarvestWithHand(true)
+            .hasEntityCollision(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockCampfire() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockCampfire(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCampfire(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -73,36 +93,13 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return isExtinguished() ? 0 : 15;
     }
 
-    @Override
-    public double getResistance() {
-        return 2;
-    }
-
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{Item.get(ItemID.CHARCOAL, 0, 2)};
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (down().getProperties() == PROPERTIES) {
@@ -145,11 +142,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return true;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         if (isExtinguished()) {
@@ -174,11 +167,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.FIRE, 1);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -250,11 +239,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return false;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMaxY() {
         return y + 0.4371948;
@@ -288,11 +273,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return "Campfire";
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityCampfire blockEntity = getBlockEntity();
@@ -304,18 +285,4 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return super.getComparatorInputOverride();
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
     }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return true;
-    }
-}

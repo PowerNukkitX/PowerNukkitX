@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -10,6 +12,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockInvisibleBedrock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(INVISIBLE_BEDROCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,7 +31,7 @@ public class BlockInvisibleBedrock extends BlockSolid {
     }
 
     public BlockInvisibleBedrock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -30,37 +40,7 @@ public class BlockInvisibleBedrock extends BlockSolid {
     }
 
     @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
-    @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public  boolean canBePulled() {
         return false;
     }
 

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntityPistonArm;
 import org.powernukkitx.item.Item;
@@ -14,6 +16,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockPistonArmCollision extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PISTON_ARM_COLLISION, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1.5)
+            .resistance(1.5)
+            .canBePushed(false)
+            .canBePulled(false)
+            .isSolid(false)
+            .build();
 
     @Override
     @NotNull
@@ -26,22 +35,16 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
     }
 
     public BlockPistonArmCollision(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockPistonArmCollision(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
     public String getName() {
         return "Piston Head";
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
     }
 
     @Override
@@ -93,21 +96,7 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;

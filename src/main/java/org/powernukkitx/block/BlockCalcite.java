@@ -1,18 +1,27 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCalcite extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CALCITE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.75)
+            .resistance(0.75)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     public BlockCalcite() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockCalcite(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -25,28 +34,4 @@ public class BlockCalcite extends BlockSolid {
         return "Calcite";
     }
 
-    @Override
-    public double getHardness() {
-        return 0.75;
     }
-
-    @Override
-    public double getResistance() {
-        return 0.75;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

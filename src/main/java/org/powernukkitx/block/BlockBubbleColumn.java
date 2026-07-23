@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
@@ -20,6 +22,18 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBubbleColumn extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUBBLE_COLUMN, CommonBlockProperties.DRAG_DOWN);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(100)
+            .resistance(500)
+            .canPassThrough(true)
+            .canBeReplaced(true)
+            .canHarvestWithHand(false)
+            .isSolid(false)
+            .canBePlaced(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(2)
+            .build();
 
     private static final double DOWNWARD_MAX_MOTION = -0.3;
     private static final double DOWNWARD_MAX_EXIT_MOTION = -0.9;
@@ -39,27 +53,12 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
 
     public BlockBubbleColumn(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Bubble Column";
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
     }
 
     @Override
@@ -79,21 +78,6 @@ public class BlockBubbleColumn extends BlockTransparent {
 
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean canBePlaced() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
         return false;
     }
 
@@ -173,26 +157,6 @@ public class BlockBubbleColumn extends BlockTransparent {
         this.getLevel().setBlock(this, 1, new BlockFlowingWater(), true, false);
         this.getLevel().setBlock(this, this, true, true);
         return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 100;
-    }
-
-    @Override
-    public double getResistance() {
-        return 500;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

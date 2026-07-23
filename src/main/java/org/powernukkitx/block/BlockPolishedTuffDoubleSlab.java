@@ -1,11 +1,19 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPolishedTuffDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_TUFF_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
+            .hardness(1.5)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,7 +25,7 @@ public class BlockPolishedTuffDoubleSlab extends BlockDoubleSlabBase {
     }
 
     public BlockPolishedTuffDoubleSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -35,28 +43,4 @@ public class BlockPolishedTuffDoubleSlab extends BlockDoubleSlabBase {
         return BlockPolishedTuffSlab.PROPERTIES.getDefaultState();
     }
 
-    @Override
-    public double getResistance() {
-        return 6;
     }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -16,6 +18,15 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BlockPortal extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PORTAL, CommonBlockProperties.PORTAL_AXIS);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(-1)
+            .lightEmission(11)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canHarvestWithHand(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -27,7 +38,7 @@ public class BlockPortal extends BlockFlowable implements Faceable {
     }
 
     public BlockPortal(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -35,39 +46,15 @@ public class BlockPortal extends BlockFlowable implements Faceable {
         return "Nether Portal Block";
     }
 
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
 
     @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 11;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
     }
 
     @Override
@@ -82,16 +69,6 @@ public class BlockPortal extends BlockFlowable implements Faceable {
             }
         }
         return result;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

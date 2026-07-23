@@ -1,10 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockTuffBricks extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(TUFF_BRICKS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(6)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +24,7 @@ public class BlockTuffBricks extends BlockSolid {
     }
 
     public BlockTuffBricks(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,23 +32,4 @@ public class BlockTuffBricks extends BlockSolid {
         return "Tuff Bricks";
     }
 
-    @Override
-    public double getResistance() {
-        return 6;
     }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

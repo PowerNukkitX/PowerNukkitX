@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -24,6 +26,17 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HONEY_LEVEL;
 
 public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityBeehive> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEEHIVE, CommonBlockProperties.DIRECTION, HONEY_LEVEL);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.6)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_AXE)
+            .burnChance(5)
+            .burnAbility(20)
+            .canBeActivated(true)
+            .canSilkTouch(true)
+            .canHarvestWithHand(true)
+            .hasComparatorInputOverride(true)
+            .build();
 
     @Override
     @NotNull
@@ -36,7 +49,11 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     public BlockBeehive(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockBeehive(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -54,31 +71,6 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     @NotNull
     public Class<? extends BlockEntityBeehive> getBlockEntityClass() {
         return BlockEntityBeehive.class;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
     }
 
     @Override
@@ -138,11 +130,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         super.onTouch(vector, item, face, fx, fy, fz, player, action);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     public void honeyCollected(Player player) {
         honeyCollected(player, level.getServer().getDifficulty() > 0 && !player.isCreative());
     }
@@ -179,16 +167,6 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
     }
 
     @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
@@ -219,11 +197,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         return getPropertyValue(HONEY_LEVEL) == HONEY_LEVEL.getMax();
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         return getHoneyLevel();

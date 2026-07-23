@@ -1,10 +1,19 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockChiseledNetherBricks extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_NETHER_BRICKS);
+    public static final BlockDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +25,7 @@ public class BlockChiseledNetherBricks extends Block {
     }
 
     public BlockChiseledNetherBricks(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,28 +33,4 @@ public class BlockChiseledNetherBricks extends Block {
         return "Chiseled Nether Bricks";
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

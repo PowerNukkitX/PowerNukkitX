@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.EntityLiving;
 import org.powernukkitx.event.block.BlockFadeEvent;
@@ -34,6 +36,16 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HEIGHT;
 
 public class BlockSnowLayer extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNOW_LAYER, COVERED_BIT, HEIGHT);
+    public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
+            .hardness(0.2)
+            .resistance(0.1)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canHarvestWithHand(false)
+            .isTransparent(true)
+            .canBeFlowedInto(true)
+            .build();
 
     @Override
     @NotNull
@@ -46,7 +58,7 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     public BlockSnowLayer(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -90,21 +102,6 @@ public class BlockSnowLayer extends BlockFallable {
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
     }
 
     @Override
@@ -290,31 +287,6 @@ public class BlockSnowLayer extends BlockFallable {
             default -> 4;
         };
         return new Item[]{Item.get(ItemID.SNOWBALL, 0, amount)};
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     @Override

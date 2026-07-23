@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
@@ -12,33 +14,23 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/11/24
  */
 public abstract class BlockCarpet extends BlockFlowable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(0.1)
+            .resistance(0.5)
+            .canPassThrough(false)
+            .waterloggingLevel(1)
+            .build();
     public BlockCarpet(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 0.1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
+    public BlockCarpet(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

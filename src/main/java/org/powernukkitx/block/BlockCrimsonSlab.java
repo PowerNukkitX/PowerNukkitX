@@ -1,11 +1,21 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
+            .hardness(3.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(-1)
+            .burnAbility(0)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,7 +27,7 @@ public class BlockCrimsonSlab extends BlockSlab {
     }
 
     public BlockCrimsonSlab(BlockState blockstate) {
-        super(blockstate, CRIMSON_DOUBLE_SLAB);
+        super(blockstate, CRIMSON_DOUBLE_SLAB, DEFINITION);
     }
 
     @Override
@@ -30,33 +40,4 @@ public class BlockCrimsonSlab extends BlockSlab {
         return getId().equals(slab.getId());
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getHardness(){
-        return 3.5;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return -1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-}

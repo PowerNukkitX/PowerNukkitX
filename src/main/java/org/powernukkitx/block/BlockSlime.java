@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +11,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockSlime extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SLIME);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .canStickBlocks(true)
+            .isSolid(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,37 +28,19 @@ public class BlockSlime extends BlockTransparent {
     }
 
     public BlockSlime(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
+    
     @Override
     public String getName() {
         return "Slime Block";
     }
 
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
+    
     @Override
     public int getLightFilter() {
         return 1;
-    }
-
-    @Override
-    public boolean canSticksBlock() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return true;
     }
 
     @Override

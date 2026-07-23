@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.copper.chain.AbstractBlockCopperChain;
 import org.powernukkitx.item.Item;
@@ -14,6 +16,16 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HANGING;
 
 public class BlockLantern extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LANTERN, HANGING);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(3.5)
+            .resistance(3.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .lightEmission(15)
+            .canPassThrough(false)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -25,7 +37,11 @@ public class BlockLantern extends BlockFlowable {
     }
 
     public BlockLantern(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockLantern(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -97,31 +113,6 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
     public double getMinX() {
         return x + (5.0 / 16);
     }
@@ -151,21 +142,13 @@ public class BlockLantern extends BlockFlowable {
         return z + (11.0 / 16);
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     public boolean isHanging() {
         return getPropertyValue(HANGING);
     }
@@ -174,8 +157,4 @@ public class BlockLantern extends BlockFlowable {
         setPropertyValue(HANGING, hanging);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

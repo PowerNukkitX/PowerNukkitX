@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +9,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockCopperOre extends BlockOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_ORE);
+    public static final BlockDefinition DEFINITION = BlockOre.DEFINITION.toBuilder()
+            .hardness(3)
+            .resistance(3)
+            .toolTier(ItemTool.TIER_STONE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -18,7 +25,11 @@ public class BlockCopperOre extends BlockOre {
     }
 
     public BlockCopperOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCopperOre(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -26,11 +37,7 @@ public class BlockCopperOre extends BlockOre {
         return "Copper Ore";
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
-    }
-
+    
     @Override
     protected @Nullable String getRawMaterial() {
         return ItemID.RAW_COPPER;
@@ -41,13 +48,5 @@ public class BlockCopperOre extends BlockOre {
         return 3;
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
+    
     }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-}

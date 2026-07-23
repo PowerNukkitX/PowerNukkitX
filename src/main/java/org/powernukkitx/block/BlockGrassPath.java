@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
@@ -13,13 +15,18 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockGrassPath extends BlockGrassBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_PATH);
+    public static final BlockDefinition DEFINITION = BlockGrassBlock.DEFINITION.toBuilder()
+            .hardness(0.65)
+            .resistance(0.65)
+            .isTransparent(true)
+            .build();
 
     public BlockGrassPath() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockGrassPath(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -30,16 +37,6 @@ public class BlockGrassPath extends BlockGrassBlock {
     @Override
     public String getName() {
         return "Dirt Path";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.65;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.65;
     }
 
     @Override
@@ -68,8 +65,4 @@ public class BlockGrassPath extends BlockGrassBlock {
         return false;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
     }
-}

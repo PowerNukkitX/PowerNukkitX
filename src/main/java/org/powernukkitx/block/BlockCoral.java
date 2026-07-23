@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.item.Item;
@@ -14,6 +16,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.LIQUID_DEPTH
 
 
 public abstract class BlockCoral extends BlockFlowable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .waterloggingLevel(2)
+            .build();
     public static final int TYPE_TUBE = 0;
     public static final int TYPE_BRAIN = 1;
     public static final int TYPE_BUBBLE = 2;
@@ -21,7 +26,11 @@ public abstract class BlockCoral extends BlockFlowable {
     public static final int TYPE_HORN = 4;
 
     public BlockCoral(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCoral(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public abstract boolean isDead();
@@ -32,11 +41,7 @@ public abstract class BlockCoral extends BlockFlowable {
         this.getLevel().setBlock(this, deadBlock, true, true);
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -80,11 +85,7 @@ public abstract class BlockCoral extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {

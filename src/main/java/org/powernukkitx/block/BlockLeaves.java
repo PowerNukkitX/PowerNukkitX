@@ -13,6 +13,7 @@ import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.utils.BlockColor;
 import org.powernukkitx.utils.Hash;
+import org.powernukkitx.block.definition.BlockDefinition;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -29,22 +30,29 @@ import static org.powernukkitx.block.property.CommonBlockProperties.UPDATE_BIT;
  * @author Angelic47 (Nukkit Project)
  */
 public abstract class BlockLeaves extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .toolType(ItemTool.TYPE_HOE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(30)
+            .burnAbility(60)
+            .canSilkTouch(true)
+            .diffusesSkyLight(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .waterloggingLevel(1)
+            .build();
+
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
 
     public BlockLeaves(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
+    public BlockLeaves(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     public abstract WoodType getType();
@@ -52,21 +60,6 @@ public abstract class BlockLeaves extends BlockTransparent {
     @Override
     public String getName() {
         return getType().getName() + " Leaves";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 30;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 60;
     }
 
     @Override
@@ -204,28 +197,8 @@ public abstract class BlockLeaves extends BlockTransparent {
         setPropertyValue(PERSISTENT_BIT, persistent);
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
     protected boolean canDropApple() {
         return getType() == WoodType.OAK;
-    }
-
-    @Override
-    public boolean diffusesSkyLight() {
-        return true;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     public Item toSapling() {

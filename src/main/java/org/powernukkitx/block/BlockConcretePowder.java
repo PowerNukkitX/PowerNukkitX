@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -13,23 +15,17 @@ import org.jetbrains.annotations.NotNull;
  */
 
 public abstract class BlockConcretePowder extends BlockFallable {
+    public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
+            .hardness(0.5)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .build();
     public BlockConcretePowder(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
+    public BlockConcretePowder(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     public abstract BlockConcrete getConcrete();

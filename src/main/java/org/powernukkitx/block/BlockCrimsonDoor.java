@@ -1,11 +1,17 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonDoor extends BlockWoodenDoor {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_DOOR, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT, CommonBlockProperties.DOOR_HINGE_BIT);
+    public static final BlockDefinition DEFINITION = BlockWoodenDoor.DEFINITION.toBuilder()
+            .burnChance(-1)
+            .burnAbility(0)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,7 +23,7 @@ public class BlockCrimsonDoor extends BlockWoodenDoor {
     }
 
     public BlockCrimsonDoor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -35,13 +41,5 @@ public class BlockCrimsonDoor extends BlockWoodenDoor {
         level.addSound(this, Sound.CLOSE_NETHER_WOOD_DOOR);
     }
 
-    @Override
-    public int getBurnChance() {
-        return -1;
+    
     }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.block.BlockFromToEvent;
 import org.powernukkitx.event.player.PlayerInteractEvent;
@@ -18,6 +20,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockDragonEgg extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(DRAGON_EGG);
+    public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
+            .hardness(3)
+            .resistance(45)
+            .lightEmission(1)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .isTransparent(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -30,37 +41,12 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     public BlockDragonEgg(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Dragon Egg";
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 45;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override
@@ -106,13 +92,5 @@ public class BlockDragonEgg extends BlockFallable {
         }
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
+    
     }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-}

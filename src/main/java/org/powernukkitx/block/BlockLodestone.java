@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityLodestone;
@@ -24,12 +26,22 @@ import java.util.Objects;
 @Slf4j
 public class BlockLodestone extends BlockSolid implements BlockEntityHolder<BlockEntityLodestone> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LODESTONE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2)
+            .resistance(3.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBePushed(false)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .build();
     public BlockLodestone() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockLodestone(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -47,11 +59,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null || item.isNull() || !Objects.equals(item.getId(), ItemID.COMPASS) && !Objects.equals(item.getId(), ItemID.LODESTONE_COMPASS)) {
@@ -109,38 +117,4 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         return PROPERTIES;
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
     }
-
-    @Override
-    public double getResistance() {
-        return 3.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public  boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-}

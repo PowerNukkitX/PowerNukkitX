@@ -7,6 +7,7 @@ import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.utils.Faceable;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -18,8 +19,16 @@ import static org.powernukkitx.block.property.CommonBlockProperties.WEIRDO_DIREC
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockStairs extends BlockTransparent implements Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .waterloggingLevel(1)
+            .build();
+
     public BlockStairs(BlockState blockState) {
-        super(blockState);
+        this(blockState, DEFINITION);
+    }
+
+    public BlockStairs(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -112,11 +121,6 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
             ));
             default -> false;
         };
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     public void setUpsideDown(boolean upsideDown) {

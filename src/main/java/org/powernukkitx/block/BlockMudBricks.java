@@ -1,10 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMudBricks extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(MUD_BRICKS);
+    public static final BlockDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .hardness(3)
+            .resistance(1.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +24,7 @@ public class BlockMudBricks extends Block {
     }
 
     public BlockMudBricks(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,23 +32,4 @@ public class BlockMudBricks extends Block {
         return "Mud Bricks";
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
     }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-}

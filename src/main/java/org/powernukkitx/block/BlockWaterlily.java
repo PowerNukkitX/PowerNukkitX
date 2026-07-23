@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -14,6 +16,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockWaterlily extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WATERLILY);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .canBeFlowedInto(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -25,7 +31,7 @@ public class BlockWaterlily extends BlockFlowable {
     }
 
     public BlockWaterlily(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -93,13 +99,5 @@ public class BlockWaterlily extends BlockFlowable {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
+    
     }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-}

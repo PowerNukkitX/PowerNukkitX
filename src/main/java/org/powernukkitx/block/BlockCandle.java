@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -22,6 +24,11 @@ import static org.powernukkitx.block.property.CommonBlockProperties.LIT;
 
 public class BlockCandle extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE, CANDLES, LIT);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(0.1)
+            .resistance(0.1)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -34,7 +41,11 @@ public class BlockCandle extends BlockFlowable {
     }
 
     public BlockCandle(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCandle(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public Block toCakeForm() {
@@ -95,11 +106,7 @@ public class BlockCandle extends BlockFlowable {
         };
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public String getName() {
         return "Candle";
@@ -110,13 +117,5 @@ public class BlockCandle extends BlockFlowable {
         return getPropertyValue(LIT) ? getPropertyValue(CANDLES) * 3 : 0;
     }
 
-    @Override
-    public double getHardness() {
-        return 0.1;
+    
     }
-
-    @Override
-    public double getResistance() {
-        return 0.1;
-    }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -19,6 +21,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.FACING_DIREC
 //special thanks to wode
 public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityCommandBlock> {
     public static final BlockProperties PROPERTIES = new BlockProperties(COMMAND_BLOCK, CONDITIONAL_BIT, FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .resistance(6000000)
+            .canBePushed(false)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .hasComparatorInputOverride(true)
+            .build();
 
     @Override
     @NotNull
@@ -31,24 +40,14 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     public BlockCommandBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public double getResistance() {
-        return 6000000;
+    public BlockCommandBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
@@ -97,11 +96,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         return blockEntity != null;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
@@ -134,11 +129,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         return super.onUpdate(type);
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         return Math.min(this.getOrCreateBlockEntity().getSuccessCount(), 0xf);

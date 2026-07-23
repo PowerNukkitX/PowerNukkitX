@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.enums.CauldronLiquid;
@@ -35,6 +37,15 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HANGING;
 
 public class BlockPointedDripstone extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(POINTED_DRIPSTONE, DRIPSTONE_THICKNESS, HANGING);
+    public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
+            .hardness(1.5)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -47,7 +58,11 @@ public class BlockPointedDripstone extends BlockFallable {
     }
 
     public BlockPointedDripstone(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockPointedDripstone(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -71,41 +86,7 @@ public class BlockPointedDripstone extends BlockFallable {
         return getPropertyValue(DRIPSTONE_THICKNESS);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness() == DripstoneThickness.TIP) {

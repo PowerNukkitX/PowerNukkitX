@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.item.Item;
@@ -24,6 +26,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.SUSPENDED_BI
 public class BlockTripWire extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
             POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .canPassThrough(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -35,37 +44,12 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     public BlockTripWire(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Tripwire";
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
     }
 
     @Override

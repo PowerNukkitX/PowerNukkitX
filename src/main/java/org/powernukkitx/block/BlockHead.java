@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -19,9 +21,23 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public abstract class BlockHead extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1)
+            .resistance(5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .isSolid(false)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockHead(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockHead(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -36,34 +52,10 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
         return BlockEntitySkull.class;
     }
 
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
     }
 
     @Override
@@ -106,21 +98,6 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
 
         entity.setMouthMoving(this.isGettingPower());
         return Level.BLOCK_UPDATE_REDSTONE;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -26,6 +28,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockFlowingLava extends BlockLiquid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
+    public static final BlockDefinition DEFINITION = BlockLiquid.DEFINITION.toBuilder()
+            .lightEmission(15)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -37,14 +42,14 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     public BlockFlowingLava(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public int getLightLevel() {
-        return 15;
+    public BlockFlowingLava(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
+    
     @Override
     public String getName() {
         return "Lava";

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.mob.EntityIronGolem;
@@ -10,6 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockCarvedPumpkin extends BlockPumpkin {
     public static final BlockProperties PROPERTIES = new BlockProperties(CARVED_PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockPumpkin.DEFINITION.toBuilder()
+            .canBeActivated(false)
+            .build();
 
     @Override
     @NotNull
@@ -22,7 +27,7 @@ public class BlockCarvedPumpkin extends BlockPumpkin {
     }
 
     public BlockCarvedPumpkin(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -30,11 +35,7 @@ public class BlockCarvedPumpkin extends BlockPumpkin {
         return "Carved Pumpkin";
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return false;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;

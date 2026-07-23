@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemTool;
@@ -12,6 +14,13 @@ import org.jetbrains.annotations.NotNull;
 public class BlockIronBars extends BlockThin {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(IRON_BARS);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(5)
+            .resistance(10)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -23,7 +32,7 @@ public class BlockIronBars extends BlockThin {
     }
 
     public BlockIronBars(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -32,37 +41,9 @@ public class BlockIronBars extends BlockThin {
     }
 
     @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
+    
     }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

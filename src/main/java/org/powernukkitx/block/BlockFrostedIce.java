@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -11,6 +13,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockFrostedIce extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(FROSTED_ICE, CommonBlockProperties.AGE_4);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.5)
+            .resistance(2.5)
+            .friction(0.98)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,7 +30,7 @@ public class BlockFrostedIce extends BlockTransparent {
     }
 
     public BlockFrostedIce(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -30,21 +38,7 @@ public class BlockFrostedIce extends BlockTransparent {
         return "Frosted Ice";
     }
 
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getFrictionFactor() {
-        return 0.98;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         boolean success = super.place(item, block, target, face, fx, fy, fz, player);
@@ -81,11 +75,7 @@ public class BlockFrostedIce extends BlockTransparent {
         return Item.AIR;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     protected void slightlyMelt(boolean isSource) {
         int age = getAge();
         if (age < 3) {

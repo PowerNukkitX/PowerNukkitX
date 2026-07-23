@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.BambooLeafSize;
@@ -17,6 +19,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBambooSapling extends BlockSapling {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_SAPLING, CommonBlockProperties.AGE_BIT);
+    public static final BlockDefinition DEFINITION = BlockSapling.DEFINITION.toBuilder()
+            .resistance(5)
+            .build();
 
     @Override
     @NotNull
@@ -29,7 +34,7 @@ public class BlockBambooSapling extends BlockSapling {
     }
 
     public BlockBambooSapling(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -130,11 +135,7 @@ public class BlockBambooSapling extends BlockSapling {
         };
     }
 
-    @Override
-    public double getResistance() {
-        return 5;
-    }
-
+    
     /**
      * Alias age == 0 | age == false | !age
      */

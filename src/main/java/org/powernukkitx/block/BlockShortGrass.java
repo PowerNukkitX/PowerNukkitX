@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
@@ -16,6 +18,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockShortGrass extends BlockFlowable implements Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SHORT_GRASS);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .toolType(ItemTool.TYPE_SHEARS)
+            .burnChance(60)
+            .burnAbility(100)
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull
@@ -28,27 +36,13 @@ public class BlockShortGrass extends BlockFlowable implements Supportable {
     }
 
     public BlockShortGrass(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 60;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 100;
     }
 
     @Override
@@ -121,8 +115,4 @@ public class BlockShortGrass extends BlockFlowable implements Supportable {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
     }
-}

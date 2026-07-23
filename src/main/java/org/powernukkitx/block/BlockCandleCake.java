@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -14,9 +16,22 @@ import java.util.Objects;
 
 public class BlockCandleCake extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE_CAKE, CommonBlockProperties.LIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.5)
+            .resistance(0.5)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockCandleCake(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockCandleCake(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     public BlockCandleCake() {
@@ -38,26 +53,7 @@ public class BlockCandleCake extends BlockTransparent {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMinX() {
         return this.x + (1 + blockstate.specialValue() * 2) / 16d;
@@ -143,18 +139,4 @@ public class BlockCandleCake extends BlockTransparent {
         return 14;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
     }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-}

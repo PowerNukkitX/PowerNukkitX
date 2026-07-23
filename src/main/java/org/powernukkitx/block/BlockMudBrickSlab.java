@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
@@ -8,6 +10,13 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMudBrickSlab extends BlockSlab {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MUD_BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
+            .hardness(1.5)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull
@@ -20,7 +29,7 @@ public class BlockMudBrickSlab extends BlockSlab {
     }
 
     public BlockMudBrickSlab(BlockState blockState) {
-        super(blockState, MUD_BRICK_DOUBLE_SLAB);
+        super(blockState, MUD_BRICK_DOUBLE_SLAB, DEFINITION);
     }
 
     @Override
@@ -33,28 +42,4 @@ public class BlockMudBrickSlab extends BlockSlab {
         return slab.getId().equals(getId());
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-}

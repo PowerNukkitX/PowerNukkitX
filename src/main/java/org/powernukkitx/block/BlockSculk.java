@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -10,6 +12,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockSculk extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.2)
+            .resistance(0.2)
+            .toolType(ItemTool.TYPE_HOE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .dropExp(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,31 +31,11 @@ public class BlockSculk extends BlockSolid {
     }
 
     public BlockSculk(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
     @Override
     public String getName() {
         return "Sculk";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     @Override
@@ -66,13 +56,5 @@ public class BlockSculk extends BlockSolid {
         }
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    
     }
-
-    @Override
-    public int getDropExp() {
-        return 1;
-    }
-}

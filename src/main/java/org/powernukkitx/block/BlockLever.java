@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.LeverDirection;
@@ -26,6 +28,15 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OPEN_BIT;
 
 public class BlockLever extends BlockFlowable implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LEVER, LEVER_DIRECTION, OPEN_BIT);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(0.5d)
+            .resistance(2.5d)
+            .breaksWhenMoved(true)
+            .canBeActivated(true)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -37,27 +48,12 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     }
 
     public BlockLever(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Lever";
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5d;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5d;
     }
 
     @Override
@@ -189,27 +185,8 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     }
 
     @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
     public BlockFace getBlockFace() {
         return getLeverOrientation().getFacing();
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.math.BlockFace;
@@ -14,13 +16,19 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockBarrier extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BARRIER);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockBarrier() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockBarrier(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -33,31 +41,13 @@ public class BlockBarrier extends BlockSolid {
         return PROPERTIES;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
+    
     @Override
     public int getLightFilter() {
         return 1;

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,6 +10,11 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HANGING;
 
 public class BlockSulfurSpike extends BlockPointedDripstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(SULFUR_SPIKE, DRIPSTONE_THICKNESS, HANGING);
+    public static final BlockDefinition DEFINITION = BlockPointedDripstone.DEFINITION.toBuilder()
+            .hardness(1.5)
+            .resistance(3)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull
@@ -20,32 +27,12 @@ public class BlockSulfurSpike extends BlockPointedDripstone {
     }
 
     public BlockSulfurSpike(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Sulfur Spike";
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override
