@@ -367,7 +367,7 @@ public class LevelDBChunkSerializer {
                             blockEntity.serializationSnapshot = null;
                         } else {
                             blockEntity.saveNBT();
-                            tag = blockEntity.getNbt().copy();
+                            tag = blockEntity.getNbt();
                         }
                         nbtOutputStream.writeTag(tag.toNetwork());
                     } catch (Exception e) {
@@ -400,7 +400,7 @@ public class LevelDBChunkSerializer {
                                 e.serializationSnapshot = null;
                             } else {
                                 e.saveNBT();
-                                tag = e.getNbt().copy();
+                                tag = e.getNbt();
                             }
                             nbtOutputStream.writeTag(tag.toNetwork());
                         } catch (Exception ex) {
