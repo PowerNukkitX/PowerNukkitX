@@ -75,7 +75,8 @@ public class Chunk implements IChunk {
     protected final StampedLock heightAndBiomeLock;
     protected final StampedLock lightLock;
     protected final LevelProvider provider;
-    protected boolean isInit;
+    protected volatile boolean isInit;
+    protected boolean isInitializing;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
 
@@ -743,8 +744,13 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public void initChunk() {
-        if (this.getProvider() != null && !this.isInit) {
+    public synchronized void initChunk() {
+        if (this.getProvider() == null || this.isInit || this.isInitializing) {
+            return;
+        }
+
+        this.isInitializing = true;
+        try {
             boolean changed = false;
             if (this.entityNBT != null) {
                 for (CompoundTag nbt : entityNBT) {
@@ -795,6 +801,8 @@ public class Chunk implements IChunk {
             }
 
             this.isInit = true;
+        } finally {
+            this.isInitializing = false;
         }
     }
 
