@@ -260,3 +260,8 @@ __pycache__
 /terra/
 /services/
 .claude/
+
+# test-generated fixture levels
+src/test/resources/newlevel_fixture_*/
+src/test/resources/gen_smoke_*/
+src/test/resources/newlevel/
