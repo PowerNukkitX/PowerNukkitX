@@ -1,5 +1,7 @@
 package org.powernukkitx.network.process.handler;
 
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerSkinPacket;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -8,8 +10,6 @@ import org.powernukkitx.event.player.PlayerChangeSkinEvent;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.utils.SkinUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.packet.PlayerSkinPacket;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +26,7 @@ public class PlayerSkinHandler implements PacketHandler<PlayerSkinPacket> {
         if (player.getServer().getSettings().playerSettings().forceSkinTrusted()) {
             packet.setTrustedSkin(true);
         }
-        Skin skin = new Skin(packet.getSerializedSkin(), packet.isTrustedSkin());
+        Skin skin = new Skin(packet.getSkin(), packet.isTrustedSkin());
 
         if (!player.spawned || !player.isAlive()) {
             log.debug("Player {} tried to update skin while not spawned or dead", playerHandle.getUsername());

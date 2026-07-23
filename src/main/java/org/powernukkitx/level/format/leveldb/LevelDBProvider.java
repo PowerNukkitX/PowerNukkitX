@@ -115,6 +115,7 @@ public class LevelDBProvider implements LevelProvider {
         CompoundTag dp = this.storage.readWorldDynamicProperties();
         this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
         this.worldDynamicPropertiesDirty = false;
+        this.level.getVillageManager().load(this.storage.readVillages(getDimensionData()));
     }
 
     @UsedByReflection
@@ -364,7 +365,7 @@ public class LevelDBProvider implements LevelProvider {
                         }
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
                 data.set(byteBuf.copy());
                 subChunkCountRef.set(total);
@@ -539,8 +540,11 @@ public class LevelDBProvider implements LevelProvider {
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
             CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
-                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
+                // Clear the dirty flag before serializing so a change made
+                // mid-save (e.g. taking an item from a chest) re-marks the chunk
+                // dirty and gets persisted on the next save instead of being lost.
                 chunk.setChanged(false);
+                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
             }), Server.getInstance().getComputeThreadPool()).join();
             helper.write(batch);
             helper.close();
@@ -580,6 +584,7 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void saveLevelData() {
         flushWorldDynamicProperties();
+        storage.writeVillages(getDimensionData(), level.getVillageManager().getVillages());
         writeLevelDat(path, getDimensionData(), this.levelDat);
     }
 

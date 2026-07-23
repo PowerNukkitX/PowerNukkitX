@@ -275,9 +275,8 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -293,8 +292,8 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new FlatRandomRoamExecutor(0.5f, 12, 40, true, 100, true, 10),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
@@ -346,18 +345,17 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
                                 (entity -> true),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

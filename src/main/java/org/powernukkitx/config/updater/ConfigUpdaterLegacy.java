@@ -23,6 +23,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 
 @Slf4j
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
     private final String version = "2.0.0";
 
@@ -55,7 +56,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
             );
             settings.setAccessible(false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
 
         LegacyServerSettings legacyNukkit = ConfigManager.create(LegacyServerSettings.class, it -> {
@@ -74,8 +75,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .autosaveDelay(baseOld.autosave())
                 .saveUnknownBlock(baseOld.saveUnknownBlock())
                 .forceServerTranslate(baseOld.forceServerTranslate())
-                .safeSpawn(baseOld.safeSpawn())
-                .waterdogpe(baseOld.waterdogpe());
+                .safeSpawn(baseOld.safeSpawn());
 
         ChunkSettings chunk = settings.chunkSettings();
         LegacyServerSettings.ChunkSettings chunkOld = legacyNukkit.chunkSettings();
@@ -168,10 +168,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .pvp(oldProp.get(LegacyServerPropertiesKeys.PVP, game.pvp()))
                 .difficulty(oldProp.get(LegacyServerPropertiesKeys.DIFFICULTY, game.difficulty()))
                 .forceResources(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES, game.forceResources()))
-                .allowClientPacks(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, game.allowClientPacks()))
-                .serverAuthoritativeMovement(oldProp.get(LegacyServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT, game.serverAuthoritativeMovement()));
-
-        misc.enableTerra(oldProp.get(LegacyServerPropertiesKeys.USE_TERRA, misc.enableTerra()));
+                .allowClientPacks(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, game.allowClientPacks()));
 
         net.enableQuery(oldProp.get(LegacyServerPropertiesKeys.ENABLE_QUERY, net.enableQuery()))
                 .networkEncryption(oldProp.get(LegacyServerPropertiesKeys.NETWORK_ENCRYPTION, net.networkEncryption()))

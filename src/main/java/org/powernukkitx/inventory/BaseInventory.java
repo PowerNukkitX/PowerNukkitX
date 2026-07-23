@@ -253,7 +253,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void decreaseCount(int slot) {
+    public void decreaseCount(int slot, int amount) {
         Item item;
         synchronized (this.slots) {
             item = this.slots.getOrDefault(slot, Item.AIR);
@@ -263,7 +263,11 @@ public abstract class BaseInventory implements Inventory {
                 return;
             }
         }
-        item.count--;
+        item.count -= amount;
+        if (item.count <= 0) {
+            this.clear(slot);
+            return;
+        }
         this.setItem(slot, item);
     }
 
@@ -585,10 +589,10 @@ public abstract class BaseInventory implements Inventory {
     }
 
     /**
-     * 检测指定物品能在该库存所能存放的空余数量
+     * Checks how much free space is available in this inventory for the given item.
      *
-     * @param item 要检测的物品
-     * @return 所能存放的空余数量
+     * @param item the item to check
+     * @return the amount of free space available
      */
     @Override
     public int getFreeSpace(Item item) {

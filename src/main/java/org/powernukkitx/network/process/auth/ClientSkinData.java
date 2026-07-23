@@ -9,7 +9,7 @@ import org.cloudburstmc.protocol.bedrock.data.skin.AnimationExpressionType;
 import org.cloudburstmc.protocol.bedrock.data.skin.ImageData;
 import org.cloudburstmc.protocol.bedrock.data.skin.PersonaPieceData;
 import org.cloudburstmc.protocol.bedrock.data.skin.PersonaPieceTintData;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
 import org.jose4j.jwt.JwtClaims;
 
 import java.util.Base64;
@@ -24,12 +24,12 @@ public class ClientSkinData {
 
     private final Base64.Decoder DECODER = Base64.getDecoder();
 
-    public SerializedSkin readSkin(JwtClaims claims) {
+    public Skin readSkin(JwtClaims claims) {
         final Map<String, Object> map = claims.getClaimsMap();
         if (map.isEmpty()) {
             return null;
         }
-        final SerializedSkin.Builder builder = SerializedSkin.builder();
+        final Skin.Builder builder = Skin.builder();
         try {
             if (map.containsKey("AnimatedImageData")) {
                 final List<AnimationData> animations = new ObjectArrayList<>();

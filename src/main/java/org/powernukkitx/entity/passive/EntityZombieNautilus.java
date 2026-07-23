@@ -304,11 +304,8 @@ public class EntityZombieNautilus extends EntityNautilus {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
-                ),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(
                                 new MoveToRiderTargetExecutor(this.getEnvironmentalMoveSpeed() * 2.00f, true),
                                 e -> this.isRiddenByMob(),
@@ -362,8 +359,8 @@ public class EntityZombieNautilus extends EntityNautilus {
                                 },
                                 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new ISensor() {
                             @Override
                             public void sense(EntityIntelligent entity) {
@@ -380,15 +377,14 @@ public class EntityZombieNautilus extends EntityNautilus {
                                 return 60;
                             }
                         }
-                ),
-                Set.of(
+                )
+                .controllers(
                         new SpaceMoveController(),
                         new LookController(true, true),
                         new DiveController()
-                ),
-                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
+                .build();
     }
 
 }

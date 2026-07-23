@@ -32,7 +32,7 @@ public class TrimData {
             trimPatterns = Collections.unmodifiableList(l1);
             trimMaterials = Collections.unmodifiableList(l2);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

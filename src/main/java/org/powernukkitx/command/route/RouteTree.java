@@ -38,11 +38,16 @@ public class RouteTree {
             Map.entry(MessageStringNode.class, CommandParamType.MESSAGE),
             Map.entry(RemainStringNode.class, CommandParamType.JSON_OBJECT),
             Map.entry(BlockStateNode.class, CommandParamType.BLOCK_STATE),
-            Map.entry(ItemNode.class, CommandParamType.ID),
-            Map.entry(BlockNode.class, CommandParamType.ID),
             Map.entry(PlayersNode.class, CommandParamType.SELECTION),
             Map.entry(TargetNode.class, CommandParamType.SELECTION),
             Map.entry(EnumNode.class, CommandParamType.ID)
+    );
+
+    @SuppressWarnings("rawtypes")
+    private static final Map<Class<? extends ParamNode>, CommandEnum> NODE_ENUM_MAP = Map.ofEntries(
+            Map.entry(BooleanNode.class, CommandEnum.ENUM_BOOLEAN),
+            Map.entry(ItemNode.class, CommandEnum.ENUM_ITEM),
+            Map.entry(BlockNode.class, CommandEnum.ENUM_BLOCK)
     );
 
     private final RouteNode root;
@@ -164,19 +169,15 @@ public class RouteTree {
             for (RouteNode node : path) {
                 if (node.isSuggestHidden()) break;
                 if (node.getType() == NodeType.LITERAL) {
-                    params.add(CommandParameter.newEnum(node.getName(), false,
+                    params.add(CommandParameter.newEnum(node.getName(), node.isOptional(),
                             new CommandEnum(node.getName(), List.of(node.getName()))));
                 } else {
                     List<String> suggestions = node.getSuggestions();
                     if (suggestions != null) {
-                        params.add(CommandParameter.newEnum(node.getName(), false,
+                        params.add(CommandParameter.newEnum(node.getName(), node.isOptional(),
                                 new CommandEnum(node.getName(), suggestions)));
-                    } else if (node.getParamNode() instanceof BooleanNode) {
-                        params.add(CommandParameter.newEnum(node.getName(), false, CommandEnum.ENUM_BOOLEAN));
                     } else {
-                        @SuppressWarnings("rawtypes")
-                        CommandParamType type = NODE_TYPE_MAP.getOrDefault((Class<? extends ParamNode>) node.getParamNode().getClass(), CommandParamType.RAW_TEXT);
-                        params.add(CommandParameter.newType(node.getName(), false, type, node.getParamNode()));
+                        params.add(createArgumentParameter(node));
                     }
                 }
             }
@@ -187,13 +188,28 @@ public class RouteTree {
         }
     }
 
+    @SuppressWarnings("rawtypes")
+    private CommandParameter createArgumentParameter(RouteNode node) {
+        IParamNode<?> paramNode = node.getParamNode();
+        Class<? extends ParamNode> nodeClass = (Class<? extends ParamNode>) paramNode.getClass();
+        CommandEnum enumData = NODE_ENUM_MAP.get(nodeClass);
+        if (enumData != null) {
+            return CommandParameter.newEnum(node.getName(), node.isOptional(), enumData, paramNode);
+        }
+
+        CommandParamType type = NODE_TYPE_MAP.getOrDefault(nodeClass, CommandParamType.RAW_TEXT);
+        return CommandParameter.newType(node.getName(), node.isOptional(), type, paramNode);
+    }
+
     private void collectPaths(RouteNode node, List<RouteNode> current, List<List<RouteNode>> result) {
         if (node.getType() != NodeType.LITERAL || !node.getName().equals(root.getName())) {
             current = new ArrayList<>(current);
             current.add(node);
         }
         if (node.isExecutable()) {
-            result.add(new ArrayList<>(current));
+            if (!node.isSuggestHidden()) {
+                result.add(new ArrayList<>(current));
+            }
         }
         for (RouteNode child : node.getChildren()) {
             collectPaths(child, current, result);

@@ -1,5 +1,10 @@
 package org.powernukkitx.level.structure;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.generator.object.BlockManager;
@@ -8,16 +13,12 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.StructureRotationUtil;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.UnaryOperator;
 
 /**
  * Lightweight structure representation for Bedrock-style palettes.
@@ -160,6 +161,23 @@ public class PNXStructure extends AbstractStructure {
     public void place(Position position, boolean includeEntities, BlockManager blockManager) {
         preparePlace(position, blockManager);
         blockManager.applySubChunkUpdate();
+    }
+
+    public PNXStructure withPalette(UnaryOperator<BlockState> mapper) {
+        BlockState[] mappedPalette = new BlockState[palette.length];
+        boolean changed = false;
+        for (int i = 0; i < palette.length; i++) {
+            BlockState state = palette[i];
+            if (state == STATE_STRUCTURE_VOID || state == STATE_UNKNOWN) {
+                mappedPalette[i] = state;
+                continue;
+            }
+            BlockState mapped = mapper.apply(state);
+            mappedPalette[i] = mapped == null ? state : mapped;
+            changed |= mappedPalette[i] != state;
+        }
+        if (!changed) return this;
+        return new PNXStructure(sizeX, sizeY, sizeZ, mappedPalette, blocks, jigsaws);
     }
 
     @Override

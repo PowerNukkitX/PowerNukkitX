@@ -39,7 +39,7 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         return PROPERTIES;
     }
 
-    /*这里写木质类型为OAK只是为了获取凋落物时的概率正确，并不代表真的就是橡木*/
+    /*the wood type is set to OAK only so the drop probabilities are correct, it does not mean this is actually oak*/
     @Override
     public WoodType getType() {
         return WoodType.OAK;

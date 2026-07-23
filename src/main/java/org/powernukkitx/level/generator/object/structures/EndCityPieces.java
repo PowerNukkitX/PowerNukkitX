@@ -1,5 +1,7 @@
 package org.powernukkitx.level.generator.object.structures;
 
+import com.google.common.collect.Lists;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockBrewingStand;
 import org.powernukkitx.block.BlockChest;
@@ -13,7 +15,11 @@ import org.powernukkitx.blockentity.BlockEntityBrewingStand;
 import org.powernukkitx.blockentity.BlockEntityItemFrame;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.effect.PotionType;
 import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.ItemPotion;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.generator.object.BlockManager;
@@ -26,14 +32,8 @@ import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.registry.Registries;
-import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemID;
-import org.powernukkitx.item.ItemPotion;
-import org.powernukkitx.entity.effect.PotionType;
 import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.random.RandomSourceProvider;
-import com.google.common.collect.Lists;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.ArrayList;
 import java.util.List;

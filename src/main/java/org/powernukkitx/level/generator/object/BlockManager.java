@@ -1,6 +1,6 @@
 package org.powernukkitx.level.generator.object;
 
-import org.powernukkitx.Server;
+import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockEntityHolder;
@@ -311,13 +311,26 @@ public class BlockManager {
             return;
         }
         HashMap<IChunk, ArrayList<Block>> chunks = new HashMap<>(Math.max(16, blockList.size() >> 3));
-        var players = level.getPlayers().values();
-        boolean shouldBroadcast = !players.isEmpty();
+        boolean shouldBroadcast = !level.getPlayers().isEmpty();
         HashMap<SubChunkEntry, UpdateSubChunkBlocksPacket> batchs = shouldBroadcast ? new HashMap<>(Math.max(16, blockList.size() >> 2)) : null;
+        HashMap<Long, List<Player>> recipientsByChunk = shouldBroadcast ? new HashMap<>() : null;
         for (var b : blockList) {
             ArrayList<Block> chunk = chunks.computeIfAbsent(level.getChunk(b.getChunkX(), b.getChunkZ(), true), c -> new ArrayList<>());
             chunk.add(b);
             if (shouldBroadcast) {
+                long chunkHash = Level.chunkHash(b.getChunkX(), b.getChunkZ());
+                List<Player> recipients = recipientsByChunk.computeIfAbsent(chunkHash, hash -> {
+                    List<Player> result = new ArrayList<>();
+                    for (Player player : level.getChunkPlayers(b.getChunkX(), b.getChunkZ()).values()) {
+                        if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(hash)) {
+                            result.add(player);
+                        }
+                    }
+                    return result;
+                });
+                if (recipients.isEmpty()) {
+                    continue;
+                }
                 UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> {
                     final UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
                     packet.setChunkX(s.x);
@@ -385,8 +398,18 @@ public class BlockManager {
         }
 
         if (shouldBroadcast) {
-            for (var p : batchs.values()) {
-                Server.broadcastPacket(players, p);
+            for (var entry : batchs.entrySet()) {
+                SubChunkEntry subChunk = entry.getKey();
+                List<Player> recipients = recipientsByChunk.get(Level.chunkHash(subChunk.x >> 4, subChunk.z >> 4));
+                if (recipients == null) {
+                    continue;
+                }
+                long chunkHash = Level.chunkHash(subChunk.x >> 4, subChunk.z >> 4);
+                for (Player player : recipients) {
+                    if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(chunkHash)) {
+                        player.sendPacket(entry.getValue());
+                    }
+                }
             }
         }
         places.clear();

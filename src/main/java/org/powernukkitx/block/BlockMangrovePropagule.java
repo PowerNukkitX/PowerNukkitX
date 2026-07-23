@@ -150,6 +150,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
         Vector3 groundPos = new Vector3(this.x, this.y - 1, this.z);
         ObjectMangroveTree tree = new ObjectMangroveTree(ThreadLocalRandom.current().nextFloat() > 0.15F);
         tree.setWithBeenest(ThreadLocalRandom.current().nextFloat() < 0.01F);
+        tree.setBeeCount(ThreadLocalRandom.current().nextInt(2, 4));
 
         this.level.setBlock(this, Block.get(BlockID.AIR), true, false);
         boolean success = tree.generate(chunkManager, new Xoroshiro128(), this);

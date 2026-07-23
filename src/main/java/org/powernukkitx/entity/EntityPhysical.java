@@ -16,12 +16,12 @@ import org.powernukkitx.event.player.EntityFreezeEvent;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.AxisAlignedBB;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector2;
 import org.powernukkitx.math.Vector2f;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -100,6 +100,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (!this.isImmobile()) {
             // Dealing with gravity
             handleGravity();
+            handleWallClimbing();
             if (needsRecalcMovement) {
                 // Handling collision box extrusion movement
                 handleCollideMovement(currentTick);
@@ -109,6 +110,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             handleGroundFrictionMovement();
             handlePassableBlockFrictionMovement();
         }
+        this.inBubbleColumn = false;
     }
 
     @Override
@@ -196,10 +198,18 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             this.fallingTick = 0;
             return;
         }
-        // Gravity is always there
-        this.motionY -= this.getGravity();
+        if (!this.inBubbleColumn) {
+            this.motionY -= this.getGravity();
+        }
         if (!this.onGround && this.hasWaterAt(getFootHeight())) {
             // Landing water
+            resetFallDistance();
+        }
+    }
+
+    protected void handleWallClimbing() {
+        if (this.isWallClimbing()) {
+            this.motionY = NukkitMath.clamp(this.motionY, -2, 2);
             resetFallDistance();
         }
     }
@@ -240,7 +250,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return;
         final double factor = getPassableBlockFrictionFactor();
         this.motionX *= factor;
-        this.motionY *= factor;
+        if (!this.inBubbleColumn) {
+            this.motionY *= factor;
+        }
         this.motionZ *= factor;
 
         if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
@@ -300,6 +312,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleFloatingMovement() {
+        if (this.inBubbleColumn) return;
         if (this.hasWaterAt(0)) {
             this.motionY += this.getGravity() * getFloatingForceFactor();
         }
@@ -362,24 +375,19 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             }
         }
 
-        var dxPositives = new DoubleArrayList(size);
-        var dxNegatives = new DoubleArrayList(size);
-        var dzPositives = new DoubleArrayList(size);
-        var dzNegatives = new DoubleArrayList(size);
+        double dxPosMax = Double.NEGATIVE_INFINITY;
+        double dxNegMax = Double.NEGATIVE_INFINITY;
+        double dzPosMax = Double.NEGATIVE_INFINITY;
+        double dzNegMax = Double.NEGATIVE_INFINITY;
 
-        var stream = collidingEntities.stream();
-        if (size > 4) {
-            stream = stream.parallel();
-        }
-
-        stream.forEach(each -> {
+        for (Entity each : collidingEntities) {
             AxisAlignedBB targetAABB;
             if (each instanceof EntityPhysical entityPhysical) {
                 targetAABB = entityPhysical.getOffsetBoundingBox();
             } else if (each instanceof Player player) {
                 targetAABB = player.reCalcOffsetBoundingBox();
             } else {
-                return;
+                continue;
             }
 
             double centerXWidth = (targetAABB.getMaxX() + targetAABB.getMinX() - selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5;
@@ -387,26 +395,32 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
             if (centerXWidth > 0) {
                 double value = (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 - centerXWidth;
-                dxPositives.add(value);
+                if (value > dxPosMax) dxPosMax = value;
             } else {
                 double value = (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 + centerXWidth;
-                dxNegatives.add(value);
+                if (value > dxNegMax) dxNegMax = value;
             }
 
             if (centerZWidth > 0) {
                 double value = (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 - centerZWidth;
-                dzPositives.add(value);
+                if (value > dzPosMax) dzPosMax = value;
             } else {
                 double value = (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth;
-                dzNegatives.add(value);
+                if (value > dzNegMax) dzNegMax = value;
             }
-        });
+        }
 
-        double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0)
-                - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
-        double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0)
-                - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
+        double resultX = (dxPosMax == Double.NEGATIVE_INFINITY ? 0 : dxPosMax)
+                - (dxNegMax == Double.NEGATIVE_INFINITY ? 0 : dxNegMax);
+        double resultZ = (dzPosMax == Double.NEGATIVE_INFINITY ? 0 : dzPosMax)
+                - (dzNegMax == Double.NEGATIVE_INFINITY ? 0 : dzNegMax);
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
+
+        if (Double.isNaN(len) || len <= 0) {
+            this.previousCollideMotion.setX(0);
+            this.previousCollideMotion.setZ(0);
+            return;
+        }
 
         double finalX = -(resultX / len * 0.2 * 0.32);
         double finalZ = -(resultZ / len * 0.2 * 0.32);

@@ -1,7 +1,6 @@
 package org.powernukkitx.item.customitem.data;
 
-
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
+import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemCategory;
 
 /**
  * Controls the creative tab category for custom items, such as Construction, Nature, etc.
@@ -14,6 +13,7 @@ public enum CreativeCategory {
     NATURE,
     EQUIPMENT,
     ITEMS,
+    ITEM_COMMAND_ONLY,
     NONE;
 
     public static CreativeCategory fromID(int num) {
@@ -22,6 +22,7 @@ public enum CreativeCategory {
             case 2 -> NATURE;
             case 3 -> EQUIPMENT;
             case 4 -> ITEMS;
+            case 5 -> ITEM_COMMAND_ONLY;
             case 6 -> NONE;
             default -> NONE;
         };
@@ -33,6 +34,7 @@ public enum CreativeCategory {
             case NATURE -> 2;
             case EQUIPMENT -> 3;
             case ITEMS -> 4;
+            case ITEM_COMMAND_ONLY -> 5;
             case NONE -> 6;
         };
     }
@@ -46,7 +48,8 @@ public enum CreativeCategory {
             case NATURE -> CreativeItemCategory.NATURE;
             case EQUIPMENT -> CreativeItemCategory.EQUIPMENT;
             case ITEMS -> CreativeItemCategory.ITEMS;
-            case NONE -> CreativeItemCategory.UNDEFINED;
+            case ITEM_COMMAND_ONLY -> CreativeItemCategory.ITEM_COMMAND_ONLY;
+            case NONE -> null;
         };
     }
 }

@@ -1,5 +1,11 @@
 package org.powernukkitx.block.customblock;
 
+import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.ServerBlockProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.customblock.data.CraftingTable;
 import org.powernukkitx.block.customblock.data.Geometry;
@@ -23,13 +29,6 @@ import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
-
-import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.BlockPropertyData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -702,8 +701,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     public record BlockTickSettings(int minTicks, int maxTicks, boolean looping) {
     }
 
-    public BlockPropertyData toNetwork() {
-        return new BlockPropertyData(
+    public ServerBlockProperty toNetwork() {
+        return new ServerBlockProperty(
                 this.identifier,
                 this.nbt.toNetwork()
         );

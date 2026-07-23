@@ -16,13 +16,14 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author MagicDroidX
  */
 @Slf4j
 public abstract class BlockEntity extends Position implements BlockEntityID {
-    public static long count = 1;
+    public static final AtomicLong count = new AtomicLong(1);
     public IChunk chunk;
     public String name;
     public long id;
@@ -107,7 +108,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
             log.warn("Tried to create a block entity with an invalid id, {}", this.getClass().getSimpleName());
         }
         this.name = nbt.getString("id");
-        this.id = BlockEntity.count++;
+        this.id = BlockEntity.count.getAndIncrement();
         this.x = nbt.getInt("x");
         this.y = nbt.getInt("y");
         this.z = nbt.getInt("z");
@@ -152,11 +153,24 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         return id;
     }
 
+    /**
+     * Returns a position-independent snapshot of this block entity's NBT, suitable for copying
+     * the block entity elsewhere (item block data, block picking, structure saving, equality checks).
+     * <p>
+     * The returned tag is a defensive deep copy: the live {@link #nbt} is never modified, and callers
+     * are free to mutate the result. The {@code id}, {@code x}, {@code y} and {@code z} tags are
+     * stripped since they only describe this block entity's current identity/location. Subclasses may
+     * override to additionally strip location-bound data (e.g. {@link BlockEntityChest} removes its
+     * {@code pairx}/{@code pairz} pairing coordinates).
+     *
+     * @return a cleaned copy of the NBT, or {@code null} if nothing meaningful remains after cleaning
+     */
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
-        this.nbt.remove("id", "x", "y", "z");
-        if (!this.nbt.isEmpty()) {
-            return getNbt();
+        final CompoundTag cleaned = this.nbt.copy();
+        cleaned.remove("id", "x", "y", "z");
+        if (!cleaned.isEmpty()) {
+            return cleaned;
         } else {
             return null;
         }

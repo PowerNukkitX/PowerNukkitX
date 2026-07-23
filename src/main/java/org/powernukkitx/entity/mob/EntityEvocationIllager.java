@@ -62,10 +62,8 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
 
     @Override
     protected IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_EVOCATION_ILLAGER_AMBIENT), new RandomSoundEvaluator(), 10, 1),
                         new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.5f, true, 9), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
@@ -148,17 +146,16 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                         ), 3, 1),
                         new Behavior(new DoNothingExecutor(), entity -> entity.getDataFlag(ActorFlags.CASTING), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY), entity -> entity instanceof EntityCreaking)
-                ),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

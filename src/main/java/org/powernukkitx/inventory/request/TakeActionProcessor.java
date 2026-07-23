@@ -30,7 +30,7 @@ public class TakeActionProcessor extends TransferItemActionProcessor<TakeAction>
             Integer dynamicId = containerName.getDynamicID();
             Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicId);
             Item sourItem = source.getUnclonedItem(0);
-            int count = action.getCount();
+            int count = action.getAmount();
             if (sourItem.getCount() > count) {
                 Item capped = sourItem.clone();
                 capped.setCount(count);

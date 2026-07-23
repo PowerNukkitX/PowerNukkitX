@@ -67,10 +67,8 @@ public class EntityAllay extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.22f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM), 5, 1),
                         new Behavior(new EntityMoveToOwnerExecutor(0.4f, true, 64, -1), entity -> {
                             if (this.hasOwner()) {
@@ -82,15 +80,14 @@ public class EntityAllay extends EntityMob implements EntityFlyable {
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
                                 1, 1, 25),
                         new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestItemSensor(32, 0 , 20),
                         new NearestPlayerSensor(64, 0, 20)
-                ),
-                Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
-                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
+                .build();
     }
 
     @Override

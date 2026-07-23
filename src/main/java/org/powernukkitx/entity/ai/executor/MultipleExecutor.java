@@ -32,13 +32,13 @@ public class MultipleExecutor implements IBehaviorExecutor {
         try {
             return CompletableFuture.allOf(tasks.toArray(new CompletableFuture[executors.size()])).whenComplete((s, t) -> {
                 if (t != null) {
-                    log.error("阶段执行过程中存在异常：",t);
+                    log.error("Exception occurred during phase execution:",t);
                 }
             }).thenApply(v -> tasks.stream().map(task -> {
                 try {
                     return (Boolean) task.get();
                 } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }).reduce(false, (a, b) -> a || b)).get();
         } catch (InterruptedException | ExecutionException e) {

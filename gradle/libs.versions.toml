@@ -2,47 +2,48 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+pnx-gamedata                                    = "r-26_u3-SNAPSHOT"
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
-pnx-terra-binary                                = "6.6.1-BETA"
 fastreflection                                  = "1.0.3"
-com-github-oshi-oshi-core                       = "6.4.10"
+com-github-oshi-oshi-core                       = "7.4.1"
 com-google-code-findbugs-jsr305                 = "3.0.2"
-com-google-code-gson-gson                       = "2.10.1"
-com-google-guava-guava                          = "33.0.0-jre"
-commons-io-commons-io                           = "2.15.1"
-io-netty-netty-transport-classes-epoll          = "4.2.10.Final"
-io-netty-netty-transport-classes-kqueue         = "4.2.10.Final"
-it-unimi-dsi-fastutil                           = "8.5.12"
+com-google-code-gson-gson                       = "2.14.0"
+com-google-guava-guava                          = "33.6.0-jre"
+commons-io-commons-io                           = "2.22.0"
+io-netty-netty-transport-classes-epoll          = "4.2.16.Final"
+io-netty-netty-transport-classes-kqueue         = "4.2.16.Final"
+it-unimi-dsi-fastutil                           = "8.5.19"
 leveldb                                         = "1.1.0"
 net-minecrell-terminalconsoleappender           = "1.3.0"
 net-sf-jopt-simple-jopt-simple                  = "5.0.4"
-log4j                                           = "2.25.3"
+log4j                                           = "2.26.1"
 org-bitbucket-b-c-jose4j                        = "0.9.6"
 org-cloudburstmc-netty-netty-transport-raknet   = "1.0.0.CR3-SNAPSHOT"
-org-jetbrains-annotations                       = "24.1.0"
-org-jline-jline-reader                          = "3.25.0"
-org-jline-jline-terminal                        = "3.25.0"
-org-jline-jline-terminal-jna                    = "3.25.0"
-org-junit-jupiter-junit-jupiter                 = "5.10.1"
-org-junit-platform-launcher                     = "1.10.1"
-org-lz4-lz4-java                                = "1.10.2"
-org-mockito-mockito-junit-jupiter               = "5.8.0"
+org-jetbrains-annotations                       = "26.1.0"
+org-jline-jline-reader                          = "4.3.1"
+org-jline-jline-terminal                        = "4.3.1"
+org-jline-jline-terminal-jni                    = "4.3.1"
+org-junit-jupiter-junit-jupiter                 = "6.1.2"
+org-junit-platform-launcher                     = "6.1.2"
+at-yawk-lz4-java                                = "1.11.1"
+org-mockito-mockito-junit-jupiter               = "5.23.0"
 org-openjdk-jmh-jmh-core                        = "1.37"
 org-openjdk-jmh-jmh-generator-annprocess        = "1.37"
-org-ow2-asm-asm                                 = "9.7"
-org-projectlombok-lombok                        = "1.18.30"
-org-xerial-snappy-snappy-java                   = "1.1.10.5"
-org-yaml-snakeyaml                              = "2.2"
-commons-lang3                                   = "3.14.0"
-commons-rng                                     = "1.5"
+org-ow2-asm-asm                                 = "9.10.1"
+org-projectlombok-lombok                        = "1.18.46"
+org-xerial-snappy-snappy-java                   = "1.1.10.8"
+org-yaml-snakeyaml                              = "2.6"
+commons-lang3                                   = "3.20.0"
+caffeine                                        = "3.2.4"
+commons-rng                                     = "1.7"
 com-github-stateless4j                          = "2.6.0"
 eu-okaeri-core                                  = "5.0.1"
 disruptor                                       = "4.0.0"
 bedrock-protocol                                = "3.0.0.Beta7-Debug-SNAPSHOT"
 
 [libraries]
+pnxgamedata          = { module = "org.powernukkitx:gamedata",                      version.ref = "pnx-gamedata"                                    }
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
-terra                = { module = "org.powernukkitx:Terra",                         version.ref = "pnx-terra-binary"                                }
 libdeflate           = { module = "org.powernukkitx:libdeflate-java",               version.ref = "libdeflate-java"                                 }
 fastreflection       = { module = "me.sunlan:fast-reflection",                      version.ref = "fastreflection"                                  }
 oshi                 = { module = "com.github.oshi:oshi-core",                      version.ref = "com-github-oshi-oshi-core"                       }
@@ -52,6 +53,7 @@ guava                = { module = "com.google.guava:guava",                     
 disruptor            = { module = "com.lmax:disruptor",                             version.ref = "disruptor"                                       }
 commonsio            = { module = "commons-io:commons-io",                          version.ref = "commons-io-commons-io"                           }
 commonslang3         = { module = "org.apache.commons:commons-lang3",               version.ref = "commons-lang3"                                   }
+caffeine             = { module = "com.github.ben-manes.caffeine:caffeine",         version.ref = "caffeine"                                        }
 fastutil             = { module = "it.unimi.dsi:fastutil",                          version.ref = "it-unimi-dsi-fastutil"                           }
 leveldb              = { module = "com.hivemc.leveldb:leveldb",                     version.ref = "leveldb"                                         }
 leveldb-api          = { module = "com.hivemc.leveldb:leveldb-api",                 version.ref = "leveldb"                                         }
@@ -69,11 +71,11 @@ netty-kqueue         = { module = "io.netty:netty-transport-classes-kqueue",    
 consoleappender      = { module = "net.minecrell:terminalconsoleappender",          version.ref = "net-minecrell-terminalconsoleappender"           }
 jline-reader         = { module = "org.jline:jline-reader",                         version.ref = "org-jline-jline-reader"                          }
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
-jline-terminaljna    = { module = "org.jline:jline-terminal-jna",                   version.ref = "org-jline-jline-terminal-jna"                    }
+jline-terminaljni    = { module = "org.jline:jline-terminal-jni",                   version.ref = "org-jline-jline-terminal-jni"                    }
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine",         version.ref = "org-junit-jupiter-junit-jupiter"                 }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher",  version.ref = "org-junit-platform-launcher"                     }
-lz4                  = { module = "at.yawk.lz4:lz4-java",                           version.ref = "org-lz4-lz4-java"                                }
+lz4                  = { module = "at.yawk.lz4:lz4-java",                           version.ref = "at-yawk-lz4-java"                                }
 mockito              = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "org-mockito-mockito-junit-jupiter"               }
 jmh-core             = { module = "org.openjdk.jmh:jmh-core",                       version.ref = "org-openjdk-jmh-jmh-core"                        }
 jmh-generator        = { module = "org.openjdk.jmh:jmh-generator-annprocess",       version.ref = "org-openjdk-jmh-jmh-generator-annprocess"        }
@@ -83,7 +85,7 @@ rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",    
 bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection",   version.ref = "bedrock-protocol"                                }
 
 [bundles]
-terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
+terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljni",    "consoleappender"   ]
 test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator"              ]
 netty           = ["netty-epoll",      "netty-kqueue"                                                   ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]

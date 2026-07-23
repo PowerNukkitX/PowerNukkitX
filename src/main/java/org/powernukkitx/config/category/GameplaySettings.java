@@ -47,8 +47,6 @@ public class GameplaySettings extends OkaeriConfig {
     boolean forceResources = false;
     @Comment("pnx.settings.gameplay.allowClientPacks")
     boolean allowClientPacks = true;
-    @Comment("pnx.settings.gameplay.serverAuthoritativeMovement")
-    String serverAuthoritativeMovement = "server-auth";
     @Comment("pnx.settings.gameplay.allowVibrantVisuals")
     boolean allowVibrantVisuals = true;
     @Comment("pnx.settings.gameplay.experiments")
@@ -69,4 +67,28 @@ public class GameplaySettings extends OkaeriConfig {
     boolean muteEmoteAnnouncements = false;
     @Comment("pnx.settings.gameplay.enablemobai")
     boolean enableMobAi = true;
+    @Comment("pnx.settings.gameplay.enableRecipes")
+    boolean enableRecipes = true;
+    @Comment("pnx.settings.gameplay.enableCreativeInventory")
+    boolean enableCreativeInventory = true;
+    @Comment("pnx.settings.gameplay.enableDaylightCycle")
+    boolean enableDaylightCycle = true;
+    @Comment("pnx.settings.gameplay.enableWeather")
+    boolean enableWeather = true;
+    @Comment("pnx.settings.gameplay.enableEntitySpawning")
+    boolean enableEntitySpawning = true;
+    @Comment("pnx.settings.gameplay.enableBlockRandomTicking")
+    boolean enableBlockRandomTicking = true;
+    @Comment("pnx.settings.gameplay.enableLiquidFlow")
+    boolean enableLiquidFlow = true;
+    @Comment("pnx.settings.gameplay.enableItemDrops")
+    boolean enableItemDrops = true;
+    @Comment("pnx.settings.gameplay.enableXpOrbs")
+    boolean enableXpOrbs = true;
+    @Comment("pnx.settings.gameplay.enableExplosionBlockDamage")
+    boolean enableExplosionBlockDamage = true;
+    @Comment("pnx.settings.gameplay.enableBlockGravity")
+    boolean enableBlockGravity = true;
+    @Comment("pnx.settings.gameplay.enableHunger")
+    boolean enableHunger = true;
 }

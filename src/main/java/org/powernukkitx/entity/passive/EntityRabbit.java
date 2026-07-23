@@ -1,7 +1,10 @@
 package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.Player;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -9,11 +12,13 @@ import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.HoppingController;
 import org.powernukkitx.entity.ai.controller.LookController;
+import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
 import org.powernukkitx.entity.ai.evaluator.PassByTimeEvaluator;
 import org.powernukkitx.entity.ai.evaluator.ProbabilityEvaluator;
 import org.powernukkitx.entity.ai.executor.AnimalGrowExecutor;
 import org.powernukkitx.entity.ai.executor.BreedingExecutor;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
+import org.powernukkitx.entity.ai.executor.FleeFromTargetExecutor;
 import org.powernukkitx.entity.ai.executor.LookAtTargetExecutor;
 import org.powernukkitx.entity.ai.executor.LoveTimeoutExecutor;
 import org.powernukkitx.entity.ai.executor.TemptExecutor;
@@ -21,15 +26,19 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.tags.BiomeTags;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,12 +50,28 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityRabbit extends EntityAnimal implements EntityWalkable {
+public class EntityRabbit extends EntityAnimal implements EntityWalkable, EntityVariant {
+    public static final int COAT_BROWN = 0;
+    public static final int COAT_WHITE = 1;
+    public static final int COAT_BLACK = 2;
+    public static final int COAT_SPLOTCHED = 3;
+    public static final int COAT_DESERT = 4;
+    public static final int COAT_SALT = 5;
+
+    private static final int[] VARIANTS = {
+            COAT_BROWN,
+            COAT_WHITE,
+            COAT_BLACK,
+            COAT_SPLOTCHED,
+            COAT_DESERT,
+            COAT_SALT
+    };
+
     @Override
     @NotNull public String getIdentifier() {
         return RABBIT;
     }
-    
+
 
     public EntityRabbit(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -166,9 +191,39 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     @Override
     protected void initEntity() {
         super.initEntity();
+        if (!hasVariant()) {
+            setVariant(getBiomeVariant());
+        }
         if (this.isBaby()) {
             this.setScale(0.4f);
         } else this.setScale(0.60f);
+    }
+
+    @Override
+    public int[] getAllVariant() {
+        return VARIANTS;
+    }
+
+    private int getBiomeVariant() {
+        var biomeTags = Registries.BIOME.getTags(getLevel().getBiomeId((int) x, (int) y, (int) z));
+        if (biomeTags.contains(BiomeTags.DESERT)) {
+            return COAT_DESERT;
+        }
+        if (biomeTags.contains(BiomeTags.FROZEN) || biomeTags.contains(BiomeTags.ICE) || biomeTags.contains(BiomeTags.SNOWY_SLOPES)) {
+            return Utils.rand(1, 100) <= 80 ? COAT_WHITE : COAT_SPLOTCHED;
+        }
+
+        int roll = Utils.rand(1, 100);
+        if (roll <= 50) return COAT_BROWN;
+        if (roll <= 90) return COAT_BLACK;
+        return COAT_SALT;
+    }
+
+    private boolean shouldAvoid(Entity entity) {
+        if (entity instanceof Player player && !player.isSurvival()) {
+            return false;
+        }
+        return entity instanceof Player || entity.isFamily("wolf") || entity.isFamily("monster");
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
@@ -179,9 +234,8 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new LoveTimeoutExecutor(20 * 30),
                             e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -197,12 +251,38 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
                             ),
                         1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
-                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
-                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                        entity -> {
+                            if (entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT) instanceof EntityDamageByEntityEvent event) {
+                                entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_SHARED_ENTITY, event.getDamager());
+                            }
+                            return false;
+                        },
+                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                        8, 1
+                    ),
+                    new Behavior(
+                        new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.66f, true, 8),
+                        all(
+                            new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
+                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100)
+                        ),
+                        7, 1
+                    ),
+                    new Behavior(
+                        new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 1f, true, 8),
+                        all(
+                            new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
+                            e -> shouldAvoid(e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
+                        ),
                         4, 1
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.4f, 12, 10, true, 100, true, 10),
+                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 100, 100),
+                        3, 1
                     ),
                     new Behavior(
                         new BreedingExecutor(16, 200, 0.25f),
@@ -210,7 +290,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
                                 e -> !e.isBaby(),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
                             ),
-                        3, 1
+                        6, 1
                     ),
                     new Behavior(
                         new TemptExecutor(1.0f, TEMPT_ITEMS),
@@ -218,7 +298,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
                                 e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
                                 e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
                             ),
-                        3, 1
+                        5, 1
                     ),
                     new Behavior(
                         new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
@@ -230,18 +310,18 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
                             (entity -> true),
                         1, 1
                     )
-                ),
-                Set.of(
-                    new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
-                    new HoppingController(5),
-                    new LookController(true, true),
+                )
+                .sensors(
+                    new NearestPlayerSensor(8, 0, 20),
+                    new NearestTargetEntitySensor<>(0, 8, 20, List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY), this::shouldAvoid)
+                )
+                .controllers(
+                    new HoppingController(15),
+                    new LookController(() -> !isMoving(), this::isMoving),
                     new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

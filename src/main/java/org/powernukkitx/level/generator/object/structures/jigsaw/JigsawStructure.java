@@ -1,5 +1,7 @@
 package org.powernukkitx.level.generator.object.structures.jigsaw;
 
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockJigsaw;
 import org.powernukkitx.block.BlockState;
@@ -11,18 +13,16 @@ import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePool;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
-import org.powernukkitx.registry.Registries;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.random.RandomSourceProvider;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public abstract class JigsawStructure {
         }
         PlacedStructurePiece rootPiece = placeStructurePiece(
                 Vector3.ZERO,
-                Rotation.NONE,
+                getRandomRotation(randomSourceProvider),
                 manager,
                 startPool,
                 randomSourceProvider
@@ -59,6 +59,10 @@ public abstract class JigsawStructure {
         Set<BlockVector3> connectedJigsaws = new HashSet<>();
         List<BoundingBox> occupiedBoxes = new ArrayList<>();
         occupiedBoxes.add(rootPiece.boundingBox());
+        List<BoundingBox> terrainAdaptationBoxes = new ArrayList<>();
+        if (appliesTerrainAdaptation(rootPiece.structureName())) {
+            terrainAdaptationBoxes.add(rootPiece.boundingBox());
+        }
         List<PendingStructurePiece> pendingPieces = new ArrayList<>();
         pendingPieces.add(new PendingStructurePiece(rootPiece, 0, 0));
 
@@ -69,8 +73,8 @@ public abstract class JigsawStructure {
             }
 
             for (JigsawReference sourceReference : getOrderedJigsaws(
-                    pending.piece().sourceStructure(),
-                    pending.piece().placedStructure(),
+                    pending.piece().sourceJigsaws(),
+                    pending.piece().placedJigsaws(),
                     randomSourceProvider
             )) {
                 BlockVector3 parentWorldPos = absolutePos(pending.piece().position(), sourceReference.placedJigsaw());
@@ -111,7 +115,8 @@ public abstract class JigsawStructure {
                         candidate.structureName(),
                         candidate.childStructure(),
                         candidate.projection(),
-                        occupiedBoxes
+                        occupiedBoxes,
+                        pending.piece().boundingBox()
                 );
                 if (childPiece == null) {
                     continue;
@@ -120,6 +125,9 @@ public abstract class JigsawStructure {
                 connectedJigsaws.add(parentWorldPos);
                 connectedJigsaws.add(candidate.connection().childJigsawWorldPos());
                 occupiedBoxes.add(childPiece.boundingBox());
+                if (appliesTerrainAdaptation(childPiece.structureName())) {
+                    terrainAdaptationBoxes.add(childPiece.boundingBox());
+                }
                 if (pending.depth() + 1 < getMaxDepth()) {
                     insertPendingPiece(
                             pendingPieces,
@@ -128,7 +136,7 @@ public abstract class JigsawStructure {
                 }
             }
         }
-        postProcessStructure(manager, occupiedBoxes);
+        postProcessStructure(manager, terrainAdaptationBoxes);
     }
 
     private PlacedStructurePiece placeStructurePiece(Vector3 position, Rotation rotation, StructureHelper helper, StructurePool pool,
@@ -148,7 +156,7 @@ public abstract class JigsawStructure {
             return null;
         }
 
-        return placeStructurePiece(position, rotation, helper, structureName, structure, selectedEntry.projection(), null);
+        return placeStructurePiece(position, rotation, helper, structureName, structure, selectedEntry.projection(), null, null);
     }
 
     protected abstract int getMaxDepth();
@@ -163,13 +171,19 @@ public abstract class JigsawStructure {
         postProcessStructure(helper);
     }
 
+    protected boolean appliesTerrainAdaptation(String structureName) {
+        return true;
+    }
+
     private PlacedStructurePiece placeStructurePiece(Vector3 position, Rotation rotation, StructureHelper helper, String structureName,
-                                                     PNXStructure structure, String projection, List<BoundingBox> occupiedBoxes) {
+                                                     PNXStructure structure, String projection, List<BoundingBox> occupiedBoxes,
+                                                     BoundingBox ignoredBox) {
         PNXStructure placedStructure = rotation == Rotation.NONE ? structure : structure.rotate(rotation);
         BoundingBox currentBox = createBoundingBox(position, placedStructure);
-        if (occupiedBoxes != null && hasStructureCollision(helper, position, placedStructure, occupiedBoxes, currentBox, null)) {
+        if (occupiedBoxes != null && hasStructureCollision(helper, position, placedStructure, occupiedBoxes, currentBox, ignoredBox)) {
             return null;
         }
+        ensureChunksGenerated(helper, currentBox);
         Vector3 worldPosition = toWorldPosition(helper, position);
         StructureHelper tempHelper = new StructureHelper(helper.getLevel(), new BlockVector3(0, 0, 0));
         placedStructure.preparePlace(Position.fromObject(worldPosition), tempHelper);
@@ -198,7 +212,7 @@ public abstract class JigsawStructure {
             }
 
             for (Rotation childRotation : getShuffledRotations(randomSourceProvider)) {
-                Connection connection = resolveConnection(parentPiece, sourceReference, childStructure, candidateEntry.projection(), childRotation, helper, randomSourceProvider);
+                Connection connection = resolveConnection(parentPiece, sourceReference, childStructure, childRotation, randomSourceProvider);
                 if (connection == null || connectedJigsaws.contains(connection.childJigsawWorldPos())) {
                     continue;
                 }
@@ -249,8 +263,8 @@ public abstract class JigsawStructure {
     }
 
     private Connection resolveConnection(PlacedStructurePiece parentPiece, JigsawReference sourceReference,
-                                         PNXStructure childStructure, String childProjection, Rotation childRotation,
-                                         StructureHelper helper, RandomSourceProvider randomSourceProvider) {
+                                         PNXStructure childStructure, Rotation childRotation,
+                                         RandomSourceProvider randomSourceProvider) {
         JigsawOrientation parentOrientation = getJigsawOrientation(
                 parentPiece.sourceStructure(),
                 sourceReference.sourceJigsaw(),
@@ -260,7 +274,11 @@ public abstract class JigsawStructure {
         BlockVector3 parentWorldPos = absolutePos(parentPiece.position(), sourceReference.placedJigsaw());
         PNXStructure rotatedChild = childRotation == Rotation.NONE ? childStructure : childStructure.rotate(childRotation);
 
-        for (JigsawReference childReference : getOrderedJigsaws(childStructure, rotatedChild, randomSourceProvider)) {
+        for (JigsawReference childReference : getOrderedJigsaws(
+                childStructure.getJigsaws(),
+                rotatedChild.getJigsaws(),
+                randomSourceProvider
+        )) {
             if (!normalizeResourceKey(childReference.sourceJigsaw().getName()).equals(normalizeResourceKey(sourceReference.sourceJigsaw().getTarget()))) {
                 continue;
             }
@@ -280,39 +298,10 @@ public abstract class JigsawStructure {
                     childReference.placedJigsaw().getY(),
                     childReference.placedJigsaw().getZ()
             ));
-            childStructurePos = applyProjection(parentPiece, sourceReference, childReference, childStructurePos, childProjection, parentOrientation, helper);
             return new Connection(childRotation, childStructurePos, childWorldPos, rotatedChild, createBoundingBox(childStructurePos.asVector3(), rotatedChild));
         }
 
         return null;
-    }
-
-    private BlockVector3 applyProjection(PlacedStructurePiece parentPiece, JigsawReference sourceReference,
-                                         JigsawReference childReference, BlockVector3 childStructurePos, String childProjection,
-                                         JigsawOrientation parentOrientation, StructureHelper helper) {
-        boolean sourceRigid = isRigid(parentPiece.projection());
-        boolean targetRigid = isRigid(childProjection);
-        int deltaY = sourceReference.placedJigsaw().getY() - childReference.placedJigsaw().getY() + parentOrientation.front().getYOffset();
-
-        if (sourceRigid && targetRigid) {
-            return new BlockVector3(
-                    childStructurePos.getX(),
-                    parentPiece.boundingBox().y0 + deltaY,
-                    childStructurePos.getZ()
-            );
-        }
-
-        BlockVector3 sourceWorldPos = toWorldPosition(helper, absolutePos(parentPiece.position(), sourceReference.placedJigsaw()).asVector3()).asBlockVector3();
-        int sourceSurfaceY = helper.getLevel().getHeightMap(sourceWorldPos.getX(), sourceWorldPos.getZ());
-        return new BlockVector3(
-                childStructurePos.getX(),
-                sourceSurfaceY - childReference.placedJigsaw().getY(),
-                childStructurePos.getZ()
-        );
-    }
-
-    private boolean isRigid(String projection) {
-        return projection == null || "rigid".equalsIgnoreCase(normalizeResourceKey(projection));
     }
 
     private boolean canAttach(JigsawOrientation parentOrientation, String parentJoint, PNXStructure.Jigsaw parentJigsaw,
@@ -373,6 +362,7 @@ public abstract class JigsawStructure {
             case ROTATE_90 -> rotateCounterClockwise(face);
             case ROTATE_180 -> rotateClockwise(rotateClockwise(face));
             case ROTATE_270 -> rotateClockwise(face);
+            default -> throw new IllegalStateException("invalid rotate face: " + face);
         };
     }
 
@@ -429,10 +419,15 @@ public abstract class JigsawStructure {
         return rotations;
     }
 
-    private List<JigsawReference> getOrderedJigsaws(PNXStructure sourceStructure, PNXStructure placedStructure,
+    private Rotation getRandomRotation(RandomSourceProvider randomSourceProvider) {
+        Rotation[] rotations = {Rotation.NONE, Rotation.ROTATE_90, Rotation.ROTATE_180, Rotation.ROTATE_270};
+        return rotations[randomSourceProvider.nextBoundedInt(rotations.length - 1)];
+    }
+
+    private List<JigsawReference> getOrderedJigsaws(PNXStructure.Jigsaw[] sourceJigsaws, PNXStructure.Jigsaw[] placedJigsaws,
                                                     RandomSourceProvider randomSourceProvider) {
-        List<Integer> indices = new ArrayList<>(sourceStructure.getJigsaws().length);
-        for (int i = 0; i < sourceStructure.getJigsaws().length; i++) {
+        List<Integer> indices = new ArrayList<>(sourceJigsaws.length);
+        for (int i = 0; i < sourceJigsaws.length; i++) {
             indices.add(i);
         }
         for (int i = indices.size() - 1; i > 0; i--) {
@@ -441,11 +436,11 @@ public abstract class JigsawStructure {
             indices.set(i, indices.get(index));
             indices.set(index, value);
         }
-        indices.sort(Comparator.comparingInt((Integer index) -> sourceStructure.getJigsaws()[index].getSelectionPriority()).reversed());
+        indices.sort(Comparator.comparingInt((Integer index) -> sourceJigsaws[index].getSelectionPriority()).reversed());
 
         List<JigsawReference> references = new ArrayList<>(indices.size());
         for (int index : indices) {
-            references.add(new JigsawReference(sourceStructure.getJigsaws()[index], placedStructure.getJigsaws()[index]));
+            references.add(new JigsawReference(sourceJigsaws[index], placedJigsaws[index]));
         }
         return references;
     }
@@ -497,6 +492,20 @@ public abstract class JigsawStructure {
         );
     }
 
+    private void ensureChunksGenerated(StructureHelper helper, BoundingBox relativeBox) {
+        BlockVector3 origin = helper.getOrigin();
+        int minChunkX = (origin.getX() + relativeBox.x0) >> 4;
+        int maxChunkX = (origin.getX() + relativeBox.x1) >> 4;
+        int minChunkZ = (origin.getZ() + relativeBox.z0) >> 4;
+        int maxChunkZ = (origin.getZ() + relativeBox.z1) >> 4;
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                helper.getLevel().getOrGenerateChunk(chunkX, chunkZ);
+            }
+        }
+    }
+
     private boolean overlapsExistingBox(List<BoundingBox> occupiedBoxes, BoundingBox box, BoundingBox ignoredBox) {
         for (BoundingBox occupiedBox : occupiedBoxes) {
             if (occupiedBox == ignoredBox) {
@@ -510,9 +519,9 @@ public abstract class JigsawStructure {
     }
 
     protected boolean strictlyIntersects(BoundingBox first, BoundingBox second) {
-        return first.x1 > second.x0 && first.x0 < second.x1
-                && first.y1 > second.y0 && first.y0 < second.y1
-                && first.z1 > second.z0 && first.z0 < second.z1;
+        return first.x1 >= second.x0 && first.x0 <= second.x1
+                && first.y1 >= second.y0 && first.y0 <= second.y1
+                && first.z1 >= second.z0 && first.z0 <= second.z1;
     }
 
     private void replaceJigsawBlocks(StructureHelper helper, PNXStructure.Jigsaw[] jigsaws) {

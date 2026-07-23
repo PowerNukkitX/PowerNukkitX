@@ -1,5 +1,7 @@
 package org.powernukkitx.inventory.request;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
+import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.BeaconInventory;
 import com.google.common.collect.Lists;
@@ -43,7 +45,7 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
             log.warn("only creative mode can destroy item");
             return context.error();
         }
-        var count = action.getCount();
+        var count = action.getAmount();
         var slot = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
         var item = sourceInventory.getItem(slot);
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
@@ -66,21 +68,20 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
             item = sourceInventory.getItem(slot);
         }
         return context.success(List.of(
-                new ItemStackResponseContainerInfo(
-                        sourceInventory.getContainerEnumName(slot),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlotInfo(
-                                        sourceInventory.toNetworkSlot(slot),
-                                        sourceInventory.toNetworkSlot(slot),
-                                        item.getCount(),
-                                        item.getNetId(),
-                                        item.getCustomName(),
-                                        item.getDamage(),
-                                        ""
-                                )
-                        ),
-                        containerName
-                )
+            new ItemStackResponseContainerInfo(
+                sourceInventory.getContainerEnumName(slot),
+                Lists.newArrayList(
+                    new ItemStackResponseSlotInfo(
+                        sourceInventory.toNetworkSlot(slot),
+                        sourceInventory.toNetworkSlot(slot),
+                        item.getCount(),
+                        new ItemStackNetId(item.getNetId()),
+                        new RedactableString(item.getCustomName(), ""),
+                        item.getDamage()
+                    )
+                ),
+                containerName
+            )
         ));
     }
 }

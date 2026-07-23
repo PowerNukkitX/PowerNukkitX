@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -38,8 +39,6 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
-     * <p>
      * Set a task to be executed only once,delay=0 period=0 asynchronous=false
      *
      * @param task the task
@@ -142,8 +141,6 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
-     * <p>
      * Set a task to be executed only once,delay=0 period=0 asynchronous=false
      *
      * @param plugin the plugin
@@ -155,13 +152,11 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的任务 delay=0 period=0
-     * <p>
      * Set a task to be executed only once,delay=0 period=0
      *
      * @param plugin       the plugin
      * @param task         the task
-     * @param asynchronous 是否异步执行<br>Whether it executes asynchronously
+     * @param asynchronous Whether it executes asynchronously
      * @return the task handler
      */
     public TaskHandler scheduleTask(Plugin plugin, Runnable task, boolean asynchronous) {
@@ -169,11 +164,10 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的异步任务
      * Set up an asynchronous task to be executed only once
      *
-     * @param plugin 插件实例,
-     * @param task   异步任务
+     * @param plugin the plugin instance
+     * @param task   the asynchronous task
      */
     public TaskHandler scheduleAsyncTask(Plugin plugin, AsyncTask task) {
         return addTask(plugin, task, 0, 0, true);
@@ -184,24 +178,21 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的非异步延迟任务
      * Set up a delayed task to be executed only once
      *
-     * @param task  任务,可用匿名类创建
-     * @param delay 延迟时间,单位tick(20tick = 1s)
+     * @param task  the task, can be created with an anonymous class
+     * @param delay the delay time, in ticks (20 ticks = 1s)
      */
     public TaskHandler scheduleDelayedTask(Task task, int delay) {
         return this.addTask(task, delay, 0, false);
     }
 
     /**
-     * 设置一个只执行一次的延迟任务
-     * <p>
      * Set up a deferred task that executes only once
      *
-     * @param task         任务,可用lambda表达式创建<br>Tasks, which can be created using lambda expressions
-     * @param delay        延迟时间,单位tick(20tick = 1s)<br>Delay time, in tick (20tick = 1s)
-     * @param asynchronous 是否异步执行，如果是，会启用一个新线程执行任务<br>Whether it executes asynchronously, and if so, enables a new thread to execute the task
+     * @param task         Tasks, which can be created using lambda expressions
+     * @param delay        Delay time, in tick (20tick = 1s)
+     * @param asynchronous Whether it executes asynchronously, and if so, enables a new thread to execute the task
      * @return the task handler
      */
     public TaskHandler scheduleDelayedTask(Task task, int delay, boolean asynchronous) {
@@ -216,12 +207,10 @@ public class ServerScheduler {
     }
 
     /**
-     * 设置一个只执行一次的非异步(在主线程执行)延迟任务
-     * <p>
      * Set up a non-asynchronous (execute on the main thread) deferred task that executes only once
      *
      * @param plugin the plugin
-     * @param task   任务,可用lambda表达式创建<br>Tasks, which can be created using lambda expressions
+     * @param task   Tasks, which can be created using lambda expressions
      * @return the task handler
      */
     public TaskHandler scheduleDelayedTask(Plugin plugin, Runnable task, int delay) {
@@ -342,15 +331,13 @@ public class ServerScheduler {
 
 
     /**
-     * 设置一个延迟周期任务
-     * <p>
      * Set a deferral period task
      *
      * @param plugin       the plugin
      * @param task         the task
-     * @param delay        延迟开始的时间，单位tick<br>The time to delay the start in tick
-     * @param period       周期执行的时间，单位tick<br>The time of the cycle execution, in tick
-     * @param asynchronous 是否异步执行<br>Whether it executes asynchronously
+     * @param delay        The time to delay the start in tick
+     * @param period       The time of the cycle execution, in tick
+     * @param asynchronous Whether it executes asynchronously
      * @return the task handler
      */
     public TaskHandler scheduleDelayedRepeatingTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
@@ -505,7 +492,16 @@ public class ServerScheduler {
     }
 
     public void close() {
-        this.asyncPool.shutdownNow();
+        this.asyncPool.shutdown();
+        try {
+            if (!this.asyncPool.awaitTermination(10, TimeUnit.SECONDS)) {
+                log.warn("Timed out while waiting for the asynchronous task pool to terminate");
+                this.asyncPool.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            this.asyncPool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
     @ApiStatus.Internal

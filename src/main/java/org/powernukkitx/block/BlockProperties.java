@@ -142,7 +142,9 @@ public final class BlockProperties {
     }
 
     public boolean containBlockState(BlockState blockState) {
-        return this.specialValueMap.containsValue(blockState);
+        if (blockState == null) return false;
+        BlockState canonical = this.specialValueMap.get(blockState.specialValue());
+        return canonical != null && canonical.equals(blockState);
     }
 
     public boolean containBlockState(short specialValue) {

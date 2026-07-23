@@ -6,9 +6,11 @@ import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.item.EntityItem;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.NukkitMath;
 import lombok.Getter;
 
-//存储最近的玩家的Memory
+//Memory that stores the nearest player
 
 
 @Getter
@@ -37,18 +39,26 @@ public class NearestItemSensor implements ISensor {
         if(itemClass == null) return;
 
         EntityItem item = null;
+        double nearestSquared = 0;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
-        //寻找范围内最近的玩家
-        for (Entity e : entity.getLevel().getEntities()) {
-            if(e instanceof EntityItem entityItem) {
-                if(itemClass.isAssignableFrom(entityItem.getItem().getClass())) {
-                    if (entity.distanceSquared(e) <= rangeSquared && entity.distanceSquared(e) >= minRangeSquared) {
-                        if (item == null) {
-                            item = entityItem;
-                        } else {
-                            if (entity.distanceSquared(entityItem) < entity.distanceSquared(item)) {
-                                 item = entityItem;
+        Level level = entity.getLevel();
+        int minChunkX = NukkitMath.floorDouble((entity.x - this.range - 2) * 0.0625);
+        int maxChunkX = NukkitMath.ceilDouble((entity.x + this.range + 2) * 0.0625);
+        int minChunkZ = NukkitMath.floorDouble((entity.z - this.range - 2) * 0.0625);
+        int maxChunkZ = NukkitMath.ceilDouble((entity.z + this.range + 2) * 0.0625);
+        //Find the nearest player within range
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
+                for (Entity e : level.getChunkEntities(chunkX, chunkZ, false).values()) {
+                    if(e instanceof EntityItem entityItem) {
+                        if(itemClass.isAssignableFrom(entityItem.getItem().getClass())) {
+                            double distanceSquared = entity.distanceSquared(e);
+                            if (distanceSquared <= rangeSquared && distanceSquared >= minRangeSquared) {
+                                if (item == null || distanceSquared < nearestSquared) {
+                                    item = entityItem;
+                                    nearestSquared = distanceSquared;
+                                }
                             }
                         }
                     }

@@ -1,7 +1,12 @@
 package org.powernukkitx.level.structure;
 
+import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockState;
-import org.powernukkitx.block.BlockStructureVoid;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
@@ -17,12 +22,7 @@ import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
-import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
+import org.powernukkitx.utils.StructureRotationUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +41,6 @@ import java.util.concurrent.CompletableFuture;
 @ToString
 public class Structure extends AbstractStructure {
     private static final int FORMAT_VERSION = 1;
-    public static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
 
     private final BlockState[][][][] blockStates;
     private final Map<Vector3, CompoundTag> blockEntities;
@@ -99,14 +98,14 @@ public class Structure extends AbstractStructure {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     blockStates[0][lx][ly][lz] = dimension.getBlockStateAt(x + lx, y + ly, z + lz, 0);
                     blockStates[1][lx][ly][lz] = dimension.getBlockStateAt(x + lx, y + ly, z + lz, 1);
-                    BlockEntity blockEntity = dimension.getBlockEntity(new Vector3(x + lx, y + ly, z + lz));
+                    final BlockEntity blockEntity = dimension.getBlockEntity(new Vector3(x + lx, y + ly, z + lz));
                     if (blockEntity != null) {
-                        // Vanilla save the original position data for block entity (and entity),
-                        // which is useless as when we place the structure in different position,
-                        // the old position data is not useful anymore. However, we still save it
-                        // to follow the vanilla behavior for best compatibility.
                         blockEntity.saveNBT();
-                        blockEntities.put(new Vector3(lx, ly, lz), blockEntity.getCleanedNBT().putString("id", blockEntity.getSaveId()));
+                        final CompoundTag blockEntityData = blockEntity.getNbt().copy();
+                        blockEntityData.putString("id", blockEntity.getSaveId());
+                        final CompoundTag blockPositionData = new CompoundTag();
+                        blockPositionData.putCompound("block_entity_data", blockEntityData);
+                        blockEntities.put(new Vector3(lx, ly, lz), blockPositionData);
                     }
                 }
             }
@@ -154,8 +153,10 @@ public class Structure extends AbstractStructure {
         Preconditions.checkArgument(blockIndices.get(0).size() == sizeX * sizeY * sizeZ, "size of layer0 incorrect, it should be" + sizeX * sizeY * sizeZ);
         Preconditions.checkArgument(blockIndices.get(1).size() == sizeX * sizeY * sizeZ, "size of layer1 incorrect, it should be" + sizeX * sizeY * sizeZ);
 
-        List<IntTag> layer0 = blockIndices.get(0).getAll();
-        List<IntTag> layer1 = blockIndices.get(1).getAll();
+        @SuppressWarnings("unchecked")
+        List<IntTag> layer0 = ((ListTag<IntTag>) blockIndices.get(0)).getAll();
+        @SuppressWarnings("unchecked")
+        List<IntTag> layer1 = ((ListTag<IntTag>) blockIndices.get(1)).getAll();
         CompoundTag palette = structureNBT.getCompound("palette").getCompound("default");
         CompoundTag blockEntityNBT = palette.getCompound("block_position_data");
         List<BlockState> blockPalette = palette.getList("block_palette", CompoundTag.class).getAll().stream().map(ItemHelper::getBlockStateHelper).toList();
@@ -167,12 +168,12 @@ public class Structure extends AbstractStructure {
             for (int ly = 0; ly < sizeY; ly++) {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     if (layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
-                        blockStates[0][lx][ly][lz] = STATE_AIR;
+                        blockStates[0][lx][ly][lz] = STATE_STRUCTURE_VOID;
                     } else {
                         blockStates[0][lx][ly][lz] = blockPalette.get(layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
                     }
                     if (layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
-                        blockStates[1][lx][ly][lz] = STATE_AIR;
+                        blockStates[1][lx][ly][lz] = STATE_STRUCTURE_VOID;
                     } else {
                         blockStates[1][lx][ly][lz] = blockPalette.get(layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
                     }
@@ -231,11 +232,8 @@ public class Structure extends AbstractStructure {
                 for (int lz = 0; lz < sizeZ; lz++) {
                     BlockState l0 = blockStates[0][lx][ly][lz];
                     BlockState l1 = blockStates[1][lx][ly][lz];
-                    if (l0.equals(STRUCTURE_VOID_DEFAULT_STATE)) l0 = STATE_AIR;
-                    if (l1.equals(STRUCTURE_VOID_DEFAULT_STATE)) l1 = STATE_AIR;
-                    if (l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
-                    if (l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
-
+                    if (l0 != null && l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
+                    if (l1 != null && l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
                 }
             }
         }
@@ -245,22 +243,41 @@ public class Structure extends AbstractStructure {
         preparePlace(pos, blockManager);
         blockManager.applySubChunkUpdate();
 
-        for (var entry : blockEntities.entrySet()) {
-            int newPosX = (entry.getKey().getFloorX() + pos.getFloorX());
-            int newPosY = (entry.getKey().getFloorY() + pos.getFloorY());
-            int newPosZ = (entry.getKey().getFloorZ() + pos.getFloorZ());
+        final int deltaX = pos.getFloorX() - this.x;
+        final int deltaY = pos.getFloorY() - this.y;
+        final int deltaZ = pos.getFloorZ() - this.z;
 
-            BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
-            if (blockEntity != null) {
-                blockEntity.getLevel().removeBlockEntity(blockEntity);
+        for (var entry : blockEntities.entrySet()) {
+            final CompoundTag storedData = entry.getValue().getCompound("block_entity_data");
+            if (storedData.getString("id").isEmpty()) {
+                continue;
             }
 
-            CompoundTag oldNbt = entry.getValue().getCompound("block_entity_data");
-            oldNbt.putInt("x", newPosX);
-            oldNbt.putInt("y", newPosY);
-            oldNbt.putInt("z", newPosZ);
+            final int newPosX = storedData.contains("x") ?
+                storedData.getInt("x") + deltaX : entry.getKey().getFloorX() + pos.getFloorX();
+            final int newPosY = storedData.contains("y") ?
+                storedData.getInt("y") + deltaY : entry.getKey().getFloorY() + pos.getFloorY();
+            final int newPosZ = storedData.contains("z") ?
+                storedData.getInt("z") + deltaZ : entry.getKey().getFloorZ() + pos.getFloorZ();
 
-            BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(newPosX, newPosY, newPosZ, pos.getLevel()), oldNbt);
+            final BlockEntity existing = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
+            if (existing != null) {
+                existing.getLevel().removeBlockEntity(existing);
+            }
+
+            final CompoundTag newNbt = storedData.copy();
+            newNbt.putInt("x", newPosX);
+            newNbt.putInt("y", newPosY);
+            newNbt.putInt("z", newPosZ);
+
+            if (newNbt.contains("pairx")) {
+                newNbt.putInt("pairx", newNbt.getInt("pairx") + deltaX);
+            }
+            if (newNbt.contains("pairz")) {
+                newNbt.putInt("pairz", newNbt.getInt("pairz") + deltaZ);
+            }
+
+            BlockEntity.createBlockEntity(newNbt.getString("id"), new Position(newPosX, newPosY, newPosZ, pos.getLevel()), newNbt);
         }
 
         if(!includeEntities) {
@@ -355,7 +372,7 @@ public class Structure extends AbstractStructure {
                 for (int y = 0; y < this.sizeY; y++) {
                     for (int z = 0; z < this.sizeZ; z++) {
                         BlockState state = this.blockStates[layer][x][y][z];
-                        if (state != null && !state.equals(STRUCTURE_VOID_DEFAULT_STATE) && !blockStateToIndex.containsKey(state)) {
+                        if (state != null && state != STATE_STRUCTURE_VOID && !blockStateToIndex.containsKey(state)) {
                             blockStateToIndex.put(state, paletteIndex++);
                             uniqueBlockStates.add(state);
                         }
@@ -373,7 +390,7 @@ public class Structure extends AbstractStructure {
             for (int y = 0; y < this.sizeY; y++) {
                 for (int z = 0; z < this.sizeZ; z++) {
                     BlockState state = this.blockStates[0][x][y][z];
-                    if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
+                    if (state == null || state == STATE_STRUCTURE_VOID) {
                         layer0List.add(new IntTag(-1));
                     } else {
                         layer0List.add(new IntTag(blockStateToIndex.get(state)));
@@ -389,7 +406,7 @@ public class Structure extends AbstractStructure {
             for (int y = 0; y < this.sizeY; y++) {
                 for (int z = 0; z < this.sizeZ; z++) {
                     BlockState state = this.blockStates[1][x][y][z];
-                    if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
+                    if (state == null || state == STATE_STRUCTURE_VOID) {
                         layer1List.add(new IntTag(-1));
                     } else {
                         layer1List.add(new IntTag(blockStateToIndex.get(state)));
@@ -435,11 +452,11 @@ public class Structure extends AbstractStructure {
 
         nbt.putCompound("structure", structureNBT);
 
-        // Set structure_world_origin (using 0, 0, 0)
+        // Set structure_world_origin to the world position the structure was captured at
         ListTag<IntTag> originList = new ListTag<>();
-        originList.add(new IntTag(0));
-        originList.add(new IntTag(0));
-        originList.add(new IntTag(0));
+        originList.add(new IntTag(this.x));
+        originList.add(new IntTag(this.y));
+        originList.add(new IntTag(this.z));
         nbt.putList("structure_world_origin", originList);
 
         return nbt;
@@ -485,7 +502,7 @@ public class Structure extends AbstractStructure {
                             }
                         }
 
-                        rotatedStates[layer][rx][y][rz] = state;
+                        rotatedStates[layer][rx][y][rz] = rotateBlockState(state, rotation);
                     }
                 }
             }
@@ -514,7 +531,7 @@ public class Structure extends AbstractStructure {
                 }
             }
 
-            rotatedBlockEntities.put(new Vector3(rx, y, rz), entry.getValue());
+            rotatedBlockEntities.put(new Vector3(rx, y, rz), rotateBlockEntityData(entry.getValue(), rotation));
         }
 
         List<CompoundTag> rotatedEntities = new ArrayList<>(entities);
@@ -556,7 +573,7 @@ public class Structure extends AbstractStructure {
                             }
                         }
 
-                        mirroredStates[layer][mx][y][mz] = state;
+                        mirroredStates[layer][mx][y][mz] = mirrorBlockState(state, mirror);
                     }
                 }
             }
@@ -581,12 +598,110 @@ public class Structure extends AbstractStructure {
                 }
             }
 
-            mirroredBlockEntities.put(new Vector3(mx, y, mz), entry.getValue());
+            mirroredBlockEntities.put(new Vector3(mx, y, mz), mirrorBlockEntityData(entry.getValue(), mirror));
         }
 
         List<CompoundTag> mirroredEntities = new ArrayList<>(entities);
 
         return new Structure(mirroredStates, mirroredBlockEntities, mirroredEntities,
                 sizeX, sizeY, sizeZ, x, y, z);
+    }
+
+    private static BlockState rotateBlockState(BlockState state, Rotation rotation) {
+        if (state == null || !hasTransformableState(state)) {
+            return state;
+        }
+        return switch (rotation) {
+            case ROTATE_90 -> StructureRotationUtil.counterclockwise90(state);
+            case ROTATE_180 -> StructureRotationUtil.clockwise180(state);
+            case ROTATE_270 -> StructureRotationUtil.clockwise90(state);
+            default -> state;
+        };
+    }
+
+    private static BlockState mirrorBlockState(BlockState state, Mirror mirror) {
+        if (state == null || !hasTransformableState(state)) {
+            return state;
+        }
+        return switch (mirror) {
+            case X -> StructureRotationUtil.mirrorX(state);
+            case Z -> StructureRotationUtil.mirrorZ(state);
+            case XZ -> StructureRotationUtil.clockwise180(state);
+            default -> state;
+        };
+    }
+
+    private static boolean hasTransformableState(BlockState state) {
+        return state != STATE_AIR
+                && state != STATE_UNKNOWN
+                && state != STATE_STRUCTURE_VOID;
+    }
+
+    private CompoundTag rotateBlockEntityData(CompoundTag blockPositionData, Rotation rotation) {
+        final CompoundTag copy = blockPositionData.copy();
+        final CompoundTag data = copy.getCompound("block_entity_data");
+        if (data.contains("x") && data.contains("z")) {
+            rotateCoordPair(data, "x", "z", rotation);
+        }
+        if (data.contains("pairx") && data.contains("pairz")) {
+            rotateCoordPair(data, "pairx", "pairz", rotation);
+        }
+        return copy;
+    }
+
+    private void rotateCoordPair(CompoundTag data, String xKey, String zKey, Rotation rotation) {
+        final int relX = data.getInt(xKey) - this.x;
+        final int relZ = data.getInt(zKey) - this.z;
+        int rx = relX;
+        int rz = relZ;
+        switch (rotation) {
+            case ROTATE_90 -> {
+                rx = relZ;
+                rz = sizeX - 1 - relX;
+            }
+            case ROTATE_180 -> {
+                rx = sizeX - 1 - relX;
+                rz = sizeZ - 1 - relZ;
+            }
+            case ROTATE_270 -> {
+                rx = sizeZ - 1 - relZ;
+                rz = relX;
+            }
+            default -> {
+            }
+        }
+        data.putInt(xKey, this.x + rx);
+        data.putInt(zKey, this.z + rz);
+    }
+
+    private CompoundTag mirrorBlockEntityData(CompoundTag blockPositionData, Mirror mirror) {
+        final CompoundTag copy = blockPositionData.copy();
+        final CompoundTag data = copy.getCompound("block_entity_data");
+        if (data.contains("x") && data.contains("z")) {
+            mirrorCoordPair(data, "x", "z", mirror);
+        }
+        if (data.contains("pairx") && data.contains("pairz")) {
+            mirrorCoordPair(data, "pairx", "pairz", mirror);
+        }
+        return copy;
+    }
+
+    private void mirrorCoordPair(CompoundTag data, String xKey, String zKey, Mirror mirror) {
+        final int relX = data.getInt(xKey) - this.x;
+        final int relZ = data.getInt(zKey) - this.z;
+        int mx = relX;
+        int mz = relZ;
+        switch (mirror) {
+            case X -> mx = sizeX - 1 - relX;
+            case Z -> mz = sizeZ - 1 - relZ;
+            case XZ -> {
+                mx = sizeX - 1 - relX;
+                mz = sizeZ - 1 - relZ;
+            }
+            default -> {
+            }
+        }
+        data.putInt(xKey, this.x + mx);
+        data.putInt(zKey, this.z + mz);
     }
 }

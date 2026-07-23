@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.StampedLock;
@@ -58,6 +59,12 @@ public class Chunk implements IChunk {
     protected final AtomicLong changes;
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
+    /**
+     * Live entity count. The non-blocking map computes size()/isEmpty() by summing a
+     * striped counter, which is too slow for the per-chunk-per-tick emptiness checks
+     * in {@code Level.tickChunks}.
+     */
+    protected final AtomicInteger entityCount = new AtomicInteger();
     protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
     protected final BlockUpdateScheduler blockUpdateScheduler;
@@ -68,7 +75,8 @@ public class Chunk implements IChunk {
     protected final StampedLock heightAndBiomeLock;
     protected final StampedLock lightLock;
     protected final LevelProvider provider;
-    protected boolean isInit;
+    protected volatile boolean isInit;
+    protected boolean isInitializing;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
 
@@ -514,7 +522,9 @@ public class Chunk implements IChunk {
 
     @Override
     public void addEntity(Entity entity) {
-        this.entities.put(entity.getId(), entity);
+        if (this.entities.put(entity.getId(), entity) == null) {
+            this.entityCount.incrementAndGet();
+        }
         if (!(entity instanceof Player) && this.isInit) {
             this.setChanged();
         }
@@ -525,12 +535,19 @@ public class Chunk implements IChunk {
         if (entity.getId() < 0) return;
         if (this.entities != null) {
             synchronized (this.entities) {
-                this.entities.remove(entity.getId());
+                if (this.entities.remove(entity.getId()) != null) {
+                    this.entityCount.decrementAndGet();
+                }
                 if (!(entity instanceof Player) && this.isInit) {
                     this.setChanged();
                 }
             }
         }
+    }
+
+    @Override
+    public boolean hasEntities() {
+        return this.entityCount.get() > 0;
     }
 
     @Override
@@ -632,13 +649,19 @@ public class Chunk implements IChunk {
                     }
 
                     int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
-                    int herdSpread = spawnRule.getHerdMax() - spawnRule.getHerdMin();
 
                     for (int i = 0; i < herd; i++) {
                         Vector3 spawnPos = lookVec;
                         if (!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
-                            float offset = i / (100f * herd); //If a herd is spawned at the exact same position, they push themselves infinite
-                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5 + offset, 0, 0.5 + offset);
+                            Vector3 scattered = i == 0 ? lookVec : lookVec.add(Utils.rand(-4, 4), 0, Utils.rand(-4, 4));
+                            Vector3 safe = level.getSafeSpawn(scattered, 2, true);
+                            if (safe == null || safe.distanceSquared(lookVec) > 64) {
+                                safe = level.getSafeSpawn(lookVec, 1, true);
+                            }
+                            if (safe == null) {
+                                continue;
+                            }
+                            spawnPos = safe.add(Utils.rand(0.3, 0.7), 0, Utils.rand(0.3, 0.7));
                         }
                         if (spawnedEntityCount >= maxEntityCount) {
                             break;
@@ -727,8 +750,13 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public void initChunk() {
-        if (this.getProvider() != null && !this.isInit) {
+    public synchronized void initChunk() {
+        if (this.getProvider() == null || this.isInit || this.isInitializing) {
+            return;
+        }
+
+        this.isInitializing = true;
+        try {
             boolean changed = false;
             if (this.entityNBT != null) {
                 for (CompoundTag nbt : entityNBT) {
@@ -779,6 +807,8 @@ public class Chunk implements IChunk {
             }
 
             this.isInit = true;
+        } finally {
+            this.isInitializing = false;
         }
     }
 

@@ -3,9 +3,11 @@ package org.powernukkitx.entity.ai.sensor;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.MemoryType;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.NukkitMath;
 import lombok.Getter;
 
-//存储最近的玩家的Memory
+//Memory that stores the nearest player
 
 
 @Getter
@@ -36,17 +38,25 @@ public class NearestEntitySensor implements ISensor {
     @Override
     public void sense(EntityIntelligent entity) {
         Entity ent = null;
+        double nearestSquared = 0;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
-        //寻找范围内最近的玩家
-        for (Entity e : entity.getLevel().getEntities()) {
-            if(entityClass.isAssignableFrom(e.getClass())) {
-                if (entity.distanceSquared(e) <= rangeSquared && entity.distanceSquared(e) >= minRangeSquared) {
-                    if (ent == null) {
-                        ent = e;
-                    } else {
-                        if (entity.distanceSquared(e) < entity.distanceSquared(ent)) {
-                            ent = e;
+        Level level = entity.getLevel();
+        int minChunkX = NukkitMath.floorDouble((entity.x - this.range - 2) * 0.0625);
+        int maxChunkX = NukkitMath.ceilDouble((entity.x + this.range + 2) * 0.0625);
+        int minChunkZ = NukkitMath.floorDouble((entity.z - this.range - 2) * 0.0625);
+        int maxChunkZ = NukkitMath.ceilDouble((entity.z + this.range + 2) * 0.0625);
+        //Find the nearest player within range
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
+                for (Entity e : level.getChunkEntities(chunkX, chunkZ, false).values()) {
+                    if(entityClass.isAssignableFrom(e.getClass())) {
+                        double distanceSquared = entity.distanceSquared(e);
+                        if (distanceSquared <= rangeSquared && distanceSquared >= minRangeSquared) {
+                            if (ent == null || distanceSquared < nearestSquared) {
+                                ent = e;
+                                nearestSquared = distanceSquared;
+                            }
                         }
                     }
                 }

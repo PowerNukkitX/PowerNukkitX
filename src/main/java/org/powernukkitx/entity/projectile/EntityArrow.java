@@ -185,7 +185,7 @@ public class EntityArrow extends SlenderProjectile {
     public void setItem(ItemArrow arrow) {
         this.item = arrow;
         if (arrow.getTippedArrowPotion() != null) {
-            this.setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) arrow.getTippedArrowPotion().id() + 1);
+            this.setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) (arrow.getTippedArrowPotion().id() + 1));
         }
     }
 

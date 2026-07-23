@@ -1,16 +1,23 @@
 package org.powernukkitx.level;
 
+import org.powernukkitx.Server;
 import org.powernukkitx.block.BlockAir;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockOakLog;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.format.palette.Palette;
+import org.powernukkitx.level.village.VillageManager;
+import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.HashUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +25,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -34,6 +42,7 @@ public class LevelStorageTest {
         FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/level2"));
         Level level = Mockito.mock(Level.class);
         Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
+        Mockito.when(level.getVillageManager()).thenReturn(new VillageManager(level));
         levelDBProvider = new LevelDBProvider(level, "src/test/resources/level2");
     }
 
@@ -82,7 +91,58 @@ public class LevelStorageTest {
         Assertions.assertNotNull(levelDBProvider.getLevelData());
         Assertions.assertEquals("Bedrock level", levelDBProvider.getLevelData().getName());
     }
-    
+
+
+    @Order(4)
+    @Test
+    void testUnknownBlockIdentityPreservedOnRoundTrip() {
+        // Simulate a custom/removed block that has no implementation: a real name + states
+        final String customName = "powernukkitx:test_unknown_block";
+        final NbtMap identity = NbtMap.builder()
+                .putString("name", customName)
+                .putCompound("states", NbtMap.builder().putInt("test_state", 3).build())
+                .build();
+        final int hash = HashUtils.fnv1a_32_nbt(identity);
+        final NbtMap blockTag = identity.toBuilder()
+                .putInt("version", NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION)
+                .build();
+        final BlockState unknown = BlockState.makeUnknownBlockState(hash, blockTag);
+
+        // In memory, the unknown state carries the original identity under the "Block" compound
+        Assertions.assertEquals(customName, unknown.getBlockStateTag().getCompound("Block").getString("name"));
+
+        // Write a single-entry palette containing that unknown block to storage...
+        final Palette<BlockState> palette = new Palette<>(unknown);
+        final ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+        palette.writeToStoragePersistent(buf, BlockState::getBlockStateTag);
+
+        // ...and read it back with the same deserializer the chunk loader uses:
+        // an unresolved hash maps to the generic unknown default, which is what triggers
+        // the preserve-or-lose branch in addBlockPalette. The unknown-block path consults
+        // Server settings (saveUnknownBlock), so stub the singleton for this unit test
+        final Server server = Mockito.mock(Server.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(server.getSettings().baseSettings().saveUnknownBlock()).thenReturn(true);
+        final Palette<BlockState> reloaded = new Palette<>(BlockAir.STATE);
+        try (MockedStatic<Server> mocked = Mockito.mockStatic(Server.class)) {
+            mocked.when(Server::getInstance).thenReturn(server);
+            reloaded.readFromStoragePersistent(buf, hashKey -> {
+                BlockState bs = Registries.BLOCKSTATE.get(hashKey);
+                return bs == null ? BlockUnknown.PROPERTIES.getDefaultState() : bs;
+            });
+        }
+        buf.release();
+
+        final BlockState result = reloaded.get(0);
+        Assertions.assertEquals(BlockID.UNKNOWN, result.getIdentifier());
+
+        // The critical assertion: the block's original identity survived the round-trip
+        // instead of being destroyed into an empty tag.
+        final NbtMap preserved = result.getBlockStateTag().getCompound("Block");
+        Assertions.assertEquals(customName, preserved.getString("name"),
+                "Unknown block lost its name on the save/load round-trip");
+        Assertions.assertEquals(3, preserved.getCompound("states").getInt("test_state"),
+                "Unknown block lost its states on the save/load round-trip");
+    }
 
     @Order(8)
     @Test
@@ -90,6 +150,7 @@ public class LevelStorageTest {
     void testCloseAndLoadAgain() {
         Level level = Mockito.mock(Level.class);
         Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
+        Mockito.when(level.getVillageManager()).thenReturn(new VillageManager(level));
         var newProvider = new LevelDBProvider(level, "src/test/resources/level3");
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {

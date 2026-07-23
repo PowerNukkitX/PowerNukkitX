@@ -8,4 +8,8 @@ public interface Supportable {
         return block.hasTag(BlockTags.DIRT);
     }
 
+    default boolean isSupportGrass(Block block) {
+        return block instanceof BlockGrassBlock && !(block instanceof BlockGrassPath);
+    }
+
 }
