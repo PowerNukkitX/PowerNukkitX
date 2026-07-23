@@ -214,7 +214,13 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public void setDirty() {
-        chunk.setChanged();
+        if (chunk != null) {
+            chunk.setChanged();
+        }
+
+        if (this.level == null) {
+            return;
+        }
 
         if (!this.getLevelBlock().isAir()) {
             getLevel().getScheduler().scheduleTask(new Task() {
