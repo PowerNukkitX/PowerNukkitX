@@ -44,33 +44,35 @@ public class BlockGrassBlock extends BlockDirt {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (!this.up().canBeReplaced()) {
-            return false;
-        }
-
         if (item.isFertilizer()) {
-            if (player != null && (player.gamemode & 0x01) == 0) {
-                item.count--;
+            if(up().isAir()) {
+                if (player != null && (player.gamemode & 0x01) == 0) {
+                    item.count--;
+                }
+                this.level.addParticle(new BoneMealParticle(this));
+                BlockManager blockManager = new BlockManager(this.level);
+                LegacyTallGrass.growGrass(blockManager, this, new NukkitRandom());
+                blockManager.applyBlockUpdate();
+                return true;
             }
-            this.level.addParticle(new BoneMealParticle(this));
-            BlockManager blockManager = new BlockManager(this.level);
-            LegacyTallGrass.growGrass(blockManager, this, new NukkitRandom());
-            blockManager.applyBlockUpdate();
-            return true;
         } else if (item.isHoe()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(BlockID.FARMLAND));
-            if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+            if(up().isAir()) {
+                item.useOn(this);
+                this.getLevel().setBlock(this, Block.get(BlockID.FARMLAND));
+                if (player != null) {
+                    player.getLevel().addSound(player, Sound.USE_GRASS);
+                }
+                return true;
             }
-            return true;
         } else if (item.isShovel()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));
-            if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+            if(up().isAir()) {
+                item.useOn(this);
+                this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));
+                if (player != null) {
+                    player.getLevel().addSound(player, Sound.USE_GRASS);
+                }
+                return true;
             }
-            return true;
         }
 
         return false;
