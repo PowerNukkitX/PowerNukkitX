@@ -37,6 +37,11 @@ public class ForestTreeFeature extends LegacyTreeGeneratorFeature {
     }
 
     @Override
+    protected float getBeeNestChance() {
+        return 0.00035F;
+    }
+
+    @Override
     public String name() {
         return NAME;
     }

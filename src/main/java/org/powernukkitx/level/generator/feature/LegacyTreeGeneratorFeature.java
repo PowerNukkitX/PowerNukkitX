@@ -9,6 +9,9 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateFeature;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.TreeGenerator;
+import org.powernukkitx.level.generator.object.BeeNestGenerator;
+import org.powernukkitx.level.generator.object.legacytree.LegacyBirchTree;
+import org.powernukkitx.level.generator.object.legacytree.LegacyOakTree;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.registry.Registries;
@@ -29,6 +32,10 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature impleme
 
     public String getRequiredTag() {
         return BiomeTags.OVERWORLD;
+    }
+
+    protected float getBeeNestChance() {
+        return 0F;
     }
 
     @Override
@@ -54,7 +61,12 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature impleme
             if(isSupportDirt(level.getBlock(v))) {
                 TreeGenerator generator = getGenerator(random);
                 if(generator == null) return;
-                generator.generate(object, random, new Vector3(v.getFloorX(), v.getFloorY() + 1, v.getFloorZ()));
+                Vector3 treePosition = new Vector3(v.getFloorX(), v.getFloorY() + 1, v.getFloorZ());
+                if (generator.generate(object, random, treePosition)
+                        && (generator instanceof LegacyOakTree || generator instanceof LegacyBirchTree)
+                        && random.nextFloat() < getBeeNestChance()) {
+                    BeeNestGenerator.place(object, random, treePosition);
+                }
                 manager.merge(object);
             }
         }

@@ -12,6 +12,11 @@ public class MeadowTreeFeature extends PlainsTreeFeature {
     }
 
     @Override
+    protected float getBeeNestChance() {
+        return 1F;
+    }
+
+    @Override
     public String name() {
         return NAME;
     }
