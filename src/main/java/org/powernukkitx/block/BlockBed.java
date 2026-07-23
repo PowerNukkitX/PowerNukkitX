@@ -209,14 +209,14 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         setBlockFace(direction);
 
-        level.setBlock(block, this, true, true);
+        level.setBlock(block, this, false, true);
         if (next instanceof BlockLiquid && ((BlockLiquid) next).usesWaterLogging()) {
-            level.setBlock(next, 1, next, true, false);
+            level.setBlock(next, 1, next, false, false);
         }
 
         BlockBed head = (BlockBed) clone();
         head.setHeadPiece(true);
-        level.setBlock(next, head, true, true);
+        level.setBlock(next, head, false, true);
 
         BlockEntityBed thisBed = null;
         try {
@@ -228,10 +228,10 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             if (thisBed != null) {
                 thisBed.close();
             }
-            level.setBlock(thisLayer0, 0, thisLayer0, true);
-            level.setBlock(thisLayer1, 1, thisLayer1, true);
-            level.setBlock(nextLayer0, 0, nextLayer0, true);
-            level.setBlock(nextLayer1, 1, nextLayer1, true);
+            level.setBlock(thisLayer0, 0, thisLayer0, false);
+            level.setBlock(thisLayer1, 1, thisLayer1, false);
+            level.setBlock(nextLayer0, 0, nextLayer0, false);
+            level.setBlock(nextLayer1, 1, nextLayer1, false);
             return false;
         }
         return true;
