@@ -129,6 +129,7 @@
   "pnx.settings.misc.shutdownmessage": "Message sent when the server shuts down",
   "pnx.settings.misc.installspark": "Whether to install the Spark plugin on the server as profiler",
   "pnx.settings.misc.bypassapicheck": "Ignore plugin API check",
+  "pnx.settings.misc.enablemetrics": "Send statistics to developers",
   "pnx.settings.level.levelthread": "Whether to enable level thread (Every level has its own thread)",
   "pnx.settings.level.autotickrate": "Whether the server dynamically adjusts the tick rate",
   "pnx.settings.level.autotickratelimit": "Maximum adjustable tick count",

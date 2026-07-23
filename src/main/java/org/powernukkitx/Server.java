@@ -475,7 +475,7 @@ public class Server {
         this.consoleSender = new ConsoleCommandSender();
 
         // Initialize metrics
-        if (!this.settings.miscSettings().disableMetrics()) {
+        if (this.settings.miscSettings().enableMetrics()) {
             NukkitMetrics.startNow(this);
         }
 
