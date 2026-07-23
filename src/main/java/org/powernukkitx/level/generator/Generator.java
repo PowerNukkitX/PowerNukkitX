@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -107,12 +106,7 @@ public abstract class Generator implements BlockID {
         if (chunk.getChunkState().ordinal() < ChunkState.STARTED.ordinal()) {
             chunk.setChunkState(ChunkState.STARTED);
         }
-        final AtomicBoolean called = new AtomicBoolean(false);
-        asyncGenerate0(context, start, to, () -> {
-            if (called.compareAndSet(false, true)) {
-                callback.accept(context);
-            }
-        });
+        asyncGenerate0(context, start, to, () -> callback.accept(context));
     }
 
 
@@ -123,24 +117,14 @@ public abstract class Generator implements BlockID {
         }
         if (to.equals(start.name())) {
             start.getExecutor().execute(() -> {
-                try {
-                    start.apply(context);
-                } catch (Throwable t) {
-                    log.error("Error while applying the generate stage {} of the chunk ({}, {})", start.name(), context.getChunk().getX(), context.getChunk().getZ(), t);
-                } finally {
-                    callback.run();
-                }
+                start.apply(context);
+                callback.run();
             });
             return;
         }
         start.getExecutor().execute(() -> {
-            try {
-                start.apply(context);
-                asyncGenerate0(context, start.getNextStage(), to, callback);
-            } catch (Throwable t) {
-                log.error("Error while applying the generate stage {} of the chunk ({}, {})", start.name(), context.getChunk().getX(), context.getChunk().getZ(), t);
-                callback.run();
-            }
+            start.apply(context);
+            asyncGenerate0(context, start.getNextStage(), to, callback);
         });
 
     }

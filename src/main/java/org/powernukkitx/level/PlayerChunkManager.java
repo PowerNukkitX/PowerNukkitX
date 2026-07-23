@@ -117,6 +117,8 @@ public final class PlayerChunkManager {
         updateInRadiusChunks(1, floor);
         removeOutOfRadiusChunks();
         updateInRadiusChunks(8, floor);
+        pruneLoadingQueueOutOfRadius();
+        pruneQueueOutOfRadius(chunkReadyToSend, true);
         updateChunkSendingQueue();
         loadQueuedChunks(8, true);
         sendChunk();
