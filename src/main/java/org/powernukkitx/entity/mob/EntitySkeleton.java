@@ -131,6 +131,11 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     }
 
     @Override
+    public double getFloatingForceFactor() {
+        return 0.7;
+    }
+
+    @Override
     public boolean isUndead() {
         return true;
     }
