@@ -69,6 +69,7 @@ import org.powernukkitx.level.vibration.SimpleVibrationManager;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationManager;
 import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.level.village.VillageManager;
 import org.powernukkitx.math.*;
 import org.powernukkitx.math.BlockFace.Plane;
 import org.powernukkitx.metadata.BlockMetadataStore;
@@ -348,6 +349,7 @@ public class Level implements Metadatable {
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<Player>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
+    private final VillageManager villageManager = new VillageManager(this);
     public boolean stopTime;
     public int skyLightSubtracted;
     public int sleepTicks = 0;
@@ -2948,6 +2950,10 @@ public class Level implements Metadatable {
 
         BlockChangeEvent blockChangeEvent = new BlockChangeEvent(block, blockPrevious);
         this.server.getPluginManager().callEvent(blockChangeEvent);
+
+        if (layer == 0) {
+            this.villageManager.onBlockChange(blockPrevious, block);
+        }
 
         int cx = x >> 4;
         int cz = z >> 4;
@@ -5944,6 +5950,10 @@ public class Level implements Metadatable {
 
     public VibrationManager getVibrationManager() {
         return this.vibrationManager;
+    }
+
+    public VillageManager getVillageManager() {
+        return this.villageManager;
     }
 
     public int ensureY(final int y) {
