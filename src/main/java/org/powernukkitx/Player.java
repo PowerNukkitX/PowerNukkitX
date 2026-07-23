@@ -261,7 +261,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Vector3 sleeping = null;
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
-    /** Wall-clock gate for the async chunk-order run in {@link #checkNetwork()}. */
+    /** Wall-clock gate for the chunk-order run in {@link #checkNetwork()}. */
     private long lastChunkOrderRunMillis;
     protected Vector3 newPosition = null;
     protected int chunkRadius;
@@ -3123,7 +3123,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             long now = System.currentTimeMillis();
             if (now - this.lastChunkOrderRunMillis >= 50) {
                 this.lastChunkOrderRunMillis = now;
-                CompletableFuture.runAsync(playerChunkManager::tick, this.server.getComputeThreadPool());
+                playerChunkManager.tick();
             }
         }
 
