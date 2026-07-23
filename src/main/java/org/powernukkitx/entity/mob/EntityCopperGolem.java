@@ -62,6 +62,8 @@ import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.powernukkitx.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.objects.ObjectList;
+
+import java.util.Locale;
 import lombok.Getter;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
@@ -169,7 +171,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
         if (nbtMap.contains("Mainhand")) {
             this.inventory.setItemInHand(ItemHelper.read(nbtMap.getCompound("Mainhand")), true);
         }
-        setOxidation(Oxidation.valueOf(nbtMap.getString("oxidationLevel").toUpperCase()));
+        setOxidation(Oxidation.valueOf(nbtMap.getString("oxidationLevel").toUpperCase(Locale.ROOT)));
         this.weatherTick = nbtMap.getInt("weatheredTick");
         setEnumEntityProperty(PROPERTIES[0].getIdentifier(), "none");
     }
@@ -287,7 +289,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     }
 
     public Oxidation getOxidation() {
-        return Oxidation.valueOf(this.getEnumEntityProperty(PROPERTIES[2].getIdentifier()).toUpperCase());
+        return Oxidation.valueOf(this.getEnumEntityProperty(PROPERTIES[2].getIdentifier()).toUpperCase(Locale.ROOT));
     }
 
     public void setFlower(boolean flower) {
@@ -357,7 +359,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
         OXIDIZED;
 
         public String getName() {
-            return name().toLowerCase();
+            return name().toLowerCase(Locale.ROOT);
         }
 
         public static Oxidation getGolemOxidation(OxidizationLevel level) {
