@@ -3,6 +3,7 @@ package org.powernukkitx.level.generator.populator.normal;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockChest;
 import org.powernukkitx.block.BlockJigsaw;
+import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockWallBanner;
 import org.powernukkitx.blockentity.BlockEntityBanner;
 import org.powernukkitx.entity.Entity;
@@ -14,6 +15,9 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
+import org.powernukkitx.level.generator.object.structures.StructureHelper;
+import org.powernukkitx.level.generator.object.structures.jigsaw.Beardifier;
+import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
@@ -26,6 +30,8 @@ import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.random.NukkitRandom;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
+import java.util.List;
+
 import static org.powernukkitx.block.BlockID.*;
 
 public class PillagerOutpostPopulator extends Populator implements PopulatorStructure {
@@ -33,6 +39,9 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
     public static final String NAME = "normal_pillager_outpost";
 
     protected static final ChestPopulator CHEST_POPULATOR = new ChestPopulator();
+    private static final double BEARD_THRESHOLD = 0.03;
+    private static final BlockState BEARD_TOP = Registries.BLOCK.get(GRASS_BLOCK).getBlockState();
+    private static final BlockState BEARD_MID = Registries.BLOCK.get(DIRT).getBlockState();
 
     protected static final PNXStructure WATCHTOWER = (PNXStructure) Registries.STRUCTURE.get("pillager_outpost/watchtower");
     protected static final PNXStructure WATCHTOWER_OVERGROWN = (PNXStructure) Registries.STRUCTURE.get("pillager_outpost/watchtower_overgrown");
@@ -95,17 +104,25 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
             while (block.canBeReplaced() && y > 1) {
                 block = chunk.getBlockState(0, --y, 0).toBlock();
             }
-            BlockManager manager = new BlockManager(level);
-            Position vec = new Position(chunkX << 4, y, chunkZ << 4);
-            WATCHTOWER.preparePlace(vec, manager);
-            BlockManager manager2 = new BlockManager(level);
-            WATCHTOWER_OVERGROWN.preparePlace(vec, manager2);
-            for(Block b : manager2.getBlocks()) {
-                if(random.nextInt(20) != 0) manager2.unsetBlockStateAt(b);
+            Position vec = new Position(chunkX << 4, y+1, chunkZ << 4);
+            StructureHelper helper = new StructureHelper(level, vec.asBlockVector3());
+            Position relativeOrigin = new Position(0, 0, 0, level);
+            WATCHTOWER.preparePlace(relativeOrigin, helper);
+            StructureHelper helper2 = new StructureHelper(level, vec.asBlockVector3());
+            WATCHTOWER_OVERGROWN.preparePlace(relativeOrigin, helper2);
+            for(Block b : helper2.getBlocks()) {
+                if(random.nextInt(20) != 0) helper2.unsetBlockStateAt(b);
             }
-            manager.merge(manager2);
+            helper.merge(helper2);
 
             BlockVector3 size = new BlockVector3(WATCHTOWER.getSizeX(), WATCHTOWER.getSizeY(), WATCHTOWER.getSizeZ());
+            Beardifier.apply(
+                    helper,
+                    List.of(new BoundingBox(0, 0, 0, size.getX() - 1, size.getY() - 1, size.getZ() - 1)),
+                    Beardifier.surface(BEARD_TOP, BEARD_MID, BEARD_THRESHOLD)
+            );
+            BlockManager manager = new BlockManager(level);
+            manager.merge(helper);
             fillBase(chunk, y, 0, 0, size.getX(), size.getZ());
             random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ 0x5DEECE66DL);
             if (random.nextBoolean()) {
