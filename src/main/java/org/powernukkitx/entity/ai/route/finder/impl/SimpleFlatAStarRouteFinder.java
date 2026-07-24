@@ -10,8 +10,10 @@ import org.powernukkitx.entity.ai.route.finder.SimpleRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.IPosEvaluator;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.particle.BlockForceFieldParticle;
+import org.powernukkitx.math.AxisAlignedBB;
+import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.math.VectorMath;
+import org.powernukkitx.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -136,10 +138,12 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        //Because the earlier "reached target" check only roughly compared the floored coordinates,
-        //here we still need to point it precisely at the target
+        // The earlier "reached target" check only compares floored coordinates. Only append the
+        // precise target if the entity-sized path from the safe node to it is actually clear.
+        // Targets close to or inside a block must not turn into a final waypoint through a wall.
         Node targetNode = currentNode;
-        if (!currentNode.getVector3().equals(target)) {
+        if (!currentNode.getVector3().equals(target)
+                && !hasBarrier(currentNode.getVector3(), target)) {
             targetNode = new Node(target, currentNode, 0, 0);
         }
 
@@ -448,9 +452,38 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
-        return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
-                (pos) -> !evalStandingBlock(this.entity.level.getTickCachedBlock(pos.add(0, -1)))
-        );
+
+        double dx = pos2.x - pos1.x;
+        double dy = pos2.y - pos1.y;
+        double dz = pos2.z - pos1.z;
+        int samples = Math.max(1, (int) Math.ceil(Math.sqrt(dx * dx + dy * dy + dz * dz) * 4));
+        double radius = entity.getWidth() * entity.getScale() * 0.5;
+        double height = entity.getHeight() * entity.getScale();
+
+        for (int i = 0; i <= samples; i++) {
+            double progress = (double) i / samples;
+            double x = pos1.x + dx * progress;
+            double y = pos1.y + dy * progress;
+            double z = pos1.z + dz * progress;
+
+            if (!evalStandingBlock(entity.level.getTickCachedBlock(
+                    (int) Math.floor(x),
+                    (int) Math.floor(y - 1),
+                    (int) Math.floor(z),
+                    false
+            ))) {
+                return true;
+            }
+
+            AxisAlignedBB entityBox = new SimpleAxisAlignedBB(
+                    x - radius, y, z - radius,
+                    x + radius, y + height, z + radius
+            );
+            if (Utils.hasCollisionTickCachedBlocks(entity.level, entityBox)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

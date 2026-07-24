@@ -13,9 +13,51 @@ import org.powernukkitx.nbt.tag.ListTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class CustomBlockUtils {
 
     private CustomBlockUtils() {}
+
+    public static AxisAlignedBB[] getCollisionBoxes(CustomBlockDefinition def, Block block) {
+        CompoundTag components = def.getComponents();
+        if (!components.contains("minecraft:collision_box")) return AxisAlignedBB.EMPTY_ARRAY;
+        CompoundTag collision = components.getCompound("minecraft:collision_box");
+        if (!collision.contains("boxes")) return AxisAlignedBB.EMPTY_ARRAY;
+        ListTag<CompoundTag> boxTags = collision.getList("boxes", CompoundTag.class);
+        if (boxTags.size() == 0) return AxisAlignedBB.EMPTY_ARRAY;
+
+        RotationResult rotation = getRotation(block);
+        List<AxisAlignedBB> result = new ArrayList<>(boxTags.size());
+        for (CompoundTag boxTag : boxTags.getAll()) {
+            float minX = boxTag.getFloat("minX") / 16f;
+            float minY = boxTag.getFloat("minY") / 16f;
+            float minZ = boxTag.getFloat("minZ") / 16f;
+            float maxX = boxTag.getFloat("maxX") / 16f;
+            float maxY = boxTag.getFloat("maxY") / 16f;
+            float maxZ = boxTag.getFloat("maxZ") / 16f;
+
+            Vector3f[] corners = buildAndRotateBoxCorners(
+                    new float[]{minX, minY, minZ},
+                    new float[]{maxX - minX, maxY - minY, maxZ - minZ},
+                    rotation.rotX,
+                    rotation.rotY,
+                    rotation.isVerticalRotated
+            );
+            float[] bounds = calculateBounds(corners);
+            clampBounds(bounds);
+            result.add(new SimpleAxisAlignedBB(
+                    block.x + bounds[0],
+                    block.y + bounds[1],
+                    block.z + bounds[2],
+                    block.x + bounds[3],
+                    block.y + bounds[4],
+                    block.z + bounds[5]
+            ));
+        }
+        return result.toArray(AxisAlignedBB.EMPTY_ARRAY);
+    }
 
     public static @Nullable AxisAlignedBB getBoundingBox(CustomBlockDefinition def, Block block) {
         CompoundTag components = def.getComponents();
@@ -111,6 +153,26 @@ public final class CustomBlockUtils {
         if (box == null) return true;
         double height = box.getMaxY() - box.getMinY();
         return height >= 0.99;
+    }
+
+    private static void clampBounds(float[] bounds) {
+        for (int i = 0; i < 3; i++) {
+            float high = i == 1 ? 1.5f : 1f;
+            float min = bounds[i];
+            float max = bounds[i + 3];
+
+            if (min < 0f) {
+                max -= min;
+                min = 0f;
+            }
+            if (max > high) {
+                min -= max - high;
+                max = high;
+            }
+
+            bounds[i] = min;
+            bounds[i + 3] = max;
+        }
     }
 
     private static RotationResult getRotation(Block block) {

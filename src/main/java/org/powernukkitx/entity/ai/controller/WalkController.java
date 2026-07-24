@@ -74,8 +74,9 @@ public class WalkController implements IController {
 
             if ((under.isSolid() && blockedAhead && currentJumpCoolDown > JUMP_COOL_DOWN) || waterStepOut) {
                 // note: From the BDS packet capture information, the collision box of the stairs is the same as that of the half brick on the server side, and the height is 0.5
+                var movementBox = entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz);
                 Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(
-                        entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz),
+                        movementBox,
                         false,
                         false,
                         this::canJump
@@ -83,7 +84,9 @@ public class WalkController implements IController {
 
                 // Calculate the height you need to move upward
                 double maxY = Arrays.stream(collisionBlocks)
-                        .map(b -> b.getCollisionBoundingBox().getMaxY())
+                        .flatMap(block -> Arrays.stream(block.getCollisionBoxes()))
+                        .filter(movementBox::intersectsWith)
+                        .map(box -> box.getMaxY())
                         .max(Double::compareTo)
                         .orElse(0.0d);
 

@@ -53,6 +53,16 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
 
     @Override
     public boolean collidesWithBB(AxisAlignedBB bb) {
+        for (AxisAlignedBB collisionBox : getCollisionBoxes()) {
+            if (bb.intersectsWith(collisionBox)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public AxisAlignedBB[] getCollisionBoxes() {
         BlockFace face = getBlockFace();
         double minSlabY = 0;
         double maxSlabY = 0.5;
@@ -66,52 +76,50 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
             maxHalfSlabY = 0.5;
         }
 
-        if (bb.intersectsWith(new SimpleAxisAlignedBB(
+        AxisAlignedBB slab = new SimpleAxisAlignedBB(
                 this.x,
                 this.y + minSlabY,
                 this.z,
                 this.x + 1,
                 this.y + maxSlabY,
                 this.z + 1
-        ))) {
-            return true;
-        }
-
-        return switch (face) {
-            case EAST -> bb.intersectsWith(new SimpleAxisAlignedBB(
+        );
+        AxisAlignedBB step = switch (face) {
+            case EAST -> new SimpleAxisAlignedBB(
                     this.x + 0.5,
                     this.y + minHalfSlabY,
                     this.z,
                     this.x + 1,
                     this.y + maxHalfSlabY,
                     this.z + 1
-            ));
-            case WEST -> bb.intersectsWith(new SimpleAxisAlignedBB(
+            );
+            case WEST -> new SimpleAxisAlignedBB(
                     this.x,
                     this.y + minHalfSlabY,
                     this.z,
                     this.x + 0.5,
                     this.y + maxHalfSlabY,
                     this.z + 1
-            ));
-            case SOUTH -> bb.intersectsWith(new SimpleAxisAlignedBB(
+            );
+            case SOUTH -> new SimpleAxisAlignedBB(
                     this.x,
                     this.y + minHalfSlabY,
                     this.z + 0.5,
                     this.x + 1,
                     this.y + maxHalfSlabY,
                     this.z + 1
-            ));
-            case NORTH -> bb.intersectsWith(new SimpleAxisAlignedBB(
+            );
+            case NORTH -> new SimpleAxisAlignedBB(
                     this.x,
                     this.y + minHalfSlabY,
                     this.z,
                     this.x + 1,
                     this.y + maxHalfSlabY,
                     this.z + 0.5
-            ));
-            default -> false;
+            );
+            default -> null;
         };
+        return step == null ? new AxisAlignedBB[]{slab} : new AxisAlignedBB[]{slab, step};
     }
 
     @Override

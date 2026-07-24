@@ -2404,7 +2404,11 @@ public class Level implements Metadatable {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
-                        collides.add(block.getBoundingBox());
+                        for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
+                            if (collisionBox.intersectsWith(bb)) {
+                                collides.add(collisionBox);
+                            }
+                        }
                     }
                 }
             }
@@ -2444,7 +2448,11 @@ public class Level implements Metadatable {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
-                        collides.add(block.getBoundingBox());
+                        for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
+                            if (collisionBox.intersectsWith(bb)) {
+                                collides.add(collisionBox);
+                            }
+                        }
                     }
                 }
             }
