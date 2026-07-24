@@ -215,7 +215,10 @@ public abstract class Item implements Cloneable, ItemID {
         if (item == null) {
             BlockState itemBlockState = getItemBlockState(id, meta);
             if (itemBlockState == null || itemBlockState == BlockAir.STATE) {
-                return Item.AIR;
+                if (id.equals(Block.AIR)) {
+                    return Item.AIR;
+                }
+                return new ItemUnknown(id, meta, count, tags);
             }
             item = itemBlockState.toItem();
             item.setCount(count);
