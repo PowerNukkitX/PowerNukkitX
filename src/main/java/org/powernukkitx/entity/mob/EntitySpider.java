@@ -84,8 +84,8 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         private final int id;
 
         private static final SpawnRiderType[] BY_ID = new SpawnRiderType[
-                Collections.max(List.of(values()), Comparator.comparingInt(t -> t.id)).id + 1
-                ];
+            Collections.max(List.of(values()), Comparator.comparingInt(t -> t.id)).id + 1
+            ];
 
         static {
             for (SpawnRiderType t : values()) BY_ID[t.id] = t;
@@ -144,24 +144,24 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         }
 
         return new RideableComponent(
+            0,
+            true,
+            RideableComponent.DismountMode.DEFAULT,
+            riders,
+            null,
+            0.0f,
+            false,
+            false,
+            1,
+            List.of(new RideableComponent.Seat(
                 0,
-                true,
-                RideableComponent.DismountMode.DEFAULT,
-                riders,
-                null,
-                0.0f,
-                false,
-                false,
                 1,
-                List.of(new RideableComponent.Seat(
-                        0,
-                        1,
-                        new Vector3f(0.0f, y, z),
-                        null,
-                        null,
-                        null,
-                        null
-                ))
+                new Vector3f(0.0f, y, z),
+                null,
+                null,
+                null,
+                null
+            ))
         );
     }
 
@@ -313,7 +313,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
         int highest = b.getLevel().getHeightMap(b.getFloorX(), b.getFloorZ());
         return highest > b.getFloorY() && b.canPassThrough()
-                && b.getLevel().getBlock(b.getFloorX(), highest, b.getFloorZ()).isSolid();
+            && b.getLevel().getBlock(b.getFloorX(), highest, b.getFloorZ()).isSolid();
     }
 
     private @Nullable Set<String> getSpawnBiomeTags() {
@@ -345,9 +345,9 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
     private boolean isSnowCoveredBiome() {
         return hasSpawnBiomeTag(BiomeTags.SNOWY_SLOPES) ||
-                hasSpawnBiomeTag(BiomeTags.FROZEN) ||
-                hasSpawnBiomeTag(BiomeTags.ICE) ||
-                hasSpawnBiomeTag(BiomeTags.ICE_PLAINS);
+            hasSpawnBiomeTag(BiomeTags.FROZEN) ||
+            hasSpawnBiomeTag(BiomeTags.ICE) ||
+            hasSpawnBiomeTag(BiomeTags.ICE_PLAINS);
     }
 
     @Override
@@ -413,46 +413,30 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         return BehaviorGroup.builder(this)
             .behaviors(
                 new Behavior(new PlaySoundExecutor(Sound.MOB_SPIDER_SAY), new RandomSoundEvaluator(), 6, 1),
-                new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 9), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 6, 1),
-                new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 5, 1),
+                new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 9), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 5, 1),
+                new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
                 new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30), all(
                     new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                     entity -> getLevel().getFullLight(this) <= 11
                 ), 3, 1),
                 new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
             )
-                .sensors(
-                        new NearestTargetEntitySensor<>(0, 16, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
-                        new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0)
-                )
-                .controllers(
-                        new WalkController(),
-                        new ClimbController(),
-                        new LookController(true, true)
-                )
-                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
-                .build();
+            .sensors(
+                new NearestTargetEntitySensor<>(0, 16, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
+                new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0)
+            )
+            .controllers(
+                new WalkController(),
+                new ClimbController(),
+                new LookController(true, true)
+            )
+            .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+            .build();
     }
 
 
     @Override
     public boolean attackTarget(Entity entity) {
-        if (entity.isFamily("golem") || entity.isFamily("snowgolem")) {
-            return true;
-        }
-
-        if (!entity.isFamily("player")) {
-            return false;
-        }
-
-        if (!getLevel().isDaytime()) {
-            return true;
-        }
-
-        if (getBehaviorGroup().getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-            return false;
-        }
-
-        return getBehaviorGroup().getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) == entity;
+        return entity.isFamily("player") || entity.isFamily("golem") || entity.isFamily("snowgolem");
     }
 }
