@@ -18,6 +18,7 @@ public class RespawnHandler implements PacketHandler<RespawnPacket> {
         if (!packet.getState().equals(PlayerRespawnState.CLIENT_READY_TO_SPAWN) || player.isAlive()) {
             return;
         }
+
         final RespawnPacket respawnPacket = new RespawnPacket();
         respawnPacket.setPosition(player.getPosition().toNetwork());
         respawnPacket.setState(PlayerRespawnState.READY_TO_SPAWN);

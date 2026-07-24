@@ -47,6 +47,6 @@ public class AnimateHandler implements PacketHandler<AnimatePacket> {
         pk.setTargetRuntimeID(player.getId());
         pk.setData(animationEvent.getData());
         pk.setSwingSource(animationEvent.getSwingSource());
-        Server.broadcastPacket(player.getViewers().values(), pk);
+        Server.broadcastPacket(player.getViewers().values(), pk); // TODO: fix it
     }
 }

@@ -36,7 +36,7 @@ public class TextHandler implements PacketHandler<TextPacket> {
         final TextPacketBody body = packet.getBody();
 
         if (!(body instanceof AuthorAndMessage authorAndMessage)) {
-            playerHandle.player.close("§cPacket handling error");
+            log.warn("{} sent TextPacket with invalid body : {}", playerHandle.getUsername(), body);
             return;
         }
         if (packet.getMessageType().equals(TextPacketType.CHAT)) {

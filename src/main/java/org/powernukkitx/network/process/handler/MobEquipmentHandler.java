@@ -27,28 +27,9 @@ public class MobEquipmentHandler implements PacketHandler<MobEquipmentPacket> {
             return;
         }
 
-        if (packet.getSelectedSlot() < 0 || packet.getSelectedSlot() > 8) {
-            player.close("§cPacket handling error");
+        if (!player.getInventory().isHotbarSlot(packet.getSelectedSlot())) {
+            log.warn("Player {} sent a MobEquipmentPacket with an invalid selected slot: {}", player.getName(), packet.getSelectedSlot());
             return;
-        }
-        final Item itemFromNetwork = Item.fromNetwork(packet.getItem());
-        if (!itemFromNetwork.isNull()) {
-            if (itemFromNetwork.getEnchantments().length > Enchantment.getEnchantments().length) { // Last Enchant Id
-                player.close("§cPacket handling error");
-                return;
-            }
-            if (itemFromNetwork.getLore().length > 100) {
-                player.close("§cPacket handling error");
-                return;
-            }
-            if (itemFromNetwork.getCanPlaceOn().size() > 250) {
-                player.close("§cPacket handling error");
-                return;
-            }
-            if (itemFromNetwork.getCanDestroy().size() > 250) {
-                player.close("§cPacket handling error");
-                return;
-            }
         }
 
         Inventory inv = player.getWindowById(packet.getContainerId());
@@ -62,8 +43,27 @@ public class MobEquipmentHandler implements PacketHandler<MobEquipmentPacket> {
             return;
         }
 
-        Item item = inv.getItem(packet.getSelectedSlot());
+        final Item itemFromNetwork = Item.fromNetwork(packet.getItem());
+        if (!itemFromNetwork.isNull()) {
+            if (itemFromNetwork.getEnchantments().length > Enchantment.getEnchantments().length) { // Last Enchant Id
+                log.warn("Player {} sent a MobEquipmentPacket with an invalid enchantment count: {}", player.getName(), itemFromNetwork.getEnchantments().length);
+                return;
+            }
+            if (itemFromNetwork.getLore().length > 100) {
+                log.warn("Player {} sent a MobEquipmentPacket with an invalid lore count: {}", player.getName(), itemFromNetwork.getLore().length);
+                return;
+            }
+            if (itemFromNetwork.getCanPlaceOn().size() > 250) {
+                log.warn("Player {} sent a MobEquipmentPacket with an invalid canPlaceOn count: {}", player.getName(), itemFromNetwork.getCanPlaceOn().size());
+                return;
+            }
+            if (itemFromNetwork.getCanDestroy().size() > 250) {
+                log.warn("Player {} sent a MobEquipmentPacket with an invalid canDestroy count: {}", player.getName(), itemFromNetwork.getCanDestroy().size());
+                return;
+            }
+        }
 
+        Item item = inv.getItem(packet.getSelectedSlot());
         if (!item.equals(itemFromNetwork, false, true)) {
             Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount(), item.getNbtBytes());
             if (fixItem.equals(itemFromNetwork, false, true)) {

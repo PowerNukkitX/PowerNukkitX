@@ -66,10 +66,8 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                 }
                 playerHandle.respawn();
             }
-            case PlayerActionType.CHANGE_DIMENSION_ACK ->
+            case PlayerActionType.CHANGE_DIMENSION_ACK -> {
                     player.sendPosition(player, player.yaw, player.pitch, PositionMode.NORMAL);
-            case PlayerActionType.DENY_DESTROY_BLOCK -> {
-                //TODO
             }
             case PlayerActionType.START_SPIN_ATTACK -> {
                 if (!Objects.equals(player.getInventory().getItemInMainHand().getId(), ItemID.TRIDENT)) {
@@ -117,16 +115,6 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                     player.setSpinAttacking(false);
                 }
             }
-            case PlayerActionType.INTERACT_WITH_BLOCK -> {
-                //TODO
-            }
-            case PlayerActionType.PREDICT_DESTROY_BLOCK -> {
-                //TODO
-            }
-            case PlayerActionType.START_ITEM_USE_ON, PlayerActionType.STOP_ITEM_USE_ON -> {
-                // TODO
-            }
-            default -> log.warn("{} sent invalid action id {}", player.getName(), packet.getAction());
         }
     }
 }

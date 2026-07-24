@@ -51,7 +51,7 @@ public class ModalFormResponseHandler implements PacketHandler<ModalFormResponse
         ModalFormCancelReason cancelReason = packet.getFormCancelReason().orElse(null);
 
         if (jsonResponse != null && jsonResponse.length() > 1024) {
-            player.close("§cPacket handling error");
+            log.warn("Player {} sent a ModalFormResponsePacket with an invalid json response: {}", player.getName(), jsonResponse);
             return;
         }
 
