@@ -1086,8 +1086,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             if (this.damage == null) return;
 
             itemProps.putInt("damage", this.damage);
-            components.putCompound("minecraft:damage",
-                    new CompoundTag().putByte("value", this.damage.intValue() & 0xFF));
+            components.putCompound("minecraft:damage", new CompoundTag().putShort("value", this.damage));
         }
 
         private void writeFood(CompoundTag components, CompoundTag itemProps) {
