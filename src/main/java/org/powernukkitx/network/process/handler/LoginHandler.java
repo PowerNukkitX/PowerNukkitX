@@ -98,29 +98,32 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
         try {
             final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
+            
             if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
-                sessionFailEvent.setDisconnectFailReason(notAuthenticated);
-                server.getPluginManager().callEvent(sessionFailEvent);
-
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                 final boolean unsignedAllowed = server.getProxyAuthProvider() != null
                         && server.getProxyAuthProvider().isUnsignedLoginAllowed();
-                if (xboxAuthRequired && !result.signed() && !unsignedAllowed) {
-                    holder.disconnect(notAuthenticated);
-                    return;
-                }
-
-                final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
-                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
-                server.getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
+            
+                if (!unsignedAllowed) {
+                    sessionFailEvent.setDisconnectFailReason(notAuthenticated);
                     server.getPluginManager().callEvent(sessionFailEvent);
-
+            
                     holder.disconnect(sessionFailEvent.getDisconnectFailReason());
                     return;
                 }
-
+            }
+            
+            final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
+            
+            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
+            server.getPluginManager().callEvent(event);
+            
+            if (event.isCancelled()) {
+                sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
+                server.getPluginManager().callEvent(sessionFailEvent);
+            
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+                return;
+            }
                 if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
                     sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.SERVER_FULL);
                     server.getPluginManager().callEvent(sessionFailEvent);
