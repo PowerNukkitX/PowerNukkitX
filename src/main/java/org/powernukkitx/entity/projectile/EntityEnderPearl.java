@@ -83,7 +83,7 @@ public class EntityEnderPearl extends EntityProjectile {
         }
 
         if (this.age > 1200 || this.isCollided) {
-            this.kill();
+            this.close();
             hasUpdate = true;
         }
 
@@ -104,18 +104,19 @@ public class EntityEnderPearl extends EntityProjectile {
         }
 
         this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
-        this.shootingEntity.teleport(destination, TeleportCause.ENDER_PEARL);
-        if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
-            this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
-        }
-        this.level.addLevelEvent(this, LevelEvent.PARTICLE_TELEPORT);
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
-        if (this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            if (ThreadLocalRandom.current().nextInt(1, 20) == 1) {
-                EntityEndermite endermite = (EntityEndermite) Entity.createEntity(Entity.ENDERMITE,
+        if(this.shootingEntity.teleport(destination, TeleportCause.ENDER_PEARL)) {
+            if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
+                this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
+            }
+            this.level.addLevelEvent(this, LevelEvent.PARTICLE_TELEPORT);
+            this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
+            if (this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+                if (ThreadLocalRandom.current().nextInt(1, 20) == 1) {
+                    EntityEndermite endermite = (EntityEndermite) Entity.createEntity(Entity.ENDERMITE,
                         this.getChunk(), Entity.getDefaultNBT(destination)
-                );
-                endermite.spawnToAll();
+                    );
+                    endermite.spawnToAll();
+                }
             }
         }
     }
