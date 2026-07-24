@@ -77,7 +77,9 @@ import org.powernukkitx.registry.EntityRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.Task;
 import org.powernukkitx.tags.ItemTags;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.powernukkitx.utils.ChunkException;
+import org.powernukkitx.utils.Hash;
 import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.PortalHelper;
 import org.powernukkitx.utils.TextFormat;
@@ -160,7 +162,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public List<Block> blocksAround = new ArrayList<>();
     public List<Block> collisionBlocks = new ArrayList<>();
     public List<Block> stepOnBlocks = new ArrayList<>();
-    protected Set<Vector3> lastStepOnBlocks = new HashSet<>();
+    protected LongOpenHashSet lastStepOnBlocks = new LongOpenHashSet();
     public double lastX;
     public double lastY;
     public double lastZ;
@@ -241,6 +243,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected volatile boolean saveWithChunk = true;
     private final Map<String, Integer> intProperties = new LinkedHashMap<>();
     private final Map<String, Float> floatProperties = new LinkedHashMap<>();
+    private transient PropertySyncData clientSyncPropertiesCache;
     protected final Map<Integer, Attribute> attributes = new HashMap<>();
 
     protected static final int DEFAULT_SOFT_DESPAWN_DISTANCE = 74;
@@ -688,6 +691,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 }
             }
         }
+        this.clientSyncPropertiesCache = null;
 
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
@@ -1286,11 +1290,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected BedrockPacket createAddEntityPacket() {
         final AddActorPacket addActorPacket = new AddActorPacket();
         if (!this.isPlayer && !this.attributes.isEmpty()) {
-            addActorPacket.getAttributesList().addAll(
-                    this.attributes.values().stream()
-                            .map(Attribute::toNetwork)
-                            .toList()
-            );
+            var attributesList = addActorPacket.getAttributesList();
+            for (Attribute attribute : this.attributes.values()) {
+                attributesList.add(attribute.toNetwork());
+            }
         }
 
         addActorPacket.setActorData(this.actorDataMap);
@@ -1349,8 +1352,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setActorData(data == null ? this.actorDataMap : data);
         packet.setTargetRuntimeID(this.getId());
-        packet.getSyncedProperties().getFloatProperties().addAll(this.propertySyncData().getFloatProperties());
-        packet.getSyncedProperties().getIntProperties().addAll(this.propertySyncData().getIntProperties());
+        PropertySyncData syncData = this.propertySyncData();
+        packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
+        packet.getSyncedProperties().getIntProperties().addAll(syncData.getIntProperties());
 
         player.sendPacket(packet);
     }
@@ -1363,8 +1367,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setActorData(data == null ? this.actorDataMap : data);
         packet.setTargetRuntimeID(this.getId());
-        packet.getSyncedProperties().getFloatProperties().addAll(this.propertySyncData().getFloatProperties());
-        packet.getSyncedProperties().getIntProperties().addAll(this.propertySyncData().getIntProperties());
+        PropertySyncData syncData = this.propertySyncData();
+        packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
+        packet.getSyncedProperties().getIntProperties().addAll(syncData.getIntProperties());
 
         for (Player player : players) {
             if (player == this) {
@@ -1823,6 +1828,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     if (dsq < nearestSq) {
                         nearestSq = dsq;
                         nearest = p;
+                        if (dsq <= softDistSq) {
+                            break;
+                        }
                     }
                 }
             }
@@ -1891,7 +1899,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.positionChanged = false;
         }
 
-        if (diffMotion > 0.0025 || (diffMotion > 0.0001 && this.getMotion().lengthSquared() <= 0.0001)) { //0.05 ** 2
+        if (diffMotion > 0.0025 || (diffMotion > 0.0001 && (this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) <= 0.0001)) { //0.05 ** 2
             this.lastMotionX = this.motionX;
             this.lastMotionY = this.motionY;
             this.lastMotionZ = this.motionZ;
@@ -4596,12 +4604,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void syncAttributes() {
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
         packet.setRuntimeID(this.getId());
-        packet.getAttributeList().addAll(
-                this.attributes.values().stream()
-                        .filter(Attribute::isSyncable)
-                        .map(Attribute::toNetwork)
-                        .toList()
-        );
+        var attributeList = packet.getAttributeList();
+        for (Attribute attribute : this.attributes.values()) {
+            if (attribute.isSyncable()) {
+                attributeList.add(attribute.toNetwork());
+            }
+        }
         Server.broadcastPacket(this.getViewers().values(), packet);
     }
 
@@ -5067,6 +5075,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     private static final float Y_SIZE_THRESHOLD = 0.05F;
     private static final float Y_SIZE_BOOST = 0.5F;
 
+    private final SimpleAxisAlignedBB moveOriginalBB = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
+    private final SimpleAxisAlignedBB moveSteppedBB = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
+
     public boolean move(double dx, double dy, double dz) {
         if (isImmobile() && shouldStopMotionWhenImmobile()) return true; //Do not move when immobile
 
@@ -5081,7 +5092,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         double movY = dy;
         double movZ = dz;
 
-        AxisAlignedBB originalBB = this.boundingBox.clone();
+        AxisAlignedBB originalBB = this.moveOriginalBB;
+        originalBB.setBB(this.boundingBox);
 
         var list = this.noClip ? AxisAlignedBB.EMPTY_LIST : this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
@@ -5102,7 +5114,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             dy = this.getStepHeight();
             dz = movZ;
 
-            AxisAlignedBB steppedBB = this.boundingBox.clone();
+            AxisAlignedBB steppedBB = this.moveSteppedBB;
+            steppedBB.setBB(this.boundingBox);
             this.boundingBox.setBB(originalBB);
 
             list = this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
@@ -5337,11 +5350,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     protected void checkBlockStepOn() {
         List<Block> currentStepOnBlocks = this.getTickCachedStepOnBlocks();
-        Set<Vector3> currentPositions = new HashSet<>();
+        LongOpenHashSet currentPositions = new LongOpenHashSet(currentStepOnBlocks.size());
 
         // On Step ON
         for (Block block : currentStepOnBlocks) {
-            Vector3 pos = new Vector3(block.getX(), block.getY(), block.getZ());
+            long pos = Hash.hashBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ());
             currentPositions.add(pos);
 
             if (!lastStepOnBlocks.contains(pos)) {
@@ -5349,9 +5362,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
         }
         // On Step OFF
-        for (Vector3 oldPos : lastStepOnBlocks) {
+        var oldIter = lastStepOnBlocks.longIterator();
+        while (oldIter.hasNext()) {
+            long oldPos = oldIter.nextLong();
             if (!currentPositions.contains(oldPos)) {
-                Block oldBlock = this.level.getBlock(oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ());
+                Block oldBlock = this.level.getBlock(Hash.hashBlockX(oldPos), Hash.hashBlockY(oldPos), Hash.hashBlockZ(oldPos));
                 oldBlock.onEntityStepOff(this);
             }
         }
@@ -5409,8 +5424,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             outerScaffolding:
             for (int i = minX; i <= maxX; i++) {
                 for (int j = minZ; j <= maxZ; j++) {
-                    Location location = new Location(i, Y, j, level);
-                    if (BlockID.SCAFFOLDING.equals(location.getLevelBlock(false).getId())) {
+                    if (BlockID.SCAFFOLDING.equals(level.getBlock(i, Y, j, false).getId())) {
                         setDataFlag(ActorFlags.OVER_SCAFFOLDING, true);
                         break outerScaffolding;
                     }
@@ -5554,7 +5568,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
             if (!this.justCreated) {
                 Map<Integer, Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
-                for (Player player : new ArrayList<>(this.hasSpawned.values())) {
+                for (Player player : this.hasSpawned.values()) {
                     if (!newChunk.containsKey(player.getLoaderId())) {
                         this.despawnFrom(player);
                     } else {
@@ -5739,7 +5753,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void despawnFromAll() {
-        for (Player player : new ArrayList<>(this.hasSpawned.values())) {
+        for (Player player : this.hasSpawned.values()) {
             this.despawnFrom(player);
         }
     }
@@ -5999,7 +6013,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return true if entity has a string tag
      */
     public boolean hasTag(String tag) {
-        return this.getNbt().getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
+        for (StringTag t : this.getNbt().getList("Tags", StringTag.class).getAll()) {
+            if (t.data.equals(tag)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -6117,6 +6136,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
 
         intProperties.put(identifier, value);
+        this.clientSyncPropertiesCache = null;
         return true;
     }
 
@@ -6127,6 +6147,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (booleanProperty == null) return false;
 
         intProperties.put(identifier, value ? 1 : 0);
+        this.clientSyncPropertiesCache = null;
         return true;
     }
 
@@ -6141,6 +6162,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
 
         floatProperties.put(identifier, value);
+        this.clientSyncPropertiesCache = null;
         return true;
     }
 
@@ -6189,6 +6211,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             int index = property.findIndex(value);
             if (index >= 0) {
                 intProperties.put(identifier, index);
+                this.clientSyncPropertiesCache = null;
                 if (property.isClientSync()) {
                     this.sendData(this.getViewers().values().toArray(new Player[0]));
                 }
@@ -6200,6 +6223,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public PropertySyncData getClientSyncProperties() {
+        PropertySyncData cached = this.clientSyncPropertiesCache;
+        if (cached != null) {
+            return cached;
+        }
         List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
 
         PropertySyncData syncData = new PropertySyncData();
@@ -6230,6 +6257,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             schemaIndex++;
         }
 
+        this.clientSyncPropertiesCache = syncData;
         return syncData;
     }
 
@@ -6325,6 +6353,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 }
             }
         }
+        this.clientSyncPropertiesCache = null;
     }
 
     private PropertySyncData propertySyncData() {

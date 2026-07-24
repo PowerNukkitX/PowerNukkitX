@@ -1015,13 +1015,38 @@ public class Level implements Metadatable {
     public Map<Integer, Player> getChunkPlayers(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
         Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
-        if (loaders != null) {
-            return loaders.entrySet()
-                    .stream()
-                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
-                    .collect(HashMap::new, (m, e) -> m.put(e.getKey(), (Player) e.getValue()), HashMap::putAll);
+        if (loaders == null || loaders.isEmpty()) {
+            return Collections.emptyMap();
         }
-        return Collections.emptyMap();
+        Map<Integer, Player> result = null;
+        for (Map.Entry<Integer, ChunkLoader> e : loaders.entrySet()) {
+            if (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)) {
+                if (result == null) {
+                    result = new HashMap<>(loaders.size());
+                }
+                result.put(e.getKey(), p);
+            }
+        }
+        return result == null ? Collections.emptyMap() : result;
+    }
+
+    public Player[] getChunkPlayerArray(int chunkX, int chunkZ) {
+        long index = Level.chunkHash(chunkX, chunkZ);
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders == null || loaders.isEmpty()) {
+            return Player.EMPTY_ARRAY;
+        }
+        int count = 0;
+        Player[] result = new Player[loaders.size()];
+        for (ChunkLoader loader : loaders.values()) {
+            if (loader instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)) {
+                result[count++] = p;
+            }
+        }
+        if (count == 0) {
+            return Player.EMPTY_ARRAY;
+        }
+        return count == result.length ? result : Arrays.copyOf(result, count);
     }
 
     public ChunkLoader[] getChunkLoaders(int chunkX, int chunkZ) {
@@ -1383,12 +1408,11 @@ public class Level implements Metadatable {
                                 IChunk chunk = this.getChunk(chunkX, chunkZ);
                                 if (chunk == null) continue;
                                 chunk.reObfuscateChunk();
-                                for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
+                                for (Player p : this.getChunkPlayerArray(chunkX, chunkZ)) {
                                     p.onChunkChanged(chunk);
                                 }
                             } else {
-                                Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
-                                Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
+                                Player[] playerArray = this.getChunkPlayerArray(chunkX, chunkZ);
                                 var size = blocks.size();
                                 if (isAntiXrayEnabled()) {
                                     antiXraySystem.obfuscateSendBlocks(index, playerArray, blocks);
@@ -1413,12 +1437,13 @@ public class Level implements Metadatable {
             }
 
             if (!this.chunkPackets.isEmpty()) {
-                for (long index : this.chunkPackets.keySet()) {
+                for (var entry : this.chunkPackets.entrySet()) {
+                    long index = entry.getKey();
                     int chunkX = Level.getHashX(index);
                     int chunkZ = Level.getHashZ(index);
-                    Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
+                    Player[] chunkPlayers = this.getChunkPlayerArray(chunkX, chunkZ);
                     if (chunkPlayers.length > 0) {
-                        for (var pk : this.chunkPackets.get(index)) {
+                        for (var pk : entry.getValue()) {
                             Server.broadcastPacket(chunkPlayers, pk);
                         }
                     }
@@ -2767,7 +2792,9 @@ public class Level implements Metadatable {
                 int chunkZ = Level.getHashZ(index);
                 int bx = chunkX << 4;
                 int bz = chunkZ << 4;
-                for (int blockHash : blocks.clone()) {
+                var blockIter = blocks.intIterator();
+                while (blockIter.hasNext()) {
+                    int blockHash = blockIter.nextInt();
                     int hi = (byte) (blockHash >>> 16);
                     int lo = (short) blockHash;
                     int y = ensureY(lo - 64);
@@ -2959,12 +2986,13 @@ public class Level implements Metadatable {
         long index = Level.chunkHash(cx, cz);
 
         if (direct) {
+            Player[] chunkPlayers = this.getChunkPlayerArray(cx, cz);
             if (isAntiXrayEnabled() && block.isTransparent()) {
-                this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+                this.sendBlocks(chunkPlayers, new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
             }
-            this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
+            this.sendBlocks(chunkPlayers, new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
             if (blockPrevious instanceof CustomBlock && block.isAir()) { //hack: For some reason, we have to send the same packet twice if the previous block was custom and the new block is air.
-                this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
+                this.sendBlocks(chunkPlayers, new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
             }
         } else {
             addBlockChange(index, x, y, z);
@@ -3964,7 +3992,24 @@ public class Level implements Metadatable {
     }
 
     public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb, Entity entity, boolean loadChunks) {
-        return Arrays.stream(getNearbyEntities(bb, entity, loadChunks)).filter(Objects::nonNull).toList().toArray(Entity.EMPTY_ARRAY);
+        Entity[] found = getNearbyEntities(bb, entity, loadChunks);
+        int count = 0;
+        for (Entity e : found) {
+            if (e != null) {
+                count++;
+            }
+        }
+        if (count == found.length) {
+            return found;
+        }
+        Entity[] result = new Entity[count];
+        int i = 0;
+        for (Entity e : found) {
+            if (e != null) {
+                result[i++] = e;
+            }
+        }
+        return result;
     }
 
     public Entity[] getNearbyEntities(AxisAlignedBB bb) {
@@ -4396,9 +4441,12 @@ public class Level implements Metadatable {
         Position previousSpawn = this.getSpawnLocation();
         this.requireProvider().setSpawn(pos);
         this.server.getPluginManager().callEvent(new SpawnChangeEvent(this, previousSpawn));
-        this.getPlayers().values().stream().filter(player ->
-                player.getSpawn().second() == null || player.getSpawn().second() == Player.SpawnPointType.WORLD
-        ).forEach(player -> player.setSpawn(this.getSpawnLocation(), Player.SpawnPointType.WORLD));
+        Position spawn = this.getSpawnLocation();
+        for (Player player : this.getPlayers().values()) {
+            if (player.getSpawn().second() == null || player.getSpawn().second() == Player.SpawnPointType.WORLD) {
+                player.setSpawn(spawn, Player.SpawnPointType.WORLD);
+            }
+        }
     }
 
     public Position getFuzzySpawnLocation() {

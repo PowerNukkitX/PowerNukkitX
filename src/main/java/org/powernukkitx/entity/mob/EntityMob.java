@@ -24,7 +24,9 @@ import org.powernukkitx.utils.Utils;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -260,7 +262,13 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        return getInventory().getContents().values().stream().filter(item -> !item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)).toArray(Item[]::new);
+        List<Item> drops = new ArrayList<>();
+        for (Item item : getInventory().getContents().values()) {
+            if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+                drops.add(item);
+            }
+        }
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

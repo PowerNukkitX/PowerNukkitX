@@ -4,19 +4,22 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
-import java.util.HashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+
+import java.util.Collections;
+import java.util.Map;
 
 public abstract class Profession {
 
-    private static final HashMap<Integer, Profession> knownProfessions = new HashMap<>();
+    private static final Int2ObjectOpenHashMap<Profession> knownProfessions = new Int2ObjectOpenHashMap<>();
+    private static final Map<Integer, Profession> knownProfessionsView = Collections.unmodifiableMap(knownProfessions);
 
     public static void registerProfession(Profession profession) {
         knownProfessions.put(profession.getIndex(), profession);
     }
 
-    @SuppressWarnings("unchecked")
-    public static HashMap<Integer, Profession> getProfessions() {
-        return (HashMap<Integer, Profession>) knownProfessions.clone();
+    public static Map<Integer, Profession> getProfessions() {
+        return knownProfessionsView;
     }
 
     public static Profession getProfession(int index) {

@@ -620,9 +620,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             tradeInventory = new TradeInventory(this);
         }
         if (!isBaby() && getProfession() == 0 && getVillageUuid() == null) {
-            List<Profession> professions = Profession.getProfessions().values().stream()
-                    .filter(profession -> profession.getIndex() > 0 && profession.getIndex() < 14)
-                    .toList();
+            List<Profession> professions = new ArrayList<>();
+            for (Profession profession : Profession.getProfessions().values()) {
+                if (profession.getIndex() > 0 && profession.getIndex() < 14) {
+                    professions.add(profession);
+                }
+            }
             if (!professions.isEmpty()) {
                 Profession profession = professions.get(ThreadLocalRandom.current().nextInt(professions.size()));
                 setProfession(profession.getIndex(), true);

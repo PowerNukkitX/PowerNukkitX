@@ -1,6 +1,7 @@
 package org.powernukkitx.command.defaults;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.Server;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.data.CommandParameter;
 import org.powernukkitx.command.tree.ParamList;
@@ -62,7 +63,7 @@ public class CameraShakeCommand extends VanillaCommand {
                 packet.setSeconds(second);
                 packet.setShakeType(shakeType);
                 packet.setShakeAction(CameraShakeAction.ADD);
-                players.forEach(player -> player.sendPacket(packet));
+                Server.broadcastPacket(players, packet);
                 log.addSuccess("commands.screenshake.success", players_str).output();
                 return 1;
             }
@@ -74,7 +75,7 @@ public class CameraShakeCommand extends VanillaCommand {
                 packet.setIntensity(-1);
                 packet.setShakeType(CameraShakeType.POSITIONAL);
                 packet.setShakeAction(CameraShakeAction.STOP);
-                players.forEach(player -> player.sendPacket(packet));
+                Server.broadcastPacket(players, packet);
                 log.addSuccess("commands.screenshake.successStop", players_str).output();
                 return 1;
             }

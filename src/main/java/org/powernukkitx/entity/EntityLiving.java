@@ -329,8 +329,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         for (Vector3 from : fromPoints) {
             for (Vector3 to : toPoints) {
-                Vector3 dir = to.subtract(from);
-                if (dir.lengthSquared() < 1e-6) continue;
+                double dirX = to.x - from.x;
+                double dirY = to.y - from.y;
+                double dirZ = to.z - from.z;
+                if (dirX * dirX + dirY * dirY + dirZ * dirZ < 1e-6) continue;
 
                 if (!useCorridor) {
                     List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
@@ -339,21 +341,25 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     continue;
                 }
 
-                Vector3 right = new Vector3(-dir.z, 0, dir.x);
-                if (right.lengthSquared() < 1e-6) right = new Vector3(1, 0, 0);
-                right = right.normalize().multiply(thickness);
-
-                Vector3 up = new Vector3(0, thickness, 0);
-
-                Vector3[] offsets = new Vector3[]{
-                        right, right.multiply(-1),
-                        up, up.multiply(-1),
-                };
+                double rightX = -dirZ;
+                double rightZ = dirX;
+                double rightSq = rightX * rightX + rightZ * rightZ;
+                if (rightSq < 1e-6) {
+                    rightX = 1;
+                    rightZ = 0;
+                    rightSq = 1;
+                }
+                double rightLen = Math.sqrt(rightSq);
+                rightX = rightX / rightLen * thickness;
+                rightZ = rightZ / rightLen * thickness;
 
                 boolean allClear = true;
-                for (Vector3 o : offsets) {
-                    Vector3 f = from.add(o.x, o.y, o.z);
-                    Vector3 t = to.add(o.x, o.y, o.z);
+                for (int oi = 0; oi < 4; oi++) {
+                    double ox = oi == 0 ? rightX : oi == 1 ? -rightX : 0;
+                    double oy = oi == 2 ? thickness : oi == 3 ? -thickness : 0;
+                    double oz = oi == 0 ? rightZ : oi == 1 ? -rightZ : 0;
+                    Vector3 f = from.add(ox, oy, oz);
+                    Vector3 t = to.add(ox, oy, oz);
 
                     List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
                     boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
