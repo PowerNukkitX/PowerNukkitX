@@ -1,7 +1,7 @@
 package org.powernukkitx.network.primitiveshape;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ArrowDataPayload;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
 import org.powernukkitx.math.Vector3;
 
@@ -49,7 +49,7 @@ public class ArrowShape extends PrimitiveShape<ArrowShape> {
     }
 
     @Override
-    protected DebugShapePayload buildExtra() {
+    protected ExtraShapeDataPayload buildExtra() {
         ArrowDataPayload payload = new ArrowDataPayload();
         payload.setArrowEndLocation(end.toNetwork());
         payload.setArrowHeadLength(headLength);

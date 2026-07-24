@@ -1,6 +1,6 @@
 package org.powernukkitx.network.primitiveshape;
 
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.TextDataPayload;
 import org.powernukkitx.math.Vector3;
@@ -66,7 +66,7 @@ public class TextShape extends PrimitiveShape<TextShape> {
     }
 
     @Override
-    protected DebugShapePayload buildExtra() {
+    protected ExtraShapeDataPayload buildExtra() {
         TextDataPayload payload = new TextDataPayload();
         payload.setText(text);
         payload.setUseRotation(useRotation);
