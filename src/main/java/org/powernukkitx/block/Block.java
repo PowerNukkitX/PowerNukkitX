@@ -19,6 +19,7 @@ import org.powernukkitx.level.MovingObjectPosition;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.metadata.MetadataValue;
 import org.powernukkitx.metadata.Metadatable;
@@ -1263,7 +1264,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public AxisAlignedBB getCollisionBoundingBox() {
-        return this.recalculateCollisionBoundingBox();
+        return recalculateCollisionBoundingBox();
     }
 
     public AxisAlignedBB[] getCollisionBoxes() {
@@ -1271,12 +1272,35 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (def != null && def.getComponents().contains("minecraft:collision_box")) {
             return def.getCollisionBoxes(this);
         }
-        AxisAlignedBB box = this.getCollisionBoundingBox();
+        AxisAlignedBB box = this.getBoundingBox();
         return box == null ? AxisAlignedBB.EMPTY_ARRAY : new AxisAlignedBB[]{box};
     }
 
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return getBoundingBox();
+        AxisAlignedBB[] boxes = this.getCollisionBoxes();
+        if (boxes.length == 0) {
+            return null;
+        } else if(boxes.length == 1) {
+            return boxes[0];
+        }
+
+        double minX = Double.POSITIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        double maxZ = Double.NEGATIVE_INFINITY;
+
+        for (AxisAlignedBB box : boxes) {
+            minX = Math.min(minX, box.getMinX());
+            minY = Math.min(minY, box.getMinY());
+            minZ = Math.min(minZ, box.getMinZ());
+            maxX = Math.max(maxX, box.getMaxX());
+            maxY = Math.max(maxY, box.getMaxY());
+            maxZ = Math.max(maxZ, box.getMaxZ());
+        }
+
+        return new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public AxisAlignedBB getBoundingBox() {
