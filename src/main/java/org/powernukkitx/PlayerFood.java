@@ -99,8 +99,7 @@ public class PlayerFood {
         }
         this.food = event.getFoodLevel();
         this.saturation = Math.min(event.getFoodSaturationLevel(), food);
-        this.sendFood();
-        this.sendSaturation();
+        this.send();
     }
 
     /**
@@ -186,9 +185,11 @@ public class PlayerFood {
         }
     }
 
-    /**
-     * Sends the current saturation level to the player.
-     */
+    public void send() {
+        this.sendFood();
+        this.sendSaturation();
+    }
+
     public void sendSaturation() {
         if (this.player.spawned) {
             Attribute attribute = player.getAttributes().computeIfAbsent(Attribute.SATURATION, Attribute::getAttribute);
@@ -284,8 +285,7 @@ public class PlayerFood {
         this.saturation = 20;
         this.exhaustion = 0;
         this.foodTickTimer = 0;
-        this.sendFood();
-        this.sendSaturation();
+        this.send();
     }
 
     /**
