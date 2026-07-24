@@ -1,6 +1,6 @@
 package org.powernukkitx.network.primitiveshape;
 
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.SphereDataPayload;
 import org.powernukkitx.math.Vector3;
@@ -35,7 +35,7 @@ public class CircleShape extends PrimitiveShape<CircleShape> {
     }
 
     @Override
-    protected DebugShapePayload buildExtra() {
+    protected ExtraShapeDataPayload buildExtra() {
         SphereDataPayload payload = new SphereDataPayload();
         payload.setNumSegments(segments);
         return payload;

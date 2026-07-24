@@ -1,7 +1,7 @@
 package org.powernukkitx.network.primitiveshape;
 
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.EllipsoidDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
 import org.powernukkitx.math.Vector3;
@@ -38,7 +38,7 @@ public class EllipsoidShape extends PrimitiveShape<EllipsoidShape> {
     }
 
     @Override
-    protected DebugShapePayload buildExtra() {
+    protected ExtraShapeDataPayload buildExtra() {
         EllipsoidDataPayload payload = new EllipsoidDataPayload();
         payload.setRadii(radii);
         payload.setSegmentsPerAxis(segmentsPerAxis);
