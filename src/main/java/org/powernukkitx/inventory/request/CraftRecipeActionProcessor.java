@@ -13,7 +13,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.network.protocol.types.TrimData;
+import org.powernukkitx.network.protocol.types.ArmorTrim;
 import org.powernukkitx.recipe.Input;
 import org.powernukkitx.recipe.MultiRecipe;
 import org.powernukkitx.recipe.Recipe;
@@ -324,22 +324,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         Item template = smithingInventory.getTemplate();
 
         if (!ingredient.isNull() && !template.isNull()) {
-            Optional<TrimPattern> find1 = TrimData.trimPatterns.stream().filter(trimPattern -> template.getId().equals(trimPattern.getItemName())).findFirst();
-            Optional<TrimMaterial> find2 = TrimData.trimMaterials.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.getItemName())).findFirst();
+            Optional<TrimPattern> find1 = Registries.TRIM.getPattern(template.getId());
+            Optional<TrimMaterial> find2 = Registries.TRIM.getMaterial(ingredient.getId());
             if (equipment.isNull() || find1.isEmpty() || find2.isEmpty()) {
                 return context.error();
             }
-            TrimPattern trimPattern = find1.get();
-            TrimMaterial trimMaterial = find2.get();
-            Item result = equipment.clone();
-            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.getMaterialId())
-                    .putString("Pattern", trimPattern.getPatternId());
-            CompoundTag compound = ingredient.getNbt();
-            if (compound == null) {
-                compound = result.getOrCreateNbt();
-            } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
-            compound.putCompound("Trim", trim);
-            result.setNbt(compound);
+            Item result = ArmorTrim.of(find1.get(), find2.get()).applyTo(equipment);
             player.getCreativeOutputInventory().setItem(result);
             smithingInventory.decreaseCount(0, 1);
             smithingInventory.decreaseCount(1, 1);
