@@ -74,7 +74,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
         } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_RELEASE)) {
             try {
                 final ItemReleaseInventoryTransaction releaseInventoryTransaction =
-                        (ItemReleaseInventoryTransaction) packet.getTransaction();
+                    (ItemReleaseInventoryTransaction) packet.getTransaction();
                 ItemReleaseActionType type = releaseInventoryTransaction.getActionType();
                 final Item itemFromNetwork = Item.fromNetwork(releaseInventoryTransaction.getItem());
                 if (type.equals(ItemReleaseActionType.RELEASE)) {
@@ -104,12 +104,12 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
         } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.NORMAL)) {
             // looks like an action index swap for u3
             if (packet.getTransaction().getActions().getActions().size() == 2 &&
-                    packet.getTransaction().getActions().getActions().get(1).getSource().getSourceType().equals(InventorySourceType.WORLD_INTERACTION) &&
-                    (packet.getTransaction().getActions().getActions().get(1).getSource().getBitFlags() == null ||
-                            packet.getTransaction().getActions().getActions().get(1).getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG)) &&
-                    packet.getTransaction().getActions().getActions().getFirst().getSource().getSourceType().equals(InventorySourceType.CONTAINER_INVENTORY) &&
-                    (packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags() == null ||
-                            packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG))) { //handle throw hotbar item for player
+                packet.getTransaction().getActions().getActions().get(1).getSource().getSourceType().equals(InventorySourceType.WORLD_INTERACTION) &&
+                (packet.getTransaction().getActions().getActions().get(1).getSource().getBitFlags() == null ||
+                    packet.getTransaction().getActions().getActions().get(1).getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG)) &&
+                packet.getTransaction().getActions().getActions().getFirst().getSource().getSourceType().equals(InventorySourceType.CONTAINER_INVENTORY) &&
+                (packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags() == null ||
+                    packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG))) { //handle throw hotbar item for player
                 final int slot = packet.getTransaction().getActions().getActions().getFirst().getSlot();
                 final int count = Math.min(packet.getTransaction().getActions().getActions().get(1).getToItem().getCount(), player.getInventory().getItem(slot).getCount());
                 dropHotBarItemForPlayer(slot, count, player);
@@ -205,7 +205,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             }
         } else if (type.equals(ItemUseOnActorActionType.ATTACK)) {
             if (target instanceof Player && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_PLAYERS)
-                    || !(target instanceof Player) && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_MOBS))
+                || !(target instanceof Player) && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_MOBS))
                 return;
             if (target.getId() == player.getId()) {
                 PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.INVALID_PVP);
@@ -348,25 +348,18 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 if (player.isCreative()) {
                     item = serverItemInHand;
                 } else if (!serverItemInHand.equals(useItemDataItem)) {
-                    player.getServer().getLogger().debug("Item received did not match item in hand."); //Client seems to send multiple packets with the same durability.
+                    player.getServer().getLogger().debug("Item received did not match item in hand.");
                     player.getInventory().sendHeldItem(player);
                     return;
                 } else {
                     item = serverItemInHand;
                 }
-                PlayerItemConsumeEvent consumeEvent = null;
-                if (item.isEdible()) {
-                    consumeEvent = new PlayerItemConsumeEvent(player, item.clone());
-                    player.getServer().getPluginManager().callEvent(consumeEvent);
-                }
+
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 playerHandle.setInteract();
-                if (consumeEvent != null && consumeEvent.isCancelled()) {
-                    player.getInventory().sendSlot(transaction.getSlot(), player);
-                    return;
-                }
-                if (interactEvent.isCancelled() && (consumeEvent == null || !consumeEvent.isBypassInteract())) {
+
+                if (interactEvent.isCancelled()) {
                     if (interactEvent.getItem() != null && interactEvent.getItem().isWearable()) {
                         player.getInventory().sendArmorContents(player);
                     }
@@ -377,6 +370,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                     player.getInventory().sendSlot(transaction.getSlot(), player);
                     return;
                 }
+
                 if (item.onClickAir(player, directionVector)) {
                     if (!player.isCreative()) {
                         if (item.isNull() || Objects.equals(player.getInventory().getItemInMainHand().getId(), item.getId())) {
@@ -474,8 +468,8 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 }
 
                 float spearSpeed = player.getRiding() != null
-                        ? (float) player.getRiding().getMotion().length()
-                        : player.getMovementSpeed();
+                    ? (float) player.getRiding().getMotion().length()
+                    : player.getMovementSpeed();
                 spear.onSpearStab(player, spearSpeed);
             }
             default -> log.debug("{} sent invalid item use action type {}", player.getName(), type);
