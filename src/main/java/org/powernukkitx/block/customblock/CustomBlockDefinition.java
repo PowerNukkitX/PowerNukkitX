@@ -698,6 +698,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         return CustomBlockUtils.getBoundingBox(this, block);
     }
 
+    public AxisAlignedBB[] getCollisionBoxes(Block block) {
+        return CustomBlockUtils.getCollisionBoxes(this, block);
+    }
+
     public record BlockTickSettings(int minTicks, int maxTicks, boolean looping) {
     }
 

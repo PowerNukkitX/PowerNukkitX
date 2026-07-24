@@ -1266,6 +1266,15 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return this.recalculateCollisionBoundingBox();
     }
 
+    public AxisAlignedBB[] getCollisionBoxes() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:collision_box")) {
+            return def.getCollisionBoxes(this);
+        }
+        AxisAlignedBB box = this.getCollisionBoundingBox();
+        return box == null ? AxisAlignedBB.EMPTY_ARRAY : new AxisAlignedBB[]{box};
+    }
+
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return getBoundingBox();
     }
