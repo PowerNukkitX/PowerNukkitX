@@ -3407,7 +3407,7 @@ public class Level implements Metadatable {
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 boolean throttledFertilizer = item.isFertilizer() && !player.isFertilizerCoolDownEnd();
-                if (!throttledFertilizer && ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
+                if (!throttledFertilizer && (ev.getAction() == Action.RIGHT_CLICK_BLOCK || ev.getAction() == Action.RIGHT_HOLD_BLOCK) && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
                     if (item.isFertilizer()) {
                         player.resetFertilizerCoolDown();
                     }

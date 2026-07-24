@@ -57,12 +57,14 @@ public class BlockGrassPath extends BlockGrassBlock {
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isHoe()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, get(FARMLAND), true);
-            if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+            if(up().isAir()) {
+                item.useOn(this);
+                this.getLevel().setBlock(this, get(FARMLAND), true);
+                if (player != null) {
+                    player.getLevel().addSound(player, Sound.USE_GRASS);
+                }
+                return true;
             }
-            return true;
         }
 
         return false;
