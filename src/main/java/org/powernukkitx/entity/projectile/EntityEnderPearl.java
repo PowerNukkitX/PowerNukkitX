@@ -8,8 +8,8 @@ import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.player.PlayerTeleportEvent.TeleportCause;
 import org.powernukkitx.level.GameRule;
+import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
-import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.DoubleTag;
@@ -67,17 +67,18 @@ public class EntityEnderPearl extends EntityProjectile {
         if (this.closed) {
             return false;
         }
+        Position oldPosition = getPosition();
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.isCollided && this.shootingEntity instanceof Player) {
             boolean portal = false;
             for (Block collided : this.getCollisionBlocks()) {
-                if (collided.getId() == Block.PORTAL) {
+                if (collided.getId().equals(Block.PORTAL)) {
                     portal = true;
                 }
             }
             if (!portal) {
-                teleport();
+                teleportOwner(oldPosition);
             }
         }
 
@@ -92,18 +93,17 @@ public class EntityEnderPearl extends EntityProjectile {
     @Override
     public void onCollideWithEntity(Entity entity) {
         if (this.shootingEntity instanceof Player) {
-            teleport();
+            teleportOwner(getPosition());
         }
         super.onCollideWithEntity(entity);
     }
 
-    private void teleport() {
+    private void teleportOwner(Vector3 destination) {
         if (!this.level.equals(this.shootingEntity.getLevel())) {
             return;
         }
 
         this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
-        Vector3 destination = new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y + 1, NukkitMath.floorDouble(this.z) + 0.5);
         this.shootingEntity.teleport(destination, TeleportCause.ENDER_PEARL);
         if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
             this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
@@ -113,18 +113,7 @@ public class EntityEnderPearl extends EntityProjectile {
         if (this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
             if (ThreadLocalRandom.current().nextInt(1, 20) == 1) {
                 EntityEndermite endermite = (EntityEndermite) Entity.createEntity(Entity.ENDERMITE,
-                        level.getChunk(destination.getFloorX() >> 4, destination.getFloorZ() >> 4), new CompoundTag()
-                                .putList("Pos", new ListTag<>()
-                                        .add(new DoubleTag(destination.getX() + 0.5))
-                                        .add(new DoubleTag(destination.getY() + 0.0625d))
-                                        .add(new DoubleTag(destination.getZ() + 0.5)))
-                                .putList("Motion", new ListTag<>()
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0)))
-                                .putList("Rotation", new ListTag<>()
-                                        .add(new FloatTag(0))
-                                        .add(new FloatTag(0)))
+                        this.getChunk(), Entity.getDefaultNBT(destination)
                 );
                 endermite.spawnToAll();
             }
