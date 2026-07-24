@@ -1,7 +1,7 @@
 package org.powernukkitx.network.primitiveshape;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.BoxDataPayload;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
 import org.powernukkitx.math.Vector3;
 
@@ -29,7 +29,7 @@ public class BoxShape extends PrimitiveShape<BoxShape> {
     }
 
     @Override
-    protected DebugShapePayload buildExtra() {
+    protected ExtraShapeDataPayload buildExtra() {
         BoxDataPayload payload = new BoxDataPayload();
         payload.setBoxBound(bound.toNetwork());
         return payload;
