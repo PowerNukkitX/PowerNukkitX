@@ -20,6 +20,8 @@ import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.entity.passive.EntityVillager;
+import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.entity.weather.EntityLightningBolt;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
@@ -165,19 +167,20 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     @Override
     protected IBehaviorGroup requireBehaviorGroup() {
         return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_SKELETON_SAY), new RandomSoundEvaluator(), 5, 1),
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_GOLEM, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM), 3, 1),
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
-                .sensors(
-                        new NearestPlayerSensor(16, 0, 20),
-                        new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0)
-                )
-                .controllers(new WalkController(), new LookController(true, true))
-                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
-                .build();
+            .behaviors(
+                new Behavior(new PlaySoundExecutor(Sound.MOB_SKELETON_SAY), new RandomSoundEvaluator(), 5, 1),
+                new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
+                new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_GOLEM, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM), 3, 1),
+                new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
+                new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
+            )
+            .sensors(
+                new NearestPlayerSensor(16, 0, 20),
+                new NearestEntitySensor(EntityVillagerV2.class, CoreMemoryTypes.ATTACK_TARGET, 16, 0),
+                new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0)
+            )
+            .controllers(new WalkController(), new LookController(true, true))
+            .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+            .build();
     }
 }
