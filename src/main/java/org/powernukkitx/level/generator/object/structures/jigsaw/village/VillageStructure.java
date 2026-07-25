@@ -28,7 +28,6 @@ import org.powernukkitx.level.generator.noise.minecraft.noise.NormalNoise;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.block.BlockState;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.powernukkitx.utils.random.Xoroshiro128;
@@ -136,7 +135,6 @@ public abstract class VillageStructure extends JigsawStructure {
 
     @Override
     protected void postProcessStructurePiece(String structureName, BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
-        liftPieceAboveWater(blockManager, jigsaws);
         if (isDecorPiece(structureName)) {
             shiftWholePieceToTerrain(blockManager, jigsaws);
             int lampHeightOffset = getLampHeightOffset(structureName);
@@ -247,54 +245,6 @@ public abstract class VillageStructure extends JigsawStructure {
         return !isDecorPiece(structureName) &&
                 !structureName.contains("/streets/")
                 && !structureName.contains("/terminators/");
-    }
-
-    protected void liftPieceAboveWater(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
-        Level level = blockManager.getLevel();
-        Block globalLowestBlock = null;
-        Map<Long, Integer> lowestColumns = new HashMap<>();
-
-        for (Block block : blockManager.getBlocks()) {
-            if (block instanceof BlockJigsaw || block.isAir()) {
-                continue;
-            }
-            if (globalLowestBlock == null || block.getFloorY() < globalLowestBlock.getFloorY()) {
-                globalLowestBlock = block;
-            }
-        }
-
-        if (globalLowestBlock == null) {
-            return;
-        }
-
-        int supportY = globalLowestBlock.getFloorY();
-        for (Block block : blockManager.getBlocks()) {
-            if (block instanceof BlockJigsaw || block.isAir() || block.getFloorY() != supportY) {
-                continue;
-            }
-            lowestColumns.put(columnKey(block.getFloorX(), block.getFloorZ()), 1);
-        }
-
-        int deltaY = 0;
-        for (long columnKey : lowestColumns.keySet()) {
-            int x = (int) (columnKey >> 32);
-            int z = (int) columnKey;
-            level.getOrGenerateChunk(x >> 4, z >> 4);
-
-            int height = level.getHeightMap(x, z);
-            Block topBlock = level.getBlock(x, height, z);
-            if (!(topBlock instanceof BlockFlowingWater) && !topBlock.isWaterLogged()) {
-                continue;
-            }
-
-            deltaY = Math.max(deltaY, height + 1 - supportY);
-        }
-
-        if (deltaY <= 0) {
-            return;
-        }
-
-        shiftWholePiece(blockManager, jigsaws, deltaY);
     }
 
     protected void shiftWholePieceToTerrain(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
