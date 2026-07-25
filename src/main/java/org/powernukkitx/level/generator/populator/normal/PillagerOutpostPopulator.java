@@ -118,7 +118,9 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
             BlockVector3 size = new BlockVector3(WATCHTOWER.getSizeX(), WATCHTOWER.getSizeY(), WATCHTOWER.getSizeZ());
             Beardifier.apply(
                     helper,
-                    List.of(new BoundingBox(0, 0, 0, size.getX() - 1, size.getY() - 1, size.getZ() - 1)),
+                    List.of(Beardifier.TerrainAdaptationPiece.atBoundingBoxFloor(
+                            new BoundingBox(0, 0, 0, size.getX() - 1, size.getY() - 1, size.getZ() - 1)
+                    )),
                     Beardifier.surface(BEARD_TOP, BEARD_MID, BEARD_THRESHOLD)
             );
             BlockManager manager = new BlockManager(level);

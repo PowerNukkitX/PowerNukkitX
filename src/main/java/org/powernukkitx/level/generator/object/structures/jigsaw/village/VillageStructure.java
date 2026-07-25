@@ -128,8 +128,11 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     @Override
-    protected void postProcessStructure(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
-        applyBiomeSurfaceBeardification(helper, occupiedBoxes);
+    protected void postProcessStructure(
+            StructureHelper helper,
+            List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces
+    ) {
+        applyBiomeSurfaceBeardification(helper, terrainAdaptationPieces);
         postProcessStructure(helper);
     }
 
@@ -318,8 +321,11 @@ public abstract class VillageStructure extends JigsawStructure {
         return (((long) x) << 32) | (z & 0xffffffffL);
     }
 
-    private void applyBiomeSurfaceBeardification(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
-        Beardifier.apply(helper, occupiedBoxes,
+    private void applyBiomeSurfaceBeardification(
+            StructureHelper helper,
+            List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces
+    ) {
+        Beardifier.apply(helper, terrainAdaptationPieces,
                 Beardifier.surface(this::getBiomeSurfaceMaterials, BEARD_THRESHOLD));
     }
 

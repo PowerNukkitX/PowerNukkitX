@@ -14,7 +14,6 @@ import org.powernukkitx.level.generator.object.structures.jigsaw.Beardifier;
 import org.powernukkitx.level.generator.object.structures.jigsaw.JigsawStructure;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePool;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
-import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -184,8 +183,11 @@ public class AncientCityStructure extends JigsawStructure {
     }
 
     @Override
-    protected void postProcessStructure(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
-        Beardifier.apply(helper, occupiedBoxes, Beardifier.carveAndFill(
+    protected void postProcessStructure(
+            StructureHelper helper,
+            List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces
+    ) {
+        Beardifier.apply(helper, terrainAdaptationPieces, Beardifier.carveAndFill(
                 BlockAir.STATE, BEARD_CARVE_THRESHOLD, DEEPSLATE, BEARD_FILL_THRESHOLD));
         helper.applySubChunkUpdate();
     }

@@ -51,16 +51,17 @@ public final class Beardifier {
      * Traverses the complete beard kernel around structure boxes. Callers only
      * decide what a density contribution does to a block.
      */
-    public static void apply(StructureHelper helper, List<BoundingBox> relativeBoxes,
+    public static void apply(StructureHelper helper, List<TerrainAdaptationPiece> pieces,
                              ColumnProcessor processor) {
         BlockVector3 origin = helper.getOrigin();
         int minHeight = helper.getMinHeight();
         int maxHeight = helper.getMaxHeight() - 1;
 
-        for (BoundingBox relativeBox : relativeBoxes) {
-            BoundingBox box = relativeBox.moved(origin.getX(), origin.getY(), origin.getZ());
-            int minY = Math.max(minHeight, box.y0 - KERNEL_RADIUS);
-            int maxY = Math.min(maxHeight, box.y1 + KERNEL_RADIUS);
+        for (TerrainAdaptationPiece piece : pieces) {
+            BoundingBox box = piece.boundingBox().moved(origin.getX(), origin.getY(), origin.getZ());
+            int groundY = origin.getY() + piece.groundY();
+            int minY = Math.max(minHeight, groundY - KERNEL_RADIUS);
+            int maxY = Math.min(maxHeight, groundY + KERNEL_RADIUS);
 
             for (int x = box.x0 - KERNEL_RADIUS; x <= box.x1 + KERNEL_RADIUS; x++) {
                 for (int z = box.z0 - KERNEL_RADIUS; z <= box.z1 + KERNEL_RADIUS; z++) {
@@ -76,17 +77,29 @@ public final class Beardifier {
                             continue;
                         }
 
-                        int dy = distanceToRange(y, box.y0, box.y1);
+                        int dy = Math.abs(y - groundY);
                         if (dy >= KERNEL_RADIUS) {
                             continue;
                         }
 
-                        double contribution = getContribution(dx, dy, dz, y - box.y0) * 0.8;
+                        double contribution = getContribution(dx, dy, dz, y - groundY) * 0.8;
                         processor.process(helper, box, x, y, z, contribution);
                     }
                     processor.endColumn(helper, box, x, z);
                 }
             }
+        }
+    }
+
+    /**
+     * Terrain-adaptation data in coordinates relative to the structure helper.
+     * The density kernel is centered at {@code groundY}; its highest positive
+     * fill contribution is therefore one block below that level.
+     */
+    public record TerrainAdaptationPiece(BoundingBox boundingBox, int groundY) {
+
+        public static TerrainAdaptationPiece atBoundingBoxFloor(BoundingBox boundingBox) {
+            return new TerrainAdaptationPiece(boundingBox, boundingBox.y0);
         }
     }
 
