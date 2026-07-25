@@ -41,4 +41,7 @@ public class BaseSettings extends OkaeriConfig {
     boolean saveUnknownBlock = true;
     @Comment("pnx.settings.base.xboxauth")
     boolean xboxAuth = true;
+    @Comment("pnx.settings.base.waterdogpe")
+    boolean waterdogpe = true;
+
 }
