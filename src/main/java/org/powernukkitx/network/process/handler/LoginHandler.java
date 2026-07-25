@@ -1,16 +1,5 @@
 package org.powernukkitx.network.process.handler;
 
-import org.powernukkitx.Player;
-import org.powernukkitx.Server;
-import org.powernukkitx.event.player.PlayerLoginFailEvent;
-import org.powernukkitx.event.player.PlayerPreLoginEvent;
-import org.powernukkitx.network.NetworkConstants;
-import org.powernukkitx.network.process.PacketHandler;
-import org.powernukkitx.network.process.PlayerSessionHolder;
-import org.powernukkitx.network.process.SessionState;
-import org.powernukkitx.network.process.auth.ClientChainData;
-import org.powernukkitx.network.process.auth.ClientSkinData;
-import org.powernukkitx.utils.SkinUtils;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
@@ -29,6 +18,7 @@ import org.jose4j.lang.JoseException;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.player.PlayerPreLoginEvent;
+import org.powernukkitx.event.player.PlayerLoginFailEvent;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
