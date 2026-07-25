@@ -13,6 +13,6 @@ public enum ChunkState {
     FINISHED;
 
     public boolean canSend() {
-        return this.ordinal() >= 3;
+        return this.ordinal() >= 4;
     }
 }

@@ -2404,7 +2404,11 @@ public class Level implements Metadatable {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
-                        collides.add(block.getBoundingBox());
+                        for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
+                            if (collisionBox.intersectsWith(bb)) {
+                                collides.add(collisionBox);
+                            }
+                        }
                     }
                 }
             }
@@ -2444,7 +2448,11 @@ public class Level implements Metadatable {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
-                        collides.add(block.getBoundingBox());
+                        for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
+                            if (collisionBox.intersectsWith(bb)) {
+                                collides.add(collisionBox);
+                            }
+                        }
                     }
                 }
             }
@@ -3407,7 +3415,7 @@ public class Level implements Metadatable {
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 boolean throttledFertilizer = item.isFertilizer() && !player.isFertilizerCoolDownEnd();
-                if (!throttledFertilizer && ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
+                if (!throttledFertilizer && (ev.getAction() == Action.RIGHT_CLICK_BLOCK || ev.getAction() == Action.RIGHT_HOLD_BLOCK) && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
                     if (item.isFertilizer()) {
                         player.resetFertilizerCoolDown();
                     }
@@ -4462,7 +4470,7 @@ public class Level implements Metadatable {
             }
             if (players != null) {
                 IChunk chunk = this.getChunk(x, z);
-                if (chunk != null && chunk.getChunkState().canSend()) {
+                if (chunk != null && chunk.getChunkState().canSend() && chunk.isInitiated()) {
                     final Int2ObjectNonBlockingMap<Player> playersToSend;
                     synchronized (this.chunkSendQueue) {
                         playersToSend = this.chunkSendQueue.remove(index);
@@ -4494,7 +4502,8 @@ public class Level implements Metadatable {
                     } finally {
                         chunkData.release();
                     }
-                } else if (!this.chunkGenerationQueue.containsKey(index)) {
+                } else if ((chunk == null || !chunk.getChunkState().canSend())
+                        && !this.chunkGenerationQueue.containsKey(index)) {
                     this.generateChunk(x, z, true);
                 }
             }
@@ -4615,6 +4624,8 @@ public class Level implements Metadatable {
         IChunk chunk = this.requireProvider().getLoadedChunk(index);
         if (chunk == null) {
             chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
+        } else if (!chunk.isInitiated()) {
+            chunk.initChunk();
         }
         return chunk;
     }
@@ -4644,6 +4655,9 @@ public class Level implements Metadatable {
         if (levelProvider != null) {
             IChunk loaded = levelProvider.getLoadedChunk(index);
             if (loaded != null) {
+                if (!loaded.isInitiated()) {
+                    loaded.initChunk();
+                }
                 return CompletableFuture.completedFuture(loaded);
             }
         }
@@ -4679,14 +4693,13 @@ public class Level implements Metadatable {
         }
 
         if (chunk.getProvider() != null) {
+            chunk.initChunk();
             this.tickChunkCacheDirty = true;
             this.server.getPluginManager().callEvent(new ChunkLoadEvent(chunk, !chunk.isGenerated()));
         } else {
             this.unloadChunk(x, z, false);
             return chunk;
         }
-
-        chunk.initChunk();
 
         if (this.isChunkInUse(index)) {
             this.unloadQueue.remove(index);

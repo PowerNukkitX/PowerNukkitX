@@ -18,6 +18,6 @@ public class MiscSettings extends OkaeriConfig {
     boolean bypassAPICheck = false;
     @Comment("pnx.settings.misc.overrideserverauthblockbreaking")
     boolean overrideServerAuthBlockBreaking = false;
-    @Comment("pnx.settings.misc.disablemetrics")
-    boolean disableMetrics = true;
+    @Comment("pnx.settings.misc.enablemetrics")
+    boolean enableMetrics = true;
 }
