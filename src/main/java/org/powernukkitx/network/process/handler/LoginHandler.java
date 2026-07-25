@@ -88,20 +88,15 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
         try {
             final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
+            final boolean unsignedAllowed = server.getProxyAuthProvider() != null
+                && server.getProxyAuthProvider().isUnsignedLoginAllowed();
+            if (xboxAuthRequired && !result.signed() && !unsignedAllowed) {
+                sessionFailEvent.setDisconnectFailReason(notAuthenticated);
+                server.getPluginManager().callEvent(sessionFailEvent);
 
-            if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
-                final boolean unsignedAllowed = server.getProxyAuthProvider() != null
-                    && server.getProxyAuthProvider().isUnsignedLoginAllowed();
-
-                if (!unsignedAllowed) {
-                    sessionFailEvent.setDisconnectFailReason(notAuthenticated);
-                    server.getPluginManager().callEvent(sessionFailEvent);
-
-                    holder.disconnect(sessionFailEvent.getDisconnectFailReason());
-                    return;
-                }
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+                return;
             }
-
             final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
 
             final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
