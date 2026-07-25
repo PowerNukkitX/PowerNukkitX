@@ -476,7 +476,7 @@ public class Server {
 
         // Initialize metrics
         if (this.settings.miscSettings().enableMetrics()) {
-            NukkitMetrics.startNow(this);
+            NukkitMetrics.startNow();
         }
 
         final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
@@ -1001,6 +1001,7 @@ public class Server {
         } catch (Throwable e) {
             log.error("Exception while closing thread pools", e);
         }
+        NukkitMetrics.closeNow();
         // TODO: Other things
     }
 
