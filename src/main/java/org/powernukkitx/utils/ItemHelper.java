@@ -95,7 +95,7 @@ public class ItemHelper {
                         ? Item.get(item.getId(), damage, amount)
                         : blockState.toItem();
 
-                    item = !(resolvedItem instanceof ItemUnknown) ? resolvedItem : blockState.toItem();
+                    item = resolvedItem != Item.AIR ? resolvedItem : blockState.toItem();
 
                     if (damage != 0) {
                         item.setDamage(damage);
