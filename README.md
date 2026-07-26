@@ -49,6 +49,5 @@ the [contributing guide](.github/CONTRIBUTING.md).
 This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
 
 ## Give a ⭐️ if this project helped you!
-[![Star History Chart](https://api.star-history.com/svg?repos=PowerNukkitX/PowerNukkitX&type=Date)](https://star-history.com/#PowerNukkitX/PowerNukkitX&Date)
 
 [![Contributors](https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX)](https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors)
