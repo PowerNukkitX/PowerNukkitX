@@ -36,7 +36,6 @@ import org.powernukkitx.entity.data.property.EntityProperty;
 import org.powernukkitx.event.player.PlayerCreationEvent;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.network.process.pack.InternalPackManager;
-import org.powernukkitx.network.protocol.types.TrimData;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.ItemRuntimeIdRegistry;
 import org.powernukkitx.registry.Registries;
@@ -225,10 +224,7 @@ public class PlayerSessionHolder {
         this.player.syncCreativeContent();
         this.player.sendAttributes();
 
-        final TrimDataPacket trimDataPacket = new TrimDataPacket();
-        trimDataPacket.getTrimMaterialList().addAll(TrimData.trimMaterials);
-        trimDataPacket.getTrimPatternList().addAll(TrimData.trimPatterns);
-        this.session.sendPacketImmediately(trimDataPacket);
+        this.session.sendPacketImmediately(Registries.TRIM.buildPacket());
 
         this.player.setCanClimb(true);
         this.player.setMovementSpeed(this.player.getMovementSpeed());

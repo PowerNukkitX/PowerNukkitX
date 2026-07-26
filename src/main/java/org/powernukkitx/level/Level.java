@@ -1139,16 +1139,14 @@ public class Level implements Metadatable {
         if (this.tickCachedBlocks.isEmpty()) {
             return;
         }
-        synchronized (this.tickCachedBlocks) {
-            var iterator = tickCachedBlocks.values().iterator();
-            while (iterator.hasNext()) {
-                var each = iterator.next();
-                if (each.isCachedStoreEmpty()) {
-                    iterator.remove();
-                } else {
-                    each.clearCachedStore();
+        for (Long key : this.tickCachedBlocks.keySet()) {
+            this.tickCachedBlocks.computeIfPresent(key, (ignore, store) -> {
+                if (store.isCachedStoreEmpty()) {
+                    return null;
                 }
-            }
+                store.clearCachedStore();
+                return store;
+            });
         }
     }
 
@@ -2404,7 +2402,11 @@ public class Level implements Metadatable {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
-                        collides.add(block.getBoundingBox());
+                        for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
+                            if (collisionBox.intersectsWith(bb)) {
+                                collides.add(collisionBox);
+                            }
+                        }
                     }
                 }
             }
@@ -2444,7 +2446,11 @@ public class Level implements Metadatable {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
-                        collides.add(block.getBoundingBox());
+                        for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
+                            if (collisionBox.intersectsWith(bb)) {
+                                collides.add(collisionBox);
+                            }
+                        }
                     }
                 }
             }
@@ -3407,7 +3413,7 @@ public class Level implements Metadatable {
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 boolean throttledFertilizer = item.isFertilizer() && !player.isFertilizerCoolDownEnd();
-                if (!throttledFertilizer && ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
+                if (!throttledFertilizer && (ev.getAction() == Action.RIGHT_CLICK_BLOCK || ev.getAction() == Action.RIGHT_HOLD_BLOCK) && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {
                     if (item.isFertilizer()) {
                         player.resetFertilizerCoolDown();
                     }
