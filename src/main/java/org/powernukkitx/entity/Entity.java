@@ -243,7 +243,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected volatile boolean saveWithChunk = true;
     private final Map<String, Integer> intProperties = new LinkedHashMap<>();
     private final Map<String, Float> floatProperties = new LinkedHashMap<>();
-    private transient PropertySyncData clientSyncPropertiesCache;
+    private transient volatile PropertySyncData clientSyncPropertiesCache;
     protected final Map<Integer, Attribute> attributes = new HashMap<>();
 
     protected static final int DEFAULT_SOFT_DESPAWN_DISTANCE = 74;

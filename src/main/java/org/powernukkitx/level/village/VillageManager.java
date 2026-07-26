@@ -32,21 +32,23 @@ public final class VillageManager {
 
     private final Level level;
     private final ConcurrentHashMap<UUID, Village> villages = new ConcurrentHashMap<>();
-    private static volatile java.util.Set<String> jobSiteBlockIds;
-    private static volatile int jobSiteProfessionCount = -1;
+    private record JobSiteCache(java.util.Set<String> ids, int version) {
+    }
+
+    private static volatile JobSiteCache jobSiteCache;
 
     private static java.util.Set<String> getJobSiteBlockIds() {
-        var professions = Profession.getProfessions();
-        var ids = jobSiteBlockIds;
-        if (ids == null || jobSiteProfessionCount != professions.size()) {
-            var rebuilt = new HashSet<String>();
-            for (Profession profession : professions.values()) {
-                rebuilt.add(profession.getBlockID());
-            }
-            jobSiteBlockIds = rebuilt;
-            jobSiteProfessionCount = professions.size();
-            return rebuilt;
+        int version = Profession.getRegistrationVersion();
+        var cache = jobSiteCache;
+        if (cache != null && cache.version() == version) {
+            return cache.ids();
         }
+        var rebuilt = new HashSet<String>();
+        for (Profession profession : Profession.getProfessions().values()) {
+            rebuilt.add(profession.getBlockID());
+        }
+        var ids = java.util.Set.copyOf(rebuilt);
+        jobSiteCache = new JobSiteCache(ids, version);
         return ids;
     }
 

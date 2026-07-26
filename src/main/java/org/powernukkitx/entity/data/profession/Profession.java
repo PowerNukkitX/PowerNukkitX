@@ -13,9 +13,15 @@ public abstract class Profession {
 
     private static final Int2ObjectOpenHashMap<Profession> knownProfessions = new Int2ObjectOpenHashMap<>();
     private static final Map<Integer, Profession> knownProfessionsView = Collections.unmodifiableMap(knownProfessions);
+    private static volatile int registrationVersion;
 
     public static void registerProfession(Profession profession) {
         knownProfessions.put(profession.getIndex(), profession);
+        registrationVersion++;
+    }
+
+    public static int getRegistrationVersion() {
+        return registrationVersion;
     }
 
     public static Map<Integer, Profession> getProfessions() {
