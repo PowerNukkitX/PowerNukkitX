@@ -77,6 +77,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private int shieldAttackInterruptTicks = 0;
     private boolean shieldReblockAfterAttack = false;
 
+    private Vector3 pendingHomePosition;
+
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -161,7 +163,49 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
     }
 
+    protected void prepareHomePosition() {
+        if (!this.hasHome() || !(this instanceof EntityIntelligent)) return;
 
+        if (this.nbt.contains("HomeX")
+                && this.nbt.contains("HomeY")
+                && this.nbt.contains("HomeZ")) {
+            this.pendingHomePosition = new Vector3(
+                    this.nbt.getDouble("HomeX"),
+                    this.nbt.getDouble("HomeY"),
+                    this.nbt.getDouble("HomeZ")
+            );
+        } else {
+            this.pendingHomePosition = this.getPosition().floor();
+
+            this.nbt.putDouble("HomeX", this.pendingHomePosition.x);
+            this.nbt.putDouble("HomeY", this.pendingHomePosition.y);
+            this.nbt.putDouble("HomeZ", this.pendingHomePosition.z);
+        }
+    }
+
+    protected void initializeHomeMemoryIfNeeded() {
+        if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
+        if (this.pendingHomePosition == null) return;
+        if (this.level == null) return;
+        if (this.closed) return;
+        if (ei.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK)) return;
+
+        int chunkX = this.pendingHomePosition.getFloorX() >> 4;
+        int chunkZ = this.pendingHomePosition.getFloorZ() >> 4;
+
+        IChunk chunk = this.level.getChunk(chunkX, chunkZ, false);
+        if (chunk == null) return;
+
+        Block home = this.level.getTickCachedBlock(
+                this.pendingHomePosition.getFloorX(),
+                this.pendingHomePosition.getFloorY(),
+                this.pendingHomePosition.getFloorZ()
+        );
+
+        if (home == null) return;
+
+        ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+    }
 
     protected void loadParentFromNBT() {
         if (!(this instanceof EntityIntelligent ei)) return;
@@ -228,6 +272,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean onUpdate(int currentTick) {
+        this.initializeHomeMemoryIfNeeded();
+
         if (restoreMountTries > 0) {
             restoreMountTries--;
             if ((restoreMountTries % 4) == 0) tryRestoreMountLink();
@@ -1006,17 +1052,23 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void setHomePosition() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
 
-        int x = ei.getFloorX();
-        int y = ei.getFloorY();
-        int z = ei.getFloorZ();
-        Block home = ei.level.getBlock(x, y, z);
+        this.pendingHomePosition = this.getPosition().floor();
 
-        ei.setNbt(
-                ei.nbt.putDouble("HomeX", home.x)
-                        .putDouble("HomeY", home.y)
-                        .putDouble("HomeZ", home.z)
+        this.nbt.putDouble("HomeX", this.pendingHomePosition.x);
+        this.nbt.putDouble("HomeY", this.pendingHomePosition.y);
+        this.nbt.putDouble("HomeZ", this.pendingHomePosition.z);
+
+        if (this.level == null || this.closed) return;
+
+        Block home = this.level.getTickCachedBlock(
+                this.pendingHomePosition.getFloorX(),
+                this.pendingHomePosition.getFloorY(),
+                this.pendingHomePosition.getFloorZ()
         );
-        ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+
+        if (home != null) {
+            ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+        }
     }
 
     public Block getHomePosition() {

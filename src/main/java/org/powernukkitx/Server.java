@@ -476,7 +476,7 @@ public class Server {
 
         // Initialize metrics
         if (this.settings.miscSettings().enableMetrics()) {
-            NukkitMetrics.startNow(this);
+            NukkitMetrics.startNow();
         }
 
         final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
@@ -530,6 +530,7 @@ public class Server {
             CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
             CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
             CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
+            CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
 
             CompletableFuture<Void> blockStateF = blockF.thenRunAsync(
                 registryCache != null
@@ -555,7 +556,7 @@ public class Server {
 
             CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
                 fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
-                creativeF, recipeF, voxelF, disconnectF).join();
+                creativeF, recipeF, voxelF, disconnectF, trimF).join();
 
             if (useRegistryCache && registryCache == null) {
                 RegistryCache.save(registryCachePath);
@@ -1000,6 +1001,7 @@ public class Server {
         } catch (Throwable e) {
             log.error("Exception while closing thread pools", e);
         }
+        NukkitMetrics.closeNow();
         // TODO: Other things
     }
 
