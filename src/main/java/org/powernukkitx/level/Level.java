@@ -1139,16 +1139,14 @@ public class Level implements Metadatable {
         if (this.tickCachedBlocks.isEmpty()) {
             return;
         }
-        synchronized (this.tickCachedBlocks) {
-            var iterator = tickCachedBlocks.values().iterator();
-            while (iterator.hasNext()) {
-                var each = iterator.next();
-                if (each.isCachedStoreEmpty()) {
-                    iterator.remove();
-                } else {
-                    each.clearCachedStore();
+        for (Long key : this.tickCachedBlocks.keySet()) {
+            this.tickCachedBlocks.computeIfPresent(key, (ignore, store) -> {
+                if (store.isCachedStoreEmpty()) {
+                    return null;
                 }
-            }
+                store.clearCachedStore();
+                return store;
+            });
         }
     }
 
