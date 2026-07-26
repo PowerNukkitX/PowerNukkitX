@@ -4802,9 +4802,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         packet.setNpcId(dialog.getEntityId());
         packet.setActionType(NpcDialoguePacket.Action.OPEN);
         packet.setDialogue(dialog.getContent());
-        if (book) {
-            packet.setSceneName(dialog.getSceneName());
-        }
+        packet.setSceneName(book ? dialog.getSceneName() : "");
         packet.setNpcName(dialog.getTitle());
         packet.setActionJson(dialog.getButtonJSONData());
         if (book) {
