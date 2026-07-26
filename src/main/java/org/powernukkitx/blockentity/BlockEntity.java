@@ -218,7 +218,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
             chunk.setChanged();
         }
 
-        if (this.level == null) {
+        if (!this.isValid()) {
             return;
         }
 
