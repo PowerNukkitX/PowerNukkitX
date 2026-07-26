@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFlowable;
@@ -86,7 +87,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     private Set<Long> spawnedEntities = new HashSet<>();
 
-    private String entityId = EntityID.BREEZE;
+    private String entityId;
     private int spawnRange;
     private int requiredPlayerRange;
     private int ticksBetweenSpawn;
@@ -114,6 +115,15 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.scheduleUpdate();
+        this.state = this.entityId == null || this.entityId.isEmpty() ? STATE_INACTIVE : STATE_WAITING_FOR_PLAYERS;
+        this.nextMobSpawnTick = this.level.getTick() + this.ticksBetweenSpawn;
+    }
+
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         if (!this.nbt.contains(TAG_SPAWN_RANGE) || !(this.nbt.get(TAG_SPAWN_RANGE) instanceof ShortTag)) {
             this.nbt.putShort(TAG_SPAWN_RANGE, DEFAULT_SPAWN_RANGE);
         }
@@ -154,14 +164,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         this.spawnBaby = this.nbt.getBoolean(TAG_SPAWN_BABY);
         this.nextOminousProjectileTick = this.nbt.getInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.level.getTick() + OMINOUS_PROJECTILE_INTERVAL_TICKS);
         resolveOminousProjectileSelection();
-
-        this.state = this.entityId == null || this.entityId.isEmpty() ? STATE_INACTIVE : STATE_WAITING_FOR_PLAYERS;
-        this.nextMobSpawnTick = this.level.getTick() + this.ticksBetweenSpawn;
-
-        this.scheduleUpdate();
-        super.initBlockEntity();
-        this.level.getScheduler().scheduleTask(this::spawnToAll);
-        updateBlockState(false);
     }
 
     @Override
@@ -181,7 +183,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
         if (this.entityId == null || this.entityId.isEmpty()) {
             setState(STATE_INACTIVE, false);
-            this.scheduleUpdate();
             return true;
         }
 
@@ -193,7 +194,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
         if (this.cooldownEndsAt > currentTick) {
             setState(STATE_COOLDOWN, false);
-            this.scheduleUpdate();
             return true;
         }
         if (this.cooldownEndsAt != 0) {
@@ -204,13 +204,11 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             if (this.state != STATE_WAITING_FOR_REWARD_EJECTION && this.state != STATE_EJECTING_REWARD) {
                 setState(STATE_WAITING_FOR_REWARD_EJECTION, true);
             }
-            this.scheduleUpdate();
             return true;
         }
         if (this.state == STATE_WAITING_FOR_REWARD_EJECTION) {
             setState(STATE_EJECTING_REWARD, true);
             this.rewardStateEndsAt = currentTick + TRIAL_CHAMBER_EJECTING_REWARD_TICKS;
-            this.scheduleUpdate();
             return true;
         }
         if (this.state == STATE_EJECTING_REWARD) {
@@ -218,7 +216,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             this.rewardStateEndsAt = 0;
             this.cooldownEndsAt = currentTick + this.targetCooldownLength;
             setState(STATE_COOLDOWN, true);
-            this.scheduleUpdate();
             return true;
         }
 
@@ -226,7 +223,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             if (spawnedEntities.isEmpty() && this.totalSpawnedThisCycle == 0) {
                 setState(STATE_WAITING_FOR_PLAYERS, false);
             }
-            this.scheduleUpdate();
             return true;
         }
 
@@ -242,12 +238,10 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             preparePendingReward();
             this.rewardStateEndsAt = currentTick + TRIAL_CHAMBER_WAITING_FOR_REWARD_TICKS;
             setState(STATE_WAITING_FOR_REWARD_EJECTION, true);
-            this.scheduleUpdate();
             return true;
         }
 
         if (!this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING) || this.server.getDifficulty() == 0) {
-            this.scheduleUpdate();
             return true;
         }
 
@@ -266,8 +260,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             this.rewardStateEndsAt = currentTick + TRIAL_CHAMBER_WAITING_FOR_REWARD_TICKS;
             setState(STATE_WAITING_FOR_REWARD_EJECTION, true);
         }
-
-        this.scheduleUpdate();
         return true;
     }
 
@@ -602,14 +594,12 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         if (this.closed || this.level == null || !this.isOminous()) {
             return;
         }
-
         launchLingeringPotion(spawnPos);
         launchSecondaryOminousProjectile(spawnPos);
         this.level.addLevelSoundEvent(spawnPos, SoundEvent.OMINOUS_ITEM_SPAWNER_SPAWN_ITEM);
     }
 
     private void launchLingeringPotion(Vector3 spawnPos) {
-
         CompoundTag nbt = Entity.getDefaultNBT(spawnPos, new Vector3(0, -0.35d, 0), 0f, 90f)
                 .putInt("PotionId", this.ominousLingeringPotion.id());
         Entity projectile = Entity.createEntity(EntityID.LINGERING_POTION, this.level.getChunk((int) spawnPos.x >> 4, (int) spawnPos.z >> 4), nbt);
@@ -620,7 +610,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     private void launchSecondaryOminousProjectile(Vector3 spawnPos) {
         switch (this.ominousProjectileKind) {
-            case "arrow" -> launchArrow(spawnPos, null);
             case "poison_arrow" -> launchArrow(spawnPos, PotionType.POISON_LONG);
             case "slowness_arrow" -> launchArrow(spawnPos, PotionType.SLOWNESS_STRONG);
             case "small_fireball" -> launchProjectileEntity(EntityID.SMALL_FIREBALL, spawnPos, new Vector3(0, -0.3d, 0), 2.0d);
@@ -809,6 +798,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         this.spawnToAll();
     }
 
+    @ApiStatus.Internal
     public void applyTrialChamberDefaults(String structureName) {
         this.spawnRange = DEFAULT_SPAWN_RANGE;
         this.requiredPlayerRange = DEFAULT_REQUIRED_PLAYER_RANGE;
@@ -844,7 +834,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-
         this.nbt.putString(TAG_TYPE_ID, this.entityId);
         this.nbt.putShort(TAG_SPAWN_RANGE, this.spawnRange);
         this.nbt.putShort(TAG_REQUIRED_PLAYER_RANGE, this.requiredPlayerRange);
