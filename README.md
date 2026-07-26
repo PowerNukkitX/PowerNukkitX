@@ -1,9 +1,5 @@
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-  <a href="https://powernukkitx.org"><img src=".github/logo.png" alt="PowerNukkitX Logo" width="150"></a>
-</p>
-
-<p align="center">
     <a href="https://powernukkitx.org">
       <img src="https://avatars.githubusercontent.com/u/99014792" width=20%>
     </a>
