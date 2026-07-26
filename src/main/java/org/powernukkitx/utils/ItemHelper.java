@@ -64,7 +64,9 @@ public class ItemHelper {
         int damage = !tag.contains("Damage") ? 0 : tag.getShort("Damage");
         int amount = tag.getByte("Count");
         Item item = Item.get(name, damage, amount);
-
+        if (item == Item.AIR) {
+            item = new ItemUnknown(name, damage, amount, null);
+        }
         Tag tagTag = tag.get("tag");
         CompoundTag savedNbt = tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty() ? compoundTag : null;
         if (savedNbt != null) {
