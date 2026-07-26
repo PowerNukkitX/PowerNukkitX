@@ -566,12 +566,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         var manager = this.server.getScoreboardManager();
         // This will be null in the test environment, so it is necessary to check for null values.
         if (manager != null) manager.onEntityDead(this);
-        if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+        if (this.level.getGameRules().getBoolean(GameRule.DO_MOB_LOOT)) {
             for (Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
+            this.getLevel().dropExpOrb(this, getExperienceDrops());
         }
-        this.getLevel().dropExpOrb(this, getExperienceDrops());
     }
 
     @Override
