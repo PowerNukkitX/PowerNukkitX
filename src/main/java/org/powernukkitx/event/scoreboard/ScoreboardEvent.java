@@ -7,7 +7,7 @@ import org.powernukkitx.scoreboard.IScoreboard;
 import lombok.Getter;
 
 /**
- * 请注意，若计分板不存在于 {@link org.powernukkitx.Server}::scoreboardManager中，则此事件不会被调用
+ * Note that if the scoreboard does not exist in {@link org.powernukkitx.Server}::scoreboardManager, this event will not be called
  */
 @Getter
 public abstract class ScoreboardEvent extends Event implements Cancellable {

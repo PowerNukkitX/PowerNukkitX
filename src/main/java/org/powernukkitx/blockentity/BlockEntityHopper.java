@@ -51,7 +51,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
     private final BlockVector3 temporalVector = new BlockVector3();
 
-    //由容器矿车检测漏斗并通知更新，这样子能大幅优化性能
+    //the container minecart detects the hopper and notifies it to update, which greatly improves performance
     @Getter
     @Setter
     private InventoryHolder minecartInvPickupFrom = null;
@@ -294,7 +294,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
                     item.count--;
                     inv.setItem(i, item);
 
-                    //归位为null
+                    //reset to null
                     setMinecartInvPickupFrom(null);
                     return true;
                 }
@@ -354,7 +354,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
                     item.count--;
                     this.inventory.setItem(i, item);
 
-                    //归位为null
+                    //reset to null
                     setMinecartInvPushTo(null);
                     return true;
                 }
@@ -382,7 +382,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         BlockEntity be = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, side));
 
 
-        //漏斗应该有主动向被锁住的漏斗推送物品的能力
+        //a hopper should be able to actively push items into a locked hopper
         if (be instanceof BlockEntityHopper sideHopper && levelBlockState.isDefaultState() && !sideHopper.isDisabled() || !(be instanceof InventoryHolder) && !(blockSide instanceof BlockComposter)) {
             return false;
         }

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.block.BlockComposter;
+import org.powernukkitx.block.BlockLightProperties;
 import org.powernukkitx.block.dispenser.DispenseBehaviorRegister;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.command.Command;
@@ -68,7 +69,6 @@ import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.LevelProviderManager;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
-import org.powernukkitx.level.generator.terra.PNXPlatform;
 import org.powernukkitx.level.tickingarea.manager.SimpleTickingAreaManager;
 import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
 import org.powernukkitx.level.tickingarea.storage.JSONTickingAreaStorage;
@@ -88,6 +88,7 @@ import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
 import org.powernukkitx.network.process.NetworkState;
+import org.powernukkitx.network.process.auth.ProxyAuthProvider;
 import org.powernukkitx.permission.BanEntry;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.permission.DefaultPermissions;
@@ -284,7 +285,7 @@ public class Server {
     private final ServerSettings settings;
     private Watchdog watchdog;
     private DB playerDataDB;
-    private boolean useTerra;
+    private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
 
@@ -417,7 +418,6 @@ public class Server {
 
         this.allowNether = this.settings.gameplaySettings().allowNether();
         this.allowTheEnd = this.settings.gameplaySettings().allowTheEnd();
-        this.useTerra = this.settings.miscSettings().enableTerra();
         this.checkLoginTime = this.settings.networkSettings().checkLoginTime();
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
@@ -434,9 +434,6 @@ public class Server {
         this.scheduler = new ServerScheduler();
 
         this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
-        if (this.getSettings().baseSettings().waterdogpe()) {
-            this.checkLoginTime = false;
-        }
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
@@ -478,15 +475,32 @@ public class Server {
         this.consoleSender = new ConsoleCommandSender();
 
         // Initialize metrics
-        if (!this.settings.miscSettings().disableMetrics()) {
-            NukkitMetrics.startNow(this);
+        if (this.settings.miscSettings().enableMetrics()) {
+            NukkitMetrics.startNow();
+        }
+
+        final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
+        final boolean recipesEnabled;
+        {
+            boolean recipes = settings.gameplaySettings().enableRecipes();
+            if (recipes && !creativeInventoryEnabled) {
+                log.warn("gameplay-settings: enableRecipes was forced to false because enableCreativeInventory is false (the recipe registry depends on the creative registry)");
+                recipes = false;
+            }
+            recipesEnabled = recipes;
+        }
+
+        final boolean useRegistryCache = settings.performanceSettings().registryCacheEnabled()
+                && creativeInventoryEnabled && recipesEnabled;
+        if (settings.performanceSettings().registryCacheEnabled() && !useRegistryCache) {
+            log.info("Registry cache is bypassed because the creative inventory or recipe registry is disabled by gameplay settings");
         }
 
         final RegistryCache registryCache;
         Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
         {
             RegistryCache cache = null;
-            if (settings.performanceSettings().registryCacheEnabled()) {
+            if (useRegistryCache) {
                 cache = RegistryCache.tryLoad(registryCachePath);
             }
             registryCache = cache;
@@ -516,6 +530,7 @@ public class Server {
             CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
             CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
             CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
+            CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
 
             CompletableFuture<Void> blockStateF = blockF.thenRunAsync(
                 registryCache != null
@@ -523,23 +538,27 @@ public class Server {
                     : Registries.BLOCKSTATE::init,
                 computeThreadPool);
             CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
-            CompletableFuture<Void> creativeF = CompletableFuture.allOf(itemF, blockStateF)
-                .thenRunAsync(
-                    registryCache != null
-                        ? () -> registryCache.restoreCreative(Registries.CREATIVE)
-                        : Registries.CREATIVE::init,
-                    computeThreadPool);
-            CompletableFuture<Void> recipeF = creativeF.thenRunAsync(
-                registryCache != null
-                    ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
-                    : Registries.RECIPE::init,
-                computeThreadPool);
+            CompletableFuture<Void> creativeF = creativeInventoryEnabled
+                    ? CompletableFuture.allOf(itemF, blockStateF)
+                            .thenRunAsync(
+                                    registryCache != null
+                                            ? () -> registryCache.restoreCreative(Registries.CREATIVE)
+                                            : Registries.CREATIVE::init,
+                                    computeThreadPool)
+                    : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, computeThreadPool);
+            CompletableFuture<Void> recipeF = recipesEnabled
+                    ? creativeF.thenRunAsync(
+                            registryCache != null
+                                    ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
+                                    : Registries.RECIPE::init,
+                            computeThreadPool)
+                    : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
 
             CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
                 fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
-                creativeF, recipeF, voxelF, disconnectF).join();
+                creativeF, recipeF, voxelF, disconnectF, trimF).join();
 
-            if (settings.performanceSettings().registryCacheEnabled() && registryCache == null) {
+            if (useRegistryCache && registryCache == null) {
                 RegistryCache.save(registryCachePath);
             }
 
@@ -553,12 +572,6 @@ public class Server {
 
         if (settings.gameplaySettings().enableEducation()) {
             Education.enable();
-            if (settings.baseSettings().waterdogpe())
-                log.info("You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
-        }
-
-        if (useTerra) {// load terra
-            PNXPlatform instance = PNXPlatform.getInstance();
         }
 
         freezableArrayManager = new FreezableArrayManager(
@@ -627,6 +640,8 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
         LevelProviderManager.addProvider("leveldb", LevelDBProvider.class);
+
+        BlockLightProperties.build();
 
         loadLevels();
 
@@ -986,6 +1001,7 @@ public class Server {
         } catch (Throwable e) {
             log.error("Exception while closing thread pools", e);
         }
+        NukkitMetrics.closeNow();
         // TODO: Other things
     }
 
@@ -1136,7 +1152,7 @@ public class Server {
     }
 
     public int getBaseTps() {
-        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 100_000);
+        return NukkitMath.clamp(getSettings().performanceSettings().baseTps(), 1, 1_000_000);
     }
 
     /**
@@ -1905,12 +1921,8 @@ public class Server {
         buffer.putLong(uniqueId.getMostSignificantBits());
         buffer.putLong(uniqueId.getLeastSignificantBits());
         byte[] array = buffer.array();
-        byte[] bytes = playerDataDB.get(array);
-        if (bytes == null) {
-            playerDataDB.put(nameBytes, array);
-        }
-        boolean xboxAuthEnabled = this.settings.baseSettings().xboxAuth();
-        if (!xboxAuthEnabled) {
+        byte[] existing = playerDataDB.get(nameBytes);
+        if (existing == null || !Arrays.equals(existing, array)) {
             playerDataDB.put(nameBytes, array);
         }
     }
@@ -3101,6 +3113,14 @@ public class Server {
 
     public ServerSettings getSettings() {
         return settings;
+    }
+
+    public ProxyAuthProvider getProxyAuthProvider() {
+        return proxyAuthProvider;
+    }
+
+    public void setProxyAuthProvider(ProxyAuthProvider proxyAuthProvider) {
+        this.proxyAuthProvider = proxyAuthProvider;
     }
 
     public boolean isNetherAllowed() {

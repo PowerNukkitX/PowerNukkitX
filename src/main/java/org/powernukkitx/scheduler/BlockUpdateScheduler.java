@@ -17,6 +17,7 @@ public class BlockUpdateScheduler {
     private final IChunk chunk;
     private long lastTick;
     private final Long2ObjectNonBlockingMap<Set<BlockUpdateEntry>> queuedUpdates;
+    private final Map<BlockUpdateEntry, Long> entryToTick = new ConcurrentHashMap<>();
 
     private Set<BlockUpdateEntry> pendingUpdates;
 
@@ -27,6 +28,10 @@ public class BlockUpdateScheduler {
     }
 
     public void tick(long currentTick) {
+        if (entryToTick.isEmpty()) {
+            lastTick = currentTick;
+            return;
+        }
         // Should only perform once, unless ticks were skipped
         if (currentTick - lastTick < Short.MAX_VALUE) {// Arbitrary
             for (long tick = lastTick + 1; tick <= currentTick; tick++) {
@@ -58,6 +63,7 @@ public class BlockUpdateScheduler {
 
                     Vector3 pos = entry.pos;
                     updateIterator.remove();
+                    entryToTick.remove(entry, tick);
                     if(pos.getChunkX() == chunk.getX() && pos.getChunkZ() == chunk.getZ()) {
                         Level level = chunk.getLevel();
                         Block block = level.getBlock(entry.pos, entry.block.layer);
@@ -127,23 +133,19 @@ public class BlockUpdateScheduler {
             if (tmp != null) updateSet = tmp;
         }
         updateSet.add(entry);
+        entryToTick.put(entry, time);
     }
 
     public boolean contains(BlockUpdateEntry entry) {
-        for (var tickUpdateSet : queuedUpdates.values()) {
-            if (tickUpdateSet.contains(entry)) {
-                return true;
-            }
-        }
-        return false;
+        return entryToTick.containsKey(entry);
     }
 
     public boolean remove(BlockUpdateEntry entry) {
-        for (var tickUpdateSet : queuedUpdates.values()) {
-            if (tickUpdateSet.remove(entry)) {
-                return true;
-            }
+        Long tick = entryToTick.remove(entry);
+        if (tick == null) {
+            return false;
         }
-        return false;
+        Set<BlockUpdateEntry> tickUpdateSet = queuedUpdates.get((long) tick);
+        return tickUpdateSet != null && tickUpdateSet.remove(entry);
     }
 }

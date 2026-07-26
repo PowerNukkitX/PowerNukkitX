@@ -91,7 +91,7 @@ public class TickingAreaCommand extends VanillaCommand {
                     log.addError("commands.tickingarea-add.conflictingname", name).output();
                     return 0;
                 }
-                //计算出哪些区块和圆重合
+                //figure out which chunks overlap with the circle
                 TickingArea area = new TickingArea(name, level.getName());
                 Vector2 centerVec2 = new Vector2(center.getChunkX(), center.getChunkZ());
                 int radiusSquared = radius * radius;

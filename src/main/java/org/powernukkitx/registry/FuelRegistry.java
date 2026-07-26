@@ -352,7 +352,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         try {
             register(key, value);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

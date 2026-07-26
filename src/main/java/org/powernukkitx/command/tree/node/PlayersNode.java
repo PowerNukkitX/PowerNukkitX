@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * @since PowerNukkitX 1.19.50
  */
 public class PlayersNode extends TargetNode<Player> {
-    //todo 支持uuid 或者 xuid
+    //todo support uuid or xuid
     @Override
     public void fill(String arg) {
         if (arg.isBlank()) {

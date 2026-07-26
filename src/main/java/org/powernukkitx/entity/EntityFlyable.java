@@ -1,13 +1,13 @@
 package org.powernukkitx.entity;
 
 /**
- * 实现了此接口的实体可飞行
+ * An entity that implements this interface can fly.
  */
 
 
 public interface EntityFlyable {
     /**
-     * @return 是否具有摔落伤害
+     * @return whether it takes falling damage
      */
     default boolean hasFallingDamage() {
         return false;

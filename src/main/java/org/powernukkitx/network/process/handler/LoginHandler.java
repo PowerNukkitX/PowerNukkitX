@@ -74,7 +74,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
         try {
             final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
-            if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
+            final boolean unsignedAllowed = server.getProxyAuthProvider() != null
+                    && server.getProxyAuthProvider().isUnsignedLoginAllowed();
+            if (xboxAuthRequired && !result.signed() && !unsignedAllowed) {
                 holder.disconnect(notAuthenticated);
                 return;
             }

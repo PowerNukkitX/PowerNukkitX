@@ -46,12 +46,12 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
      * Shooting actuator
      *
      * @param item              the item
-     * @param memory            用于读取攻击目标的记忆<br>Used to read the memory of the attack target
-     * @param speed             移动向攻击目标的速度<br>The speed of movement towards the attacking target
-     * @param maxShootDistance  允许射击的最大距离，只有在这个距离内才能射击<br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
-     * @param clearDataWhenLose 失去目标时清空记忆<br>Clear your memory when you lose your target
-     * @param coolDownTick      攻击冷却时间(单位tick)<br>Attack cooldown (tick)
-     * @param pullBowTick       每次攻击动画用时(单位tick)<br>Attack Animation time(tick)
+     * @param memory            Used to read the memory of the attack target
+     * @param speed             The speed of movement towards the attacking target
+     * @param maxShootDistance  The maximum distance at which it is permissible to shoot, and only at this distance can be fired
+     * @param clearDataWhenLose Clear your memory when you lose your target
+     * @param coolDownTick      Attack cooldown (tick)
+     * @param pullBowTick       Attack Animation time(tick)
      */
     public CrossBowShootExecutor(Supplier<Item> item, MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullBowTick) {
         this.item = item;

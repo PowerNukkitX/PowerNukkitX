@@ -3,6 +3,8 @@ package org.powernukkitx.entity.ai.sensor;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.MemoryType;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.utils.SortedList;
 
 import java.util.ArrayList;
@@ -12,8 +14,6 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * 用来搜索最近的目标实体，构造函数中接受一个目标函数{@code Function<T, Boolean> target}的Set，用于实体检测，最终结果保存到{@code List<MemoryType<Entity>> memories}中.
- * <p>
  * The constructor accepts a Set of Integer to target function {@code Function<T, Boolean> target} to search for the nearest target entity, and the final result is saved to {@code List<MemoryType<Entity>> memories}.
  */
 
@@ -31,8 +31,6 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
     protected List<MemoryType<Entity>> memories;
 
     /**
-     * 不指定目标函数，默认将全部结果存入第一个记忆
-     * <p>
      * Without specifying the target function, all results will be stored in the first memory by default
      *
      * @see #NearestTargetEntitySensor(double, double, int, List, Function[])
@@ -42,11 +40,11 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
     }
 
     /**
-     * @param minRange          最小搜索范围<br>Minimum Search Range
-     * @param maxRange          最大搜索范围<br>Maximum Search Range
-     * @param period            传感器执行周期，单位tick<br>Senor execute period
-     * @param allTargetFunction 接收一个Set，将指定目标函数筛选的结果映射到指定索引的记忆上，目标函数接受一个参数T，返回一个Boolean<br>Receives a Set that set the results filtered by the specified target function to the memory of the specified index, the target function accepts a parameter T and returns a Boolean
-     * @param memories          保存结果的记忆类型<br>Memory class type for saving results
+     * @param minRange          Minimum Search Range
+     * @param maxRange          Maximum Search Range
+     * @param period            Senor execute period
+     * @param allTargetFunction Receives a Set that set the results filtered by the specified target function to the memory of the specified index, the target function accepts a parameter T and returns a Boolean
+     * @param memories          Memory class type for saving results
      */
     @SafeVarargs
     public NearestTargetEntitySensor(double minRange, double maxRange, int period, List<MemoryType<Entity>> memories, Function<T, Boolean>... allTargetFunction) {
@@ -67,17 +65,27 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
     public void sense(EntityIntelligent entity) {
         double minRangeSquared = this.minRange * this.minRange;
         double maxRangeSquared = this.maxRange * this.maxRange;
+        Level level = entity.getLevel();
+        int minChunkX = NukkitMath.floorDouble((entity.x - this.maxRange - 2) * 0.0625);
+        int maxChunkX = NukkitMath.ceilDouble((entity.x + this.maxRange + 2) * 0.0625);
+        int minChunkZ = NukkitMath.floorDouble((entity.z - this.maxRange - 2) * 0.0625);
+        int maxChunkZ = NukkitMath.ceilDouble((entity.z + this.maxRange + 2) * 0.0625);
 
         if (allTargetFunction == null && memories.size() == 1) {
             var currentMemory = memories.get(0);
             var current = entity.getMemoryStorage().get(currentMemory);
             if (current != null && current.isAlive()) return;
 
-            //寻找范围内最近的实体
+            //Find the nearest entity within range
             var entities = Collections.synchronizedList(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
-            for (Entity p : entity.getLevel().getEntities()) {
-                if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
-                    entities.add(p);
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
+                    for (Entity p : level.getChunkEntities(chunkX, chunkZ, false).values()) {
+                        double distanceSquared = entity.distanceSquared(p);
+                        if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared && !p.equals(entity)) {
+                            entities.add(p);
+                        }
+                    }
                 }
             }
 
@@ -93,14 +101,21 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
                 sortEntities.add(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
             }
 
-            for (Entity p : entity.getLevel().getEntities()) {
-                if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
-                    int i = 0;
-                    for (var targetFunction : allTargetFunction) {
-                        if (targetFunction.apply((T) p)) {
-                            sortEntities.get(i).add(p);
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
+                    for (Entity p : level.getChunkEntities(chunkX, chunkZ, false).values()) {
+                        double distanceSquared = entity.distanceSquared(p);
+                        if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared && !p.equals(entity)) {
+                            int i = 0;
+                            for (var targetFunction : allTargetFunction) {
+                                @SuppressWarnings("unchecked")
+                                T castedP = (T) p;
+                                if (targetFunction.apply(castedP)) {
+                                    sortEntities.get(i).add(p);
+                                }
+                                ++i;
+                            }
                         }
-                        ++i;
                     }
                 }
             }

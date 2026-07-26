@@ -194,8 +194,7 @@ public record PotionEffectDefinition(Function<PotionApplicationMode, List<Effect
             new EffectSlowFalling().setDuration(duration)
     ));
 
-    // TODO: Implement effects first, then add these back in.
-    /*public static final PotionEffectDefinition WIND_CHARGING = of(3600, duration -> List.of(
+    public static final PotionEffectDefinition WIND_CHARGED = of(3600, duration -> List.of(
             new EffectWindCharged().setDuration(duration)
     ));
 
@@ -207,9 +206,9 @@ public record PotionEffectDefinition(Function<PotionApplicationMode, List<Effect
             new EffectOozing().setDuration(duration)
     ));
 
-    public static final PotionEffectDefinition INFESTATION = of(3600, duration -> List.of(
+    public static final PotionEffectDefinition INFESTED = of(3600, duration -> List.of(
             new EffectInfested().setDuration(duration)
-    ));*/
+    ));
 
     public List<Effect> getEffects(PotionApplicationMode mode) {
         return supplier.apply(mode);

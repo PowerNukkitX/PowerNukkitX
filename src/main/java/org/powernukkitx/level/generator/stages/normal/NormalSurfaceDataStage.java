@@ -49,8 +49,8 @@ public class NormalSurfaceDataStage extends GenerateStage {
 
                             BiomeSurfaceMaterialAdjustmentData biomeSurfaceMaterialAdjustmentData = chunkGenData.getSurfaceMaterialAdjustment();
                             if(biomeSurfaceMaterialAdjustmentData != null) {
+                                float random = noise.getValue(((unsafeChunk.getX() << 4) + x),  0, ((unsafeChunk.getZ() << 4) + z));
                                 for(var element : biomeSurfaceMaterialAdjustmentData.getBiomeElements()) {
-                                    float random = noise.getValue(((unsafeChunk.getX() << 4) + x),  0, ((unsafeChunk.getZ() << 4) + z));
                                     if(random < element.getNoiseUpperBound() && random > element.getNoiseLowerBound()) {
                                         int _topBlock = element.getAdjustedMaterials().getTopBlock().getRuntimeId();
                                         int _midBlock = element.getAdjustedMaterials().getMidBlock().getRuntimeId();
@@ -63,8 +63,10 @@ public class NormalSurfaceDataStage extends GenerateStage {
                             }
                             if (topBlockState != BlockWater.PROPERTIES.getBlockState()) {
                                 unsafeChunk.setBlockState(x, y, z, Registries.BLOCKSTATE.get(topBlock), 0);
-                                for(int i = 1; i < NukkitMath.remapFromNormalized(noise.getValue(x, 0, z), 1, 4); i++){
-                                    unsafeChunk.setBlockState(x, y-i, z, Registries.BLOCKSTATE.get(midBlock), 0);
+                                BlockState midState = Registries.BLOCKSTATE.get(midBlock);
+                                float midDepth = NukkitMath.remapFromNormalized(noise.getValue(x, 0, z), 1, 4);
+                                for(int i = 1; i < midDepth; i++){
+                                    unsafeChunk.setBlockState(x, y-i, z, midState, 0);
                                 }
                             } else {
                                 int depth = 0;
@@ -75,8 +77,9 @@ public class NormalSurfaceDataStage extends GenerateStage {
                                     BlockState state = Registries.BLOCKSTATE.get(seaFloorBlock);
                                     unsafeChunk.setBlockState(x, (y - depth), z, state, 0);
                                 } else {
+                                    BlockState midState = Registries.BLOCKSTATE.get(midBlock);
                                     for (int i = 0; i < 3; i++) {
-                                        unsafeChunk.setBlockState(x, (y - depth) - i, z, Registries.BLOCKSTATE.get(midBlock), 0);
+                                        unsafeChunk.setBlockState(x, (y - depth) - i, z, midState, 0);
                                     }
                                 }
                             }

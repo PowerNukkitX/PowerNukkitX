@@ -30,6 +30,7 @@ import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.PlayerActionType;
 import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
 import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 
@@ -95,6 +96,9 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         if (packet.getInputData().contains(PlayerAuthInputData.START_JUMPING)) {
             PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
             player.getServer().getPluginManager().callEvent(playerJumpEvent);
+        }
+        if (packet.getInputData().contains(PlayerAuthInputData.MISSED_SWING)) {
+            player.getLevel().addLevelSoundEvent(player, SoundEvent.ATTACK_NO_DAMAGE, -1, "minecraft:player", false, false);
         }
         if (packet.getInputData().contains(PlayerAuthInputData.START_SWIMMING)) {
             var playerSwimmingEvent = new PlayerToggleSwimEvent(player, true);
@@ -257,8 +261,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
     private static void syncVehiclePositionFromRiderInput(Player player, Entity vehicle, PlayerAuthInputPacket pk) {
         if (vehicle == null || !vehicle.isAlive()) return;
-        if (pk.getClientPredictedVehicle() == 0) return;
-        if (pk.getClientPredictedVehicle() != vehicle.getId()) return;
+
+        Long clientPredictedVehicle = pk.getClientPredictedVehicle();
+        if (clientPredictedVehicle == null || clientPredictedVehicle == 0L) return;
+        if (clientPredictedVehicle.longValue() != vehicle.getId()) return;
 
         Vector3f pos = Vector3f.fromNetwork(pk.getPosition());
 
@@ -267,13 +273,18 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             return;
         }
 
-        Vector2f vehicleRotation = Vector2f.fromNetwork(pk.getVehicleRotation());
+        Vector2f vehicleRotation = null;
 
-        if (!Float.isFinite(vehicleRotation.x) || !Float.isFinite(vehicleRotation.y)) {
-            log.debug("Player {} sent invalid vehicle rotation values (NaN or Infinite)", player.getName());
-            return;
+        if (pk.getVehicleRotation() != null) {
+            vehicleRotation = Vector2f.fromNetwork(pk.getVehicleRotation());
+
+            if (!Float.isFinite(vehicleRotation.x) || !Float.isFinite(vehicleRotation.y)) {
+                log.debug("Player {} sent invalid vehicle rotation values (NaN or Infinite)", player.getName());
+                return;
+            }
         }
-        Vector3 packetPosition = Vector3f.fromNetwork(pk.getPosition()).asVector3();
+
+        Vector3 packetPosition = pos.asVector3();
         Vector3 vehiclePosition = packetPosition;
         EntityBoat boat = vehicle instanceof EntityBoat entityBoat ? entityBoat : null;
 
@@ -282,12 +293,12 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             vehiclePosition = new Vector3(packetPosition.x, boatY, packetPosition.z);
         }
 
-        double vehiclePitch = vehicle.getPitch();
-        double vehicleYaw = vehicle.getYaw();
+        double vehiclePitch;
+        double vehicleYaw;
 
-        if (pk.getVehicleRotation() != null) {
-            vehiclePitch = pk.getVehicleRotation().getX() % 360;
-            vehicleYaw = pk.getVehicleRotation().getY() % 360;
+        if (vehicleRotation != null) {
+            vehiclePitch = vehicleRotation.getX() % 360;
+            vehicleYaw = vehicleRotation.getY() % 360;
         } else {
             vehiclePitch = pk.getPlayerRotation().getX() % 360;
             vehicleYaw = pk.getPlayerRotation().getY() % 360;
@@ -296,9 +307,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         if (vehicleYaw < 0) vehicleYaw += 360;
         if (vehiclePitch < 0) vehiclePitch += 360;
 
-        double distanceSquared = vehiclePosition.distanceSquared(vehicle);
-
-        if (distanceSquared > 0.0001d) {
+        if (vehiclePosition.distanceSquared(vehicle) > 0.0001d) {
             vehicle.setPosition(vehiclePosition);
         }
 

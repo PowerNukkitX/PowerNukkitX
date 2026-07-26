@@ -7,115 +7,113 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * 此接口抽象了一个寻路器
- * <p>
  * This interface abstracts a pathfinder
  */
 
 
 public interface IRouteFinder {
     /**
-     * @return boolean 是否正在寻路
+     * @return boolean whether it is currently searching
      */
     boolean isSearching();
 
     /**
-     * @return boolean 是否完成寻路（找到有效路径）
+     * @return boolean whether pathfinding is finished (a valid path was found)
      */
     boolean isFinished();
 
     /**
-     * @return boolean 寻路是否被中断了
+     * @return boolean whether pathfinding was interrupted
      */
     boolean isInterrupt();
 
     /**
-     * 在调用此方法前，你应该首先尝试寻路，否则此方法始将终返回{@code true}
+     * Before calling this method, you should first attempt to search, otherwise this method will always return {@code true}
      *
-     * @return 终点是否可到达
+     * @return whether the target is reachable
      */
     boolean isReachable();
 
     /**
-     * 尝试开始寻路
+     * Attempt to start pathfinding
      *
-     * @return 是否成功找到路径
+     * @return whether a path was successfully found
      */
     boolean search();
 
     /**
-     * @return 寻路起点
+     * @return the pathfinding start point
      */
     Vector3 getStart();
 
     /**
-     * 设置寻路起点，将会导致寻路中断
+     * Set the pathfinding start point, which will interrupt the current search
      *
-     * @param vector3 寻路起点
+     * @param vector3 the pathfinding start point
      */
     void setStart(Vector3 vector3);
 
     /**
-     * @return 寻路终点
+     * @return the pathfinding target point
      */
     Vector3 getTarget();
 
     /**
-     * 设置寻路终点，将会导致寻路中断
+     * Set the pathfinding target point, which will interrupt the current search
      *
-     * @param vector3 寻路终点
+     * @param vector3 the pathfinding target point
      */
     void setTarget(Vector3 vector3);
 
     /**
-     * @return 可到达的终点
+     * @return the reachable target point
      */
     Vector3 getReachableTarget();
 
     /**
-     * 获取寻路结果
+     * Get the pathfinding result
      *
-     * @return 一个包含 {@link Node} 的列表 {@link List}，应已排序好，第一项为寻路起点，最后一项为寻路终点，之间的为找到的路径点
+     * @return a {@link List} containing {@link Node}s, which should already be sorted, with the first item being the start point, the last item being the target point, and the ones in between being the path points found
      */
     List<Node> getRoute();
 
     /**
-     * @return 是否有下一个节点 {@link Node}
+     * @return whether there is a next {@link Node}
      */
     boolean hasNext();
 
     /**
-     * 获取下一个节点{@link Node}（如果有的话）
+     * Get the next {@link Node} (if there is one)
      *
-     * @return 下一个节点
+     * @return the next node
      */
     @Nullable
     Node next();
 
     /**
-     * @return 当前索引所在位置是否有节点 {@link Node}
+     * @return whether there is a {@link Node} at the current index position
      */
     boolean hasCurrentNode();
 
     /**
-     * @return 当前索引位置对应的节点 {@link Node}
+     * @return the {@link Node} at the current index position
      */
     Node getCurrentNode();
 
     /**
-     * @return 当前索引
+     * @return the current index
      */
     int getNodeIndex();
 
     /**
-     * 设置当前索引
+     * Set the current index
      *
-     * @param index 索引值
+     * @param index the index value
      */
     void setNodeIndex(int index);
 
     /**
-     * @return 指定索引位置的节点 {@link Node}
+     * @return the {@link Node} at the specified index position
      */
     Node getNode(int index);
 }

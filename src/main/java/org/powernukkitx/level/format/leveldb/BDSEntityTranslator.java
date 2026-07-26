@@ -38,7 +38,7 @@ public final class BDSEntityTranslator {
                 target.add(new DoubleTag(v.data));
             }
             from.putList("Motion", target);
-            linkedCompoundTag.putList("Pos", target);
+            linkedCompoundTag.putList("Motion", target);
         } else {
             ListTag<DoubleTag> target = new ListTag<>();
             target.add(new DoubleTag(0));

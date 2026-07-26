@@ -5,7 +5,6 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntitySwimmable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -22,7 +21,6 @@ import org.powernukkitx.entity.ai.executor.TemptExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.SwimmingPosEvaluator;
-import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.components.*;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
@@ -316,7 +314,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
         }
 
         // Init home memory
-        this.initHome();
+        this.prepareHomePosition();
     }
 
     @Override
@@ -487,9 +485,8 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     // TODO: Create dash attack behavior (retaliate)
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -505,8 +502,8 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new BreedingExecutor(16, 200, 0.25f),
                                 all(
@@ -563,33 +560,15 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
                                 },
                                 1
                         )
-                ),
-                Set.of(
-                        new ISensor() {
-                            @Override
-                            public void sense(EntityIntelligent entity) {
-                                EntityNautilus n = (EntityNautilus) entity;
-
-                                if (!n.isTamed()) return;
-                                Block home = n.getHomePosition();
-                                if (home == null) return;
-                                entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
-                            }
-
-                            @Override
-                            public int getPeriod() {
-                                return 60;
-                            }
-                        }
-                ),
-                Set.of(
+                )
+                .sensors()
+                .controllers(
                         new SpaceMoveController(),
                         new LookController(true, true),
                         new DiveController()
-                ),
-                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
+                .build();
     }
 
     @Override

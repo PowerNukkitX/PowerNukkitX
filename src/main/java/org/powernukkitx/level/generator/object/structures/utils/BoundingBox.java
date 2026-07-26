@@ -5,6 +5,7 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import com.google.common.base.MoreObjects;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class BoundingBox implements AxisAlignedBB {
 
     public int x0;

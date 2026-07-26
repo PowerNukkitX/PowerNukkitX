@@ -49,7 +49,7 @@ public class CreativeItemTest {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         });
     }

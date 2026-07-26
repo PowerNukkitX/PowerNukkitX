@@ -19,7 +19,7 @@ package org.powernukkitx.command;
  * To check permissions, use {@link org.powernukkitx.command.Command#testPermissionSilent}.
  *
  * @author MagicDroidX (code) @ Nukkit Project
- * @author 粉鞋大妈 (javadoc) @ Nukkit Project
+ * @author Fenxie Dama (javadoc) @ Nukkit Project
  * @see org.powernukkitx.plugin.PluginBase
  * @see org.powernukkitx.command.CommandExecutor#onCommand
  * @since Nukkit 1.0 | Nukkit API 1.0.0

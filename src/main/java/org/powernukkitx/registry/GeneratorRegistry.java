@@ -24,7 +24,7 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
             register("nether", Nether.class);
             register("the_end", TheEnd.class);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

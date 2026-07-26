@@ -208,7 +208,7 @@ public class Education implements BlockID, ItemID {
         try {
             registerBlocks();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

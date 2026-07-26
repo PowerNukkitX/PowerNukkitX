@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class TestUtils {
     public static void serverTick(Server server) {
         try {
@@ -15,7 +16,7 @@ public class TestUtils {
             tick.setAccessible(true);
             tick.invoke(server);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

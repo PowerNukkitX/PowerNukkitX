@@ -49,6 +49,10 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
         register0(EffectType.TRIAL_OMEN, EffectTrialOmen.class);
         //register0(EffectType.VILLAGE_HERO, VillageHeroEffect.class);
         register0(EffectType.DARKNESS, EffectDarkness.class);
+        register0(EffectType.WIND_CHARGED, EffectWindCharged.class);
+        register0(EffectType.WEAVING, EffectWeaving.class);
+        register0(EffectType.OOZING, EffectOozing.class);
+        register0(EffectType.INFESTED, EffectInfested.class);
     }
 
     @Override
@@ -58,7 +62,7 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
             if (fastConstructor == null) return null;
             return (Effect) fastConstructor.invoke();
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

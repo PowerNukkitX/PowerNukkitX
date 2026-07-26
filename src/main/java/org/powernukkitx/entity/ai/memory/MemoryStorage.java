@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 记忆存储器标准实现
+ * Standard implementation of the memory storage
  */
 
 
 public class MemoryStorage implements IMemoryStorage {
 
-    //表示一个空值(null)，这样做是因为在ConcurrentHashMap中不允许放入null值
+    //represents an empty value (null) - this is needed because ConcurrentHashMap does not allow null values
     public static final Object EMPTY_VALUE = new Object();
 
     protected Map<MemoryType<?>, Object> memoryMap = new ConcurrentHashMap<>();
@@ -43,7 +43,9 @@ public class MemoryStorage implements IMemoryStorage {
             put(type, data);
         }
         D value;
-        return (value = (D) memoryMap.get(type)) != EMPTY_VALUE ? value : null;
+        @SuppressWarnings("unchecked")
+        var result = (value = (D) memoryMap.get(type)) != EMPTY_VALUE ? value : null;
+        return result;
     }
 
     @Override

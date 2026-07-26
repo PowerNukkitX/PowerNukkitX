@@ -89,6 +89,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
  */
 @Slf4j
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public final class BlockRegistry implements BlockID, IRegistry<String, Block, Class<? extends Block>> {
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Set<String> KEYSET = new HashSet<>();
@@ -1361,7 +1362,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

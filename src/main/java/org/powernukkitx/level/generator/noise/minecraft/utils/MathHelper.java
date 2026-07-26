@@ -3,6 +3,7 @@ package org.powernukkitx.level.generator.noise.minecraft.utils;
 /**
  * @author SeedFinding Project
  */
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class MathHelper {
 
     public static final int[][] GRADIENTS = new int[][] {

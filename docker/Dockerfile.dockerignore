@@ -1,0 +1,13 @@
+#README.md
+data
+run
+*.iml
+logs
+.idea
+#!.idea/codeStyles/codeStyleConfig.xml
+#!.idea/codeStyles/Project.xml
+#.github
+#Dockerfile
+#docker-compose.yml
+/build
+/worlds

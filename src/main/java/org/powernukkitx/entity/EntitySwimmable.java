@@ -1,13 +1,13 @@
 package org.powernukkitx.entity;
 
 /**
- * 实现了此接口的生物可游泳
+ * A mob that implements this interface can swim.
  */
 
 
 public interface EntitySwimmable {
     /**
-     * @return 此实体是否会受到溺水伤害
+     * @return whether this entity takes drowning damage
      */
     default boolean canDrown() {
         return false;

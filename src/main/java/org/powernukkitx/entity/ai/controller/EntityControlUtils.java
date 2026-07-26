@@ -5,7 +5,7 @@ import org.powernukkitx.entity.ai.memory.IMemoryStorage;
 import org.powernukkitx.math.Vector3;
 
 /**
- * 一些通用的实体运动控制方法
+ * Some common entity movement control methods
  * <p>
  * Some general entity motion control methods
  */
@@ -64,7 +64,7 @@ public interface EntityControlUtils {
         getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, enablePitch);
     }
 
-//    暂时不使用
+//    not used for now
 //
 //
 //    public boolean isEnableYaw() {

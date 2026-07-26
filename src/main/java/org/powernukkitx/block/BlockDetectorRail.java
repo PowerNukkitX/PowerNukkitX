@@ -85,9 +85,9 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
             RedstoneComponent.updateAroundRedstone(this.getSide(BlockFace.DOWN));
         }
         if (powered) {
-            //每20gt检查一遍
+            //check once every 20gt
             level.scheduleUpdate(this, 20);
-            //更新比较器输出
+            //update comparator output
             level.updateComparatorOutputLevel(this);
         }
     }

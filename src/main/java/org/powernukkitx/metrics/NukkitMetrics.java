@@ -1,24 +1,31 @@
 package org.powernukkitx.metrics;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.PowerNukkitX;
 import org.powernukkitx.Server;
 import org.powernukkitx.network.process.auth.ClientChainData;
-import org.powernukkitx.utils.Config;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.powernukkitx.utils.SHAUtil;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.ComputerSystem;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,59 +35,30 @@ import static java.util.stream.Collectors.groupingBy;
 
 @Slf4j
 public class NukkitMetrics {
-    private static final AtomicReference<Map<Server, NukkitMetrics>> metricsStarted = new AtomicReference<>(Collections.emptyMap());
+    private static NukkitMetrics metricsInstance;
 
-    private final Server server;
-
-    private boolean enabled;
     private String serverUUID;
-    private boolean logFailedRequests;
+    private boolean logFailedRequests = true;
 
     private Metrics metrics;
 
-    private NukkitMetrics(Server server, boolean start) {
-        this.server = server;
-
-        try {
-            this.loadConfig();
-        } catch (Exception e) {
-            log.warn("Failed to load the bStats configuration file", e);
-        }
-
-        if (start && enabled) {
-            startNow(server);
-        }
+    private NukkitMetrics() {
+        this.serverUUID = buildServerUUID();
     }
 
     /**
      * Setup the nukkit metrics and starts it if it hadn't started yet.
-     *
-     * @param server The Nukkit server
      */
-    public static boolean startNow(Server server) {
-        NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
+    public static boolean startNow() {
+        NukkitMetrics nukkitMetrics = getOrCreateMetrics();
         return nukkitMetrics.metrics != null;
     }
 
-    private static NukkitMetrics getOrCreateMetrics(@NotNull final Server server) {
-        Map<Server, NukkitMetrics> current = metricsStarted.get();
-        NukkitMetrics metrics = current.get(server);
-        if (metrics != null) {
-            return metrics;
+    private static synchronized NukkitMetrics getOrCreateMetrics() {
+        if (metricsInstance == null) {
+            metricsInstance = createMetrics(Server.getInstance());
         }
-
-        current = metricsStarted.updateAndGet(before -> {
-            Map<Server, NukkitMetrics> mutable = before;
-            if (before.isEmpty()) {
-                mutable = new WeakHashMap<>(1);
-            }
-            mutable.computeIfAbsent(server, NukkitMetrics::createMetrics);
-            return mutable;
-        });
-
-        metrics = current.get(server);
-        assert metrics != null;
-        return metrics;
+        return metricsInstance;
     }
 
     private static String pnxCliVersion = null;
@@ -103,7 +81,7 @@ public class NukkitMetrics {
                 return pnxCliVersion = "Invalid PNX-CLI path";
             }
 
-            var process = new ProcessBuilder(cliPath, "-V").start();
+            var process = new ProcessBuilder(cliPath, "-V").start(); // nosemgrep - cliPath is an admin-set, validated executable, run without a shell
             process.waitFor(10, TimeUnit.MICROSECONDS);
             var content = new String(process.getInputStream().readAllBytes()).replace("\n", "");
             if (content.isBlank() || !content.contains(".")) {
@@ -117,10 +95,7 @@ public class NukkitMetrics {
 
     @NotNull
     private static NukkitMetrics createMetrics(@NotNull final Server server) {
-        NukkitMetrics nukkitMetrics = new NukkitMetrics(server, false);
-        if (!nukkitMetrics.enabled) {
-            return nukkitMetrics;
-        }
+        NukkitMetrics nukkitMetrics = new NukkitMetrics();
 
         final Metrics metrics = new Metrics("PowerNukkitX", nukkitMetrics.serverUUID, nukkitMetrics.logFailedRequests);
         nukkitMetrics.metrics = metrics;
@@ -128,6 +103,7 @@ public class NukkitMetrics {
         metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> server.getOnlinePlayers().size()));
         metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", server::getVersion));
         metrics.addCustomChart(new Metrics.SimplePie("pnx_version", server::getBStatsNukkitVersion));
+        metrics.addCustomChart(new Metrics.SimplePie("git_commit", server::getGitCommit));
         metrics.addCustomChart(new Metrics.SimplePie("xbox_auth", () -> server.getSettings().baseSettings().xboxAuth() ? "Required" : "Not required"));
 
         metrics.addCustomChart(new Metrics.AdvancedPie("player_platform_pie", () -> server.getOnlinePlayers().values().stream()
@@ -180,46 +156,6 @@ public class NukkitMetrics {
         }
     }
 
-    /**
-     * Loads the bStats configuration.
-     */
-    private void loadConfig() throws IOException {
-        File bStatsFolder = new File(server.getPluginPath(), "bStats");
-
-        if (!bStatsFolder.exists() && !bStatsFolder.mkdirs()) {
-            log.warn("Failed to create bStats metrics directory");
-            return;
-        }
-
-        File configFile = new File(bStatsFolder, "config.yml");
-        if (!configFile.exists()) {
-            writeFile(configFile,
-                    "# bStats collects some data for plugin authors like how many servers are using their plugins.",
-                    "# To honor their work, you should not disable it.",
-                    "# This has nearly no effect on the server performance!",
-                    "# Check out https://bStats.org/ to learn more :)",
-                    "enabled: true",
-                    "serverUuid: \"" + UUID.randomUUID() + "\"",
-                    "logFailedRequests: false");
-        }
-
-        Config config = new Config(configFile, Config.YAML);
-
-        // Load configuration
-        this.enabled = config.getBoolean("enabled", true);
-        this.serverUUID = config.getString("serverUuid");
-        this.logFailedRequests = config.getBoolean("logFailedRequests", false);
-    }
-
-    private void writeFile(File file, String... lines) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            for (String line : lines) {
-                writer.write(line);
-                writer.newLine();
-            }
-        }
-    }
-
     private String mapDeviceOSToString(int os) {
         return switch (os) {
             case 1 -> "Android";
@@ -239,8 +175,54 @@ public class NukkitMetrics {
         };
     }
 
-    public static void closeNow(Server server) {
-        NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
-        if (nukkitMetrics.metrics != null) nukkitMetrics.metrics.close();
+    private String buildServerUUID() {
+        List<String> identifiers = new ArrayList<>();
+        identifiers.add(PowerNukkitX.DATA_PATH);
+        try {
+            HardwareAbstractionLayer hardware = new SystemInfo().getHardware();
+            ComputerSystem computerSystem = hardware.getComputerSystem();
+            CentralProcessor processor = hardware.getProcessor();
+
+            addIdentifier(identifiers, computerSystem.getHardwareUUID());
+            addIdentifier(identifiers, computerSystem.getSerialNumber());
+            addIdentifier(identifiers, computerSystem.getBaseboard().getSerialNumber());
+            addIdentifier(identifiers, computerSystem.getManufacturer());
+            addIdentifier(identifiers, computerSystem.getModel());
+            addIdentifier(identifiers, processor.getProcessorIdentifier().getIdentifier());
+
+            hardware.getNetworkIFs().stream()
+                .map(NetworkIF::getMacaddr)
+                .filter(NukkitMetrics::isUsableIdentifier)
+                .map(value -> value.toLowerCase(Locale.ROOT))
+                .sorted()
+                .forEach(identifiers::add);
+        } catch (RuntimeException | LinkageError e) {
+            log.warn("Could not read hardware identifiers for the bStats server UUID", e);
+        }
+        return UUID.nameUUIDFromBytes(SHAUtil.SHA512(String.join("", identifiers)).getBytes(StandardCharsets.UTF_8)).toString();
+    }
+
+    private static void addIdentifier(List<String> identifiers, String value) {
+        if (isUsableIdentifier(value)) {
+            identifiers.add(value.trim().toLowerCase(Locale.ROOT));
+        }
+    }
+
+    private static boolean isUsableIdentifier(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+        return switch (value.trim().toLowerCase(Locale.ROOT)) {
+            case "unknown", "none", "null", "not specified", "not applicable",
+                 "to be filled by o.e.m.", "default string", "system serial number", "03000200-0400-0500-0006-000700080009",
+                 "ffffffff-ffff-ffff-ffff-ffffffffffff", "00000000-0000-0000-0000-000000000000" -> false;
+            default -> true;
+        };
+    }
+    public static synchronized void closeNow() {
+        if (metricsInstance != null && metricsInstance.metrics != null) {
+            metricsInstance.metrics.close();
+        }
+        metricsInstance = null;
     }
 }

@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.inventory.ContainerInventory;
 import org.powernukkitx.item.Item;
@@ -9,6 +10,8 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
+
+import java.util.HashSet;
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected ContainerInventory inventory;
 
@@ -35,7 +38,9 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void close() {
         if (!closed) {
-            this.getInventory().getViewers().forEach(p -> p.removeWindow(this.getInventory()));
+            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+                player.removeWindow(this.getInventory());
+            }
             super.close();
         }
     }
@@ -100,7 +105,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     }
 
     /**
-     * 继承于此类的容器方块实体必须实现此方法
+     * Container block entities extending this class must implement this method
      *
      * @return ContainerInventory
      */

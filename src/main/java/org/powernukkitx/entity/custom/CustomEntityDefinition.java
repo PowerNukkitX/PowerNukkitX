@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  * Override methods can be used for advanced or specialized logic not covered by the builder.
  */
 @Slf4j
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg, boolean isSummonable) {
 
     public CustomEntityDefinition {

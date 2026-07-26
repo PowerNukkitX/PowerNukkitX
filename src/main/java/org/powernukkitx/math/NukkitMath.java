@@ -78,6 +78,16 @@ public class NukkitMath {
         return ((double) Math.round(d * pow)) / pow;
     }
 
+    public static String formatNanos(long nanos) {
+        if (nanos >= 1_000_000L) {
+            return round(nanos / 1_000_000d, 3) + " ms";
+        }
+        if (nanos >= 1_000L) {
+            return round(nanos / 1_000d, 2) + " us";
+        }
+        return nanos + " ns";
+    }
+
     public static double clamp(double value, double min, double max) {
         return value < min ? min : (Math.min(value, max));
     }

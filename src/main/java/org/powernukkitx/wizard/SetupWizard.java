@@ -14,6 +14,7 @@ import org.jline.reader.ParsedLine;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -29,13 +30,12 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public class SetupWizard implements AutoCloseable {
-    /** Regex pattern for validating language codes (3 lowercase letters) */
-    private static final String LANGUAGE_CODE_PATTERN = "^[a-z]{3}$";
-
     private final Terminal terminal;
     private final LineReader reader;
     private final Map<String, String> availableLanguages;
     private final WizardConfig wizardConfig = new WizardConfig();
+    private final boolean interactive;
+    private final boolean unicodeOutput;
     private boolean skipWizard = false;
     protected BaseLang baseLang;
 
@@ -43,10 +43,12 @@ public class SetupWizard implements AutoCloseable {
     private boolean portProvidedByArg = false;
 
     public SetupWizard() throws IOException {
+        this.interactive = System.console() != null && !SetupWizardSupport.isAutomatedEnvironment();
+        this.unicodeOutput = supportsUnicodeOutput();
         this.terminal = TerminalBuilder.builder()
                 .system(true)
                 .jna(false)
-                .dumb(true)
+                .dumb(isDumbTerminal())
                 .build();
 
         this.availableLanguages = loadAvailableLanguages();
@@ -113,7 +115,6 @@ public class SetupWizard implements AutoCloseable {
                 refuse(baseLang.tr("pnx.setupWizard.license.no_accept"));
                 refuse(baseLang.tr("pnx.setupWizard.license.terminating"));
                 terminal.writer().flush();
-                System.exit(1);
                 return wizardConfig;
             }
             wizardConfig.setLicenseAccepted(true);
@@ -162,18 +163,19 @@ public class SetupWizard implements AutoCloseable {
      */
     private String selectLanguage(String predefinedLanguage) {
         terminal.writer().println();
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println(centerText("PowerNukkitX Setup Wizard - Language Selection", 59));
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println();
         terminal.writer().println("Welcome! Please choose a language first!");
         terminal.writer().println();
 
         if (predefinedLanguage != null && !predefinedLanguage.isEmpty()) {
-            if (validateLanguage(predefinedLanguage)) {
-                accept("Using predefined language: " + predefinedLanguage);
+            String normalizedLanguage = SetupWizardSupport.normalizeLanguageCode(predefinedLanguage);
+            if (validateLanguage(normalizedLanguage)) {
+                accept("Using predefined language: " + normalizedLanguage);
                 terminal.writer().flush();
-                return predefinedLanguage;
+                return normalizedLanguage;
             } else {
                 refuse("Invalid predefined language: " + predefinedLanguage);
                 terminal.writer().println("  Please choose a valid language from the list.");
@@ -183,6 +185,12 @@ public class SetupWizard implements AutoCloseable {
 
         List<Map.Entry<String, String>> languageList = new ArrayList<>(availableLanguages.entrySet());
         String defaultLanguage = languageList.isEmpty() ? "eng" : languageList.get(0).getKey();
+        if (!interactive) {
+            accept("Automated environment detected. Language selected: " + defaultLanguage);
+            terminal.writer().println();
+            terminal.writer().flush();
+            return defaultLanguage;
+        }
 
         notice("Enter a language code from the list below (press Enter for default).");
         for (Map.Entry<String, String> entry : languageList) {
@@ -192,7 +200,7 @@ public class SetupWizard implements AutoCloseable {
 
         try {
             while (true) {
-                String input = reader.readLine("» Language code [" + defaultLanguage + "]: ").trim();
+            String input = SetupWizardSupport.normalizeLanguageCode(reader.readLine(promptText("Language code [" + defaultLanguage + "]: ")));
                 if (input.isEmpty()) {
                     accept("Language selected: " + defaultLanguage + " (" + availableLanguages.get(defaultLanguage) + ")");
                     terminal.writer().println();
@@ -228,10 +236,16 @@ public class SetupWizard implements AutoCloseable {
             terminal.writer().flush();
             return true;
         }
+        if (!interactive) {
+            terminal.writer().println();
+            warn("Automated environment detected. Continuing setup with default configuration.");
+            terminal.writer().flush();
+            return true;
+        }
         terminal.writer().println();
-        terminal.writer().println("═══════════════════════════════════════════════════════════");
+        terminal.writer().println(borderLine());
         terminal.writer().println("          GNU Lesser General Public License v3.0");
-        terminal.writer().println("═══════════════════════════════════════════════════════════");
+        terminal.writer().println(borderLine());
         terminal.writer().println();
         terminal.writer().println("PowerNukkitX is licensed under the GNU LGPL v3.0");
         terminal.writer().println();
@@ -264,12 +278,19 @@ public class SetupWizard implements AutoCloseable {
      */
     private void askSkipWizard() {
         terminal.writer().println();
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println(centerText(baseLang.tr("pnx.setupWizard.category.additionnal", "Additional Setup Configuration"), 59));
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println(baseLang.tr("pnx.setupWizard.skip_prompt"));
         terminal.writer().println();
         terminal.writer().flush();
+        if (!interactive) {
+            skipWizard = true;
+            accept(baseLang.tr("pnx.setupWizard.skip"));
+            terminal.writer().println();
+            terminal.writer().flush();
+            return;
+        }
         handleUserInputLoop(
                 baseLang.tr("pnx.setupWizard.skip.question"),
                 new String[]{"y", "yes", "n", "no", ""},
@@ -298,9 +319,9 @@ public class SetupWizard implements AutoCloseable {
      */
     private void configureServerComplete() {
         terminal.writer().println();
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println(centerText(baseLang.tr("pnx.setupWizard.category.serverconfig", "Server Configuration"), 59));
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println();
         terminal.writer().flush();
 
@@ -346,7 +367,7 @@ public class SetupWizard implements AutoCloseable {
             terminal.writer().flush();
             return;
         }
-        terminal.writer().println("─".repeat(57));
+        terminal.writer().println(separatorLine());
         while (true) {
             try {
                 String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.port.question"))).trim();
@@ -354,17 +375,13 @@ public class SetupWizard implements AutoCloseable {
                     break; // Use default
                 }
 
-                int port = Integer.parseInt(input);
-                if (port < 1 || port > 65535) {
-                    refuse(baseLang.tr("pnx.setupWizard.port.invalid"));
-                    terminal.writer().flush();
-                    continue;
-                }
-
-                wizardConfig.setPort(port);
+                wizardConfig.setPort(SetupWizardSupport.parsePortOrDefault(input, wizardConfig.getPort()));
                 break;
             } catch (NumberFormatException e) {
                 refuse(baseLang.tr("pnx.setupWizard.port.error.number"));
+                terminal.writer().flush();
+            } catch (IllegalArgumentException e) {
+                refuse(baseLang.tr("pnx.setupWizard.port.invalid"));
                 terminal.writer().flush();
             } catch (Exception e) {
                 log.error("Error reading server port", e);
@@ -380,7 +397,7 @@ public class SetupWizard implements AutoCloseable {
      * Configures default gamemode.
      */
     private void configureGamemode() {
-        terminal.writer().println("─".repeat(57));
+        terminal.writer().println(separatorLine());
         notice(baseLang.tr("pnx.setupWizard.gamemode"));
         prompt("[0] " + baseLang.tr("pnx.setupWizard.gamemode.survival"));
         prompt("[1] " + baseLang.tr("pnx.setupWizard.gamemode.creative"));
@@ -396,17 +413,13 @@ public class SetupWizard implements AutoCloseable {
                     break;
                 }
 
-                int gamemode = Integer.parseInt(input);
-                if (gamemode < 0 || gamemode > 3) {
-                    warn(baseLang.tr("pnx.setupWizard.gamemode.invalid"));
-                    terminal.writer().flush();
-                    continue;
-                }
-
-                wizardConfig.setGamemode(gamemode);
+                wizardConfig.setGamemode(SetupWizardSupport.parseGamemodeOrDefault(input, wizardConfig.getGamemode()));
                 break;
             } catch (NumberFormatException e) {
                 refuse(baseLang.tr("pnx.setupWizard.gamemode.error.number"));
+                terminal.writer().flush();
+            } catch (IllegalArgumentException e) {
+                warn(baseLang.tr("pnx.setupWizard.gamemode.invalid"));
                 terminal.writer().flush();
             } catch (Exception e) {
                 log.error("Error reading gamemode", e);
@@ -429,13 +442,13 @@ public class SetupWizard implements AutoCloseable {
      * Configures whitelist settings.
      */
     private void configureWhitelist() {
-        terminal.writer().println("─".repeat(57));
+        terminal.writer().println(separatorLine());
 
         handleUserInputLoop(
                 baseLang.tr("pnx.setupWizard.whitelist.question"),
                 new String[]{"y", "yes", "n", "no", ""},
                 input -> {
-                    if (input.equals("y") || input.equals("yes") || input.isEmpty()) {
+                    if (input.equals("y") || input.equals("yes")) {
                         wizardConfig.setWhitelistEnabled(true);
                         accept(baseLang.tr("pnx.setupWizard.whitelist.enabled"));
                         configureWhitelistedPlayers();
@@ -460,16 +473,9 @@ public class SetupWizard implements AutoCloseable {
             notice(baseLang.tr("pnx.setupWizard.whitelist.example"));
             prompt(baseLang.tr("pnx.setupWizard.whitelist.skip"));
             terminal.writer().flush();
-            String input = reader.readLine("  » ").trim();
+            String input = reader.readLine("  " + promptPrefix()).trim();
             if (!input.isEmpty()) {
-                String[] players = input.split(",");
-                List<String> whitelisted = new ArrayList<>();
-                for (String player : players) {
-                    String cleanedName = player.trim();
-                    if (!cleanedName.isEmpty()) {
-                        whitelisted.add(cleanedName);
-                    }
-                }
+                List<String> whitelisted = SetupWizardSupport.parseCommaSeparatedNames(input);
                 wizardConfig.setWhitelistedPlayers(whitelisted);
                 if (!whitelisted.isEmpty()) {
                     accept(baseLang.tr("pnx.setupWizard.whitelist.added", String.join(", ", whitelisted)));
@@ -492,22 +498,15 @@ public class SetupWizard implements AutoCloseable {
      * Configures server operators.
      */
     private void configureOperators() {
-        terminal.writer().println("─".repeat(57));
+        terminal.writer().println(separatorLine());
         try {
             prompt(baseLang.tr("pnx.setupWizard.operators.enter"));
             notice(baseLang.tr("pnx.setupWizard.operators.example"));
             prompt(baseLang.tr("pnx.setupWizard.operators.skip"));
             terminal.writer().flush();
-            String input = reader.readLine("  » ").trim();
+            String input = reader.readLine("  " + promptPrefix()).trim();
             if (!input.isEmpty()) {
-                String[] ops = input.split(",");
-                List<String> operators = new ArrayList<>();
-                for (String op : ops) {
-                    String cleanedName = op.trim();
-                    if (!cleanedName.isEmpty()) {
-                        operators.add(cleanedName);
-                    }
-                }
+                List<String> operators = SetupWizardSupport.parseCommaSeparatedNames(input);
                 wizardConfig.setOperators(operators);
                 if (!operators.isEmpty()) {
                     accept(baseLang.tr("pnx.setupWizard.operators.added", String.join(", ", operators)));
@@ -530,23 +529,20 @@ public class SetupWizard implements AutoCloseable {
      * Configures maximum number of players.
      */
     private void configureMaxPlayers() {
-        terminal.writer().println("─".repeat(57));
+        terminal.writer().println(separatorLine());
         while (true) {
             try {
                 String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.maxPlayers.prompt"))).trim();
                 if (input.isEmpty()) {
                     break; // Use default
                 }
-                int maxPlayers = Integer.parseInt(input);
-                if (maxPlayers < 1) {
-                    refuse(baseLang.tr("pnx.setupWizard.maxPlayers.invalid.positive"));
-                    terminal.writer().flush();
-                    continue;
-                }
-                wizardConfig.setMaxPlayers(maxPlayers);
+                wizardConfig.setMaxPlayers(SetupWizardSupport.parseMaxPlayersOrDefault(input, wizardConfig.getMaxPlayers()));
                 break;
             } catch (NumberFormatException e) {
                 refuse(baseLang.tr("pnx.setupWizard.maxPlayers.invalid"));
+                terminal.writer().flush();
+            } catch (IllegalArgumentException e) {
+                refuse(baseLang.tr("pnx.setupWizard.maxPlayers.invalid.positive"));
                 terminal.writer().flush();
             } catch (Exception e) {
                 log.error("Error reading max players", e);
@@ -562,10 +558,10 @@ public class SetupWizard implements AutoCloseable {
      * Configures query settings.
      */
     private void configureQuery() {
-        terminal.writer().println("─".repeat(57));
+        terminal.writer().println(separatorLine());
         while (true) {
             try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.query.prompt"))).trim();
+                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.query.prompt"))).trim().toLowerCase(Locale.ENGLISH);
                 if (input.isEmpty() || input.equals("y") || input.equals("yes")) {
                     wizardConfig.setQueryEnabled(true);
                     accept(baseLang.tr("pnx.setupWizard.query.enabled"));
@@ -594,9 +590,9 @@ public class SetupWizard implements AutoCloseable {
      */
     private void displaySummaryAndWaitForStart() {
         terminal.writer().println();
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println(centerText(baseLang.tr("pnx.setupWizard.summary.title"), 59));
-        terminal.writer().println("═".repeat(59));
+        terminal.writer().println(borderLine());
         terminal.writer().println();
         accept(baseLang.tr("pnx.setupWizard.summary.ready"));
         terminal.writer().println();
@@ -606,11 +602,17 @@ public class SetupWizard implements AutoCloseable {
             prompt(baseLang.tr("pnx.setupWizard.summary.local", localIP, String.valueOf(wizardConfig.getPort())));
             prompt(baseLang.tr("pnx.setupWizard.summary.external", externalIP, String.valueOf(wizardConfig.getPort())));
             terminal.writer().println();
-            terminal.writer().println("═".repeat(59));
+            terminal.writer().println(borderLine());
             terminal.writer().println();
             terminal.writer().flush();
         } catch (Exception e) {
             log.error("Error reading IP address", e);
+        }
+        if (!interactive) {
+            accept(baseLang.tr("pnx.setupWizard.summary.starting"));
+            terminal.writer().println();
+            terminal.writer().flush();
+            return;
         }
         try {
             reader.readLine(baseLang.tr("pnx.setupWizard.summary.startPrompt"));
@@ -631,11 +633,12 @@ public class SetupWizard implements AutoCloseable {
      * @return true if valid, false otherwise
      */
     private boolean validateLanguage(String languageCode) {
-        if (languageCode == null || languageCode.isEmpty()) {
+        languageCode = SetupWizardSupport.normalizeLanguageCode(languageCode);
+        if (languageCode.isEmpty()) {
             return false;
         }
 
-        if (!languageCode.matches(LANGUAGE_CODE_PATTERN)) {
+        if (!SetupWizardSupport.isLanguageCodeFormat(languageCode)) {
             log.warn("Invalid language code format (must be 3 lowercase letters): {}", languageCode);
             return false;
         }
@@ -710,7 +713,7 @@ public class SetupWizard implements AutoCloseable {
         terminal.writer().println("[!] " + message);
     }
     private void accept(String message) {
-        terminal.writer().println("✓ " + message);
+        terminal.writer().println((unicodeOutput ? "✓ " : "[OK] ") + message);
     }
     private void refuse(String message) {
         terminal.writer().println("[x] " + message);
@@ -719,11 +722,39 @@ public class SetupWizard implements AutoCloseable {
         terminal.writer().println("[*] " + message);
     }
     private void prompt(String message) {
-        terminal.writer().println("» " + message);
+        terminal.writer().println(promptPrefix() + message);
     }
 
     private String promptText(String text) {
-        return "» " + text;
+        return promptPrefix() + text;
+    }
+
+    private String promptPrefix() {
+        return unicodeOutput ? "» " : "> ";
+    }
+
+    private String borderLine() {
+        return (unicodeOutput ? "═" : "=").repeat(59);
+    }
+
+    private String separatorLine() {
+        return (unicodeOutput ? "─" : "-").repeat(57);
+    }
+
+    private static boolean supportsUnicodeOutput() {
+        String encoding = System.getProperty("sun.stdout.encoding", Charset.defaultCharset().name());
+        Charset charset;
+        try {
+            charset = Charset.forName(encoding);
+        } catch (Exception e) {
+            charset = Charset.defaultCharset();
+        }
+        return SetupWizardSupport.supportsUnicodeOutput(charset);
+    }
+
+    private static boolean isDumbTerminal() {
+        String term = System.getenv("TERM");
+        return System.console() == null || term == null || "dumb".equalsIgnoreCase(term);
     }
 
     public void setBaseLang(BaseLang lang) {
@@ -786,7 +817,7 @@ public class SetupWizard implements AutoCloseable {
     ) {
         while (true) {
             try {
-                String input = reader.readLine(promptText(prompt)).trim().toLowerCase();
+                String input = reader.readLine(promptText(prompt)).trim().toLowerCase(Locale.ENGLISH);
                 if (Arrays.asList(validInputs).contains(input)) {
                     onValid.accept(input);
                     terminal.writer().flush();

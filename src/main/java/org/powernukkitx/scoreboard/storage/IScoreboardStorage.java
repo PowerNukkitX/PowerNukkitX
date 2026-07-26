@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * 计分板存储器接口
+ * Scoreboard storage interface.
  */
 
 

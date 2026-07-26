@@ -9,21 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 非异步的路径查找抽象类 <br/>
- * 在PowerNukkitX的生物AI架构中，不同实体的路径查找是并行的而不是异步的 <br/>
- * 所以说我们并不需要异步路径查找
+ * Abstract class for non-asynchronous pathfinding <br/>
+ * In PowerNukkitX's mob AI architecture, pathfinding for different entities is parallel rather than asynchronous <br/>
+ * So we do not need asynchronous pathfinding
  */
 
 
 public abstract class SimpleRouteFinder implements IRouteFinder {
 
-    //用于存储寻路结果的List
+    //List used to store pathfinding results
     protected List<Node> nodes = new ArrayList<>();
 
-    //索引值
+    //index value
     protected int currentIndex = 0;
 
-    //方块评估器
+    //block evaluator
     @Getter
     protected IPosEvaluator evalPos;
 
@@ -31,17 +31,17 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
         this.evalPos = blockEvaluator;
     }
 
-    //添加寻路结果节点
+    //add a pathfinding result node
     protected void addNode(Node node) {
         nodes.add(node);
     }
 
-    //批量添加寻路结果节点
+    //add pathfinding result nodes in bulk
     protected void addNode(List<Node> node) {
         nodes.addAll(node);
     }
 
-    //重置寻路结果
+    //reset pathfinding results
     protected void resetNodes() {
         this.nodes.clear();
     }

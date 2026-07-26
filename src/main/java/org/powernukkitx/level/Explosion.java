@@ -134,6 +134,10 @@ public class Explosion {
             return false;
         }
 
+        if (!this.level.getServer().getSettings().gameplaySettings().enableExplosionBlockDamage()) {
+            return true;
+        }
+
         if (affectedBlocks == null) {
             affectedBlocks = new LinkedHashSet<>();
         }

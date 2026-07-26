@@ -9,6 +9,7 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
@@ -18,9 +19,9 @@ plugins {
     java
     idea
     jacoco
-    id("io.github.goooler.shadow") version "8.1.7"
-    id("io.freefair.lombok") version "8.4"
-    id("com.gorylenko.gradle-git-properties") version "2.5.5"
+    id("io.github.goooler.shadow") version "8.1.8"
+    id("io.freefair.lombok") version "9.5.0"
+    id("com.gorylenko.gradle-git-properties") version "4.0.1"
 }
 
 group = "org.powernukkitx"
@@ -56,15 +57,16 @@ dependencies {
     implementation(libs.disruptor)
     implementation(libs.oshi)
     implementation(libs.fastreflection)
-    implementation(libs.terra)
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
+    implementation(libs.pnxgamedata)
     implementation(libs.bedrock.connection)
+    implementation(libs.commonslang3)
+    implementation(libs.caffeine)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
-    testImplementation(libs.commonslang3)
     
     testRuntimeOnly(libs.junit.platform.launcher)
 
@@ -83,6 +85,7 @@ configurations.all {
 }
 
 tasks.withType<JavaCompile>().configureEach {
+    options.encoding = ENCODING
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
     options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000", "-nowarn"))
     options.isWarnings = false
@@ -127,19 +130,19 @@ tasks.processTestResources {
 
 tasks.register<DefaultTask>("buildFast") {
     group = ALPHA_BUILD
-    description = "Fast build without documentation and tests - for rapid development"
+    description = "Compile resources and create the plain jar without tests, docs, or shadow packaging"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar)
 }
 
 tasks.register<DefaultTask>("buildSkipChores") {
     group = ALPHA_BUILD
-    description = "Build without documentation and tests"
+    description = "Build the runnable jar without tests or documentation"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
 tasks.register<DefaultTask>("buildForGithubAction") {
     group = GH_BUILD
-    description = "Optimized build for CI/CD pipelines (without tests)"
+    description = "CI packaging build used by GitHub Actions; tests are covered by checkFast"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
@@ -151,7 +154,7 @@ tasks.build {
 tasks.clean {
     group = ALPHA_BUILD
     description = "Deletes the build directory and generated files"
-    delete("pnx.yml", "terra", "services")
+    delete("pnx.yml", "services")
 }
 
 tasks.compileJava {
@@ -208,6 +211,18 @@ tasks.withType<Test>().configureEach {
     onlyIf { !project.hasProperty("skipTests") }
 }
 
+tasks.register<DefaultTask>("testFast") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Run the unit test suite without documentation or packaging tasks"
+    dependsOn(tasks.test)
+}
+
+tasks.register<DefaultTask>("checkFast") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Compile main/test sources and run fast unit checks"
+    dependsOn(tasks.compileJava, tasks.compileTestJava, tasks.test)
+}
+
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {
         csv.required = false
@@ -222,6 +237,7 @@ tasks.withType<AbstractCopyTask>() {
 }
 
 tasks.named<AbstractArchiveTask>("sourcesJar") {
+    dependsOn("generateGitProperties")
     destinationDirectory.set(layout.buildDirectory)
 }
 
@@ -337,14 +353,6 @@ publishing {
             }
         }
     }
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = ENCODING
-}
-
-tasks.withType<Javadoc> {
-    options.encoding = ENCODING
 }
 
 // Task optimization - disable unnecessary tasks for faster builds

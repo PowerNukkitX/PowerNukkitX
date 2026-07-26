@@ -3,6 +3,7 @@ package org.powernukkitx.level.generator.noise.minecraft.simplex;
 import org.powernukkitx.utils.random.NukkitRandom;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
+@SuppressWarnings("PMD.SingularField")
 public class SimplexNoise {
 
     private final float[] amplitudes;

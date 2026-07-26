@@ -45,7 +45,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(TheEndPopulatorStage.NAME, TheEndPopulatorStage.class);
 
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

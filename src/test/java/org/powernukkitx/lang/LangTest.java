@@ -32,14 +32,14 @@ public class LangTest {
 //    void test_tr() {
 //        assertEquals("hhdaosidhja", i18n.tr(LangCode.en_US, "test1", "hhdaosidhja"));
 //        assertEquals("hello \n world", i18n.tr(LangCode.en_US, "test2"));
-//        assertEquals("你好 \n 世界", i18n.tr(LangCode.zh_CN, "test2"));
+//        assertEquals("Hello \n World", i18n.tr(LangCode.zh_CN, "test2"));
 //        assertEquals("Hello \n World", Server.getInstance().getLanguage().tr("Hello \n World"));
 //    }
 //
 //    @Test
 //    void test_placeholders() {
 //        assertEquals("Test placeholders 1 2", i18n.tr(LangCode.en_US, "test3", "1","2"));
-//        assertEquals("测试 placeholders 1 2", i18n.tr(LangCode.zh_CN, "test3", "1","2"));
+//        assertEquals("Test placeholders 1 2", i18n.tr(LangCode.zh_CN, "test3", "1","2"));
 //        assertEquals("§7CoolLoong §ejoin the server!", i18n.tr(LangCode.zh_CN, "test4", "CoolLoong"));
 //    }
 //
@@ -47,7 +47,7 @@ public class LangTest {
 //    void test_addLang() {
 //        i18n.addLang(LangCode.zh_TW, "src/test/resources/language_extra/zh_TW.json");
 //        assertEquals("hhdaosidhja", i18n.tr(LangCode.zh_TW, "test1", "hhdaosidhja"));
-//        assertEquals("你好，世界！", i18n.tr(LangCode.zh_TW, "test2"));
+//        assertEquals("Hello, World!", i18n.tr(LangCode.zh_TW, "test2"));
 //    }
 //
 //    @Test

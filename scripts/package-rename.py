@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-"""
-Bulk-renames a Java package throughout a source tree:
-  - Moves/renames folder structure (cn/nukkit/... -> org/powernukkitx/...)
-  - Updates package declarations, import statements, and any other
-    textual references to the old package inside all files (.java, .kt,
-    .xml, .properties, .gradle, .yml, etc.)
+"""Bulk-rename a Java package throughout a source tree."""
 
-Usage:
-    python3 rename_package.py /path/to/project [--old cn.nukkit] [--new org.powernukkitx] [--dry-run]
-
-By default it operates on the whole project directory recursively.
-It skips common build/VCS directories (.git, build, target, out, .gradle, .idea).
-"""
+# Moves/renames folder structure (cn/nukkit/... -> org/powernukkitx/...) and updates
+# package declarations, import statements, and any other textual references to the old
+# package inside all text files (.java, .kt, .xml, .properties, .gradle, .yml, etc.)
+#
+# Usage:
+#     python3 rename_package.py /path/to/project [--old cn.nukkit] [--new org.powernukkitx] [--dry-run]
+#
+# By default it operates on the whole project directory recursively.
+# It skips common build/VCS directories (.git, build, target, out, .gradle, .idea).
 
 import argparse
 import os
@@ -42,8 +40,7 @@ def is_text_file(path: str) -> bool:
 
 
 def replace_in_file(path: str, old: str, old_slash: str, new: str, new_slash: str, dry_run: bool) -> bool:
-    """Replace textual occurrences of the old package (dotted and slashed form)
-    with the new one. Returns True if the file was changed."""
+    """Replace dotted and slashed occurrences of the old package in a file, returning True if changed."""
     try:
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -61,9 +58,7 @@ def replace_in_file(path: str, old: str, old_slash: str, new: str, new_slash: st
 
 
 def move_package_folders(root: str, old_slash: str, new_slash: str, dry_run: bool):
-    """Find every directory path ending in the old package's folder structure
-    (e.g. .../cn/nukkit) and move it to the new location
-    (e.g. .../org/powernukkitx), preserving whatever subtree lives under it."""
+    """Move directories ending in the old package structure to the new location, preserving subtrees."""
     moved = []
 
     for dirpath, dirnames, _filenames in os.walk(root, topdown=True):
@@ -100,12 +95,7 @@ def walk_and_replace_contents(root: str, old: str, old_slash: str, new: str, new
 
 
 def rename_matching_filenames(root: str, old_last: str, new_last: str, dry_run: bool):
-    """Optional: if any filenames themselves contain the last package
-    segment (rare, but e.g. 'NukkitMain.java' referencing 'nukkit'),
-    this is left untouched by default — package renames only affect
-    folders/contents, not arbitrary filenames. Included as a no-op hook
-    in case you want to extend it."""
-    pass
+    """No-op hook for renaming filenames that embed the package's last segment."""
 
 
 def main():

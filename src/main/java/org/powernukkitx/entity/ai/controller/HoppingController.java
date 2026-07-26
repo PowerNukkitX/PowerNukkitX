@@ -1,5 +1,6 @@
 package org.powernukkitx.entity.ai.controller;
 
+import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityPhysical;
 import org.powernukkitx.entity.mob.EntitySlime;
@@ -9,9 +10,11 @@ import org.powernukkitx.math.Vector3;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
+import java.util.Arrays;
+
 /**
- * 处理陆地行走实体运动
- * todo: 有待解耦
+ * Handles movement of land-walking entities
+ * todo: needs to be decoupled
  */
 
 
@@ -29,7 +32,7 @@ public class HoppingController extends WalkController {
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection() && currentJumpCoolDown > moveCooldown) {
-            //clone防止异步导致的NPE
+            //clone to prevent NPE caused by asynchronous access
             Vector3 direction = entity.getMoveDirectionEnd().clone();
             var speed = entity.getMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
@@ -44,16 +47,33 @@ public class HoppingController extends WalkController {
                 return false;
             }
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
-            var k = speed / xzLength * 0.33;
+            var k = speed / xzLength;
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
             if (entity.isOnGround()) {
                 double diffY = entity.getScale();
-                dy += entity.getJumpingMotion(diffY);
+                boolean steppingUpBlock = false;
+                if (collidesBlocks(entity, dx, 0, dz)) {
+                    Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(
+                            entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, 0, dz),
+                            false,
+                            false,
+                            this::canJump
+                    );
+
+                    double maxY = Arrays.stream(collisionBlocks)
+                            .map(b -> b.getCollisionBoundingBox().getMaxY())
+                            .max(Double::compareTo)
+                            .orElse(entity.getY());
+
+                    diffY = Math.max(diffY, maxY - entity.getY());
+                    steppingUpBlock = diffY > 0.01d && diffY <= 1.1d;
+                }
+                dy += steppingUpBlock ? Math.max(entity.getJumpingMotion(diffY) + 0.1d, diffY + 0.05d) : entity.getJumpingMotion(diffY) + 0.1d;
                 Sound jumpSound = entity instanceof EntityRabbit ? Sound.MOB_RABBIT_HOP : entity instanceof EntitySlime ? Sound.JUMP_SLIME : null;
                 if(jumpSound != null) entity.getLevel().addSound(entity, jumpSound);
-                entity.setDataProperty(ActorDataTypes.CLIENT_EVENT, 2);
+                entity.setDataProperty(ActorDataTypes.CLIENT_EVENT, (byte) 2);
                 currentJumpCoolDown = 0;
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));

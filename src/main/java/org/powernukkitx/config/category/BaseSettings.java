@@ -34,8 +34,6 @@ public class BaseSettings extends OkaeriConfig {
     boolean forceServerTranslate = false;
     @Comment("pnx.settings.base.safespawn")
     boolean safeSpawn = true;
-    @Comment("pnx.settings.base.waterdogpe")
-    boolean waterdogpe = false;
     @Comment("pnx.settings.base.autosave")
     boolean autoSave = true;
     int autosaveDelay = 6000;

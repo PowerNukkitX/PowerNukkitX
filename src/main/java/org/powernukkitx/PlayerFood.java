@@ -319,7 +319,8 @@ public class PlayerFood {
      * @return True if enabled
      */
     public boolean isEnabled() {
-        return !(player.isCreative() || player.isFlying() || player.isSpectator()) && this.enabled;
+        return !(player.isCreative() || player.isFlying() || player.isSpectator()) && this.enabled
+                && player.getLevel().getGameplaySettings().enableHunger();
     }
 
     /**

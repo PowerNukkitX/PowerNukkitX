@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * 寻路节点
+ * pathfinding node
  */
 
 

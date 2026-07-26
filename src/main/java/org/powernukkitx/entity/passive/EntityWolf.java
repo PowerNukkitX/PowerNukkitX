@@ -455,9 +455,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -519,8 +518,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                                 },
                                 entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new PlaySoundExecutor(Sound.MOB_WOLF_BARK),
                                 new RandomSoundEvaluator(),
@@ -581,8 +580,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                                 ),
                                 1, 1, 50
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 20, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
@@ -591,15 +590,14 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                                     default -> false;
                                 }),
                         new EntityAttackedByOwnerSensor(5, false)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

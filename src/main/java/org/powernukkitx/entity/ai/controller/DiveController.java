@@ -4,7 +4,7 @@ import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 
 /**
- * 下潜运动控制器，使实体下潜
+ * A dive movement controller that makes the entity dive
  */
 
 
@@ -13,7 +13,7 @@ public class DiveController implements IController {
     public boolean control(EntityIntelligent entity) {
         //add dive force
         if (entity.getMemoryStorage().get(CoreMemoryTypes.ENABLE_DIVE_FORCE))
-            //                                                                  抵消额外的浮力即可
+            //                                                                  just cancel out the extra buoyancy
             entity.motionY -= entity.getGravity() * (entity.getFloatingForceFactor() - 1);
         return true;
     }

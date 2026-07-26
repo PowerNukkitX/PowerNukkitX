@@ -26,10 +26,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 在一个文件中存储{@link PositionTracking}对象的顺序范围。读取操作被缓存。
- * <p>这个对象持有一个文件处理程序，当它不再需要时，必须关闭。
- * <p>一旦关闭，该实例就不能被重新使用。
- * <p>
  * Stores a sequential range of {@link PositionTracking} objects in a file. The read operation is cached.
  * <p>This object holds a file handler and must be closed when it is no longer needed.</p>
  * <p>Once closed the instance cannot be reused.</p>

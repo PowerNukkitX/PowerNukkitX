@@ -137,7 +137,7 @@ public class FormWindowDialog implements Dialog {
         return sceneName;
     }
 
-    //请不要随意调用此方法，否则可能会导致潜在的bug
+    //please do not call this method casually, otherwise it may cause potential bugs
     protected void setSceneName(String sceneName) {
         this.sceneName = sceneName;
     }

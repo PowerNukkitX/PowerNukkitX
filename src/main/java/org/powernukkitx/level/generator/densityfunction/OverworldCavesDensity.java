@@ -7,6 +7,7 @@ import org.powernukkitx.level.generator.noise.minecraft.noise.NormalNoise;
  * @since 2026/04/02
  * @implNote <a href="https://github.com/misode/mcmeta/tree/data/data/minecraft/worldgen/density_function/overworld/caves">Sources</a>
  */
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public final class OverworldCavesDensity {
 
     private static final DensityFunction Y = new DensityFunction.SimpleFunction() {

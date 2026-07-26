@@ -13,13 +13,14 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.network.protocol.types.TrimData;
+import org.powernukkitx.network.protocol.types.ArmorTrim;
 import org.powernukkitx.recipe.Input;
 import org.powernukkitx.recipe.MultiRecipe;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.recipe.SmithingTransformRecipe;
 import org.powernukkitx.recipe.UserDataShapelessRecipe;
 import org.powernukkitx.recipe.SmithingTrimRecipe;
+import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
@@ -199,6 +200,11 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         }
         int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
         Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetId().getRawId());
+        if (recipe == null) {
+            log.debug("Rejecting craft request for unknown recipe network id {} (recipe registry {})",
+                    action.getRecipeNetId().getRawId(), Registries.RECIPE.isEnabled() ? "enabled" : "disabled");
+            return context.error();
+        }
         Input input = craft.getInput();
         Item[][] data = input.getData();
         ArrayList<Item> items = new ArrayList<>();
@@ -277,7 +283,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         ItemDescriptor expectEquipment = recipe.getBase();
         ItemDescriptor expectIngredient = recipe.getAddition();
         ItemDescriptor expectTemplate = recipe.getTemplate();
-        boolean match = expectEquipment.match(equipment);
+        boolean match;
+        if (expectEquipment instanceof DefaultDescriptor dd) {
+            match = equipment.getId().equals(dd.getItem().getId());
+        } else {
+            match = expectEquipment.match(equipment);
+        }
         match &= expectIngredient.match(ingredient);
         match &= expectTemplate.match(template);
         if (match) {
@@ -285,6 +296,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             CompoundTag tag = equipment.getNbt();
             if (tag != null) {
                 result.setNbt(tag);
+            }
+            if (equipment.getDamage() > 0) {
+                result.setDamage(equipment.getDamage());
             }
             player.getCreativeOutputInventory().setItem(result);
             smithingInventory.decreaseCount(0, 1);
@@ -310,22 +324,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         Item template = smithingInventory.getTemplate();
 
         if (!ingredient.isNull() && !template.isNull()) {
-            Optional<TrimPattern> find1 = TrimData.trimPatterns.stream().filter(trimPattern -> template.getId().equals(trimPattern.getItemName())).findFirst();
-            Optional<TrimMaterial> find2 = TrimData.trimMaterials.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.getItemName())).findFirst();
+            Optional<TrimPattern> find1 = Registries.TRIM.getPattern(template.getId());
+            Optional<TrimMaterial> find2 = Registries.TRIM.getMaterial(ingredient.getId());
             if (equipment.isNull() || find1.isEmpty() || find2.isEmpty()) {
                 return context.error();
             }
-            TrimPattern trimPattern = find1.get();
-            TrimMaterial trimMaterial = find2.get();
-            Item result = equipment.clone();
-            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.getMaterialId())
-                    .putString("Pattern", trimPattern.getPatternId());
-            CompoundTag compound = ingredient.getNbt();
-            if (compound == null) {
-                compound = result.getOrCreateNbt();
-            } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
-            compound.putCompound("Trim", trim);
-            result.setNbt(compound);
+            Item result = ArmorTrim.of(find1.get(), find2.get()).applyTo(equipment);
             player.getCreativeOutputInventory().setItem(result);
             smithingInventory.decreaseCount(0, 1);
             smithingInventory.decreaseCount(1, 1);

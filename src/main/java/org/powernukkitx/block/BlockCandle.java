@@ -43,7 +43,7 @@ public class BlockCandle extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (target.getId().equals(BlockID.CAKE) && target.isDefaultState()) {//必须是完整的蛋糕才能插蜡烛
+        if (target.getId().equals(BlockID.CAKE) && target.isDefaultState()) {//must be a complete cake to place a candle on it
             target.getLevel().setBlock(target, toCakeForm(), true, true);
             return true;
         }

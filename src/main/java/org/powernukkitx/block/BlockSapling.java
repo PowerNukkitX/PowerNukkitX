@@ -12,6 +12,8 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector2;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.tags.BiomeTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -173,7 +175,16 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                 }
             default:
                 BlockManager blockManager = new BlockManager(this.level);
-                LegacyTreeGenerator.growTree(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), RandomSourceProvider.create(), getWoodType(), false);
+                RandomSourceProvider random = RandomSourceProvider.create();
+                boolean beeNest = (getWoodType() == WoodType.OAK || getWoodType() == WoodType.BIRCH)
+                        && random.nextFloat() < 0.05F
+                        && (BeeNestGenerator.hasNearbyFlower(blockManager, this)
+                        || getWoodType() == WoodType.OAK && Registries.BIOME.containsTag(BiomeTags.PLAINS,
+                        level.getBiomeId(getFloorX(), getFloorY(), getFloorZ())));
+                LegacyTreeGenerator.growTree(blockManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), random, getWoodType(), false);
+                if (beeNest) {
+                    BeeNestGenerator.place(blockManager, random, this);
+                }
                 StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {

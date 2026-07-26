@@ -42,7 +42,7 @@ public class NukkitConsole extends SimpleTerminalConsole {
         try {
             return consoleQueue.take();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

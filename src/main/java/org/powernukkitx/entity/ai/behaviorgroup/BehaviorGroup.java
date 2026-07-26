@@ -16,7 +16,6 @@ import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -32,84 +31,82 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * 标准行为组实现
+ * Standard behavior group implementation
  */
-
 
 @Getter
 @Setter
 public class BehaviorGroup implements IBehaviorGroup {
 
     /**
-     * 决定多少gt更新一次路径
+     * Determines how many gt between each path update
      */
     protected static int ROUTE_UPDATE_CYCLE = 16;//gt
 
 
     /**
-     * 不会被其他行为覆盖的"核心“行为
+     * "Core" behaviors that will not be overridden by other behaviors
      */
     protected final Set<IBehavior> coreBehaviors;
 
     /**
-     * 全部行为
+     * All behaviors
      */
     protected final Set<IBehavior> behaviors;
     /**
-     * 传感器
+     * Sensors
      */
     protected final Set<ISensor> sensors;
     /**
-     * 控制器
+     * Controllers
      */
     protected final Set<IController> controllers;
     /**
-     * 正在运行的”核心“行为
+     * The "core" behaviors currently running
      */
     protected final Set<IBehavior> runningCoreBehaviors = new HashSet<>();
     /**
-     * 正在运行的行为
+     * The behaviors currently running
      */
     protected final Set<IBehavior> runningBehaviors = new HashSet<>();
     /**
-     * 用于存储核心行为距离上次评估逝去的gt数
+     * Stores the number of gt elapsed since each core behavior was last evaluated
      */
     protected final Map<IBehavior, Integer> coreBehaviorPeriodTimer = new HashMap<>();
     /**
-     * 用于存储行为距离上次评估逝去的gt数
+     * Stores the number of gt elapsed since each behavior was last evaluated
      */
     protected final Map<IBehavior, Integer> behaviorPeriodTimer = new HashMap<>();
     /**
-     * 用于存储传感器距离上次刷新逝去的gt数
+     * Stores the number of gt elapsed since each sensor was last refreshed
      */
     protected final Map<ISensor, Integer> sensorPeriodTimer = new HashMap<>();
     /**
-     * 记忆存储器
+     * Memory storage
      */
     protected final IMemoryStorage memoryStorage;
     /**
-     * 寻路器(非异步，因为没必要，生物AI本身就是并行的)
+     * Pathfinder (not asynchronous, because it isn't necessary - the mob AI is already parallelized)
      */
     protected final IRouteFinder routeFinder;
     /**
-     * 此行为组所属实体
+     * The entity this behavior group belongs to
      */
     protected final EntityIntelligent entity;
     /**
-     * 寻路任务
+     * Pathfinding task
      */
     protected RouteFindingManager.RouteFindingTask routeFindingTask;
 
     protected long blockChangeCache;
 
     /**
-     * 记录距离上次路径更新过去的gt数
+     * Records the number of gt elapsed since the last path update
      */
     protected int currentRouteUpdateTick;//gt
 
     protected boolean forceUpdateRoute = false;
 
-    @Builder
     public BehaviorGroup(int startRouteUpdateTick,
                          Set<IBehavior> coreBehaviors,
                          Set<IBehavior> behaviors,
@@ -117,7 +114,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                          Set<IController> controllers,
                          IRouteFinder routeFinder,
                          EntityIntelligent entity) {
-        //此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
+        //this parameter staggers the path update timing of each entity, to avoid submitting too many path update tasks within a single gt
         this.currentRouteUpdateTick = startRouteUpdateTick;
         this.coreBehaviors = coreBehaviors;
         this.behaviors = behaviors;
@@ -130,7 +127,90 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 运行并刷新正在运行的行为
+     * Creates a new fluent builder bound to the given entity. The route update tick offset
+     * defaults to the entity's tickSpread, so entities only need to declare their behaviors,
+     * sensors, controllers and route finder.
+     */
+    public static Builder builder(@NotNull EntityIntelligent entity) {
+        return new Builder(entity);
+    }
+
+    /**
+     * Fluent builder for {@link BehaviorGroup}. Each group is bound to a single entity, since
+     * behaviors, sensors and route finders capture the entity instance - so unlike blocks there
+     * is no shared definition registry, every entity builds its own group.
+     */
+    public static class Builder {
+        private final EntityIntelligent entity;
+        private int startRouteUpdateTick;
+        private Set<IBehavior> coreBehaviors = Set.of();
+        private Set<IBehavior> behaviors = Set.of();
+        private Set<ISensor> sensors = Set.of();
+        private Set<IController> controllers = Set.of();
+        private IRouteFinder routeFinder;
+
+        private Builder(@NotNull EntityIntelligent entity) {
+            this.entity = entity;
+            this.startRouteUpdateTick = entity.tickSpread;
+        }
+
+        public Builder startRouteUpdateTick(int startRouteUpdateTick) {
+            this.startRouteUpdateTick = startRouteUpdateTick;
+            return this;
+        }
+
+        public Builder coreBehaviors(IBehavior... coreBehaviors) {
+            this.coreBehaviors = Set.of(coreBehaviors);
+            return this;
+        }
+
+        public Builder coreBehaviors(Collection<IBehavior> coreBehaviors) {
+            this.coreBehaviors = Set.copyOf(coreBehaviors);
+            return this;
+        }
+
+        public Builder behaviors(IBehavior... behaviors) {
+            this.behaviors = Set.of(behaviors);
+            return this;
+        }
+
+        public Builder behaviors(Collection<IBehavior> behaviors) {
+            this.behaviors = Set.copyOf(behaviors);
+            return this;
+        }
+
+        public Builder sensors(ISensor... sensors) {
+            this.sensors = Set.of(sensors);
+            return this;
+        }
+
+        public Builder sensors(Collection<ISensor> sensors) {
+            this.sensors = Set.copyOf(sensors);
+            return this;
+        }
+
+        public Builder controllers(IController... controllers) {
+            this.controllers = Set.of(controllers);
+            return this;
+        }
+
+        public Builder controllers(Collection<IController> controllers) {
+            this.controllers = Set.copyOf(controllers);
+            return this;
+        }
+
+        public Builder routeFinder(IRouteFinder routeFinder) {
+            this.routeFinder = routeFinder;
+            return this;
+        }
+
+        public BehaviorGroup build() {
+            return new BehaviorGroup(startRouteUpdateTick, coreBehaviors, behaviors, sensors, controllers, routeFinder, entity);
+        }
+    }
+
+    /**
+     * Runs and refreshes the currently running behaviors
      */
     @Override
     public void tickRunningBehaviors(EntityIntelligent entity) {
@@ -183,9 +263,9 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void collectSensorData(EntityIntelligent entity) {
         sensorPeriodTimer.forEach((sensor, tick) -> {
-            //刷新gt数
+            //refresh the gt count
             sensorPeriodTimer.put(sensor, ++tick);
-            //没到周期就不评估
+            //don't evaluate until the period is reached
             if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) return;
             sensorPeriodTimer.put(sensor, 0);
             sensor.sense(entity);
@@ -195,12 +275,12 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
         coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
-            //若已经在运行了，就不需要评估了
+            //if it's already running, there's no need to evaluate it
             if (runningCoreBehaviors.contains(coreBehavior)) return;
             int nextTick = ++tick;
-            //刷新gt数
+            //refresh the gt count
             coreBehaviorPeriodTimer.put(coreBehavior, nextTick);
-            //没到周期就不评估
+            //don't evaluate until the period is reached
             if (nextTick < coreBehavior.getPeriod()) return;
             coreBehaviorPeriodTimer.put(coreBehavior, 0);
             if (coreBehavior.evaluate(entity)) {
@@ -212,24 +292,24 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 评估所有行为
+     * Evaluates all behaviors
      *
-     * @param entity 评估的实体对象
+     * @param entity the entity object being evaluated
      */
     @Override
     public void evaluateBehaviors(EntityIntelligent entity) {
-        //存储评估成功的行为（未过滤优先级）
+        //stores the behaviors that evaluated successfully (priority not yet filtered)
         var evalSucceed = new HashSet<IBehavior>(behaviors.size());
         int highestPriority = Integer.MIN_VALUE;
         for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
             IBehavior behavior = entry.getKey();
-            //若已经在运行了，就不需要评估了
+            //if it's already running, there's no need to evaluate it
             if (runningBehaviors.contains(behavior)) continue;
             int tick = entry.getValue();
             int nextTick = ++tick;
-            //刷新gt数
+            //refresh the gt count
             behaviorPeriodTimer.put(behavior, nextTick);
-            //没到周期就不评估
+            //don't evaluate until the period is reached
             if (nextTick < behavior.getPeriod()) continue;
             behaviorPeriodTimer.put(behavior, 0);
             if (behavior.evaluate(entity)) {
@@ -242,7 +322,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                 evalSucceed.add(behavior);
             }
         }
-        //如果没有评估结果，则返回空
+        //return if there are no evaluation results
         if (evalSucceed.isEmpty()) return;
         IBehavior first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
         int runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
@@ -254,15 +334,15 @@ public class BehaviorGroup implements IBehaviorGroup {
                 }
             }
         }
-        //如果result的优先级低于当前运行的行为，则不执行
+        //if the result's priority is lower than the currently running behavior, do nothing
         if (highestPriority < runningBehaviorPriority && firstEval) {
             //do nothing
         } else if (highestPriority > runningBehaviorPriority || !firstEval) {
-            //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
+            //if the result's priority is higher than the currently running behavior, replace all currently running behaviors
             interruptAllRunningBehaviors(entity);
             addToRunningBehaviors(entity, evalSucceed);
         } else {
-            //如果result的优先级和当前运行的行为的优先级一样，则添加result的行为
+            //if the result's priority equals the currently running behavior, add the result's behaviors
             addToRunningBehaviors(entity, evalSucceed);
         }
     }
@@ -281,30 +361,30 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (reachUpdateCycle) currentRouteUpdateTick = 0;
         Vector3 target = entity.getMoveTarget();
         if (target == null) {
-            //没有路径目标，则清除路径信息
+            //no path target, so clear the path information
             entity.setMoveDirectionStart(null);
             entity.setMoveDirectionEnd(null);
             return;
         }
-        //到达更新周期时，开始重新计算新路径
+        //when the update cycle is reached, start recalculating the new path
         if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity))) {
-            //若有路径目标，则计算新路径
+            //if there is a path target, calculate the new path
             boolean reSubmit = false;
-            //         第一次计算                       上一次计算已完成                                         超时，重新提交任务
+            //         first calculation                 previous calculation finished                          timed out, resubmit the task
             if (routeFindingTask == null || routeFindingTask.getFinished() || (reSubmit = (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
                 if (reSubmit) routeFindingTask.cancel(true);
-                //clone防止寻路器潜在的修改
+                //clone to prevent potential modification by the pathfinder
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
                     entity.setShouldUpdateMoveDirection(false);
                     setForceUpdateRoute(false);
-                    //写入section变更记录
+                    //write the section change record
                     cacheSectionBlockChange(entity.level, calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level));
                 }).setStart(entity.clone()).setTarget(target));
             }
         }
         if (routeFindingTask != null && routeFindingTask.getFinished() && !hasNewUnCalMoveTarget(entity)) {
-            //若不能再移动了，且没有正在计算的寻路任务，则清除路径信息
+            //if it can no longer move and there is no pathfinding task in progress, clear the path information
             var reachableTarget = routeFinder.getReachableTarget();
             if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
                 entity.setMoveTarget(null);
@@ -315,7 +395,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         if (entity.isShouldUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
-                //若有新的移动方向，则更新
+                //if there is a new movement direction, update it
                 updateMoveDirection(entity);
                 entity.setShouldUpdateMoveDirection(false);
             }
@@ -323,34 +403,34 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 检查路径是否需要更新。此方法检测路径经过的ChunkSection是否发生了变化
+     * Checks whether the path needs to be updated. This method detects whether the ChunkSections the path passes through have changed
      *
-     * @return 是否需要更新路径
+     * @return whether the path needs to be updated
      */
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
-        //此优化只针对处于非active区块的实体
+        //this optimization only applies to entities in non-active chunks
         if (entity.isActive()) return true;
-        //终点发生变化或第一次计算，需要重算
+        //the endpoint changed or it's the first calculation, so recalculation is needed
         if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity))
             return true;
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
         long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
-        //Section发生变化，需要重算
+        //a Section changed, so recalculation is needed
         return blockChangeCache != total;
     }
 
     /**
-     * 通过比对寻路器中设置的moveTarget与entity的moveTarget来确认实体是否设置了新的未计算的moveTarget
+     * Confirms whether the entity has set a new, uncalculated moveTarget by comparing the moveTarget set in the pathfinder with the entity's moveTarget
      *
-     * @param entity 实体
-     * @return 是否存在新的未计算的寻路目标
+     * @param entity the entity
+     * @return whether a new, uncalculated pathfinding target exists
      */
     protected boolean hasNewUnCalMoveTarget(EntityIntelligent entity) {
         return !entity.getMoveTarget().equals(this.routeFinder.getTarget());
     }
 
     /**
-     * 缓存section的blockChanges到blockChangeCache
+     * Caches the section's blockChanges into blockChangeCache
      */
 
     protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
@@ -358,7 +438,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 返回sectionVector对应的section的blockChanges
+     * Returns the blockChanges of the section corresponding to the sectionVector
      */
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
         var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
@@ -366,7 +446,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 计算坐标集经过的ChunkSection
+     * Calculates the ChunkSections that the set of coordinates passes through
      *
      * @return (chunkX | chunkSectionY | chunkZ)
      */
@@ -431,11 +511,11 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 计算活跃实体延迟
+     * Calculates the active entity delay
      *
-     * @param entity        实体
-     * @param originalDelay 原始延迟
-     * @return 如果实体是非活跃的，则延迟*4，否则返回原始延迟
+     * @param entity        the entity
+     * @param originalDelay the original delay
+     * @return if the entity is inactive, the delay is multiplied by 4, otherwise the original delay is returned
      */
     protected int calcActiveDelay(@NotNull EntityIntelligent entity, int originalDelay) {
         if (!entity.isActive()) {
@@ -463,10 +543,10 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 添加评估成功后的行为到{@link BehaviorGroup#runningBehaviors}
+     * Adds the successfully evaluated behaviors to {@link BehaviorGroup#runningBehaviors}
      *
-     * @param entity    评估的实体
-     * @param behaviors 要添加的行为
+     * @param entity    the entity being evaluated
+     * @param behaviors the behaviors to add
      */
     protected void addToRunningBehaviors(EntityIntelligent entity, @NotNull Set<IBehavior> behaviors) {
         behaviors.forEach((behavior) -> {
@@ -477,7 +557,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 中断所有正在运行的行为
+     * Interrupts all currently running behaviors
      */
     protected void interruptAllRunningBehaviors(EntityIntelligent entity) {
         for (IBehavior behavior : runningBehaviors) {
@@ -488,7 +568,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 描述一个ChunkSection的位置
+     * Describes the position of a ChunkSection
      *
      * @param chunkX
      * @param sectionY

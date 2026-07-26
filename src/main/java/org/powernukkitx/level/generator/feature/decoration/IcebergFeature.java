@@ -26,6 +26,7 @@ import static org.powernukkitx.block.BlockID.SNOW_LAYER;
 import static org.powernukkitx.block.BlockID.WATER;
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class IcebergFeature extends GenerateFeature {
 
     public static final String NAME = "minecraft:frozen_ocean_after_surface_ice_feature";

@@ -4,7 +4,7 @@ import org.powernukkitx.command.Command;
 import org.powernukkitx.command.data.NukkitCommandData;
 
 /**
- * 测试命令基类
+ * Base class for test commands
  */
 
 
@@ -24,7 +24,7 @@ public abstract class TestCommand extends Command {
 
     public TestCommand(String name, String description, String usageMessage, String[] aliases) {
         super(name, description, usageMessage, aliases);
-        //标记为测试命令（客户端显示为蓝色）
+        //mark as a test command (shown in blue on the client)
         this.commandData.flags.add(NukkitCommandData.Flag.TEST_USAGE);
     }
 }

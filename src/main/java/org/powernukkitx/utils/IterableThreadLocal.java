@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 @Slf4j
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements Iterable<T> {
     private ThreadLocal<T> flag;
     private final ConcurrentLinkedDeque<T> allValues = new ConcurrentLinkedDeque<>();

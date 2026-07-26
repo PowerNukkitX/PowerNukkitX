@@ -42,63 +42,63 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 public interface IParamNode<T> {
 
     /**
-     * 负责填充该参数节点,覆写该方法需要实现对接受参数arg的验证以及解析成为对应类型T的结果
+     * Responsible for filling this parameter node. Overriding this method must implement validation of the accepted argument arg and parsing it into a result of the corresponding type T
      * <br>
-     * 当验证失败或者解析失败,请调用{@link #error(String)}方法标记错误.形如{@code this.error()}
+     * When validation or parsing fails, call the {@link #error(String)} method to flag the error, for example {@code this.error()}
      *
      * @param arg the arg
      */
     void fill(String arg);
 
     /**
-     * 获取已被{@link #fill(String)}填充后的节点值,会自动转型为接受类型E,不会判断是否能成功转型<br>有可能抛出{@link ClassCastException}
+     * Gets the node value after it has been filled by {@link #fill(String)}. It is automatically cast to the accepting type E without checking whether the cast can succeed<br>and may throw {@link ClassCastException}
      */
     <E> E get();
 
     /**
-     * 将节点重置回初始化状态,以待下次填充{@link #fill(String)}
+     * Resets the node back to its initial state, ready for the next fill {@link #fill(String)}
      */
     void reset();
 
     /**
-     * 该节点是否已经得到结果<br>
-     * 该方法返回值为false时,将会一直重复对该节点执行填充{@link #fill(String)}直到该方法返回true或者命令输入参数用完
+     * Whether this node has obtained a result<br>
+     * While this method returns false, filling {@link #fill(String)} will be repeated on this node until it returns true or the command input arguments are exhausted
      */
     boolean hasResult();
 
     /**
-     * 该命令节点是否为可选值,可选值不一定需要被填充{@link #fill(String)}
+     * Whether this command node is optional. Optional values do not necessarily need to be filled {@link #fill(String)}
      */
     boolean isOptional();
 
     /**
-     * 获取该节点所属{@link ParamList}
+     * Gets the {@link ParamList} this node belongs to
      *
      * @return the parent
      */
     ParamList getParamList();
 
     /**
-     * 标记该节点的{@link #fill(String)}出现错误，输出默认错误信息
+     * Flags an error in this node's {@link #fill(String)} and outputs the default error message
      */
     default void error() {
         this.getParamList().error();
     }
 
     /**
-     * 标记该节点的{@link #fill(String)}出现错误
+     * Flags an error in this node's {@link #fill(String)}
      *
-     * @param key 添加的错误信息
+     * @param key the error message to add
      */
     default void error(String key) {
         this.error(key, CommandOutputContainer.EMPTY_STRING);
     }
 
     /**
-     * 标记该节点的{@link #fill(String)}出现错误
+     * Flags an error in this node's {@link #fill(String)}
      *
-     * @param key    添加的错误信息，可以填写多语言文本key
-     * @param params 填充多语言文本的参数
+     * @param key    the error message to add, which may be a multi-language text key
+     * @param params the parameters to fill into the multi-language text
      */
     default void error(String key, String... params) {
         var list = this.getParamList();
@@ -107,9 +107,9 @@ public interface IParamNode<T> {
     }
 
     /**
-     * 标记该节点的{@link #fill(String)}出现错误
+     * Flags an error in this node's {@link #fill(String)}
      *
-     * @param messages 添加的错误信息{@link CommandOutputMessage}
+     * @param messages the error messages to add {@link CommandOutputMessage}
      */
     default void error(CommandOutputMessage... messages) {
         var list = this.getParamList();
@@ -118,7 +118,7 @@ public interface IParamNode<T> {
     }
 
     /**
-     * 这个方法用于初始化{@link ParamList}和一些能从{@link org.powernukkitx.command.data.CommandParameter CommandParameter}得到的参数,例如optional enumData等，插件不需要调用
+     * This method initializes the {@link ParamList} and some parameters obtainable from {@link org.powernukkitx.command.data.CommandParameter CommandParameter}, such as optional, enumData, etc. Plugins do not need to call it
      *
      * @param parent   the parent
      * @param name     the name

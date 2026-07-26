@@ -291,7 +291,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
                 }
             }
 
-            //15格以上需要嫁接（放置竹子）
+            //above 15 blocks it needs grafting (placing bamboo)
             if (count >= 15) {
                 return false;
             }

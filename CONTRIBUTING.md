@@ -26,6 +26,7 @@ Also make sure to read the [README](https://github.com/PowerNukkitX/PowerNukkitX
 If you spot something wrong, [search existing issues](https://github.com/PowerNukkitX/PowerNukkitX/issues) first to avoid duplicates — your problem may already be tracked or resolved. If no related issue exists, open a new one using the appropriate [issue form](https://github.com/PowerNukkitX/PowerNukkitX/issues/new/choose).
 
 For bug reports, please include:
+
 - Your server version and Java version (JDK 21 required)
 - Steps to reproduce the issue
 - What you expected to happen vs. what actually happened

@@ -8,8 +8,6 @@ import org.powernukkitx.nbt.tag.ListTag;
 import javax.annotation.Nullable;
 
 /**
- * RenderOffsets是设置 render_offsets 项目组件。可以设置参数来偏移物品的在不同视角下的呈现方式。
- * <p>
  * RenderOffsets is the component that sets the render_offsets item. Parameters can be set to offset the rendering of items in different views.
  */
 
@@ -18,14 +16,12 @@ public class RenderOffsets {
     public final CompoundTag nbt = new CompoundTag();
 
     /**
-     * 设置自定义物品在不同视角下的渲染偏移量
-     * <p>
      * Set rendering offsets for custom items at different viewpoints
      *
-     * @param mainHandFirstPerson 设置第一人称主手物品的偏移量<br>Set the offset of the first person main hand item
-     * @param mainHandThirdPerson 设置第三人称主手物品的偏移量<br>Set the offset of the third person main hand item
-     * @param offHandFirstPerson  设置第一人称副手物品的偏移量<br>Set the offset of the first person offhand item
-     * @param offHandThirdPerson  设置第三人称副手物品的偏移量<br>Set the offset of the third person offhand item
+     * @param mainHandFirstPerson Set the offset of the first person main hand item
+     * @param mainHandThirdPerson Set the offset of the third person main hand item
+     * @param offHandFirstPerson  Set the offset of the first person offhand item
+     * @param offHandThirdPerson  Set the offset of the third person offhand item
      */
     public RenderOffsets(@Nullable Offset mainHandFirstPerson, @Nullable Offset mainHandThirdPerson, @Nullable Offset offHandFirstPerson, @Nullable Offset offHandThirdPerson) {
         if (mainHandFirstPerson != null || mainHandThirdPerson != null) {
@@ -50,11 +46,9 @@ public class RenderOffsets {
     }
 
     /**
-     * 以指定参数调整第一人称主手的scale偏移量
-     * <p>
      * Adjusts the scale offset of the first-person main hand with the specified multiplier
      *
-     * @param multiplier 按照指定规模缩放物品,这只会影响scale,所以物品位置可能不正确<br>Scaling the item to the specified scale multiplier number, which only affects the scale, so the item position may not be correct.
+     * @param multiplier Scaling the item to the specified scale multiplier number, which only affects the scale, so the item position may not be correct.
      * @return the render offsets
      */
     public static RenderOffsets scaleOffset(double multiplier) {
@@ -73,11 +67,9 @@ public class RenderOffsets {
     }
 
     /**
-     * 按照指定的物品材质大小缩放为标准16x16像素物品显示
-     * <p>
      * Scale to a standard 16x16 pixel item display at the specified item texture size
      *
-     * @param textureSize 指定物品材质的像素大小,只能为16的倍数<br>Specify the pixel size of the item texture, which can only be a multiple of 16.
+     * @param textureSize Specify the pixel size of the item texture, which can only be a multiple of 16.
      * @return the render offsets
      */
     public static RenderOffsets scaleOffset(int textureSize) {

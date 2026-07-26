@@ -109,10 +109,8 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(
                                 new BeeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
                                 all(
@@ -134,14 +132,13 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                                 1,
                                 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new BeeMemorizedBlockSensor(32, 6, 20)
-                ),
-                Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
-                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
+                .build();
     }
 
     public boolean hasSting() {

@@ -42,7 +42,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     /**
-     * @return 指定方块是否能向指定方向推动<br>Whether the specified square can be pushed in the specified direction
+     * @return Whether the specified square can be pushed in the specified direction
      */
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
         int min = block.level.getMinHeight();

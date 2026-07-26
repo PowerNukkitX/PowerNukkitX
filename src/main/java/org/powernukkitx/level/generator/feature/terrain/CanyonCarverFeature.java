@@ -8,6 +8,7 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 
 import static org.powernukkitx.level.Level.CHUNK_SIZE;
 
+@SuppressWarnings("PMD.ExcessiveParameterList")
 public class CanyonCarverFeature extends CaveGenerateFeature {
 
     public static final String NAME = "minecraft:canyon_carver";

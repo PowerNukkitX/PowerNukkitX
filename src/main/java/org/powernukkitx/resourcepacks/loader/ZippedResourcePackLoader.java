@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ZippedResourcePackLoader implements ResourcePackLoader {
 
-    //资源包文件存放地址
+    //location where the resource pack files are stored
     protected final File path;
 
     public ZippedResourcePackLoader(File path) {

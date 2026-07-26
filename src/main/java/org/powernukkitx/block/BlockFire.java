@@ -122,7 +122,7 @@ public class BlockFire extends BlockFlowable {
                 level.scheduleUpdate(this, tickRate());
             }
 
-            //在第一次放置时就检查下雨
+            //check for rain on the first placement
             checkRain();
 
             return Level.BLOCK_UPDATE_NORMAL;
@@ -323,9 +323,9 @@ public class BlockFire extends BlockFlowable {
     }
 
     /**
-     * 检查火焰是否应被雨水浇灭
+     * Check whether the fire should be extinguished by rain
      *
-     * @return 是否应被雨水浇灭
+     * @return whether it should be extinguished by rain
      */
     protected boolean checkRain() {
         var down = down();
