@@ -68,9 +68,8 @@ public class ItemHelper {
             item = new ItemUnknown(name, damage, amount, null);
         }
         Tag tagTag = tag.get("tag");
-        CompoundTag savedNbt = tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty() ? compoundTag : null;
-        if (savedNbt != null) {
-            item.setNbt(savedNbt);
+        if (tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty()) {
+            item.setNbt(compoundTag);
         }
 
         if (tag.contains("Block")) {
