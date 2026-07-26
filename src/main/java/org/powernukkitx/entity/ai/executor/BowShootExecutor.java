@@ -1,0 +1,225 @@
+package org.powernukkitx.entity.ai.executor;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.Server;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.EntityLiving;
+import org.powernukkitx.entity.ai.memory.MemoryType;
+import org.powernukkitx.entity.projectile.EntityArrow;
+import org.powernukkitx.entity.projectile.EntityProjectile;
+import org.powernukkitx.event.entity.EntityShootBowEvent;
+import org.powernukkitx.event.entity.ProjectileLaunchEvent;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemBow;
+import org.powernukkitx.item.enchantment.Enchantment;
+import org.powernukkitx.item.enchantment.bow.EnchantmentBow;
+import org.powernukkitx.level.Location;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.DoubleTag;
+import org.powernukkitx.nbt.tag.FloatTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+
+import java.util.function.Supplier;
+
+public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
+    protected MemoryType<? extends Entity> memory;
+    protected float speed;
+    protected int maxShootDistanceSquared;
+    protected boolean clearDataWhenLose;
+    protected final int coolDownTick;
+    protected final int pullBowTick;
+    /**
+     * Used to specify a specific attack target.
+     **/
+    protected Entity target;
+    /**
+     * The item used for shooting
+     */
+    protected Supplier<Item> item;
+    private int tick1;//control the coolDownTick
+    private int tick2;//control the pullBowTick
+
+    /**
+     * The shooting executor
+     *
+     * @param item              the item
+     * @param memory            used to read the memory of the attack target
+     * @param speed             the speed of movement towards the attacking target
+     * @param maxShootDistance  the maximum distance at which it is permissible to shoot, and only at this distance can be fired
+     * @param clearDataWhenLose clear the memory when the target is lost
+     * @param coolDownTick      attack cooldown (tick)
+     * @param pullBowTick       animation time per attack (tick)
+     */
+    public BowShootExecutor(Supplier<Item> item, MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullBowTick) {
+        this.item = item;
+        this.memory = memory;
+        this.speed = speed;
+        this.maxShootDistanceSquared = maxShootDistance * maxShootDistance;
+        this.clearDataWhenLose = clearDataWhenLose;
+        this.coolDownTick = coolDownTick;
+        this.pullBowTick = pullBowTick;
+    }
+
+    @Override
+    public boolean execute(EntityIntelligent entity) {
+        if (tick2 == 0) {
+            tick1++;
+        }
+        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
+        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
+        Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+        if (this.target == null) target = newTarget;
+        //some check
+        if (!target.isAlive()) return false;
+        else if (target instanceof Player player) {
+            if (player.isIgnoredByEntities() || !entity.level.getName().equals(player.level.getName())) {
+                return false;
+            }
+        }
+
+        if (!this.target.getPosition().equals(newTarget.getPosition())) {
+            //update the target
+            target = newTarget;
+        }
+
+        if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
+        Location clone = this.target.getLocation();
+        boolean canSee = entity.hasLineOfSight(target);
+        if (entity.distanceSquared(target) > maxShootDistanceSquared || !canSee) {
+            //update the pathfinding target
+            setRouteTarget(entity, clone);
+        } else {
+            setRouteTarget(entity, null);
+        }
+        //update the line-of-sight target
+        setLookTarget(entity, clone);
+
+        if (tick2 == 0 && tick1 > coolDownTick && canSee) {
+            if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
+                this.tick1 = 0;
+                this.tick2++;
+                playBowAnimation(entity);
+            }
+        } else if (tick2 != 0) {
+            tick2++;
+            if (tick2 > pullBowTick) {
+                Item tool = item.get();
+                if (tool instanceof ItemBow bow) {
+                    bowShoot(bow, entity);
+                    stopBowAnimation(entity);
+                    tick2 = 0;
+                    return target.getHealthCurrent() != 0;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
+        //reset the speed
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
+        if (clearDataWhenLose) {
+            entity.getBehaviorGroup().getMemoryStorage().clear(memory);
+        }
+        entity.setEnablePitch(false);
+        stopBowAnimation(entity);
+        this.target = null;
+    }
+
+    @Override
+    public void onInterrupt(EntityIntelligent entity) {
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
+        //reset the speed
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
+        if (clearDataWhenLose) {
+            entity.getBehaviorGroup().getMemoryStorage().clear(memory);
+        }
+        entity.setEnablePitch(false);
+        stopBowAnimation(entity);
+        this.target = null;
+    }
+
+    protected void bowShoot(ItemBow bow, EntityLiving entity) {
+        playBowAnimation(entity);
+        double damage = 2;
+        Enchantment bowDamage = bow.getEnchantment(Enchantment.ID_BOW_POWER);
+        if (bowDamage != null && bowDamage.getLevel() > 0) {
+            damage += (double) bowDamage.getLevel() * 0.5 + 0.5;
+        }
+        Enchantment flameEnchant = bow.getEnchantment(Enchantment.ID_BOW_FLAME);
+        boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
+
+        final CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(entity.x))
+                        .add(new DoubleTag(entity.y + entity.getCurrentHeight() / 2 + 0.2f))
+                        .add(new DoubleTag(entity.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
+                        .add(new FloatTag((float) -entity.pitch)))
+                .putShort("Fire", (short) (flame ? 45 * 60 : 0))
+                .putDouble("damage", damage);
+
+        double p = (double) pullBowTick / 20;
+        double f = Math.min((p * p + p * 2) / 3, 1) * 3;
+
+        EntityArrow arrow = (EntityArrow) Entity.createEntity(Entity.ARROW, entity.chunk, nbt, entity, f == 2);
+
+        if (arrow == null) {
+            return;
+        }
+
+        EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(entity, bow, arrow, f);
+        Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
+        if (entityShootBowEvent.isCancelled()) {
+            entityShootBowEvent.getProjectile().kill();
+        } else {
+            entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
+            Enchantment infinityEnchant = bow.getEnchantment(Enchantment.ID_BOW_INFINITY);
+            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
+            EntityProjectile projectile;
+            if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
+                ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
+            }
+
+            for (var enc : bow.getEnchantments()) {
+                if (enc instanceof EnchantmentBow enchantmentBow) {
+                    enchantmentBow.onBowShoot(entity, arrow, bow);
+                }
+            }
+
+            if (entityShootBowEvent.getProjectile() != null) {
+                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), entity);
+                Server.getInstance().getPluginManager().callEvent(projectev);
+                if (projectev.isCancelled()) {
+                    entityShootBowEvent.getProjectile().kill();
+                } else {
+                    entityShootBowEvent.getProjectile().spawnToAll();
+                    entity.getLevel().addSound(entity, Sound.RANDOM_BOW);
+                }
+            }
+        }
+    }
+
+    private void playBowAnimation(Entity entity) {
+        entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
+        entity.setDataFlag(ActorFlags.FACING_TARGET_TO_RANGE_ATTACK);
+    }
+
+    private void stopBowAnimation(Entity entity) {
+        entity.setDataProperty(ActorDataTypes.TARGET, 0L);
+        entity.setDataFlag(ActorFlags.FACING_TARGET_TO_RANGE_ATTACK, false);
+    }
+}

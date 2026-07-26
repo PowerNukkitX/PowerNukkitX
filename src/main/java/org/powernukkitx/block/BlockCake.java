@@ -1,0 +1,166 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.vibration.VibrationEvent;
+import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.math.BlockFace;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
+
+import static org.powernukkitx.block.property.CommonBlockProperties.BITE_COUNTER;
+
+/**
+ * @author Nukkit Project Team
+ */
+public class BlockCake extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CAKE, BITE_COUNTER);
+
+    public BlockCake(BlockState blockState) {
+        super(blockState);
+    }
+
+    public BlockCake() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    @Override
+    public String getName() {
+        return "Cake Block";
+    }
+
+    @Override
+    @NotNull
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public double getHardness() {
+        return 0.5;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0.5;
+    }
+
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
+
+    @Override
+    public double getMinX() {
+        return this.x + (1 + getBiteCount() * 2) / 16;
+    }
+
+    @Override
+    public double getMinY() {
+        return this.y;
+    }
+
+    @Override
+    public double getMinZ() {
+        return this.z + 0.0625;
+    }
+
+    @Override
+    public double getMaxX() {
+        return this.x - 0.0625 + 1;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 0.5;
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z - 0.0625 + 1;
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (!down().isAir()) {
+            getLevel().setBlock(block, this, true, true);
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL && down().isAir()) {
+            getLevel().setBlock(this, Block.get(BlockID.AIR), true);
+
+            return Level.BLOCK_UPDATE_NORMAL;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return Item.EMPTY_ARRAY;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if(isNotActivate(player)) return false;
+        if (item.getBlock() instanceof BlockCandle && this.getBiteCount() == 0) {
+            return false;
+        }
+        int damage = getBiteCount();
+        if ((player.getFoodData().isHungry() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
+            if (damage < BITE_COUNTER.getMax()) setBiteCount(damage + 1);
+            if (damage >= BITE_COUNTER.getMax()) {
+                getLevel().setBlock(this, Block.get(BlockID.AIR), true);
+            } else {
+                player.getFoodData().addFood(2, 0.4F);
+                getLevel().setBlock(this, this, true);
+            }
+            this.level.addLevelSoundEvent(this, SoundEvent.BURP );
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, this.add(0.5, 0.5, 0.5), VibrationType.EAT));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int getComparatorInputOverride() {
+        return (7 - this.getBiteCount()) * 2;
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    public int getBiteCount() {
+        return getPropertyValue(BITE_COUNTER);
+    }
+
+    public void setBiteCount(int count) {
+        setPropertyValue(BITE_COUNTER, count);
+    }
+}

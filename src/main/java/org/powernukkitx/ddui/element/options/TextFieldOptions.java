@@ -1,0 +1,31 @@
+package org.powernukkitx.ddui.element.options;
+
+import org.powernukkitx.ddui.Observable;
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class TextFieldOptions implements ElementOptions {
+
+    /**
+     * Description text displayed above or alongside the text field.
+     * Can be a plain {@code String} or an {@link Observable}.
+     */
+    @Builder.Default
+    private final Object description = "";
+
+    /**
+     * Whether the text field is disabled (non-interactive).
+     * Supply either a plain {@code boolean} or an {@link Observable}.
+     */
+    @Builder.Default
+    private final Object disabled = false;
+
+    /**
+     * Whether the text field is visible in the UI.
+     * Supply either a plain {@code boolean} or an {@link Observable}.
+     */
+    @Builder.Default
+    private final Object visible = true;
+}

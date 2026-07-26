@@ -1,0 +1,34 @@
+package org.powernukkitx.config.category;
+
+import eu.okaeri.configs.OkaeriConfig;
+import eu.okaeri.configs.annotation.Comment;
+import eu.okaeri.configs.annotation.CustomKey;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Accessors(fluent = true)
+public class PerformanceSettings extends OkaeriConfig {
+    @Comment("pnx.settings.performance.asyncworkers")
+    String asyncWorkers = "auto";
+    @Comment("pnx.settings.performance.basetps")
+    int baseTps = 20;
+    @Comment("pnx.settings.performance.registrycache.enable")
+    boolean registryCacheEnabled = false;
+    @Comment("pnx.settings.performance.registrycache.path")
+    String registryCachePath = "path/to/your/registry_cache.bin";
+    @Comment("pnx.settings.performance.forcegcpercentage")
+    float forceGCpercentage = 1f;
+    @Comment("pnx.settings.performance.freezearray.enable")
+    boolean enable = true;
+    int slots = 32;
+    int defaultTemperature = 32;
+    int freezingPoint = 0;
+    int boilingPoint = 1024;
+    int absoluteZero = -256;
+    int melting = 16;
+    int singleOperation = 1;
+    int batchOperation = 32;
+}

@@ -1,0 +1,44 @@
+package org.powernukkitx.item;
+
+import org.powernukkitx.block.Block;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class ItemBlock extends Item {
+    public ItemBlock(Block block) {
+        this(block, 0, 1);
+    }
+
+    public ItemBlock(Block block, int aux) {
+        this(block, aux, 1);
+    }
+
+    public ItemBlock(Block block, int aux, int count) {
+        super(block, aux, count, block.getName(), true);
+    }
+
+    @Override
+    public void setDamage(int meta) {
+
+    }
+
+    @Override
+    public ItemBlock clone() {
+        ItemBlock block = (ItemBlock) super.clone();
+        block.block = this.block.clone();
+        return block;
+    }
+
+    @Override
+    @NotNull
+    public Block getBlock() {
+        return this.block.clone();
+    }
+
+    @Override
+    public boolean isLavaResistant() {
+        return block.isLavaResistant();
+    }
+}

@@ -1,0 +1,16 @@
+package org.powernukkitx.recipe.special;
+
+import org.powernukkitx.recipe.SmithingTrimRecipe;
+import org.powernukkitx.recipe.descriptor.ItemTagDescriptor;
+
+public class SmithingArmorTrimCorrectedRecipe extends SmithingTrimRecipe {
+
+    public SmithingArmorTrimCorrectedRecipe(int netId) {
+        super("minecraft:smithing_armor_trim_corrected",
+                netId,
+                new ItemTagDescriptor("minecraft:trimmable_armors", 1),
+                new ItemTagDescriptor("minecraft:trim_materials", 1),
+                new ItemTagDescriptor("minecraft:trim_templates", 1),
+                "smithing_table");
+    }
+}

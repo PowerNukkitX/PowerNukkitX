@@ -1,0 +1,22 @@
+package org.powernukkitx.utils;
+
+/**
+ * Represents the available colors for a boss bar.
+ * Used to customize the appearance of boss bars in the UI.
+ *
+ * @author Kevims
+ */
+public enum BossBarColor {
+    PINK,
+    BLUE,
+    RED,
+    GREEN,
+    YELLOW,
+    PURPLE,
+    REBECCA_PURPLE,
+    WHITE;
+
+    public org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor toNetwork() {
+        return org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor.from(this.ordinal());
+    }
+}

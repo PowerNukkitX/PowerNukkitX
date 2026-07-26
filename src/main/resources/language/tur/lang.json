@@ -64,7 +64,6 @@
   "pnx.settings.base.deprecatedVerbose": "Whether to prompt for deprecated events for plugin",
   "pnx.settings.base.asyncWorkers": "Number of threads used by the server scheduler, 'auto' means automatic allocation",
   "pnx.settings.base.installSpark": "Whether to install the Spark plugin on the server",
-  "pnx.settings.base.waterdogpe": "Whether to enable WaterdogPE compatibility mode on the server",
   "pnx.settings.base.autosave": "Tick cycle for server auto-save",
   "pnx.settings.base.saveUnknownBlock": "Whether to save unknown blocks, such as custom blocks that are not registered",
   "pnx.settings.network": "Server's network configuration",

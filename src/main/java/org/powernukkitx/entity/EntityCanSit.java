@@ -1,0 +1,20 @@
+package org.powernukkitx.entity;
+
+import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+
+/**
+ * Interface for entities that can sit.<p>
+ */
+
+
+public interface EntityCanSit extends EntityComponent {
+    default boolean isSitting() {
+        return getMemoryStorage().get(CoreMemoryTypes.IS_SITTING);
+    }
+
+    default void setSitting(boolean sitting) {
+        getMemoryStorage().put(CoreMemoryTypes.IS_SITTING, sitting);
+        asEntity().setDataFlag(ActorFlags.SITTING, sitting);
+    }
+}

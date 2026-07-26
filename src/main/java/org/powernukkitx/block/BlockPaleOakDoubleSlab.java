@@ -1,0 +1,28 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockPaleOakDoubleSlab extends BlockDoubleWoodenSlab {
+     public static final BlockProperties PROPERTIES = new BlockProperties(PALE_OAK_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+
+     @Override
+     @NotNull
+     public BlockProperties getProperties() {
+        return PROPERTIES;
+     }
+
+     public BlockPaleOakDoubleSlab(BlockState blockstate) {
+         super(blockstate);
+     }
+
+    @Override
+    public String getSlabName() {
+        return "Pale Oak";
+    }
+
+    @Override
+    public BlockState getSingleSlab() {
+        return BlockPaleOakSlab.PROPERTIES.getDefaultState();
+    }
+}

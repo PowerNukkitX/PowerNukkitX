@@ -1,0 +1,196 @@
+package org.powernukkitx.permission;
+
+import org.powernukkitx.Server;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class Permission {
+
+    public final static String DEFAULT_OP = "op";
+    public final static String DEFAULT_NOT_OP = "notop";
+    public final static String DEFAULT_TRUE = "true";
+    public final static String DEFAULT_FALSE = "false";
+
+    public static final String DEFAULT_PERMISSION = DEFAULT_OP;
+
+    public static String getByName(String value) {
+        return switch (value.toLowerCase(Locale.ENGLISH)) {
+            case "op", "isop", "operator", "isoperator", "admin", "isadmin" -> DEFAULT_OP;
+            case "!op", "notop", "!operator", "notoperator", "!admin", "notadmin" -> DEFAULT_NOT_OP;
+            case "true" -> DEFAULT_TRUE;
+            default -> DEFAULT_FALSE;
+        };
+    }
+
+    private final String name;
+
+    private String description;
+
+    private Map<String, Boolean> children = new HashMap<>();
+
+    private String defaultValue;
+
+    public Permission(String name) {
+        this(name, null, null, new HashMap<>());
+    }
+
+    public Permission(String name, String description) {
+        this(name, description, null, new HashMap<>());
+    }
+
+    public Permission(String name, String description, String defaultValue) {
+        this(name, description, defaultValue, new HashMap<>());
+    }
+
+    public Permission(String name, String description, String defaultValue, Map<String, Boolean> children) {
+        this.name = name;
+        this.description = description != null ? description : "";
+        this.defaultValue = defaultValue != null ? defaultValue : DEFAULT_PERMISSION;
+        this.children = children;
+
+        this.recalculatePermissibles();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Map<String, Boolean> getChildren() {
+        return children;
+    }
+
+    public String getDefault() {
+        return defaultValue;
+    }
+
+    public void setDefault(String value) {
+        if (!value.equals(this.defaultValue)) {
+            this.defaultValue = value;
+            this.recalculatePermissibles();
+        }
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Set<Permissible> getPermissibles() {
+        return Server.getInstance().getPluginManager().getPermissionSubscriptions(this.name);
+    }
+
+    public void recalculatePermissibles() {
+        Set<Permissible> perms = this.getPermissibles();
+
+        Server.getInstance().getPluginManager().recalculatePermissionDefaults(this);
+
+        for (Permissible p : perms) {
+            p.recalculatePermissions();
+        }
+    }
+
+    public void addParent(Permission permission, boolean value) {
+        this.getChildren().put(this.getName(), value);
+        permission.recalculatePermissibles();
+    }
+
+    public Permission addParent(String name, boolean value) {
+        Permission perm = Server.getInstance().getPluginManager().getPermission(name);
+        if (perm == null) {
+            perm = new Permission(name);
+            Server.getInstance().getPluginManager().addPermission(perm);
+        }
+
+        this.addParent(perm, value);
+
+        return perm;
+    }
+
+    public static List<Permission> loadPermissions(Map<String, Object> data) {
+        return loadPermissions(data, DEFAULT_OP);
+    }
+
+    public static List<Permission> loadPermissions(Map<String, Object> data, String defaultValue) {
+        List<Permission> result = new ArrayList<>();
+        if (data != null) {
+            for (Map.Entry<String, Object> e : data.entrySet()) {
+                String key = e.getKey();
+                Object value = e.getValue();
+                if (value instanceof Map<?, ?> entryMap) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> entry = (Map<String, Object>) entryMap;
+                    result.add(loadPermission(key, entry, defaultValue, result));
+                } else {
+                    throw new IllegalStateException("Permission entry for key '" + key + "' is not a Map");
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Permission loadPermission(String name, Map<String, Object> data) {
+        return loadPermission(name, data, DEFAULT_OP, new ArrayList<>());
+    }
+
+    public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue) {
+        return loadPermission(name, data, defaultValue, new ArrayList<>());
+    }
+
+    public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue, List<Permission> output) {
+        String desc = null;
+        Map<String, Boolean> children = new HashMap<>();
+        if (data.containsKey("default")) {
+            String value = Permission.getByName(String.valueOf(data.get("default")));
+            if (value != null) {
+                defaultValue = value;
+            } else {
+                throw new IllegalStateException("'default' key contained unknown value");
+            }
+        }
+
+        if (data.containsKey("children")) {
+            Object childrenObj = data.get("children");
+            if (childrenObj instanceof Map<?, ?> childrenMap) {
+                for (Map.Entry<?, ?> entry : childrenMap.entrySet()) {
+                    String k = String.valueOf(entry.getKey());
+                    Object v = entry.getValue();
+                    if (v instanceof Map<?, ?> vMap) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> vMapCasted = (Map<String, Object>) vMap;
+                        Permission permission = loadPermission(k, vMapCasted, defaultValue, output);
+                        output.add(permission);
+                        children.put(k, true);
+                    } else {
+                        boolean childValue;
+                        if (v instanceof Boolean bool) {
+                            childValue = bool;
+                        } else {
+                            childValue = Boolean.parseBoolean(String.valueOf(v));
+                        }
+                        children.put(k, childValue);
+                    }
+                }
+            } else {
+                throw new IllegalStateException("'children' key is of wrong type");
+            }
+        }
+
+        if (data.containsKey("description")) {
+            desc = (String) data.get("description");
+        }
+
+        return new Permission(name, desc, defaultValue, children);
+    }
+
+}

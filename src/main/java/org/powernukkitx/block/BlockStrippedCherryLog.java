@@ -1,0 +1,32 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.enums.WoodType;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockStrippedCherryLog extends BlockWoodStripped {
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_CHERRY_LOG, CommonBlockProperties.PILLAR_AXIS);
+
+    @Override
+    @NotNull public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    public BlockStrippedCherryLog() {
+        this(PROPERTIES.getDefaultState());
+    }
+
+    public BlockStrippedCherryLog(BlockState blockstate) {
+        super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Stripped Cherry Log";
+    }
+
+    @Override
+    public WoodType getWoodType() {
+        return WoodType.CHERRY;
+    }
+}

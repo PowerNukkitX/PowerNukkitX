@@ -1,0 +1,22 @@
+package org.powernukkitx.utils;
+
+/**
+ * Exception thrown when a chunk-related error occurs in the world or level system.
+ *
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class ChunkException extends RuntimeException {
+
+    public ChunkException(String message) {
+        super(message);
+    }
+
+    public ChunkException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ChunkException(Throwable cause) {
+        super(cause);
+    }
+
+}

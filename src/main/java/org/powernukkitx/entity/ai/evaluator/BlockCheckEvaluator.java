@@ -1,0 +1,21 @@
+package org.powernukkitx.entity.ai.evaluator;
+
+import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.math.Vector3;
+
+
+public class BlockCheckEvaluator implements IBehaviorEvaluator {
+
+    protected String blockId;
+    protected Vector3 offsetVec;
+
+    public BlockCheckEvaluator(String blockId, Vector3 offsetVec) {
+        this.blockId = blockId;
+        this.offsetVec = offsetVec;
+    }
+
+    @Override
+    public boolean evaluate(EntityIntelligent entity) {
+        return entity.level.getTickCachedBlock(entity.add(offsetVec)).getId().equals(blockId);
+    }
+}

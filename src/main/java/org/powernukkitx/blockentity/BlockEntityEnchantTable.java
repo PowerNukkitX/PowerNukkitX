@@ -1,0 +1,57 @@
+package org.powernukkitx.blockentity;
+
+import org.powernukkitx.block.Block;
+import org.powernukkitx.inventory.EnchantInventory;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.nbt.tag.CompoundTag;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
+    public BlockEntityEnchantTable(IChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
+    @Override
+    public boolean isBlockEntityValid() {
+        return getBlock().getId().equals(Block.ENCHANTING_TABLE);
+    }
+
+    @Override
+    public String getName() {
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Enchanting Table";
+    }
+
+    @Override
+    public boolean hasName() {
+        return this.nbt.contains("CustomName");
+    }
+
+    @Override
+    public void setName(String name) {
+        if (name == null || name.isBlank()) {
+            this.nbt.remove("CustomName");
+            return;
+        }
+
+        this.nbt.putString("CustomName", name);
+    }
+
+    @Override
+    public CompoundTag getSpawnCompound() {
+        CompoundTag c = super.getSpawnCompound()
+                .putBoolean("isMovable", false);
+
+        if (this.hasName()) {
+            c.putString("CustomName", this.getNbt().getString("CustomName"));
+        }
+
+        return c;
+    }
+
+    @Override
+    public EnchantInventory getInventory() {
+        return new EnchantInventory(this);
+    }
+}

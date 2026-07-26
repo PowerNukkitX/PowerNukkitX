@@ -1,0 +1,43 @@
+package org.powernukkitx.command.defaults;
+
+import org.powernukkitx.Server;
+import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.data.CommandParameter;
+import org.powernukkitx.command.tree.ParamList;
+import org.powernukkitx.command.utils.CommandLogger;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+
+import java.util.Map;
+
+
+public class SetMaxPlayersCommand extends VanillaCommand {
+
+    public SetMaxPlayersCommand(String name) {
+        super(name, "commands.setmaxplayers.description");
+        this.setPermission("nukkit.command.setmaxplayers");
+        this.getCommandParameters().clear();
+        this.addCommandParameters("default", new CommandParameter[]{
+                CommandParameter.newType("maxPlayers", false, CommandParamType.INT)
+        });
+        this.enableParamTree();
+    }
+
+    @Override
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        int maxPlayers = result.getValue().getResult(0);
+        boolean lowerBound = false;
+
+        if (maxPlayers < Server.getInstance().getOnlinePlayers().size()) {
+            maxPlayers = Server.getInstance().getOnlinePlayers().size();
+            lowerBound = true;
+        }
+
+        sender.getServer().setMaxPlayers(maxPlayers);
+        log.addSuccess("commands.setmaxplayers.success", String.valueOf(maxPlayers));
+        if (lowerBound) {
+            log.addSuccess("commands.setmaxplayers.success.lowerbound");
+        }
+        log.output();
+        return 1;
+    }
+}

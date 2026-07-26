@@ -1,0 +1,70 @@
+package org.powernukkitx.entity.ai.controller;
+
+import org.powernukkitx.entity.EntityIntelligent;
+import java.util.function.BooleanSupplier;
+import org.powernukkitx.math.BVector3;
+import org.powernukkitx.math.Vector3;
+
+/**
+ * Handle entity Pitch/Yaw/HeadYaw rotation to look at targets or move direction.
+ */
+public class LookController implements IController {
+
+    protected final BooleanSupplier lookAtTarget;
+    protected final BooleanSupplier lookAtRoute;
+
+    public LookController(boolean lookAtTarget, boolean lookAtRoute) {
+        this.lookAtTarget = () -> lookAtTarget;
+        this.lookAtRoute = () -> lookAtRoute;
+    }
+
+    public LookController(BooleanSupplier lookAtTarget, BooleanSupplier lookAtRoute) {
+        this.lookAtTarget = lookAtTarget;
+        this.lookAtRoute = lookAtRoute;
+    }
+
+    @Override
+    public boolean control(EntityIntelligent entity) {
+        Vector3 lookTarget = entity.getLookTarget();
+
+        if (lookAtRoute.getAsBoolean() && entity.hasMoveDirection()) {
+            // Clone prevents NPE caused by asynchronous
+            Vector3 moveDirectionEnd = entity.getMoveDirectionEnd().clone();
+            // Construct path direction vector
+            var routeDirectionVector = new Vector3(moveDirectionEnd.x - entity.x, moveDirectionEnd.y - entity.y, moveDirectionEnd.z - entity.z);
+            var yaw = BVector3.getYawFromVector(routeDirectionVector);
+            entity.setYaw(yaw);
+            if (!lookAtTarget.getAsBoolean()) {
+                entity.setHeadYaw(yaw);
+
+                if (entity.isEnablePitch()) {
+                    if (routeDirectionVector.lengthSquared() > 0) {
+                        float pitch = (float) -Math.toDegrees(Math.atan2(routeDirectionVector.y, Math.sqrt(routeDirectionVector.x * routeDirectionVector.x + routeDirectionVector.z * routeDirectionVector.z)));
+                        entity.setPitch(pitch);
+                    }
+                }
+            }
+        }
+
+        if (lookAtTarget.getAsBoolean() && lookTarget != null) {
+            // Construct a vector pointing to the player
+            var toPlayerVector = new Vector3(
+                    lookTarget.x - entity.x,
+                    lookTarget.y - entity.y,
+                    lookTarget.z - entity.z
+            );
+
+            if (entity.isEnablePitch()) {
+                if (toPlayerVector.lengthSquared() > 0) {
+                    float pitch = (float) -Math.toDegrees(Math.atan2(toPlayerVector.y, Math.sqrt(toPlayerVector.x * toPlayerVector.x + toPlayerVector.z * toPlayerVector.z)));
+                    entity.setPitch(pitch);
+                }
+            }
+
+            entity.setHeadYaw(BVector3.getYawFromVector(toPlayerVector));
+        }
+
+        if (!entity.isEnablePitch()) entity.setPitch(0);
+        return true;
+    }
+}

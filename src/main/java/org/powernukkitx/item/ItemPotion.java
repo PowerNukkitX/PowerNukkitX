@@ -1,0 +1,135 @@
+package org.powernukkitx.item;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.entity.effect.PotionApplicationMode;
+import org.powernukkitx.entity.effect.PotionType;
+import org.powernukkitx.event.player.PlayerItemConsumeEvent;
+import org.powernukkitx.level.vibration.VibrationEvent;
+import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
+
+import javax.annotation.Nullable;
+
+public class ItemPotion extends Item {
+
+    public ItemPotion() {
+        this(0, 1);
+    }
+
+    public ItemPotion(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemPotion(Integer meta, int count) {
+        super(POTION, meta, count, "Potion");
+        updateName();
+    }
+
+    @Override
+    public void setDamage(int meta) {
+        super.setDamage(meta);
+        updateName();
+    }
+
+    private void updateName() {
+        PotionType potion = this.getPotion();
+        if (PotionType.WATER.equals(potion)) {
+            name = buildName(potion, "Bottle", true);
+        } else {
+            name = buildName(potion, "Potion", true);
+        }
+    }
+
+    static String buildName(PotionType potion, String type, boolean includeLevel) {
+        return switch (potion.stringId()) {
+            case "minecraft:water" -> "Water " + type;
+            case "minecraft:mundane", "minecraft:long_mundane" -> "Mundane " + type;
+            case "minecraft:thick" -> "Thick " + type;
+            case "minecraft:awkward" -> "Awkward " + type;
+            case "minecraft:turtle_master", "minecraft:long_turtle_master", "minecraft:strong_turtle_master" -> {
+                String name = type + " of the Turtle Master";
+                if (!includeLevel) {
+                    yield name;
+                }
+
+                if (potion.level() <= 1) {
+                    yield name;
+                }
+
+                yield name + " " + potion.getRomanLevel();
+            }
+            default -> {
+                String finalName = potion.name();
+                if (finalName.isEmpty()) {
+                    finalName = type;
+                } else {
+                    finalName = type + " of " + finalName;
+                }
+                if (includeLevel && potion.level() > 1) {
+                    finalName += " " + potion.getRomanLevel();
+                }
+                yield finalName;
+            }
+        };
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
+
+    @Override
+    public boolean isConsumable() {
+        return true;
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        return true;
+    }
+
+    @Override
+    public int getUsingTicks() {
+        return 31;
+    }
+
+    @Override
+    public boolean onUse(Player player, int ticksUsed) {
+        if (ticksUsed < 31) {
+            return false;
+        }
+        PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
+        player.getServer().getPluginManager().callEvent(consumeEvent);
+        if (consumeEvent.isCancelled()) {
+            return false;
+        }
+
+        player.completeUsingItem(this.getRuntimeId(), ItemUseMethod.CONSUME);
+
+        PotionType potion = PotionType.get(this.getDamage());
+
+        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.getLocation(), VibrationType.DRINKING));
+
+        if (player.isAdventure() || player.isSurvival()) {
+            --this.count;
+            player.getInventory().setItemInMainHand(this);
+            player.getInventory().addItem(new ItemGlassBottle());
+            player.level.addLevelSoundEvent(player, SoundEvent.BOTTLE_EMPTY);
+        }
+
+        if (potion != null) {
+            potion.applyEffects(player, PotionApplicationMode.DRINK, 1);
+        }
+        return true;
+    }
+
+    public @Nullable PotionType getPotion() {
+        return PotionType.get(getDamage());
+    }
+
+    public static ItemPotion fromPotion(PotionType potion) {
+        return new ItemPotion(potion.id());
+    }
+}

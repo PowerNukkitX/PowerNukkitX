@@ -1,0 +1,210 @@
+package org.powernukkitx.item;
+
+import org.powernukkitx.Player;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.item.EntityElytraFirework;
+import org.powernukkitx.entity.item.EntityFireworksRocket;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.Vector3;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.DoubleTag;
+import org.powernukkitx.nbt.tag.FloatTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.utils.DyeColor;
+import org.powernukkitx.utils.ItemHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ItemFireworkRocket extends Item {
+    public ItemFireworkRocket() {
+        this(0);
+    }
+
+    public ItemFireworkRocket(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemFireworkRocket(Integer meta, int count) {
+        super(FIREWORK_ROCKET, meta, count, "Firework Rocket");
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+        if (player.isAdventure()) {
+            return false;
+        }
+
+        if (block.canPassThrough()) {
+            this.spawnFirework(level, block);
+
+            if (!player.isCreative()) {
+                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        if (player.getInventory().getChestplate() instanceof ItemElytra && player.isGliding()) {
+            player.setMotion(new Vector3(
+                    -Math.sin(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2,
+                    -Math.sin(Math.toRadians(player.pitch)) * 2,
+                    Math.cos(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2));
+
+            spawnElytraFirework(player, player);
+            if (!player.isCreative()) {
+                this.count--;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void addExplosion(FireworkExplosion explosion) {
+        List<DyeColor> colors = explosion.getColors();
+        List<DyeColor> fades = explosion.getFades();
+
+        if (colors.isEmpty()) {
+            return;
+        }
+        byte[] clrs = new byte[colors.size()];
+        for (int i = 0; i < clrs.length; i++) {
+            clrs[i] = (byte) colors.get(i).getDyeData();
+        }
+
+        byte[] fds = new byte[fades.size()];
+        for (int i = 0; i < fds.length; i++) {
+            fds[i] = (byte) fades.get(i).getDyeData();
+        }
+
+        ListTag<CompoundTag> explosions = this.getNbt().getCompound("Fireworks").getList("Explosions", CompoundTag.class);
+        CompoundTag tag = new CompoundTag()
+                .putByteArray("FireworkColor", clrs)
+                .putByteArray("FireworkFade", fds)
+                .putBoolean("FireworkFlicker", explosion.flicker)
+                .putBoolean("FireworkTrail", explosion.trail)
+                .putByte("FireworkType", explosion.type.ordinal());
+
+        explosions.add(tag);
+    }
+
+    public void clearExplosions() {
+        this.getNbt().getCompound("Fireworks").putList("Explosions", new ListTag<CompoundTag>());
+    }
+
+    private void spawnFirework(Level level, Vector3 pos) {
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(pos.x + 0.5))
+                        .add(new DoubleTag(pos.y + 0.5))
+                        .add(new DoubleTag(pos.z + 0.5)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
+                .putCompound("FireworkItem", ItemHelper.write(this));
+
+        EntityFireworksRocket entity = (EntityFireworksRocket) Entity.createEntity(Entity.FIREWORKS_ROCKET, level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
+        if (entity != null) {
+            entity.spawnToAll();
+        }
+    }
+
+    private void spawnElytraFirework(Vector3 pos, Player player) {
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(pos.x + 0.5))
+                        .add(new DoubleTag(pos.y + 0.5))
+                        .add(new DoubleTag(pos.z + 0.5)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
+                .putCompound("FireworkItem", ItemHelper.write(this));
+
+        EntityElytraFirework entity = new EntityElytraFirework(player.getChunk(), nbt, player);
+        entity.spawnToAll();
+    }
+
+    public static class FireworkExplosion {
+
+        private final List<DyeColor> colors = new ArrayList<>();
+        private final List<DyeColor> fades = new ArrayList<>();
+        private boolean flicker = false;
+        private boolean trail = false;
+        private FireworkExplosion.ExplosionType type = FireworkExplosion.ExplosionType.CREEPER_SHAPED;
+
+        public List<DyeColor> getColors() {
+            return this.colors;
+        }
+
+        public List<DyeColor> getFades() {
+            return this.fades;
+        }
+
+        public boolean hasFlicker() {
+            return this.flicker;
+        }
+
+        public boolean hasTrail() {
+            return this.trail;
+        }
+
+        public FireworkExplosion.ExplosionType getType() {
+            return this.type;
+        }
+
+        public FireworkExplosion setFlicker(boolean flicker) {
+            this.flicker = flicker;
+            return this;
+        }
+
+        public FireworkExplosion setTrail(boolean trail) {
+            this.trail = trail;
+            return this;
+        }
+
+        public FireworkExplosion type(FireworkExplosion.ExplosionType type) {
+            this.type = type;
+            return this;
+        }
+
+        public FireworkExplosion addColor(DyeColor color) {
+            colors.add(color);
+            return this;
+        }
+
+        public FireworkExplosion addFade(DyeColor fade) {
+            fades.add(fade);
+            return this;
+        }
+
+        public enum ExplosionType {
+            SMALL_BALL,
+            LARGE_BALL,
+            STAR_SHAPED,
+            CREEPER_SHAPED,
+            BURST
+        }
+    }
+}

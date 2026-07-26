@@ -1,0 +1,39 @@
+package org.powernukkitx.block;
+
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemCreeperHead;
+import org.jetbrains.annotations.NotNull;
+
+public class BlockCreeperHead extends BlockHead {
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(CREEPER_HEAD, CommonBlockProperties.FACING_DIRECTION);
+
+    public BlockCreeperHead(BlockState blockState) {
+        super(blockState);
+    }
+
+    @Override
+    public @NotNull BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public String getName() {
+        return "Creeper Head";
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{
+                this.toItem()
+        };
+    }
+
+    @Override
+    public Item toItem() {
+        Item item = new ItemCreeperHead();
+        item.setBlockUnsafe(this.getProperties().getDefaultState().toBlock());
+        return item;
+    }
+}
