@@ -59,9 +59,11 @@ public abstract class JigsawStructure {
         Set<BlockVector3> connectedJigsaws = new HashSet<>();
         List<BoundingBox> occupiedBoxes = new ArrayList<>();
         occupiedBoxes.add(rootPiece.boundingBox());
-        List<BoundingBox> terrainAdaptationBoxes = new ArrayList<>();
+        List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces = new ArrayList<>();
         if (appliesTerrainAdaptation(rootPiece.structureName())) {
-            terrainAdaptationBoxes.add(rootPiece.boundingBox());
+            terrainAdaptationPieces.add(
+                    Beardifier.TerrainAdaptationPiece.atBoundingBoxFloor(rootPiece.boundingBox())
+            );
         }
         List<PendingStructurePiece> pendingPieces = new ArrayList<>();
         pendingPieces.add(new PendingStructurePiece(rootPiece, 0, 0));
@@ -126,7 +128,10 @@ public abstract class JigsawStructure {
                 connectedJigsaws.add(candidate.connection().childJigsawWorldPos());
                 occupiedBoxes.add(childPiece.boundingBox());
                 if (appliesTerrainAdaptation(childPiece.structureName())) {
-                    terrainAdaptationBoxes.add(childPiece.boundingBox());
+                    terrainAdaptationPieces.add(new Beardifier.TerrainAdaptationPiece(
+                            childPiece.boundingBox(),
+                            candidate.connection().childJigsawWorldPos().getY()
+                    ));
                 }
                 if (pending.depth() + 1 < getMaxDepth()) {
                     insertPendingPiece(
@@ -136,7 +141,7 @@ public abstract class JigsawStructure {
                 }
             }
         }
-        postProcessStructure(manager, terrainAdaptationBoxes);
+        postProcessStructure(manager, terrainAdaptationPieces);
     }
 
     private PlacedStructurePiece placeStructurePiece(Vector3 position, Rotation rotation, StructureHelper helper, StructurePool pool,
@@ -167,7 +172,8 @@ public abstract class JigsawStructure {
     protected void postProcessStructure(StructureHelper helper) {
     }
 
-    protected void postProcessStructure(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
+    protected void postProcessStructure(StructureHelper helper,
+                                        List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces) {
         postProcessStructure(helper);
     }
 

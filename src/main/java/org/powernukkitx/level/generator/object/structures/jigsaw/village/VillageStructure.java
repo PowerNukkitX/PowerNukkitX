@@ -20,6 +20,7 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
+import org.powernukkitx.level.generator.object.structures.jigsaw.Beardifier;
 import org.powernukkitx.level.generator.object.structures.jigsaw.JigsawStructure;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.generator.holder.NormalObjectHolder;
@@ -27,7 +28,6 @@ import org.powernukkitx.level.generator.noise.minecraft.noise.NormalNoise;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.block.BlockState;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.powernukkitx.utils.random.Xoroshiro128;
@@ -51,10 +51,7 @@ import static org.powernukkitx.block.BlockID.*;
  */
 public abstract class VillageStructure extends JigsawStructure {
 
-    private static final int BEARD_KERNEL_RADIUS = 12;
-    private static final int BEARD_KERNEL_SIZE = BEARD_KERNEL_RADIUS * 2;
     private static final double BEARD_THRESHOLD = 0.03;
-    private static final double[] BEARD_KERNEL = createBeardKernel();
     private static final Object2ObjectMap<String, String> VILLAGE_LOOT_CATEGORY_LOOKUP;
     private final Map<BlockVector3, RandomizableContainer> pendingChestLoot = new HashMap<>();
 
@@ -131,14 +128,16 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     @Override
-    protected void postProcessStructure(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
-        applyBiomeSurfaceBeardification(helper, occupiedBoxes);
+    protected void postProcessStructure(
+            StructureHelper helper,
+            List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces
+    ) {
+        applyBiomeSurfaceBeardification(helper, terrainAdaptationPieces);
         postProcessStructure(helper);
     }
 
     @Override
     protected void postProcessStructurePiece(String structureName, BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
-        liftPieceAboveWater(blockManager, jigsaws);
         if (isDecorPiece(structureName)) {
             shiftWholePieceToTerrain(blockManager, jigsaws);
             int lampHeightOffset = getLampHeightOffset(structureName);
@@ -246,57 +245,9 @@ public abstract class VillageStructure extends JigsawStructure {
 
     @Override
     protected boolean appliesTerrainAdaptation(String structureName) {
-        return !isDecorPiece(structureName)
-                && !structureName.contains("/streets/")
+        return !isDecorPiece(structureName) &&
+                !structureName.contains("/streets/")
                 && !structureName.contains("/terminators/");
-    }
-
-    protected void liftPieceAboveWater(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
-        Level level = blockManager.getLevel();
-        Block globalLowestBlock = null;
-        Map<Long, Integer> lowestColumns = new HashMap<>();
-
-        for (Block block : blockManager.getBlocks()) {
-            if (block instanceof BlockJigsaw || block.isAir()) {
-                continue;
-            }
-            if (globalLowestBlock == null || block.getFloorY() < globalLowestBlock.getFloorY()) {
-                globalLowestBlock = block;
-            }
-        }
-
-        if (globalLowestBlock == null) {
-            return;
-        }
-
-        int supportY = globalLowestBlock.getFloorY();
-        for (Block block : blockManager.getBlocks()) {
-            if (block instanceof BlockJigsaw || block.isAir() || block.getFloorY() != supportY) {
-                continue;
-            }
-            lowestColumns.put(columnKey(block.getFloorX(), block.getFloorZ()), 1);
-        }
-
-        int deltaY = 0;
-        for (long columnKey : lowestColumns.keySet()) {
-            int x = (int) (columnKey >> 32);
-            int z = (int) columnKey;
-            level.getOrGenerateChunk(x >> 4, z >> 4);
-
-            int height = level.getHeightMap(x, z);
-            Block topBlock = level.getBlock(x, height, z);
-            if (!(topBlock instanceof BlockFlowingWater) && !topBlock.isWaterLogged()) {
-                continue;
-            }
-
-            deltaY = Math.max(deltaY, height + 1 - supportY);
-        }
-
-        if (deltaY <= 0) {
-            return;
-        }
-
-        shiftWholePiece(blockManager, jigsaws, deltaY);
     }
 
     protected void shiftWholePieceToTerrain(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
@@ -370,75 +321,15 @@ public abstract class VillageStructure extends JigsawStructure {
         return (((long) x) << 32) | (z & 0xffffffffL);
     }
 
-    private void applyBiomeSurfaceBeardification(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
-        Level level = helper.getLevel();
-        BlockVector3 origin = helper.getOrigin();
-        int minHeight = helper.getMinHeight();
-        int maxHeight = helper.getMaxHeight() - 1;
-
-        for (BoundingBox relativeBox : occupiedBoxes) {
-            BoundingBox box = relativeBox.moved(origin.getX(), origin.getY(), origin.getZ());
-            int minX = box.x0 - BEARD_KERNEL_RADIUS;
-            int maxX = box.x1 + BEARD_KERNEL_RADIUS;
-            int minY = Math.max(minHeight, box.y0 - BEARD_KERNEL_RADIUS);
-            int maxY = Math.min(maxHeight, box.y1 + BEARD_KERNEL_RADIUS);
-            int minZ = box.z0 - BEARD_KERNEL_RADIUS;
-            int maxZ = box.z1 + BEARD_KERNEL_RADIUS;
-
-            for (int x = minX; x <= maxX; x++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    int dx = Math.max(0, Math.max(box.x0 - x, x - box.x1));
-                    int dz = Math.max(0, Math.max(box.z0 - z, z - box.z1));
-                    if (dx >= BEARD_KERNEL_RADIUS || dz >= BEARD_KERNEL_RADIUS) {
-                        continue;
-                    }
-
-                    SurfaceMaterials materials = getBiomeSurfaceMaterials(level, x, box.y0, z);
-                    if (materials == null) {
-                        continue;
-                    }
-
-                    int highestFilledY = Integer.MIN_VALUE;
-                    for (int y = minY; y <= maxY; y++) {
-                        BlockVector3 position = new BlockVector3(x, y, z);
-                        if (helper.isCached(position)) {
-                            continue;
-                        }
-
-                        int dy = Math.max(0, Math.max(box.y0 - y, y - box.y1));
-                        if (dy >= BEARD_KERNEL_RADIUS) {
-                            continue;
-                        }
-
-                        double contribution = getBeardContribution(dx, dy, dz, y - box.y0) * 0.8;
-                        if (contribution > BEARD_THRESHOLD) {
-                            Block current = level.getBlock(x, y, z);
-                            if (current.canBeReplaced() || !current.isSolid()) {
-                                helper.setBlockStateAt(
-                                        x - origin.getX(),
-                                        y - origin.getY(),
-                                        z - origin.getZ(),
-                                        materials.mid()
-                                );
-                                highestFilledY = Math.max(highestFilledY, y);
-                            }
-                        }
-                    }
-
-                    if (highestFilledY != Integer.MIN_VALUE) {
-                        helper.setBlockStateAt(
-                                x - origin.getX(),
-                                highestFilledY - origin.getY(),
-                                z - origin.getZ(),
-                                materials.top()
-                        );
-                    }
-                }
-            }
-        }
+    private void applyBiomeSurfaceBeardification(
+            StructureHelper helper,
+            List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces
+    ) {
+        Beardifier.apply(helper, terrainAdaptationPieces,
+                Beardifier.surface(this::getBiomeSurfaceMaterials, BEARD_THRESHOLD));
     }
 
-    private SurfaceMaterials getBiomeSurfaceMaterials(Level level, int x, int y, int z) {
+    private Beardifier.SurfaceMaterials getBiomeSurfaceMaterials(Level level, int x, int y, int z) {
         var biomeDefinition = Registries.BIOME.get(level.getBiomeId(x, y, z)).second();
         BiomeDefinitionChunkGenData chunkGenData = biomeDefinition == null ? null : biomeDefinition.getChunkGenData();
         var surfaceBuilder = chunkGenData == null ? null : chunkGenData.getSurfaceBuilderData();
@@ -466,44 +357,8 @@ public abstract class VillageStructure extends JigsawStructure {
                 }
             }
         }
-        return new SurfaceMaterials(Registries.BLOCKSTATE.get(topRuntimeId), Registries.BLOCKSTATE.get(midRuntimeId));
-    }
-
-    private static double getBeardContribution(int dx, int dy, int dz, int yToGround) {
-        int xi = dx + BEARD_KERNEL_RADIUS;
-        int yi = dy + BEARD_KERNEL_RADIUS;
-        int zi = dz + BEARD_KERNEL_RADIUS;
-        if (!isInKernelRange(xi) || !isInKernelRange(yi) || !isInKernelRange(zi)) {
-            return 0.0;
-        }
-
-        double dyWithOffset = yToGround + 0.5;
-        double distanceSqr = dx * (double) dx + dyWithOffset * dyWithOffset + dz * (double) dz;
-        double value = -dyWithOffset / Math.sqrt(distanceSqr / 2.0) / 2.0;
-        return value * BEARD_KERNEL[zi * BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE + xi * BEARD_KERNEL_SIZE + yi];
-    }
-
-    private static boolean isInKernelRange(int index) {
-        return index >= 0 && index < BEARD_KERNEL_SIZE;
-    }
-
-    private static double[] createBeardKernel() {
-        double[] kernel = new double[BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE];
-        for (int zi = 0; zi < BEARD_KERNEL_SIZE; zi++) {
-            for (int xi = 0; xi < BEARD_KERNEL_SIZE; xi++) {
-                for (int yi = 0; yi < BEARD_KERNEL_SIZE; yi++) {
-                    int dx = xi - BEARD_KERNEL_RADIUS;
-                    double dy = yi - BEARD_KERNEL_RADIUS + 0.5;
-                    int dz = zi - BEARD_KERNEL_RADIUS;
-                    double distanceSqr = dx * (double) dx + dy * dy + dz * (double) dz;
-                    kernel[zi * BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE + xi * BEARD_KERNEL_SIZE + yi] = Math.exp(-distanceSqr / 16.0);
-                }
-            }
-        }
-        return kernel;
-    }
-
-    private record SurfaceMaterials(BlockState top, BlockState mid) {
+        return new Beardifier.SurfaceMaterials(
+                Registries.BLOCKSTATE.get(topRuntimeId), Registries.BLOCKSTATE.get(midRuntimeId));
     }
 
     protected int getTerrainY(Level level, int x, int z) {
