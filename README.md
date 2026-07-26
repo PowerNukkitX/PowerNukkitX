@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 <p align="center">
     <a href="https://powernukkitx.org">
-      <img src="https://avatars.githubusercontent.com/u/99014792" width=20%>
+      <img src="https://avatars.githubusercontent.com/u/99014792" width=20% alt="PNX Logo">
     </a>
     <p align="center">
         <strong>
@@ -35,19 +35,23 @@
 - 🗿 **More features to discover...**
 
 ## Getting Started
+
 To get started, check out our [documentation](https://powernukkitx.org/docs/).
 
 ## Community & Support
+
 Join our [Discord](https://discord.gg/apwd7uauZg) server to chat with other users, developers and server owners.
 
 ## 🤝 Contributing to PowerNukkitX
+
 Contributions, issues and feature requests are welcome!<br />Feel free to
 check [issues page](https://github.com/PowerNukkitX/PowerNukkitX/issues). Also take a look at
 the [contributing guide](.github/CONTRIBUTING.md).
 
 ## 📝 License Information
+
 This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
 
-## Give a ⭐️ if this project helped you!
+## Give a ⭐️ if this project helped you
 
 [![Contributors](https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX)](https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors)
