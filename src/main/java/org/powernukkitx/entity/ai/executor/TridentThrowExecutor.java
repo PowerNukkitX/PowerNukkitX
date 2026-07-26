@@ -89,7 +89,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
             setRouteTarget(entity, null);
         }
 
-        setLookTarget(entity, clone);
+        setLookTarget(entity, newTarget);
 
         if (tick2 == 0 && tick1 > coolDownTick) {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
