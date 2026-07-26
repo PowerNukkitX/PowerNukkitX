@@ -35,7 +35,7 @@
 - 🗿 **More features to discover...**
 
 ## Getting Started
-To get started, check out our [guide](https://powernukkitx.org/docs/) for guides and tutorials.
+To get started, check out our [documentation](https://powernukkitx.org/docs/).
 
 ## Community & Support
 Join our [Discord](https://discord.gg/apwd7uauZg) server to chat with other users, developers and server owners.
