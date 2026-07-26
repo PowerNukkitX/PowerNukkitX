@@ -18,8 +18,7 @@ public class SightEvaluator implements IBehaviorEvaluator {
     public boolean evaluate(EntityIntelligent entity) {
         if (entity.getMemoryStorage().isEmpty(type)) {
             return false;
-        } else {
-            return entity.hasLineOfSight(entity.getMemoryStorage().get(type));
         }
+        return entity.hasLineOfSight(entity.getMemoryStorage().get(type));
     }
 }
