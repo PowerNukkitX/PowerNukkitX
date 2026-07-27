@@ -98,7 +98,7 @@ jobs:
 
       - run: ./gradlew checkFast --no-configuration-cache --no-daemon --parallel --max-workers=2 --stacktrace
 
-      - uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
         if: success()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
