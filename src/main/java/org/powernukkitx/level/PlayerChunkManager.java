@@ -7,8 +7,8 @@ import org.powernukkitx.event.player.PlayerChunkRequestEvent;
 import org.powernukkitx.event.player.PlayerPreChunkRequestEvent;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockVector3;
-import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrayPriorityQueue;
 import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongIterator;
@@ -18,8 +18,6 @@ import org.cloudburstmc.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacke
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -175,9 +173,12 @@ public final class PlayerChunkManager {
     private void updateChunkSendingQueue() {
         chunkSendQueue.clear();
         // Blocks that have already been sent will not be sent again
-        Sets.SetView<Long> difference = Sets.difference(inRadiusChunks, sentChunks);
-        for (Long v : difference) {
-            chunkSendQueue.enqueue(v.longValue());
+        LongIterator iter = inRadiusChunks.longIterator();
+        while (iter.hasNext()) {
+            long v = iter.nextLong();
+            if (!sentChunks.contains(v)) {
+                chunkSendQueue.enqueue(v);
+            }
         }
     }
 
@@ -197,13 +198,27 @@ public final class PlayerChunkManager {
     }
 
     private void removeOutOfRadiusChunks() {
-        Set<Long> difference = new HashSet<>(Sets.difference(sentChunks, inRadiusChunks));
-        // Unload blocks that are out of range
-        for (Long hash : difference) {
-            unloadChunkForPlayer(hash.longValue());
+        LongArrayList toRemove = null;
+        LongIterator iter = sentChunks.longIterator();
+        while (iter.hasNext()) {
+            long hash = iter.nextLong();
+            if (!inRadiusChunks.contains(hash)) {
+                if (toRemove == null) {
+                    toRemove = new LongArrayList();
+                }
+                toRemove.add(hash);
+            }
         }
-        // The intersection of the remaining sentChunks and inRadiusChunks
-        sentChunks.removeAll(difference);
+        if (toRemove == null) {
+            return;
+        }
+        // Unload blocks that are out of range
+        for (int i = 0; i < toRemove.size(); i++) {
+            long hash = toRemove.getLong(i);
+            unloadChunkForPlayer(hash);
+            // The intersection of the remaining sentChunks and inRadiusChunks
+            sentChunks.remove(hash);
+        }
     }
 
     private void loadQueuedChunks(int trySendChunkCountPerTick, boolean force) {

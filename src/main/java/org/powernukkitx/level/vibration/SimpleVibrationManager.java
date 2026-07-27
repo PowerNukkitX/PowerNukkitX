@@ -98,8 +98,11 @@ public class SimpleVibrationManager implements VibrationManager {
     }
 
     protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
-        return VectorMath.getPassByVector3(from, to)
-                .stream()
-                .noneMatch(vec -> level.getTickCachedBlock(vec).hasTag(BlockTags.PNX_WOOL));
+        for (Vector3 vec : VectorMath.getPassByVector3(from, to)) {
+            if (level.getTickCachedBlock(vec).hasTag(BlockTags.PNX_WOOL)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

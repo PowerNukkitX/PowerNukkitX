@@ -134,13 +134,14 @@ public final class LevelDBStorage {
         Pattern pattern = getVillageKeyPattern(prefix);
         Map<UUID, Map<String, CompoundTag>> villageData = new HashMap<>();
 
+        byte[] prefixBytes = prefix.getBytes(StandardCharsets.UTF_8);
         try (DBIterator iterator = this.db.iterator()) {
-            for (iterator.seek(prefix.getBytes(StandardCharsets.UTF_8)); iterator.hasNext(); iterator.next()) {
+            for (iterator.seek(prefixBytes); iterator.hasNext(); iterator.next()) {
                 var entry = iterator.peekNext();
-                String key = new String(entry.getKey(), StandardCharsets.UTF_8);
-                if (!key.startsWith(prefix)) {
+                if (!startsWith(entry.getKey(), prefixBytes)) {
                     break;
                 }
+                String key = new String(entry.getKey(), StandardCharsets.UTF_8);
                 var matcher = pattern.matcher(key);
                 if (!matcher.matches()) {
                     continue;
@@ -167,14 +168,14 @@ public final class LevelDBStorage {
     public void writeVillages(DimensionData dimension, List<Village> villages) {
         String prefix = getVillagePrefix(dimension);
         Pattern pattern = getVillageKeyPattern(prefix);
+        byte[] prefixBytes = prefix.getBytes(StandardCharsets.UTF_8);
         try (WriteBatch batch = this.db.createWriteBatch(); DBIterator iterator = this.db.iterator()) {
-            for (iterator.seek(prefix.getBytes(StandardCharsets.UTF_8)); iterator.hasNext(); iterator.next()) {
+            for (iterator.seek(prefixBytes); iterator.hasNext(); iterator.next()) {
                 byte[] key = iterator.peekNext().getKey();
-                String keyString = new String(key, StandardCharsets.UTF_8);
-                if (!keyString.startsWith(prefix)) {
+                if (!startsWith(key, prefixBytes)) {
                     break;
                 }
-                if (pattern.matcher(keyString).matches()) {
+                if (pattern.matcher(new String(key, StandardCharsets.UTF_8)).matches()) {
                     batch.delete(key);
                 }
             }
@@ -210,6 +211,18 @@ public final class LevelDBStorage {
 
     private static byte[] getVillageKey(String prefix, String component) {
         return (prefix + component).getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static boolean startsWith(byte[] key, byte[] prefix) {
+        if (key.length < prefix.length) {
+            return false;
+        }
+        for (int i = 0; i < prefix.length; i++) {
+            if (key[i] != prefix[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static CompoundTag readLittleEndianCompound(byte[] data) {
