@@ -104,9 +104,11 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
             if (event.isCancelled()) {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
+                sessionFailEvent.setDisconnectMessage(event.getKickMessage());
+
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason(), sessionFailEvent.getDisconnectMessage());
                 return;
             }
             if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
@@ -128,10 +130,15 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             var entry = server.getNameBans().getEntires().get(identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH));
             if (entry != null) {
                 String reason = entry.getReason();
+
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.UNKNOWN);
+                sessionFailEvent.setDisconnectMessage(
+                    !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned"
+                );
+
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                holder.disconnect(DisconnectFailReason.UNKNOWN, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason(), sessionFailEvent.getDisconnectMessage());
                 return;
             }
 
