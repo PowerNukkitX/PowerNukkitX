@@ -6,11 +6,13 @@ import org.powernukkitx.nbt.tag.ListTag;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Map;
 
 public abstract class Profession {
 
     private static final Int2ObjectOpenHashMap<Profession> knownProfessions = new Int2ObjectOpenHashMap<>();
+    private static final Map<Integer, Profession> knownProfessionsView = Collections.unmodifiableMap(knownProfessions);
     private static volatile int registrationVersion;
 
     public static void registerProfession(Profession profession) {
@@ -22,8 +24,8 @@ public abstract class Profession {
         return registrationVersion;
     }
 
-    public static HashMap<Integer, Profession> getProfessions() {
-        return new HashMap<>(knownProfessions);
+    public static Map<Integer, Profession> getProfessions() {
+        return knownProfessionsView;
     }
 
     public static Profession getProfession(int index) {
