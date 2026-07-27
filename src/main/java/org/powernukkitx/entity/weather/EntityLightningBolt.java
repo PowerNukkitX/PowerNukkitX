@@ -22,8 +22,11 @@ import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -37,7 +40,9 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
     @NotNull public String getIdentifier() {
         return LIGHTNING_BOLT;
     }
-    
+
+    private final Set<Long> struckEntities = ConcurrentHashMap.newKeySet();
+
     public int state;
     public int liveTime;
     protected boolean isEffect = true;
@@ -214,7 +219,9 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
                 bb.setMaxX(bb.getMaxX() + 6);
 
                 for (Entity entity : this.level.getCollidingEntities(bb, this)) {
-                    entity.onStruckByLightning(this);
+                    if (struckEntities.add(entity.getId())) {
+                        entity.onStruckByLightning(this);
+                    }
                 }
             }
         }
