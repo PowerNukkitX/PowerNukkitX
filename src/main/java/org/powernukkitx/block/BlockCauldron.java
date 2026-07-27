@@ -178,7 +178,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     } else if (bucket.isWater()) {
                         if (!isEmpty() && getCauldronLiquid() != CauldronLiquid.WATER) {
                             clearWithFizz(cauldron, player);
-                        } else if (isEmpty() || getCauldronLiquid() == CauldronLiquid.WATER) {
+                        } else {
                             this.setFillLevel(FILL_LEVEL.getMax(), player);
                             cauldron.clearCustomColor();
                             this.level.setBlock(this, this, true);
@@ -187,7 +187,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     } else if (bucket.isPowderSnow()) {
                         if (!isEmpty() && getCauldronLiquid() != CauldronLiquid.POWDER_SNOW) {
                             clearWithFizz(cauldron, player);
-                        } else if (isEmpty() || getCauldronLiquid() == CauldronLiquid.POWDER_SNOW) {
+                        } else {
                             this.setCauldronLiquid(CauldronLiquid.POWDER_SNOW);
                             this.setFillLevel(FILL_LEVEL.getMax(), player);
                             cauldron.clearCustomColor();
@@ -197,7 +197,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     } else if (bucket.isLava()) {
                         if (!isEmpty() && getCauldronLiquid() != CauldronLiquid.LAVA) {
                             clearWithFizz(cauldron, player);
-                        } else if (isEmpty() || getCauldronLiquid() == CauldronLiquid.LAVA) {
+                        } else {
                             this.setCauldronLiquid(CauldronLiquid.LAVA);
                             this.setFillLevel(FILL_LEVEL.getMax(), player);
                             cauldron.setType(BlockEntityCauldron.PotionType.LAVA);
