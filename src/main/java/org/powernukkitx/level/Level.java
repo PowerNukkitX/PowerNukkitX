@@ -5950,7 +5950,7 @@ public class Level implements Metadatable {
                     totalBlocks++;
                     final double fromZ = Math.fma(z, diffZ, zOffset);
 
-                    if (this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
+                    if (!this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
                         visibleBlocks++;
                     }
                 }
