@@ -86,6 +86,5 @@ N/A
 - [ ] Public API additions/changes have Javadoc
 - [ ] No dead code, commented-out blocks, or debug logging left behind
 - [ ] Commit messages follow Conventional Commits
-- [ ] I did not edit translation files outside `language/eng/` (those go through Crowdin)
 - [ ] My contribution is licensed under LGPL-3.0, and any third-party code is attributed
 - [ ] "Allow maintainer edits" is enabled
