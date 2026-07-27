@@ -78,10 +78,6 @@ public class BlockTorch extends BlockFlowable implements Faceable {
             face = BlockFace.UP;
         }
 
-        if (target instanceof BlockGrassPath) {
-            return false;
-        }
-
         if (face == BlockFace.DOWN || !BlockLever.isSupportValid(target, face)) {
             BlockFace valid = findValidSupport();
             if (valid == null) {
