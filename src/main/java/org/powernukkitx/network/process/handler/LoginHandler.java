@@ -70,6 +70,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
         final PlayerAuthenticationType type = packet.getAuthenticationType();
         final DisconnectFailReason notAuthenticated = DisconnectFailReason.NOT_AUTHENTICATED;
+        final String notAuthenticatedMessage = "You are not authanticated at Xbox Live";
         if (type.equals(PlayerAuthenticationType.UNKNOWN)) {
             sessionFailEvent.setDisconnectFailReason(notAuthenticated);
             server.getPluginManager().callEvent(sessionFailEvent);
@@ -81,9 +82,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
         if (xboxAuthRequired && (packet.getToken() == null || packet.getToken().isEmpty())) {
             sessionFailEvent.setDisconnectFailReason(notAuthenticated);
+            sessionFailEvent.setDisconnectMessage(notAuthenticatedMessage);
             server.getPluginManager().callEvent(sessionFailEvent);
 
-            holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason(), sessionFailEvent.getDisconnectMessage());
             return;
         }
         try {
@@ -92,9 +94,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 && server.getProxyAuthProvider().isUnsignedLoginAllowed();
             if (xboxAuthRequired && !result.signed() && !unsignedAllowed) {
                 sessionFailEvent.setDisconnectFailReason(notAuthenticated);
-                server.getPluginManager().callEvent(sessionFailEvent);
+                sessionFailEvent.setDisconnectMessage(notAuthenticatedMessage);
 
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+                server.getPluginManager().callEvent(sessionFailEvent);
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason(), sessionFailEvent.getDisconnectMessage());
                 return;
             }
             final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
@@ -113,17 +116,19 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             }
             if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.SERVER_FULL);
+                sessionFailEvent.setDisconnectMessage("Server is full");
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason(), sessionFailEvent.getDisconnectMessage());
                 return;
             }
 
             if (!server.isWhitelisted(identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH))) {
                 sessionFailEvent.setDisconnectFailReason(DisconnectFailReason.NOT_ALLOWED);
+                sessionFailEvent.setDisconnectMessage("Server is whitelisted");
                 server.getPluginManager().callEvent(sessionFailEvent);
 
-                holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+                holder.disconnect(sessionFailEvent.getDisconnectFailReason(), sessionFailEvent.getDisconnectMessage());
                 return;
             }
 

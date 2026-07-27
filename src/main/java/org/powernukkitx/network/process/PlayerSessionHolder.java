@@ -166,13 +166,13 @@ public class PlayerSessionHolder {
         if (socketAddress instanceof InetSocketAddress address) {
             InetAddress inetAddress = address.getAddress();
 
-            log.debug("[Network session disconnected: {}:{}] - {}",
+            log.info("[Network session disconnected: {}:{}] - {}",
                 inetAddress != null ? inetAddress.getHostAddress() : address.getHostString(),
                 address.getPort(),
                 message
             );
         } else {
-            log.debug("[Network session disconnected] - {}", message);
+            log.info("[Network session disconnected] - {}", message);
         }
     }
 
