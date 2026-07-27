@@ -2697,7 +2697,7 @@ public abstract class Item implements Cloneable, ItemID {
                 .tag(this.getNbt() == null ? null : this.getNbt().toNetwork())
                 .canPlace(!hasNbt ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
                 .canBreak(!hasNbt ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId()))
+                .blockDefinition(new RuntimeBlockDefinition(this.getNetworkBlockRuntimeId()))
                 .usingNetId(true)
                 .netId(this.getNetId())
                 .build();
@@ -2714,10 +2714,17 @@ public abstract class Item implements Cloneable, ItemID {
                 .tag(clearCreativeTag || this.getNbt() == null ? null : this.getNbt().toNetwork())
                 .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
                 .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : (this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId())))
+                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : this.getNetworkBlockRuntimeId()))
                 .usingNetId(false)
                 .netId(0)
                 .build();
+    }
+
+    private int getNetworkBlockRuntimeId() {
+        if (this.block != null && this.getId().equals(this.getBlockId())) {
+            return this.getBlock().getRuntimeId();
+        }
+        return Block.get(Block.AIR).getRuntimeId();
     }
 
     protected boolean isCreativeTagEmpty() {
