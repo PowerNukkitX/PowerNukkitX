@@ -1,15 +1,15 @@
 package org.powernukkitx.network.primitiveshape;
 
 import org.cloudburstmc.protocol.bedrock.data.ExtraShapeDataType;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.PrimitiveShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.packet.PrimitiveShapesPacket;
 import org.powernukkitx.Player;
 import org.powernukkitx.math.Vector3;
 
 public final class PrimitiveShapes {
 
-    public static final DebugShapePayload REMOVAL_EXTRA = () -> ExtraShapeDataType.NONE;
+    public static final ExtraShapeDataPayload REMOVAL_EXTRA = () -> ExtraShapeDataType.NONE;
 
     private PrimitiveShapes() {
     }
@@ -54,8 +54,8 @@ public final class PrimitiveShapes {
         return new ConeShape(base, radius, height);
     }
 
-    public static ShapeDataPayload removalPayload(long networkId) {
-        ShapeDataPayload payload = new ShapeDataPayload();
+    public static PrimitiveShapeDataPayload removalPayload(long networkId) {
+        PrimitiveShapeDataPayload payload = new PrimitiveShapeDataPayload();
         payload.setNetworkId(networkId);
         payload.setExtraShapeData(REMOVAL_EXTRA);
         return payload;

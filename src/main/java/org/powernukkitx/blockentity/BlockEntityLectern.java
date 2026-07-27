@@ -22,7 +22,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     @Override
     protected void initBlockEntity() {
         super.initBlockEntity();
-        updateTotalPages();
+        scheduleUpdate();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = super.getSpawnCompound()
-                .putBoolean("isMovable", this.movable);
+            .putBoolean("isMovable", this.movable);
 
         Item book = getBook();
         if (!book.isNull()) {
@@ -63,6 +63,13 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     @Override
     public void onBreak(boolean isSilkTouch) {
         level.dropItem(this, getBook());
+    }
+
+    @Override
+    public boolean onUpdate() {
+        if(!this.chunk.isInitiated()) return true; //Update once chunk is initiated.
+        updateTotalPages();
+        return super.onUpdate();
     }
 
     public boolean hasBook() {

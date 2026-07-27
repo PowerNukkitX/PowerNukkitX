@@ -166,22 +166,24 @@ public class FreezableArrayManager {
         // freeze arrays
         var start = System.currentTimeMillis();
         // clean up dead references
-        CompletableFuture.runAsync(() -> set.parallelForeach(e -> {
-            if (e == null) return;
-            int temp = e.getTemperature();
-            e.colder(1);
-            if (temp <= getFreezingPoint() + 1) {
-                if (System.currentTimeMillis() - start > maxCompressionTime) {
-                    return;
-                }
-                if (e.getFreezeStatus() == AutoFreezable.FreezeStatus.NONE || e.getFreezeStatus() == AutoFreezable.FreezeStatus.FREEZE) {
-                    if (e.getTemperature() == absoluteZero) {
-                        e.deepFreeze();
-                    } else {
-                        e.freeze();
+        CompletableFuture.runAsync(() -> {
+            for (AutoFreezable e : set) {
+                if (e == null) continue;
+                int temp = e.getTemperature();
+                e.colder(1);
+                if (temp <= getFreezingPoint() + 1) {
+                    if (System.currentTimeMillis() - start > maxCompressionTime) {
+                        continue;
+                    }
+                    if (e.getFreezeStatus() == AutoFreezable.FreezeStatus.NONE || e.getFreezeStatus() == AutoFreezable.FreezeStatus.FREEZE) {
+                        if (e.getTemperature() == absoluteZero) {
+                            e.deepFreeze();
+                        } else {
+                            e.freeze();
+                        }
                     }
                 }
             }
-        }), Server.getInstance().getComputeThreadPool()).thenRun(set::clearDeadReferences);
+        }, Server.getInstance().getComputeThreadPool()).thenRun(set::clearDeadReferences);
     }
 }

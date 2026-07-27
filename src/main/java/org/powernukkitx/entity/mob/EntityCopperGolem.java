@@ -25,6 +25,7 @@ import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
+import org.powernukkitx.entity.ai.executor.coppergolem.ChestInteractionFailExecutor;
 import org.powernukkitx.entity.ai.executor.coppergolem.PutInChestExecutor;
 import org.powernukkitx.entity.ai.executor.coppergolem.TakeFromCopperChestExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
@@ -113,20 +114,22 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     public IBehaviorGroup requireBehaviorGroup() {
         return BehaviorGroup.builder(this)
                 .behaviors(
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), any(
-                                all(
-                                        entity -> entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) > 0,
-                                        entity -> {
-                                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING,
-                                                    entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) - 1);
-                                            return true;
-                                        }
-                                )
+                        new Behavior(new ChestInteractionFailExecutor(), entity -> {
+                            String interaction = getEnumEntityProperty(PROPERTIES[0].getIdentifier());
+                            return "take_fail".equals(interaction) || "put_fail".equals(interaction);
+                        }, 8, 1),
+                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), all(
+                            entity -> entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) > 0,
+                            entity -> {
+                                entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING,
+                                    entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) - 1);
+                                return true;
+                            }
                         ), 7, 1),
                         new Behavior(new PutInChestExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
                                 not(entity -> inventory.getItemInHand().isNull()),
-                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 2.1f)
+                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 3.1f)
                         ), 6, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.2f, true), all(
                                 not(entity -> inventory.getItemInHand().isNull()),
@@ -135,7 +138,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                         new Behavior(new TakeFromCopperChestExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2),
                                 entity -> inventory.getItemInHand().isNull(),
-                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2, 2.1f)
+                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2, 3.1f)
                         ), 4, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK_2, 0.2f, true), all(
                                 entity -> inventory.getItemInHand().isNull(),
@@ -143,6 +146,16 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                         ), 3, 1),
                         new Behavior(entity -> {
                             entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
+                            entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).clear();
+                            return true;
+                        }, all(
+                                entity -> inventory.getItemInHand().isNull(),
+                                new MemoryCheckEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2),
+                                entity -> !entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).isEmpty()
+                        ), 2, 1),
+                        new Behavior(entity -> {
+                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
+                            entity.getMemoryStorage().get(CoreMemoryTypes.CHESTS).clear();
                             return true;
                         }, all(
                                 not(entity -> inventory.getItemInHand().isNull()),
@@ -174,6 +187,12 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
         setOxidation(Oxidation.valueOf(nbtMap.getString("oxidationLevel").toUpperCase(Locale.ROOT)));
         this.weatherTick = nbtMap.getInt("weatheredTick");
         setEnumEntityProperty(PROPERTIES[0].getIdentifier(), "none");
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        super.spawnTo(player);
+        this.getInventory().sendContents(player);
     }
 
     @Override

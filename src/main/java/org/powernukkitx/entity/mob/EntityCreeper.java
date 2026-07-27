@@ -83,7 +83,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                                 entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
                         ), 3, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, true, 16f, 3f), all(
-                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),   
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
                                     Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);

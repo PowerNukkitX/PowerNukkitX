@@ -2,7 +2,7 @@ package org.powernukkitx.network.primitiveshape;
 
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.CylinderDataPayload;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
 import org.powernukkitx.math.Vector3;
 
@@ -52,7 +52,7 @@ public class CylinderShape extends PrimitiveShape<CylinderShape> {
     }
 
     @Override
-    protected DebugShapePayload buildExtra() {
+    protected ExtraShapeDataPayload buildExtra() {
         CylinderDataPayload payload = new CylinderDataPayload();
         payload.setRadiusX(radiusX);
         payload.setRadiusZ(radiusZ);

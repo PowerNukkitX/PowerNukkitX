@@ -214,18 +214,29 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public void setDirty() {
-        chunk.setChanged();
+        if (chunk != null) {
+            chunk.setChanged();
+        }
+
+        if (!this.isValid()) {
+            return;
+        }
 
         if (!this.getLevelBlock().isAir()) {
-            getLevel().getScheduler().scheduleTask(new Task() {
-                @Override
-                public void onRun(int currentTick) {
-                    if (isValid() && isBlockEntityValid()) {
-                        getLevel().updateComparatorOutputLevelSelective(BlockEntity.this, isObservable());
-                    }
-                }
-            });
+            scheduleComparatorOutputUpdate();
         }
+    }
+
+    protected void scheduleComparatorOutputUpdate() {
+        if (!this.isValid()) return;
+        getLevel().getScheduler().scheduleTask(new Task() {
+            @Override
+            public void onRun(int currentTick) {
+                if (isValid() && isBlockEntityValid()) {
+                    getLevel().updateComparatorOutputLevelSelective(BlockEntity.this, isObservable());
+                }
+            }
+        });
     }
 
     /**
