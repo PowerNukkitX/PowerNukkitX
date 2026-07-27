@@ -19,7 +19,7 @@ PowerNukkitX is a Minecraft: Bedrock Edition server software written in Java. It
 
 ## Required reading
 
-Read these before you write code. Do not work from assumptions about "how open-source Java projects usually do it" - this project has its own rules and they are written down.
+Read these before you write code. Do not work from assumptions about "how open-source Java projects usually do it" - this project has its own rules, and they are written down.
 
 | File                                     | Read it for                                                                                                                                                                           |
 |------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -28,7 +28,7 @@ Read these before you write code. Do not work from assumptions about "how open-s
 | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Applies to anything you draft for a human to post.                                                                                                                                    |
 | [README.md](README.md)                   | Project overview, supported versions, how the server is distributed.                                                                                                                  |
 
-Pay particular attention to the **"PRs we close without review"** and **"AI Tool Usage"** sections of CONTRIBUTING.md. They describe the failure modes this file exists to prevent, and they apply to your output whether or not you read them.
+Pay particular attention to the **"PRs we close without review"** and **"AI Tool Usage"** sections of CONTRIBUTING.md. They describe the failure modes this file exists to prevent, and they apply to your output whether you read them.
 
 ---
 
@@ -77,7 +77,7 @@ Violating any of these gets the pull request closed without a line-by-line revie
 4. **No new dependencies** without the human opening an issue first.
 5. **No dead code**, commented-out blocks, `System.out.println`, `printStackTrace()`, or debug logging left in the diff.
 6. **Do not break the public plugin API.** Anything under `plugin/`, `event/`, `api/`, or any `public` method a plugin could call is a compatibility surface. Deprecate rather than delete, and flag the break explicitly.
-7. **Do not weaken security checks** to make something work - permission checks, `xbox-auth`, packet validation, bounds checks, path sanitization. If a check is in your way, stop and explain the problem.
+7. **Do not weaken security checks** to make something work - permission checks, `xbox-auth`, packet validation, bounds checks, path sanitation. If a check is in your way, stop and explain the problem.
 8. **Do not touch** `.github/workflows/`, `gradle/wrapper/`, signing config, or release automation unless that is the explicit task.
 9. **Do not commit, push, or open a pull request** unless the human explicitly asks. Leave the work on a branch.
 
@@ -138,9 +138,9 @@ The mode is fixed at boot and exposed as `Server#isLevelThreadMode()`. Consequen
 ### Concurrency
 
 - **There is no single "server thread" you can assume.** Networking, the scheduler, and player handling run on the main loop, but level ticking runs either on that loop or on one dedicated thread per level, depending on `level-settings.levelThread` (see [Performance](#performance)). Code reachable from a level tick must be correct in **both** modes.
-- **`Server#isPrimaryThread()` tells you whether you are on the main loop** — check it rather than assuming. Note its own Javadoc caveat: matching the primary thread implies you are synchronized, but *not* matching does not prove you are unsynchronized. It is a main-loop check, not a lock.
-- **Do not touch world, chunk, entity, or player state from an async task** unless the surrounding code clearly already does and you understand the synchronization it relies on. Schedule the work back onto the owning thread instead.
-- **Cross-level access is the sharp edge.** Reading or mutating level B's state from level A's tick is safe in shared mode and a data race with level threads enabled. Do not do it without explicit synchronization, and flag it if you must.
+- **`Server#isPrimaryThread()` tells you whether you are on the main loop** - check it rather than assuming. Note its own Javadoc caveat: matching the primary thread implies you are synchronised, but *not* matching does not prove you are unsynchronised. It is a main-loop check, not a lock.
+- **Do not touch world, chunk, entity, or player state from an async task** unless the surrounding code clearly already does, and you understand the synchronisation it relies on. Schedule the work back onto the owning thread instead.
+- **Cross-level access is the sharp edge.** Reading or mutating level B's state from level A's tick is safe in shared mode and a data race with level threads enabled. Do not do it without explicit synchronisation, and flag it if you must.
 - Adding a lock, a `synchronized` block, or a concurrent collection to the tick path is a design decision, not a detail - call it out explicitly in your summary so a human reviews it.
 - Deadlocks and races in chunk loading and entity init have bitten this project before. If your change touches those paths, say so loudly.
 

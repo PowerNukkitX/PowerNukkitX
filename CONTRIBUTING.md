@@ -99,7 +99,7 @@ To keep review time available for real contributions, the following are closed o
 - **Code that doesn't compile**, or that fails CI on the first push with no follow-up.
 - **Untested changes**, or a PR whose testing section is empty, generic, or fabricated.
 - **Hallucinated APIs** - calls to methods, fields, config keys, or events that do not exist in this codebase.
-- **Mass rewrites**: repo-wide reformats, blanket "optimizations", or refactors nobody asked for.
+- **Mass rewrites**: repo-wide reformats, blanket "optimisations", or refactors nobody asked for.
 - **AI-written PR descriptions or review replies** (see below).
 - **Undisclosed AI usage**, or an AI disclosure that is obviously incomplete.
 - **Duplicate or spam PRs**, including hacktoberfest-style filler.
