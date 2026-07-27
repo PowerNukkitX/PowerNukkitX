@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-pnx-gamedata                                    = "r-26_u3-SNAPSHOT"
+pnx-gamedata                                    = "r-26_u4-SNAPSHOT"
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 fastreflection                                  = "1.0.3"
 com-github-oshi-oshi-core                       = "7.4.1"
