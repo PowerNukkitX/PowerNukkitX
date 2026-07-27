@@ -9,6 +9,7 @@ import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.format.palette.Palette;
+import org.powernukkitx.level.village.VillageManager;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.HashUtils;
@@ -41,6 +42,7 @@ public class LevelStorageTest {
         FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/level2"));
         Level level = Mockito.mock(Level.class);
         Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
+        Mockito.when(level.getVillageManager()).thenReturn(new VillageManager(level));
         levelDBProvider = new LevelDBProvider(level, "src/test/resources/level2");
     }
 
@@ -148,6 +150,7 @@ public class LevelStorageTest {
     void testCloseAndLoadAgain() {
         Level level = Mockito.mock(Level.class);
         Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
+        Mockito.when(level.getVillageManager()).thenReturn(new VillageManager(level));
         var newProvider = new LevelDBProvider(level, "src/test/resources/level3");
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {

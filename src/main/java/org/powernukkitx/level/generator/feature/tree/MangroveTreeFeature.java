@@ -15,7 +15,7 @@ public class MangroveTreeFeature extends ObjectGeneratorFeature {
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
         ObjectMangroveTree tree = new ObjectMangroveTree(random.nextFloat() > 0.15F);
-        tree.setWithBeenest(random.nextFloat() < 0.01F);
+        tree.setWithBeenest(random.nextFloat() < 0.04F);
         return tree;
     }
 

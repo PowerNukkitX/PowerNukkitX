@@ -3,6 +3,8 @@ package org.powernukkitx.entity.ai.sensor;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.MemoryType;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.utils.SortedList;
 
 import java.util.ArrayList;
@@ -63,6 +65,11 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
     public void sense(EntityIntelligent entity) {
         double minRangeSquared = this.minRange * this.minRange;
         double maxRangeSquared = this.maxRange * this.maxRange;
+        Level level = entity.getLevel();
+        int minChunkX = NukkitMath.floorDouble((entity.x - this.maxRange - 2) * 0.0625);
+        int maxChunkX = NukkitMath.ceilDouble((entity.x + this.maxRange + 2) * 0.0625);
+        int minChunkZ = NukkitMath.floorDouble((entity.z - this.maxRange - 2) * 0.0625);
+        int maxChunkZ = NukkitMath.ceilDouble((entity.z + this.maxRange + 2) * 0.0625);
 
         if (allTargetFunction == null && memories.size() == 1) {
             var currentMemory = memories.get(0);
@@ -71,9 +78,14 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
 
             //Find the nearest entity within range
             var entities = Collections.synchronizedList(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
-            for (Entity p : entity.getLevel().getEntities()) {
-                if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
-                    entities.add(p);
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
+                    for (Entity p : level.getChunkEntities(chunkX, chunkZ, false).values()) {
+                        double distanceSquared = entity.distanceSquared(p);
+                        if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared && !p.equals(entity)) {
+                            entities.add(p);
+                        }
+                    }
                 }
             }
 
@@ -89,16 +101,21 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
                 sortEntities.add(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
             }
 
-            for (Entity p : entity.getLevel().getEntities()) {
-                if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
-                    int i = 0;
-                    for (var targetFunction : allTargetFunction) {
-                        @SuppressWarnings("unchecked")
-                        T castedP = (T) p;
-                        if (targetFunction.apply(castedP)) {
-                            sortEntities.get(i).add(p);
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
+                    for (Entity p : level.getChunkEntities(chunkX, chunkZ, false).values()) {
+                        double distanceSquared = entity.distanceSquared(p);
+                        if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared && !p.equals(entity)) {
+                            int i = 0;
+                            for (var targetFunction : allTargetFunction) {
+                                @SuppressWarnings("unchecked")
+                                T castedP = (T) p;
+                                if (targetFunction.apply(castedP)) {
+                                    sortEntities.get(i).add(p);
+                                }
+                                ++i;
+                            }
                         }
-                        ++i;
                     }
                 }
             }

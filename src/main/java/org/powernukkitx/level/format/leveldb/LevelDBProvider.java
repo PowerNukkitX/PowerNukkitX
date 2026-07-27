@@ -25,8 +25,8 @@ import org.powernukkitx.utils.ChunkException;
 import org.powernukkitx.utils.SemVersion;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.PooledByteBufAllocator;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
@@ -115,6 +115,7 @@ public class LevelDBProvider implements LevelProvider {
         CompoundTag dp = this.storage.readWorldDynamicProperties();
         this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
         this.worldDynamicPropertiesDirty = false;
+        this.level.getVillageManager().load(this.storage.readVillages(getDimensionData()));
     }
 
     @UsedByReflection
@@ -309,7 +310,8 @@ public class LevelDBProvider implements LevelProvider {
         AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
-            final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+            final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer();
+            boolean success = false;
             try {
                 final ChunkSection[] sections = unsafeChunk.getSections();
                 int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
@@ -366,10 +368,14 @@ public class LevelDBProvider implements LevelProvider {
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
-                data.set(byteBuf.copy());
+                data.set(byteBuf);
                 subChunkCountRef.set(total);
+                success = true;
             } finally {
-                byteBuf.release();
+                // only release on early bail-out
+                if (!success) {
+                    byteBuf.release();
+                }
             }
         });
         return Pair.of(data.get(), subChunkCountRef.get());
@@ -583,6 +589,7 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void saveLevelData() {
         flushWorldDynamicProperties();
+        storage.writeVillages(getDimensionData(), level.getVillageManager().getVillages());
         writeLevelDat(path, getDimensionData(), this.levelDat);
     }
 

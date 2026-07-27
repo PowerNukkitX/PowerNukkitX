@@ -201,7 +201,6 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerSpawner(new SpawnRuleArmadillo());
         registerSpawner(new SpawnRuleAxolotl());
         registerSpawner(new SpawnRuleBat());
-        registerSpawner(new SpawnRuleBee());
         registerSpawner(new SpawnRuleBogged());
         registerSpawner(new SpawnRuleCamel());
         registerSpawner(new SpawnRuleChicken());

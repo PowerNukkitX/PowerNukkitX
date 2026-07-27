@@ -62,6 +62,13 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.scheduleUpdate();
+    }
+
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         if (!this.nbt.contains(TAG_SPAWN_RANGE) || !(this.nbt.get(TAG_SPAWN_RANGE) instanceof ShortTag)) {
             this.nbt.putShort(TAG_SPAWN_RANGE, (short) SPAWN_RANGE);
         }
@@ -98,10 +105,6 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
         this.requiredPlayerRange = nbtMap.getShort(TAG_REQUIRED_PLAYER_RANGE);
         this.minSpawnCount = nbtMap.getShort(TAG_MINIMUM_SPAWN_COUNT);
         this.maxSpawnCount = nbtMap.getShort(TAG_MAXIMUM_SPAWN_COUNT);
-
-        this.scheduleUpdate();
-        super.initBlockEntity();
-        this.level.getScheduler().scheduleTask(this::spawnToAll);
     }
 
     @Override
@@ -242,7 +245,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return Objects.equals(level.getBlockIdAt((int) x, (int) y, (int) z), Block.MOB_SPAWNER);
+        return isValid() && Objects.equals(level.getBlockIdAt((int) x, (int) y, (int) z), Block.MOB_SPAWNER);
     }
 
     public int getSpawnEntityType() {

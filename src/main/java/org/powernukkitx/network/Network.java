@@ -161,7 +161,6 @@ public class Network implements NetworkInterface {
                         }
                         if (isAddressBlocked(address)) {
                             session.close("Your IP address has been blocked by this server!");
-                            onSessionDisconnect(address);
                         } else {
                             session.setCodec(NetworkConstants.CODEC);
                             session.setPacketHandler(new NetworkPacketHandler(server,
@@ -170,7 +169,13 @@ public class Network implements NetworkInterface {
                                             Network.this.server.getSettings().networkSettings().rateLimitSettings()
                                     )
                             ));
+                            final Channel sessionChannel = session.getPeer().getChannel();
                             Network.this.sessionMap.put(address, session);
+                            sessionChannel.closeFuture().addListener(future -> {
+                                if (!Network.this.sessionMap.remove(address, session)) {
+                                    Network.this.sessionMap.values().remove(session);
+                                }
+                            });
                         }
                     }
                 })

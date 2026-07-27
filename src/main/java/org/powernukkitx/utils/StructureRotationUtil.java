@@ -240,6 +240,142 @@ public class StructureRotationUtil {
         return result;
     }
 
+    /**
+     * Mirror a block state across the X axis (i.e. swap its east and west facing while keeping
+     * north/south). This reverses orientation, so chiral properties such as door hinges are flipped.
+     */
+    public static BlockState mirrorX(BlockState state) {
+        Block block = state.toBlock();
+        var states = new java.util.ArrayList<>(state.getBlockPropertyValues());
+        EnumMap<BlockFace, WallConnectionType> mirroredWallConnections = null;
+        if (state.getPropertyValue(WALL_POST_BIT) != null) {
+            mirroredWallConnections = mirrorWallConnectionsX(state);
+        }
+
+        int idx = 0;
+        for (var property : state.getBlockPropertyValues()) {
+            var type = property.getPropertyType();
+
+            if (type == TORCH_FACING_DIRECTION) {
+                var mirrored = TORCH_FACING_DIRECTION.createValue(switch (state.getPropertyValue(TORCH_FACING_DIRECTION)) {
+                    case EAST -> WEST;
+                    case WEST -> EAST;
+                    default -> state.getPropertyValue(TORCH_FACING_DIRECTION);
+                });
+                states.set(idx, mirrored);
+            } else if (type == RAIL_DIRECTION_10) {
+                var mirrored = RAIL_DIRECTION_10.createValue(switch (state.getPropertyValue(RAIL_DIRECTION_10)) {
+                    case 2 -> 3;
+                    case 3 -> 2;
+                    case 6 -> 7;
+                    case 7 -> 6;
+                    case 8 -> 9;
+                    case 9 -> 8;
+                    default -> state.getPropertyValue(RAIL_DIRECTION_10);
+                });
+                states.set(idx, mirrored);
+            } else if (type == RAIL_DIRECTION_6) {
+                var mirrored = RAIL_DIRECTION_6.createValue(switch (state.getPropertyValue(RAIL_DIRECTION_6)) {
+                    case 2 -> 3;
+                    case 3 -> 2;
+                    default -> state.getPropertyValue(RAIL_DIRECTION_6);
+                });
+                states.set(idx, mirrored);
+            } else if (type == WEIRDO_DIRECTION) {
+                var mirrored = WEIRDO_DIRECTION.createValue(switch (state.getPropertyValue(WEIRDO_DIRECTION)) {
+                    case 0 -> 1;
+                    case 1 -> 0;
+                    default -> state.getPropertyValue(WEIRDO_DIRECTION);
+                });
+                states.set(idx, mirrored);
+            } else if (type == DIRECTION) {
+                int mirroredDirection = block instanceof BlockTrapdoor
+                        ? mirrorTrapdoorDirectionX(state.getPropertyValue(DIRECTION))
+                        : mirrorDirectionX(state.getPropertyValue(DIRECTION));
+                states.set(idx, DIRECTION.createValue(mirroredDirection));
+            } else if (type == GROUND_SIGN_DIRECTION) {
+                var mirrored = GROUND_SIGN_DIRECTION.createValue((16 - state.getPropertyValue(GROUND_SIGN_DIRECTION)) % 16);
+                states.set(idx, mirrored);
+            } else if (type == FACING_DIRECTION) {
+                states.set(idx, FACING_DIRECTION.createValue(mirrorFacingDirectionX(state.getPropertyValue(FACING_DIRECTION))));
+            } else if (type == ROTATION && block instanceof BlockJigsaw) {
+                var mirrored = ROTATION.createValue((4 - (state.getPropertyValue(ROTATION) & 0x3)) & 0x3);
+                states.set(idx, mirrored);
+            } else if (type == LEVER_DIRECTION) {
+                int meta = state.getPropertyValue(LEVER_DIRECTION).getMetadata();
+                var mirrored = LEVER_DIRECTION.createValue(LeverDirection.byMetadata(switch (meta) {
+                    case 1 -> 2;
+                    case 2 -> 1;
+                    default -> meta;
+                }));
+                states.set(idx, mirrored);
+            } else if (type == MINECRAFT_CARDINAL_DIRECTION) {
+                var mirrored = MINECRAFT_CARDINAL_DIRECTION.createValue(switch (state.getPropertyValue(MINECRAFT_CARDINAL_DIRECTION)) {
+                    case EAST -> MinecraftCardinalDirection.WEST;
+                    case WEST -> MinecraftCardinalDirection.EAST;
+                    default -> state.getPropertyValue(MINECRAFT_CARDINAL_DIRECTION);
+                });
+                states.set(idx, mirrored);
+            } else if (type == VINE_DIRECTION_BITS) {
+                int meta = state.getPropertyValue(VINE_DIRECTION_BITS);
+                int mirrored = (meta & 0x1) | (meta & 0x4) | ((meta & 0x2) << 2) | ((meta & 0x8) >> 2);
+                states.set(idx, VINE_DIRECTION_BITS.createValue(mirrored));
+            } else if (type == DOOR_HINGE_BIT) {
+                states.set(idx, DOOR_HINGE_BIT.createValue(!state.getPropertyValue(DOOR_HINGE_BIT)));
+            } else {
+                if (mirroredWallConnections != null) {
+                    WallConnectionType mirroredConnection = getRotatedWallConnection(type, mirroredWallConnections);
+                    if (mirroredConnection != null) {
+                        @SuppressWarnings("unchecked")
+                        var mirrored = ((EnumPropertyType<WallConnectionType>) type).createValue(mirroredConnection);
+                        states.set(idx, mirrored);
+                    }
+                }
+            }
+            idx++;
+        }
+        return state.setPropertyValues(block.getProperties(), states.toArray(BlockPropertyType.BlockPropertyValue[]::new));
+    }
+
+    /**
+     * Mirror a block state across the Z axis (swap north and south facing while keeping east/west).
+     * Expressed as a 180° rotation of the X mirror, since two perpendicular reflections compose into
+     * a half-turn - this reuses the rotation logic and keeps chirality correct.
+     */
+    public static BlockState mirrorZ(BlockState state) {
+        return clockwise180(mirrorX(state));
+    }
+
+    private static EnumMap<BlockFace, WallConnectionType> mirrorWallConnectionsX(BlockState state) {
+        EnumMap<BlockFace, WallConnectionType> mirroredConnections = new EnumMap<>(BlockFace.class);
+        putRotatedWallConnection(mirroredConnections, BlockFace.EAST, state.getPropertyValue(WALL_CONNECTION_TYPE_WEST));
+        putRotatedWallConnection(mirroredConnections, BlockFace.WEST, state.getPropertyValue(WALL_CONNECTION_TYPE_EAST));
+        putRotatedWallConnection(mirroredConnections, BlockFace.NORTH, state.getPropertyValue(WALL_CONNECTION_TYPE_NORTH));
+        putRotatedWallConnection(mirroredConnections, BlockFace.SOUTH, state.getPropertyValue(WALL_CONNECTION_TYPE_SOUTH));
+        return mirroredConnections;
+    }
+
+    private static BlockFace mirrorFaceX(BlockFace face) {
+        return face.getAxis() == BlockFace.Axis.X ? face.getOpposite() : face;
+    }
+
+    private static int mirrorDirectionX(int value) {
+        return mirrorFaceX(BlockFace.fromHorizontalIndex(value)).getHorizontalIndex();
+    }
+
+    private static int mirrorTrapdoorDirectionX(int value) {
+        BlockFace face = CommonPropertyMap.EWSN_DIRECTION.inverse().get(value);
+        if (face == null) {
+            return value;
+        }
+        return CommonPropertyMap.EWSN_DIRECTION.get(mirrorFaceX(face));
+    }
+
+    private static int mirrorFacingDirectionX(int meta) {
+        int extraBits = meta & ~0x7;
+        return mirrorFaceX(BlockFace.fromIndex(meta & 0x7)).getIndex() | extraBits;
+    }
+
     public static Rotation rotateBy(Rotation self, Rotation other) {
         return Rotation.values()[(self.ordinal() + other.ordinal()) & 0x3];
     }

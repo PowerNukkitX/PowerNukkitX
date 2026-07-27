@@ -1,6 +1,6 @@
 package org.powernukkitx.network.primitiveshape;
 
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.PyramidDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
 import org.powernukkitx.math.Vector3;
@@ -42,7 +42,7 @@ public class PyramidShape extends PrimitiveShape<PyramidShape> {
     }
 
     @Override
-    protected DebugShapePayload buildExtra() {
+    protected ExtraShapeDataPayload buildExtra() {
         PyramidDataPayload payload = new PyramidDataPayload();
         payload.setWidth(width);
         payload.setDepth(depth);

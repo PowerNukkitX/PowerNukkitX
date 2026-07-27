@@ -16,13 +16,14 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author MagicDroidX
  */
 @Slf4j
 public abstract class BlockEntity extends Position implements BlockEntityID {
-    public static long count = 1;
+    public static final AtomicLong count = new AtomicLong(1);
     public IChunk chunk;
     public String name;
     public long id;
@@ -107,7 +108,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
             log.warn("Tried to create a block entity with an invalid id, {}", this.getClass().getSimpleName());
         }
         this.name = nbt.getString("id");
-        this.id = BlockEntity.count++;
+        this.id = BlockEntity.count.getAndIncrement();
         this.x = nbt.getInt("x");
         this.y = nbt.getInt("y");
         this.z = nbt.getInt("z");
@@ -213,18 +214,29 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public void setDirty() {
-        chunk.setChanged();
+        if (chunk != null) {
+            chunk.setChanged();
+        }
+
+        if (!this.isValid()) {
+            return;
+        }
 
         if (!this.getLevelBlock().isAir()) {
-            getLevel().getScheduler().scheduleTask(new Task() {
-                @Override
-                public void onRun(int currentTick) {
-                    if (isValid() && isBlockEntityValid()) {
-                        getLevel().updateComparatorOutputLevelSelective(BlockEntity.this, isObservable());
-                    }
-                }
-            });
+            scheduleComparatorOutputUpdate();
         }
+    }
+
+    protected void scheduleComparatorOutputUpdate() {
+        if (!this.isValid()) return;
+        getLevel().getScheduler().scheduleTask(new Task() {
+            @Override
+            public void onRun(int currentTick) {
+                if (isValid() && isBlockEntityValid()) {
+                    getLevel().updateComparatorOutputLevelSelective(BlockEntity.this, isObservable());
+                }
+            }
+        });
     }
 
     /**

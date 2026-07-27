@@ -12,6 +12,7 @@ import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BiomeTags;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.utils.random.Xoroshiro128;
 
 /**
  * Trail Ruins for PowerNukkitX
@@ -40,7 +41,7 @@ public class TrailRuinsPopulator extends Populator implements PopulatorStructure
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        RandomSourceProvider placementRandom = RandomSourceProvider.create(level.getSeed());
+        RandomSourceProvider placementRandom = new Xoroshiro128(level.getSeed());
         if (!PLACEMENT.canGenerate(level.getSeed(), placementRandom, chunkX, chunkZ, biome)) {
             return;
         }

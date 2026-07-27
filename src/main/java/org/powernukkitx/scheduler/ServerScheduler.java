@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -491,7 +492,16 @@ public class ServerScheduler {
     }
 
     public void close() {
-        this.asyncPool.shutdownNow();
+        this.asyncPool.shutdown();
+        try {
+            if (!this.asyncPool.awaitTermination(10, TimeUnit.SECONDS)) {
+                log.warn("Timed out while waiting for the asynchronous task pool to terminate");
+                this.asyncPool.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            this.asyncPool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
     @ApiStatus.Internal
