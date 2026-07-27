@@ -1,6 +1,7 @@
 package org.powernukkitx.item;
 
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.level.Level;
@@ -126,6 +127,7 @@ public class ItemFilledMap extends Item {
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
         final ClientboundMapItemDataPacket packet = new ClientboundMapItemDataPacket();
+        packet.setCreationMapIDs(new LongArrayList());
         packet.getCreationMapIDs().add(this.getMapId());
         packet.setMapID(this.getMapId());
         packet.setDimension(DimensionType.from(player.getLevel().getDimension()));
