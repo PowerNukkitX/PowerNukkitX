@@ -3,7 +3,6 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -17,7 +16,6 @@ import org.powernukkitx.entity.ai.executor.TemptExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.SwimmingPosEvaluator;
-import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.EquippableComponent;
@@ -360,24 +358,7 @@ public class EntityZombieNautilus extends EntityNautilus {
                                 1
                         )
                 )
-                .sensors(
-                        new ISensor() {
-                            @Override
-                            public void sense(EntityIntelligent entity) {
-                                EntityNautilus n = (EntityNautilus) entity;
-
-                                if (!n.isTamed()) return;
-                                Block home = n.getHomePosition();
-                                if (home == null) return;
-                                entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
-                            }
-
-                            @Override
-                            public int getPeriod() {
-                                return 60;
-                            }
-                        }
-                )
+                .sensors()
                 .controllers(
                         new SpaceMoveController(),
                         new LookController(true, true),

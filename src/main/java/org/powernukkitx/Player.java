@@ -44,7 +44,7 @@ import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangeEntitySco
 import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangeFakePlayerScore;
 import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangePlayerScore;
 import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.RemoveScore;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.PrimitiveShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageOnly;
@@ -4809,9 +4809,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         packet.setNpcId(dialog.getEntityId());
         packet.setActionType(NpcDialoguePacket.Action.OPEN);
         packet.setDialogue(dialog.getContent());
-        if (book) {
-            packet.setSceneName(dialog.getSceneName());
-        }
+        packet.setSceneName(book ? dialog.getSceneName() : "");
         packet.setNpcName(dialog.getTitle());
         packet.setActionJson(dialog.getButtonJSONData());
         if (book) {
@@ -5996,10 +5994,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public List<Integer> sendPrimitiveShape(ShapeDataPayload... shapes) {
+    public List<Integer> sendPrimitiveShape(PrimitiveShapeDataPayload... shapes) {
         List<Integer> ids = new ArrayList<>();
 
-        for (ShapeDataPayload shapeDataPayload : shapes) {
+        for (PrimitiveShapeDataPayload shapeDataPayload : shapes) {
             int id = this.shapeIds.getAndIncrement();
             shapeDataPayload.setNetworkId(id);
             ids.add(id);
@@ -6012,7 +6010,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return ids;
     }
 
-    public int sendPrimitiveShape(ShapeDataPayload shape) {
+    public int sendPrimitiveShape(PrimitiveShapeDataPayload shape) {
         final int id = this.shapeIds.getAndIncrement();
         shape.setNetworkId(id);
 
@@ -6023,7 +6021,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return id;
     }
 
-    public void updatePrimitiveShape(int id, ShapeDataPayload shape) {
+    public void updatePrimitiveShape(int id, PrimitiveShapeDataPayload shape) {
         shape.setNetworkId(id);
 
         final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
@@ -6033,7 +6031,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void removePrimitiveShape(int id) {
-        final ShapeDataPayload shape = new ShapeDataPayload();
+        final PrimitiveShapeDataPayload shape = new PrimitiveShapeDataPayload();
         shape.setNetworkId(id);
         shape.setExtraShapeData(PrimitiveShapes.REMOVAL_EXTRA);
 
@@ -6044,10 +6042,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void clearPrimitiveShapes() {
-        List<ShapeDataPayload> shapes = new ArrayList<>();
+        List<PrimitiveShapeDataPayload> shapes = new ArrayList<>();
 
         for (int i = 0; i < shapeIds.get(); i++) {
-            final ShapeDataPayload shape = new ShapeDataPayload();
+            final PrimitiveShapeDataPayload shape = new PrimitiveShapeDataPayload();
             shape.setNetworkId(i);
             shape.setExtraShapeData(PrimitiveShapes.REMOVAL_EXTRA);
             shapes.add(shape);
