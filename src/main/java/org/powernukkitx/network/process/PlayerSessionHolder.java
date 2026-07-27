@@ -27,6 +27,7 @@ import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
 import org.jetbrains.annotations.Nullable;
+import org.powernukkitx.utils.TextFormat;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -45,7 +46,9 @@ import org.powernukkitx.utils.DefaultCameraPresets;
 import org.powernukkitx.utils.RuntimeBlockDefinitionRegistry;
 
 import java.lang.reflect.Constructor;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -134,7 +137,7 @@ public class PlayerSessionHolder {
                     );
                     this.lastWarnTime = now;
                 }
-                return false; // excess is dropped
+                return false;
             }
         }
         return true;
@@ -155,7 +158,22 @@ public class PlayerSessionHolder {
         final DisconnectPacket packet = new DisconnectPacket();
         packet.setReason(reason);
         packet.setMessages(new DisconnectPacketMessages(message, ""));
+
         this.session.sendPacketImmediately(packet);
+
+        SocketAddress socketAddress = this.getSession().getSocketAddress();
+
+        if (socketAddress instanceof InetSocketAddress address) {
+            InetAddress inetAddress = address.getAddress();
+
+            log.debug("[Network session disconnected: {}:{}] - {}",
+                inetAddress != null ? inetAddress.getHostAddress() : address.getHostString(),
+                address.getPort(),
+                message
+            );
+        } else {
+            log.debug("[Network session disconnected] - {}", message);
+        }
     }
 
     public void sendResourcePacksInfo(Server server) {
