@@ -1,6 +1,7 @@
 package org.powernukkitx.level.generator;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.powernukkitx.ServerMockFixture;
@@ -25,9 +26,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class GeneratorSmokeTest {
 
+    private Level current;
+    private File currentDir;
+
     @BeforeAll
     static void setup() {
         ServerMockFixture.boot();
+    }
+
+    // Each generator test opens a real LevelDB world plus its generator caches. Left
+    // open they pile up across the fork and blow the tight test heap, so tear the level
+    // down and drop its files right after every test.
+    @AfterEach
+    void tearDown() {
+        if (current != null) {
+            try {
+                current.close();
+            } catch (Throwable ignore) {
+            }
+            current = null;
+        }
+        if (currentDir != null) {
+            FileUtils.deleteQuietly(currentDir);
+            currentDir = null;
+        }
     }
 
     private Level buildLevel(String genName, DimensionEnum dim, int dimId) throws Exception {
@@ -43,6 +65,8 @@ public class GeneratorSmokeTest {
                         LevelConfig.AntiXrayMode.LOW, true,
                         dim.getDimensionData(), new HashMap<>()));
         level.initLevel();
+        this.current = level;
+        this.currentDir = dir;
         return level;
     }
 
