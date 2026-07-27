@@ -60,6 +60,11 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         VARIANT_BROWN
     };
 
+    private static final String[] VARIANT_MUSHROOM_BLOCK = {
+        BlockID.RED_MUSHROOM,
+        BlockID.BROWN_MUSHROOM
+    };
+
     @Override
     @NotNull public String getIdentifier() {
         return MOOSHROOM;
@@ -209,7 +214,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     @Override
     public boolean shear() {
         this.close();
-        this.level.dropItem(this, Item.get(isBrown() ? BlockID.BROWN_MUSHROOM : BlockID.RED_MUSHROOM, 0, 5));
+        this.level.dropItem(this, Item.get(VARIANT_MUSHROOM_BLOCK[getVariant()]));
         this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
         this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
         EntityCow cow = new EntityCow(this.getChunk(), this.getNbt());
