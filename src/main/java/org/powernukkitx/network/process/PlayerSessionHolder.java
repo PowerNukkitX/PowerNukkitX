@@ -46,7 +46,9 @@ import org.powernukkitx.utils.DefaultCameraPresets;
 import org.powernukkitx.utils.RuntimeBlockDefinitionRegistry;
 
 import java.lang.reflect.Constructor;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -135,7 +137,7 @@ public class PlayerSessionHolder {
                     );
                     this.lastWarnTime = now;
                 }
-                return false; // excess is dropped
+                return false;
             }
         }
         return true;
@@ -157,11 +159,21 @@ public class PlayerSessionHolder {
         packet.setReason(reason);
         packet.setMessages(new DisconnectPacketMessages(message, ""));
 
-        InetSocketAddress address = (InetSocketAddress) this.getSession().getSocketAddress();
-        
-        log.info(TextFormat.AQUA + "[Network session disconnected: " + address.getAddress().getHostAddress() + ":" + address.getPort() + "] - " + message);
-        
         this.session.sendPacketImmediately(packet);
+
+        SocketAddress socketAddress = this.getSession().getSocketAddress();
+
+        if (socketAddress instanceof InetSocketAddress address) {
+            InetAddress inetAddress = address.getAddress();
+
+            log.debug("[Network session disconnected: {}:{}] - {}",
+                inetAddress != null ? inetAddress.getHostAddress() : address.getHostString(),
+                address.getPort(),
+                message
+            );
+        } else {
+            log.debug("[Network session disconnected] - {}", message);
+        }
     }
 
     public void sendResourcePacksInfo(Server server) {
