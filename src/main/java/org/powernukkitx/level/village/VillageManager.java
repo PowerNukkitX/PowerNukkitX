@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -32,12 +33,12 @@ public final class VillageManager {
 
     private final Level level;
     private final ConcurrentHashMap<UUID, Village> villages = new ConcurrentHashMap<>();
-    private record JobSiteCache(java.util.Set<String> ids, int version) {
+    private record JobSiteCache(Set<String> ids, int version) {
     }
 
     private static volatile JobSiteCache jobSiteCache;
 
-    private static java.util.Set<String> getJobSiteBlockIds() {
+    private static Set<String> getJobSiteBlockIds() {
         int version = Profession.getRegistrationVersion();
         var cache = jobSiteCache;
         if (cache != null && cache.version() == version) {
@@ -47,7 +48,7 @@ public final class VillageManager {
         for (Profession profession : Profession.getProfessions().values()) {
             rebuilt.add(profession.getBlockID());
         }
-        var ids = java.util.Set.copyOf(rebuilt);
+        var ids = Set.copyOf(rebuilt);
         jobSiteCache = new JobSiteCache(ids, version);
         return ids;
     }
