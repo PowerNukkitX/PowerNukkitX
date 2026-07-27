@@ -17,7 +17,6 @@ import org.powernukkitx.event.player.PlayerDropItemEvent;
 import org.powernukkitx.event.player.PlayerHackDetectedEvent;
 import org.powernukkitx.event.player.PlayerInteractEntityEvent;
 import org.powernukkitx.event.player.PlayerInteractEvent;
-import org.powernukkitx.event.player.PlayerItemConsumeEvent;
 import org.powernukkitx.event.player.PlayerKickEvent;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.InventoryHolder;
@@ -354,19 +353,10 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 } else {
                     item = serverItemInHand;
                 }
-                PlayerItemConsumeEvent consumeEvent = null;
-                if (item.isEdible()) {
-                    consumeEvent = new PlayerItemConsumeEvent(player, item.clone());
-                    player.getServer().getPluginManager().callEvent(consumeEvent);
-                }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 playerHandle.setInteract();
-                if (consumeEvent != null && consumeEvent.isCancelled()) {
-                    player.getInventory().sendSlot(transaction.getSlot(), player);
-                    return;
-                }
-                if (interactEvent.isCancelled() && (consumeEvent == null || !consumeEvent.isBypassInteract())) {
+                if (interactEvent.isCancelled()) {
                     if (interactEvent.getItem() != null && interactEvent.getItem().isWearable()) {
                         player.getInventory().sendArmorContents(player);
                     }

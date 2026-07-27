@@ -649,13 +649,19 @@ public class Chunk implements IChunk {
                     }
 
                     int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
-                    int herdSpread = spawnRule.getHerdMax() - spawnRule.getHerdMin();
 
                     for (int i = 0; i < herd; i++) {
                         Vector3 spawnPos = lookVec;
                         if (!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
-                            float offset = i / (100f * herd); //If a herd is spawned at the exact same position, they push themselves infinite
-                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5 + offset, 0, 0.5 + offset);
+                            Vector3 scattered = i == 0 ? lookVec : lookVec.add(Utils.rand(-4, 4), 0, Utils.rand(-4, 4));
+                            Vector3 safe = level.getSafeSpawn(scattered, 2, true);
+                            if (safe == null || safe.distanceSquared(lookVec) > 64) {
+                                safe = level.getSafeSpawn(lookVec, 1, true);
+                            }
+                            if (safe == null) {
+                                continue;
+                            }
+                            spawnPos = safe.add(Utils.rand(0.3, 0.7), 0, Utils.rand(0.3, 0.7));
                         }
                         if (spawnedEntityCount >= maxEntityCount) {
                             break;

@@ -185,7 +185,7 @@ tasks.test {
     jvmArgs(
         "--add-opens", "java.base/java.lang=ALL-UNNAMED",
         "--add-opens", "java.base/java.io=ALL-UNNAMED",
-        "-Xmx1g", // Limit test JVM memory
+        "-Xmx2g", // Limit test JVM memory - smoke tests boot real levels and run terrain generation
         "-XX:+UseG1GC", // Use G1GC for tests
         "-XX:MaxGCPauseMillis=200" // Lower GC pause time
     )

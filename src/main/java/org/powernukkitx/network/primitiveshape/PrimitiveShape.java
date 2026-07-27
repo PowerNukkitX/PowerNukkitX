@@ -2,9 +2,9 @@ package org.powernukkitx.network.primitiveshape;
 
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.DebugShapePayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ExtraShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ScriptPrimitiveShapeType;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.PrimitiveShapeDataPayload;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.math.Vector3;
@@ -96,10 +96,10 @@ public abstract class PrimitiveShape<T extends PrimitiveShape<T>> {
 
     protected abstract ScriptPrimitiveShapeType shapeType();
 
-    protected abstract DebugShapePayload buildExtra();
+    protected abstract ExtraShapeDataPayload buildExtra();
 
-    public ShapeDataPayload toPayload() {
-        ShapeDataPayload payload = new ShapeDataPayload();
+    public PrimitiveShapeDataPayload toPayload() {
+        PrimitiveShapeDataPayload payload = new PrimitiveShapeDataPayload();
         payload.setShapeType(shapeType());
         payload.setLocation(location);
         payload.setScale(scale);
