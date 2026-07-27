@@ -20,6 +20,22 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.scheduleUpdate();
+    }
+
+    @Override
+    public boolean onUpdate() {
+        if (!this.chunk.isInitiated()) {
+            return true;
+        }
+
+        this.level.updateComparatorOutputLevel(this);
+        return super.onUpdate();
+    }
+
+    @Override
     public void loadNBT() {
         super.loadNBT();
 
@@ -33,7 +49,6 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
         for (int i = 0; i < itemsTag.size(); i++) {
             this.inventory.setItem(i, ItemHelper.read(itemsTag.get(i)));
         }
-        this.level.updateComparatorOutputLevel(this);
     }
 
     @Override

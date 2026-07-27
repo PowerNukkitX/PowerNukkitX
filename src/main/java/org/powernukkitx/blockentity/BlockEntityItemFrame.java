@@ -28,6 +28,22 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
+    protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.scheduleUpdate();
+    }
+
+    @Override
+    public boolean onUpdate() {
+        if (!this.chunk.isInitiated()) {
+            return true;
+        }
+
+        this.level.updateComparatorOutputLevel(this);
+        return super.onUpdate();
+    }
+
+    @Override
     public void loadNBT() {
         super.loadNBT();
         if (!nbt.contains("Item")) {
@@ -39,7 +55,6 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (!nbt.contains("ItemDropChance")) {
             this.nbt.putFloat("ItemDropChance", 1.0f);
         }
-        this.level.updateComparatorOutputLevel(this);
     }
 
     @Override
