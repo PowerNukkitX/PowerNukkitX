@@ -39,7 +39,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (!nbt.contains("ItemDropChance")) {
             this.nbt.putFloat("ItemDropChance", 1.0f);
         }
-        this.level.updateComparatorOutputLevel(this);
+        this.scheduleComparatorOutputUpdate();
     }
 
     @Override

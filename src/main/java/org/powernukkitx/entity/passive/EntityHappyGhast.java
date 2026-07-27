@@ -4,7 +4,6 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
-import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -21,7 +20,6 @@ import org.powernukkitx.entity.ai.executor.TemptExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.HoveringPosEvaluator;
-import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.HomeComponent;
@@ -138,11 +136,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         }
 
         // Init home memory
-        if (this.nbt.contains("HomeX")) {
-            this.initHome();
-        } else {
-            this.setHomePosition();
-        }
+        this.prepareHomePosition();
     }
 
     @Override
@@ -696,21 +690,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                     )
                 )
                 .sensors(
-                    new NearestPlayerSensor(56, 0, 20),
-                    // Ensure HOME memory exists + stays valid
-                    new ISensor() {
-                        @Override
-                        public void sense(EntityIntelligent entity) {
-                            EntityHappyGhast g = (EntityHappyGhast) entity;
-                            if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK))
-                                g.setHomePosition();
-                        }
-
-                        @Override
-                        public int getPeriod() {
-                            return 60;
-                        }
-                    }
+                    new NearestPlayerSensor(56, 0, 20)
                 )
                 .controllers(
                     new SpaceMoveController(),
