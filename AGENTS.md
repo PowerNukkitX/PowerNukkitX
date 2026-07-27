@@ -148,7 +148,6 @@ The mode is fixed at boot and exposed as `Server#isLevelThreadMode()`. Consequen
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/): `fix:`, `feat:`, `perf:`, `refactor:`, `docs:`, `chore(deps):`. Write the subject as what changed and why it matters - `fix: prevent deadlock when entity home loads before chunk`, not `fix: bug`.
 
-
 ---
 
 ## Testing
