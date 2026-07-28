@@ -1075,10 +1075,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void broadcastMountedMovement() {
-        if (this.riding == null) return;
+        Entity riding = this.riding;
+        if (riding == null) return;
 
         MovePlayerPacket pk = new MovePlayerPacket();
-        pk.setPlayerRuntimeID(this.getId());
+        pk.setPlayerRuntimeID(this.id);
         pk.setPosition(Vector3f.from(
             (float) this.x,
             (float) this.y,
@@ -1090,17 +1091,24 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             (float) this.headYaw
         ));
         pk.setPositionMode(PositionMode.NORMAL);
-        pk.setOnGround(false);
-        pk.setRidingRuntimeID(this.riding.getId());
+        pk.setOnGround(this.onGround);
+        pk.setRidingRuntimeID(riding.getId());
+        pk.setTick(this.getServer().getTick());
 
-        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
-        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
-        teleportData.setSourceActorType(0);
-        pk.setTeleportData(teleportData);
+        Set<Player> viewers = new HashSet<>();
 
-        pk.setTick(this.getLevel().getCurrentTick());
+        viewers.addAll(this.hasSpawned.values());
+        viewers.addAll(riding.getViewers().values());
 
-        Server.broadcastPacket(this.hasSpawned.values(), pk);
+        for (Entity passenger : riding.getPassengers()) {
+            if (passenger instanceof Player player) {
+                viewers.add(player);
+            }
+        }
+
+        viewers.remove(this);
+
+        Server.broadcastPacket(viewers, pk);
     }
 
     /**
