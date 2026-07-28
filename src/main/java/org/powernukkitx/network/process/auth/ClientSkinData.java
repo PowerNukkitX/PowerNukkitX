@@ -105,7 +105,7 @@ public class ClientSkinData {
                     final String pieceId = stringValue(personaPiece, "PieceId");
                     final String pieceType = stringValue(personaPiece, "PieceType");
                     final String packId = stringValue(personaPiece, "PackId");
-                    final String isDefault = stringValue(personaPiece, "IsDefault");
+                    final Boolean isDefault = booleanValue(personaPiece, "IsDefault");
                     final String productId = stringValue(personaPiece, "ProductId");
                     if (pieceId == null || pieceType == null || packId == null || isDefault == null || productId == null) {
                         return null;
@@ -115,7 +115,7 @@ public class ClientSkinData {
                                     pieceId,
                                     pieceType,
                                     packId,
-                                    Boolean.parseBoolean(isDefault),
+                                    isDefault,
                                     productId
                             )
                     );
@@ -235,8 +235,19 @@ public class ClientSkinData {
     }
 
     private String stringValue(Map<String, Object> map, String key) {
+        return map.get(key) instanceof String value ? value : null;
+    }
+
+    private Boolean booleanValue(Map<String, Object> map, String key) {
         final Object value = map.get(key);
-        return value == null ? null : value.toString();
+        if (value instanceof Boolean bool) {
+            return bool;
+        }
+        // some clients send it as a quoted literal
+        if (value instanceof String str && ("true".equalsIgnoreCase(str) || "false".equalsIgnoreCase(str))) {
+            return Boolean.valueOf(str);
+        }
+        return null;
     }
 
     private ImageData readImageData(Map<String, Object> map) {

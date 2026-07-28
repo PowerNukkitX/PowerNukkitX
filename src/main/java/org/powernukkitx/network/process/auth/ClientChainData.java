@@ -1,6 +1,5 @@
 package org.powernukkitx.network.process.auth;
 
-import org.powernukkitx.Server;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
@@ -136,11 +135,14 @@ public class ClientChainData {
         } catch (Exception e) {
             return null;
         }
-        final WaterdogData waterdogData = !map.containsKey("Waterdog_IP") && !map.containsKey("Waterdog_XUID") ? null :
-                new WaterdogData(
-                        map.get("Waterdog_IP").toString(),
-                        map.get("Waterdog_XUID").toString()
-                );
+        final WaterdogData waterdogData;
+        if (!map.containsKey("Waterdog_IP") && !map.containsKey("Waterdog_XUID")) {
+            waterdogData = null;
+        } else if (!(map.get("Waterdog_IP") instanceof String waterdogIp) || !(map.get("Waterdog_XUID") instanceof String waterdogXuid)) {
+            return null;
+        } else {
+            waterdogData = new WaterdogData(waterdogIp, waterdogXuid);
+        }
         final int clientEditorConnectionIntent;
         if (map.containsKey("ClientEditorConnectionIntent")) {
             if (!(map.get("ClientEditorConnectionIntent") instanceof Number intent)) {
@@ -172,7 +174,7 @@ public class ClientChainData {
                 selfSignedId,
                 serverAddress,
                 thirdPartyName,
-                trustedSkin || Server.getInstance().getSettings().playerSettings().forceSkinTrusted(),
+                trustedSkin,
                 uiProfile,
                 map.containsKey("IsEduMode"),
                 waterdogData,

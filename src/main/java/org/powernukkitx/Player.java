@@ -431,7 +431,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         buffer.putLong(this.uuid.getMostSignificantBits());
         buffer.putLong(this.uuid.getLeastSignificantBits());
         this.rawUUID = buffer.array();
-        this.setSkin(new Skin(info.getSkin(), info.clientChainData.isTrustedSkin()));
+        final boolean trustedSkin = info.clientChainData.isTrustedSkin()
+                || this.server.getSettings().playerSettings().forceSkinTrusted();
+        this.setSkin(new Skin(info.getSkin(), trustedSkin));
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
         this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
         this.movementDistanceThreshold = this.server.getSettings().playerSettings().movementDistanceThreshold();

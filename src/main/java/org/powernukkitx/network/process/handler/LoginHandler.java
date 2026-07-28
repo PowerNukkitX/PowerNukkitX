@@ -37,6 +37,9 @@ import java.util.Locale;
 @Slf4j
 public class LoginHandler implements PacketHandler<LoginPacket> {
 
+    // gamertags are capped at 16 chars, the extra headroom is for proxies rewriting the name
+    private static final int MAX_DISPLAY_NAME_LENGTH = 32;
+
     @Override
     public void handle(LoginPacket packet, PlayerSessionHolder holder, Server server) {
         if (!holder.getState().equals(SessionState.LOGIN)) {
@@ -80,7 +83,14 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 return;
             }
 
-            final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
+            final ChainValidationResult.IdentityClaims identityClaims;
+            try {
+                identityClaims = result.identityClaims();
+            } catch (RuntimeException e) {
+                log.debug("Malformed identity claims", e);
+                holder.disconnect(notAuthenticated);
+                return;
+            }
             if (!isValidIdentityClaims(identityClaims)) {
                 holder.disconnect(notAuthenticated);
                 return;
@@ -147,23 +157,21 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     }
 
     private static boolean isValidIdentityClaims(ChainValidationResult.IdentityClaims identityClaims) {
-        if (identityClaims == null || identityClaims.extraData == null) {
+        if (identityClaims.extraData == null) {
             return false;
         }
-        if (isBlank(identityClaims.extraData.displayName) || identityClaims.extraData.displayName.length() > 32) {
+        final String displayName = identityClaims.extraData.displayName;
+        if (isBlank(displayName) || displayName.length() > MAX_DISPLAY_NAME_LENGTH) {
             return false;
         }
         return !isBlank(identityClaims.identityPublicKey);
     }
 
     private static boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
+        return value == null || value.isBlank();
     }
 
     private ClientJwtValidationResult validateClientJwt(LoginPacket packet, PublicKey identityPublicKey) {
-        if (identityPublicKey == null) {
-            return ClientJwtValidationResult.INVALID;
-        }
         final String clientJwt = packet.getClientJwt();
         if (isBlank(clientJwt)) {
             return ClientJwtValidationResult.INVALID;
