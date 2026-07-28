@@ -126,6 +126,7 @@ public class ItemBucket extends Item {
             case PUFFERFISH_BUCKET -> EntityID.PUFFERFISH;
             case AXOLOTL_BUCKET -> EntityID.AXOLOTL;
             case TADPOLE_BUCKET -> EntityID.TADPOLE;
+            case SULFUR_CUBE_BUCKET -> EntityID.SULFUR_CUBE;
             default -> null;
         };
     }
