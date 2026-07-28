@@ -28,6 +28,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.PooledByteBufAllocator;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NBTOutputStream;
@@ -56,6 +57,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -75,6 +77,24 @@ public class LevelDBProvider implements LevelProvider {
     protected final String path;
     protected CompoundTag worldDynamicProperties;
     protected boolean worldDynamicPropertiesDirty = false;
+    /**
+     * Serialised network payloads keyed by chunk hash, in least-recently-used order. Each entry
+     * owns one reference to its buffer; callers receive retained duplicates. Guarded by its own
+     * monitor because chunk sends, saves and unloads reach it from different threads.
+     */
+    private final Long2ObjectLinkedOpenHashMap<CachedChunkPayload> payloadCache = new Long2ObjectLinkedOpenHashMap<>();
+    /** Total {@link CachedChunkPayload#byteSize()} held in {@link #payloadCache}. Guarded by it. */
+    private long payloadCacheBytes;
+
+    /**
+     * A serialised chunk payload together with the {@link IChunk#getContentVersion()} it was
+     * built from, which is what makes a hit safe.
+     *
+     * @param byteSize readable size of {@code data} when it was cached, kept separately so the
+     *                 budget can be adjusted without touching a possibly-released buffer
+     */
+    private record CachedChunkPayload(ByteBuf data, int subChunkCount, long contentVersion, int byteSize) {
+    }
 
     /**
      * @return int The nether coordinate scale for the world
@@ -270,6 +290,7 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public void putChunk(long index, IChunk chunk) {
+        invalidatePayloadCache(index);
         if (this.chunks.containsKey(index)) {
             level.getPlayers().values().forEach(player -> {
                 synchronized (player.getPlayerChunkManager()) {
@@ -307,9 +328,24 @@ public class LevelDBProvider implements LevelProvider {
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
+        final long cacheLimitBytes = getPayloadCacheLimitBytes();
+        final boolean cacheable = cacheLimitBytes > 0 && chunk.getContentVersion() >= 0
+                && !this.level.isAntiXrayEnabled();
+        final long index = Level.chunkHash(x, z);
+        if (cacheable) {
+            long currentVersion = chunk.getContentVersion();
+            synchronized (this.payloadCache) {
+                CachedChunkPayload cached = this.payloadCache.getAndMoveToLast(index);
+                if (cached != null && cached.contentVersion() == currentVersion) {
+                    return Pair.of(cached.data().retainedDuplicate(), cached.subChunkCount());
+                }
+            }
+        }
         AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
+        AtomicLong serializedVersion = new AtomicLong(-1);
         chunk.batchProcess(unsafeChunk -> {
+            serializedVersion.set(chunk.getContentVersion());
             final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer();
             boolean success = false;
             try {
@@ -353,8 +389,6 @@ public class LevelDBProvider implements LevelProvider {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
                         if (blockEntity instanceof BlockEntityMobSpawner spawner && !spawner.hasSpawnEntityType()) continue;
                         tagList.add(blockEntitySpawnable.getSpawnCompound());
-                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
-                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
                     }
                 }
                 try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf); final NBTOutputStream outputStream = NbtUtils.createNetworkWriter(stream)) {
@@ -378,7 +412,60 @@ public class LevelDBProvider implements LevelProvider {
                 }
             }
         });
-        return Pair.of(data.get(), subChunkCountRef.get());
+        ByteBuf payload = data.get();
+        Integer subChunkCount = subChunkCountRef.get();
+        if (!cacheable || payload == null || subChunkCount == null) {
+            return Pair.of(payload, subChunkCount);
+        }
+        int payloadBytes = payload.readableBytes();
+        synchronized (this.payloadCache) {
+            discardCached(this.payloadCache.put(index,
+                    new CachedChunkPayload(payload, subChunkCount, serializedVersion.get(), payloadBytes)));
+            this.payloadCacheBytes += payloadBytes;
+            while (this.payloadCacheBytes > cacheLimitBytes && !this.payloadCache.isEmpty()) {
+                discardCached(this.payloadCache.removeFirst());
+            }
+        }
+        return Pair.of(payload.retainedDuplicate(), subChunkCount);
+    }
+
+    /**
+     * Off-heap budget for cached payloads in bytes, from {@code chunk-settings.payloadCacheMemoryMb}.
+     * Read per request rather than snapshot so the budget can be modified on a running server.
+     */
+    private long getPayloadCacheLimitBytes() {
+        return Math.max(0L, this.level.getServer().getSettings().chunkSettings().payloadCacheMemoryMb()) * 1024L * 1024L;
+    }
+
+    /**
+     * Releases this provider's reference to a cached payload and stops counting it against the
+     * budget. Outstanding duplicates already handed to callers keep the memory alive until they
+     * are released, so this is safe to call while a chunk send is in flight.
+     *
+     * @param cached the entry being dropped, or {@code null} when there was none
+     */
+    private void discardCached(@Nullable CachedChunkPayload cached) {
+        if (cached == null) {
+            return;
+        }
+        this.payloadCacheBytes -= cached.byteSize();
+        cached.data().release();
+    }
+
+    private void invalidatePayloadCache(long index) {
+        synchronized (this.payloadCache) {
+            discardCached(this.payloadCache.remove(index));
+        }
+    }
+
+    private void clearPayloadCache() {
+        synchronized (this.payloadCache) {
+            for (CachedChunkPayload cached : this.payloadCache.values()) {
+                cached.data().release();
+            }
+            this.payloadCache.clear();
+            this.payloadCacheBytes = 0;
+        }
     }
 
     private void writeBorderBlockData(ByteBuf byteBuf, IChunk chunk) {
@@ -626,6 +713,7 @@ public class LevelDBProvider implements LevelProvider {
         if (chunk != null && chunk.unload(false, safe)) {
             lastChunk.remove();
             this.chunks.remove(index, chunk);
+            invalidatePayloadCache(index);
             return true;
         }
         return false;
@@ -695,6 +783,7 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void close() {
         flushWorldDynamicProperties();
+        clearPayloadCache();
         storage.close();
     }
 
