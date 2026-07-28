@@ -2549,6 +2549,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
     }
 
+    /**
+     * Broadcasts the mounted movement of all player passengers.
+     */
     public void broadcastMountedPassengerMovements() {
         if (this.passengers.isEmpty()) return;
 

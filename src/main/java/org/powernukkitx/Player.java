@@ -1074,6 +1074,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.fastMove(diffX, diffY, diffZ);
     }
 
+    /**
+     * Broadcasts this player's mounted position and rotation to relevant viewers.
+     *
+     * <p>Does nothing if the player is not riding an entity.</p>
+     */
     public void broadcastMountedMovement() {
         Entity riding = this.riding;
         if (riding == null) return;
