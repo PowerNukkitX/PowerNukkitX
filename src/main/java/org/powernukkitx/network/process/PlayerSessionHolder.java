@@ -215,6 +215,7 @@ public class PlayerSessionHolder {
         this.sendItemRegistry();
 
         this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
+        this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
 
         final AvailableActorIdentifiersPacket availableActorIdentifiersPacket = new AvailableActorIdentifiersPacket();
         availableActorIdentifiersPacket.setActorInfoList(Registries.ENTITY.getTag());

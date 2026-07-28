@@ -14,7 +14,6 @@ import org.powernukkitx.utils.DefaultCameraPresets;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraFadeInstruction;
-import org.cloudburstmc.protocol.bedrock.data.camera.CameraPreset;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraSetInstruction;
 import org.cloudburstmc.protocol.bedrock.data.camera.EasingType;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
@@ -150,28 +149,8 @@ public class CameraCommand extends VanillaCommand {
         return list.get(index).get();
     }
 
-    private CameraPreset findPreset(String name) {
-        for (CameraPreset preset : DefaultCameraPresets.getAll()) {
-            if (preset.getName().equals(name)) {
-                return preset;
-            }
-        }
-        return null;
-    }
-
-    private NamedDefinition asDefinition(CameraPreset preset) {
-        final String identifier = preset.getName();
-        return new NamedDefinition() {
-            @Override
-            public String getIdentifier() {
-                return identifier;
-            }
-
-            @Override
-            public int getRuntimeId() {
-                return 0;
-            }
-        };
+    private NamedDefinition findPreset(String name) {
+        return DefaultCameraPresets.getDefinition(name);
     }
 
     @Override
@@ -207,7 +186,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .defaultPreset(OptionalBoolean.of(true))
                         .build());
             }
@@ -218,7 +197,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .rot(Vector2f.from(((RelativeFloatNode) list.get(4)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(5)).get((float) senderLocation.getYaw())))
                         .build());
             }
@@ -230,7 +209,7 @@ public class CameraCommand extends VanillaCommand {
                 }
                 Position position = list.get(4).get();
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
                         .build());
             }
@@ -242,7 +221,7 @@ public class CameraCommand extends VanillaCommand {
                 }
                 Position position = list.get(4).get();
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
                         .rot(Vector2f.from(((RelativeFloatNode) list.get(6)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(7)).get((float) senderLocation.getYaw())))
                         .build());
@@ -256,7 +235,7 @@ public class CameraCommand extends VanillaCommand {
                 float easeTime = list.get(4).get();
                 var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
                         .defaultPreset(OptionalBoolean.of(true))
                         .build());
@@ -270,7 +249,7 @@ public class CameraCommand extends VanillaCommand {
                 float easeTime = list.get(4).get();
                 var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
                         .rot(Vector2f.from(((RelativeFloatNode) list.get(7)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(8)).get((float) senderLocation.getYaw())))
                         .build());
@@ -285,7 +264,7 @@ public class CameraCommand extends VanillaCommand {
                 var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 Position position = list.get(7).get();
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
                         .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
                         .build());
@@ -300,7 +279,7 @@ public class CameraCommand extends VanillaCommand {
                 var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 Position position = list.get(7).get();
                 pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(asDefinition(preset))
+                        .preset(preset)
                         .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
                         .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
                         .rot(Vector2f.from(((RelativeFloatNode) list.get(9)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(10)).get((float) senderLocation.getYaw())))
