@@ -431,7 +431,7 @@ public class Level implements Metadatable {
     private int rainTime = 0;
     private boolean thundering = false;
     private int thunderTime = 0;
-    private Object2IntOpenHashMap<String> playerWeatherShowMap = new Object2IntOpenHashMap<String>();
+    private final Object2IntOpenHashMap<String> playerWeatherShowMap = new Object2IntOpenHashMap<String>();
 
     ///
 
@@ -1524,8 +1524,15 @@ public class Level implements Metadatable {
             return;
         }
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
-            for (String key : playerWeatherShowMap.keySet()) {
-                int intValue = playerWeatherShowMap.getInt(key);
+            final String[] weatherKeys;
+            synchronized (playerWeatherShowMap) {
+                weatherKeys = playerWeatherShowMap.keySet().toArray(new String[0]);
+            }
+            for (String key : weatherKeys) {
+                final int intValue;
+                synchronized (playerWeatherShowMap) {
+                    intValue = playerWeatherShowMap.getInt(key);
+                }
                 if (intValue == 0) {
                     Player player = server.getPlayer(key);
                     if (player != null) {
@@ -1535,14 +1542,18 @@ public class Level implements Metadatable {
                             levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                             levelEventPacketStartRain.setData(this.rainTime);
                             player.sendPacket(levelEventPacketStartRain);
-                            this.playerWeatherShowMap.put(key, 1);
+                            synchronized (playerWeatherShowMap) {
+                                this.playerWeatherShowMap.put(key, 1);
+                            }
                             if (isThundering()) {
                                 final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
                                 levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
                                 levelEventPacketStartThunder.setData(this.thunderTime);
                                 levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                                 player.sendPacket(levelEventPacketStartThunder);
-                                this.playerWeatherShowMap.put(key, 2);
+                                synchronized (playerWeatherShowMap) {
+                                    this.playerWeatherShowMap.put(key, 2);
+                                }
                             }
                         }
                     }
@@ -4563,7 +4574,9 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.remove(entity.getId());
-            this.playerWeatherShowMap.removeInt(p.getName());
+            synchronized (playerWeatherShowMap) {
+                this.playerWeatherShowMap.removeInt(p.getName());
+            }
             this.checkSleep();
         } else {
             entity.close();
@@ -4580,7 +4593,9 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.put(entity.getId(), p);
-            this.playerWeatherShowMap.put(p.getName(), 0);
+            synchronized (playerWeatherShowMap) {
+                this.playerWeatherShowMap.put(p.getName(), 0);
+            }
         }
         this.entities.put(entity.getId(), entity);
     }
@@ -5433,7 +5448,9 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
+            synchronized (playerWeatherShowMap) {
+                this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
+            }
             p.sendPacket(pk);
         }
 
@@ -5481,7 +5498,9 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 2 : 0);
+            synchronized (playerWeatherShowMap) {
+                this.playerWeatherShowMap.put(p.getName(), raining ? 2 : 0);
+            }
             p.sendPacket(pk);
         }
 
