@@ -2550,6 +2550,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
+     * Broadcasts the mounted movement of all player passengers.
+     */
+    public void broadcastMountedPassengerMovements() {
+        if (this.passengers.isEmpty()) return;
+
+        for (Entity passenger : List.copyOf(this.passengers)) {
+            if (passenger instanceof Player player && player.getRiding() == this) {
+                player.broadcastMountedMovement();
+            }
+        }
+    }
+
+    /**
      * Resolves the seat offset to apply to a passenger for a specific seat index.
      */
     public @Nullable RideableComponent.Seat getRideSeatFor(int seatIndex) {
@@ -2604,9 +2617,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 }
 
                 Float lock = sm.lockRiderRotationDegrees();
+                boolean bodyFollowsHead = this.getDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD);
+
                 if (lock != null) {
+                    p.setSeatLockPassengerRotation(!bodyFollowsHead, false);
                     p.setSeatLockRiderRotationDegrees(lock, false);
                 } else {
+                    p.setSeatLockPassengerRotation(false, false);
                     p.setSeatLockRiderRotationDegrees(0.0f, false);
                 }
 
@@ -2756,6 +2773,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void clearSeatData(Player passenger) {
         passenger.setSeatCameraRelaxDistanceSmoothing(0.0f, false);
+        passenger.setSeatLockPassengerRotation(false, false);
         passenger.setSeatLockRiderRotationDegrees(0.0f, false);
         passenger.setSeatThirdPersonCameraRadius(0.0f, false);
         passenger.setSeatRotationOffset(false, false);
@@ -2863,6 +2881,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING)) {
             data.put(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, this.actorDataMap.get(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING));
+        }
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION)) {
+            data.put(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, this.actorDataMap.get(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION));
         }
 
         if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES)) {
