@@ -230,10 +230,12 @@ public final class PlayerChunkManager {
             long chunkHash = chunkSendQueue.dequeueLong();
             int chunkX = Level.getHashX(chunkHash);
             int chunkZ = Level.getHashZ(chunkHash);
-            PlayerPreChunkRequestEvent event = new PlayerPreChunkRequestEvent(player, chunkX, chunkZ, force);
-            Server.getInstance().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                continue;
+            if (!PlayerPreChunkRequestEvent.getHandlers().isEmpty()) {
+                PlayerPreChunkRequestEvent event = new PlayerPreChunkRequestEvent(player, chunkX, chunkZ, force);
+                Server.getInstance().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    continue;
+                }
             }
             var chunkTask = chunkLoadingQueue.computeIfAbsent(chunkHash, (hash) -> player.getLevel().getChunkAsync(chunkX, chunkZ));
             if (chunkTask.isDone()) {
@@ -281,8 +283,10 @@ public final class PlayerChunkManager {
                 }
                 int chunkX = Level.getHashX(chunkHash);
                 int chunkZ = Level.getHashZ(chunkHash);
-                PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
-                player.getServer().getPluginManager().callEvent(ev);
+                if (!PlayerChunkRequestEvent.getHandlers().isEmpty()) {
+                    PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
+                    player.getServer().getPluginManager().callEvent(ev);
+                }
                 player.level.requestChunk(chunkX, chunkZ, player);
                 sentChunks.add(chunkHash);
             }
