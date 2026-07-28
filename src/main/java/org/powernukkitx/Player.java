@@ -318,6 +318,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private Entity killer = null;
     private TaskHandler delayedPosTrackingUpdate;
     protected boolean showingCredits;
+    @Getter
+    @Setter
+    @ApiStatus.Internal
+    protected volatile Level.WeatherDisplay shownWeather = Level.WeatherDisplay.NONE;
     protected static final int NO_SHIELD_DELAY = 10;
     @Getter
     @Setter

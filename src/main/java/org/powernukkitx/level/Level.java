@@ -93,7 +93,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -431,7 +430,6 @@ public class Level implements Metadatable {
     private int rainTime = 0;
     private boolean thundering = false;
     private int thunderTime = 0;
-    private Object2IntOpenHashMap<String> playerWeatherShowMap = new Object2IntOpenHashMap<String>();
 
     ///
 
@@ -1524,27 +1522,24 @@ public class Level implements Metadatable {
             return;
         }
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
-            for (String key : playerWeatherShowMap.keySet()) {
-                int intValue = playerWeatherShowMap.getInt(key);
-                if (intValue == 0) {
-                    Player player = server.getPlayer(key);
-                    if (player != null) {
-                        if (isRaining()) {
-                            final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
-                            levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
-                            levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                            levelEventPacketStartRain.setData(this.rainTime);
-                            player.sendPacket(levelEventPacketStartRain);
-                            this.playerWeatherShowMap.put(key, 1);
-                            if (isThundering()) {
-                                final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
-                                levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
-                                levelEventPacketStartThunder.setData(this.thunderTime);
-                                levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                                player.sendPacket(levelEventPacketStartThunder);
-                                this.playerWeatherShowMap.put(key, 2);
-                            }
-                        }
+            if (isRaining()) {
+                for (Player player : this.players.values()) {
+                    if (player.getShownWeather() != WeatherDisplay.NONE) {
+                        continue;
+                    }
+                    final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
+                    levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
+                    levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
+                    levelEventPacketStartRain.setData(this.rainTime);
+                    player.sendPacket(levelEventPacketStartRain);
+                    player.setShownWeather(WeatherDisplay.RAIN);
+                    if (isThundering()) {
+                        final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
+                        levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
+                        levelEventPacketStartThunder.setData(this.thunderTime);
+                        levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
+                        player.sendPacket(levelEventPacketStartThunder);
+                        player.setShownWeather(WeatherDisplay.THUNDER);
                     }
                 }
             }
@@ -4563,7 +4558,6 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.remove(entity.getId());
-            this.playerWeatherShowMap.removeInt(p.getName());
             this.checkSleep();
         } else {
             entity.close();
@@ -4580,7 +4574,7 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.put(entity.getId(), p);
-            this.playerWeatherShowMap.put(p.getName(), 0);
+            p.setShownWeather(WeatherDisplay.NONE);
         }
         this.entities.put(entity.getId(), entity);
     }
@@ -5433,7 +5427,7 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
+            p.setShownWeather(raining ? WeatherDisplay.RAIN : WeatherDisplay.NONE);
             p.sendPacket(pk);
         }
 
@@ -5481,7 +5475,7 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 2 : 0);
+            p.setShownWeather(raining ? WeatherDisplay.THUNDER : WeatherDisplay.NONE);
             p.sendPacket(pk);
         }
 
@@ -6023,6 +6017,13 @@ public class Level implements Metadatable {
         @NotNull
         private Block block;
         private BlockFace neighbor;
+    }
+
+    @ApiStatus.Internal
+    public enum WeatherDisplay {
+        NONE,
+        RAIN,
+        THUNDER
     }
 
     /**
