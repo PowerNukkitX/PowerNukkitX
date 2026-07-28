@@ -1523,6 +1523,7 @@ public class Level implements Metadatable {
         }
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
             if (isRaining()) {
+                final boolean thundering = this.thundering;
                 for (Player player : this.players.values()) {
                     if (player.getShownWeather() != WeatherDisplay.NONE) {
                         continue;
@@ -1532,14 +1533,15 @@ public class Level implements Metadatable {
                     levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                     levelEventPacketStartRain.setData(this.rainTime);
                     player.sendPacket(levelEventPacketStartRain);
-                    player.setShownWeather(WeatherDisplay.RAIN);
-                    if (isThundering()) {
+                    if (thundering) {
                         final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
                         levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
                         levelEventPacketStartThunder.setData(this.thunderTime);
                         levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                         player.sendPacket(levelEventPacketStartThunder);
                         player.setShownWeather(WeatherDisplay.THUNDER);
+                    } else {
+                        player.setShownWeather(WeatherDisplay.RAIN);
                     }
                 }
             }
