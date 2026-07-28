@@ -406,7 +406,14 @@ public class Level implements Metadatable {
     private LongOpenHashSet tickingAreaChunkHashes;
     /** Resolved chunk set for tick-all mode ({@code chunksPerTicks < 0}); see tickAllChunksCached. */
     private IChunk[] cachedTickChunks;
-    private long cachedTickChunksLoaderKey;
+    /**
+     * Distinct chunk positions of this level's loaders. Refilled at the top of every tick-all
+     * pass and consumed by the rebuild that pass may trigger, so it is only meaningful inside
+     * {@link #tickAllChunksCached}.
+     */
+    private final LongOpenHashSet loaderChunkPositions = new LongOpenHashSet();
+    /** The loader chunk positions {@link #cachedTickChunks} was built from. */
+    private final LongOpenHashSet cachedTickChunksLoaderPositions = new LongOpenHashSet();
     /** Set on chunk load/unload (any thread) so the tick-all cache rebuilds next tick. */
     private volatile boolean tickChunkCacheDirty = true;
     /**
@@ -1889,17 +1896,18 @@ public class Level implements Metadatable {
      * border, a chunk loaded or unloaded, or ticking areas changed.
      */
     private void tickAllChunksCached(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion, int tickSpeed) {
-        long loaderKey = 1;
+        this.loaderChunkPositions.clear();
         synchronized (this.loaders) {
             for (ChunkLoader loader : this.loaders.values()) {
-                loaderKey = loaderKey * 31 + Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
+                this.loaderChunkPositions.add(Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4));
             }
         }
         if (this.cachedTickChunks == null || this.tickChunkCacheDirty
-                || loaderKey != this.cachedTickChunksLoaderKey
-                || areaVersion != this.tickingAreaHashesVersion) {
+                || areaVersion != this.tickingAreaHashesVersion
+                || !this.loaderChunkPositions.equals(this.cachedTickChunksLoaderPositions)) {
             this.tickChunkCacheDirty = false;
-            this.cachedTickChunksLoaderKey = loaderKey;
+            this.cachedTickChunksLoaderPositions.clear();
+            this.cachedTickChunksLoaderPositions.addAll(this.loaderChunkPositions);
             rebuildTickAllChunkCache(areaManager, hasTickingAreas, areaVersion);
         }
         for (IChunk chunk : this.cachedTickChunks) {
@@ -1913,16 +1921,16 @@ public class Level implements Metadatable {
     private void rebuildTickAllChunkCache(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
         this.chunkTickList.clear();
         LevelProvider provider = requireProvider();
-        synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                int chunkX = (int) loader.getX() >> 4;
-                int chunkZ = (int) loader.getZ() >> 4;
-                for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
-                    for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
-                        long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
-                        if (provider.isChunkLoaded(hash)) {
-                            this.chunkTickList.put(hash, -1);
-                        }
+        LongIterator positions = this.loaderChunkPositions.longIterator();
+        while (positions.hasNext()) {
+            long position = positions.nextLong();
+            int chunkX = getHashX(position);
+            int chunkZ = getHashZ(position);
+            for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
+                for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
+                    long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
+                    if (provider.isChunkLoaded(hash)) {
+                        this.chunkTickList.put(hash, -1);
                     }
                 }
             }
@@ -1942,7 +1950,11 @@ public class Level implements Metadatable {
             }
         }
         this.chunkTickList.clear();
-        this.cachedTickChunks = resolved.toArray(new IChunk[0]);
+        IChunk[] target = this.cachedTickChunks;
+        if (target == null || target.length != resolved.size()) {
+            target = new IChunk[resolved.size()];
+        }
+        this.cachedTickChunks = resolved.toArray(target);
     }
 
     private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
