@@ -5515,6 +5515,18 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         Server.broadcastPacket(players, pk);
+
+        final WeatherDisplay shown;
+        if (this.isThundering()) {
+            shown = WeatherDisplay.THUNDER;
+        } else if (this.isRaining()) {
+            shown = WeatherDisplay.RAIN;
+        } else {
+            shown = WeatherDisplay.NONE;
+        }
+        for (Player player : players) {
+            player.setShownWeather(shown);
+        }
     }
 
     public void sendWeather(Player player) {
