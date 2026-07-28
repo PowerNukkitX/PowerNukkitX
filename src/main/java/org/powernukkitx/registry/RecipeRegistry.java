@@ -11,6 +11,7 @@ import org.powernukkitx.recipe.descriptor.ItemDescriptorType;
 import org.powernukkitx.recipe.descriptor.ItemTagDescriptor;
 import org.powernukkitx.recipe.special.DecoratedPotRecipe;
 import org.powernukkitx.recipe.special.SmithingArmorTrimCorrectedRecipe;
+import org.powernukkitx.recipe.unlock.RecipeUnlockIndex;
 import org.powernukkitx.tags.ItemTags;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.Identifier;
@@ -63,11 +64,23 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     private final Object2ObjectOpenHashMap<String, Recipe> allRecipeMaps = new Object2ObjectOpenHashMap<>();
     private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
     private final Int2ObjectMap<Recipe> networkIdRecipeMap = new Int2ObjectOpenHashMap<>();
+    private final RecipeUnlockIndex unlockIndex = new RecipeUnlockIndex();
 
     public static int FURNACE_RECIPE_NET_ID_COUNTER = 111000;
 
     public VanillaRecipeParser getVanillaRecipeParser() {
         return vanillaRecipeParser;
+    }
+
+    /**
+     * The reverse ingredient lookup used to decide which recipes a player may unlock.
+     * It is kept in sync by {@link #register(String, Recipe)} and is empty while the registry
+     * is disabled.
+     *
+     * @return the shared index, never {@code null}
+     */
+    public RecipeUnlockIndex getUnlockIndex() {
+        return unlockIndex;
     }
 
     public Int2ObjectMap<Recipe> getNetworkIdRecipeMap() {
@@ -455,6 +468,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         recipeXpMap.clear();
         allRecipeMaps.clear();
         networkIdRecipeMap.clear();
+        unlockIndex.clear();
         if (enabled) {
             init();
         } else {
@@ -492,6 +506,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
             }
         }
+        this.unlockIndex.index(recipe);
     }
 
     public void register(Recipe recipe) {
@@ -507,6 +522,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         networkIdRecipeMap.clear();
         recipeMaps.values().forEach(Map::clear);
         allRecipeMaps.clear();
+        unlockIndex.clear();
         RECIPE_COUNT = 0;
         PACKET = null;
     }

@@ -241,6 +241,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 }
             }
             context.put(GRID_CONSUMED_KEY, true);
+            player.getRecipeBook().unlock(recipe);
             if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
                 context.put(RECIPE_DATA_KEY, recipe);
             } else if (recipe.getResults().size() == 1) {

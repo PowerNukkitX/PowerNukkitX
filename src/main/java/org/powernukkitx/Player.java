@@ -162,6 +162,7 @@ import org.powernukkitx.permission.PermissionAttachmentInfo;
 import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.plugin.Plugin;
 import org.powernukkitx.positiontracking.PositionTrackingService;
+import org.powernukkitx.recipe.unlock.PlayerRecipeBook;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.AsyncTask;
 import org.powernukkitx.scheduler.ServerScheduler;
@@ -337,6 +338,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Fog settings of player.
      */
     protected List<String> fogStack = new ObjectArrayList<>();
+    /**
+     * Recipes this player has discovered.
+     */
+    protected final PlayerRecipeBook recipeBook = new PlayerRecipeBook(this);
     /**
      * The entity that the player is attacked last.
      */
@@ -717,6 +722,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
         this.syncInventory();
         this.resetInventory();
+        this.recipeBook.onSpawn();
 
         this.setEnableClientCommand(true);
 
@@ -1429,6 +1435,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         for (int i = 0; i < fogIdentifiers.size(); i++) {
             this.fogStack.add(i, fogIdentifiers.get(i).parseValue());
         }
+
+        this.recipeBook.load(this.nbt);
 
         if (!this.server.getSettings().playerSettings().checkMovement()) {
             this.checkMovement = false;
@@ -3957,6 +3965,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.nbt.putInt("TimeSinceRest", this.timeSinceRest);
 
+            this.recipeBook.save(this.nbt);
+
             if (!this.getName().isBlank() && this.nbt != null) {
                 this.server.saveOfflinePlayerData(this.uuid, this.getNbt(), async);
             }
@@ -5955,6 +5965,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public List<String> getFogStack() {
         return fogStack;
+    }
+
+    /**
+     * The player's recipe book, holding every recipe this player has discovered.
+     * The instance lives as long as the player and is usable before spawn, although it only
+     * mirrors changes to the client once {@code recipesUnlock} discovery is active.
+     *
+     * @return the recipe book, never {@code null}
+     */
+    public @NotNull PlayerRecipeBook getRecipeBook() {
+        return this.recipeBook;
     }
 
     /**
