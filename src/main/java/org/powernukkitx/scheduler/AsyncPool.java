@@ -1,6 +1,6 @@
 package org.powernukkitx.scheduler;
 
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +16,7 @@ public class AsyncPool extends ThreadPoolExecutor {
     private static final AtomicInteger THREAD_COUNTER = new AtomicInteger();
 
     public AsyncPool(int size) {
-        super(size, Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new SynchronousQueue<>());
+        super(size, size, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         this.setThreadFactory(runnable -> {
             Thread thread = new Thread(runnable);
             thread.setDaemon(true);

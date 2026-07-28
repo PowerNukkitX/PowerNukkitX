@@ -61,11 +61,13 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     @Override
     public void deepFreeze() {
         if (temperature > manager.getAbsoluteZero()) return;
-        if (freezeStatus.get() != FreezeStatus.NONE && freezeStatus.get() != FreezeStatus.FREEZE) return;
-        var needDecompressFirst = freezeStatus.get() == FreezeStatus.FREEZE;
+        if (freezeStatus.get() == FreezeStatus.FREEZE) {
+            freezeStatus.set(FreezeStatus.DEEP_FREEZE);
+            return;
+        }
+        if (freezeStatus.get() != FreezeStatus.NONE) return;
         freezeStatus.set(FreezeStatus.DEEP_FREEZING);
-        var tmp = needDecompressFirst ? LZ4Freezer.decompressor.decompress(data, rawLength) : data;
-        data = LZ4Freezer.deepCompressor.compress(tmp);
+        data = LZ4Freezer.deepCompressor.compress(data);
         freezeStatus.set(FreezeStatus.DEEP_FREEZE);
     }
 

@@ -310,7 +310,7 @@ public class LevelDBProvider implements LevelProvider {
         AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
-            final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer();
+            final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer(64 * 1024);
             boolean success = false;
             try {
                 final ChunkSection[] sections = unsafeChunk.getSections();
