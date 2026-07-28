@@ -44,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -52,18 +53,48 @@ import java.util.Set;
  */
 public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityVariant {
 
-    public static final int VARIANT_RED = 0;
-    public static final int VARIANT_BROWN = 1;
+    /**
+     * The mooshroom variants. Adding a new one only means adding a constant here - the id, the
+     * mushroom it is sheared into and the lightning cycle all follow from the declaration order.
+     */
+    public enum Variant {
+        RED(BlockID.RED_MUSHROOM),
+        BROWN(BlockID.BROWN_MUSHROOM);
 
-    private static final int[] VARIANTS = {
-        VARIANT_RED,
-        VARIANT_BROWN
-    };
+        private static final Variant[] VALUES = values();
 
-    private static final String[] VARIANT_MUSHROOM_BLOCK = {
-        BlockID.RED_MUSHROOM,
-        BlockID.BROWN_MUSHROOM
-    };
+        private final String mushroom;
+
+        Variant(String mushroom) {
+            this.mushroom = mushroom;
+        }
+
+        public int getId() {
+            return ordinal();
+        }
+
+        /**
+         * The mushroom dropped when a mooshroom of this variant is sheared.
+         */
+        public String getMushroom() {
+            return mushroom;
+        }
+
+        /**
+         * The variant a lightning strike converts this one into, wrapping back to the first.
+         */
+        public Variant next() {
+            return VALUES[(ordinal() + 1) % VALUES.length];
+        }
+
+        public static Variant byId(int id) {
+            return id >= 0 && id < VALUES.length ? VALUES[id] : RED;
+        }
+    }
+
+    private static final int[] VARIANTS = Arrays.stream(Variant.values()).mapToInt(Variant::getId).toArray();
+
+    private static final int SHEAR_MUSHROOM_COUNT = 5;
 
     @Override
     @NotNull public String getIdentifier() {
@@ -114,7 +145,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     protected void initEntity() {
         super.initEntity();
         if (!hasVariant()) {
-            setVariant(VARIANT_RED);
+            setVariant(Variant.RED.getId());
         }
     }
 
@@ -123,8 +154,13 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         return VARIANTS;
     }
 
-    public boolean isBrown() {
-        return getVariant() == VARIANT_BROWN;
+    public Variant getVariantType() {
+        return Variant.byId(getVariant());
+    }
+
+    public void setVariantType(Variant variant) {
+        setVariant(variant.getId());
+        setDataProperty(ActorDataTypes.VARIANT, variant.getId());
     }
 
     @Override
@@ -214,7 +250,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     @Override
     public boolean shear() {
         this.close();
-        this.level.dropItem(this, Item.get(VARIANT_MUSHROOM_BLOCK[getVariant()]));
+        this.level.dropItem(this, Item.get(getVariantType().getMushroom(), 0, SHEAR_MUSHROOM_COUNT));
         this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
         this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
         EntityCow cow = new EntityCow(this.getChunk(), this.getNbt());
@@ -230,11 +266,8 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     public void onStruckByLightning(Entity entity) {
         super.onStruckByLightning(entity);
 
-        int newVariant = isBrown() ? VARIANT_RED : VARIANT_BROWN;
-        setVariant(newVariant);
-        setDataProperty(ActorDataTypes.VARIANT, newVariant);
+        setVariantType(getVariantType().next());
     }
-
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
         BlockID.WHEAT
