@@ -43,6 +43,7 @@ public final class PlayerChunkManager {
     private int comparatorLoaderChunkZ;
     private double comparatorDirX;
     private double comparatorDirZ;
+    private int comparatorFieldOfView = -1;
     private double comparatorCosFov;
 
     private final LongComparator chunkDistanceAndFovComparator = new LongComparator() {
@@ -331,11 +332,10 @@ public final class PlayerChunkManager {
         this.comparatorDirZ = Math.cos(yawRadians);
 
         int fieldOfView = player.getServer().getSettings().levelSettings().fieldOfView();
-        if (fieldOfView != cachedFieldOfView) {
-            cachedFieldOfView = fieldOfView;
-            cachedCosFieldOfView = Math.cos(Math.toRadians(fieldOfView));
+        if (fieldOfView != this.comparatorFieldOfView) {
+            this.comparatorFieldOfView = fieldOfView;
+            this.comparatorCosFov = Math.cos(Math.toRadians(fieldOfView));
         }
-        this.comparatorCosFov = cachedCosFieldOfView;
     }
 
     private void unloadChunkForPlayer(long hash) {
