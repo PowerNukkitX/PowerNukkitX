@@ -9,7 +9,8 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockVector3;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
-import it.unimi.dsi.fastutil.longs.LongArrayPriorityQueue;
+import it.unimi.dsi.fastutil.longs.LongHeapPriorityQueue;
+import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -18,24 +19,17 @@ import org.cloudburstmc.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacke
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.CompletionException;
 
 @Slf4j
 public final class PlayerChunkManager {
-
 
     /**
      * Chunks closer than this distance to the player are always considered to be in the field of view.
      */
     private static final double MIN_FOV_CHECK_DISTANCE = 4.0;
-
-    /**
-     * Timeout for asynchronously loading a chunk before retrying or generating it, in microseconds.
-     */
-    private static final long CHUNK_LOAD_TIMEOUT_MICROS = 10L;
 
     private static final double MIN_FOV_CHECK_DISTANCE_SQUARED = MIN_FOV_CHECK_DISTANCE * MIN_FOV_CHECK_DISTANCE;
 
@@ -44,6 +38,7 @@ public final class PlayerChunkManager {
     private double comparatorDirX;
     private double comparatorDirZ;
     private double comparatorCosFov;
+    private double comparatorCosFovSquared;
 
     private final LongComparator chunkDistanceAndFovComparator = new LongComparator() {
         @Override
@@ -70,17 +65,22 @@ public final class PlayerChunkManager {
             return Long.compare(squaredDist1, squaredDist2);
         }
 
+        /**
+         * Equivalent to: (rawDot / sqrt(squaredDistance)) >= comparatorCosFov
+         * but avoids the sqrt by comparing squared values instead.
+         */
         private boolean isInPlayerFov(int dx, int dz, long squaredDistance) {
             if (squaredDistance < MIN_FOV_CHECK_DISTANCE_SQUARED) return true;
 
-            double len = Math.sqrt(squaredDistance);
+            double rawDot = comparatorDirX * dx + comparatorDirZ * dz;
 
-            double toChunkX = dx / len;
-            double toChunkZ = dz / len;
-
-            double dot = comparatorDirX * toChunkX + comparatorDirZ * toChunkZ;
-
-            return dot >= comparatorCosFov;
+            if (comparatorCosFov <= 0) {
+                if (rawDot >= 0) return true;
+                return rawDot * rawDot <= comparatorCosFovSquared * squaredDistance;
+            } else {
+                if (rawDot < 0) return false;
+                return rawDot * rawDot >= comparatorCosFovSquared * squaredDistance;
+            }
         }
     };
 
@@ -90,19 +90,19 @@ public final class PlayerChunkManager {
     //holds all chunk hash values to be sent this tick
     private final @NotNull LongOpenHashSet inRadiusChunks;
     private final int trySendChunkCountPerTick;
-    private final LongArrayPriorityQueue chunkSendQueue;
+    private final LongPriorityQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;
-    private final LongArrayPriorityQueue chunkReadyToSend;
+    private final LongPriorityQueue chunkReadyToSend;
     private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
 
     public PlayerChunkManager(Player player) {
         this.player = player;
         this.sentChunks = new LongOpenHashSet();
         this.inRadiusChunks = new LongOpenHashSet();
-        this.chunkSendQueue = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceAndFovComparator);
+        this.chunkSendQueue = new LongHeapPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceAndFovComparator);
         this.chunkLoadingQueue = new Long2ObjectOpenHashMap<>(player.getViewDistance() * player.getViewDistance());
         this.trySendChunkCountPerTick = player.getChunkSendCountPerTick();
-        this.chunkReadyToSend = new LongArrayPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceAndFovComparator);
+        this.chunkReadyToSend = new LongHeapPriorityQueue(player.getViewDistance() * player.getViewDistance(), chunkDistanceAndFovComparator);
     }
 
     /**
@@ -124,10 +124,11 @@ public final class PlayerChunkManager {
 
     public synchronized void tick() {
         if (!player.isConnected()) return;
-        refreshComparatorContext();
         long currentLoaderChunkPosHashed;
         BlockVector3 floor = player.asBlockVector3();
         if ((currentLoaderChunkPosHashed = Level.chunkHash(floor.x >> 4, floor.z >> 4)) != lastLoaderChunkPosHashed) {
+            // Only pay the cost of recomputing yaw/fov trig when the player actually changed chunk
+            refreshComparatorContext();
             lastLoaderChunkPosHashed = currentLoaderChunkPosHashed;
             updateInRadiusChunks(player.getViewDistance(), floor);
             removeOutOfRadiusChunks();
@@ -186,9 +187,10 @@ public final class PlayerChunkManager {
         inRadiusChunks.clear();
         var loaderChunkX = currentPos.x >> 4;
         var loaderChunkZ = currentPos.z >> 4;
+        var radiusSquared = viewDistance * viewDistance;
         for (int rx = -viewDistance; rx <= viewDistance; rx++) {
             for (int rz = -viewDistance; rz <= viewDistance; rz++) {
-                if (ifChunkNotInRadius(rx, rz, viewDistance)) continue;
+                if (rx * rx + rz * rz > radiusSquared) continue;
                 var chunkX = loaderChunkX + rx;
                 var chunkZ = loaderChunkZ + rz;
                 var hashXZ = Level.chunkHash(chunkX, chunkZ);
@@ -238,7 +240,9 @@ public final class PlayerChunkManager {
             var chunkTask = chunkLoadingQueue.computeIfAbsent(chunkHash, (hash) -> player.getLevel().getChunkAsync(chunkX, chunkZ));
             if (chunkTask.isDone()) {
                 try {
-                    IChunk chunk = chunkTask.get(CHUNK_LOAD_TIMEOUT_MICROS, TimeUnit.MICROSECONDS);
+                    // The future is already done, getNow() returns immediately without any
+                    // timeout/park machinery (the previous timed get() served no purpose here).
+                    IChunk chunk = chunkTask.getNow(null);
                     // Cached future may be stale - re-check in-memory map
                     if (chunk == null || !chunk.getChunkState().canSend()) {
                         chunk = player.level.getChunkIfLoaded(chunkX, chunkZ);
@@ -252,12 +256,10 @@ public final class PlayerChunkManager {
                     chunkLoadingQueue.remove(chunkHash);
                     player.level.registerChunkLoader(player, chunkX, chunkZ, false);
                     chunkReadyToSend.enqueue(chunkHash);
-                } catch (InterruptedException e) {
-                    log.warn("Chunk loading interrupted for chunk ({}, {})", chunkX, chunkZ, e);
-                } catch (ExecutionException e) {
-                    log.warn("Chunk loading execution failed for chunk ({}, {})", chunkX, chunkZ, e);
-                } catch (TimeoutException e) {
-                    log.warn("Timeout while loading chunk ({} {})", chunkX, chunkZ);
+                } catch (CancellationException e) {
+                    log.warn("Chunk loading was cancelled for chunk ({}, {})", chunkX, chunkZ, e);
+                } catch (CompletionException e) {
+                    log.warn("Chunk loading failed for chunk ({}, {})", chunkX, chunkZ, e.getCause() != null ? e.getCause() : e);
                 }
             } else {
                 enqueue.add(chunkHash);
@@ -290,7 +292,7 @@ public final class PlayerChunkManager {
         chunkReadyToSend.clear();
     }
 
-    private void pruneQueueOutOfRadius(LongArrayPriorityQueue queue, boolean unloadChunkLoader) {
+    private void pruneQueueOutOfRadius(LongPriorityQueue queue, boolean unloadChunkLoader) {
         if (queue.isEmpty()) return;
         LongOpenHashSet keep = new LongOpenHashSet();
         while (!queue.isEmpty()) {
@@ -324,21 +326,20 @@ public final class PlayerChunkManager {
         this.comparatorDirX = -Math.sin(yawRadians);
         this.comparatorDirZ = Math.cos(yawRadians);
         this.comparatorCosFov = Math.cos(Math.toRadians(player.getServer().getSettings().levelSettings().fieldOfView()));
+        this.comparatorCosFovSquared = comparatorCosFov * comparatorCosFov;
     }
 
     private void unloadChunkForPlayer(long hash) {
         int x = Level.getHashX(hash);
         int z = Level.getHashZ(hash);
         if (player.level.unregisterChunkLoader(player, x, z)) {
-            for (Entity entity : player.level.getChunkEntities(x, z).values()) {
+            var entities = player.level.getChunkEntities(x, z);
+            if (entities.isEmpty()) return;
+            for (Entity entity : entities.values()) {
                 if (entity != player) {
                     entity.despawnFrom(player);
                 }
             }
         }
-    }
-
-    private boolean ifChunkNotInRadius(int chunkX, int chunkZ, int radius) {
-        return chunkX * chunkX + chunkZ * chunkZ > radius * radius;
     }
 }
