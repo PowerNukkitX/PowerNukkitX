@@ -97,8 +97,6 @@ public final class PlayerChunkManager {
     private final LongOpenHashSet requeueScratch;
     private final LongOpenHashSet pruneScratch;
     private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
-    private int cachedFieldOfView = Integer.MIN_VALUE;
-    private double cachedCosFieldOfView;
 
     public PlayerChunkManager(Player player) {
         this.player = player;
