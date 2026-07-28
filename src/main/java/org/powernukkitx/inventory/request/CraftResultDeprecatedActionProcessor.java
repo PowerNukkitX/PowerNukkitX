@@ -43,6 +43,9 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
             if (!validateResultAgainstInput(player, resultItem)) {
                 return context.error();
             }
+            if (resultItem.getId().equals(Item.SHIELD)) {
+                resultItem.setDamage(0);
+            }
             var createdOutput = player.getCreativeOutputInventory();
             resultItem.autoAssignStackNetworkId();
             createdOutput.setItem(0, resultItem, false);
@@ -53,7 +56,7 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
     }
 
     protected boolean validateResultAgainstInput(Player player, Item resultItem) {
-        if (resultItem.getId().equals(Item.FIREWORK_ROCKET) || resultItem.getId().equals(Item.FIREWORK_STAR)) {
+        if (resultItem.getId().equals(Item.FIREWORK_ROCKET) || resultItem.getId().equals(Item.FIREWORK_STAR) || resultItem.getId().equals(Item.SHIELD)) {
             return true;
         }
         Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
