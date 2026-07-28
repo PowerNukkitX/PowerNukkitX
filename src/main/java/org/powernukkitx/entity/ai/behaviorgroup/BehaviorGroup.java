@@ -16,7 +16,6 @@ import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -108,7 +107,6 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     protected boolean forceUpdateRoute = false;
 
-    @Builder
     public BehaviorGroup(int startRouteUpdateTick,
                          Set<IBehavior> coreBehaviors,
                          Set<IBehavior> behaviors,
@@ -126,6 +124,89 @@ public class BehaviorGroup implements IBehaviorGroup {
         this.entity = entity;
         this.memoryStorage = new MemoryStorage(entity);
         this.initPeriodTimer();
+    }
+
+    /**
+     * Creates a new fluent builder bound to the given entity. The route update tick offset
+     * defaults to the entity's tickSpread, so entities only need to declare their behaviors,
+     * sensors, controllers and route finder.
+     */
+    public static Builder builder(@NotNull EntityIntelligent entity) {
+        return new Builder(entity);
+    }
+
+    /**
+     * Fluent builder for {@link BehaviorGroup}. Each group is bound to a single entity, since
+     * behaviors, sensors and route finders capture the entity instance - so unlike blocks there
+     * is no shared definition registry, every entity builds its own group.
+     */
+    public static class Builder {
+        private final EntityIntelligent entity;
+        private int startRouteUpdateTick;
+        private Set<IBehavior> coreBehaviors = Set.of();
+        private Set<IBehavior> behaviors = Set.of();
+        private Set<ISensor> sensors = Set.of();
+        private Set<IController> controllers = Set.of();
+        private IRouteFinder routeFinder;
+
+        private Builder(@NotNull EntityIntelligent entity) {
+            this.entity = entity;
+            this.startRouteUpdateTick = entity.tickSpread;
+        }
+
+        public Builder startRouteUpdateTick(int startRouteUpdateTick) {
+            this.startRouteUpdateTick = startRouteUpdateTick;
+            return this;
+        }
+
+        public Builder coreBehaviors(IBehavior... coreBehaviors) {
+            this.coreBehaviors = Set.of(coreBehaviors);
+            return this;
+        }
+
+        public Builder coreBehaviors(Collection<IBehavior> coreBehaviors) {
+            this.coreBehaviors = Set.copyOf(coreBehaviors);
+            return this;
+        }
+
+        public Builder behaviors(IBehavior... behaviors) {
+            this.behaviors = Set.of(behaviors);
+            return this;
+        }
+
+        public Builder behaviors(Collection<IBehavior> behaviors) {
+            this.behaviors = Set.copyOf(behaviors);
+            return this;
+        }
+
+        public Builder sensors(ISensor... sensors) {
+            this.sensors = Set.of(sensors);
+            return this;
+        }
+
+        public Builder sensors(Collection<ISensor> sensors) {
+            this.sensors = Set.copyOf(sensors);
+            return this;
+        }
+
+        public Builder controllers(IController... controllers) {
+            this.controllers = Set.of(controllers);
+            return this;
+        }
+
+        public Builder controllers(Collection<IController> controllers) {
+            this.controllers = Set.copyOf(controllers);
+            return this;
+        }
+
+        public Builder routeFinder(IRouteFinder routeFinder) {
+            this.routeFinder = routeFinder;
+            return this;
+        }
+
+        public BehaviorGroup build() {
+            return new BehaviorGroup(startRouteUpdateTick, coreBehaviors, behaviors, sensors, controllers, routeFinder, entity);
+        }
     }
 
     /**

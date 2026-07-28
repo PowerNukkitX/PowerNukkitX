@@ -33,7 +33,7 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
         for (int i = 0; i < itemsTag.size(); i++) {
             this.inventory.setItem(i, ItemHelper.read(itemsTag.get(i)));
         }
-        this.level.updateComparatorOutputLevel(this);
+        this.scheduleComparatorOutputUpdate();
     }
 
     @Override

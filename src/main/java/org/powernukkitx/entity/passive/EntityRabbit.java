@@ -234,9 +234,8 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable, Entity
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new LoveTimeoutExecutor(20 * 30),
                             e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -252,8 +251,8 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable, Entity
                             ),
                         1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
                         entity -> {
                             if (entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT) instanceof EntityDamageByEntityEvent event) {
@@ -311,19 +310,18 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable, Entity
                             (entity -> true),
                         1, 1
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(8, 0, 20),
                     new NearestTargetEntitySensor<>(0, 8, 20, List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY), this::shouldAvoid)
-                ),
-                Set.of(
+                )
+                .controllers(
                     new HoppingController(15),
                     new LookController(() -> !isMoving(), this::isMoving),
                     new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

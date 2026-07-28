@@ -38,7 +38,7 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
             return;
         }
 
-        if (holder.getState().equals(SessionState.REQUESTED_NETWORK_SETTINGS)) {
+        if (!holder.getState().equals(SessionState.INITIAL)) {
             holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
             return;
         }

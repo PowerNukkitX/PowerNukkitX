@@ -44,7 +44,7 @@ import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangeEntitySco
 import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangeFakePlayerScore;
 import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.ChangePlayerScore;
 import org.cloudburstmc.protocol.bedrock.data.payload.scoreboard.RemoveScore;
-import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.PrimitiveShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageOnly;
@@ -152,6 +152,7 @@ import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.network.primitiveshape.PrimitiveShapes;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.permission.PermissibleBase;
@@ -220,6 +221,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
     private static final byte PLAYER_FLAG_SLEEP = 0x2;
+    private static final long POST_TELEPORT_GRACE_MS = 1000L;
     /// static fields
     public boolean playedBefore;
     public boolean spawned = false;
@@ -259,7 +261,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Vector3 sleeping = null;
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
-    /** Wall-clock gate for the async chunk-order run in {@link #checkNetwork()}. */
+    /** Wall-clock gate for the chunk-order run in {@link #checkNetwork()}. */
     private long lastChunkOrderRunMillis;
     protected Vector3 newPosition = null;
     protected int chunkRadius;
@@ -1074,11 +1076,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.fastMove(diffX, diffY, diffZ);
     }
 
+    /**
+     * Broadcasts this player's mounted position and rotation to relevant viewers.
+     *
+     * <p>Does nothing if the player is not riding an entity.</p>
+     */
     public void broadcastMountedMovement() {
-        if (this.riding == null) return;
+        Entity riding = this.riding;
+        if (riding == null) return;
 
         MovePlayerPacket pk = new MovePlayerPacket();
-        pk.setPlayerRuntimeID(this.getId());
+        pk.setPlayerRuntimeID(this.id);
         pk.setPosition(Vector3f.from(
             (float) this.x,
             (float) this.y,
@@ -1090,17 +1098,24 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             (float) this.headYaw
         ));
         pk.setPositionMode(PositionMode.NORMAL);
-        pk.setOnGround(false);
-        pk.setRidingRuntimeID(this.riding.getId());
+        pk.setOnGround(this.onGround);
+        pk.setRidingRuntimeID(riding.getId());
+        pk.setTick(this.getServer().getTick());
 
-        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
-        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
-        teleportData.setSourceActorType(0);
-        pk.setTeleportData(teleportData);
+        Set<Player> viewers = new HashSet<>();
 
-        pk.setTick(this.getLevel().getCurrentTick());
+        viewers.addAll(this.hasSpawned.values());
+        viewers.addAll(riding.getViewers().values());
 
-        Server.broadcastPacket(this.hasSpawned.values(), pk);
+        for (Entity passenger : riding.getPassengers()) {
+            if (passenger instanceof Player player) {
+                viewers.add(player);
+            }
+        }
+
+        viewers.remove(this);
+
+        Server.broadcastPacket(viewers, pk);
     }
 
     /**
@@ -1166,20 +1181,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             || Math.abs(this.getHeadYaw() - newPosition.headYaw) > rotationUpdateThreshold;
 
         boolean shouldHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
-        if (shouldHandle) {
-            // Hack: ignore erroneous positions received right after teleportation
-            long now = System.currentTimeMillis();
-            if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
-                double teleportDistance = newPosition.distance(lastTeleportMessage.left());
-                if (teleportDistance < movementDistanceThreshold) {
-                    // Ignore this movement as it is probably due to post-teleport desynchronization
-                    return;
-                }
+
+        if (!shouldHandle) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+
+        if (lastTeleportMessage != null && now - lastTeleportMessage.right() < POST_TELEPORT_GRACE_MS) {
+            Location teleportDestination = lastTeleportMessage.left();
+            double destinationDistance = newPosition.distance(teleportDestination);
+
+            if (destinationDistance > movementDistanceThreshold) {
+                return;
             }
-            this.newPosition = newPosition;
-            if (!this.clientMovements.offer(newPosition)) {
-                log.warn("Failed to enqueue movement task for player {} at position {}", this.getName(), newPosition);
-            }
+        }
+
+        this.newPosition = newPosition;
+        if (!this.clientMovements.offer(newPosition)) {
+            log.warn("Failed to enqueue movement task for player {} at position {}", this.getName(), newPosition);
         }
     }
 
@@ -1187,7 +1207,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
             boolean recentlyTeleported = lastTeleportMessage != null
-                && (System.currentTimeMillis() - lastTeleportMessage.right()) < 1000;
+                    && System.currentTimeMillis() - lastTeleportMessage.right() < POST_TELEPORT_GRACE_MS;
             //Handling saturation updates
             if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0 && !recentlyTeleported) {
                 //UpdateFoodExpLevel
@@ -2207,8 +2227,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * If WaterdogPE compatibility is enabled, the address is modified to be WaterdogPE compatible, otherwise it is the same as {@link #rawSocketAddress}
-     *
      * @return {@link String}
      */
     public String getAddress() {
@@ -2223,8 +2241,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * If WaterdogPE compatibility is enabled, the address is modified to be WaterdogPE compatible, otherwise it is the same as {@link #rawSocketAddress}
-     *
      * @return {@link InetSocketAddress}
      */
     public InetSocketAddress getSocketAddress() {
@@ -2839,7 +2855,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             Arrays.asList(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0).toNetwork(),
                 Attribute.getAttribute(Attribute.ABSORPTION).setValue(this.getAbsorption()).toNetwork(),
-                Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getMaxFood()).toNetwork(),
+                Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getFood()).toNetwork(),
+                Attribute.getAttribute(Attribute.SATURATION).setValue(this.getFoodData().getSaturation()).toNetwork(),
                 Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()).toNetwork(),
                 Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()).toNetwork(),
                 Attribute.getAttribute(Attribute.EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel())).toNetwork()
@@ -2899,11 +2916,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (!this.isAlive() && this.spawned) {
             this.drainInboundPackets();
+            if (this.isAlive()) {
+                return true;
+            }
             if (this.getLevel().getGameRules().getBoolean(GameRule.DO_IMMEDIATE_RESPAWN)) {
                 this.despawnFromAll();
                 return true;
             }
-            getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::despawnFromAll, 10);
+            getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                if (!this.isAlive()) {
+                    this.despawnFromAll();
+                }
+            }, 10);
             return true;
         }
 
@@ -3122,7 +3146,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             long now = System.currentTimeMillis();
             if (now - this.lastChunkOrderRunMillis >= 50) {
                 this.lastChunkOrderRunMillis = now;
-                CompletableFuture.runAsync(playerChunkManager::tick, this.server.getComputeThreadPool());
+                playerChunkManager.tick();
             }
         }
 
@@ -4620,17 +4644,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isOnline()) {
             return false;
         }
-        Location from = this.getLocation();
-        this.lastTeleportMessage = Pair.of(from, System.currentTimeMillis());
 
+        Location from = this.getLocation();
         Location to = location;
-        //event
+
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
             this.server.getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             to = event.getTo();
         }
+
+        this.lastTeleportMessage = Pair.of(
+                to.clone(),
+                System.currentTimeMillis()
+        );
 
         //remove inventory, ride,sign editor
         for (Inventory window : new ArrayList<>(this.windows.keySet())) {
@@ -4797,9 +4825,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         packet.setNpcId(dialog.getEntityId());
         packet.setActionType(NpcDialoguePacket.Action.OPEN);
         packet.setDialogue(dialog.getContent());
-        if (book) {
-            packet.setSceneName(dialog.getSceneName());
-        }
+        packet.setSceneName(book ? dialog.getSceneName() : "");
         packet.setNpcName(dialog.getTitle());
         packet.setActionJson(dialog.getButtonJSONData());
         if (book) {
@@ -5956,10 +5982,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the XUID
      */
     public String getXUID() {
-        return this.server.getSettings().baseSettings().waterdogpe() &&
-            this.info.clientChainData.getWaterdogData() != null ?
-            this.info.clientChainData.getWaterdogData().getXuid() :
-            this.info.identityClaims.extraData.xuid;
+        String xuid = this.info.identityClaims.extraData.xuid;
+        var proxy = this.server.getProxyAuthProvider();
+        return proxy != null ? proxy.getXuid(this.info.clientChainData, xuid) : xuid;
     }
 
     /**
@@ -5985,10 +6010,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    public List<Integer> sendDebugShape(ShapeDataPayload... shapes) {
+    public List<Integer> sendPrimitiveShape(PrimitiveShapeDataPayload... shapes) {
         List<Integer> ids = new ArrayList<>();
 
-        for (ShapeDataPayload shapeDataPayload : shapes) {
+        for (PrimitiveShapeDataPayload shapeDataPayload : shapes) {
             int id = this.shapeIds.getAndIncrement();
             shapeDataPayload.setNetworkId(id);
             ids.add(id);
@@ -6001,7 +6026,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return ids;
     }
 
-    public int sendDebugShape(ShapeDataPayload shape) {
+    public int sendPrimitiveShape(PrimitiveShapeDataPayload shape) {
         final int id = this.shapeIds.getAndIncrement();
         shape.setNetworkId(id);
 
@@ -6012,7 +6037,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return id;
     }
 
-    public void updateDebugShape(int id, ShapeDataPayload shape) {
+    public void updatePrimitiveShape(int id, PrimitiveShapeDataPayload shape) {
         shape.setNetworkId(id);
 
         final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
@@ -6021,9 +6046,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(packet);
     }
 
-    public void removeDebugShape(int id) {
-        final ShapeDataPayload shape = new ShapeDataPayload();
+    public void removePrimitiveShape(int id) {
+        final PrimitiveShapeDataPayload shape = new PrimitiveShapeDataPayload();
         shape.setNetworkId(id);
+        shape.setExtraShapeData(PrimitiveShapes.REMOVAL_EXTRA);
 
         final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
         packet.getShapes().add(shape);
@@ -6031,12 +6057,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(packet);
     }
 
-    public void clearDebugShapes() {
-        List<ShapeDataPayload> shapes = new ArrayList<>();
+    public void clearPrimitiveShapes() {
+        List<PrimitiveShapeDataPayload> shapes = new ArrayList<>();
 
         for (int i = 0; i < shapeIds.get(); i++) {
-            final ShapeDataPayload shape = new ShapeDataPayload();
+            final PrimitiveShapeDataPayload shape = new PrimitiveShapeDataPayload();
             shape.setNetworkId(i);
+            shape.setExtraShapeData(PrimitiveShapes.REMOVAL_EXTRA);
             shapes.add(shape);
         }
 

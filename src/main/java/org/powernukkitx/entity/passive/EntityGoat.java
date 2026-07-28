@@ -107,9 +107,8 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new LoveTimeoutExecutor(20 * 30),
                             e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -125,8 +124,8 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
                             ),
                         1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
                         new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
@@ -158,18 +157,17 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
                             (entity -> true),
                         1, 1
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                     new WalkController(),
                     new LookController(true, true),
                     new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

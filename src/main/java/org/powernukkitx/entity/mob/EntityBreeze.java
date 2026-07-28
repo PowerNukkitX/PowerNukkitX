@@ -49,25 +49,23 @@ public class EntityBreeze extends EntityMob {
 
     @Override
     protected IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new BreezeShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 2, 1),
                         new Behavior(new BreezeShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.4f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_BREEZE_IDLE_AIR), all(new RandomSoundEvaluator(), entity -> !isOnGround()), 7, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_BREEZE_IDLE_GROUND), all(new RandomSoundEvaluator(), entity -> isOnGround()), 6, 1),
                         new Behavior(new BreezeJumpExecutor(), all(any(Entity::isOnGround, Entity::isInsideOfWater), entity -> getRiding() == null, entity -> !isInsideOfLava()), 5, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 1.2f, true), all(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 24)), 4, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 1.2f, true), all(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 24)), 3, 1),
                         new Behavior(new FlatRandomRoamExecutor(1f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(new NearestPlayerSensor(24, 0, 20)),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .sensors(new NearestPlayerSensor(24, 0, 20))
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

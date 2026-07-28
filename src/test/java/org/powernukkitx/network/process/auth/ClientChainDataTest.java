@@ -68,24 +68,11 @@ class ClientChainDataTest {
     }
 
     @Test
-    void returnsNullWhenOnlyOneWaterdogClaimIsPresent() {
-        JwtClaims claims = validClaims();
-        claims.setClaim("Waterdog_IP", "127.0.0.1");
-
-        assertNull(ClientChainData.from(claims));
-    }
-
-    @Test
-    void parsesWaterdogDataWhenBothClaimsArePresent() {
-        JwtClaims claims = validClaims();
-        claims.setClaim("Waterdog_IP", "127.0.0.1");
-        claims.setClaim("Waterdog_XUID", "2535465366947306");
-
-        ClientChainData data = ClientChainData.from(claims);
+    void exposesRawClaims() {
+        ClientChainData data = ClientChainData.from(validClaims());
 
         assertNotNull(data);
-        assertNotNull(data.getWaterdogData());
-        assertEquals("127.0.0.1", data.getWaterdogData().getIp());
+        assertEquals("en_US", data.getRawClaims().get("LanguageCode"));
     }
 
     private static JwtClaims validClaims() {

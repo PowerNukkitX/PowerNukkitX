@@ -6,30 +6,53 @@ on:
       - master
       - r/**
       - b/**
-    paths:
-      - '.github/**'
-      - 'src/**'
-      - 'gradle/**'
-      - 'build.gradle.kts'
-      - 'settings.gradle.kts'
+  push:
+    branches:
+      - master
+      - r/**
+      - b/**
 
 jobs:
+  changes:
+    name: Detect relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.filter.outputs.relevant }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706
+        id: filter
+        with:
+          filters: |
+            relevant:
+              - '.github/**'
+              - 'src/**'
+              - 'gradle/**'
+              - 'build.gradle.kts'
+              - 'settings.gradle.kts'
+
   build:
     name: Build PNX Server
+    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
         with:
           fetch-depth: 1
           submodules: false
 
       - uses: actions/setup-java@v5
+        if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
         with:
           distribution: temurin
           java-version: 21
 
       - uses: actions/cache@v6
+        if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
         with:
           path: |
             ~/.gradle/caches
@@ -38,31 +61,37 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - run: chmod +x gradlew
+      - if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
+        run: chmod +x gradlew
 
-      - run: ./gradlew assemble --no-daemon --parallel --max-workers=2 --stacktrace
+      - if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
+        run: ./gradlew assemble --no-daemon --parallel --max-workers=2 --stacktrace
 
       - uses: actions/upload-artifact@v7
-        if: success()
+        if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true' && success()
         with:
           name: powernukkitx-jar
           path: build/libs/*.jar
 
   check:
     name: Fast checks (compile, unit tests)
+    needs: changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        if: needs.changes.outputs.relevant == 'true'
         with:
           fetch-depth: 1
           submodules: false
 
       - uses: actions/setup-java@v5
+        if: needs.changes.outputs.relevant == 'true'
         with:
           distribution: temurin
           java-version: 21
 
       - uses: actions/cache@v6
+        if: needs.changes.outputs.relevant == 'true'
         with:
           path: |
             ~/.gradle/caches
@@ -71,6 +100,15 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - run: chmod +x gradlew
+      - if: needs.changes.outputs.relevant == 'true'
+        run: chmod +x gradlew
 
-      - run: ./gradlew checkFast --no-configuration-cache --no-daemon --parallel --max-workers=2 --stacktrace
+      - if: needs.changes.outputs.relevant == 'true'
+        run: ./gradlew checkFast --no-configuration-cache --no-daemon --parallel --max-workers=2 --stacktrace
+
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
+        if: needs.changes.outputs.relevant == 'true' && success()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/jacoco/test/jacocoTestReport.xml
+          disable_search: true

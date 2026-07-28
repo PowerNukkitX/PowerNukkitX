@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import io.netty.channel.EventLoop;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
@@ -10,14 +11,15 @@ import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
 import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
+import org.jetbrains.annotations.Nullable;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.jwt.consumer.JwtContext;
-import org.jose4j.lang.JoseException;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.player.PlayerPreLoginEvent;
+import org.powernukkitx.event.player.PlayerLoginFailEvent;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -26,12 +28,26 @@ import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.network.process.auth.ClientSkinData;
 import org.powernukkitx.utils.SkinUtils;
 
-import java.security.NoSuchAlgorithmException;
+import javax.crypto.SecretKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
+ * Handles the client's {@code LoginPacket}.
+ * <p>
+ * Validating a login costs several milliseconds of cryptography: the identity chain, the client
+ * JWT, and the encryption key exchange. RakNet pins a session to one Netty event loop that also
+ * serves every other session on that loop, so doing this inline stalls unrelated players whenever
+ * a batch of logins arrives.
+ * <p>
+ * The work therefore runs on the compute pool in two steps, with the checks that read server
+ * state - the pre-login event, player count, whitelist and bans - on the event loop between them.
+ * That ordering is deliberate: it matches the sequence used when this ran inline, so failures are
+ * still reported in the same order, and a login the server is going to refuse anyway never pays
+ * for the client JWT or the key exchange.
+ *
  * @author Kaooot
  */
 @Slf4j
@@ -43,7 +59,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     @Override
     public void handle(LoginPacket packet, PlayerSessionHolder holder, Server server) {
         if (!holder.getState().equals(SessionState.LOGIN)) {
-            holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
+            failLogin(holder, server, DisconnectFailReason.UNEXPECTED_PACKET, null);
             return;
         }
 
@@ -53,109 +69,56 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         if (clientNetworkVersion != serverNetworkVersion) {
             final boolean serverOutdated = clientNetworkVersion > serverNetworkVersion;
             holder.sendPlayStatus(
-                    serverOutdated ?
-                            PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
+                serverOutdated ?
+                    PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
             );
-            holder.disconnect(
-                    serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT
-            );
+            failLogin(holder, server, serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT, null);
             return;
         }
 
         final PlayerAuthenticationType type = packet.getAuthenticationType();
-        final DisconnectFailReason notAuthenticated = DisconnectFailReason.NOT_AUTHENTICATED;
         if (type.equals(PlayerAuthenticationType.UNKNOWN)) {
-            holder.disconnect(notAuthenticated);
+            failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
             return;
         }
 
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
-        final String token = packet.getToken();
-        if (isBlank(token)) {
-            holder.disconnect(notAuthenticated);
+        if (isBlank(packet.getToken())) {
+            failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
             return;
         }
 
-        try {
-            final ChainValidationResult result = EncryptionUtils.validateToken(type, token);
-            if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
-                holder.disconnect(notAuthenticated);
-                return;
-            }
+        final Credentials credentials = new Credentials(type, packet.getToken(), packet.getClientJwt());
 
-            final ChainValidationResult.IdentityClaims identityClaims;
-            try {
-                identityClaims = result.identityClaims();
-            } catch (RuntimeException e) {
-                log.debug("Malformed identity claims", e);
-                holder.disconnect(notAuthenticated);
-                return;
-            }
-            if (!isValidIdentityClaims(identityClaims)) {
-                holder.disconnect(notAuthenticated);
-                return;
-            }
-            final String playerName = identityClaims.extraData.displayName;
-            final String playerNameKey = playerName.toLowerCase(Locale.ENGLISH);
+        holder.setState(SessionState.AUTHENTICATING);
 
-            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
-            server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                holder.disconnect(DisconnectFailReason.UNKNOWN, event.getKickMessage());
-                return;
-            }
-
-            if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
-                holder.disconnect(DisconnectFailReason.SERVER_FULL);
-                return;
-            }
-
-            if (!server.isWhitelisted(playerNameKey)) {
-                holder.disconnect(DisconnectFailReason.NOT_ALLOWED);
-                return;
-            }
-
-            var entry = server.getNameBans().getEntires().get(playerNameKey);
-            if (entry != null) {
-                String reason = entry.getReason();
-                holder.disconnect(DisconnectFailReason.UNKNOWN, !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-                return;
-            }
-
-            final ClientJwtValidationResult clientJwtValidationResult = this.validateClientJwt(packet, identityClaims.parsedIdentityPublicKey());
-            if (!clientJwtValidationResult.isValid()) {
-                holder.disconnect(DisconnectFailReason.INVALID_PLATFORM_SKIN);
-                return;
-            }
-
-            final ClientChainData clientChainData = clientJwtValidationResult.getClientChainData();
-            if (clientChainData.isEduMode()) {
-                holder.sendPlayStatus(PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA);
-                holder.disconnect(DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA);
-                return;
-            }
-            holder.setPlayerInfo(
-                    new Player.PlayerInfo(
-                            identityClaims,
-                            clientChainData,
-                            clientJwtValidationResult.getSkin(),
-                            result.signed()
-                    )
-            );
-
-            if (server.enabledNetworkEncryption) {
-                this.enableEncryption(identityClaims, holder);
-            } else {
-                holder.sendPlayStatus(PlayStatus.LOGIN_SUCCESS);
-                holder.setState(SessionState.RESOURCE_PACK);
-                holder.sendResourcePacksInfo(server);
-            }
-        } catch (InvalidJwtException | JoseException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-            log.debug("Error while validating jwt", e);
-            holder.disconnect(notAuthenticated);
-        }
+        offLoop(holder, server,
+            () -> validateChain(credentials, server, xboxAuthRequired),
+            chain -> applyChain(chain, credentials, holder, server));
     }
 
+    /**
+     * Verifies the identity chain. First off-loop step, and the only one a login must pass before
+     * the server decides whether it wants the player at all.
+     */
+    private ChainOutcome validateChain(Credentials credentials, Server server, boolean xboxAuthRequired) throws Exception {
+        final ChainValidationResult result = EncryptionUtils.validateToken(credentials.authenticationType(), credentials.token());
+        final boolean unsignedAllowed = server.getProxyAuthProvider() != null
+            && server.getProxyAuthProvider().isUnsignedLoginAllowed();
+        if (xboxAuthRequired && !result.signed() && !unsignedAllowed) {
+            return new ChainOutcome(DisconnectFailReason.NOT_AUTHENTICATED, null, false);
+        }
+        final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
+        if (!isValidIdentityClaims(identityClaims)) {
+            return new ChainOutcome(DisconnectFailReason.NOT_AUTHENTICATED, null, false);
+        }
+        return new ChainOutcome(null, identityClaims, result.signed());
+    }
+
+    /**
+     * Rejects identities the rest of the login would otherwise dereference blindly - the display
+     * name feeds the whitelist and ban lookups, and the public key feeds the client JWT check.
+     */
     private static boolean isValidIdentityClaims(ChainValidationResult.IdentityClaims identityClaims) {
         if (identityClaims.extraData == null) {
             return false;
@@ -171,16 +134,176 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         return value == null || value.isBlank();
     }
 
-    private ClientJwtValidationResult validateClientJwt(LoginPacket packet, PublicKey identityPublicKey) {
-        final String clientJwt = packet.getClientJwt();
+    /**
+     * Runs the checks that read server state, then starts the second off-loop step for a login
+     * that passed them.
+     */
+    private void applyChain(ChainOutcome chain, Credentials credentials, PlayerSessionHolder holder, Server server) {
+        if (chain.failure() != null) {
+            failLogin(holder, server, chain.failure(), null);
+            return;
+        }
+        final ChainValidationResult.IdentityClaims identityClaims = Objects.requireNonNull(
+            chain.identityClaims(), "a chain outcome without a failure always carries identity claims");
+
+        final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
+        server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            failLogin(holder, server, DisconnectFailReason.UNKNOWN, event.getKickMessage());
+            return;
+        }
+        if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
+            failLogin(holder, server, DisconnectFailReason.SERVER_FULL, null);
+            return;
+        }
+
+        final String displayName = identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH);
+        if (!server.isWhitelisted(displayName)) {
+            failLogin(holder, server, DisconnectFailReason.NOT_ALLOWED, null);
+            return;
+        }
+
+        final var entry = server.getNameBans().getEntires().get(displayName);
+        if (entry != null) {
+            final String reason = entry.getReason();
+            failLogin(holder, server, DisconnectFailReason.UNKNOWN,
+                !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+            return;
+        }
+
+        offLoop(holder, server,
+            () -> validateClient(credentials, server, identityClaims),
+            client -> completeLogin(client, identityClaims, chain.signed(), holder, server));
+    }
+
+    /**
+     * Verifies the client JWT and prepares the key exchange. Second off-loop step, reached only
+     * once the server has accepted the identity.
+     */
+    private ClientOutcome validateClient(Credentials credentials, Server server, ChainValidationResult.IdentityClaims identityClaims) throws Exception {
+        final ClientJwtValidationResult clientJwt = this.validateClientJwt(credentials.clientJwt(), identityClaims.parsedIdentityPublicKey());
+        if (!clientJwt.isValid()) {
+            return new ClientOutcome(null, null, null, false);
+        }
+        EncryptionHandshake handshake = null;
+        boolean encryptionFailed = false;
+        if (server.enabledNetworkEncryption) {
+            try {
+                final PublicKey clientKey = EncryptionUtils.parseKey(identityClaims.identityPublicKey);
+                final var encryptionKeyPair = EncryptionUtils.createKeyPair();
+                final byte[] encryptionToken = EncryptionUtils.generateRandomToken();
+                handshake = new EncryptionHandshake(
+                    EncryptionUtils.getSecretKey(encryptionKeyPair.getPrivate(), clientKey, encryptionToken),
+                    EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken)
+                );
+            } catch (Exception e) {
+                log.debug("Failed to prepare the encryption handshake", e);
+                encryptionFailed = true;
+            }
+        }
+        return new ClientOutcome(clientJwt.getClientChainData(), clientJwt.getSkin(), handshake, encryptionFailed);
+    }
+
+    /**
+     * Answers the client: the remaining rejections, then either the encryption handshake or the
+     * resource pack stage.
+     */
+    private void completeLogin(ClientOutcome client, ChainValidationResult.IdentityClaims identityClaims,
+                               boolean signed, PlayerSessionHolder holder, Server server) {
+        final ClientChainData clientChainData = client.clientChainData();
+        if (clientChainData == null) {
+            failLogin(holder, server, DisconnectFailReason.INVALID_PLATFORM_SKIN, null);
+            return;
+        }
+        if (clientChainData.isEduMode()) {
+            holder.sendPlayStatus(PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA);
+            failLogin(holder, server, DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA, null);
+            return;
+        }
+
+        holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
+
+        if (client.encryptionFailed()) {
+            holder.disconnect(DisconnectFailReason.UNKNOWN, "encryption error");
+            return;
+        }
+        if (client.encryption() != null) {
+            try {
+                final ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
+                pk.setHandshakeWebToken(client.encryption().handshakeJwt());
+                holder.getSession().sendPacketImmediately(pk);
+                holder.getSession().enableEncryption(client.encryption().secretKey());
+            } catch (Exception e) {
+                log.debug("Failed to start the encrypted session", e);
+                holder.disconnect(DisconnectFailReason.UNKNOWN, "encryption error");
+                return;
+            }
+            holder.setState(SessionState.ENCRYPTION);
+        } else {
+            holder.sendPlayStatus(PlayStatus.LOGIN_SUCCESS);
+            holder.setState(SessionState.RESOURCE_PACK);
+            holder.sendResourcePacksInfo(server);
+        }
+    }
+
+    /**
+     * Runs {@code work} on the compute pool and hands its result to {@code then} back on the
+     * session's event loop, so everything touching session or server state stays on one thread.
+     * A session that went away in the meantime is dropped, and a failing step disconnects rather
+     * than leaving the login stuck in {@link SessionState#AUTHENTICATING}.
+     */
+    private <T> void offLoop(PlayerSessionHolder holder, Server server, ThrowingSupplier<T> work, Consumer<T> then) {
+        final EventLoop eventLoop = holder.getSession().getPeer().getChannel().eventLoop();
+        server.getComputeThreadPool().execute(() -> {
+            final T result;
+            try {
+                result = work.get();
+            } catch (Exception e) {
+                log.debug("Error while validating login", e);
+                eventLoop.execute(() -> {
+                    if (holder.getSession().isConnected()) {
+                        failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
+                    }
+                });
+                return;
+            }
+            eventLoop.execute(() -> {
+                if (holder.getSession().isConnected()) {
+                    then.accept(result);
+                }
+            });
+        });
+    }
+
+    /**
+     * Fires {@link PlayerLoginFailEvent} so plugins may adjust the reason, then disconnects with
+     * whatever they left in place.
+     *
+     * @param message an explicit disconnect message, or {@code null} to use the reason's default
+     */
+    private void failLogin(PlayerSessionHolder holder, Server server, DisconnectFailReason reason, @Nullable String message) {
+        final PlayerLoginFailEvent sessionFailEvent = new PlayerLoginFailEvent(holder, reason);
+        if (message != null) {
+            sessionFailEvent.setDisconnectMessage(message);
+        }
+        server.getPluginManager().callEvent(sessionFailEvent);
+
+        if (sessionFailEvent.getDisconnectMessage() != null) {
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason(), sessionFailEvent.getDisconnectMessage());
+        } else {
+            holder.disconnect(sessionFailEvent.getDisconnectFailReason());
+        }
+    }
+
+    private ClientJwtValidationResult validateClientJwt(String clientJwt, PublicKey identityPublicKey) {
         if (isBlank(clientJwt)) {
             return ClientJwtValidationResult.INVALID;
         }
         try {
             final JwtContext ctx = new JwtConsumerBuilder()
-                    .setVerificationKey(identityPublicKey)
-                    .build()
-                    .process(clientJwt);
+                .setVerificationKey(identityPublicKey)
+                .build()
+                .process(clientJwt);
             final JwtClaims claims = ctx.getJwtClaims();
             final ClientChainData clientChainData = ClientChainData.from(claims);
             if (clientChainData == null) {
@@ -191,12 +314,11 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 return ClientJwtValidationResult.INVALID;
             }
             return new ClientJwtValidationResult(
-                    true,
-                    clientChainData,
-                    skin
+                true,
+                clientChainData,
+                skin
             );
-        } catch (InvalidJwtException ignored) {
-        }
+        } catch (InvalidJwtException ignored) {}
         return ClientJwtValidationResult.INVALID;
     }
 
@@ -209,29 +331,46 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         Skin skin;
     }
 
-    private void enableEncryption(ChainValidationResult.IdentityClaims claims, PlayerSessionHolder holder) {
-        try {
-            var session = holder.getSession();
-            var clientKey = EncryptionUtils.parseKey(claims.identityPublicKey);
-            var encryptionKeyPair = EncryptionUtils.createKeyPair();
-            var encryptionToken = EncryptionUtils.generateRandomToken();
-            var encryptionKey = EncryptionUtils.getSecretKey(
-                    encryptionKeyPair.getPrivate(), clientKey,
-                    encryptionToken
-            );
-            var handshakeWebToken = EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken);
-            if (!holder.getSession().isConnected()) {
-                return;
-            }
-            var pk = new ServerToClientHandshakePacket();
-            pk.setHandshakeWebToken(handshakeWebToken);
+    @FunctionalInterface
+    private interface ThrowingSupplier<T> {
+        T get() throws Exception;
+    }
 
-            session.sendPacketImmediately(pk);
-            session.enableEncryption(encryptionKey);
+    /**
+     * The parts of the login packet the off-loop steps need, copied out on the network thread so
+     * that nothing reads the packet once the pipeline has moved on from it.
+     */
+    private record Credentials(PlayerAuthenticationType authenticationType, String token, String clientJwt) {
+    }
 
-            holder.setState(SessionState.ENCRYPTION);
-        } catch (Exception e) {
-            holder.disconnect(DisconnectFailReason.UNKNOWN, "encryption error");
-        }
+    /**
+     * Result of {@link #validateChain}: either a {@code failure} with the other fields unset, or
+     * the verified identity.
+     */
+    private record ChainOutcome(
+        @Nullable DisconnectFailReason failure,
+        @Nullable ChainValidationResult.IdentityClaims identityClaims,
+        boolean signed
+    ) {
+    }
+
+    /**
+     * Result of {@link #validateClient}.
+     *
+     * @param clientChainData  {@code null} when the client JWT was rejected
+     * @param encryption       the prepared key exchange, or {@code null} when encryption is
+     *                         disabled, the JWT was rejected, or preparation failed
+     * @param encryptionFailed whether preparing the key exchange threw
+     */
+    private record ClientOutcome(
+        @Nullable ClientChainData clientChainData,
+        @Nullable Skin skin,
+        @Nullable EncryptionHandshake encryption,
+        boolean encryptionFailed
+    ) {
+    }
+
+    /** Encryption material derived off the event loop, applied once back on it. */
+    private record EncryptionHandshake(SecretKey secretKey, String handshakeJwt) {
     }
 }

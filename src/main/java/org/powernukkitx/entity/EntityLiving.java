@@ -32,6 +32,7 @@ import org.powernukkitx.inventory.InventorySlice;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemShield;
 import org.powernukkitx.item.ItemTurtleHelmet;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -75,6 +76,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private int shieldTransitionTicks = 0;
     private int shieldAttackInterruptTicks = 0;
     private boolean shieldReblockAfterAttack = false;
+
+    private Vector3 pendingHomePosition;
 
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -160,7 +163,49 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
     }
 
+    protected void prepareHomePosition() {
+        if (!this.hasHome() || !(this instanceof EntityIntelligent)) return;
 
+        if (this.nbt.contains("HomeX")
+                && this.nbt.contains("HomeY")
+                && this.nbt.contains("HomeZ")) {
+            this.pendingHomePosition = new Vector3(
+                    this.nbt.getDouble("HomeX"),
+                    this.nbt.getDouble("HomeY"),
+                    this.nbt.getDouble("HomeZ")
+            );
+        } else {
+            this.pendingHomePosition = this.getPosition().floor();
+
+            this.nbt.putDouble("HomeX", this.pendingHomePosition.x);
+            this.nbt.putDouble("HomeY", this.pendingHomePosition.y);
+            this.nbt.putDouble("HomeZ", this.pendingHomePosition.z);
+        }
+    }
+
+    protected void initializeHomeMemoryIfNeeded() {
+        if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
+        if (this.pendingHomePosition == null) return;
+        if (this.level == null) return;
+        if (this.closed) return;
+        if (ei.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK)) return;
+
+        int chunkX = this.pendingHomePosition.getFloorX() >> 4;
+        int chunkZ = this.pendingHomePosition.getFloorZ() >> 4;
+
+        IChunk chunk = this.level.getChunk(chunkX, chunkZ, false);
+        if (chunk == null) return;
+
+        Block home = this.level.getTickCachedBlock(
+                this.pendingHomePosition.getFloorX(),
+                this.pendingHomePosition.getFloorY(),
+                this.pendingHomePosition.getFloorZ()
+        );
+
+        if (home == null) return;
+
+        ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+    }
 
     protected void loadParentFromNBT() {
         if (!(this instanceof EntityIntelligent ei)) return;
@@ -227,6 +272,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean onUpdate(int currentTick) {
+        this.initializeHomeMemoryIfNeeded();
+
         if (restoreMountTries > 0) {
             restoreMountTries--;
             if ((restoreMountTries % 4) == 0) tryRestoreMountLink();
@@ -328,8 +375,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         for (Vector3 from : fromPoints) {
             for (Vector3 to : toPoints) {
-                Vector3 dir = to.subtract(from);
-                if (dir.lengthSquared() < 1e-6) continue;
+                double dirX = to.x - from.x;
+                double dirY = to.y - from.y;
+                double dirZ = to.z - from.z;
+                if (dirX * dirX + dirY * dirY + dirZ * dirZ < 1e-6) continue;
 
                 if (!useCorridor) {
                     List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
@@ -338,21 +387,25 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     continue;
                 }
 
-                Vector3 right = new Vector3(-dir.z, 0, dir.x);
-                if (right.lengthSquared() < 1e-6) right = new Vector3(1, 0, 0);
-                right = right.normalize().multiply(thickness);
-
-                Vector3 up = new Vector3(0, thickness, 0);
-
-                Vector3[] offsets = new Vector3[]{
-                        right, right.multiply(-1),
-                        up, up.multiply(-1),
-                };
+                double rightX = -dirZ;
+                double rightZ = dirX;
+                double rightSq = rightX * rightX + rightZ * rightZ;
+                if (rightSq < 1e-6) {
+                    rightX = 1;
+                    rightZ = 0;
+                    rightSq = 1;
+                }
+                double rightLen = Math.sqrt(rightSq);
+                rightX = rightX / rightLen * thickness;
+                rightZ = rightZ / rightLen * thickness;
 
                 boolean allClear = true;
-                for (Vector3 o : offsets) {
-                    Vector3 f = from.add(o.x, o.y, o.z);
-                    Vector3 t = to.add(o.x, o.y, o.z);
+                for (int oi = 0; oi < 4; oi++) {
+                    double ox = oi == 0 ? rightX : oi == 1 ? -rightX : 0;
+                    double oy = oi == 2 ? thickness : oi == 3 ? -thickness : 0;
+                    double oz = oi == 0 ? rightZ : oi == 1 ? -rightZ : 0;
+                    Vector3 f = from.add(ox, oy, oz);
+                    Vector3 t = to.add(ox, oy, oz);
 
                     List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
                     boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
@@ -403,6 +456,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                     this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animatePacket);
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
+                }
+
+                Enchantment[] weaponEnchantments = event.getWeaponEnchantments();
+                if (weaponEnchantments != null) {
+                    double enchantmentBonus = 0;
+                    for (Enchantment enchantment : weaponEnchantments) {
+                        enchantmentBonus += enchantment.getDamageBonus(this, damager);
+                    }
+                    if (enchantmentBonus > 0) {
+                        final AnimatePacket magicCritPacket = new AnimatePacket();
+                        magicCritPacket.setTargetRuntimeID(this.getId());
+                        magicCritPacket.setAction(AnimatePacket.Action.MAGIC_CRITICAL_HIT);
+                        magicCritPacket.setData(55f);
+
+                        this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), magicCritPacket);
+                    }
                 }
 
                 if (damager.isOnFire() && !(damager instanceof Player)) {
@@ -503,12 +572,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         var manager = this.server.getScoreboardManager();
         // This will be null in the test environment, so it is necessary to check for null values.
         if (manager != null) manager.onEntityDead(this);
-        if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+        if (this.level.getGameRules().getBoolean(GameRule.DO_MOB_LOOT)) {
             for (Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
+            this.getLevel().dropExpOrb(this, getExperienceDrops());
         }
-        this.getLevel().dropExpOrb(this, getExperienceDrops());
     }
 
     @Override
@@ -989,17 +1058,23 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void setHomePosition() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
 
-        int x = ei.getFloorX();
-        int y = ei.getFloorY();
-        int z = ei.getFloorZ();
-        Block home = ei.level.getBlock(x, y, z);
+        this.pendingHomePosition = this.getPosition().floor();
 
-        ei.setNbt(
-                ei.nbt.putDouble("HomeX", home.x)
-                        .putDouble("HomeY", home.y)
-                        .putDouble("HomeZ", home.z)
+        this.nbt.putDouble("HomeX", this.pendingHomePosition.x);
+        this.nbt.putDouble("HomeY", this.pendingHomePosition.y);
+        this.nbt.putDouble("HomeZ", this.pendingHomePosition.z);
+
+        if (this.level == null || this.closed) return;
+
+        Block home = this.level.getTickCachedBlock(
+                this.pendingHomePosition.getFloorX(),
+                this.pendingHomePosition.getFloorY(),
+                this.pendingHomePosition.getFloorZ()
         );
-        ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+
+        if (home != null) {
+            ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+        }
     }
 
     public Block getHomePosition() {

@@ -64,7 +64,6 @@
   "pnx.settings.base.deprecatedVerbose": "Ob bei veralteten Ereignissen für das Plugin eine Nachfrage erfolgen soll",
   "pnx.settings.base.asyncWorkers": "Anzahl der vom Server-Scheduler verwendeten Threads; „auto“ bedeutet automatische Zuweisung",
   "pnx.settings.base.installSpark": "Ob das Plugin „Spark“ auf dem Server installiert werden soll",
-  "pnx.settings.base.waterdogpe": "Ob der WaterdogPE-Kompatibilitätsmodus auf dem Server aktiviert werden soll",
   "pnx.settings.base.autosave": "Tick-Zyklus für das automatische Speichern des Servers",
   "pnx.settings.base.saveUnknownBlock": "Ob unbekannte Blöcke gespeichert werden sollen – wie etwa benutzerdefinierte Blöcke, die nicht registriert sind",
   "pnx.settings.network": "Netzwerkeinstellungen des Servers",

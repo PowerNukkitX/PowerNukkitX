@@ -10,6 +10,8 @@ import org.cloudburstmc.protocol.bedrock.data.PlatformType;
 import org.cloudburstmc.protocol.bedrock.data.UserInterfaceProfile;
 import org.jose4j.jwt.JwtClaims;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,8 +45,8 @@ public class ClientChainData {
     boolean trustedSkin;
     UserInterfaceProfile uiProfile;
     boolean isEduMode;
-    WaterdogData waterdogData;
     int clientEditorConnectionIntent;
+    Map<String, Object> rawClaims;
 
     public static ClientChainData from(JwtClaims claims) {
         final Map<String, Object> map = claims.getClaimsMap();
@@ -135,14 +137,6 @@ public class ClientChainData {
         } catch (Exception e) {
             return null;
         }
-        final WaterdogData waterdogData;
-        if (!map.containsKey("Waterdog_IP") && !map.containsKey("Waterdog_XUID")) {
-            waterdogData = null;
-        } else if (!(map.get("Waterdog_IP") instanceof String waterdogIp) || !(map.get("Waterdog_XUID") instanceof String waterdogXuid)) {
-            return null;
-        } else {
-            waterdogData = new WaterdogData(waterdogIp, waterdogXuid);
-        }
         final int clientEditorConnectionIntent;
         if (map.containsKey("ClientEditorConnectionIntent")) {
             if (!(map.get("ClientEditorConnectionIntent") instanceof Number intent)) {
@@ -177,8 +171,8 @@ public class ClientChainData {
                 trustedSkin,
                 uiProfile,
                 map.containsKey("IsEduMode"),
-                waterdogData,
-                clientEditorConnectionIntent
+                clientEditorConnectionIntent,
+                Map.copyOf(map)
         );
     }
 

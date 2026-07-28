@@ -356,9 +356,8 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(entity -> {
                             entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, ((EntityDamageByEntityEvent) entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT)).getDamager());
                             entity.setDataFlag(ActorFlags.ANGRY, true);
@@ -408,8 +407,8 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                                 new RandomSoundEvaluator(),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new PandaAttackEecutor(),
                                 all(
@@ -508,8 +507,8 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                                 (entity -> true),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(16, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
@@ -524,15 +523,14 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                                 )
                                         || entity instanceof Player),
                         new PandaNearestItemSensor(16, 0)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }
