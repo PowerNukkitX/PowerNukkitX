@@ -2556,7 +2556,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.passengers.isEmpty()) return;
 
         for (Entity passenger : List.copyOf(this.passengers)) {
-            if (passenger instanceof Player player) {
+            if (passenger instanceof Player player && player.getRiding() == this) {
                 player.broadcastMountedMovement();
             }
         }

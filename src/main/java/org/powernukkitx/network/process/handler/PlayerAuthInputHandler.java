@@ -215,7 +215,12 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             boolean handled = vehicle.onRiderInput(player, packet);
 
             vehicle.updatePassengers(false, false);
-            vehicle.broadcastMountedPassengerMovements();
+
+            if (controllingRider) {
+                vehicle.broadcastMountedPassengerMovements();
+            } else {
+                player.broadcastMountedMovement();
+            }
 
             if (handled) return;
         }
