@@ -7,10 +7,11 @@ class SessionStateTest {
 
     @Test
     void hasExpectedConstants() {
-        Assertions.assertEquals(7, SessionState.values().length);
+        Assertions.assertEquals(8, SessionState.values().length);
         Assertions.assertNotNull(SessionState.valueOf("INITIAL"));
         Assertions.assertNotNull(SessionState.valueOf("REQUESTED_NETWORK_SETTINGS"));
         Assertions.assertNotNull(SessionState.valueOf("LOGIN"));
+        Assertions.assertNotNull(SessionState.valueOf("AUTHENTICATING"));
         Assertions.assertNotNull(SessionState.valueOf("ENCRYPTION"));
         Assertions.assertNotNull(SessionState.valueOf("RESOURCE_PACK"));
         Assertions.assertNotNull(SessionState.valueOf("BEFORE_SPAWN"));
