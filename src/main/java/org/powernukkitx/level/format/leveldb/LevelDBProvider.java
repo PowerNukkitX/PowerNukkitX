@@ -26,7 +26,9 @@ import org.powernukkitx.utils.SemVersion;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +59,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * @author CoolLoong (PNX Project)
@@ -75,6 +78,23 @@ public class LevelDBProvider implements LevelProvider {
     protected final String path;
     protected CompoundTag worldDynamicProperties;
     protected boolean worldDynamicPropertiesDirty = false;
+    /**
+     * Network bytes an absent section serialises to, indexed by section Y offset into the byte
+     * range. Sized from {@link Byte} because {@link ChunkSection#y()} is a {@code byte} that the
+     * wire format writes as a single signed byte, so a taller dimension cannot widen this without
+     * changing the section format first.
+     * <p>
+     * Shared by every level: the bytes depend only on the section Y, so two dimensions at the
+     * same Y - and two worlds of the same dimension - produce identical output. See
+     * {@link #emptySectionPayload(int)}.
+     */
+    private static final AtomicReferenceArray<byte[]> EMPTY_SECTION_PAYLOADS =
+            new AtomicReferenceArray<>(1 << Byte.SIZE);
+    /**
+     * Network bytes the biome palette of an absent section serialises to. One value for the whole
+     * server: unlike the section payload this does not encode the section Y.
+     */
+    private static volatile byte[] emptyBiomePayload;
 
     /**
      * @return int The nether coordinate scale for the world
@@ -321,28 +341,34 @@ public class LevelDBProvider implements LevelProvider {
                     }
                 }
                 int total = subChunkCount + 1;
+                final int minSectionY = unsafeChunk.getDimensionData().getMinSectionY();
                 //write block
                 if (level != null && level.isAntiXrayEnabled()) {
                     for (int i = 0; i < total; i++) {
                         if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                            sections[i] = new ChunkSection((byte) (i + minSectionY));
                         }
-                        assert sections[i] != null;
                         sections[i].writeObfuscatedToBuf(level, byteBuf);
                     }
                 } else {
                     for (int i = 0; i < total; i++) {
-                        if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                        final ChunkSection section = sections[i];
+                        if (section != null) {
+                            section.writeToBuf(byteBuf);
+                        } else {
+                            byteBuf.writeBytes(emptySectionPayload(i + minSectionY));
                         }
-                        assert sections[i] != null;
-                        sections[i].writeToBuf(byteBuf);
                     }
                 }
 
                 // Write biomes
                 for (int i = 0; i < total; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
+                    final ChunkSection section = sections[i];
+                    if (section != null) {
+                        section.biomes().writeToNetwork(byteBuf, Integer::intValue);
+                    } else {
+                        byteBuf.writeBytes(emptyBiomePayload());
+                    }
                 }
 
                 writeBorderBlockData(byteBuf, chunk);
@@ -379,6 +405,61 @@ public class LevelDBProvider implements LevelProvider {
             }
         });
         return Pair.of(data.get(), subChunkCountRef.get());
+    }
+
+    /**
+     * The serialised form of a section the chunk does not have.
+     * <p>
+     * A chunk send used to fill each empty slot with a real {@link ChunkSection} and store it
+     * back into the chunk, so every chunk ever sent to a player permanently held block palettes,
+     * a biome palette and two light arrays for each of its empty sections. A heap dump of a busy
+     * server showed 23.8 of a possible 24 sections materialised per chunk, the resulting
+     * {@code int[]} and {@code byte[]} being most of the heap.
+     * <p>
+     * An empty section always serialises to the same bytes for a given section index, so they are
+     * produced once from a real {@link ChunkSection} - rather than by hand, which would duplicate
+     * the wire format - and reused. That removes both the retention and the per-send allocation.
+     * <p>
+     * Anti-xray does not use this: obfuscation keeps per-section state and rewrites the palette,
+     * so that path still materialises absent sections exactly as it always has.
+     *
+     * @param sectionY the section's Y, as written into the payload
+     * @return bytes to append, which the caller must not modify
+     */
+    private static byte[] emptySectionPayload(int sectionY) {
+        final byte y = (byte) sectionY;
+        final int slot = y - Byte.MIN_VALUE;
+        byte[] payload = EMPTY_SECTION_PAYLOADS.get(slot);
+        if (payload == null) {
+            final ByteBuf scratch = Unpooled.buffer();
+            try {
+                new ChunkSection(y).writeToBuf(scratch);
+                payload = ByteBufUtil.getBytes(scratch);
+            } finally {
+                scratch.release();
+            }
+            EMPTY_SECTION_PAYLOADS.compareAndSet(slot, null, payload);
+            payload = EMPTY_SECTION_PAYLOADS.get(slot);
+        }
+        return payload;
+    }
+
+    /**
+     * @return the biome bytes of an absent section, which the caller must not modify
+     */
+    private static byte[] emptyBiomePayload() {
+        byte[] payload = emptyBiomePayload;
+        if (payload == null) {
+            final ByteBuf scratch = Unpooled.buffer();
+            try {
+                new ChunkSection((byte) 0).biomes().writeToNetwork(scratch, Integer::intValue);
+                payload = ByteBufUtil.getBytes(scratch);
+            } finally {
+                scratch.release();
+            }
+            emptyBiomePayload = payload;
+        }
+        return payload;
     }
 
     private void writeBorderBlockData(ByteBuf byteBuf, IChunk chunk) {
