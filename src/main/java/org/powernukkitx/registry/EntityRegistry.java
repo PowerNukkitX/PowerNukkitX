@@ -59,6 +59,12 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static NbtMap TAG;
 
 
+    /**
+     * {@link org.powernukkitx.entity.passive.EntityVillager} and
+     * {@link org.powernukkitx.entity.mob.EntityZombieVillager} are deprecated in favour of their v2 forms, but
+     * Bedrock still lists the pre-1.14 types under runtime ids 15 and 44, so both have to stay registered.
+     */
+    @SuppressWarnings("deprecation")
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
