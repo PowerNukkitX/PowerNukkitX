@@ -2703,6 +2703,17 @@ public abstract class Item implements Cloneable, ItemID {
                 .build();
     }
 
+    public ItemData toRecipeNetwork() {
+        final CompoundTag nbt = this.getNbt();
+        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
+            return this.toNetwork();
+        }
+        final Item stripped = this.clone();
+        final CompoundTag strippedNbt = nbt.copy().remove("Damage");
+        stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
+        return stripped.toNetwork();
+    }
+
     public ItemData toCreativeNetwork() {
         final boolean hasNbt = this.getNbt() != null;
         final boolean clearCreativeTag = this.isCreativeTagEmpty();

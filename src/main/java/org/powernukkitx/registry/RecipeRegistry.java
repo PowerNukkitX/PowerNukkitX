@@ -1,5 +1,6 @@
 package org.powernukkitx.registry;
 
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.powernukkitx.Server;
 import org.powernukkitx.item.Item;
@@ -11,6 +12,7 @@ import org.powernukkitx.recipe.descriptor.ItemDescriptorType;
 import org.powernukkitx.recipe.descriptor.ItemTagDescriptor;
 import org.powernukkitx.recipe.special.DecoratedPotRecipe;
 import org.powernukkitx.recipe.special.SmithingArmorTrimCorrectedRecipe;
+import org.powernukkitx.recipe.unlock.RecipeUnlockIndex;
 import org.powernukkitx.tags.ItemTags;
 import org.powernukkitx.utils.Config;
 import org.powernukkitx.utils.Identifier;
@@ -63,11 +65,23 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     private final Object2ObjectOpenHashMap<String, Recipe> allRecipeMaps = new Object2ObjectOpenHashMap<>();
     private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
     private final Int2ObjectMap<Recipe> networkIdRecipeMap = new Int2ObjectOpenHashMap<>();
+    private final RecipeUnlockIndex unlockIndex = new RecipeUnlockIndex();
 
     public static int FURNACE_RECIPE_NET_ID_COUNTER = 111000;
 
     public VanillaRecipeParser getVanillaRecipeParser() {
         return vanillaRecipeParser;
+    }
+
+    /**
+     * The reverse ingredient lookup used to decide which recipes a player may unlock.
+     * It is kept in sync by {@link #register(String, Recipe)} and is empty while the registry
+     * is disabled.
+     *
+     * @return the shared index, never {@code null}
+     */
+    public RecipeUnlockIndex getUnlockIndex() {
+        return unlockIndex;
     }
 
     public Int2ObjectMap<Recipe> getNetworkIdRecipeMap() {
@@ -455,6 +469,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         recipeXpMap.clear();
         allRecipeMaps.clear();
         networkIdRecipeMap.clear();
+        unlockIndex.clear();
         if (enabled) {
             init();
         } else {
@@ -492,6 +507,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
             }
         }
+        this.unlockIndex.index(recipe);
     }
 
     public void register(Recipe recipe) {
@@ -507,6 +523,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         networkIdRecipeMap.clear();
         recipeMaps.values().forEach(Map::clear);
         allRecipeMaps.clear();
+        unlockIndex.clear();
         RECIPE_COUNT = 0;
         PACKET = null;
     }
@@ -704,7 +721,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             netId,
                             priority,
                             primaryResult.toItem(),
-                            ingredients.getFirst().toItem()
+                            ingredients.getFirst().toItem(),
+                            parseUnlockingRequirement(recipe, inputParseType)
                         ));
                     }
                     case "cartography_table" -> {
@@ -733,7 +751,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             netId,
                             priority,
                             primaryResult.toItem(),
-                            ingredients
+                            ingredients,
+                            parseUnlockingRequirement(recipe, inputParseType)
                         ));
                     }
 
@@ -752,6 +771,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         UUID uuid = UUID.fromString((String) recipe.get("uuid"));
                         int priority = (int) ((double) recipe.get("priority"));
                         int netId = (int) ((double) recipe.get("netId"));
+                        RecipeUnlockingRequirement unlockingRequirement = parseUnlockingRequirement(recipe, inputParseType);
 
                         List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipe.get("output");
                         Map<String, Object> primaryResultData = outputs.removeFirst();
@@ -792,7 +812,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                 ingredients,
                                 extraResults,
                                 false,
-                                RecipeUnlockingRequirement.INVALID
+                                unlockingRequirement
                             ));
                         } else {    // is shapeless recipe
 
@@ -812,7 +832,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                     priority,
                                     primaryResult.toItem(),
                                     ingredients,
-                                    RecipeUnlockingRequirement.INVALID
+                                    unlockingRequirement
                                 ));
                             } else {
                                 this.register(new ShapelessRecipe(
@@ -822,7 +842,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                     priority,
                                     primaryResult.toItem(),
                                     ingredients,
-                                    RecipeUnlockingRequirement.INVALID
+                                    unlockingRequirement
                                 ));
                             }
                         }
@@ -855,15 +875,17 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
                         this.register(smeltingRecipe);*/
 
+                        RecipeUnlockingRequirement unlockingRequirement = parseUnlockingRequirement(recipe, ParseType.FURNACE_INPUT);
+
                         if (primaryResult instanceof ItemTagDescriptor tagDescriptor) {
                             final Set<String> ids = ItemTags.getItemSet(tagDescriptor.getItemTag());
                             for (String id : ids) {
                                 final Item outputItem = Item.get(id, 0, tagDescriptor.getCount());
-                                this.registerFurnaceRecipe(block, outputItem, ingredients, furnaceXpConfig);
+                                this.registerFurnaceRecipe(block, outputItem, ingredients, furnaceXpConfig, unlockingRequirement);
                             }
                         } else {
                             final Item outputItem = primaryResult.toItem();
-                            this.registerFurnaceRecipe(block, outputItem, ingredients, furnaceXpConfig);
+                            this.registerFurnaceRecipe(block, outputItem, ingredients, furnaceXpConfig, unlockingRequirement);
                         }
                     }
                 }
@@ -893,21 +915,21 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false))));
     }
 
-    private void registerFurnaceRecipe(String block, Item outputItem, List<ItemDescriptor> ingredients, Config furnaceXpConfig) {
+    private void registerFurnaceRecipe(String block, Item outputItem, List<ItemDescriptor> ingredients, Config furnaceXpConfig, RecipeUnlockingRequirement unlockingRequirement) {
         final ItemDescriptor descriptor = ingredients.getFirst();
         if (descriptor instanceof ItemTagDescriptor tagDescriptor) {
             final Set<String> ids = ItemTags.getItemSet(tagDescriptor.getItemTag());
             for (String id : ids) {
                 final Item inputItem = Item.get(id, 0, tagDescriptor.getCount());
-                this.registerFurnaceRecipe(block, outputItem, inputItem, furnaceXpConfig);
+                this.registerFurnaceRecipe(block, outputItem, inputItem, furnaceXpConfig, unlockingRequirement);
             }
         } else {
             final Item inputItem = ingredients.getFirst().toItem();
-            this.registerFurnaceRecipe(block, outputItem, inputItem, furnaceXpConfig);
+            this.registerFurnaceRecipe(block, outputItem, inputItem, furnaceXpConfig, unlockingRequirement);
         }
     }
 
-    private void registerFurnaceRecipe(String block, Item outputItem, Item inputItem, Config furnaceXpConfig) {
+    private void registerFurnaceRecipe(String block, Item outputItem, Item inputItem, Config furnaceXpConfig, RecipeUnlockingRequirement unlockingRequirement) {
         final SmeltingRecipe smeltingRecipeInternal = switch (block) {
             case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
             case "smoker" -> new SmokerRecipe(outputItem, inputItem);
@@ -915,6 +937,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             case "soul_campfire" -> new SoulCampfireRecipe(outputItem, inputItem);
             default -> new FurnaceRecipe(outputItem, inputItem);
         };
+        if (unlockingRequirement != null && !unlockingRequirement.isInvalid()) {
+            smeltingRecipeInternal.setUnlockingRequirement(unlockingRequirement);
+        }
         try {
             this.register(smeltingRecipeInternal);
 
@@ -931,6 +956,32 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     private void registerSpecial() {
         this.register(new DecoratedPotRecipe(10000));
         this.register(new SmithingArmorTrimCorrectedRecipe(10001));
+    }
+
+    /**
+     * Parses the vanilla {@code unlockingRequirements} block of a recipe entry. The requirement is
+     * forwarded to the client inside the crafting data packet so it can unlock the recipe on its
+     * own, and it drives the server side {@link RecipeUnlockIndex}.
+     *
+     * @return the parsed requirement, or {@link RecipeUnlockingRequirement#INVALID} when the recipe
+     * has no unlock data
+     */
+    private RecipeUnlockingRequirement parseUnlockingRequirement(Map<String, Object> recipeData, ParseType inputParseType) {
+        Map<String, Object> data = (Map<String, Object>) recipeData.get("unlockingRequirements");
+        if (data == null) {
+            return RecipeUnlockingRequirement.INVALID;
+        }
+        final RecipeUnlockingRequirement requirement = new RecipeUnlockingRequirement(RecipeUnlockingContext.from(Utils.toInt(data.get("context"))));
+        final List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
+        if (items != null) {
+            for (Map<String, Object> item : items) {
+                final ItemDescriptor descriptor = parseDescription(item, inputParseType);
+                if (descriptor != null) {
+                    requirement.getUnlockingIngredients().add(descriptor.toNetwork());
+                }
+            }
+        }
+        return requirement;
     }
 
     /**

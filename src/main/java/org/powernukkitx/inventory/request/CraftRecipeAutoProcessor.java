@@ -74,6 +74,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             return context.error();
         } else {
             context.put(RECIPE_DATA_KEY, recipe);
+            player.getRecipeBook().unlock(recipe);
             var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
 
             int consumeActionCountNeeded = 0;
