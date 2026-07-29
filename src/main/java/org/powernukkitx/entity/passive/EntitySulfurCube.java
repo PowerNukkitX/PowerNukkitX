@@ -133,39 +133,81 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         @Nullable
         public static Archetype fromBlockId(@Nullable String blockId) {
             if (blockId == null) return null;
-            String id = blockId.startsWith("minecraft:") ? blockId.substring("minecraft:".length()) : blockId;
-            if (id.equals("tnt")) return EXPLOSIVE;
-            if (id.equals("magma")) return HOT;
-            if (id.equals("honeycomb_block")) return STICKY;
-            if (id.equals("soul_sand") || id.equals("soul_soil")) return HIGH_RESISTANCE;
-            if (id.equals("blue_ice") || id.equals("packed_ice") || id.equals("snow")) return FAST_SLIDING;
-            if (id.equals("mycelium") || id.equals("shroomlight")
-                    || id.equals("brown_mushroom_block") || id.equals("red_mushroom_block")
-                    || id.equals("mushroom_stem")) return SLOW_SLIDING;
-            if (id.equals("iron_block") || id.equals("gold_block") || id.equals("netherite_block")
-                    || id.equals("copper_block") || id.equals("raw_iron_block")
-                    || id.equals("raw_gold_block") || id.equals("raw_copper_block")) return SLOW_FLAT;
-            if (id.endsWith("_wool")) return LIGHT;
-            if (id.endsWith("coral_block") || id.equals("sponge") || id.equals("wet_sponge")
-                    || id.equals("pumpkin") || id.equals("carved_pumpkin") || id.endsWith("froglight")
-                    || id.equals("moss_block") || id.equals("pale_moss_block")) return FAST_FLAT;
-            if (id.endsWith("_planks") || id.endsWith("_log") || id.endsWith("_wood")
-                    || id.endsWith("_stem") && id.startsWith("stripped") || id.equals("bamboo_block")
-                    || id.equals("stripped_bamboo_block") || id.equals("crimson_stem")
-                    || id.equals("warped_stem") || id.equals("crimson_hyphae") || id.equals("warped_hyphae")) return BOUNCY;
-            if (id.equals("dirt") || id.equals("coarse_dirt") || id.equals("rooted_dirt")
-                    || id.equals("grass_block") || id.equals("clay") || id.equals("coal_block")
-                    || id.endsWith("concrete_powder") || id.equals("sand") || id.equals("red_sand")
-                    || id.equals("gravel") || id.equals("mud") || id.equals("packed_mud")) return REGULAR;
-            if (id.equals("stone") || id.equals("cobblestone") || id.equals("mossy_cobblestone")
-                    || id.equals("deepslate") || id.equals("cobbled_deepslate") || id.equals("tuff")
-                    || id.equals("andesite") || id.equals("diorite") || id.equals("granite")
-                    || id.equals("calcite") || id.equals("dripstone_block") || id.equals("amethyst_block")
-                    || id.equals("blackstone") || id.equals("basalt") || id.equals("smooth_basalt")
-                    || id.equals("netherrack") || id.equals("end_stone") || id.equals("obsidian")
-                    || id.equals("sandstone") || id.equals("red_sandstone")
-                    || id.endsWith("_ore")) return SLOW_BOUNCY;
-            return null;
+            return switch (blockId) {
+                case BlockID.TNT -> EXPLOSIVE;
+                case BlockID.MAGMA -> HOT;
+                case BlockID.HONEYCOMB_BLOCK -> STICKY;
+                case BlockID.SOUL_SAND, BlockID.SOUL_SOIL -> HIGH_RESISTANCE;
+                case BlockID.BLUE_ICE, BlockID.PACKED_ICE, BlockID.SNOW -> FAST_SLIDING;
+                case BlockID.MYCELIUM, BlockID.SHROOMLIGHT, BlockID.BROWN_MUSHROOM_BLOCK,
+                     BlockID.RED_MUSHROOM_BLOCK, BlockID.MUSHROOM_STEM -> SLOW_SLIDING;
+                case BlockID.IRON_BLOCK, BlockID.GOLD_BLOCK, BlockID.NETHERITE_BLOCK,
+                     BlockID.COPPER_BLOCK, BlockID.RAW_IRON_BLOCK, BlockID.RAW_GOLD_BLOCK,
+                     BlockID.RAW_COPPER_BLOCK -> SLOW_FLAT;
+                case BlockID.WHITE_WOOL, BlockID.ORANGE_WOOL, BlockID.MAGENTA_WOOL,
+                     BlockID.LIGHT_BLUE_WOOL, BlockID.YELLOW_WOOL, BlockID.LIME_WOOL,
+                     BlockID.PINK_WOOL, BlockID.GRAY_WOOL, BlockID.LIGHT_GRAY_WOOL,
+                     BlockID.CYAN_WOOL, BlockID.PURPLE_WOOL, BlockID.BLUE_WOOL,
+                     BlockID.BROWN_WOOL, BlockID.GREEN_WOOL, BlockID.RED_WOOL,
+                     BlockID.BLACK_WOOL -> LIGHT;
+                case BlockID.TUBE_CORAL_BLOCK, BlockID.BRAIN_CORAL_BLOCK, BlockID.BUBBLE_CORAL_BLOCK,
+                     BlockID.FIRE_CORAL_BLOCK, BlockID.HORN_CORAL_BLOCK,
+                     BlockID.DEAD_TUBE_CORAL_BLOCK, BlockID.DEAD_BRAIN_CORAL_BLOCK,
+                     BlockID.DEAD_BUBBLE_CORAL_BLOCK, BlockID.DEAD_FIRE_CORAL_BLOCK,
+                     BlockID.DEAD_HORN_CORAL_BLOCK, BlockID.SPONGE, BlockID.WET_SPONGE,
+                     BlockID.PUMPKIN, BlockID.CARVED_PUMPKIN, BlockID.OCHRE_FROGLIGHT,
+                     BlockID.VERDANT_FROGLIGHT, BlockID.PEARLESCENT_FROGLIGHT,
+                     BlockID.MOSS_BLOCK, BlockID.PALE_MOSS_BLOCK -> FAST_FLAT;
+                case BlockID.OAK_PLANKS, BlockID.SPRUCE_PLANKS, BlockID.BIRCH_PLANKS,
+                     BlockID.JUNGLE_PLANKS, BlockID.ACACIA_PLANKS, BlockID.DARK_OAK_PLANKS,
+                     BlockID.MANGROVE_PLANKS, BlockID.CHERRY_PLANKS, BlockID.PALE_OAK_PLANKS,
+                     BlockID.BAMBOO_PLANKS, BlockID.CRIMSON_PLANKS, BlockID.WARPED_PLANKS,
+                     BlockID.OAK_LOG, BlockID.SPRUCE_LOG, BlockID.BIRCH_LOG, BlockID.JUNGLE_LOG,
+                     BlockID.ACACIA_LOG, BlockID.DARK_OAK_LOG, BlockID.MANGROVE_LOG,
+                     BlockID.CHERRY_LOG, BlockID.PALE_OAK_LOG,
+                     BlockID.STRIPPED_OAK_LOG, BlockID.STRIPPED_SPRUCE_LOG, BlockID.STRIPPED_BIRCH_LOG,
+                     BlockID.STRIPPED_JUNGLE_LOG, BlockID.STRIPPED_ACACIA_LOG, BlockID.STRIPPED_DARK_OAK_LOG,
+                     BlockID.STRIPPED_MANGROVE_LOG, BlockID.STRIPPED_CHERRY_LOG, BlockID.STRIPPED_PALE_OAK_LOG,
+                     BlockID.OAK_WOOD, BlockID.SPRUCE_WOOD, BlockID.BIRCH_WOOD, BlockID.JUNGLE_WOOD,
+                     BlockID.ACACIA_WOOD, BlockID.DARK_OAK_WOOD, BlockID.MANGROVE_WOOD,
+                     BlockID.CHERRY_WOOD, BlockID.PALE_OAK_WOOD,
+                     BlockID.STRIPPED_OAK_WOOD, BlockID.STRIPPED_SPRUCE_WOOD, BlockID.STRIPPED_BIRCH_WOOD,
+                     BlockID.STRIPPED_JUNGLE_WOOD, BlockID.STRIPPED_ACACIA_WOOD, BlockID.STRIPPED_DARK_OAK_WOOD,
+                     BlockID.STRIPPED_MANGROVE_WOOD, BlockID.STRIPPED_CHERRY_WOOD, BlockID.STRIPPED_PALE_OAK_WOOD,
+                     BlockID.BAMBOO_BLOCK, BlockID.STRIPPED_BAMBOO_BLOCK,
+                     BlockID.CRIMSON_STEM, BlockID.WARPED_STEM,
+                     BlockID.STRIPPED_CRIMSON_STEM, BlockID.STRIPPED_WARPED_STEM,
+                     BlockID.CRIMSON_HYPHAE, BlockID.WARPED_HYPHAE,
+                     BlockID.STRIPPED_CRIMSON_HYPHAE, BlockID.STRIPPED_WARPED_HYPHAE -> BOUNCY;
+                case BlockID.DIRT, BlockID.COARSE_DIRT, BlockID.DIRT_WITH_ROOTS,
+                     BlockID.GRASS_BLOCK, BlockID.CLAY, BlockID.COAL_BLOCK,
+                     BlockID.WHITE_CONCRETE_POWDER, BlockID.ORANGE_CONCRETE_POWDER,
+                     BlockID.MAGENTA_CONCRETE_POWDER, BlockID.LIGHT_BLUE_CONCRETE_POWDER,
+                     BlockID.YELLOW_CONCRETE_POWDER, BlockID.LIME_CONCRETE_POWDER,
+                     BlockID.PINK_CONCRETE_POWDER, BlockID.GRAY_CONCRETE_POWDER,
+                     BlockID.LIGHT_GRAY_CONCRETE_POWDER, BlockID.CYAN_CONCRETE_POWDER,
+                     BlockID.PURPLE_CONCRETE_POWDER, BlockID.BLUE_CONCRETE_POWDER,
+                     BlockID.BROWN_CONCRETE_POWDER, BlockID.GREEN_CONCRETE_POWDER,
+                     BlockID.RED_CONCRETE_POWDER, BlockID.BLACK_CONCRETE_POWDER,
+                     BlockID.SAND, BlockID.RED_SAND, BlockID.GRAVEL,
+                     BlockID.MUD, BlockID.PACKED_MUD -> REGULAR;
+                case BlockID.STONE, BlockID.COBBLESTONE, BlockID.MOSSY_COBBLESTONE,
+                     BlockID.DEEPSLATE, BlockID.COBBLED_DEEPSLATE, BlockID.TUFF,
+                     BlockID.ANDESITE, BlockID.DIORITE, BlockID.GRANITE,
+                     BlockID.CALCITE, BlockID.DRIPSTONE_BLOCK, BlockID.AMETHYST_BLOCK,
+                     BlockID.BLACKSTONE, BlockID.BASALT, BlockID.SMOOTH_BASALT,
+                     BlockID.NETHERRACK, BlockID.END_STONE, BlockID.OBSIDIAN,
+                     BlockID.SANDSTONE, BlockID.RED_SANDSTONE,
+                     BlockID.COAL_ORE, BlockID.IRON_ORE, BlockID.COPPER_ORE, BlockID.GOLD_ORE,
+                     BlockID.REDSTONE_ORE, BlockID.LIT_REDSTONE_ORE, BlockID.LAPIS_ORE,
+                     BlockID.DIAMOND_ORE, BlockID.EMERALD_ORE, BlockID.QUARTZ_ORE,
+                     BlockID.NETHER_GOLD_ORE, BlockID.DEEPSLATE_COAL_ORE, BlockID.DEEPSLATE_IRON_ORE,
+                     BlockID.DEEPSLATE_COPPER_ORE, BlockID.DEEPSLATE_GOLD_ORE,
+                     BlockID.DEEPSLATE_REDSTONE_ORE, BlockID.LIT_DEEPSLATE_REDSTONE_ORE,
+                     BlockID.DEEPSLATE_LAPIS_ORE, BlockID.DEEPSLATE_DIAMOND_ORE,
+                     BlockID.DEEPSLATE_EMERALD_ORE -> SLOW_BOUNCY;
+                default -> null;
+            };
         }
     }
 
