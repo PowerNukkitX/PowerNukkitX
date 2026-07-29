@@ -10,6 +10,9 @@ import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.village.Village;
+import org.powernukkitx.level.village.VillageDwellers;
+import org.powernukkitx.level.village.VillageRaid;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.registry.Registries;
@@ -58,10 +61,10 @@ public class Raid {
     private static final int WAVE_DELAY        = 300;
     private static final int RAID_EXPIRY_TICKS = 48000;
 
-    private static final double VILLAGE_RADIUS_SQ = 128.0 * 128.0;
     private static final double NOTIFY_RADIUS_SQ  =  96.0 *  96.0;
 
     private final Level level;
+    private final Village village;
     private final Vector3 center;
     private final int totalWaves;
     private final int difficultyIdx;
@@ -79,9 +82,10 @@ public class Raid {
     private final Map<String, DummyBossBar> bossBars = new HashMap<>();
     private int bossBarUpdateTick = 0;
 
-    public Raid(Level level, Vector3 center) {
+    public Raid(Level level, Village village) {
         this.level = level;
-        this.center = center.clone();
+        this.village = village;
+        this.center = village.center().asVector3();
         int difficulty = Server.getInstance().getDifficulty();
         this.difficultyIdx = (difficulty <= 1) ? 0 : (difficulty == 2) ? 1 : 2;
         this.totalWaves    = WAVES[difficultyIdx].length;
@@ -91,6 +95,11 @@ public class Raid {
                 p.playOmenScreenAnimation();
             }
         }
+        publishToVillage();
+    }
+
+    public Village getVillage() {
+        return village;
     }
 
     public void tick(int currentTick) {
@@ -103,7 +112,7 @@ public class Raid {
             return;
         }
 
-        if (raidAge % 100 == 0 && !hasVillagerNearby()) {
+        if (raidAge % 100 == 0 && !hasVillagerAlive()) {
             onDefeat();
             return;
         }
@@ -125,6 +134,7 @@ public class Raid {
                     spawnNextWave();
                 }
             }
+            publishToVillage();
             return;
         }
 
@@ -152,6 +162,8 @@ public class Raid {
                 waitTick = 0;
             }
         }
+
+        publishToVillage();
     }
 
     private void spawnNextWave() {
@@ -210,10 +222,12 @@ public class Raid {
         level.addLevelSoundEvent(hornPos, SoundEvent.RAID_HORN, -1);
     }
 
-    private boolean hasVillagerNearby() {
-        for (Entity e : level.getEntities()) {
-            if (e instanceof EntityVillagerV2 && e.isAlive() && e.distanceSquared(center) <= VILLAGE_RADIUS_SQ) {
-                return true;
+    private boolean hasVillagerAlive() {
+        for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
+            for (VillageDwellers.Actor actor : dweller.actors()) {
+                if (level.getEntity(actor.id()) instanceof EntityVillagerV2 villager && villager.isAlive()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -276,6 +290,7 @@ public class Raid {
         }
         raidMobs.forEach(e -> { if (e.isAlive()) e.kill(); });
         raidMobs.clear();
+        village.setRaid(null);
     }
 
     private void onDefeat() {
@@ -293,6 +308,7 @@ public class Raid {
             }
         }
         raidMobs.clear();
+        village.setRaid(null);
     }
 
     private void onExpiry() {
@@ -305,6 +321,20 @@ public class Raid {
         }
         raidMobs.forEach(e -> { if (e.isAlive()) e.despawnable = true; });
         raidMobs.clear();
+        village.setRaid(null);
+    }
+
+    private void publishToVillage() {
+        List<Long> raiderIds = raidMobs.stream().filter(e -> e.isAlive() && !e.closed)
+                .map(Entity::getId).toList();
+        float totalMaxHealth = 0f;
+        for (Entity mob : raidMobs) {
+            if (mob.isAlive() && !mob.closed) totalMaxHealth += mob.getHealthDefaultMax();
+        }
+        village.setRaid(new VillageRaid(
+                level.getCurrentTick(), (byte) Math.max(1, currentWave), (byte) totalWaves,
+                (byte) raiderIds.size(), raiderIds, (byte) 0, center, state.ordinal(), state.ordinal(),
+                raidAge, totalMaxHealth));
     }
 
     public boolean isEnded() { return state == RaidState.ENDED; }

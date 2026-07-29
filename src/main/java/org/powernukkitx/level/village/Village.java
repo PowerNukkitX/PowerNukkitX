@@ -11,7 +11,7 @@ public final class Village {
     private VillageInfo info;
     private final VillagePlayers players;
     private final VillagePois pois;
-    private final @Nullable VillageRaid raid;
+    private @Nullable VillageRaid raid;
 
     public Village(UUID uuid, VillageDwellers dwellers, VillageInfo info, VillagePlayers players,
                    VillagePois pois, @Nullable VillageRaid raid) {
@@ -31,6 +31,7 @@ public final class Village {
     public @Nullable VillageRaid raid() { return raid; }
 
     public void setInfo(VillageInfo info) { this.info = info; }
+    public void setRaid(@Nullable VillageRaid raid) { this.raid = raid; }
     public long population() {
         return dwellers.dwellers().stream().flatMap(dweller -> dweller.actors().stream()).count();
     }
