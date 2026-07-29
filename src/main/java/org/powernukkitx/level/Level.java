@@ -5294,20 +5294,6 @@ public class Level implements Metadatable {
                         .collect(Collectors.toUnmodifiableSet());
 
                 if (!chunksToSave.isEmpty() && getAutoSave()) {
-                    for (IChunk c : chunksToSave) {
-                        for (BlockEntity be : c.getBlockEntities().values()) {
-                            if (!be.closed) {
-                                be.saveNBT();
-                                be.serializationSnapshot = be.getNbt().copy();
-                            }
-                        }
-                        for (Entity e : c.getEntities().values()) {
-                            if (!(e instanceof Player) && !e.closed) {
-                                e.saveNBT();
-                                e.serializationSnapshot = e.getNbt().copy();
-                            }
-                        }
-                    }
                     requireProvider().saveChunks(chunksToSave);
                 }
 

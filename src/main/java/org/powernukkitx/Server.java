@@ -1197,20 +1197,6 @@ public class Server {
 
         if (this.autoSave && tickTime - this.lastAutoSaveMillis >= this.autoSaveTicks * 50L) {
             this.lastAutoSaveMillis = tickTime;
-            for (Level level : this.levelArray) {
-                for (BlockEntity be : level.getBlockEntities().values()) {
-                    if (!be.closed) {
-                        be.saveNBT();
-                        be.serializationSnapshot = be.getNbt().copy();
-                    }
-                }
-                for (Entity entity : level.getEntities()) {
-                    if (!(entity instanceof Player) && !entity.closed) {
-                        entity.saveNBT();
-                        entity.serializationSnapshot = entity.getNbt().copy();
-                    }
-                }
-            }
             CompletableFuture.runAsync(this::doAutoSave);
         }
 

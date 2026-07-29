@@ -1,11 +1,13 @@
 package org.powernukkitx.level.format.leveldb;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.api.UsedByReflection;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.GameRules;
@@ -56,6 +58,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -542,21 +545,64 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveChunks(Collection<IChunk> chunks) {
+        Collection<IChunk> dirtyChunks = snapshotDirtyChunks(chunks);
+        if (dirtyChunks.isEmpty()) {
+            return;
+        }
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
-            CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
-                // Clear the dirty flag before serializing so a change made
-                // mid-save (e.g. taking an item from a chest) re-marks the chunk
-                // dirty and gets persisted on the next save instead of being lost.
-                chunk.setChanged(false);
-                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
-            }), Server.getInstance().getComputeThreadPool()).join();
+            CompletableFuture.runAsync(() -> dirtyChunks.parallelStream().forEach(chunk ->
+                    LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk)), Server.getInstance().getComputeThreadPool()).join();
             helper.write(batch);
             helper.close();
             storage.writeBatch(batch);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Collection<IChunk> snapshotDirtyChunks(Collection<IChunk> chunks) {
+        Server server = Server.getInstance();
+        if (server == null || server.isPrimaryThread()) {
+            return collectAndSnapshotDirtyChunks(chunks);
+        }
+        CompletableFuture<Collection<IChunk>> future = new CompletableFuture<>();
+        server.getScheduler().scheduleTask(null, () -> {
+            try {
+                future.complete(collectAndSnapshotDirtyChunks(chunks));
+            } catch (Throwable t) {
+                future.completeExceptionally(t);
+            }
+        });
+        try {
+            return future.get(30, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            return collectAndSnapshotDirtyChunks(chunks);
+        }
+    }
+
+    private Collection<IChunk> collectAndSnapshotDirtyChunks(Collection<IChunk> chunks) {
+        List<IChunk> dirtyChunks = new ObjectArrayList<>();
+        for (IChunk chunk : chunks) {
+            if (!chunk.hasChanged()) {
+                continue;
+            }
+            chunk.setChanged(false);
+            for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+                if (!blockEntity.closed) {
+                    blockEntity.saveNBT();
+                    blockEntity.serializationSnapshot = blockEntity.getNbt().copy();
+                }
+            }
+            for (Entity entity : chunk.getEntities().values()) {
+                if (!(entity instanceof Player) && !entity.closed && entity.canBeSavedWithChunk()) {
+                    entity.saveNBT();
+                    entity.serializationSnapshot = entity.getNbt().copy();
+                }
+            }
+            dirtyChunks.add(chunk);
+        }
+        return dirtyChunks;
     }
 
     @Override
