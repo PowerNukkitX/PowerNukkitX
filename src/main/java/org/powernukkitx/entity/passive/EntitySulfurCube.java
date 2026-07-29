@@ -98,8 +98,6 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
         private final String propertyName;
         private final float speed;
-        private final float friction;
-        private final float airDrag;
         private final float horizontalPower;
         private final float verticalPower;
         private final float groundKeepPerTick;
@@ -109,8 +107,6 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         Archetype(String propertyName, float speed, float friction, float airDrag, float horizontalPower, float verticalPower, boolean floats) {
             this.propertyName = propertyName;
             this.speed = speed;
-            this.friction = friction;
-            this.airDrag = airDrag;
             this.horizontalPower = horizontalPower;
             this.verticalPower = verticalPower;
             this.groundKeepPerTick = friction >= 1f ? 0f : (float) Math.pow(1 - friction, 1 / 20d);
