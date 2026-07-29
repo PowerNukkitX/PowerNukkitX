@@ -4851,21 +4851,9 @@ public class Level implements Metadatable {
                     }
 
                     if (chunk.hasChanged() || !chunk.getBlockEntities().isEmpty() || entities > 0) {
-                        // Kept separate from LevelDBProvider#saveChunks on purpose: unloading must also persist
-                        // chunks that are not marked dirty but still hold block entities or entities, and this
-                        // method is already synchronous on the main thread, so no cross-thread claim is needed.
-                        for (BlockEntity be : chunk.getBlockEntities().values()) {
-                            if (!be.closed) {
-                                be.saveNBT();
-                                be.serializationSnapshot = be.getNbt().copy();
-                            }
-                        }
-                        for (Entity e : chunk.getEntities().values()) {
-                            if (!(e instanceof Player) && !e.closed) {
-                                e.saveNBT();
-                                e.serializationSnapshot = e.getNbt().copy();
-                            }
-                        }
+                        // Unloading has to persist chunks that are not marked dirty but still hold block entities
+                        // or entities, so it stays on saveChunk instead of going through saveChunks. It is already
+                        // synchronous on the main thread, so the NBT capture inside the serializer is race free.
                         levelProvider.setChunk(x, z, chunk);
                         levelProvider.saveChunk(x, z);
                     }

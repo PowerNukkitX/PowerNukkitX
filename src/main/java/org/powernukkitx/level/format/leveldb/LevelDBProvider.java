@@ -1,13 +1,11 @@
 package org.powernukkitx.level.format.leveldb;
 
-import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.api.UsedByReflection;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
-import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.GameRules;
@@ -550,14 +548,14 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveChunks(Collection<IChunk> chunks) {
-        Collection<IChunk> dirtyChunks = claimDirtyChunks(chunks);
-        if (dirtyChunks.isEmpty()) {
+        Collection<ChunkSaveSnapshot> snapshots = claimDirtyChunks(chunks);
+        if (snapshots.isEmpty()) {
             return;
         }
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
-            CompletableFuture.runAsync(() -> dirtyChunks.parallelStream().forEach(chunk ->
-                    LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk)), Server.getInstance().getComputeThreadPool()).join();
+            CompletableFuture.runAsync(() -> snapshots.parallelStream().forEach(snapshot ->
+                    LevelDBChunkSerializer.INSTANCE.serialize(helper, snapshot)), Server.getInstance().getComputeThreadPool()).join();
             helper.write(batch);
             helper.close();
             storage.writeBatch(batch);
@@ -566,14 +564,14 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
-    private Collection<IChunk> claimDirtyChunks(Collection<IChunk> chunks) {
+    private Collection<ChunkSaveSnapshot> claimDirtyChunks(Collection<IChunk> chunks) {
         // Server.getInstance() is only null while running unit tests without a server instance.
         Server server = Server.getInstance();
         if (server == null || server.isPrimaryThread()) {
             return claimDirtyChunksOnMainThread(chunks);
         }
         AtomicBoolean claimed = new AtomicBoolean();
-        CompletableFuture<Collection<IChunk>> future = new CompletableFuture<>();
+        CompletableFuture<Collection<ChunkSaveSnapshot>> future = new CompletableFuture<>();
         server.getScheduler().scheduleTask(() -> {
             if (!claimed.compareAndSet(false, true)) {
                 return;
@@ -607,28 +605,18 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
-    private Collection<IChunk> claimDirtyChunksOnMainThread(Collection<IChunk> chunks) {
-        List<IChunk> dirtyChunks = new ObjectArrayList<>();
+    private Collection<ChunkSaveSnapshot> claimDirtyChunksOnMainThread(Collection<IChunk> chunks) {
+        List<ChunkSaveSnapshot> snapshots = new ObjectArrayList<>();
         for (IChunk chunk : chunks) {
             if (!chunk.hasChanged()) {
                 continue;
             }
+            // Clear the dirty flag before capturing so a change made mid-save re-marks the chunk
+            // dirty and is persisted on the next save instead of being lost.
             chunk.setChanged(false);
-            for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-                if (!blockEntity.closed) {
-                    blockEntity.saveNBT();
-                    blockEntity.serializationSnapshot = blockEntity.getNbt().copy();
-                }
-            }
-            for (Entity entity : chunk.getEntities().values()) {
-                if (!(entity instanceof Player) && !entity.closed && entity.canBeSavedWithChunk()) {
-                    entity.saveNBT();
-                    entity.serializationSnapshot = entity.getNbt().copy();
-                }
-            }
-            dirtyChunks.add(chunk);
+            snapshots.add(ChunkSaveSnapshot.capture(chunk));
         }
-        return dirtyChunks;
+        return snapshots;
     }
 
     @Override

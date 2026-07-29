@@ -1,12 +1,9 @@
 package org.powernukkitx.level.format.leveldb;
 
-import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
-import org.powernukkitx.blockentity.BlockEntity;
-import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.Chunk;
@@ -62,12 +59,17 @@ public class LevelDBChunkSerializer {
     }
 
     public void serialize(WriteBatch writeBatch, IChunk chunk) {
+        serialize(writeBatch, ChunkSaveSnapshot.capture(chunk));
+    }
+
+    public void serialize(WriteBatch writeBatch, ChunkSaveSnapshot snapshot) {
+        IChunk chunk = snapshot.chunk();
 
         //Spawning block entities requires call the getSpawnPacket method,
         //which is easy to call Level#getBlock, which can cause a deadlock,
         //so handle it without locking
 
-        serializeTileAndEntity(writeBatch, chunk);
+        serializeTileAndEntity(writeBatch, snapshot);
         chunk.batchProcess(unsafeChunk -> {
             writeBatch.put(LevelDBKeyUtil.VERSION.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
             writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), Utils.intToLittleEndian(unsafeChunk.getChunkState().ordinal() - 1));
@@ -352,70 +354,29 @@ public class LevelDBChunkSerializer {
         }
     }
 
-    private void serializeTileAndEntity(WriteBatch writeBatch, IChunk chunk) {
-        List<BlockEntity> blockEntitySnapshot = new ArrayList<>(chunk.getBlockEntities().values());
-        ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(tileBuffer);
-             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(bufOutputStream)) {
-            byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-            if (blockEntitySnapshot.isEmpty()) writeBatch.delete(key);
-            else {
-                for (BlockEntity blockEntity : blockEntitySnapshot) {
-                    try {
-                        CompoundTag tag = blockEntity.serializationSnapshot;
-                        if (tag != null) {
-                            blockEntity.serializationSnapshot = null;
-                        } else {
-                            blockEntity.saveNBT();
-                            tag = blockEntity.getNbt().copy();
-                        }
-                        nbtOutputStream.writeTag(tag.toNetwork());
-                    } catch (Exception e) {
-                        log.error("Failed to serialize block entity {} at {},{},{} in chunk [{},{}]",
-                                blockEntity.getSaveId(), (int) blockEntity.x, (int) blockEntity.y, (int) blockEntity.z,
-                                chunk.getX(), chunk.getZ(), e);
-                    }
-                }
-                writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        } finally {
-            tileBuffer.release();
-        }
+    private void serializeTileAndEntity(WriteBatch writeBatch, ChunkSaveSnapshot snapshot) {
+        IChunk chunk = snapshot.chunk();
+        DimensionData dimensionData = chunk.getProvider().getDimensionData();
+        writeTags(writeBatch, LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), dimensionData), snapshot.blockEntities());
+        writeTags(writeBatch, LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), dimensionData), snapshot.entities());
+    }
 
-        List<Entity> entitySnapshot = new ArrayList<>(chunk.getEntities().values());
-        ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(entityBuffer);
+    private void writeTags(WriteBatch writeBatch, byte[] key, List<CompoundTag> tags) {
+        if (tags.isEmpty()) {
+            writeBatch.delete(key);
+            return;
+        }
+        ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(buffer);
              final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(bufOutputStream)) {
-            byte[] key = LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-            if (entitySnapshot.isEmpty()) {
-                writeBatch.delete(key);
-            } else {
-                for (Entity e : entitySnapshot) {
-                    if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
-                        try {
-                            CompoundTag tag = e.serializationSnapshot;
-                            if (tag != null) {
-                                e.serializationSnapshot = null;
-                            } else {
-                                e.saveNBT();
-                                tag = e.getNbt().copy();
-                            }
-                            nbtOutputStream.writeTag(tag.toNetwork());
-                        } catch (Exception ex) {
-                            log.error("Failed to serialize entity {} at {},{},{} in chunk [{},{}]",
-                                    e.getIdentifier(), (int) e.x, (int) e.y, (int) e.z,
-                                    chunk.getX(), chunk.getZ(), ex);
-                        }
-                    }
-                }
-                writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));
+            for (CompoundTag tag : tags) {
+                nbtOutputStream.writeTag(tag.toNetwork());
             }
+            writeBatch.put(key, Utils.convertByteBuf2Array(buffer));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } finally {
-            entityBuffer.release();
+            buffer.release();
         }
     }
 
