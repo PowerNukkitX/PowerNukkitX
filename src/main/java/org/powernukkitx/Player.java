@@ -1528,6 +1528,36 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.server.getNameBans().isBanned(this.getName());
     }
 
+    /**
+     * Resolves where this player would come back to life if they respawned right now, applying the same fallbacks
+     * as {@link #respawn()} but none of its side effects - no respawn anchor charge is consumed, no
+     * {@link PlayerRespawnEvent} is fired, no spawn point is rewritten and no message is sent.
+     * <p>
+     * The spawn point falls back to the default level spawn when its level has been unloaded, and when a
+     * {@link SpawnPointType#BLOCK} spawn point no longer points at a valid respawn block - a broken bed or a depleted
+     * respawn anchor. {@code respawn()} remains the authority: a plugin listening to {@link PlayerRespawnEvent} can
+     * still move the player elsewhere, so the value returned here is a prediction, not a guarantee.
+     * <p>
+     * Reads block state and may load the spawn point's chunk, so call it from the thread that ticks that level.
+     *
+     * @return the predicted respawn position, never null
+     */
+    @NotNull
+    public Position getRespawnPosition() {
+        Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
+        Position spawnPos = spawnPair.left();
+        if (spawnPos == null || spawnPos.level == null || spawnPos.level.getProvider() == null) {
+            return this.getServer().getDefaultLevel().getSpawnLocation();
+        }
+        if (spawnPair.right() == SpawnPointType.BLOCK) {
+            Block spawnBlock = spawnPos.getLevelBlock();
+            if (spawnBlock == null || !isValidRespawnBlock(spawnBlock)) {
+                return this.getServer().getDefaultLevel().getSpawnLocation();
+            }
+        }
+        return spawnPos;
+    }
+
     protected void respawn() {
         //the player can't respawn if the server is hardcore
         if (this.server.isHardcore()) {
@@ -1597,6 +1627,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.inventory.sendArmorContents(this);
         this.offhandInventory.sendContents(this);
         this.teleport(Location.fromObject(respawnPos.add(0, this.getEyeHeight(), 0), respawnPos.level), TeleportCause.PLAYER_SPAWN);
+        this.despawnFromAll();
         this.spawnToAll();
     }
 
@@ -3365,7 +3396,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             log.warn("{} attempted to send an empty message", name);
             return;
         }
-        
+
         final MessageOnly messageOnly = new MessageOnly();
         messageOnly.setMessage(this.server.getLanguage().tr(message));
 
