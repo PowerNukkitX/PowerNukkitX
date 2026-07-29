@@ -89,6 +89,9 @@ import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -406,19 +409,30 @@ public class Level implements Metadatable {
     /** Resolved chunk set for tick-all mode ({@code chunksPerTicks < 0}); see tickAllChunksCached. */
     private IChunk[] cachedTickChunks;
     /**
-     * Distinct chunk positions of this level's loaders. Refilled at the top of every tick-all
-     * pass and consumed by the rebuild that pass may trigger, so it is only meaningful inside
-     * {@link #tickAllChunksCached}.
+     * Chunk hash to the number of chunk loaders whose tick radius covers it, maintained
+     * incrementally as loaders move rather than rebuilt from scratch. Purely geometric: it says
+     * nothing about whether a chunk is loaded, which is applied later by
+     * {@link #resolveTickChunks}. That separation is what lets a chunk loading or unloading
+     * invalidate only the resolved array instead of forcing a full re-expansion.
      */
-    private final LongOpenHashSet loaderChunkPositions = new LongOpenHashSet();
-    /** The loader chunk positions {@link #cachedTickChunks} was built from. */
-    private final LongOpenHashSet cachedTickChunksLoaderPositions = new LongOpenHashSet();
+    private final Long2IntOpenHashMap loaderCoverage = new Long2IntOpenHashMap();
+    /** {@link #loaderCoveragePosition} value meaning "this loader contributes no coverage yet". */
+    private static final long COVERAGE_ABSENT = Long.MIN_VALUE;
+    /**
+     * Loader id to the chunk position its {@link #loaderCoverage} contribution was applied for.
+     * Absent loaders report {@link #COVERAGE_ABSENT} rather than fastutil's default of zero,
+     * which is indistinguishable from a real position - {@code chunkHash(0, 0)} is also zero.
+     */
+    private final Int2LongOpenHashMap loaderCoveragePosition = newCoveragePositionMap();
+    /** Scratch for {@link #refreshLoaderCoverage}, so the radius work happens off the loaders monitor. */
+    private final LongArrayList coverageRemovals = new LongArrayList();
+    private final LongArrayList coverageAdditions = new LongArrayList();
     /** Set on chunk load/unload (any thread) so the tick-all cache rebuilds next tick. */
     private volatile boolean tickChunkCacheDirty = true;
     /**
      * {@link TickingAreaManager#getVersion()} the {@link #tickingAreaChunkHashes} were built
-     * from. Owned by appendTickingAreaChunks; the tick-all cache check reads it too, which is
-     * safe because appendTickingAreaChunks runs inside the cache rebuild.
+     * from. Owned by {@link #refreshTickingAreaHashes}; the tick-all cache check reads it too,
+     * which is safe because that refresh runs inside the resolve it triggers.
      */
     private long tickingAreaHashesVersion = -1;
     /**
@@ -1805,6 +1819,8 @@ public class Level implements Metadatable {
         if (this.chunksPerTicks == 0 || (this.loaders.isEmpty() && !hasTickingAreas)) {
             this.chunkTickList.clear();
             this.cachedTickChunks = null;
+            this.loaderCoverage.clear();
+            this.loaderCoveragePosition.clear();
             return;
         }
 
@@ -1893,19 +1909,12 @@ public class Level implements Metadatable {
      * border, a chunk loaded or unloaded, or ticking areas changed.
      */
     private void tickAllChunksCached(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion, int tickSpeed) {
-        this.loaderChunkPositions.clear();
-        synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                this.loaderChunkPositions.add(Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4));
-            }
-        }
+        boolean coverageChanged = refreshLoaderCoverage();
         if (this.cachedTickChunks == null || this.tickChunkCacheDirty
                 || areaVersion != this.tickingAreaHashesVersion
-                || !this.loaderChunkPositions.equals(this.cachedTickChunksLoaderPositions)) {
+                || coverageChanged) {
             this.tickChunkCacheDirty = false;
-            this.cachedTickChunksLoaderPositions.clear();
-            this.cachedTickChunksLoaderPositions.addAll(this.loaderChunkPositions);
-            rebuildTickAllChunkCache(areaManager, hasTickingAreas, areaVersion);
+            resolveTickChunks(areaManager, hasTickingAreas, areaVersion);
         }
         for (IChunk chunk : this.cachedTickChunks) {
             if (!chunk.isLoaded()) {
@@ -1915,38 +1924,91 @@ public class Level implements Metadatable {
         }
     }
 
-    private void rebuildTickAllChunkCache(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
-        this.chunkTickList.clear();
-        LevelProvider provider = requireProvider();
-        LongIterator positions = this.loaderChunkPositions.longIterator();
-        while (positions.hasNext()) {
-            long position = positions.nextLong();
-            int chunkX = getHashX(position);
-            int chunkZ = getHashZ(position);
-            for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
-                for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
-                    long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
-                    if (provider.isChunkLoaded(hash)) {
-                        this.chunkTickList.put(hash, -1);
+    private static Int2LongOpenHashMap newCoveragePositionMap() {
+        Int2LongOpenHashMap map = new Int2LongOpenHashMap();
+        map.defaultReturnValue(COVERAGE_ABSENT);
+        return map;
+    }
+
+    private boolean refreshLoaderCoverage() {
+        this.coverageRemovals.clear();
+        this.coverageAdditions.clear();
+        synchronized (this.loaders) {
+            for (Int2ObjectMap.Entry<ChunkLoader> entry : this.loaders.int2ObjectEntrySet()) {
+                ChunkLoader loader = entry.getValue();
+                long position = Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
+                long previous = this.loaderCoveragePosition.put(entry.getIntKey(), position);
+                if (previous == position) {
+                    continue;
+                }
+                if (previous != COVERAGE_ABSENT) {
+                    this.coverageRemovals.add(previous);
+                }
+                this.coverageAdditions.add(position);
+            }
+            if (this.loaderCoveragePosition.size() != this.loaders.size()) {
+                ObjectIterator<Int2LongMap.Entry> iterator = this.loaderCoveragePosition.int2LongEntrySet().iterator();
+                while (iterator.hasNext()) {
+                    Int2LongMap.Entry entry = iterator.next();
+                    if (!this.loaders.containsKey(entry.getIntKey())) {
+                        this.coverageRemovals.add(entry.getLongValue());
+                        iterator.remove();
                     }
                 }
             }
         }
-        appendTickingAreaChunks(areaManager, hasTickingAreas, areaVersion);
+        if (this.coverageRemovals.isEmpty() && this.coverageAdditions.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < this.coverageRemovals.size(); i++) {
+            applyCoverage(this.coverageRemovals.getLong(i), -1);
+        }
+        for (int i = 0; i < this.coverageAdditions.size(); i++) {
+            applyCoverage(this.coverageAdditions.getLong(i), 1);
+        }
+        return true;
+    }
 
-        List<IChunk> resolved = new ArrayList<>(this.chunkTickList.size());
-        for (Long2IntMap.Entry entry : this.chunkTickList.long2IntEntrySet()) {
-            long index = entry.getLongKey();
-            if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
-                    && !areNeighboringChunksLoaded(index)) {
-                continue;
-            }
-            IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
-            if (chunk != null) {
-                resolved.add(chunk);
+    /**
+     * Adds or withdraws one loader's tick-radius square from {@link #loaderCoverage}. A chunk
+     * drops out only once no loader covers it, so overlapping loaders cannot uncover each other.
+     *
+     * @param centre the loader's chunk position
+     * @param delta  {@code 1} to add coverage, {@code -1} to withdraw it
+     */
+    private void applyCoverage(long centre, int delta) {
+        int chunkX = getHashX(centre);
+        int chunkZ = getHashZ(centre);
+        for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
+            long xPart = ((long) (chunkX + dx)) << 32;
+            for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
+                long hash = xPart | ((chunkZ + dz) & 0xffffffffL);
+                if (this.loaderCoverage.addTo(hash, delta) + delta <= 0) {
+                    this.loaderCoverage.remove(hash);
+                }
             }
         }
-        this.chunkTickList.clear();
+    }
+
+    /** Turns the covered chunk hashes, plus any ticking areas, into the array the tick iterates. */
+    private void resolveTickChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+        refreshTickingAreaHashes(areaManager, hasTickingAreas, areaVersion);
+
+        List<IChunk> resolved = new ArrayList<>(this.loaderCoverage.size());
+        LongIterator covered = this.loaderCoverage.keySet().iterator();
+        while (covered.hasNext()) {
+            addResolvedTickChunk(covered.nextLong(), resolved);
+        }
+        if (this.tickingAreaChunkHashes != null) {
+            LongIterator areaChunks = this.tickingAreaChunkHashes.iterator();
+            while (areaChunks.hasNext()) {
+                long index = areaChunks.nextLong();
+                if (!this.loaderCoverage.containsKey(index)) {
+                    addResolvedTickChunk(index, resolved);
+                }
+            }
+        }
+
         IChunk[] target = this.cachedTickChunks;
         if (target == null || target.length != resolved.size()) {
             target = new IChunk[resolved.size()];
@@ -1954,7 +2016,27 @@ public class Level implements Metadatable {
         this.cachedTickChunks = resolved.toArray(target);
     }
 
-    private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+    /**
+     * Adds a covered chunk to the tick set if it is loaded, and either sits in a ticking area or
+     * has its neighbours loaded.
+     * <p>
+     * Coverage is geometric, so unloaded chunks reach here; the single {@code getChunk} lookup
+     * runs first to reject them before the four-lookup neighbour check.
+     */
+    private void addResolvedTickChunk(long index, List<IChunk> resolved) {
+        IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
+        if (chunk == null) {
+            return;
+        }
+        if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
+                && !areNeighboringChunksLoaded(index)) {
+            return;
+        }
+        resolved.add(chunk);
+    }
+
+    /** Rebuilds {@link #tickingAreaChunkHashes} when the ticking-area version moved. */
+    private void refreshTickingAreaHashes(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
         if (!hasTickingAreas) {
             this.tickingAreaChunkHashes = null;
             this.tickingAreaHashesVersion = areaVersion;
@@ -1972,6 +2054,13 @@ public class Level implements Metadatable {
                 }
             }
             this.tickingAreaChunkHashes = hashes;
+        }
+    }
+
+    private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+        refreshTickingAreaHashes(areaManager, hasTickingAreas, areaVersion);
+        if (this.tickingAreaChunkHashes == null) {
+            return;
         }
         LevelProvider provider = requireProvider();
         for (long hash : this.tickingAreaChunkHashes) {
