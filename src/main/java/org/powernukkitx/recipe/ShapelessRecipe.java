@@ -74,7 +74,7 @@ public class ShapelessRecipe extends CraftingRecipe {
         final ShapelessRecipePayload payload = new ShapelessRecipePayload();
         payload.setRecipeId(this.getRecipeId());
         payload.getIngredients().addAll(this.getIngredients().stream().map(ItemDescriptor::toNetwork).toList());
-        payload.getResults().addAll(this.getResults().stream().map(Item::toNetwork).toList());
+        payload.getResults().addAll(this.getResults().stream().map(Item::toRecipeNetwork).toList());
         payload.setUuid(this.getUUID());
         payload.setTag(this.getRecipeIdTag());
         payload.setPriority(this.getPriority());

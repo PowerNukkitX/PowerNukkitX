@@ -2,16 +2,16 @@ package org.powernukkitx.recipe.unlock;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemTagDescriptor;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.NameDescriptor;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.powernukkitx.recipe.CraftingRecipe;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.recipe.SmeltingRecipe;
-import org.powernukkitx.recipe.SmithingTransformRecipe;
-import org.powernukkitx.recipe.SmithingTrimRecipe;
-import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
-import org.powernukkitx.recipe.descriptor.ItemDescriptor;
-import org.powernukkitx.recipe.descriptor.ItemTagDescriptor;
 import org.powernukkitx.tags.ItemTags;
 
 import java.util.Collections;
@@ -19,12 +19,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Reverse lookup from an item to the recipes it may unlock.
+ * Reverse lookup from an item to the recipes that item unlocks.
  * <p>
- * Only recipes that the client shows in its recipe book are indexed, since only those can be
- * addressed by {@link org.cloudburstmc.protocol.bedrock.packet.UnlockedRecipesPacket}. The index
- * narrows the candidate set for a newly obtained item; whether a candidate is actually unlockable
- * is decided by matching its ingredients against the player inventory.
+ * The index follows the vanilla unlock triggers carried in each recipe's
+ * {@link RecipeUnlockingRequirement}: a recipe becomes a candidate the moment the player obtains
+ * one of the trigger items, which is not necessarily the full ingredient list. Wooden tools for
+ * example unlock through a single stick. Recipes without unlock data, or recipes unlocked through
+ * a special context such as {@code ALWAYS_UNLOCKED} or {@code PLAYER_IN_WATER}, carry no item
+ * trigger and are therefore not indexed - the client resolves those contexts on its own.
  * <p>
  * Populated from {@link org.powernukkitx.registry.RecipeRegistry#register(String, Recipe)} on the
  * thread that registers recipes and read from the player handling code afterwards; it is not
@@ -35,21 +37,28 @@ public final class RecipeUnlockIndex {
     private final Map<String, Set<String>> recipesByItemTag = new Object2ObjectOpenHashMap<>();
 
     /**
-     * Indexes a recipe by every ingredient it can be identified through. Recipes that never show up
-     * in the recipe book, and ingredient descriptors that cannot be resolved to a concrete item or
-     * tag, are ignored.
+     * Indexes a recipe by its unlock trigger items. Recipes without an item based unlock
+     * requirement are ignored.
      *
      * @param recipe the recipe to index
      */
     public void index(@NotNull Recipe recipe) {
-        if (!isBookVisible(recipe)) {
+        switch (recipe) {
+            case CraftingRecipe crafting -> index(crafting.getRecipeId(), crafting.getRequirement());
+            case SmeltingRecipe smelting -> index(smelting.getRecipeId(), smelting.getUnlockingRequirement());
+            default -> {
+            }
+        }
+    }
+
+    private void index(String recipeId, RecipeUnlockingRequirement requirement) {
+        if (requirement == null || requirement.getUnlockingContext() != RecipeUnlockingContext.NONE) {
             return;
         }
-        final String recipeId = recipe.getRecipeId();
-        for (ItemDescriptor ingredient : recipe.getIngredients()) {
-            switch (ingredient) {
-                case DefaultDescriptor descriptor ->
-                    recipesByItemId.computeIfAbsent(descriptor.getItem().getId(), id -> new ObjectOpenHashSet<>()).add(recipeId);
+        for (RecipeIngredient trigger : requirement.getUnlockingIngredients()) {
+            switch (trigger.getDescriptor()) {
+                case NameDescriptor descriptor ->
+                    recipesByItemId.computeIfAbsent(descriptor.getItemId().getIdentifier(), id -> new ObjectOpenHashSet<>()).add(recipeId);
                 case ItemTagDescriptor descriptor ->
                     recipesByItemTag.computeIfAbsent(descriptor.getItemTag(), tag -> new ObjectOpenHashSet<>()).add(recipeId);
                 default -> {
@@ -59,11 +68,11 @@ public final class RecipeUnlockIndex {
     }
 
     /**
-     * Recipe ids that use the given item as an ingredient, either directly or through one of its
+     * Recipe ids unlocked by obtaining the given item, either directly or through one of its
      * item tags.
      *
      * @param itemId the identifier of the obtained item
-     * @return the candidate recipe ids, empty when the item is not an ingredient of anything
+     * @return the unlocked recipe ids, empty when the item unlocks nothing
      */
     public @NotNull @UnmodifiableView Set<String> getCandidates(@NotNull String itemId) {
         final Set<String> direct = recipesByItemId.get(itemId);
@@ -91,12 +100,5 @@ public final class RecipeUnlockIndex {
     public void clear() {
         recipesByItemId.clear();
         recipesByItemTag.clear();
-    }
-
-    private static boolean isBookVisible(Recipe recipe) {
-        return recipe instanceof CraftingRecipe
-            || recipe instanceof SmeltingRecipe
-            || recipe instanceof SmithingTransformRecipe
-            || recipe instanceof SmithingTrimRecipe;
     }
 }

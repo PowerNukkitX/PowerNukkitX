@@ -16,7 +16,6 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.recipe.Recipe;
-import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.Registries;
 
 import java.util.Collection;
@@ -31,8 +30,8 @@ import java.util.Set;
  * Discovery is driven by the {@code recipesUnlock} game rule of the level the player spawned in.
  * While the rule is off the client keeps showing the full recipe book and no packet is sent, so
  * the book behaves exactly as it did before this class existed. While it is on the player starts
- * from the persisted set and unlocks a recipe as soon as every one of its ingredients is present
- * in the inventory, or as soon as the recipe is crafted.
+ * from the persisted set and unlocks a recipe as soon as one of its vanilla unlock trigger items
+ * enters the inventory, or as soon as the recipe is crafted.
  * <p>
  * Every method must be called from the thread that owns the player.
  */
@@ -165,7 +164,7 @@ public class PlayerRecipeBook implements InventoryListener {
         if (candidates.isEmpty()) {
             return;
         }
-        this.unlockMatching(candidates);
+        this.unlockAll(candidates);
     }
 
     private void discoverFromInventory() {
@@ -179,21 +178,18 @@ public class PlayerRecipeBook implements InventoryListener {
             }
         }
         if (!candidates.isEmpty()) {
-            this.unlockMatching(candidates);
+            this.unlockAll(candidates);
         }
     }
 
-    private void unlockMatching(Collection<String> candidates) {
+    private void unlockAll(Collection<String> candidates) {
         List<String> newlyUnlocked = null;
         for (String recipeId : candidates) {
             if (this.unlockedRecipes.contains(recipeId)) {
                 continue;
             }
             final Recipe recipe = Registries.RECIPE.get(recipeId);
-            if (recipe == null || !this.hasEveryIngredient(recipe)) {
-                continue;
-            }
-            if (!this.addUnlocked(recipe)) {
+            if (recipe == null || !this.addUnlocked(recipe)) {
                 continue;
             }
             if (newlyUnlocked == null) {
@@ -204,21 +200,6 @@ public class PlayerRecipeBook implements InventoryListener {
         if (newlyUnlocked != null) {
             this.sendPacket(UnlockedRecipesPacket.UnlockedRecipesPacketType.NEWLY_UNLOCKED, newlyUnlocked);
         }
-    }
-
-    private boolean hasEveryIngredient(Recipe recipe) {
-        final HumanInventory inventory = this.player.getInventory();
-        for (ItemDescriptor ingredient : recipe.getIngredients()) {
-            boolean found = false;
-            for (int slot = 0; slot < HumanInventory.ARMORS_INDEX && !found; slot++) {
-                final Item item = inventory.getUnclonedItem(slot);
-                found = !item.isNull() && ingredient.match(item);
-            }
-            if (!found) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private boolean addUnlocked(Recipe recipe) {
