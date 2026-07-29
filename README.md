@@ -14,8 +14,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-3.0.0-blue.svg?cacheSeconds=2592000" alt="Version">
-  <img src="https://img.shields.io/badge/minecraft-v26.30%20(Bedrock)-56383E" alt="Minecraft">
-  <img src="https://img.shields.io/badge/protocol-1001-blue" alt="Protocol">
+  <img src="https://img.shields.io/badge/minecraft-v26.40%20(Bedrock)-56383E" alt="Minecraft">
+  <img src="https://img.shields.io/badge/protocol-2168-blue" alt="Protocol">
   <img src="https://img.shields.io/badge/action-all%20builds-FF9B21" alt="Action">
   <img src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" alt="Discord">
   <img src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" alt="Documentation">
