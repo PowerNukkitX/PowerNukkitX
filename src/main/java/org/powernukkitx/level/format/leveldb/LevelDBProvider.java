@@ -65,6 +65,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class LevelDBProvider implements LevelProvider {
     static final Map<String, LevelDBStorage> CACHE = new ConcurrentHashMap<>();
     private static final byte[] levelDatMagic = new byte[]{10, 0, 0, 0, 68, 11, 0, 0};
+    private static final int CHUNK_DATA_INITIAL_CAPACITY = 64 * 1024;
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
     private final Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> scheduledTicksMap = new ConcurrentHashMap<>();
@@ -310,7 +311,7 @@ public class LevelDBProvider implements LevelProvider {
         AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
-            final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer(64 * 1024);
+            final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer(CHUNK_DATA_INITIAL_CAPACITY);
             boolean success = false;
             try {
                 final ChunkSection[] sections = unsafeChunk.getSections();

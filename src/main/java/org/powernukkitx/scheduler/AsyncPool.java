@@ -14,9 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 public class AsyncPool extends ThreadPoolExecutor {
 
     private static final AtomicInteger THREAD_COUNTER = new AtomicInteger();
+    private static final int QUEUE_CAPACITY = 1024;
 
     public AsyncPool(int size) {
-        super(size, size, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+        super(size, size * 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY));
+        this.setRejectedExecutionHandler(new CallerRunsPolicy());
         this.setThreadFactory(runnable -> {
             Thread thread = new Thread(runnable);
             thread.setDaemon(true);
