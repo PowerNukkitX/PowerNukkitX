@@ -61,7 +61,7 @@ public class PowerNukkitX {
     public final static String VERSION = getVersion();
     public final static String CODENAME = dynamic("PowerNukkitX");
     public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("3.0.0");
+    public final static String API_VERSION = dynamic("3.0.1");
     public final static String PATH = System.getProperty("user.dir") + "/";
     public final static String DATA_PATH = System.getProperty("user.dir") + "/";
     public final static String PLUGIN_PATH = DATA_PATH + "plugins";
@@ -323,7 +323,7 @@ public class PowerNukkitX {
             version = GIT_INFO.getProperty("git.commit.id.describe");
         }
 
-        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "3.0.0-DEV-SNAPSHOT";
+        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "3.0.1-DEV-SNAPSHOT";
     }
 
     private static String getGitCommit() {
