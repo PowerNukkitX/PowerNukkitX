@@ -31,6 +31,9 @@ import java.util.Set;
  * Populated from {@link org.powernukkitx.registry.RecipeRegistry#register(String, Recipe)} on the
  * thread that registers recipes and read from the player handling code afterwards; it is not
  * safe to register recipes concurrently with lookups.
+ *
+ * @author xRookieFight
+ * @since 29/07/2026
  */
 public final class RecipeUnlockIndex {
     private final Map<String, Set<String>> recipesByItemId = new Object2ObjectOpenHashMap<>();

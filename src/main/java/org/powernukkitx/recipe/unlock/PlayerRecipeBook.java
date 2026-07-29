@@ -34,6 +34,9 @@ import java.util.Set;
  * enters the inventory, or as soon as the recipe is crafted.
  * <p>
  * Every method must be called from the thread that owns the player.
+ *
+ * @author xRookieFight
+ * @since 29/07/2026
  */
 public class PlayerRecipeBook implements InventoryListener {
     private static final String UNLOCKED_RECIPES_TAG = "UnlockedRecipes";

@@ -11,6 +11,9 @@ import org.powernukkitx.recipe.Recipe;
  * <p>
  * Cancelling the event leaves the recipe locked, the client is not notified and the recipe
  * stays a candidate for a later unlock attempt.
+ *
+ * @author xRookieFight
+ * @since 29/07/2026
  */
 public class PlayerUnlockRecipeEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
