@@ -79,6 +79,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.level.raid.RaidManager;
 import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.plugin.Plugin;
 import org.powernukkitx.registry.Registries;
@@ -348,6 +349,8 @@ public class Level implements Metadatable {
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     private final VillageManager villageManager = new VillageManager(this);
+    @Getter
+    private final RaidManager raidManager = new RaidManager(this);
     public boolean stopTime;
     public int skyLightSubtracted;
     public int sleepTicks = 0;
@@ -1311,6 +1314,8 @@ public class Level implements Metadatable {
                 }
             }
             checkWeather();
+
+            this.raidManager.onTick(currentTick);
 
             if (gameplaySettings.enableDaylightCycle() || gameplaySettings.enableWeather()
                     || (currentTick & 127) == 0) {

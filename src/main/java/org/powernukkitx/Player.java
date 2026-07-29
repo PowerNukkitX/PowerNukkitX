@@ -3615,6 +3615,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(pk);
     }
 
+    public void sendTranslatedTitle(String key, int fadeIn, int stay, int fadeOut) {
+        this.setTitleAnimationTimes(fadeIn, stay, fadeOut);
+        this.setRawTextTitle(RawText.fromRawText("{\"rawtext\":[{\"translate\":\"" + key + "\"}]}"));
+    }
+
+    public void playOmenScreenAnimation() {
+        OnScreenTextureAnimationPacket pk = new OnScreenTextureAnimationPacket();
+        pk.setEffectId(1);
+        this.sendPacket(pk);
+    }
+
 
     /**
      * {@code subtitle=null,fadeIn=20,stay=20,fadeOut=5}
