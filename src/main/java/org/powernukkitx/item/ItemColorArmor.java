@@ -1,5 +1,6 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.BlockColor;
 import org.powernukkitx.utils.DyeColor;
@@ -9,21 +10,38 @@ import org.powernukkitx.utils.DyeColor;
  * @since 27.03.2016
  */
 abstract public class ItemColorArmor extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder().build();
 
     public ItemColorArmor(String id) {
-        super(id);
+        this(id, 0, 1, (String) null, DEFINITION);
+    }
+
+    public ItemColorArmor(String id, ItemDefinition definition) {
+        this(id, 0, 1, (String) null, definition);
     }
 
     public ItemColorArmor(String id, Integer meta) {
-        super(id, meta);
+        this(id, meta, 1, (String) null, DEFINITION);
+    }
+
+    public ItemColorArmor(String id, Integer meta, ItemDefinition definition) {
+        this(id, meta, 1, (String) null, definition);
     }
 
     public ItemColorArmor(String id, Integer meta, int count) {
-        super(id, meta, count);
+        this(id, meta, count, (String) null, DEFINITION);
+    }
+
+    public ItemColorArmor(String id, Integer meta, int count, ItemDefinition definition) {
+        this(id, meta, count, (String) null, definition);
     }
 
     public ItemColorArmor(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        this(id, meta, count, name, DEFINITION);
+    }
+
+    public ItemColorArmor(String id, Integer meta, int count, String name, ItemDefinition definition) {
+        super(id, meta, count, name, definition);
     }
 
     /**

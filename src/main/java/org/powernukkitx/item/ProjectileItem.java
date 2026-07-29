@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.DoubleTag;
@@ -15,9 +16,14 @@ import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
  * @author CreeperFace
  */
 public abstract class ProjectileItem extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder().build();
 
     public ProjectileItem(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        this(id, meta, count, name, DEFINITION);
+    }
+
+    public ProjectileItem(String id, Integer meta, int count, String name, ItemDefinition definition) {
+        super(id, meta, count, name, definition);
     }
 
     abstract public String getProjectileEntityType();

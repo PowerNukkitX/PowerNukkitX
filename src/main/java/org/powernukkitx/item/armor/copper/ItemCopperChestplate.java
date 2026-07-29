@@ -1,34 +1,18 @@
 package org.powernukkitx.item.armor.copper;
 
 import org.powernukkitx.item.ItemArmor;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemCopperChestplate extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(4)
+            .chestplate(true)
+            .maxDurability(177)
+            .tier(WEARABLE_TIER_COPPER)
+            .toughness(2)
+            .build();
+
     public ItemCopperChestplate() {
-        super(COPPER_CHESTPLATE);
-    }
-
-    @Override
-    public int getTier() {
-        return WEARABLE_TIER_COPPER;
-    }
-
-    @Override
-    public boolean isChestplate() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 4;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 177;
-    }
-
-    @Override
-    public int getToughness() {
-        return 2;
+        super(COPPER_CHESTPLATE, DEFINITION);
     }
 }

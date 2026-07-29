@@ -1,5 +1,6 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.jetbrains.annotations.NotNull;
 
 import static org.powernukkitx.utils.Utils.dynamic;
@@ -8,6 +9,12 @@ import static org.powernukkitx.utils.Utils.dynamic;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class ItemTool extends Item {
+    public static final ItemDefinition TOOL = DEFAULT_DEFINITION.toBuilder()
+            .tool(true)
+            .canTakeDamage(true)
+            .maxStackSize(1)
+            .build();
+
     public static final int TIER_WOODEN = 1;
     public static final int TIER_GOLD = 2;
     public static final int TIER_STONE = 3;
@@ -81,34 +88,35 @@ public abstract class ItemTool extends Item {
     }
 
     public ItemTool(String id) {
-        this(id, 0, 1, null);
+        this(id, 0, 1, (String) null, TOOL);
+    }
+
+    public ItemTool(String id, ItemDefinition definition) {
+        this(id, 0, 1, (String) null, definition);
     }
 
     public ItemTool(String id, Integer meta) {
-        this(id, meta, 1, null);
+        this(id, meta, 1, (String) null, TOOL);
+    }
+
+    public ItemTool(String id, Integer meta, ItemDefinition definition) {
+        this(id, meta, 1, (String) null, definition);
     }
 
     public ItemTool(String id, Integer meta, int count) {
-        this(id, meta, count, null);
+        this(id, meta, count, (String) null, TOOL);
+    }
+
+    public ItemTool(String id, Integer meta, int count, ItemDefinition definition) {
+        this(id, meta, count, (String) null, definition);
     }
 
     public ItemTool(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        this(id, meta, count, name, TOOL);
     }
 
-    @Override
-    public boolean isTool() {
-        return true;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public boolean canTakeDamage() {
-        return true;
+    public ItemTool(String id, Integer meta, int count, String name, ItemDefinition definition) {
+        super(id, meta, count, name, definition);
     }
 
     @Override

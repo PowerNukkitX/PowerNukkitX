@@ -5,8 +5,13 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemPoisonousPotato extends ItemPotato {
+    public static final ItemDefinition DEFINITION = ItemPotato.DEFINITION.toBuilder()
+            .nutrition(2)
+            .saturation(1.2f)
+            .build();
 
     public ItemPoisonousPotato() {
         this(0, 1);
@@ -17,7 +22,7 @@ public class ItemPoisonousPotato extends ItemPotato {
     }
 
     public ItemPoisonousPotato(Integer meta, int count) {
-        super(POISONOUS_POTATO, meta, count, "Poisonous Potato");
+        super(POISONOUS_POTATO, meta, count, "Poisonous Potato", DEFINITION);
         this.block = Block.get(BlockID.POTATOES);
     }
 
@@ -27,15 +32,5 @@ public class ItemPoisonousPotato extends ItemPotato {
             player.addEffect(Effect.get(EffectType.POISON).setDuration(80));
         }
         return super.onEaten(player);
-    }
-
-    @Override
-    public int getNutrition() {
-        return 2;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 1.2F;
     }
 }

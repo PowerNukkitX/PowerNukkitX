@@ -3,8 +3,12 @@ package org.powernukkitx.item;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntityEnderPearl;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemEnderPearl extends ProjectileItem {
+    public static final ItemDefinition DEFINITION = ProjectileItem.DEFINITION.toBuilder()
+            .maxStackSize(16)
+            .build();
 
     public ItemEnderPearl() {
         this(0, 1);
@@ -15,12 +19,7 @@ public class ItemEnderPearl extends ProjectileItem {
     }
 
     public ItemEnderPearl(Integer meta, int count) {
-        super(ENDER_PEARL, 0, count, "Ender Pearl");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 16;
+        super(ENDER_PEARL, 0, count, "Ender Pearl", DEFINITION);
     }
 
     @Override

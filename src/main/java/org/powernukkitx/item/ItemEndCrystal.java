@@ -6,6 +6,7 @@ import org.powernukkitx.block.BlockBedrock;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockObsidian;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
@@ -18,6 +19,9 @@ import org.powernukkitx.nbt.tag.ListTag;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemEndCrystal extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
 
     public ItemEndCrystal() {
         this(0, 1);
@@ -28,12 +32,7 @@ public class ItemEndCrystal extends Item {
     }
 
     public ItemEndCrystal(Integer meta, int count) {
-        super(END_CRYSTAL, meta, count, "End Crystal");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(END_CRYSTAL, meta, count, "End Crystal", DEFINITION);
     }
 
     @Override

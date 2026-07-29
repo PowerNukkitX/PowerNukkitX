@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.inventory.BundleInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.InventoryHolder;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
@@ -19,17 +20,28 @@ import java.util.Optional;
 
 @Slf4j
 public class ItemBundle extends Item implements INBT, InventoryHolder {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
 
     @Getter
     private Inventory holder;
     private BundleInventory inventory;
 
     public ItemBundle() {
-        this(BUNDLE);
+        this(BUNDLE, DEFINITION);
+    }
+
+    public ItemBundle(ItemDefinition definition) {
+        this(BUNDLE, definition);
     }
 
     public ItemBundle(String id) {
-        super(id);
+        this(id, DEFINITION);
+    }
+
+    public ItemBundle(String id, ItemDefinition definition) {
+        super(id, definition);
     }
 
     @Override
@@ -45,11 +57,6 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
 
     public int getBundleId() {
         return getNbt().getInt("bundle_id");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
     }
 
     @Override

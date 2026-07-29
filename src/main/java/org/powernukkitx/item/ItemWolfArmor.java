@@ -1,12 +1,13 @@
 package org.powernukkitx.item;
 
-public class ItemWolfArmor extends ItemColorArmor {
-     public ItemWolfArmor() {
-         super(WOLF_ARMOR);
-     }
+import org.powernukkitx.item.definition.ItemDefinition;
 
-    @Override
-    public int getMaxDurability() {
-        return 64;
-    }
+public class ItemWolfArmor extends ItemColorArmor {
+    public static final ItemDefinition DEFINITION = ItemColorArmor.DEFINITION.toBuilder()
+            .maxDurability(64)
+            .build();
+
+     public ItemWolfArmor() {
+         super(WOLF_ARMOR, DEFINITION);
+     }
 }

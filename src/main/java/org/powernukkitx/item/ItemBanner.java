@@ -1,6 +1,7 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.block.BlockStandingBanner;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.network.protocol.types.BannerPattern;
@@ -15,6 +16,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.GROUND_SIGN_
  * @author PetteriM1
  */
 public class ItemBanner extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(16)
+            .build();
+
     public ItemBanner() {
         this(0);
     }
@@ -24,18 +29,13 @@ public class ItemBanner extends Item {
     }
 
     public ItemBanner(Integer meta, int count) {
-        super(BANNER, meta, count, "Banner");
+        super(BANNER, meta, count, "Banner", DEFINITION);
     }
 
     @Override
     public void internalAdjust() {
         block = BlockStandingBanner.PROPERTIES.getBlockState(GROUND_SIGN_DIRECTION.createValue(getDamage())).toBlock();
         name = getBaseDyeColor().getName() + " Banner";
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 16;
     }
 
     public int getBaseColor() {

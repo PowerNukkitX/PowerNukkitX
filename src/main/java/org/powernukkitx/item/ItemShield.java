@@ -1,11 +1,18 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.DyeColor;
 import org.jetbrains.annotations.Nullable;
 
 
 public class ItemShield extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .maxDurability(DURABILITY_SHIELD)
+            .maxStackSize(1)
+            .shield(true)
+            .build();
+
     public ItemShield() {
         this(0, 1);
     }
@@ -15,7 +22,7 @@ public class ItemShield extends ItemTool {
     }
 
     public ItemShield(Integer meta, int count) {
-        super(SHIELD, meta, count, "Shield");
+        super(SHIELD, meta, count, "Shield", DEFINITION);
     }
 
     /**
@@ -27,7 +34,7 @@ public class ItemShield extends ItemTool {
      * @param name  the name
      */
     protected ItemShield(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        super(id, meta, count, name, DEFINITION);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -67,16 +74,6 @@ public class ItemShield extends ItemTool {
         }
         tag.putInt("Base", banner.getBaseColor());
         this.setNbt(tag);
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return DURABILITY_SHIELD;
     }
 
     @Override

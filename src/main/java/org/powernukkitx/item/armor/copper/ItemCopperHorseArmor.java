@@ -1,14 +1,14 @@
 package org.powernukkitx.item.armor.copper;
 
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemCopperHorseArmor extends Item {
-    public ItemCopperHorseArmor() {
-        super(COPPER_HORSE_ARMOR);
-    }
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
 
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+    public ItemCopperHorseArmor() {
+        super(COPPER_HORSE_ARMOR, DEFINITION);
     }
 }

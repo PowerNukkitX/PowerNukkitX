@@ -1,35 +1,47 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class ItemFood extends Item {
+    public static final ItemDefinition FOOD = DEFAULT_DEFINITION.toBuilder()
+            .edible(true)
+            .usingTicks(31)
+            .build();
+
     public ItemFood(String id) {
-        super(id);
+        this(id, 0, 1, (String) null, FOOD);
+    }
+
+    public ItemFood(String id, ItemDefinition definition) {
+        this(id, 0, 1, (String) null, definition);
     }
 
     public ItemFood(String id, Integer meta) {
-        super(id, meta);
+        this(id, meta, 1, (String) null, FOOD);
+    }
+
+    public ItemFood(String id, Integer meta, ItemDefinition definition) {
+        this(id, meta, 1, (String) null, definition);
     }
 
     public ItemFood(String id, Integer meta, int count) {
-        super(id, meta, count);
+        this(id, meta, count, (String) null, FOOD);
+    }
+
+    public ItemFood(String id, Integer meta, int count, ItemDefinition definition) {
+        this(id, meta, count, (String) null, definition);
     }
 
     public ItemFood(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        this(id, meta, count, name, FOOD);
     }
 
-    @Override
-    public boolean isEdible() {
-        return true;
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 31;
+    public ItemFood(String id, Integer meta, int count, String name, ItemDefinition definition) {
+        super(id, meta, count, name, definition);
     }
 
     @Override

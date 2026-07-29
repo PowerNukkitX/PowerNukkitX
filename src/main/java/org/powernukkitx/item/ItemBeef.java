@@ -1,16 +1,14 @@
 package org.powernukkitx.item;
 
-public class ItemBeef extends ItemFood {
-    public ItemBeef() {
-        super(BEEF);
-    }
-    @Override
-    public int getNutrition() {
-        return 3;
-    }
+import org.powernukkitx.item.definition.ItemDefinition;
 
-    @Override
-    public float getSaturation() {
-        return 1.8F;
+public class ItemBeef extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .nutrition(3)
+            .saturation(1.8f)
+            .build();
+
+    public ItemBeef() {
+        super(BEEF, DEFINITION);
     }
 }

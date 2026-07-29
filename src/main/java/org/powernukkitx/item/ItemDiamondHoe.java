@@ -1,22 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemDiamondHoe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .hoe(true)
+            .maxDurability(ItemTool.DURABILITY_DIAMOND)
+            .tier(ItemTool.TIER_DIAMOND)
+            .build();
+
     public ItemDiamondHoe() {
-        super(DIAMOND_HOE);
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_DIAMOND;
-    }
-
-    @Override
-    public boolean isHoe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_DIAMOND;
+        super(DIAMOND_HOE, DEFINITION);
     }
 }

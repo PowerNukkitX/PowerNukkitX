@@ -1,34 +1,18 @@
 package org.powernukkitx.item.armor.copper;
 
 import org.powernukkitx.item.ItemArmor;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemCopperBoots extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(1)
+            .boots(true)
+            .maxDurability(143)
+            .tier(WEARABLE_TIER_COPPER)
+            .toughness(2)
+            .build();
+
     public ItemCopperBoots() {
-        super(COPPER_BOOTS);
-    }
-
-    @Override
-    public int getTier() {
-        return WEARABLE_TIER_COPPER;
-    }
-
-    @Override
-    public boolean isBoots() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 1;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 143;
-    }
-
-    @Override
-    public int getToughness() {
-        return 2;
+        super(COPPER_BOOTS, DEFINITION);
     }
 }
