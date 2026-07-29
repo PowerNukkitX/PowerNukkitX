@@ -14,6 +14,7 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
+import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.config.category.GameplaySettings;
 import org.powernukkitx.level.tickingarea.TickingArea;
@@ -4551,7 +4552,7 @@ public class Level implements Metadatable {
                                 levelChunkPacket.setSubChunksCount(pair.second());
                                 levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/chunkData.retainedDuplicate());
                                 player.sendChunk(x, z, levelChunkPacket);
-                                //player.refreshBlockEntity(chunk);
+                                sendChunkBlockEntities(chunk, player);
                             }
                         }
                     } finally {
@@ -4561,6 +4562,22 @@ public class Level implements Metadatable {
                         && !this.chunkGenerationQueue.containsKey(index)) {
                     this.generateChunk(x, z, true);
                 }
+            }
+        }
+    }
+
+    /**
+     * Sends the spawn packets of a chunk's spawnable block entities to one player, which the
+     * client needs in addition to the NBT carried by the chunk packet before some block
+     * entities render.
+     */
+    private void sendChunkBlockEntities(IChunk chunk, Player player) {
+        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+            if (blockEntity instanceof BlockEntitySpawnable spawnable) {
+                if (blockEntity instanceof BlockEntityMobSpawner spawner && !spawner.hasSpawnEntityType()) {
+                    continue;
+                }
+                spawnable.spawnTo(player);
             }
         }
     }

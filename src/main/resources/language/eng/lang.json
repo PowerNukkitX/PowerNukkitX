@@ -147,6 +147,7 @@
   "pnx.settings.chunk.lightupdates": "Whether chunks perform light updates",
   "pnx.settings.chunk.clearticklist": "Whether to clear the tick list at the end of each tick",
   "pnx.settings.chunk.generationqueuesize": "Maximum number of terrain generation tasks executed simultaneously",
+  "pnx.settings.chunk.payloadcachememorymb": "Off-heap memory budget in MB for caching serialised chunk payloads, so a chunk sent to several players is only serialised once. This is a hard cap: least recently used chunks are dropped to stay within it. 0 disables the cache",
   "pnx.settings.chunk.spawnlimit": "Limits how many entities can spawn naturally in a chunk. ",
   "pnx.settings.chunk.checkfortickable": "Check for redstone and liquids to be ticked once at chunk load.",
   "pnx.settings.chunk.saveGenerated": "If enabled, every new generated chunk will be saved. Improves performance but world sizes will grow faster.",
