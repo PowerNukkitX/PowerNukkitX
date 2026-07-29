@@ -1,6 +1,7 @@
 package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityLiving;
@@ -37,6 +38,7 @@ import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.Utils;
 
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.packet.MobArmorEquipmentPacket;
 import org.jetbrains.annotations.NotNull;
@@ -81,35 +83,43 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     };
 
     public enum Archetype {
-        BOUNCY("bouncy", -2.0f, 0.9f, 0.3f, 0.01f, 0.105f, true),
-        REGULAR("regular", -1.0f, 0.5f, 0.3f, 0.1f, 0.09f, true),
-        SLOW_BOUNCY("slow_bouncy", 0.4f, 0.6f, 0.3f, 0.05f, 0.24f, false),
-        FAST_FLAT("fast_flat", -1.0f, 0.5f, 0.2f, 0.01f, 0.09f, false),
-        LIGHT("light", -1.0f, 1.0f, 0.3f, 1.8f, 0.18f, true),
-        FAST_SLIDING("fast_sliding", 0.5f, 0.1f, 0.05f, 0.01f, 0.09f, false),
-        HIGH_RESISTANCE("high_resistance", 0.7f, 0.2f, 1.0f, 0.01f, 0.09f, false),
-        SLOW_FLAT("slow_flat", 0.5f, 0.4f, 0.4f, 0.1f, 0.105f, false),
-        SLOW_SLIDING("slow_sliding", 0.8f, 0.1f, 0.05f, 0.01f, 0.09f, false),
-        STICKY("sticky", -2.0f, 0.0f, 2.0f, 0.01f, 0.09f, false),
-        EXPLOSIVE("explosive", -1.0f, 0.5f, 0.3f, 0.3f, 0.09f, true),
-        HOT("hot", -1.0f, 0.5f, 0.3f, 0.1f, 0.09f, true);
+        REGULAR("regular", 1.0f, 0.3f, 0.1f, 0.33f, 0.06f, true),
+        BOUNCY("bouncy", 2.0f, 0.3f, 0.01f, 0.33f, 0.07f, true),
+        SLOW_BOUNCY("slow_bouncy", -0.4f, 0.3f, 0.05f, 0.33f, 0.16f, true),
+        SLOW_FLAT("slow_flat", -0.5f, 0.4f, 0.1f, 0.33f, 0.07f, false),
+        FAST_FLAT("fast_flat", 1.0f, 0.2f, 0.01f, 0.73f, 0.06f, false),
+        LIGHT("light", 1.0f, 0.3f, 1.8f, 0.33f, 0.12f, true),
+        FAST_SLIDING("fast_sliding", -0.5f, 0.05f, 0.01f, 0.53f, 0.06f, false),
+        SLOW_SLIDING("slow_sliding", -0.8f, 0.05f, 0.01f, 0.33f, 0.06f, false),
+        STICKY("sticky", 2.0f, 2.0f, 0.01f, 0.33f, 0.06f, false),
+        HIGH_RESISTANCE("high_resistance", -0.7f, 1.0f, 0.01f, 0.33f, 0.06f, false),
+        EXPLOSIVE("explosive", 1.0f, 0.3f, 0.3f, 0.33f, 0.06f, true),
+        HOT("hot", 1.0f, 0.3f, 0.1f, 0.33f, 0.06f, true);
 
         private final String propertyName;
-        private final float knockbackResistance;
-        private final float bounciness;
+        private final float speed;
         private final float friction;
         private final float airDrag;
-        private final float verticalKick;
+        private final float horizontalPower;
+        private final float verticalPower;
+        private final float groundKeepPerTick;
+        private final float airKeepPerTick;
         private final boolean floats;
 
-        Archetype(String propertyName, float knockbackResistance, float bounciness, float friction, float airDrag, float verticalKick, boolean floats) {
+        Archetype(String propertyName, float speed, float friction, float airDrag, float horizontalPower, float verticalPower, boolean floats) {
             this.propertyName = propertyName;
-            this.knockbackResistance = knockbackResistance;
-            this.bounciness = bounciness;
+            this.speed = speed;
             this.friction = friction;
             this.airDrag = airDrag;
-            this.verticalKick = verticalKick;
+            this.horizontalPower = horizontalPower;
+            this.verticalPower = verticalPower;
+            this.groundKeepPerTick = friction >= 1f ? 0f : (float) Math.pow(1 - friction, 1 / 20d);
+            this.airKeepPerTick = airDrag >= 1f ? 0f : (float) Math.pow(1 - airDrag, 1 / 20d);
             this.floats = floats;
+        }
+
+        public float knockbackFactor() {
+            return Math.max(0f, 1f + speed);
         }
 
         public String getPropertyName() {
@@ -118,10 +128,6 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
         public boolean floats() {
             return floats;
-        }
-
-        public float launchMultiplier() {
-            return Math.max(0.1f, 1f - knockbackResistance);
         }
 
         @Nullable
@@ -167,9 +173,6 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     private boolean growthLocked;
     private int fuse = -1;
     private boolean exploding;
-    private double lastFallSpeed;
-    private boolean wasOnGround;
-    private int kickCooldown;
     private int pickupTimer;
 
     public EntitySulfurCube(IChunk chunk, CompoundTag nbt) {
@@ -226,10 +229,6 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
         super.initEntity();
 
-        if (getBehaviorGroup() != null) {
-            getMemoryStorage().put(CoreMemoryTypes.VARIANT, this.getNbt().getInt(TAG_SIZE));
-        }
-
         this.growthTicks = this.nbt.getInt(TAG_GROWTH_TICKS);
         this.growthLocked = this.nbt.getBoolean(TAG_GROWTH_LOCKED);
         this.fuse = this.nbt.contains(TAG_FUSE) ? this.nbt.getInt(TAG_FUSE) : -1;
@@ -261,11 +260,6 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
     @Override
     public int getVariant() {
-        if (getBehaviorGroup() != null) {
-            Integer variant = getMemoryStorage().get(CoreMemoryTypes.VARIANT);
-            if (variant != null) return variant;
-        }
-
         if (this.nbt.contains(TAG_SIZE)) {
             return this.getNbt().getInt(TAG_SIZE);
         }
@@ -276,20 +270,11 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     @Override
     public void setVariant(int variant) {
         this.nbt.putInt(TAG_SIZE, variant);
-
-        if (getBehaviorGroup() != null) {
-            getMemoryStorage().put(CoreMemoryTypes.VARIANT, variant);
-        }
-
         applyVariantScale();
     }
 
     @Override
     public boolean hasVariant() {
-        if (getBehaviorGroup() != null && getMemoryStorage().notEmpty(CoreMemoryTypes.VARIANT)) {
-            return true;
-        }
-
         return this.nbt.contains(TAG_SIZE);
     }
 
@@ -323,6 +308,15 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     @Override
     protected @Nullable MovementComponent getComponentMovement() {
         return MovementComponent.value(getVariant() == SIZE_LARGE ? 0.4f : 0.3f);
+    }
+
+    @Override
+    public double getGroundFrictionFactor() {
+        Archetype archetype = getArchetype();
+        if (archetype != null) {
+            return archetype.groundKeepPerTick;
+        }
+        return super.getGroundFrictionFactor();
     }
 
     @Override
@@ -370,6 +364,13 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     private void applyArchetypeProperty() {
         Archetype archetype = getArchetype();
         setEnumEntityProperty(PROPERTIES[0].getIdentifier(), archetype == null ? "none" : archetype.getPropertyName());
+        String absorbed = getAbsorbedBlock();
+        if (absorbed != null) {
+            Block block = Block.get(absorbed);
+            setDataProperty(ActorDataTypes.VARIANT, block.getBlockState().blockStateHash());
+        } else {
+            setDataProperty(ActorDataTypes.VARIANT, 0);
+        }
         sendData(this.getViewers().values().toArray(Player[]::new));
         sendAbsorbedBlockEquipment(this.getViewers().values().toArray(Player[]::new));
     }
@@ -437,7 +438,7 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
     private void explode() {
         this.exploding = true;
-        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, 4);
+        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, 3);
         this.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             this.exploding = false;
@@ -447,26 +448,24 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         }
 
         setAbsorbedBlock(null);
-        Explosion explosion = new Explosion(this, event.getForce(), this);
-        if (event.isBlockBreaking() && this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
-            explosion.explodeA();
+        if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+            Explosion explosion = new Explosion(this, event.getForce(), this);
+            if (event.isBlockBreaking() && this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+                explosion.explodeA();
+            }
+            explosion.explodeB();
         }
-        explosion.explodeB();
         this.close();
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
         if (isAlive() && !this.closed) {
-            if (this.kickCooldown > 0) {
-                this.kickCooldown--;
-            }
-
             if (this.pickupTimer > 0) {
                 this.pickupTimer--;
             }
 
-            checkPlayerKick();
+            playerPush();
 
             if (hasAbsorbedBlock()) {
                 if (hasMoveDirection()) {
@@ -509,30 +508,23 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
             Archetype archetype = getArchetype();
             if (archetype != null) {
-                if (archetype.bounciness > 0f && this.onGround && !this.wasOnGround && this.lastFallSpeed < -0.3) {
-                    double bounce = Math.min(0.5, -this.lastFallSpeed * archetype.bounciness);
-                    if (bounce >= 0.2) {
-                        this.motionY = bounce;
-                    }
-                }
-
                 double horizontalSpeed = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-                if (horizontalSpeed > 0.85) {
-                    double clamp = 0.85 / horizontalSpeed;
+                if (horizontalSpeed > 1.5) {
+                    double clamp = 1.5 / horizontalSpeed;
                     this.motionX *= clamp;
                     this.motionZ *= clamp;
-                    horizontalSpeed = 0.85;
+                    horizontalSpeed = 1.5;
                 }
-                if (horizontalSpeed > 0.02) {
-                    double factor = this.onGround
-                            ? Math.max(0, 1 - archetype.friction * 0.4)
-                            : Math.max(0, 1 - archetype.airDrag * 0.05);
-                    this.motionX *= factor;
-                    this.motionZ *= factor;
+                if (horizontalSpeed > 0.003) {
+                    if (!this.onGround) {
+                        this.motionX *= archetype.airKeepPerTick;
+                        this.motionZ *= archetype.airKeepPerTick;
+                    }
+                } else if (this.onGround) {
+                    this.motionX = 0;
+                    this.motionZ = 0;
                 }
             }
-            this.wasOnGround = this.onGround;
-            this.lastFallSpeed = this.motionY;
         }
 
         return super.onUpdate(currentTick);
@@ -565,7 +557,7 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (hasAbsorbedBlock() && item.isNull() && this.fuse < 0) {
-            launchFrom(player, 0.5);
+            launch(player, 1f);
             return true;
         }
 
@@ -648,6 +640,17 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
     @Override
     public boolean attack(EntityDamageEvent source) {
+        if (this.fuse >= 0) {
+            switch (source.getCause()) {
+                case VOID, SUICIDE -> {
+                }
+                default -> {
+                    source.setCancelled(true);
+                    return false;
+                }
+            }
+        }
+
         if (getArchetype() == Archetype.EXPLOSIVE && this.fuse < 0) {
             switch (source.getCause()) {
                 case FIRE, FIRE_TICK, LAVA -> ignite(MANUAL_FUSE_TICKS);
@@ -664,7 +667,7 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         if (hasAbsorbedBlock() && !isBypassingAbsorption(source)) {
             source.setCancelled(true);
             if (source instanceof EntityDamageByEntityEvent event && event.getDamager() != null) {
-                launch(event.getDamager(), source.getDamage() + event.getKnockBack() * 4);
+                launch(event.getDamager(), source.getDamage());
             }
             return false;
         }
@@ -695,62 +698,122 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     }
 
     private void launch(Entity damager, float damage) {
-        launchFrom(damager, 0.25 + Math.min(damage, 12) * 0.06);
-    }
-
-    private void launchFrom(Entity source, double baseStrength) {
         Archetype archetype = getArchetype();
         if (archetype == null) return;
 
-        double dx = this.x - source.x;
-        double dz = this.z - source.z;
-        double distance = Math.sqrt(dx * dx + dz * dz);
-        if (distance < 1e-4) return;
+        double horizontalPower = archetype.horizontalPower;
+        double verticalPower = archetype.verticalPower;
 
-        double strength = baseStrength * archetype.launchMultiplier();
+        double xd = damager.x - this.x;
+        double zd = damager.z - this.z;
+        if (Math.sqrt(xd * xd + zd * zd) < 1e-4) return;
+
+        Vector3 eye = new Vector3(damager.x, damager.y + damager.getEyeHeight(), damager.z);
+        Vector3 look = damager.getDirectionVector();
+        Vector3 center = new Vector3(this.x, (getBoundingBox().getMinY() + getBoundingBox().getMaxY()) / 2, this.z);
+
+        double tx = center.x - eye.x;
+        double tz = center.z - eye.z;
+        double tLen = Math.sqrt(tx * tx + tz * tz);
+        if (tLen > 1e-4) {
+            tx /= tLen;
+            tz /= tLen;
+            double lLen = Math.sqrt(look.x * look.x + look.z * look.z);
+            if (lLen > 1e-4) {
+                double lx = look.x / lLen;
+                double lz = look.z / lLen;
+                double angleDiff = Math.atan2(lx * tz - lz * tx, lx * tx + lz * tz);
+                double rot = angleDiff * 1.6;
+                double cos = Math.cos(rot);
+                double sin = Math.sin(rot);
+                double rx = xd * cos - zd * sin;
+                double rz = xd * sin + zd * cos;
+                xd = rx;
+                zd = rz;
+            }
+        }
+
+        double halfHeight = getHeight() * getScale() / 2;
+        Vector3 toTop = center.add(0, halfHeight, 0).subtract(eye.x, eye.y, eye.z).normalize();
+        Vector3 toBottom = center.add(0, -halfHeight, 0).subtract(eye.x, eye.y, eye.z).normalize();
+        double range = toBottom.y - toTop.y;
+        double factor;
+        if (Math.abs(range) < 1e-6) {
+            factor = 0;
+        } else {
+            double t = (look.y - toTop.y) / range;
+            factor = -1 + Math.max(0, Math.min(1, t)) * 2;
+        }
+        double transferred = Math.abs(factor * 0.5);
+        if (factor < 0) transferred = -transferred;
+        double px = horizontalPower * (1 - transferred);
+        double py = verticalPower * (1 + transferred);
+
+        double feetDy = this.y - damager.y;
+        double feetH = Math.sqrt(Math.pow(this.x - damager.x, 2) + Math.pow(this.z - damager.z, 2));
+        double positionAngle = Math.atan2(-feetDy, feetH) * -0.8;
+        double pCos = Math.cos(positionAngle);
+        double pSin = Math.sin(positionAngle);
+        double rpx = px * pCos - py * pSin;
+        double rpy = px * pSin + py * pCos;
+        px = rpx;
+        py = rpy;
+
+        double damageScale = Math.sqrt(Math.max(0.5f, damage));
+        px *= damageScale;
+        py *= damageScale;
+
+        double knockbackFactor = archetype.knockbackFactor();
+        px *= knockbackFactor;
+        py *= knockbackFactor;
+
+        px *= 0.4;
+
+        double dirLen = Math.sqrt(xd * xd + zd * zd);
+        if (dirLen < 1e-4) return;
+        double nx = xd / dirLen * px;
+        double nz = zd / dirLen * px;
+
         this.setMotion(new Vector3(
-                dx / distance * strength,
-                Math.min(0.35, archetype.verticalKick * (1 + strength)),
-                dz / distance * strength
+                this.motionX - nx,
+                this.motionY + Math.max(-0.5, Math.min(1.2, py * 1.2)),
+                this.motionZ - nz
         ));
-        this.kickCooldown = 10;
     }
 
-    private void checkPlayerKick() {
-        if (!hasAbsorbedBlock() || this.kickCooldown > 0 || this.fuse >= 0) return;
+    private void playerPush() {
+        if (!hasAbsorbedBlock()) return;
+        Archetype archetype = getArchetype();
+        if (archetype == null) return;
+        double knockbackFactor = archetype.knockbackFactor();
+        if (knockbackFactor <= 0) return;
 
-        for (Entity entity : this.level.getNearbyEntitiesSafe(getBoundingBox().grow(0.35, 0.25, 0.35), this)) {
+        for (Entity entity : this.level.getNearbyEntitiesSafe(getBoundingBox().grow(1.3, 0.1, 1.3), this)) {
             if (!(entity instanceof Player player) || !player.isAlive() || player.isSpectator()) continue;
 
-            double dx = player.x - player.lastX;
-            double dz = player.z - player.lastZ;
-            double speed = Math.sqrt(dx * dx + dz * dz);
+            double dx = this.x - player.x;
+            double dz = this.z - player.z;
+            double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
+            if (horizontalDistance >= 1.3 || horizontalDistance < 1e-4) continue;
 
-            Archetype archetype = getArchetype();
-            if (archetype == null) return;
+            double cubeTop = this.y + getHeight() * getScale();
+            double playerTop = player.y + player.getHeight();
+            if (player.y > cubeTop || playerTop <= this.y) continue;
 
-            double strength = Math.max(0.3, Math.min(speed * 3.5, 1.0)) * archetype.launchMultiplier();
-            double dirX;
-            double dirZ;
-            if (speed > 0.05) {
-                dirX = dx / speed;
-                dirZ = dz / speed;
-            } else {
-                double px = this.x - player.x;
-                double pz = this.z - player.z;
-                double dist = Math.sqrt(px * px + pz * pz);
-                if (dist < 1e-4) return;
-                dirX = px / dist;
-                dirZ = pz / dist;
-            }
+            double pdx = player.x - player.lastX;
+            double pdy = player.y - player.lastY;
+            double pdz = player.z - player.lastZ;
+            double playerSpeed = Math.sqrt(pdx * pdx + pdy * pdy + pdz * pdz) * 2 * 0.3;
+            playerSpeed = Math.max(0, Math.min(0.5, playerSpeed));
+            if (playerSpeed < 1e-3) continue;
 
+            double dirX = dx / horizontalDistance * knockbackFactor;
+            double dirZ = dz / horizontalDistance * knockbackFactor;
             this.setMotion(new Vector3(
-                    dirX * strength,
-                    Math.min(0.35, archetype.verticalKick * (1 + strength)),
-                    dirZ * strength
+                    this.motionX + dirX * playerSpeed,
+                    this.motionY + (this.onGround ? knockbackFactor * 0.3 * playerSpeed : 0),
+                    this.motionZ + dirZ * playerSpeed
             ));
-            this.kickCooldown = 10;
-            return;
         }
     }
 
