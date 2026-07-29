@@ -4851,6 +4851,9 @@ public class Level implements Metadatable {
                     }
 
                     if (chunk.hasChanged() || !chunk.getBlockEntities().isEmpty() || entities > 0) {
+                        // Kept separate from LevelDBProvider#saveChunks on purpose: unloading must also persist
+                        // chunks that are not marked dirty but still hold block entities or entities, and this
+                        // method is already synchronous on the main thread, so no cross-thread claim is needed.
                         for (BlockEntity be : chunk.getBlockEntities().values()) {
                             if (!be.closed) {
                                 be.saveNBT();

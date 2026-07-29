@@ -57,8 +57,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -68,6 +72,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class LevelDBProvider implements LevelProvider {
     static final Map<String, LevelDBStorage> CACHE = new ConcurrentHashMap<>();
     private static final byte[] levelDatMagic = new byte[]{10, 0, 0, 0, 68, 11, 0, 0};
+    private static final long CLAIM_TIMEOUT_MILLIS = 250;
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
     private final Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> scheduledTicksMap = new ConcurrentHashMap<>();
@@ -545,7 +550,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveChunks(Collection<IChunk> chunks) {
-        Collection<IChunk> dirtyChunks = snapshotDirtyChunks(chunks);
+        Collection<IChunk> dirtyChunks = claimDirtyChunks(chunks);
         if (dirtyChunks.isEmpty()) {
             return;
         }
@@ -561,27 +566,48 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
-    private Collection<IChunk> snapshotDirtyChunks(Collection<IChunk> chunks) {
+    private Collection<IChunk> claimDirtyChunks(Collection<IChunk> chunks) {
+        // Server.getInstance() is only null while running unit tests without a server instance.
         Server server = Server.getInstance();
         if (server == null || server.isPrimaryThread()) {
-            return collectAndSnapshotDirtyChunks(chunks);
+            return claimDirtyChunksOnMainThread(chunks);
         }
+        AtomicBoolean claimed = new AtomicBoolean();
         CompletableFuture<Collection<IChunk>> future = new CompletableFuture<>();
-        server.getScheduler().scheduleTask(null, () -> {
+        server.getScheduler().scheduleTask(() -> {
+            if (!claimed.compareAndSet(false, true)) {
+                return;
+            }
             try {
-                future.complete(collectAndSnapshotDirtyChunks(chunks));
+                future.complete(claimDirtyChunksOnMainThread(chunks));
             } catch (Throwable t) {
                 future.completeExceptionally(t);
             }
         });
         try {
-            return future.get(30, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            return collectAndSnapshotDirtyChunks(chunks);
+            return future.get(CLAIM_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            if (claimed.compareAndSet(false, true)) {
+                log.warn("Skipping chunk save cycle for level {}: main thread did not claim dirty chunks within {}ms",
+                        getName(), CLAIM_TIMEOUT_MILLIS);
+                return Collections.emptyList();
+            }
+            try {
+                return future.join();
+            } catch (CompletionException joinError) {
+                log.error("Failed to claim dirty chunks for level {}", getName(), joinError.getCause());
+                return Collections.emptyList();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Collections.emptyList();
+        } catch (ExecutionException e) {
+            log.error("Failed to claim dirty chunks for level {}", getName(), e.getCause());
+            return Collections.emptyList();
         }
     }
 
-    private Collection<IChunk> collectAndSnapshotDirtyChunks(Collection<IChunk> chunks) {
+    private Collection<IChunk> claimDirtyChunksOnMainThread(Collection<IChunk> chunks) {
         List<IChunk> dirtyChunks = new ObjectArrayList<>();
         for (IChunk chunk : chunks) {
             if (!chunk.hasChanged()) {
