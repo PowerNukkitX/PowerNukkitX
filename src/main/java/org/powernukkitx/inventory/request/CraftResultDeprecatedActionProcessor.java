@@ -43,9 +43,6 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
             if (!validateResultAgainstInput(player, resultItem)) {
                 return context.error();
             }
-            if (resultItem.getId().equals(Item.SHIELD)) {
-                resultItem.setDamage(0);
-            }
             var createdOutput = player.getCreativeOutputInventory();
             resultItem.autoAssignStackNetworkId();
             createdOutput.setItem(0, resultItem, false);
