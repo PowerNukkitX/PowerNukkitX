@@ -79,20 +79,38 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
 
         if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER) {
             int armorPoints = 0;
+            int toughnessPoints = 0;
             int epf = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
+                toughnessPoints += armor.getToughness();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
+                double damage = source.getFinalDamage();
+
+                double damageForArmor = Math.min(damage, 60.0);
+
+                double effectiveArmor = Math.min(
+                    20.0,
+                    Math.max(
+                        armorPoints / 5.0,
+                        armorPoints - damageForArmor / (2.0 + toughnessPoints / 4.0)
+                    )
+                );
+
+                double reduction = effectiveArmor / 25.0;
+
+                source.setDamage(
+                    (float) (-damage * reduction),
+                    DamageModifier.ARMOR
+                );
             }
 
             source.setDamage(-source.getFinalDamage() * Math.min(Math.min(NukkitMath.ceilFloat(Math.min(epf, 25)), 20) * 0.04f, 0.8f),
                     DamageModifier.ARMOR_ENCHANTMENTS);
-
         }
 
         if (super.attack(source)) {
