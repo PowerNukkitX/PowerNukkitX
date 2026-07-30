@@ -13,6 +13,7 @@ import org.powernukkitx.event.entity.EntityDamageEvent.DamageCause;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockFlowingLava extends BlockLiquid {
+    private static final double COLLISION_EPSILON = 1e-5;
 
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
 
@@ -48,6 +50,11 @@ public class BlockFlowingLava extends BlockLiquid {
     @Override
     public String getName() {
         return "Lava";
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return shrink(COLLISION_EPSILON, 0, COLLISION_EPSILON);
     }
 
     @Override

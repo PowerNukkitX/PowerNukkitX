@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.AGE_16;
 public class BlockCactus extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock, Natural {
+    private static final double COLLISION_EPSILON = 1e-5;
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS,
             AGE_16);
@@ -31,7 +32,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public BlockCactus() {
         this(PROPERTIES.getDefaultState());
     }
-  
+
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
@@ -89,7 +90,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 1, this.z + 1);
+        return grow(COLLISION_EPSILON, COLLISION_EPSILON, COLLISION_EPSILON);
     }
 
     @Override
