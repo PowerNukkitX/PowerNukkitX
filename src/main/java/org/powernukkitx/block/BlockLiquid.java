@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.LIQUID_DEPTH;
+import static org.powernukkitx.math.AxisAlignedBB.collisionEpsilon;
 
 public abstract class BlockLiquid extends BlockTransparent {
     private static final byte CAN_FLOW_DOWN = 1;
@@ -93,7 +94,7 @@ public abstract class BlockLiquid extends BlockTransparent {
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return this;
+        return shrink(collisionEpsilon(this.x), 0, collisionEpsilon(this.z));
     }
 
     /**
