@@ -73,8 +73,6 @@ public class BlockEntityBeehive extends BlockEntity {
                 beehive.setHoneyLevel(honeyLevel);
                 if (this.chunk != null) {
                     this.chunk.setBlockState(this.getFloorX() & 0x0f, this.getFloorY(), this.getFloorZ() & 0x0f, beehive.getBlockState());
-                } else if (this.isValid()) {
-                    this.level.setBlockStateAt(this.getFloorX(), this.getFloorY(), this.getFloorZ(), beehive.getBlockState());
                 }
             }
             this.nbt.remove("HoneyLevel");
@@ -89,18 +87,6 @@ public class BlockEntityBeehive extends BlockEntity {
             occupantsTag.add(occupant.saveNBT());
         }
         this.nbt.putList("Occupants", occupantsTag);
-
-        // Backward compatibility
-        if (this.nbt.contains("HoneyLevel")) {
-            Block block = getBlock();
-            if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.nbt.getByte("HoneyLevel");
-                beehive.setBlockFace(beehive.getBlockFace());
-                beehive.setHoneyLevel(honeyLevel);
-                beehive.getLevel().setBlock(beehive, beehive, true, true);
-            }
-            this.nbt.remove("HoneyLevel");
-        }
     }
 
     public int getHoneyLevel() {
