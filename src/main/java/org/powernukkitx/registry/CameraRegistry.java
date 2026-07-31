@@ -1,9 +1,10 @@
-package org.powernukkitx.camera;
+package org.powernukkitx.registry;
 
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraPreset;
 import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.NamedDefinition;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
+import org.powernukkitx.camera.CustomCameraDefinition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,11 +13,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Registry containing vanilla and custom camera presets.
- * 
+ * Registry containing built-in and custom camera presets.
+ *
  * @author Curse
  */
-public final class CustomCameraRegistry {
+public final class CameraRegistry {
     private final List<CameraPreset> presets = new ArrayList<>();
     private final List<NamedDefinition> definitions = new ArrayList<>();
     private final Map<String, NamedDefinition> definitionsByName = new HashMap<>();

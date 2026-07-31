@@ -7,7 +7,7 @@ import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.NamedDefinition;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.powernukkitx.camera.CustomCameraDefinition;
-import org.powernukkitx.camera.CustomCameraRegistry;
+import org.powernukkitx.registry.Registries;
 
 import java.util.List;
 
@@ -50,15 +50,13 @@ public final class DefaultCameraPresets {
             .name("minecraft:third_person_front")
             .build();
 
-    private static final CustomCameraRegistry REGISTRY = new CustomCameraRegistry();
-
     static {
-        REGISTRY.register(FIRST_PERSON);
-        REGISTRY.register(FIXED_BOOM);
-        REGISTRY.register(FOLLOW_ORBIT);
-        REGISTRY.register(FREE);
-        REGISTRY.register(THIRD_PERSON);
-        REGISTRY.register(THIRD_PERSON_FRONT);
+        Registries.CAMERA.register(FIRST_PERSON);
+        Registries.CAMERA.register(FIXED_BOOM);
+        Registries.CAMERA.register(FOLLOW_ORBIT);
+        Registries.CAMERA.register(FREE);
+        Registries.CAMERA.register(THIRD_PERSON);
+        Registries.CAMERA.register(THIRD_PERSON_FRONT);
     }
 
     private DefaultCameraPresets() {
@@ -71,7 +69,7 @@ public final class DefaultCameraPresets {
      * @return shared registered definition
      */
     public static NamedDefinition register(CustomCameraDefinition definition) {
-        return REGISTRY.register(definition);
+        return Registries.CAMERA.register(definition);
     }
 
     /**
@@ -83,7 +81,7 @@ public final class DefaultCameraPresets {
      * @return shared registered definition
      */
     public static NamedDefinition register(CameraPreset preset) {
-        return REGISTRY.register(preset);
+        return Registries.CAMERA.register(preset);
     }
 
     /**
@@ -92,7 +90,7 @@ public final class DefaultCameraPresets {
      * @return immutable camera preset list
      */
     public static List<CameraPreset> getAll() {
-        return REGISTRY.getAll();
+        return Registries.CAMERA.getAll();
     }
 
     /**
@@ -101,7 +99,7 @@ public final class DefaultCameraPresets {
      * @return camera definition registry
      */
     public static DefinitionRegistry<NamedDefinition> getDefinitions() {
-        return REGISTRY.getDefinitions();
+        return Registries.CAMERA.getDefinitions();
     }
 
     /**
@@ -114,7 +112,7 @@ public final class DefaultCameraPresets {
      * @return shared definition, or {@code null} when not registered
      */
     public static NamedDefinition getDefinition(String name) {
-        return REGISTRY.getDefinition(name);
+        return Registries.CAMERA.getDefinition(name);
     }
 
     /**
@@ -124,7 +122,7 @@ public final class DefaultCameraPresets {
      * @return shared definition, or {@code null} when not registered
      */
     public static NamedDefinition getDefinition(int runtimeId) {
-        return REGISTRY.getDefinition(runtimeId);
+        return Registries.CAMERA.getDefinition(runtimeId);
     }
 
     /**
@@ -134,7 +132,7 @@ public final class DefaultCameraPresets {
      * @return {@code true} when registered
      */
     public static boolean contains(String identifier) {
-        return REGISTRY.contains(identifier);
+        return Registries.CAMERA.contains(identifier);
     }
 
     /**
@@ -143,6 +141,6 @@ public final class DefaultCameraPresets {
      * @return camera preset count
      */
     public static int size() {
-        return REGISTRY.size();
+        return Registries.CAMERA.size();
     }
 }

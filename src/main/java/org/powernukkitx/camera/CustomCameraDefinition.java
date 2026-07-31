@@ -5,6 +5,7 @@ import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraAudioListener;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraPreset;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
+import org.powernukkitx.registry.CameraRegistry;
 
 import java.util.Objects;
 
@@ -12,8 +13,8 @@ import java.util.Objects;
  * Defines a custom camera preset.
  *
  * <p>The runtime ID and protocol definition are assigned when the camera is
- * registered in {@link CustomCameraRegistry}.</p>
- * 
+ * registered in {@link CameraRegistry}.</p>
+ *
  * @author Curse
  */
 public record CustomCameraDefinition(String identifier, CameraPreset preset) {
