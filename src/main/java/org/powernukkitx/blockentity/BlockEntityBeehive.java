@@ -71,7 +71,11 @@ public class BlockEntityBeehive extends BlockEntity {
                 int honeyLevel = this.nbt.getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
-                beehive.getLevel().setBlock(beehive, beehive, true, true);
+                if (this.chunk != null) {
+                    this.chunk.setBlockState(this.getFloorX() & 0x0f, this.getFloorY(), this.getFloorZ() & 0x0f, beehive.getBlockState());
+                } else if (this.isValid()) {
+                    this.level.setBlockStateAt(this.getFloorX(), this.getFloorY(), this.getFloorZ(), beehive.getBlockState());
+                }
             }
             this.nbt.remove("HoneyLevel");
         }

@@ -33,7 +33,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         }
 
         for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
+            this.inventory.setItemInternal(i, this.getItem(i));
         }
     }
 
