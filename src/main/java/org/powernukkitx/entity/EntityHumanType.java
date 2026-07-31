@@ -19,6 +19,7 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.ArmorUtils;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -89,24 +90,8 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
             }
 
             if (source.canBeReducedByArmor()) {
-                double damage = source.getFinalDamage();
-
-                double damageForArmor = Math.min(damage, 60.0);
-
-                double effectiveArmor = Math.min(
-                    20.0,
-                    Math.max(
-                        armorPoints / 5.0,
-                        armorPoints - damageForArmor / (2.0 + toughnessPoints / 4.0)
-                    )
-                );
-
-                double reduction = effectiveArmor / 25.0;
-
-                source.setDamage(
-                    (float) (-damage * reduction),
-                    DamageModifier.ARMOR
-                );
+                source.setDamage(-ArmorUtils.calculateDamageReduction(
+                        source.getFinalDamage(), armorPoints, toughnessPoints), DamageModifier.ARMOR);
             }
 
             source.setDamage(-source.getFinalDamage() * Math.min(Math.min(NukkitMath.ceilFloat(Math.min(epf, 25)), 20) * 0.04f, 0.8f),

@@ -27,8 +27,4 @@ public class ItemCopperChestplate extends ItemArmor {
         return 177;
     }
 
-    @Override
-    public int getToughness() {
-        return 2;
-    }
 }
