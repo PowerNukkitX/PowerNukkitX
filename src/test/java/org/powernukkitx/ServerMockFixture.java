@@ -191,12 +191,13 @@ public final class ServerMockFixture {
                 1, LevelDBProvider.class,
                 new LevelConfig.GeneratorConfig("flat", 114514L, false, LevelConfig.AntiXrayMode.LOW,
                         true, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
-        level.initLevel();
 
         HashMap<Integer, Level> levels = new HashMap<>();
         levels.put(1, level);
         doReturn(levels).when(server).getLevels();
         doReturn(level).when(server).getDefaultLevel();
+        
+        level.initLevel();
     }
 
     /** Force class-load / static-init. */
