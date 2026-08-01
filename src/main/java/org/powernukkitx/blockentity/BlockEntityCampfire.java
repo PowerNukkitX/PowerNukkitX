@@ -48,7 +48,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
             keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + i);
 
             if (this.nbt.contains("Item" + i) && this.nbt.get("Item" + i) instanceof CompoundTag itemNBT) {
-                inventory.setItem(i - 1, ItemHelper.read(itemNBT));
+                inventory.setItemInternal(i - 1, ItemHelper.read(itemNBT));
             }
         }
     }
