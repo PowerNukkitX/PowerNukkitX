@@ -45,7 +45,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         final CompoundTag nbtMap = getNbt();
         for (int i = 1; i <= burnTime.length; i++) {
             burnTime[i - 1] = nbtMap.getInt("ItemTime" + i);
-            keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + 1);
+            keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + i);
 
             if (this.nbt.contains("Item" + i) && this.nbt.get("Item" + i) instanceof CompoundTag itemNBT) {
                 inventory.setItem(i - 1, ItemHelper.read(itemNBT));
@@ -126,7 +126,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         super.saveNBT();
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
-            if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
+            if (item.isNull()) {
                 this.nbt.remove("Item" + i);
                 this.nbt.remove("KeepItem" + i);
                 this.nbt.putInt("ItemTime" + i, 0);
@@ -196,7 +196,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId() == BlockID.CAMPFIRE;
+        return getBlock().getId().equals(BlockID.CAMPFIRE);
     }
 
     public int getSize() {
