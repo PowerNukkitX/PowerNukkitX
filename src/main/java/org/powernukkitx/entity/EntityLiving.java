@@ -69,6 +69,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
+    private static final int MAX_ARMOR_POINTS = 30;
+    private static final int MAX_TOUGHNESS_POINTS = 20;
+    private static final double MAX_EFFECTIVE_ARMOR_POINTS = 20.0;
+    private static final double ARMOR_REDUCTION_DIVISOR = 25.0;
     private static final int SHIELD_TRANSITION_TICKS = 2;
     private static final int SHIELD_ATTACK_REENABLE_DELAY_TICKS = 6;
 
@@ -78,6 +82,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    protected static float calculateDamageReduction(float damage, int armorPoints, int toughnessPoints) {
+        int cappedArmorPoints = Math.max(0, Math.min(armorPoints, MAX_ARMOR_POINTS));
+        int cappedToughnessPoints = Math.max(0, Math.min(toughnessPoints, MAX_TOUGHNESS_POINTS));
+
+        double effectiveArmorPoints = Math.min(
+                MAX_EFFECTIVE_ARMOR_POINTS,
+                Math.max(
+                        cappedArmorPoints / 5.0,
+                        cappedArmorPoints - damage / (2.0 + cappedToughnessPoints / 4.0)
+                )
+        );
+
+        return (float) (damage * effectiveArmorPoints / ARMOR_REDUCTION_DIVISOR);
     }
 
     @Override

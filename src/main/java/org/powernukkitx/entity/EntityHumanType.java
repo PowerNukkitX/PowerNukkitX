@@ -19,7 +19,6 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.utils.ArmorUtils;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -90,7 +89,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-ArmorUtils.calculateDamageReduction(
+                source.setDamage(-calculateDamageReduction(
                         source.getFinalDamage(), armorPoints, toughnessPoints), DamageModifier.ARMOR);
             }
 

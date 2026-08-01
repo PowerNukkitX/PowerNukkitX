@@ -19,7 +19,6 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.utils.ArmorUtils;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import lombok.Getter;
@@ -142,7 +141,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-ArmorUtils.calculateDamageReduction(
+                source.setDamage(-calculateDamageReduction(
                         source.getFinalDamage(), armorPoints, toughnessPoints), EntityDamageEvent.DamageModifier.ARMOR);
             }
 
