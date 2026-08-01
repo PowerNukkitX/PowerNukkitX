@@ -1,9 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemShears extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .maxDurability(ItemTool.DURABILITY_SHEARS)
+            .shears(true)
+            .build();
 
     public ItemShears() {
         this(0, 1);
@@ -14,16 +20,6 @@ public class ItemShears extends ItemTool {
     }
 
     public ItemShears(Integer meta, int count) {
-        super(SHEARS, meta, count, "Shears");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_SHEARS;
-    }
-
-    @Override
-    public boolean isShears() {
-        return true;
+        super(SHEARS, meta, count, "Shears", DEFINITION);
     }
 }

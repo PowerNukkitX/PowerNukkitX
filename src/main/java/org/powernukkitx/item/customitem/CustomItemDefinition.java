@@ -9,6 +9,7 @@ import org.powernukkitx.item.customitem.data.RenderOffsets;
 import org.powernukkitx.item.utils.DiggerEntry;
 import org.powernukkitx.item.utils.ItemArmorType;
 import org.powernukkitx.item.utils.ItemEnchantSlot;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.utils.RepairEntry;
 import org.powernukkitx.item.utils.ShooterAmmo;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -1846,5 +1847,69 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
     public CompoundTag getNbt() {
         return this.nbt;
+    }
+
+    /**
+     * Folds this component-driven definition onto {@code base}, so that a custom item exposes its
+     * behaviour through the same {@link ItemDefinition} every other item uses.
+     */
+    public ItemDefinition toItemDefinition(@NotNull ItemDefinition base) {
+        ItemDefinition.ItemDefinitionBuilder<?, ?> b = base.toBuilder()
+                .canTakeDamage(canTakeDamage())
+                .maxDurability(maxDurability())
+                .damageChanceMin(damageChanceMin())
+                .damageChanceMax(damageChanceMax())
+                .edible(isEdible())
+                .helmet(isHelmet())
+                .chestplate(isChestplate())
+                .leggings(isLeggings())
+                .boots(isBoots())
+                .armorPoints(wearableProtection())
+                .sword(isSword())
+                .spear(isSpear())
+                .axe(isAxe())
+                .pickaxe(isPickaxe())
+                .shovel(isShovel())
+                .hoe(isHoe())
+                .shears(isShears())
+                .shield(isShield())
+                .bow(isBow())
+                .crossbow(isCrossbow())
+                .trident(isTrident())
+                .mace(isMace())
+                .tool(isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears());
+
+        CompoundTag stackSize = getComponent("minecraft:max_stack_size");
+        if (stackSize != null) {
+            b.maxStackSize(stackSize.getByte("value") & 0xFF);
+        }
+
+        CompoundTag useModifiers = getComponent("minecraft:use_modifiers");
+        if (useModifiers != null) {
+            b.useDuration(useModifiers.getFloat("use_duration"));
+            b.movementModifier(useModifiers.getFloat("movement_modifier"));
+        }
+
+        CompoundTag food = getComponent("minecraft:food");
+        if (food != null) {
+            int nutrition = food.getInt("nutrition");
+            b.nutrition(nutrition);
+            b.saturation(nutrition * food.getFloat("saturation_modifier") * 2f);
+            b.requiresHunger(!food.getBoolean("can_always_eat"));
+        }
+
+        CompoundTag properties = getItemProperties();
+        CompoundTag damage = getComponent("minecraft:damage");
+        if (damage != null && damage.contains("value")) {
+            b.attackDamage(damage.getByte("value") & 0xFF);
+        } else if (properties != null && properties.contains("damage")) {
+            b.attackDamage(properties.getInt("damage"));
+        }
+
+        if (properties != null && properties.contains("should_despawn")) {
+            b.shouldDespawn(properties.getBoolean("should_despawn"));
+        }
+
+        return b.build();
     }
 }

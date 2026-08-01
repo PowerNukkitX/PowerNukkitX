@@ -1,6 +1,18 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemNetheriteChestplate extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(8)
+            .chestplate(true)
+            .knockbackResistance(0.1f)
+            .lavaResistant(true)
+            .maxDurability(592)
+            .tier(Item.WEARABLE_TIER_NETHERITE)
+            .toughness(3)
+            .build();
+
     public ItemNetheriteChestplate() {
         this(0, 1);
     }
@@ -10,41 +22,6 @@ public class ItemNetheriteChestplate extends ItemArmor {
     }
 
     public ItemNetheriteChestplate(Integer meta, int count) {
-        super(NETHERITE_CHESTPLATE, meta, count, "Netherite Chestplate");
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_NETHERITE;
-    }
-
-    @Override
-    public boolean isChestplate() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 8;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 592;
-    }
-
-    @Override
-    public int getToughness() {
-        return 3;
-    }
-
-    @Override
-    public boolean isLavaResistant() {
-        return true;
-    }
-
-    @Override
-    public float getKnockbackResistance() {
-        return 0.1f;
+        super(NETHERITE_CHESTPLATE, meta, count, "Netherite Chestplate", DEFINITION);
     }
 }

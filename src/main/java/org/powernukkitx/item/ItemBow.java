@@ -7,6 +7,7 @@ import org.powernukkitx.entity.projectile.EntityArrow;
 import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.event.entity.EntityShootBowEvent;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.bow.EnchantmentBow;
 import org.powernukkitx.level.Sound;
@@ -24,6 +25,11 @@ import java.util.Random;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemBow extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .bow(true)
+            .maxDurability(ItemTool.DURABILITY_BOW)
+            .usingTicks(72000)
+            .build();
 
     public ItemBow() {
         this(0, 1);
@@ -34,12 +40,7 @@ public class ItemBow extends ItemTool {
     }
 
     public ItemBow(Integer meta, int count) {
-        super(BOW, meta, count, "Bow");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_BOW;
+        super(BOW, meta, count, "Bow", DEFINITION);
     }
 
     @Override
@@ -52,11 +53,6 @@ public class ItemBow extends ItemTool {
         return player.isCreative() ||
                 player.getInventory().getContents().values().stream().filter(item -> item instanceof ItemArrow).findFirst().isPresent() ||
                 player.getOffhandInventory().getContents().values().stream().filter(item -> item instanceof ItemArrow).findFirst().isPresent();
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 72000;
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFire;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.event.block.BlockIgniteEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
@@ -15,6 +16,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author PetteriM1
  */
 public class ItemFireCharge extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
 
     public ItemFireCharge() {
         this(0, 1);
@@ -25,12 +29,7 @@ public class ItemFireCharge extends Item {
     }
 
     public ItemFireCharge(Integer meta, int count) {
-        super(FIRE_CHARGE, 0, count, "Fire Charge");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(FIRE_CHARGE, 0, count, "Fire Charge", DEFINITION);
     }
 
     @Override

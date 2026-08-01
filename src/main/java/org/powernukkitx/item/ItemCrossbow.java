@@ -8,6 +8,7 @@ import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.event.entity.EntityShootCrossbowEvent;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
 import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
@@ -23,6 +24,12 @@ import java.util.Optional;
 
 
 public class ItemCrossbow extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .crossbow(true)
+            .maxDurability(ItemTool.DURABILITY_CROSSBOW)
+            .usingTicks(72000)
+            .build();
+
     private int loadTick;
 
     public ItemCrossbow() {
@@ -34,12 +41,7 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public ItemCrossbow(Integer meta, int count) {
-        super(CROSSBOW, meta, count, "Crossbow");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_CROSSBOW;
+        super(CROSSBOW, meta, count, "Crossbow", DEFINITION);
     }
 
     public boolean onUse(Player player, int ticksUsed) {
@@ -164,11 +166,6 @@ public class ItemCrossbow extends ItemTool {
     public void removeChargedItem(Player player) {
         this.setNbt(this.getNbt().remove("chargedItem"));
         player.getInventory().setItemInMainHand(this);
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 72000;
     }
 
     public boolean onRelease(Player player, int ticksUsed) {

@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityLiving;
 import org.powernukkitx.entity.components.BoostableComponent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
 
@@ -12,6 +13,12 @@ import org.powernukkitx.math.Vector3;
  * @since 21.03.17
  */
 public class ItemCarrotOnAStick extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .maxDurability(ItemTool.DURABILITY_CARROT_ON_A_STICK)
+            .maxStackSize(1)
+            .noDamageOnAttack(true)
+            .noDamageOnBreak(true)
+            .build();
 
     public ItemCarrotOnAStick() {
         this(0, 1);
@@ -22,7 +29,7 @@ public class ItemCarrotOnAStick extends ItemTool {
     }
 
     public ItemCarrotOnAStick(Integer meta, int count) {
-        super(CARROT_ON_A_STICK, meta, count, "Carrot on a Stick");
+        super(CARROT_ON_A_STICK, meta, count, "Carrot on a Stick", DEFINITION);
     }
 
     @Override
@@ -46,26 +53,6 @@ public class ItemCarrotOnAStick extends ItemTool {
         }
 
         return false;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_CARROT_ON_A_STICK;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public boolean noDamageOnAttack() {
-        return true;
-    }
-
-    @Override
-    public boolean noDamageOnBreak() {
-        return true;
     }
 }
 

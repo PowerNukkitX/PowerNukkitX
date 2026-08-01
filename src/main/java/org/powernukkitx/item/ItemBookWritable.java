@@ -1,5 +1,6 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
@@ -7,21 +8,38 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 
 public abstract class ItemBookWritable extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder().build();
 
     protected ItemBookWritable(String id) {
-        super(id);
+        this(id, 0, 1, (String) null, DEFINITION);
+    }
+
+    protected ItemBookWritable(String id, ItemDefinition definition) {
+        this(id, 0, 1, (String) null, definition);
     }
 
     protected ItemBookWritable(String id, Integer meta) {
-        super(id, meta);
+        this(id, meta, 1, (String) null, DEFINITION);
+    }
+
+    protected ItemBookWritable(String id, Integer meta, ItemDefinition definition) {
+        this(id, meta, 1, (String) null, definition);
     }
 
     protected ItemBookWritable(String id, Integer meta, int count) {
-        super(id, meta, count);
+        this(id, meta, count, (String) null, DEFINITION);
+    }
+
+    protected ItemBookWritable(String id, Integer meta, int count, ItemDefinition definition) {
+        this(id, meta, count, (String) null, definition);
     }
 
     protected ItemBookWritable(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        this(id, meta, count, name, DEFINITION);
+    }
+
+    protected ItemBookWritable(String id, Integer meta, int count, String name, ItemDefinition definition) {
+        super(id, meta, count, name, definition);
     }
 
     /**

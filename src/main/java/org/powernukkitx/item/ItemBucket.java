@@ -13,6 +13,7 @@ import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.event.player.PlayerBucketEmptyEvent;
 import org.powernukkitx.event.player.PlayerBucketFillEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
@@ -33,28 +34,56 @@ import java.util.Objects;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemBucket extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
+
     public ItemBucket() {
-        this(0, 1);
+        this(0, 1, DEFINITION);
+    }
+
+    public ItemBucket(ItemDefinition definition) {
+        this(0, 1, definition);
     }
 
     public ItemBucket(Integer meta) {
-        this(meta, 1);
+        this(meta, 1, DEFINITION);
+    }
+
+    public ItemBucket(Integer meta, ItemDefinition definition) {
+        this(meta, 1, definition);
     }
 
     public ItemBucket(Integer meta, int count) {
-        super(BUCKET, meta, count);
+        this(meta, count, DEFINITION);
+    }
+
+    public ItemBucket(Integer meta, int count, ItemDefinition definition) {
+        super(BUCKET, meta, count, definition);
     }
 
     public ItemBucket(String id) {
-        this(id, 0);
+        this(id, 0, DEFINITION);
+    }
+
+    public ItemBucket(String id, ItemDefinition definition) {
+        this(id, 0, definition);
     }
 
     public ItemBucket(String id, int count) {
-        super(id, 0, count);
+        this(id, count, (String) null, DEFINITION);
+    }
+
+    public ItemBucket(String id, int count, ItemDefinition definition) {
+        this(id, count, (String) null, definition);
     }
 
     public ItemBucket(String id, int count, String name) {
-        super(id, 0, count, name);
+        this(id, count, name, DEFINITION);
+    }
+
+    public ItemBucket(String id, int count, String name, ItemDefinition definition) {
+        super(id, 0, count, name, definition);
     }
 
     /**
@@ -133,11 +162,6 @@ public class ItemBucket extends Item {
     @Override
     public int getMaxStackSize() {
         return meta == 0 && Objects.equals(getId(), BUCKET) ? 16 : 1;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     /**

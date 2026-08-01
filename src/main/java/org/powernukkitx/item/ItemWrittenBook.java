@@ -1,9 +1,14 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
 public class ItemWrittenBook extends ItemBookWritable {
+    public static final ItemDefinition DEFINITION = ItemBookWritable.DEFINITION.toBuilder()
+            .maxStackSize(16)
+            .build();
+
     public static final int GENERATION_ORIGINAL = 0;
     public static final int GENERATION_COPY = 1;
     public static final int GENERATION_COPY_OF_COPY = 2;
@@ -18,12 +23,7 @@ public class ItemWrittenBook extends ItemBookWritable {
     }
 
     public ItemWrittenBook(Integer meta, int count) {
-        super(Item.WRITTEN_BOOK, 0, count, "Written Book");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 16;
+        super(Item.WRITTEN_BOOK, 0, count, "Written Book", DEFINITION);
     }
 
     public Item writeBook(String author, String title, String[] pages) {

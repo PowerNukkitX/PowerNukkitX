@@ -1,12 +1,13 @@
 package org.powernukkitx.item;
 
-public class ItemIronHorseArmor extends Item {
-    public ItemIronHorseArmor() {
-        super(IRON_HORSE_ARMOR);
-    }
+import org.powernukkitx.item.definition.ItemDefinition;
 
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+public class ItemIronHorseArmor extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
+
+    public ItemIronHorseArmor() {
+        super(IRON_HORSE_ARMOR, DEFINITION);
     }
 }

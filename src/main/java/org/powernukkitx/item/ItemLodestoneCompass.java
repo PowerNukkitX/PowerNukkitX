@@ -1,6 +1,7 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.positiontracking.NamedPosition;
 
@@ -8,6 +9,10 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 
 public class ItemLodestoneCompass extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
+
     public ItemLodestoneCompass() {
         this(0, 1);
     }
@@ -17,12 +22,7 @@ public class ItemLodestoneCompass extends Item {
     }
 
     public ItemLodestoneCompass(Integer meta, int count) {
-        super(LODESTONE_COMPASS, meta, count, "Lodestone Compass");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+        super(LODESTONE_COMPASS, meta, count, "Lodestone Compass", DEFINITION);
     }
 
     public void setTrackingPosition(@Nullable NamedPosition position) throws IOException {

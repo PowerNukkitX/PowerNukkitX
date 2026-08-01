@@ -1,6 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemLeatherChestplate extends ItemColorArmor {
+    public static final ItemDefinition DEFINITION = ItemColorArmor.DEFINITION.toBuilder()
+            .armorPoints(3)
+            .chestplate(true)
+            .maxDurability(81)
+            .tier(Item.WEARABLE_TIER_LEATHER)
+            .build();
+
     public ItemLeatherChestplate() {
         this(0, 1);
     }
@@ -10,26 +19,6 @@ public class ItemLeatherChestplate extends ItemColorArmor {
     }
 
     public ItemLeatherChestplate(Integer meta, int count) {
-        super(LEATHER_CHESTPLATE, meta, count);
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_LEATHER;
-    }
-
-    @Override
-    public boolean isChestplate() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 3;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 81;
+        super(LEATHER_CHESTPLATE, meta, count, DEFINITION);
     }
 }

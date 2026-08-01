@@ -3,34 +3,25 @@ package org.powernukkitx.item;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemSuspiciousStew extends ItemFood {
-    
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .maxStackSize(1)
+            .nutrition(6)
+            .saturation(7.2f)
+            .build();
+
     public ItemSuspiciousStew() {
         this(0, 1);
     }
-    
+
     public ItemSuspiciousStew(Integer meta) {
         this(meta, 1);
     }
-    
+
     public ItemSuspiciousStew(Integer meta, int count) {
-        super(SUSPICIOUS_STEW, meta, count, "Suspicious Stew");
-    }
-    
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public int getNutrition() {
-        return 6;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 7.2F;
+        super(SUSPICIOUS_STEW, meta, count, "Suspicious Stew", DEFINITION);
     }
 
     @Override
