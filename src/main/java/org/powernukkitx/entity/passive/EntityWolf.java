@@ -298,7 +298,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
+            Long ownerEid = getDataProperty(ActorDataTypes.OWNER);
+            if (owner != null && !Long.valueOf(owner.getId()).equals(ownerEid)) {
                 this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
             }
         }
