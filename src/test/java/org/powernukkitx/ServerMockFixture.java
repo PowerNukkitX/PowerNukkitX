@@ -17,7 +17,7 @@ import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.plugin.JavaPluginLoader;
-import org.powernukkitx.positiontracking.PositionTrackingService;
+import org.powernukkitx.network.positiontracking.PositionTrackingService;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.utils.collection.FreezableArrayManager;
@@ -196,7 +196,7 @@ public final class ServerMockFixture {
         levels.put(1, level);
         doReturn(levels).when(server).getLevels();
         doReturn(level).when(server).getDefaultLevel();
-        
+
         level.initLevel();
     }
 

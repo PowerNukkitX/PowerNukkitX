@@ -1,74 +1,10 @@
 package org.powernukkitx;
 
-import org.powernukkitx.block.BlockComposter;
-import org.powernukkitx.command.SimpleCommandMap;
-import org.powernukkitx.config.ServerSettings;
-import org.powernukkitx.config.YamlSnakeYamlConfigurer;
-import org.powernukkitx.block.dispenser.DispenseBehaviorRegister;
-import org.powernukkitx.entity.Attribute;
-import org.powernukkitx.entity.data.profession.Profession;
-import org.powernukkitx.event.server.QueryRegenerateEvent;
-import org.powernukkitx.inventory.HumanEnderChestInventory;
-import org.powernukkitx.inventory.HumanInventory;
-import org.powernukkitx.inventory.HumanOffHandInventory;
-import org.powernukkitx.inventory.Inventory;
-import org.powernukkitx.item.enchantment.Enchantment;
-import org.powernukkitx.lang.BaseLang;
-import org.powernukkitx.level.DimensionEnum;
-import org.powernukkitx.level.Level;
-import org.powernukkitx.level.format.LevelConfig;
-import org.powernukkitx.level.format.LevelProvider;
-import org.powernukkitx.level.format.leveldb.LevelDBProvider;
-import org.powernukkitx.math.Vector3;
-import org.powernukkitx.network.Network;
-import org.powernukkitx.network.process.NetworkPacketHandler;
-import org.powernukkitx.network.process.PlayerSessionHolder;
-import org.powernukkitx.network.process.auth.ClientChainData;
-import org.powernukkitx.permission.BanList;
-import org.powernukkitx.plugin.JavaPluginLoader;
-import org.powernukkitx.positiontracking.PositionTrackingService;
-import org.powernukkitx.registry.BlockRegistry;
-import org.powernukkitx.registry.Registries;
-import org.powernukkitx.scheduler.ServerScheduler;
-import org.powernukkitx.utils.collection.FreezableArrayManager;
-import eu.okaeri.configs.ConfigManager;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
-import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.LockSupport;
-
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @Slf4j
 public class GameMockExtension extends MockitoExtension {
