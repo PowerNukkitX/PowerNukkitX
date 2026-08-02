@@ -498,7 +498,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * builder.enchantable("pickaxe", 20);
          * </pre>
          * @param slot {@link ItemEnchantSlot} slot ID of the enchantable item
-         * @param value int value, can be 0 if you enchant over API, must be >= 1 if you use Anvil
+         * @param value int value, minimum of 0
          */
         public SimpleBuilder enchantable(ItemEnchantSlot slot, int value) {
             if (value < 0) value = 0;
@@ -515,11 +515,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * builder.enchantable("pickaxe", 20);
          * </pre>
          * @param slot string slot ID of the enchantable item
-         * @param value int value, can be 0 if you enchant over API, must be >= 1 if you use Anvil
+         * @param value int value, minimum of 0
          */
         public SimpleBuilder enchantable(String slot, int value) {
             if (slot == null || slot.isBlank()) return this;
-            if (value <= 0) return this;
+            if (value < 0) return this;
             if (value > 255) value = 255;
 
             CompoundTag itemProps = ensureItemProperties();
