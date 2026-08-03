@@ -29,9 +29,7 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
     @Override
     public void handle(RequestNetworkSettingsPacket packet, PlayerSessionHolder holder, Server server) {
         BedrockServerSession session = holder.getSession();
-        String ip = ((InetSocketAddress) session.getSocketAddress())
-            .getAddress()
-            .getHostAddress();
+        String ip = holder.getIp();
 
         long now = System.currentTimeMillis();
 
