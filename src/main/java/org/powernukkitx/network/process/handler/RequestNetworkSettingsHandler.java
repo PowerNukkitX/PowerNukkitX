@@ -21,7 +21,8 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author Kaooot & psycofeu
+ * @author Kaooot 
+ * @security Psycofeu
  */
 public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetworkSettingsPacket> {
 
