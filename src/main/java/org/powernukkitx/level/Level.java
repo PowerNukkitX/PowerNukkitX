@@ -810,6 +810,104 @@ public class Level implements Metadatable {
         }
     }
 
+    public void playMusic(String trackName) {
+        this.playMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE, (Player[]) null);
+    }
+
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.playMusic(trackName, volume, fadeSeconds, repeatMode, (Player[]) null);
+    }
+
+    /**
+     * Immediately starts a music track, replacing the currently playing one.
+     *
+     * @param trackName  the name of the music track, for example {@code record.pigstep}
+     * @param volume     the volume of the track, between 0 and 1
+     * @param fadeSeconds the duration of the fade between the previous track and this one, between 0 and 10
+     * @param repeatMode how the track should be repeated
+     * @param players    the players who should hear the music, all players of this level when null or empty
+     */
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode, Player... players) {
+        this.sendMusicEvent(LevelEvent.PLAY_CUSTOM_MUSIC, musicTag(trackName, volume, fadeSeconds, repeatMode), players);
+    }
+
+    public void queueMusic(String trackName) {
+        this.queueMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE, (Player[]) null);
+    }
+
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.queueMusic(trackName, volume, fadeSeconds, repeatMode, (Player[]) null);
+    }
+
+    /**
+     * Queues a music track, it starts once the currently playing track has finished.
+     *
+     * @see #playMusic(String, float, float, MusicRepeatMode, Player...)
+     */
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode, Player... players) {
+        this.sendMusicEvent(LevelEvent.QUEUE_CUSTOM_MUSIC, musicTag(trackName, volume, fadeSeconds, repeatMode), players);
+    }
+
+    public void stopMusic() {
+        this.stopMusic(0, (Player[]) null);
+    }
+
+    public void stopMusic(float fadeSeconds) {
+        this.stopMusic(fadeSeconds, (Player[]) null);
+    }
+
+    /**
+     * Stops the currently playing music track and clears the queue.
+     *
+     * @param fadeSeconds the duration of the fade out, between 0 and 10
+     * @param players     the players the music should be stopped for, all players of this level when null or empty
+     */
+    public void stopMusic(float fadeSeconds, Player... players) {
+        Preconditions.checkArgument(fadeSeconds >= 0 && fadeSeconds <= 10, "Music fade seconds must be between 0 and 10");
+
+        this.sendMusicEvent(LevelEvent.STOP_CUSTOM_MUSIC, new CompoundTag().putFloat("fadeSeconds", fadeSeconds), players);
+    }
+
+    public void setMusicVolume(float volume) {
+        this.setMusicVolume(volume, (Player[]) null);
+    }
+
+    /**
+     * Changes the volume of the currently playing music track.
+     *
+     * @param volume  the volume of the track, between 0 and 1
+     * @param players the players the volume should be changed for, all players of this level when null or empty
+     */
+    public void setMusicVolume(float volume, Player... players) {
+        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Music volume must be between 0 and 1");
+
+        this.sendMusicEvent(LevelEvent.SET_MUSIC_VOLUME, new CompoundTag().putFloat("volume", volume), players);
+    }
+
+    private static CompoundTag musicTag(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        Preconditions.checkNotNull(trackName, "trackName");
+        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Music volume must be between 0 and 1");
+        Preconditions.checkArgument(fadeSeconds >= 0 && fadeSeconds <= 10, "Music fade seconds must be between 0 and 10");
+
+        return new CompoundTag()
+                .putString("trackName", trackName)
+                .putFloat("volume", volume)
+                .putFloat("fadeSeconds", fadeSeconds)
+                .putBoolean("repeatMode", repeatMode.isLooping());
+    }
+
+    private void sendMusicEvent(LevelEventType type, CompoundTag data, Player... players) {
+        final LevelEventGenericPacket packet = new LevelEventGenericPacket();
+        packet.setType(type);
+        packet.setTag(data.toNetwork());
+
+        if (players == null || players.length == 0) {
+            Server.broadcastPacket(this.players.values(), packet);
+        } else {
+            Server.broadcastPacket(players, packet);
+        }
+    }
+
     public void addLevelEvent(LevelEventType type, int data) {
         addLevelEvent(type, data, null);
     }
