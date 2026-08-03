@@ -358,6 +358,7 @@ public class SimpleCommandMap implements CommandMap {
         ArrayList<String> args = new ArrayList<>();
         boolean notQuoted = true;
         int curlyBraceCount = 0;
+        int squareBracketCount = 0;
         int start = 0;
 
         for (int i = 0; i < sb.length(); i++) {
@@ -371,7 +372,13 @@ public class SimpleCommandMap implements CommandMap {
                 }
             }
             if (curlyBraceCount == 0) {
-                if (sb.charAt(i) == ' ' && notQuoted) {
+                if (sb.charAt(i) == '[' && notQuoted) {
+                    squareBracketCount++;
+                } else if (sb.charAt(i) == ']' && notQuoted && squareBracketCount > 0) {
+                    squareBracketCount--;
+                }
+
+                if (sb.charAt(i) == ' ' && notQuoted && squareBracketCount == 0) {
                     String arg = sb.substring(start, i);
                     if (!arg.isEmpty()) {
                         args.add(arg);

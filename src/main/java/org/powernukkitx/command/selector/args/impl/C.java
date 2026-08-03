@@ -101,6 +101,6 @@ public class C extends CachedFilterSelectorArgument {
      */
     @Override
     public int getPriority() {
-        return 3;
+        return Integer.MAX_VALUE;
     }
 }

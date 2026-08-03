@@ -1950,7 +1950,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         moveData.setOnGround(this.onGround);
         moveData.setTeleported(tp);
         moveData.setPos(this.getPosition().toNetwork().add(0f, this.getBaseOffset(), 0f));
-        moveData.setRotation(org.cloudburstmc.math.vector.Vector3f.from(this.pitch, this.yaw, this.yaw));
+        moveData.setRotation(org.cloudburstmc.math.vector.Vector3f.from(this.pitch, this.yaw, this.headYaw));
 
         final MoveActorAbsolutePacket packet = new MoveActorAbsolutePacket();
         packet.setMoveData(moveData);
@@ -5706,6 +5706,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause cause) {
         double yaw = location.yaw;
         double pitch = location.pitch;
+        double headYaw = location.headYaw;
 
         Location from = this.getLocation();
         Location to = location;
@@ -5728,10 +5729,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
 
-        if (this.setPositionAndRotation(to, yaw, pitch)) {
+        if (this.setPositionAndRotation(to, yaw, pitch, headYaw)) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
             this.updateMovement();
+            this.broadcastMovement(true);
             return true;
         }
 
