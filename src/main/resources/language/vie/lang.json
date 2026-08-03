@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Khoảng thời gian để đếm kết nối",
   "pnx.settings.network.botnet.connectionLimiter": "Danh sách đen kết nối IP",
   "pnx.settings.network.botnet.blacklistTime": "Thời gian tồn tại danh sách đen IP (giây)",
+  "pnx.settings.network.network.botnet.allowList": "Cho phép bỏ qua IP",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",

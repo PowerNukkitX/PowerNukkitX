@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "连接计数时间窗口",
   "pnx.settings.network.botnet.connectionLimiter": "IP 连接黑名单",
   "pnx.settings.network.botnet.blacklistTime": "黑名单持续时间",
+  "pnx.settings.network.botnet.allowList": "允许 IP 绕过",
 
   "pnx.settings.debug": "服务器的调试配置",
   "pnx.settings.debug.level": "服务器的调试等级 [INFO,DEBUG,TRACE,ALL]",

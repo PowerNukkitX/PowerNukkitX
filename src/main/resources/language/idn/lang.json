@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Jendela waktu untuk menghitung koneksi",
   "pnx.settings.network.botnet.connectionLimiter": "Daftar hitam koneksi IP",
   "pnx.settings.network.botnet.blacklistTime": "Durasi daftar hitam IP (detik)",
+  "pnx.settings.network.botnet.allowList": "Izinkan bypass IP",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",

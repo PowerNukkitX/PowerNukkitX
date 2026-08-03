@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Fenêtre temporelle de comptage des connexions",
   "pnx.settings.network.botnet.connectionLimiter": "Liste noire des connexions IP",
   "pnx.settings.network.botnet.blacklistTime": "Durée de la liste noire IP (sec)",
+  "pnx.settings.network.botnet.allowList": "Autoriser le contournement d’IP",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",

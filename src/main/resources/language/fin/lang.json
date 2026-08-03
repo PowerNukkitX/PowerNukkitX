@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Yhteyksien laskennan aikajakso",
   "pnx.settings.network.botnet.connectionLimiter": "IP-yhteyksien estolista",
   "pnx.settings.network.botnet.blacklistTime": "IP-estolistan kesto (s)",
+  "pnx.settings.network.botnet.allowList": "Salli IP-ohitus",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",

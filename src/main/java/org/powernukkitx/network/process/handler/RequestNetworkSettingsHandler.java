@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author Kaooot 
+ * @author Kaooot
  */
 public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetworkSettingsPacket> {
 
@@ -34,14 +34,20 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
     @Override
     public void handle(RequestNetworkSettingsPacket packet, PlayerSessionHolder holder, Server server) {
         BedrockServerSession session = holder.getSession();
-        String ip = "unknown";
+        String ip = null;
 
         SocketAddress socketAddress = holder.getSession().getSocketAddress();
 
         if (socketAddress instanceof InetSocketAddress address) {
             InetAddress inetAddress = address.getAddress();
 
-            ip = inetAddress != null ? inetAddress.getHostAddress() : address.getHostString();
+            if (inetAddress != null) {
+                ip = inetAddress.getHostAddress();
+            }
+        }
+
+        if (ip == null) {
+            return;
         }
 
         long now = System.currentTimeMillis();
@@ -61,10 +67,10 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
 
                 Date expireDate = new Date(System.currentTimeMillis() + (botnetSettings.blacklistTime() * 1000));
 
-                server.getLogger().info("Server detect too many connection. ip " + ip + " got banned.");
-                server.getIPBans().addBan(ip, "Too many connections", expireDate, "Anti-Bot");
+                server.getLogger().info("The server detected too many connections. The IP address " + ip + " have got banned.");
+                server.getIPBans().addBan(ip, "Too many connections", expireDate, "CONSOLE");
 
-                session.close("You have been automatically banned.");
+                session.close("You have been automatically banned for too many connections.");
 
                 ATTEMPTS.remove(ip);
                 FIRST_ATTEMPT.remove(ip);

@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Zeitfenster zur Verbindungszählung",
   "pnx.settings.network.botnet.connectionLimiter": "IP-Verbindungs-Blacklist",
   "pnx.settings.network.botnet.blacklistTime": "Dauer der IP-Sperre",
+  "pnx.settings.network.botnet.allowList": "IP-Umgehung erlauben",
 
   "pnx.settings.debug": "Server Debug-Konfiguration",
   "pnx.settings.debug.level": "Debug-Level des Servers [INFO, DEBUG, TRACE, ALL]",

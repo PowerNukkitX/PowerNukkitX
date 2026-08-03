@@ -85,6 +85,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Palugit ng oras para sa pagbibilang ng mga koneksyon",
   "pnx.settings.network.botnet.connectionLimiter": "Blacklist ng mga koneksyon sa IP",
   "pnx.settings.network.botnet.blacklistTime": "Tagal ng pagka-block ng IP",
+  "pnx.settings.network.botnet.allowList": "Payagan ang IP bypass",
 
   "pnx.settings.debug.deprecatedverbose": "Kung ipo-prompt ba ang mga hindi na ginagamit na kaganapan para sa plugin",
   "pnx.settings.debug.level": "Antas ng debug ng server [INFO, DEBUG, TRACE, ALL]",

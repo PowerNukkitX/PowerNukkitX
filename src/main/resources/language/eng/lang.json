@@ -163,6 +163,8 @@
   "pnx.settings.network.botnet.connectionWindow": "Time window for counting connections",
   "pnx.settings.network.botnet.connectionLimiter": "IP connection blacklist",
   "pnx.settings.network.botnet.blacklistTime": "IP blacklist duration (sec)",
+  "pnx.settings.network.botnet.allowList": "Allow ip bypass",
+
   "pnx.settings.network.query": "Whether to enable query",
   "pnx.settings.network.encryption": "Whether to enable encryption",
   "pnx.settings.network.logintime": "Login time",

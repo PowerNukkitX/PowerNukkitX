@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "連線計數時間窗口",
   "pnx.settings.network.botnet.connectionLimiter": "IP 連線黑名單",
   "pnx.settings.network.botnet.blacklistTime": "IP 黑名單持續時間（秒）",
+  "pnx.settings.network.botnet.allowList": "允許 IP 繞過",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",

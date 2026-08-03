@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Временное окно для подсчёта подключений",
   "pnx.settings.network.botnet.connectionLimiter": "Чёрный список IP-подключений",
   "pnx.settings.network.botnet.blacklistTime": "Продолжительность чёрного списка IP (сек)",
+  "pnx.settings.network.botnet.allowList": "Zezwalaj na obejście IP",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",

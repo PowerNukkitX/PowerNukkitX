@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Okno czasowe zliczania połączeń",
   "pnx.settings.network.botnet.connectionLimiter": "Czarna lista połączeń IP",
   "pnx.settings.network.botnet.blacklistTime": "Czas trwania czarnej listy IP (s)",
+  "pnx.settings.network.botnet.allowList": "Zezwalaj na obejście IP",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",

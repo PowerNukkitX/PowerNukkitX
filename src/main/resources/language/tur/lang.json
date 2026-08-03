@@ -77,6 +77,7 @@
   "pnx.settings.network.botnet.connectionWindow": "Bağlantıları saymak için zaman aralığı",
   "pnx.settings.network.botnet.connectionLimiter": "IP bağlantı kara listesi",
   "pnx.settings.network.botnet.blacklistTime": "IP kara liste süresi (sn)",
+  "pnx.settings.network.botnet.allowList": "IP atlamasına izin ver",
 
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",
