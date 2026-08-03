@@ -46,36 +46,34 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
             }
         }
 
-        if (ip == null) {
-            return;
-        }
+        if (ip != null) {
+            long now = System.currentTimeMillis();
 
-        long now = System.currentTimeMillis();
+            FIRST_ATTEMPT.putIfAbsent(ip, now);
 
-        FIRST_ATTEMPT.putIfAbsent(ip, now);
-
-        if (now - FIRST_ATTEMPT.get(ip) > TIME_WINDOW) {
-            FIRST_ATTEMPT.put(ip, now);
-            ATTEMPTS.put(ip, 0);
-        }
-
-        int attempts = ATTEMPTS.merge(ip, 1, Integer::sum);
-
-        if (attempts >= MAX_ATTEMPTS) {
-            BotnetSettings botnetSettings = Server.getInstance().getSettings().networkSettings().botnetSettings();
-            if (botnetSettings.connectionLimiter()) {
-
-                Date expireDate = new Date(System.currentTimeMillis() + (botnetSettings.blacklistTime() * 1000));
-
-                server.getLogger().info("The server detected too many connections. The IP address " + ip + " have got banned.");
-                server.getIPBans().addBan(ip, "Too many connections", expireDate, "CONSOLE");
-
-                session.close("You have been automatically banned for too many connections.");
-
-                ATTEMPTS.remove(ip);
-                FIRST_ATTEMPT.remove(ip);
+            if (now - FIRST_ATTEMPT.get(ip) > TIME_WINDOW) {
+                FIRST_ATTEMPT.put(ip, now);
+                ATTEMPTS.put(ip, 0);
             }
-            return;
+
+            int attempts = ATTEMPTS.merge(ip, 1, Integer::sum);
+
+            if (attempts >= MAX_ATTEMPTS) {
+                BotnetSettings botnetSettings = Server.getInstance().getSettings().networkSettings().botnetSettings();
+                if (botnetSettings.connectionLimiter()) {
+
+                    Date expireDate = new Date(System.currentTimeMillis() + (botnetSettings.blacklistTime() * 1000));
+
+                    server.getLogger().warning("The server detected too many connections. The IP address " + ip + " have got banned.");
+                    server.getIPBans().addBan(ip, "Too many connections", expireDate, "CONSOLE");
+
+                    session.close("You have been automatically temporary banned for too many connections.");
+
+                    ATTEMPTS.remove(ip);
+                    FIRST_ATTEMPT.remove(ip);
+                }
+                return;
+            }
         }
 
         final int clientNetworkVersion = packet.getClientNetworkVersion();

@@ -49,5 +49,4 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.ratelimit")
     @CustomKey("botnet")
     private BotnetSettings botnetSettings = new BotnetSettings();
-
 }
