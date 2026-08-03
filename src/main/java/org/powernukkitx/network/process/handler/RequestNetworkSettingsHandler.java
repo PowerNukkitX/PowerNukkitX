@@ -2,7 +2,6 @@ package org.powernukkitx.network.process.handler;
 
 import org.powernukkitx.Server;
 import org.powernukkitx.config.category.network.BotnetSettings;
-import org.powernukkitx.config.legacy.LegacyServerSettings;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -20,8 +19,10 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author Kaooot & psycofeu
+ */
 public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetworkSettingsPacket> {
 
     private static final ConcurrentHashMap<String, Integer> ATTEMPTS = new ConcurrentHashMap<>();
