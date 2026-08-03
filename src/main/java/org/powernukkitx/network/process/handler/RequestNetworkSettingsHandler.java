@@ -1,6 +1,7 @@
 package org.powernukkitx.network.process.handler;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.config.category.network.BotnetSettings;
 import org.powernukkitx.config.legacy.LegacyServerSettings;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.process.PacketHandler;
@@ -14,7 +15,10 @@ import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.packet.NetworkSettingsPacket;
 import org.cloudburstmc.protocol.bedrock.packet.RequestNetworkSettingsPacket;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,13 +27,21 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
     private static final ConcurrentHashMap<String, Integer> ATTEMPTS = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Long> FIRST_ATTEMPT = new ConcurrentHashMap<>();
 
-    private static final int MAX_ATTEMPTS = Server.getInstance().getSettings().networkSettings().maxConnectionsPerIp();
-    private static final long TIME_WINDOW = Server.getInstance().getSettings().networkSettings().connectionWindow();
+    private static final int MAX_ATTEMPTS = Server.getInstance().getSettings().networkSettings().botnetSettings().maxConnectionsPerIp();
+    private static final long TIME_WINDOW = Server.getInstance().getSettings().networkSettings().botnetSettings().connectionWindow();
 
     @Override
     public void handle(RequestNetworkSettingsPacket packet, PlayerSessionHolder holder, Server server) {
         BedrockServerSession session = holder.getSession();
-        String ip = holder.getIp();
+        String ip = "unknown";
+
+        SocketAddress socketAddress = holder.getSession().getSocketAddress();
+
+        if (socketAddress instanceof InetSocketAddress address) {
+            InetAddress inetAddress = address.getAddress();
+
+            ip = inetAddress != null ? inetAddress.getHostAddress() : address.getHostString();
+        }
 
         long now = System.currentTimeMillis();
 
@@ -43,10 +55,16 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
         int attempts = ATTEMPTS.merge(ip, 1, Integer::sum);
 
         if (attempts >= MAX_ATTEMPTS) {
-            if (Server.getInstance().getSettings().networkSettings().connectionLimiter()) {
+            BotnetSettings botnetSettings = Server.getInstance().getSettings().networkSettings().botnetSettings();
+            if (botnetSettings.connectionLimiter()) {
+
+                Date expireDate = new Date(System.currentTimeMillis() + (botnetSettings.blacklistTime() * 1000));
+
                 server.getLogger().info("Server detect too many connection. ip " + ip + " got banned.");
-                server.getIPBans().addBan(ip, "Too many connections", null, "Anti-Bot");
+                server.getIPBans().addBan(ip, "Too many connections", expireDate, "Anti-Bot");
+
                 session.close("You have been automatically banned.");
+
                 ATTEMPTS.remove(ip);
                 FIRST_ATTEMPT.remove(ip);
             }

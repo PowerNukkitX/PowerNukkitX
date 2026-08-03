@@ -73,6 +73,11 @@
   "pnx.settings.network.compressionBufferSize": "服务器是解压缩的缓存",
   "pnx.settings.network.maxDecompressSize": "服务器最大可以解压的字节数 单位B",
   "pnx.settings.network.packetLimit": "服务器每秒最大的可以接受的数据包数量",
+  "pnx.settings.network.botnet.maxConnectionsPerIP": "每个 IP 的最大连接数",
+  "pnx.settings.network.botnet.connectionWindow": "连接计数时间窗口",
+  "pnx.settings.network.botnet.connectionLimiter": "IP 连接黑名单",
+  "pnx.settings.network.botnet.blacklistTime": "黑名单持续时间",
+
   "pnx.settings.debug": "服务器的调试配置",
   "pnx.settings.debug.level": "服务器的调试等级 [INFO,DEBUG,TRACE,ALL]",
   "pnx.settings.debug.command": "是否开启调试命令",

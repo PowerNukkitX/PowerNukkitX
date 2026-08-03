@@ -73,6 +73,11 @@
   "pnx.settings.network.compressionBufferSize": "Puffer für die Server-Dekomprimierung",
   "pnx.settings.network.maxDecompressSize": "Maximale Anzahl an Bytes, die der Server dekomprimieren kann",
   "pnx.settings.network.packetLimit": "Maximale Anzahl von Paketen pro Sekunde",
+  "pnx.settings.network.botnet.maxConnectionsPerIP": "Maximale Verbindungen pro IP",
+  "pnx.settings.network.botnet.connectionWindow": "Zeitfenster zur Verbindungszählung",
+  "pnx.settings.network.botnet.connectionLimiter": "IP-Verbindungs-Blacklist",
+  "pnx.settings.network.botnet.blacklistTime": "Dauer der IP-Sperre",
+
   "pnx.settings.debug": "Server Debug-Konfiguration",
   "pnx.settings.debug.level": "Debug-Level des Servers [INFO, DEBUG, TRACE, ALL]",
   "pnx.settings.debug.command": "Ob Debug-Befehle aktiviert werden sollen",

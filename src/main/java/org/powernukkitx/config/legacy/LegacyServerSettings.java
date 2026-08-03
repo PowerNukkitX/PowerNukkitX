@@ -81,12 +81,6 @@ public final class LegacyServerSettings extends OkaeriConfig {
         int maxDecompressSize = 268435456;
         @Comment("nukkit.server.settings.networkSettings.packetLimit")
         int packetLimit = 240;
-        @Comment("Maximum connexions per IP")
-        int maxConnectionsPerIp = 10;
-        @Comment("Time to reset (MS)")
-        long connectionWindow = 5000;
-        @Comment("BlackList ip")
-        boolean connectionLimiter = true;
     }
 
     @EqualsAndHashCode(callSuper = true)

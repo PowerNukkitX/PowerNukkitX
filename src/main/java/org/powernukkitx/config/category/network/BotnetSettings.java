@@ -22,4 +22,13 @@ public class BotnetSettings extends OkaeriConfig {
     int autoBlockDurationSeconds = 60;
     @Comment("pnx.settings.network.botnet.minscore")
     int minScore = 2;
+
+    @Comment("pnx.settings.network.botnet.maxConnectionsPerIP")
+    int maxConnectionsPerIp = 10;
+    @Comment("pnx.settings.network.botnet.connectionWindow")
+    long connectionWindow = 5000;
+    @Comment("pnx.settings.network.botnet.connectionLimiter")
+    boolean connectionLimiter = true;
+    @Comment("pnx.settings.network.botnet.blacklistTime")
+    long blacklistTime = 3600;
 }
