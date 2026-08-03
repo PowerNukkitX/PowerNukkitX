@@ -49,4 +49,11 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.ratelimit")
     @CustomKey("botnet")
     private BotnetSettings botnetSettings = new BotnetSettings();
+
+    @Comment("Maximum connexions per IP")
+    int maxConnectionsPerIp = 10;
+    @Comment("Time to reset (MS)")
+    long connectionWindow = 5000;
+    @Comment("BlackList ip")
+    boolean connectionLimiter = true;
 }
