@@ -18,7 +18,7 @@ import java.util.function.Function;
  * <p>
  * The 'c' argument is used to limit the number of entities returned by a selector, optionally reversing the order
  * to select the farthest entities instead of the nearest. This class sorts the entity list by distance to the
- * reference location and returns a sublist of the specified size. Negative values reverse the order.
+ * reference location and returns up to the specified number of entities. Negative values reverse the order.
  * <p>
  * <b>Features:</b>
  * <ul>
@@ -80,7 +80,9 @@ public class C extends CachedFilterSelectorArgument {
             entities.sort(Comparator.comparingDouble(e -> e.distanceSquared(basePos)));
             if (c < 0)
                 Collections.reverse(entities);
-            return entities.subList(0, Math.abs(c));
+
+            int limit = (int) Math.min(Math.abs((long) c), entities.size());
+            return entities.subList(0, limit);
         };
     }
 
@@ -95,9 +97,10 @@ public class C extends CachedFilterSelectorArgument {
     }
 
     /**
-     * Returns the priority for this argument (3).
+     * Returns the priority for this argument.
+     * The count limit is applied after all other selector filters.
      *
-     * @return the integer 3
+     * @return the maximum integer priority
      */
     @Override
     public int getPriority() {
