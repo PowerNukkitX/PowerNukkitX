@@ -73,11 +73,11 @@
   "pnx.settings.network.compressionBufferSize": "Buffer for server decompression",
   "pnx.settings.network.maxDecompressSize": "Maximum number of bytes the server can decompress",
   "pnx.settings.network.packetLimit": "Maximun number of packet per seconds",
-  "pnx.settings.network.botnet.maxConnectionsPerIP": "Maximum connections per IP",
-  "pnx.settings.network.botnet.connectionWindow": "Time window for counting connections",
-  "pnx.settings.network.botnet.connectionLimiter": "IP connection blacklist",
-  "pnx.settings.network.botnet.blacklistTime": "IP blacklist duration (sec)",
-
+  "pnx.settings.network.botnet.maxConnectionsPerIP": "Nombre maximal de connexions par IP",
+  "pnx.settings.network.botnet.connectionWindow": "Fenêtre temporelle de comptage des connexions",
+  "pnx.settings.network.botnet.connectionLimiter": "Liste noire des connexions IP",
+  "pnx.settings.network.botnet.blacklistTime": "Durée de la liste noire IP (sec)",
+  .
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",
   "pnx.settings.debug.command": "Whether to enable debug commands",
