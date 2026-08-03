@@ -423,4 +423,18 @@ public class PlayerSessionHolder {
         }
         return null;
     }
+
+    public String getIp() {
+        SocketAddress socketAddress = this.getSession().getSocketAddress();
+
+        if (socketAddress instanceof InetSocketAddress address) {
+            InetAddress inetAddress = address.getAddress();
+
+            return inetAddress != null
+                ? inetAddress.getHostAddress()
+                : address.getHostString();
+        }
+
+        return "unknown";
+    }
 }
