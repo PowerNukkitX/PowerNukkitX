@@ -50,6 +50,8 @@ public final class ServerMockFixture {
 
     public static final Server server;
     public static final Level level;
+    public static final TestPluginManager pluginManager;
+    public static final Network network;
 
     private ServerMockFixture() {
     }
@@ -114,7 +116,7 @@ public final class ServerMockFixture {
         doReturn("1.0.0").when(server).getApiVersion();
         doReturn(java.util.Collections.emptyMap()).when(simpleCommandMap).getCommands();
 
-        TestPluginManager pluginManager = new TestPluginManager(server, simpleCommandMap);
+        pluginManager = new TestPluginManager(server, simpleCommandMap);
         pluginManager.registerInterface(JavaPluginLoader.class);
         doReturn(pluginManager).when(server).getPluginManager();
         pluginManager.loadInternalPlugin();
@@ -178,7 +180,7 @@ public final class ServerMockFixture {
         try {
             FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
             FieldUtils.writeDeclaredField(server, "autoSave", false, true);
-            Network network = new Network(server);
+            network = new Network(server);
             FieldUtils.writeDeclaredField(server, "network", network, true);
 
             FileUtils.copyDirectory(new File("src/test/resources/level"), levelDir);
