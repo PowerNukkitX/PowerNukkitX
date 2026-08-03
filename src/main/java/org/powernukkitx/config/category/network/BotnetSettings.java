@@ -28,7 +28,7 @@ public class BotnetSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.botnet.connectionWindow")
     long connectionWindow = 5000;
     @Comment("pnx.settings.network.botnet.connectionLimiter")
-    boolean connectionLimiter = true;
+    boolean connectionLimiter = false;
     @Comment("pnx.settings.network.botnet.blacklistTime")
     long blacklistTime = 3600;
 }
