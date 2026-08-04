@@ -24,10 +24,6 @@ public class PlayerSkinHandler implements PacketHandler<PlayerSkinPacket> {
     public void handle(PlayerSkinPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
-        if (packet.getSerializedSkin() == null) {
-            log.debug("{}: PlayerSkinPacket without serialized skin", playerHandle.getUsername());
-            return;
-        }
         boolean trusted = player.getServer().getSettings().playerSettings().forceSkinTrusted()
                 || SkinConverter.isTrusted(packet.getSerializedSkin());
         Skin skin = new Skin(SkinConverter.fromSerializedSkin(packet.getSerializedSkin()), trusted);
