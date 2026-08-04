@@ -5704,10 +5704,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return the boolean
      */
     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause cause) {
-        double yaw = location.yaw;
-        double pitch = location.pitch;
-        double headYaw = location.headYaw;
-
         Location from = this.getLocation();
         Location to = location;
         if (cause != null) {
@@ -5718,6 +5714,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
             to = ev.getTo();
         }
+
+        double yaw = to.yaw;
+        double pitch = to.pitch;
+        double headYaw = to.headYaw;
 
         final Entity currentRide = getRiding();
         if (currentRide != null && !currentRide.dismountEntity(this, true, false)) {
@@ -5732,8 +5732,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.setPositionAndRotation(to, yaw, pitch, headYaw)) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
-            this.updateMovement();
+
+            if (!enableHeadYaw()) {
+                this.headYaw = this.yaw;
+            }
             this.broadcastMovement(true);
+
+            this.lastX = this.x;
+            this.lastY = this.y;
+            this.lastZ = this.z;
+            this.lastYaw = this.yaw;
+            this.lastPitch = this.pitch;
+            this.lastHeadYaw = this.headYaw;
+
+            this.updateMovement();
+            this.positionChanged = true;
             return true;
         }
 

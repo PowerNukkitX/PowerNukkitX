@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
  * @since 2015/11/12
  */
 public class TeleportCommand extends VanillaCommand {
+    private static final double HORIZONTAL_FACING_EPSILON = 1.0E-8;
+
     public TeleportCommand(String name) {
         super(name, "commands.tp.description", "commands.tp.usage", new String[]{"teleport"});
         this.setPermission("nukkit.command.teleport");
@@ -153,13 +155,14 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position pos = list.getResult(1);
-                boolean hasExplicitRotation = list.hasResult(2) || list.hasResult(3);
-                double yRot = list.hasResult(2) ? list.getResult(2) : 0;
-                double xRot = list.hasResult(3) ? list.getResult(3) : 0;
+                boolean hasYRot = list.hasResult(2);
+                boolean hasXRot = list.hasResult(3);
+                double yRot = hasYRot ? list.getResult(2) : 0;
+                double xRot = hasXRot ? list.getResult(3) : 0;
                 boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
 
                 String message = victims.stream().map(v -> v.getViewableName(sender)).collect(Collectors.joining(", "));
-                Location target = Location.fromObject(pos, pos.level, xRot, yRot);
+                Location target = Location.fromObject(pos, pos.level);
 
                 if (isUnsafe(target, checkForBlocks)) {
                     log.addError("commands.tp.safeTeleportFail", message, NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
@@ -167,11 +170,10 @@ public class TeleportCommand extends VanillaCommand {
                 }
 
                 for (Entity victim : victims) {
-                    if (hasExplicitRotation) {
-                        victim.teleport(target);
-                    } else {
-                        victim.teleport(getTeleportLocation(victim, pos));
-                    }
+                    Location destination = getTeleportLocation(victim, pos);
+                    if (hasYRot) destination.setYaw(yRot).setHeadYaw(yRot);
+                    if (hasXRot) destination.setPitch(xRot);
+                    victim.teleport(destination);
                 }
                 log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
@@ -239,14 +241,15 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position pos = list.getResult(0);
-                boolean hasExplicitRotation = list.hasResult(1) || list.hasResult(2);
-                double yRot = list.hasResult(1) ? list.getResult(1) : 0;
-                double xRot = list.hasResult(2) ? list.getResult(2) : 0;
+                boolean hasYRot = list.hasResult(1);
+                boolean hasXRot = list.hasResult(2);
+                double yRot = hasYRot ? list.getResult(1) : 0;
+                double xRot = hasXRot ? list.getResult(2) : 0;
                 boolean checkForBlocks = list.hasResult(3) ? list.getResult(3) : false;
 
-                Location target = hasExplicitRotation
-                        ? Location.fromObject(pos, pos.level, xRot, yRot)
-                        : getTeleportLocation(sender.asEntity(), pos);
+                Location target = getTeleportLocation(sender.asEntity(), pos);
+                if (hasYRot) target.setYaw(yRot).setHeadYaw(yRot);
+                if (hasXRot) target.setPitch(xRot);
                 if (isUnsafe(target, checkForBlocks)) {
                     log.addError("commands.tp.safeTeleportFail", sender.getViewableName(sender), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
                     return 0;
@@ -320,27 +323,13 @@ public class TeleportCommand extends VanillaCommand {
 
     private Location getTeleportLocation(Entity entity, Position destination) {
         double dx = destination.getX() - entity.getX();
-        double dy = destination.getY() - entity.getY();
         double dz = destination.getZ() - entity.getZ();
 
-        if (dx == 0 && dy == 0 && dz == 0) {
-            return Location.fromObject(
-                    destination,
-                    destination.level,
-                    entity.getYaw(),
-                    entity.getPitch(),
-                    entity.getHeadYaw()
-            );
+        double yaw = entity.getYaw();
+        if (dx * dx + dz * dz > HORIZONTAL_FACING_EPSILON) {
+            yaw = Location.calculateYawFacing(entity.getX(), entity.getZ(), destination.getX(), destination.getZ());
         }
 
-        BVector3 direction = BVector3.fromPos(new Vector3(dx, dy, dz));
-
-        return Location.fromObject(
-                destination,
-                destination.level,
-                direction.getYaw(),
-                direction.getPitch(),
-                direction.getYaw()
-        );
+        return Location.fromObject(destination, destination.level, yaw, entity.getPitch(), yaw);
     }
 }

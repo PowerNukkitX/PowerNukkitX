@@ -8,9 +8,11 @@ import org.powernukkitx.command.selector.args.CachedFilterSelectorArgument;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.Location;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 /**
@@ -76,14 +78,37 @@ public class C extends CachedFilterSelectorArgument {
         ParseUtils.cannotReversed(arguments[0]);
         final var c = Integer.parseInt(arguments[0]);
         if (c == 0) throw new SelectorSyntaxException("C cannot be zero!");
+        final Location referencePos = basePos.clone();
         return entities -> {
-            entities.sort(Comparator.comparingDouble(e -> e.distanceSquared(basePos)));
-            if (c < 0)
-                Collections.reverse(entities);
+            if (selectorType == SelectorType.RANDOM_PLAYER) {
+                Collections.shuffle(entities, ThreadLocalRandom.current());
+            } else {
+                entities.sort(Comparator.comparingDouble(e -> e.distanceSquared(referencePos)));
+                if (c < 0)
+                    Collections.reverse(entities);
+            }
 
             int limit = (int) Math.min(Math.abs((long) c), entities.size());
-            return entities.subList(0, limit);
+            return new ArrayList<>(entities.subList(0, limit));
         };
+    }
+
+    /**
+     * Returns the filter function for the given arguments.
+     * <p>
+     * The filter is position dependent, so it is rebuilt for every sender instead of being served from the
+     * shared argument cache.
+     *
+     * @param selectorType the selector type
+     * @param sender the command sender
+     * @param basePos the reference location
+     * @param arguments the argument values
+     * @return the computed filter function
+     * @throws SelectorSyntaxException if the argument is invalid
+     */
+    @Override
+    public Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+        return cache(selectorType, sender, basePos, arguments);
     }
 
     /**
@@ -100,10 +125,10 @@ public class C extends CachedFilterSelectorArgument {
      * Returns the priority for this argument.
      * The count limit is applied after all other selector filters.
      *
-     * @return the maximum integer priority
+     * @return the integer 1000
      */
     @Override
     public int getPriority() {
-        return Integer.MAX_VALUE;
+        return 1000;
     }
 }
