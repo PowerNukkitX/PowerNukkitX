@@ -1950,7 +1950,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         moveData.setOnGround(this.onGround);
         moveData.setTeleported(tp);
         moveData.setPos(this.getPosition().toNetwork().add(0f, this.getBaseOffset(), 0f));
-        moveData.setRotation(org.cloudburstmc.math.vector.Vector3f.from(this.pitch, this.yaw, this.yaw));
+        moveData.setRotation(org.cloudburstmc.math.vector.Vector3f.from(this.pitch, this.yaw, this.headYaw));
 
         final MoveActorAbsolutePacket packet = new MoveActorAbsolutePacket();
         packet.setMoveData(moveData);
@@ -5704,9 +5704,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return the boolean
      */
     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause cause) {
-        double yaw = location.yaw;
-        double pitch = location.pitch;
-
         Location from = this.getLocation();
         Location to = location;
         if (cause != null) {
@@ -5718,6 +5715,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             to = ev.getTo();
         }
 
+        double yaw = to.yaw;
+        double pitch = to.pitch;
+        double headYaw = to.headYaw;
+
         final Entity currentRide = getRiding();
         if (currentRide != null && !currentRide.dismountEntity(this, true, false)) {
             return false;
@@ -5728,10 +5729,24 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
 
-        if (this.setPositionAndRotation(to, yaw, pitch)) {
+        if (this.setPositionAndRotation(to, yaw, pitch, headYaw)) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
+
+            if (!enableHeadYaw()) {
+                this.headYaw = this.yaw;
+            }
+            this.broadcastMovement(true);
+
+            this.lastX = this.x;
+            this.lastY = this.y;
+            this.lastZ = this.z;
+            this.lastYaw = this.yaw;
+            this.lastPitch = this.pitch;
+            this.lastHeadYaw = this.headYaw;
+
             this.updateMovement();
+            this.positionChanged = true;
             return true;
         }
 
