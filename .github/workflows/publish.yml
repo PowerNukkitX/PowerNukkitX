@@ -102,24 +102,23 @@ jobs:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
 
-      - name: Extract Minecraft version from Server.getVersion()
+      - name: Extract Minecraft version from the built jar
         id: mc_version
         run: |
-          CODEC_VERSION=$(sed -En 's/.*CODEC = (Bedrock_v[0-9]+)\.CODEC.*/\1/p' src/main/java/org/powernukkitx/network/NetworkConstants.java | head -n 1)
-          if [ -z "$CODEC_VERSION" ]; then
-            echo "Unable to extract codec version from NetworkConstants.java" >&2
-            exit 1
-          fi
-          cat > /tmp/McVersion.java << JAVA
-          import org.cloudburstmc.protocol.bedrock.codec.${CODEC_VERSION};
+          # Asking the codec itself keeps this working across protocol bumps, since nothing here
+          # names a version. Stderr is left alone so any startup noise stays visible in the log.
+          cat > /tmp/McVersion.java << 'JAVA'
           public class McVersion {
               public static void main(String[] args) {
-                  System.out.println(${CODEC_VERSION}.CODEC.getMinecraftVersion());
+                  System.out.println(org.powernukkitx.network.NetworkConstants.CODEC.getMinecraftVersion());
               }
           }
           JAVA
-          javac -cp build/powernukkitx.jar /tmp/McVersion.java -d /tmp
-          MINECRAFT_VERSION=$(java -cp "/tmp:build/powernukkitx.jar" McVersion)
+          MINECRAFT_VERSION=$(java -cp build/powernukkitx.jar /tmp/McVersion.java)
+          if ! echo "$MINECRAFT_VERSION" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
+            echo "Unexpected Minecraft version from NetworkConstants.CODEC: '$MINECRAFT_VERSION'" >&2
+            exit 1
+          fi
           echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v7
@@ -159,7 +158,7 @@ jobs:
             exit 1
           fi
           if [ -z "$MINECRAFT_VERSION" ]; then
-            echo "Unable to extract Minecraft version from Server.getVersion()" >&2
+            echo "Minecraft version missing from the publish job outputs" >&2
             exit 1
           fi
           echo "protocol_version=$PROTOCOL_VERSION" >> $GITHUB_OUTPUT
