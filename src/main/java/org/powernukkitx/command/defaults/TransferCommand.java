@@ -13,10 +13,10 @@ import java.util.Map;
 /**
  * @author iYozem
  */
-public class TransferServerCommand extends VanillaCommand {
+public class TransferCommand extends VanillaCommand {
 
-    public TransferServerCommand(String name) {
-        super(name, "commands.transferserver.description");
+    public TransferCommand(String name) {
+        super(name, "commands.transfer.description");
         this.setPermission("nukkit.command.transferserver");
 
         this.commandParameters.clear();
@@ -52,13 +52,13 @@ public class TransferServerCommand extends VanillaCommand {
                 int port = list.getResult(1);
 
                 if (!isValidPort(port)) {
-                    log.addMessage("commands.transferserver.invalid.port");
+                    log.addMessage("commands.transfer.invalid.port");
                     log.output();
                     return 0;
                 }
 
                 player.transfer(ip, port);
-                log.addSuccess("commands.transferserver.successful");
+                log.addSuccess("commands.transfer.successful");
                 log.output();
                 return 1;
             }
@@ -88,13 +88,13 @@ public class TransferServerCommand extends VanillaCommand {
                 int port = list.getResult(2);
 
                 if (!isValidPort(port)) {
-                    log.addMessage("commands.transferserver.invalid.port");
+                    log.addMessage("commands.transfer.invalid.port");
                     log.output();
                     return 0;
                 }
 
                 target.transfer(ip, port);
-                log.addSuccess("commands.transferserver.successful");
+                log.addSuccess("commands.transfer.successful");
                 log.output();
                 return 1;
             }
