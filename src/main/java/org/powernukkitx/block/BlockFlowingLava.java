@@ -24,7 +24,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockFlowingLava extends BlockLiquid {
-
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
 
     @Override

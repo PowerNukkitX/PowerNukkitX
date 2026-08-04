@@ -70,6 +70,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
+    private static final int MAX_ARMOR_POINTS = 30;
+    private static final int MAX_TOUGHNESS_POINTS = 20;
+    private static final double MAX_EFFECTIVE_ARMOR_POINTS = 20.0;
+    private static final double ARMOR_REDUCTION_DIVISOR = 25.0;
     private static final int SHIELD_TRANSITION_TICKS = 2;
     private static final int SHIELD_ATTACK_REENABLE_DELAY_TICKS = 6;
 
@@ -81,6 +85,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    protected static float calculateDamageReduction(float damage, int armorPoints, int toughnessPoints) {
+        int cappedArmorPoints = Math.max(0, Math.min(armorPoints, MAX_ARMOR_POINTS));
+        int cappedToughnessPoints = Math.max(0, Math.min(toughnessPoints, MAX_TOUGHNESS_POINTS));
+
+        double effectiveArmorPoints = Math.min(
+                MAX_EFFECTIVE_ARMOR_POINTS,
+                Math.max(
+                        cappedArmorPoints / 5.0,
+                        cappedArmorPoints - damage / (2.0 + cappedToughnessPoints / 4.0)
+                )
+        );
+
+        return (float) (damage * effectiveArmorPoints / ARMOR_REDUCTION_DIVISOR);
     }
 
     @Override
@@ -375,8 +394,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         for (Vector3 from : fromPoints) {
             for (Vector3 to : toPoints) {
-                Vector3 dir = to.subtract(from);
-                if (dir.lengthSquared() < 1e-6) continue;
+                double dirX = to.x - from.x;
+                double dirY = to.y - from.y;
+                double dirZ = to.z - from.z;
+                if (dirX * dirX + dirY * dirY + dirZ * dirZ < 1e-6) continue;
 
                 if (!useCorridor) {
                     List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
@@ -385,21 +406,25 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     continue;
                 }
 
-                Vector3 right = new Vector3(-dir.z, 0, dir.x);
-                if (right.lengthSquared() < 1e-6) right = new Vector3(1, 0, 0);
-                right = right.normalize().multiply(thickness);
-
-                Vector3 up = new Vector3(0, thickness, 0);
-
-                Vector3[] offsets = new Vector3[]{
-                        right, right.multiply(-1),
-                        up, up.multiply(-1),
-                };
+                double rightX = -dirZ;
+                double rightZ = dirX;
+                double rightSq = rightX * rightX + rightZ * rightZ;
+                if (rightSq < 1e-6) {
+                    rightX = 1;
+                    rightZ = 0;
+                    rightSq = 1;
+                }
+                double rightLen = Math.sqrt(rightSq);
+                rightX = rightX / rightLen * thickness;
+                rightZ = rightZ / rightLen * thickness;
 
                 boolean allClear = true;
-                for (Vector3 o : offsets) {
-                    Vector3 f = from.add(o.x, o.y, o.z);
-                    Vector3 t = to.add(o.x, o.y, o.z);
+                for (int oi = 0; oi < 4; oi++) {
+                    double ox = oi == 0 ? rightX : oi == 1 ? -rightX : 0;
+                    double oy = oi == 2 ? thickness : oi == 3 ? -thickness : 0;
+                    double oz = oi == 0 ? rightZ : oi == 1 ? -rightZ : 0;
+                    Vector3 f = from.add(ox, oy, oz);
+                    Vector3 t = to.add(ox, oy, oz);
 
                     List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
                     boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);

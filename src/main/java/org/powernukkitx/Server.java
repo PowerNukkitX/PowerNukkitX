@@ -1221,11 +1221,8 @@ public class Server {
 
         long nanosPerTick = getNanosPerTick();
 
-        // Handle freezable array
         int freezableArrayCompressTime = (int) ((nanosPerTick - (System.nanoTime() - tickTimeNano)) / 1_000_000L);
-        if (freezableArrayCompressTime > 4) {
-            getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
-        }
+        getFreezableArrayManager().setMaxCompressionTime(Math.max(0, freezableArrayCompressTime)).tick();
 
         long nowNano = System.nanoTime();
         this.tickDurationsNanos[(int) (this.tickCounter & (this.tickDurationsNanos.length - 1))] = nowNano - tickTimeNano;

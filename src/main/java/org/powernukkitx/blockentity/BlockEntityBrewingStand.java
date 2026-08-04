@@ -57,7 +57,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
 
         for (int i = 0; i < getSize(); i++) {
-            inventory.setItem(i, this.getItem(i));
+            inventory.setItemInternal(i, this.getItem(i));
         }
 
         final CompoundTag nbtMap = this.getNbt();

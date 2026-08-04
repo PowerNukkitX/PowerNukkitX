@@ -64,7 +64,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         }
 
         for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
+            this.inventory.setItemInternal(i, this.getItem(i));
         }
 
         final CompoundTag nbtMap = getNbt();

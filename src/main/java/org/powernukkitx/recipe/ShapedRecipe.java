@@ -316,7 +316,7 @@ public class ShapedRecipe extends CraftingRecipe {
         payload.setWidth(this.getWidth());
         payload.setHeight(this.getHeight());
         payload.getIngredients().addAll(ingredients.stream().map(ItemDescriptor::toNetwork).toList());
-        payload.getResults().addAll(this.getResults().stream().map(Item::toNetwork).toList());
+        payload.getResults().addAll(this.getResults().stream().map(Item::toRecipeNetwork).toList());
         payload.setUuid(this.getUUID());
         payload.setTag("crafting_table");
         payload.setPriority(this.getPriority());

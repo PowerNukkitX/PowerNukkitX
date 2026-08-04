@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.powernukkitx.level.Sound;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,11 +16,11 @@ class ProfessionTest {
     }
 
     @Test
-    void getProfessionsReturnsDefensiveCopy() {
-        HashMap<Integer, Profession> a = Profession.getProfessions();
-        HashMap<Integer, Profession> b = Profession.getProfessions();
-        assertNotSame(a, b);
+    void getProfessionsReturnsUnmodifiableView() {
+        Map<Integer, Profession> a = Profession.getProfessions();
         assertFalse(a.isEmpty());
+        assertThrows(UnsupportedOperationException.class,
+                () -> a.put(-1, new ProfessionArmor()));
     }
 
     @Test

@@ -2697,10 +2697,21 @@ public abstract class Item implements Cloneable, ItemID {
                 .tag(this.getNbt() == null ? null : this.getNbt().toNetwork())
                 .canPlace(!hasNbt ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
                 .canBreak(!hasNbt ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId()))
+                .blockDefinition(new RuntimeBlockDefinition(this.getNetworkBlockRuntimeId()))
                 .usingNetId(true)
                 .netId(this.getNetId())
                 .build();
+    }
+
+    public ItemData toRecipeNetwork() {
+        final CompoundTag nbt = this.getNbt();
+        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
+            return this.toNetwork();
+        }
+        final Item stripped = this.clone();
+        final CompoundTag strippedNbt = nbt.copy().remove("Damage");
+        stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
+        return stripped.toNetwork();
     }
 
     public ItemData toCreativeNetwork() {
@@ -2714,10 +2725,17 @@ public abstract class Item implements Cloneable, ItemID {
                 .tag(clearCreativeTag || this.getNbt() == null ? null : this.getNbt().toNetwork())
                 .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
                 .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : (this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId())))
+                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : this.getNetworkBlockRuntimeId()))
                 .usingNetId(false)
                 .netId(0)
                 .build();
+    }
+
+    private int getNetworkBlockRuntimeId() {
+        if (this.block != null && this.getId().equals(this.getBlockId())) {
+            return this.getBlock().getRuntimeId();
+        }
+        return Block.get(Block.AIR).getRuntimeId();
     }
 
     protected boolean isCreativeTagEmpty() {

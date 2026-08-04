@@ -47,6 +47,7 @@ dependencies {
     api(libs.fastutil)
     api(libs.snakeyaml)
     api(libs.stateless4j)
+    api(libs.bedrock.connection)
 
     implementation(libs.bundles.leveldb)
     implementation(libs.rng.simple)
@@ -61,13 +62,12 @@ dependencies {
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
     implementation(libs.pnxgamedata)
-    implementation(libs.bedrock.connection)
     implementation(libs.commonslang3)
     implementation(libs.caffeine)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
-    
+
     testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)

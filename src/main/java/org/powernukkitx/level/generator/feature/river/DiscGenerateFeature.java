@@ -109,14 +109,26 @@ public abstract class DiscGenerateFeature extends CountGenerateFeature {
                                 continue;
                             }
                             int localZ = z & 15;
+                            int highestReplaced = Integer.MIN_VALUE;
                             for (int y = minY; y <= maxY; y++) {
                                 BlockState currentState = unsafeChunk.getBlockState(localX, y, localZ, 0);
                                 for (BlockState replaceBlockState : replacementBlocks) {
                                     if (currentState.equals(replaceBlockState)) {
                                         object.setBlockStateAt(x, y, z, sourceBlock);
                                         placedAny[0] = true;
+                                        highestReplaced = y;
                                         break;
                                     }
+                                }
+                            }
+                            if (highestReplaced != Integer.MIN_VALUE) {
+                                int maxHeight = level.getMaxHeight();
+                                for (int y = highestReplaced + 1; y < maxHeight; y++) {
+                                    BlockState aboveState = unsafeChunk.getBlockState(localX, y, localZ, 0);
+                                    if (!aboveState.equals(STATE_DIRT) && !aboveState.equals(STATE_GRASS)) {
+                                        break;
+                                    }
+                                    object.setBlockStateAt(x, y, z, sourceBlock);
                                 }
                             }
                         }

@@ -11,6 +11,16 @@ public interface AxisAlignedBB extends Cloneable {
 
     List<AxisAlignedBB> EMPTY_LIST = List.of();
 
+    /**
+     * Tolerance for touch-box checks against client-supplied positions.
+     * Bedrock sends coordinates as float32; widening to double leaves
+     * sub-ULP residue that {@link #intersectsWith} would otherwise treat
+     * as real overlap. Scales with magnitude - float32 ULP grows with it.
+     */
+    static double collisionEpsilon(double coord) {
+        return Math.max(1e-5, Math.ulp((float) coord) * 4);
+    }
+
     default AxisAlignedBB setBounds(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
         this.setMinX(minX);
         this.setMinY(minY);

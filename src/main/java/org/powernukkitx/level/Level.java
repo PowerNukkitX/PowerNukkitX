@@ -89,11 +89,13 @@ import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -406,13 +408,31 @@ public class Level implements Metadatable {
     private LongOpenHashSet tickingAreaChunkHashes;
     /** Resolved chunk set for tick-all mode ({@code chunksPerTicks < 0}); see tickAllChunksCached. */
     private IChunk[] cachedTickChunks;
-    private long cachedTickChunksLoaderKey;
+    /**
+     * Chunk hash to the number of chunk loaders whose tick radius covers it, maintained
+     * incrementally as loaders move rather than rebuilt from scratch. Purely geometric: it says
+     * nothing about whether a chunk is loaded, which is applied later by
+     * {@link #resolveTickChunks}. That separation is what lets a chunk loading or unloading
+     * invalidate only the resolved array instead of forcing a full re-expansion.
+     */
+    private final Long2IntOpenHashMap loaderCoverage = new Long2IntOpenHashMap();
+    /** {@link #loaderCoveragePosition} value meaning "this loader contributes no coverage yet". */
+    private static final long COVERAGE_ABSENT = Long.MIN_VALUE;
+    /**
+     * Loader id to the chunk position its {@link #loaderCoverage} contribution was applied for.
+     * Absent loaders report {@link #COVERAGE_ABSENT} rather than fastutil's default of zero,
+     * which is indistinguishable from a real position - {@code chunkHash(0, 0)} is also zero.
+     */
+    private final Int2LongOpenHashMap loaderCoveragePosition = newCoveragePositionMap();
+    /** Scratch for {@link #refreshLoaderCoverage}, so the radius work happens off the loaders monitor. */
+    private final LongArrayList coverageRemovals = new LongArrayList();
+    private final LongArrayList coverageAdditions = new LongArrayList();
     /** Set on chunk load/unload (any thread) so the tick-all cache rebuilds next tick. */
     private volatile boolean tickChunkCacheDirty = true;
     /**
      * {@link TickingAreaManager#getVersion()} the {@link #tickingAreaChunkHashes} were built
-     * from. Owned by appendTickingAreaChunks; the tick-all cache check reads it too, which is
-     * safe because appendTickingAreaChunks runs inside the cache rebuild.
+     * from. Owned by {@link #refreshTickingAreaHashes}; the tick-all cache check reads it too,
+     * which is safe because that refresh runs inside the resolve it triggers.
      */
     private long tickingAreaHashesVersion = -1;
     /**
@@ -431,7 +451,6 @@ public class Level implements Metadatable {
     private int rainTime = 0;
     private boolean thundering = false;
     private int thunderTime = 0;
-    private Object2IntOpenHashMap<String> playerWeatherShowMap = new Object2IntOpenHashMap<String>();
 
     ///
 
@@ -791,6 +810,104 @@ public class Level implements Metadatable {
         }
     }
 
+    public void playMusic(String trackName) {
+        this.playMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE, (Player[]) null);
+    }
+
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.playMusic(trackName, volume, fadeSeconds, repeatMode, (Player[]) null);
+    }
+
+    /**
+     * Immediately starts a music track, replacing the currently playing one.
+     *
+     * @param trackName  the name of the music track, for example {@code record.pigstep}
+     * @param volume     the volume of the track, between 0 and 1
+     * @param fadeSeconds the duration of the fade between the previous track and this one, between 0 and 10
+     * @param repeatMode how the track should be repeated
+     * @param players    the players who should hear the music, all players of this level when null or empty
+     */
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode, Player... players) {
+        this.sendMusicEvent(LevelEvent.PLAY_CUSTOM_MUSIC, musicTag(trackName, volume, fadeSeconds, repeatMode), players);
+    }
+
+    public void queueMusic(String trackName) {
+        this.queueMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE, (Player[]) null);
+    }
+
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.queueMusic(trackName, volume, fadeSeconds, repeatMode, (Player[]) null);
+    }
+
+    /**
+     * Queues a music track, it starts once the currently playing track has finished.
+     *
+     * @see #playMusic(String, float, float, MusicRepeatMode, Player...)
+     */
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode, Player... players) {
+        this.sendMusicEvent(LevelEvent.QUEUE_CUSTOM_MUSIC, musicTag(trackName, volume, fadeSeconds, repeatMode), players);
+    }
+
+    public void stopMusic() {
+        this.stopMusic(0, (Player[]) null);
+    }
+
+    public void stopMusic(float fadeSeconds) {
+        this.stopMusic(fadeSeconds, (Player[]) null);
+    }
+
+    /**
+     * Stops the currently playing music track and clears the queue.
+     *
+     * @param fadeSeconds the duration of the fade out, between 0 and 10
+     * @param players     the players the music should be stopped for, all players of this level when null or empty
+     */
+    public void stopMusic(float fadeSeconds, Player... players) {
+        Preconditions.checkArgument(fadeSeconds >= 0 && fadeSeconds <= 10, "Music fade seconds must be between 0 and 10");
+
+        this.sendMusicEvent(LevelEvent.STOP_CUSTOM_MUSIC, new CompoundTag().putFloat("fadeSeconds", fadeSeconds), players);
+    }
+
+    public void setMusicVolume(float volume) {
+        this.setMusicVolume(volume, (Player[]) null);
+    }
+
+    /**
+     * Changes the volume of the currently playing music track.
+     *
+     * @param volume  the volume of the track, between 0 and 1
+     * @param players the players the volume should be changed for, all players of this level when null or empty
+     */
+    public void setMusicVolume(float volume, Player... players) {
+        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Music volume must be between 0 and 1");
+
+        this.sendMusicEvent(LevelEvent.SET_MUSIC_VOLUME, new CompoundTag().putFloat("volume", volume), players);
+    }
+
+    private static CompoundTag musicTag(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        Preconditions.checkNotNull(trackName, "trackName");
+        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Music volume must be between 0 and 1");
+        Preconditions.checkArgument(fadeSeconds >= 0 && fadeSeconds <= 10, "Music fade seconds must be between 0 and 10");
+
+        return new CompoundTag()
+                .putString("trackName", trackName)
+                .putFloat("volume", volume)
+                .putFloat("fadeSeconds", fadeSeconds)
+                .putBoolean("repeatMode", repeatMode.isLooping());
+    }
+
+    private void sendMusicEvent(LevelEventType type, CompoundTag data, Player... players) {
+        final LevelEventGenericPacket packet = new LevelEventGenericPacket();
+        packet.setType(type);
+        packet.setTag(data.toNetwork());
+
+        if (players == null || players.length == 0) {
+            Server.broadcastPacket(this.players.values(), packet);
+        } else {
+            Server.broadcastPacket(players, packet);
+        }
+    }
+
     public void addLevelEvent(LevelEventType type, int data) {
         addLevelEvent(type, data, null);
     }
@@ -1015,13 +1132,38 @@ public class Level implements Metadatable {
     public Map<Integer, Player> getChunkPlayers(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
         Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
-        if (loaders != null) {
-            return loaders.entrySet()
-                    .stream()
-                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
-                    .collect(HashMap::new, (m, e) -> m.put(e.getKey(), (Player) e.getValue()), HashMap::putAll);
+        if (loaders == null || loaders.isEmpty()) {
+            return Collections.emptyMap();
         }
-        return Collections.emptyMap();
+        Map<Integer, Player> result = null;
+        for (Map.Entry<Integer, ChunkLoader> e : loaders.entrySet()) {
+            if (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)) {
+                if (result == null) {
+                    result = new HashMap<>(loaders.size());
+                }
+                result.put(e.getKey(), p);
+            }
+        }
+        return result == null ? Collections.emptyMap() : result;
+    }
+
+    public Player[] getChunkPlayerArray(int chunkX, int chunkZ) {
+        long index = Level.chunkHash(chunkX, chunkZ);
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders == null || loaders.isEmpty()) {
+            return Player.EMPTY_ARRAY;
+        }
+        int count = 0;
+        Player[] result = new Player[loaders.size()];
+        for (ChunkLoader loader : loaders.values()) {
+            if (loader instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)) {
+                result[count++] = p;
+            }
+        }
+        if (count == 0) {
+            return Player.EMPTY_ARRAY;
+        }
+        return count == result.length ? result : Arrays.copyOf(result, count);
     }
 
     public ChunkLoader[] getChunkLoaders(int chunkX, int chunkZ) {
@@ -1381,12 +1523,11 @@ public class Level implements Metadatable {
                                 IChunk chunk = this.getChunk(chunkX, chunkZ);
                                 if (chunk == null) continue;
                                 chunk.reObfuscateChunk();
-                                for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
+                                for (Player p : this.getChunkPlayerArray(chunkX, chunkZ)) {
                                     p.onChunkChanged(chunk);
                                 }
                             } else {
-                                Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
-                                Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
+                                Player[] playerArray = this.getChunkPlayerArray(chunkX, chunkZ);
                                 var size = blocks.size();
                                 if (isAntiXrayEnabled()) {
                                     antiXraySystem.obfuscateSendBlocks(index, playerArray, blocks);
@@ -1411,12 +1552,13 @@ public class Level implements Metadatable {
             }
 
             if (!this.chunkPackets.isEmpty()) {
-                for (long index : this.chunkPackets.keySet()) {
+                for (var entry : this.chunkPackets.entrySet()) {
+                    long index = entry.getKey();
                     int chunkX = Level.getHashX(index);
                     int chunkZ = Level.getHashZ(index);
-                    Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
+                    Player[] chunkPlayers = this.getChunkPlayerArray(chunkX, chunkZ);
                     if (chunkPlayers.length > 0) {
-                        for (var pk : this.chunkPackets.get(index)) {
+                        for (var pk : entry.getValue()) {
                             Server.broadcastPacket(chunkPlayers, pk);
                         }
                     }
@@ -1499,27 +1641,26 @@ public class Level implements Metadatable {
             return;
         }
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
-            for (String key : playerWeatherShowMap.keySet()) {
-                int intValue = playerWeatherShowMap.getInt(key);
-                if (intValue == 0) {
-                    Player player = server.getPlayer(key);
-                    if (player != null) {
-                        if (isRaining()) {
-                            final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
-                            levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
-                            levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                            levelEventPacketStartRain.setData(this.rainTime);
-                            player.sendPacket(levelEventPacketStartRain);
-                            this.playerWeatherShowMap.put(key, 1);
-                            if (isThundering()) {
-                                final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
-                                levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
-                                levelEventPacketStartThunder.setData(this.thunderTime);
-                                levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                                player.sendPacket(levelEventPacketStartThunder);
-                                this.playerWeatherShowMap.put(key, 2);
-                            }
-                        }
+            if (isRaining()) {
+                final boolean thundering = this.thundering;
+                for (Player player : this.players.values()) {
+                    if (player.getShownWeather() != WeatherDisplay.NONE) {
+                        continue;
+                    }
+                    final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
+                    levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
+                    levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
+                    levelEventPacketStartRain.setData(this.rainTime);
+                    player.sendPacket(levelEventPacketStartRain);
+                    if (thundering) {
+                        final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
+                        levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
+                        levelEventPacketStartThunder.setData(this.thunderTime);
+                        levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
+                        player.sendPacket(levelEventPacketStartThunder);
+                        player.setShownWeather(WeatherDisplay.THUNDER);
+                    } else {
+                        player.setShownWeather(WeatherDisplay.RAIN);
                     }
                 }
             }
@@ -1776,6 +1917,8 @@ public class Level implements Metadatable {
         if (this.chunksPerTicks == 0 || (this.loaders.isEmpty() && !hasTickingAreas)) {
             this.chunkTickList.clear();
             this.cachedTickChunks = null;
+            this.loaderCoverage.clear();
+            this.loaderCoveragePosition.clear();
             return;
         }
 
@@ -1864,18 +2007,12 @@ public class Level implements Metadatable {
      * border, a chunk loaded or unloaded, or ticking areas changed.
      */
     private void tickAllChunksCached(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion, int tickSpeed) {
-        long loaderKey = 1;
-        synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                loaderKey = loaderKey * 31 + Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
-            }
-        }
+        boolean coverageChanged = refreshLoaderCoverage();
         if (this.cachedTickChunks == null || this.tickChunkCacheDirty
-                || loaderKey != this.cachedTickChunksLoaderKey
-                || areaVersion != this.tickingAreaHashesVersion) {
+                || areaVersion != this.tickingAreaHashesVersion
+                || coverageChanged) {
             this.tickChunkCacheDirty = false;
-            this.cachedTickChunksLoaderKey = loaderKey;
-            rebuildTickAllChunkCache(areaManager, hasTickingAreas, areaVersion);
+            resolveTickChunks(areaManager, hasTickingAreas, areaVersion);
         }
         for (IChunk chunk : this.cachedTickChunks) {
             if (!chunk.isLoaded()) {
@@ -1885,42 +2022,119 @@ public class Level implements Metadatable {
         }
     }
 
-    private void rebuildTickAllChunkCache(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
-        this.chunkTickList.clear();
-        LevelProvider provider = requireProvider();
+    private static Int2LongOpenHashMap newCoveragePositionMap() {
+        Int2LongOpenHashMap map = new Int2LongOpenHashMap();
+        map.defaultReturnValue(COVERAGE_ABSENT);
+        return map;
+    }
+
+    private boolean refreshLoaderCoverage() {
+        this.coverageRemovals.clear();
+        this.coverageAdditions.clear();
         synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                int chunkX = (int) loader.getX() >> 4;
-                int chunkZ = (int) loader.getZ() >> 4;
-                for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
-                    for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
-                        long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
-                        if (provider.isChunkLoaded(hash)) {
-                            this.chunkTickList.put(hash, -1);
-                        }
+            for (Int2ObjectMap.Entry<ChunkLoader> entry : this.loaders.int2ObjectEntrySet()) {
+                ChunkLoader loader = entry.getValue();
+                long position = Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
+                long previous = this.loaderCoveragePosition.put(entry.getIntKey(), position);
+                if (previous == position) {
+                    continue;
+                }
+                if (previous != COVERAGE_ABSENT) {
+                    this.coverageRemovals.add(previous);
+                }
+                this.coverageAdditions.add(position);
+            }
+            if (this.loaderCoveragePosition.size() != this.loaders.size()) {
+                ObjectIterator<Int2LongMap.Entry> iterator = this.loaderCoveragePosition.int2LongEntrySet().iterator();
+                while (iterator.hasNext()) {
+                    Int2LongMap.Entry entry = iterator.next();
+                    if (!this.loaders.containsKey(entry.getIntKey())) {
+                        this.coverageRemovals.add(entry.getLongValue());
+                        iterator.remove();
                     }
                 }
             }
         }
-        appendTickingAreaChunks(areaManager, hasTickingAreas, areaVersion);
-
-        List<IChunk> resolved = new ArrayList<>(this.chunkTickList.size());
-        for (Long2IntMap.Entry entry : this.chunkTickList.long2IntEntrySet()) {
-            long index = entry.getLongKey();
-            if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
-                    && !areNeighboringChunksLoaded(index)) {
-                continue;
-            }
-            IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
-            if (chunk != null) {
-                resolved.add(chunk);
-            }
+        if (this.coverageRemovals.isEmpty() && this.coverageAdditions.isEmpty()) {
+            return false;
         }
-        this.chunkTickList.clear();
-        this.cachedTickChunks = resolved.toArray(new IChunk[0]);
+        for (int i = 0; i < this.coverageRemovals.size(); i++) {
+            applyCoverage(this.coverageRemovals.getLong(i), -1);
+        }
+        for (int i = 0; i < this.coverageAdditions.size(); i++) {
+            applyCoverage(this.coverageAdditions.getLong(i), 1);
+        }
+        return true;
     }
 
-    private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+    /**
+     * Adds or withdraws one loader's tick-radius square from {@link #loaderCoverage}. A chunk
+     * drops out only once no loader covers it, so overlapping loaders cannot uncover each other.
+     *
+     * @param centre the loader's chunk position
+     * @param delta  {@code 1} to add coverage, {@code -1} to withdraw it
+     */
+    private void applyCoverage(long centre, int delta) {
+        int chunkX = getHashX(centre);
+        int chunkZ = getHashZ(centre);
+        for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
+            long xPart = ((long) (chunkX + dx)) << 32;
+            for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
+                long hash = xPart | ((chunkZ + dz) & 0xffffffffL);
+                if (this.loaderCoverage.addTo(hash, delta) + delta <= 0) {
+                    this.loaderCoverage.remove(hash);
+                }
+            }
+        }
+    }
+
+    /** Turns the covered chunk hashes, plus any ticking areas, into the array the tick iterates. */
+    private void resolveTickChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+        refreshTickingAreaHashes(areaManager, hasTickingAreas, areaVersion);
+
+        List<IChunk> resolved = new ArrayList<>(this.loaderCoverage.size());
+        LongIterator covered = this.loaderCoverage.keySet().iterator();
+        while (covered.hasNext()) {
+            addResolvedTickChunk(covered.nextLong(), resolved);
+        }
+        if (this.tickingAreaChunkHashes != null) {
+            LongIterator areaChunks = this.tickingAreaChunkHashes.iterator();
+            while (areaChunks.hasNext()) {
+                long index = areaChunks.nextLong();
+                if (!this.loaderCoverage.containsKey(index)) {
+                    addResolvedTickChunk(index, resolved);
+                }
+            }
+        }
+
+        IChunk[] target = this.cachedTickChunks;
+        if (target == null || target.length != resolved.size()) {
+            target = new IChunk[resolved.size()];
+        }
+        this.cachedTickChunks = resolved.toArray(target);
+    }
+
+    /**
+     * Adds a covered chunk to the tick set if it is loaded, and either sits in a ticking area or
+     * has its neighbours loaded.
+     * <p>
+     * Coverage is geometric, so unloaded chunks reach here; the single {@code getChunk} lookup
+     * runs first to reject them before the four-lookup neighbour check.
+     */
+    private void addResolvedTickChunk(long index, List<IChunk> resolved) {
+        IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
+        if (chunk == null) {
+            return;
+        }
+        if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
+                && !areNeighboringChunksLoaded(index)) {
+            return;
+        }
+        resolved.add(chunk);
+    }
+
+    /** Rebuilds {@link #tickingAreaChunkHashes} when the ticking-area version moved. */
+    private void refreshTickingAreaHashes(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
         if (!hasTickingAreas) {
             this.tickingAreaChunkHashes = null;
             this.tickingAreaHashesVersion = areaVersion;
@@ -1938,6 +2152,13 @@ public class Level implements Metadatable {
                 }
             }
             this.tickingAreaChunkHashes = hashes;
+        }
+    }
+
+    private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+        refreshTickingAreaHashes(areaManager, hasTickingAreas, areaVersion);
+        if (this.tickingAreaChunkHashes == null) {
+            return;
         }
         LevelProvider provider = requireProvider();
         for (long hash : this.tickingAreaChunkHashes) {
@@ -2773,7 +2994,9 @@ public class Level implements Metadatable {
                 int chunkZ = Level.getHashZ(index);
                 int bx = chunkX << 4;
                 int bz = chunkZ << 4;
-                for (int blockHash : blocks.clone()) {
+                var blockIter = blocks.intIterator();
+                while (blockIter.hasNext()) {
+                    int blockHash = blockIter.nextInt();
                     int hi = (byte) (blockHash >>> 16);
                     int lo = (short) blockHash;
                     int y = ensureY(lo - 64);
@@ -2965,12 +3188,13 @@ public class Level implements Metadatable {
         long index = Level.chunkHash(cx, cz);
 
         if (direct) {
+            Player[] chunkPlayers = this.getChunkPlayerArray(cx, cz);
             if (isAntiXrayEnabled() && block.isTransparent()) {
-                this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+                this.sendBlocks(chunkPlayers, new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
             }
-            this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
+            this.sendBlocks(chunkPlayers, new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
             if (blockPrevious instanceof CustomBlock && block.isAir()) { //hack: For some reason, we have to send the same packet twice if the previous block was custom and the new block is air.
-                this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
+                this.sendBlocks(chunkPlayers, new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
             }
         } else {
             addBlockChange(index, x, y, z);
@@ -3970,7 +4194,24 @@ public class Level implements Metadatable {
     }
 
     public Entity[] getNearbyEntitiesSafe(AxisAlignedBB bb, Entity entity, boolean loadChunks) {
-        return Arrays.stream(getNearbyEntities(bb, entity, loadChunks)).filter(Objects::nonNull).toList().toArray(Entity.EMPTY_ARRAY);
+        Entity[] found = getNearbyEntities(bb, entity, loadChunks);
+        int count = 0;
+        for (Entity e : found) {
+            if (e != null) {
+                count++;
+            }
+        }
+        if (count == found.length) {
+            return found;
+        }
+        Entity[] result = new Entity[count];
+        int i = 0;
+        for (Entity e : found) {
+            if (e != null) {
+                result[i++] = e;
+            }
+        }
+        return result;
     }
 
     public Entity[] getNearbyEntities(AxisAlignedBB bb) {
@@ -4402,9 +4643,12 @@ public class Level implements Metadatable {
         Position previousSpawn = this.getSpawnLocation();
         this.requireProvider().setSpawn(pos);
         this.server.getPluginManager().callEvent(new SpawnChangeEvent(this, previousSpawn));
-        this.getPlayers().values().stream().filter(player ->
-                player.getSpawn().second() == null || player.getSpawn().second() == Player.SpawnPointType.WORLD
-        ).forEach(player -> player.setSpawn(this.getSpawnLocation(), Player.SpawnPointType.WORLD));
+        Position spawn = this.getSpawnLocation();
+        for (Player player : this.getPlayers().values()) {
+            if (player.getSpawn().second() == null || player.getSpawn().second() == Player.SpawnPointType.WORLD) {
+                player.setSpawn(spawn, Player.SpawnPointType.WORLD);
+            }
+        }
     }
 
     public Position getFuzzySpawnLocation() {
@@ -4515,7 +4759,6 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.remove(entity.getId());
-            this.playerWeatherShowMap.removeInt(p.getName());
             this.checkSleep();
         } else {
             entity.close();
@@ -4532,7 +4775,7 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.put(entity.getId(), p);
-            this.playerWeatherShowMap.put(p.getName(), 0);
+            p.setShownWeather(WeatherDisplay.NONE);
         }
         this.entities.put(entity.getId(), entity);
     }
@@ -4848,8 +5091,12 @@ public class Level implements Metadatable {
     }
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder, boolean checkHighest) {
-        if (spawn == null)
-            spawn = (horizontalMaxOffset == 0) ? this.getSpawnLocation().add(0.5, 0, 0.5) : this.getFuzzySpawnLocation();
+        if (spawn == null) {
+            Vector3 worldSpawn = this.getSpawnLocation().add(0.5, 0, 0.5);
+            if (horizontalMaxOffset == 0 || standable(worldSpawn, allowWaterUnder))
+                return Position.fromObject(worldSpawn, this);
+            spawn = this.getFuzzySpawnLocation();
+        }
         if (spawn == null)
             return null;
         if (standable(spawn, allowWaterUnder) || horizontalMaxOffset == 0)
@@ -5385,7 +5632,7 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
+            p.setShownWeather(raining ? WeatherDisplay.RAIN : WeatherDisplay.NONE);
             p.sendPacket(pk);
         }
 
@@ -5433,7 +5680,7 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 2 : 0);
+            p.setShownWeather(raining ? WeatherDisplay.THUNDER : WeatherDisplay.NONE);
             p.sendPacket(pk);
         }
 
@@ -5473,6 +5720,18 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         Server.broadcastPacket(players, pk);
+
+        final WeatherDisplay shown;
+        if (this.isThundering()) {
+            shown = WeatherDisplay.THUNDER;
+        } else if (this.isRaining()) {
+            shown = WeatherDisplay.RAIN;
+        } else {
+            shown = WeatherDisplay.NONE;
+        }
+        for (Player player : players) {
+            player.setShownWeather(shown);
+        }
     }
 
     public void sendWeather(Player player) {
@@ -5902,7 +6161,7 @@ public class Level implements Metadatable {
                     totalBlocks++;
                     final double fromZ = Math.fma(z, diffZ, zOffset);
 
-                    if (this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
+                    if (!this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
                         visibleBlocks++;
                     }
                 }
@@ -5975,6 +6234,13 @@ public class Level implements Metadatable {
         @NotNull
         private Block block;
         private BlockFace neighbor;
+    }
+
+    @ApiStatus.Internal
+    public enum WeatherDisplay {
+        NONE,
+        RAIN,
+        THUNDER
     }
 
     /**

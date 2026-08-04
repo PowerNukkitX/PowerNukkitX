@@ -127,6 +127,7 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new SetMaxPlayersCommand("setmaxplayers"));
         this.register("nukkit", new PlaySoundCommand("playsound"));
         this.register("nukkit", new StopSoundCommand("stopsound"));
+        this.register("nukkit", new MusicCommand("music"));
         this.register("nukkit", new FillCommand("fill"));
         this.register("nukkit", new DayLockCommand("daylock"));
         this.register("nukkit", new ClearCommand("clear"));
@@ -354,10 +355,16 @@ public class SimpleCommandMap implements CommandMap {
      * @return the array of arguments
      */
     public static ArrayList<String> parseArguments(String cmdLine) {
+        ArrayList<String> args = parseArguments(cmdLine, true);
+        return args != null ? args : parseArguments(cmdLine, false);
+    }
+
+    private static ArrayList<String> parseArguments(String cmdLine, boolean groupSquareBrackets) {
         StringBuilder sb = new StringBuilder(cmdLine);
         ArrayList<String> args = new ArrayList<>();
         boolean notQuoted = true;
         int curlyBraceCount = 0;
+        int squareBracketCount = 0;
         int start = 0;
 
         for (int i = 0; i < sb.length(); i++) {
@@ -371,7 +378,15 @@ public class SimpleCommandMap implements CommandMap {
                 }
             }
             if (curlyBraceCount == 0) {
-                if (sb.charAt(i) == ' ' && notQuoted) {
+                if (groupSquareBrackets && notQuoted) {
+                    if (sb.charAt(i) == '[') {
+                        squareBracketCount++;
+                    } else if (sb.charAt(i) == ']' && squareBracketCount > 0) {
+                        squareBracketCount--;
+                    }
+                }
+
+                if (sb.charAt(i) == ' ' && notQuoted && squareBracketCount == 0) {
                     String arg = sb.substring(start, i);
                     if (!arg.isEmpty()) {
                         args.add(arg);
@@ -383,6 +398,10 @@ public class SimpleCommandMap implements CommandMap {
                     notQuoted = !notQuoted;
                 }
             }
+        }
+
+        if (squareBracketCount != 0) {
+            return null;
         }
 
         String arg = sb.substring(start);

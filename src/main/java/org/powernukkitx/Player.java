@@ -131,6 +131,7 @@ import org.powernukkitx.level.ChunkLoader;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
+import org.powernukkitx.level.MusicRepeatMode;
 import org.powernukkitx.level.PlayerChunkManager;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
@@ -162,6 +163,7 @@ import org.powernukkitx.permission.PermissionAttachmentInfo;
 import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.plugin.Plugin;
 import org.powernukkitx.positiontracking.PositionTrackingService;
+import org.powernukkitx.recipe.unlock.PlayerRecipeBook;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.AsyncTask;
 import org.powernukkitx.scheduler.ServerScheduler;
@@ -319,6 +321,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private Entity killer = null;
     private TaskHandler delayedPosTrackingUpdate;
     protected boolean showingCredits;
+    @Getter
+    @Setter
+    @ApiStatus.Internal
+    protected volatile Level.WeatherDisplay shownWeather = Level.WeatherDisplay.NONE;
     protected static final int NO_SHIELD_DELAY = 10;
     @Getter
     @Setter
@@ -338,6 +344,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Fog settings of player.
      */
     protected List<String> fogStack = new ObjectArrayList<>();
+    /**
+     * Recipes this player has discovered.
+     */
+    protected final PlayerRecipeBook recipeBook = new PlayerRecipeBook(this);
     /**
      * The entity that the player is attacked last.
      */
@@ -718,6 +728,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
         this.syncInventory();
         this.resetInventory();
+        this.recipeBook.onSpawn();
 
         this.setEnableClientCommand(true);
 
@@ -1075,11 +1086,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.fastMove(diffX, diffY, diffZ);
     }
 
+    /**
+     * Broadcasts this player's mounted position and rotation to relevant viewers.
+     *
+     * <p>Does nothing if the player is not riding an entity.</p>
+     */
     public void broadcastMountedMovement() {
-        if (this.riding == null) return;
+        Entity riding = this.riding;
+        if (riding == null) return;
 
         MovePlayerPacket pk = new MovePlayerPacket();
-        pk.setPlayerRuntimeID(this.getId());
+        pk.setPlayerRuntimeID(this.id);
         pk.setPosition(Vector3f.from(
             (float) this.x,
             (float) this.y,
@@ -1091,17 +1108,24 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             (float) this.headYaw
         ));
         pk.setPositionMode(PositionMode.NORMAL);
-        pk.setOnGround(false);
-        pk.setRidingRuntimeID(this.riding.getId());
+        pk.setOnGround(this.onGround);
+        pk.setRidingRuntimeID(riding.getId());
+        pk.setTick(this.getServer().getTick());
 
-        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
-        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
-        teleportData.setSourceActorType(0);
-        pk.setTeleportData(teleportData);
+        Set<Player> viewers = new HashSet<>();
 
-        pk.setTick(this.getLevel().getCurrentTick());
+        viewers.addAll(this.hasSpawned.values());
+        viewers.addAll(riding.getViewers().values());
 
-        Server.broadcastPacket(this.hasSpawned.values(), pk);
+        for (Entity passenger : riding.getPassengers()) {
+            if (passenger instanceof Player player) {
+                viewers.add(player);
+            }
+        }
+
+        viewers.remove(this);
+
+        Server.broadcastPacket(viewers, pk);
     }
 
     /**
@@ -1418,6 +1442,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.fogStack.add(i, fogIdentifiers.get(i).parseValue());
         }
 
+        this.recipeBook.load(this.nbt);
+
         if (!this.server.getSettings().playerSettings().checkMovement()) {
             this.checkMovement = false;
         }
@@ -1504,6 +1530,36 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.server.getNameBans().isBanned(this.getName());
     }
 
+    /**
+     * Resolves where this player would come back to life if they respawned right now, applying the same fallbacks
+     * as {@link #respawn()} but none of its side effects - no respawn anchor charge is consumed, no
+     * {@link PlayerRespawnEvent} is fired, no spawn point is rewritten and no message is sent.
+     * <p>
+     * The spawn point falls back to the default level spawn when its level has been unloaded, and when a
+     * {@link SpawnPointType#BLOCK} spawn point no longer points at a valid respawn block - a broken bed or a depleted
+     * respawn anchor. {@code respawn()} remains the authority: a plugin listening to {@link PlayerRespawnEvent} can
+     * still move the player elsewhere, so the value returned here is a prediction, not a guarantee.
+     * <p>
+     * Reads block state and may load the spawn point's chunk, so call it from the thread that ticks that level.
+     *
+     * @return the predicted respawn position, never null
+     */
+    @NotNull
+    public Position getRespawnPosition() {
+        Pair<Position, SpawnPointType> spawnPair = this.getSpawn();
+        Position spawnPos = spawnPair.left();
+        if (spawnPos == null || spawnPos.level == null || spawnPos.level.getProvider() == null) {
+            return this.getServer().getDefaultLevel().getSpawnLocation();
+        }
+        if (spawnPair.right() == SpawnPointType.BLOCK) {
+            Block spawnBlock = spawnPos.getLevelBlock();
+            if (spawnBlock == null || !isValidRespawnBlock(spawnBlock)) {
+                return this.getServer().getDefaultLevel().getSpawnLocation();
+            }
+        }
+        return spawnPos;
+    }
+
     protected void respawn() {
         //the player can't respawn if the server is hardcore
         if (this.server.isHardcore()) {
@@ -1573,6 +1629,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.inventory.sendArmorContents(this);
         this.offhandInventory.sendContents(this);
         this.teleport(Location.fromObject(respawnPos.add(0, this.getEyeHeight(), 0), respawnPos.level), TeleportCause.PLAYER_SPAWN);
+        this.despawnFromAll();
         this.spawnToAll();
     }
 
@@ -2840,7 +2897,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             Arrays.asList(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0).toNetwork(),
                 Attribute.getAttribute(Attribute.ABSORPTION).setValue(this.getAbsorption()).toNetwork(),
-                Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getMaxFood()).toNetwork(),
+                Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getFood()).toNetwork(),
+                Attribute.getAttribute(Attribute.SATURATION).setValue(this.getFoodData().getSaturation()).toNetwork(),
                 Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()).toNetwork(),
                 Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()).toNetwork(),
                 Attribute.getAttribute(Attribute.EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel())).toNetwork()
@@ -2900,11 +2958,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (!this.isAlive() && this.spawned) {
             this.drainInboundPackets();
+            if (this.isAlive()) {
+                return true;
+            }
             if (this.getLevel().getGameRules().getBoolean(GameRule.DO_IMMEDIATE_RESPAWN)) {
                 this.despawnFromAll();
                 return true;
             }
-            getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, this::despawnFromAll, 10);
+            getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                if (!this.isAlive()) {
+                    this.despawnFromAll();
+                }
+            }, 10);
             return true;
         }
 
@@ -3659,6 +3724,57 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendPacket(pk);
     }
 
+    public void playMusic(String trackName) {
+        this.playMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE);
+    }
+
+    /**
+     * Immediately starts a music track for this player, replacing the currently playing one.
+     *
+     * @param trackName   the name of the music track, for example {@code record.pigstep}
+     * @param volume      the volume of the track, between 0 and 1
+     * @param fadeSeconds the duration of the fade between the previous track and this one, between 0 and 10
+     * @param repeatMode  how the track should be repeated
+     */
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.level.playMusic(trackName, volume, fadeSeconds, repeatMode, this);
+    }
+
+    public void queueMusic(String trackName) {
+        this.queueMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE);
+    }
+
+    /**
+     * Queues a music track for this player, it starts once the currently playing track has finished.
+     *
+     * @see #playMusic(String, float, float, MusicRepeatMode)
+     */
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.level.queueMusic(trackName, volume, fadeSeconds, repeatMode, this);
+    }
+
+    public void stopMusic() {
+        this.stopMusic(0);
+    }
+
+    /**
+     * Stops the currently playing music track and clears the queue of this player.
+     *
+     * @param fadeSeconds the duration of the fade out, between 0 and 10
+     */
+    public void stopMusic(float fadeSeconds) {
+        this.level.stopMusic(fadeSeconds, this);
+    }
+
+    /**
+     * Changes the volume of the music track currently playing for this player.
+     *
+     * @param volume the volume of the track, between 0 and 1
+     */
+    public void setMusicVolume(float volume) {
+        this.level.setMusicVolume(volume, this);
+    }
+
     /**
      * fadein=1,duration=0,fadeout=1
      *
@@ -3935,6 +4051,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.nbt.putList("userProvidedFogIds", userProvidedFogIds);
 
             this.nbt.putInt("TimeSinceRest", this.timeSinceRest);
+
+            this.recipeBook.save(this.nbt);
 
             if (!this.getName().isBlank() && this.nbt != null) {
                 this.server.saveOfflinePlayerData(this.uuid, this.getNbt(), async);
@@ -5934,6 +6052,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public List<String> getFogStack() {
         return fogStack;
+    }
+
+    /**
+     * The player's recipe book, holding every recipe this player has discovered.
+     * The instance lives as long as the player and is usable before spawn, although it only
+     * mirrors changes to the client once {@code recipesUnlock} discovery is active.
+     *
+     * @return the recipe book, never {@code null}
+     */
+    public @NotNull PlayerRecipeBook getRecipeBook() {
+        return this.recipeBook;
     }
 
     /**

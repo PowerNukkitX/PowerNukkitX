@@ -43,6 +43,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     @Override
     public void handle(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
+        if (player == null) {
+            return;
+        }
+
         Vector3f pos = Vector3f.fromNetwork(packet.getPosition());
         Vector3f rot = Vector3f.fromNetwork(packet.getPosition());
         if (!Float.isFinite(pos.getX()) || !Float.isFinite(pos.getY()) || !Float.isFinite(pos.getZ()) || !Float.isFinite(rot.getX()) || !Float.isFinite(rot.getY()) || !Float.isFinite(rot.getZ())) {
@@ -204,8 +208,25 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
         Entity vehicle = null;
         if ((vehicle = player.getRiding()) != null && vehicle.hasWASDControls()) {
+            boolean controllingRider = vehicle.getRider() == player;
+
+            if (!controllingRider) {
+                syncMountedPlayerRotationFromInput(player, packet);
+            }
+
             syncVehiclePositionFromRiderInput(player, vehicle, packet);
-            if (vehicle.onRiderInput(player, packet)) return;
+
+            boolean handled = vehicle.onRiderInput(player, packet);
+
+            vehicle.updatePassengers(false, false);
+
+            if (controllingRider) {
+                vehicle.broadcastMountedPassengerMovements();
+            } else {
+                player.broadcastMountedMovement();
+            }
+
+            if (handled) return;
         }
 
         player.offerMovementTask(clientLoc);
@@ -257,6 +278,18 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             itemStackRequestPacket.getRequests().add(packet.getItemStackRequest());
             PacketHandlerRegistry.getPacketHandler(ItemStackRequestPacket.class).handle(itemStackRequestPacket, holder, server);
         }
+    }
+
+    private static void syncMountedPlayerRotationFromInput(Player player, PlayerAuthInputPacket pk) {
+        Vector3f rot = Vector3f.fromNetwork(pk.getPlayerRotation());
+
+        if (!Float.isFinite(rot.x) || !Float.isFinite(rot.y) || !Float.isFinite(rot.z)) {
+            log.debug("Player {} sent invalid rotation values (NaN or Infinite)", player.getName());
+            return;
+        }
+
+        player.setRotation(rot.getY(), rot.getX());
+        player.setHeadYaw(rot.getZ());
     }
 
     private static void syncVehiclePositionFromRiderInput(Player player, Entity vehicle, PlayerAuthInputPacket pk) {
@@ -315,9 +348,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         vehicle.setHeadYaw(vehicleYaw);
         vehicle.updateMovement();
 
-        if (boat != null) {
-            boat.updatePassengers(false, false);
-        } else {
+        if (boat == null) {
             player.setPosition(packetPosition);
         }
 
