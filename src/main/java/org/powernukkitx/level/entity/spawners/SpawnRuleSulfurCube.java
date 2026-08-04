@@ -16,6 +16,6 @@ public class SpawnRuleSulfurCube extends SpawnRule {
                 new ConditionAny(new ConditionSpawnOnSurface(), new ConditionSpawnUnderground()),
                 new ConditionDifficultyFilter(0, 3),
                 new ConditionBiomeFilter(BiomeTags.SULFUR_CAVES),
-                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER));
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL));
     }
 }

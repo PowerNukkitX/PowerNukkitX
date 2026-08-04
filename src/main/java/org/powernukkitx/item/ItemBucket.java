@@ -345,6 +345,17 @@ public class ItemBucket extends Item {
     }
 
     /**
+     * @deprecated Use {@link #spawnBucketEntity(Position)} instead. Buckets can now carry mobs that are
+     * not fish, so the name no longer describes what the method does.
+     *
+     * <p>Planned removal: after 6 months (&gt;= 2027-02-04).</p>
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public void spawnFishEntity(Position spawnPos) {
+        this.spawnBucketEntity(spawnPos);
+    }
+
+    /**
      * Releases whatever mob this bucket holds at {@code spawnPos}.
      *
      * @return {@code true} if a mob was spawned

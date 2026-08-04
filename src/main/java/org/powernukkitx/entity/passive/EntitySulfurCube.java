@@ -234,13 +234,24 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     }
 
     public void setSwallowedBlock(@Nullable String blockId) {
+        if (Objects.equals(getSwallowedBlock(), blockId)) {
+            return;
+        }
+        applySwallowedBlock(blockId);
+        playCubeSound(blockId == null ? SoundEvent.EJECT_BLOCK : SoundEvent.ABSORB_BLOCK);
+    }
+
+    /**
+     * Swaps the swallowed block without the swallow/spit sound, for state that is being restored rather
+     * than produced by something the cube just did.
+     */
+    private void applySwallowedBlock(@Nullable String blockId) {
         if (blockId == null) {
             this.nbt.remove(TAG_ABSORBED_BLOCK);
         } else {
             this.nbt.putString(TAG_ABSORBED_BLOCK, blockId);
         }
         syncSwallowedBlock();
-        playCubeSound(blockId == null ? SoundEvent.EJECT_BLOCK : SoundEvent.ABSORB_BLOCK);
     }
 
     public void ejectBlock() {
@@ -361,7 +372,8 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
                 .putInt(TAG_SIZE, getVariant())
                 .putFloat("Health", getHealthCurrent())
                 .putInt(TAG_GROWTH_TICKS, this.growthTicks)
-                .putBoolean(TAG_GROWTH_LOCKED, this.growthLocked);
+                .putBoolean(TAG_GROWTH_LOCKED, this.growthLocked)
+                .putInt(TAG_PICKUP_TIMER, this.pickupTimer);
 
         String swallowed = getSwallowedBlock();
         if (swallowed != null) {
@@ -387,8 +399,9 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
                 ? Math.min(tag.getFloat("Health"), getHealthMax()) : getHealthMax());
         this.growthTicks = tag.getInt(TAG_GROWTH_TICKS);
         this.growthLocked = tag.getBoolean(TAG_GROWTH_LOCKED);
+        this.pickupTimer = tag.getInt(TAG_PICKUP_TIMER);
         if (tag.contains(TAG_ABSORBED_BLOCK)) {
-            setSwallowedBlock(tag.getString(TAG_ABSORBED_BLOCK));
+            applySwallowedBlock(tag.getString(TAG_ABSORBED_BLOCK));
         }
         if (tag.contains("CustomName")) {
             setNameTag(tag.getString("CustomName"));
@@ -446,7 +459,10 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         if (isIgnited()) return null;
 
         if (Objects.equals(item.getId(), Item.BUCKET)) {
-            return scoopIntoBucket(player, item);
+            scoopIntoBucket(player, item);
+            // The scoop already swapped the empty bucket for a filled one. Reporting the interaction as
+            // handled would make InventoryTransactionHandler consume the held stack a second time.
+            return false;
         }
         if (Objects.equals(item.getId(), Item.SHEARS) && hasSwallowedBlock()) {
             ejectBlock();
@@ -483,7 +499,7 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         return null;
     }
 
-    private boolean scoopIntoBucket(Player player, Item bucketInHand) {
+    private void scoopIntoBucket(Player player, Item bucketInHand) {
         Item filled = Item.get(Item.SULFUR_CUBE_BUCKET);
         filled.setNbt(writeBucketTag());
 
@@ -495,7 +511,6 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
             player.dropItem(leftover);
         }
         close();
-        return false;
     }
 
     @Override
@@ -630,7 +645,10 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
     @Override
     public double getGroundFrictionFactor() {
-        return this.archetype != null ? this.archetype.getGroundKeepPerTick() : super.getGroundFrictionFactor();
+        if (this.archetype == null || !this.onGround) {
+            return super.getGroundFrictionFactor();
+        }
+        return this.archetype.getGroundKeepPerTick();
     }
 
     @Override
