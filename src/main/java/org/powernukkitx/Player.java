@@ -131,6 +131,7 @@ import org.powernukkitx.level.ChunkLoader;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
+import org.powernukkitx.level.MusicRepeatMode;
 import org.powernukkitx.level.PlayerChunkManager;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
@@ -3721,6 +3722,57 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.setPlatformOnlineId("");
         pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
+    }
+
+    public void playMusic(String trackName) {
+        this.playMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE);
+    }
+
+    /**
+     * Immediately starts a music track for this player, replacing the currently playing one.
+     *
+     * @param trackName   the name of the music track, for example {@code record.pigstep}
+     * @param volume      the volume of the track, between 0 and 1
+     * @param fadeSeconds the duration of the fade between the previous track and this one, between 0 and 10
+     * @param repeatMode  how the track should be repeated
+     */
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.level.playMusic(trackName, volume, fadeSeconds, repeatMode, this);
+    }
+
+    public void queueMusic(String trackName) {
+        this.queueMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE);
+    }
+
+    /**
+     * Queues a music track for this player, it starts once the currently playing track has finished.
+     *
+     * @see #playMusic(String, float, float, MusicRepeatMode)
+     */
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.level.queueMusic(trackName, volume, fadeSeconds, repeatMode, this);
+    }
+
+    public void stopMusic() {
+        this.stopMusic(0);
+    }
+
+    /**
+     * Stops the currently playing music track and clears the queue of this player.
+     *
+     * @param fadeSeconds the duration of the fade out, between 0 and 10
+     */
+    public void stopMusic(float fadeSeconds) {
+        this.level.stopMusic(fadeSeconds, this);
+    }
+
+    /**
+     * Changes the volume of the music track currently playing for this player.
+     *
+     * @param volume the volume of the track, between 0 and 1
+     */
+    public void setMusicVolume(float volume) {
+        this.level.setMusicVolume(volume, this);
     }
 
     /**
