@@ -1829,7 +1829,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     public int maxDurability() {
         return hasComponent("minecraft:durability") ?
                 getComponent("minecraft:durability").getInt("max_durability")
-                : 0;
+                : -1;
     }
 
     public int damageChanceMin() {
