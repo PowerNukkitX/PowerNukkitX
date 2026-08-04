@@ -5407,7 +5407,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * silently replaces the hostname with an IP address, which breaks name-based routing
      * on the proxy/BDS side.
      */
-
     public void transfer(InetSocketAddress address) {
         this.transfer(address.getHostString(), address.getPort());
     }
