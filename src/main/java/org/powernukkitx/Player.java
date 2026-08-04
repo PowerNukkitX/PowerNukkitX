@@ -270,6 +270,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int viewDistance;
     protected Position spawnPoint;
     protected SpawnPointType spawnPointType;
+    public boolean transferring = false;
     /**
      * Represents the number of ticks the player has passed through the air.
      */
@@ -5400,17 +5401,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
+     * Kept for compatibility / internal calls that already have a resolved address.
+     * Never construct the InetSocketAddress from raw user input:
+     * the String,int constructor performs a blocking DNS lookup, and getHostAddress()
+     * silently replaces the hostname with an IP address, which breaks name-based routing
+     * on the proxy/BDS side.
+     */
+
+    public void transfer(InetSocketAddress address) {
+        this.transfer(address.getHostString(), address.getPort());
+    }
+
+    /**
      * Teleport the player to another server
      *
      * @param address the address
      */
-    public void transfer(InetSocketAddress address) {
-        String hostName = address.getAddress().getHostAddress();
-        int port = address.getPort();
+    public void transfer(String address, int port) {
+        transferring = true;
+
         final TransferPacket pk = new TransferPacket();
-        pk.setServerAddress(hostName);
+        pk.setServerAddress(address);
         pk.setServerPort(port);
         this.sendPacket(pk);
+
     }
 
     /**

@@ -2,13 +2,11 @@ package org.powernukkitx.command.defaults;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.command.CommandSender;
-import org.powernukkitx.command.ConsoleCommandSender;
 import org.powernukkitx.command.data.CommandParameter;
 import org.powernukkitx.command.tree.ParamList;
 import org.powernukkitx.command.utils.CommandLogger;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
-import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +43,7 @@ public class TransferServerCommand extends VanillaCommand {
         switch (overload) {
             case "self" -> {
                 if (!(sender instanceof Player player)) {
-                    log.addMessage("commands.generic.ingame");
+                    log.addMessage("nukkit.command.generic.ingame");
                     log.output();
                     return 0;
                 }
@@ -53,40 +51,49 @@ public class TransferServerCommand extends VanillaCommand {
                 String ip = list.getResult(0);
                 int port = list.getResult(1);
 
-                InetSocketAddress address = resolveAddress(ip, port);
-                if (address == null) {
+                if (!isValidPort(port)) {
                     log.addMessage("commands.transferserver.invalid.port");
                     log.output();
                     return 0;
                 }
 
-                player.transferring = true;
-                player.transfer(address);
+                player.transfer(ip, port);
                 log.addSuccess("commands.transferserver.successful");
                 log.output();
                 return 1;
             }
             case "target" -> {
-                List<Player> targets = list.getResult(0);
-                if (targets.isEmpty()) {
+                List<?> rawTargets = list.getResult(0);
+                if (rawTargets.isEmpty()) {
                     log.addMessage("commands.generic.player.notFound");
                     log.output();
                     return 0;
                 }
-                Player target = targets.getFirst();
+
+                Player target = null;
+                for (Object obj : rawTargets) {
+                    if (obj instanceof Player p) {
+                        target = p;
+                        break;
+                    }
+                }
+
+                if (target == null) {
+                    log.addMessage("commands.generic.player.notFound");
+                    log.output();
+                    return 0;
+                }
 
                 String ip = list.getResult(1);
                 int port = list.getResult(2);
 
-                InetSocketAddress address = resolveAddress(ip, port);
-                if (address == null) {
+                if (!isValidPort(port)) {
                     log.addMessage("commands.transferserver.invalid.port");
                     log.output();
                     return 0;
                 }
 
-                target.transferring = true;
-                target.transfer(address);
+                target.transfer(ip, port);
                 log.addSuccess("commands.transferserver.successful");
                 log.output();
                 return 1;
@@ -97,12 +104,7 @@ public class TransferServerCommand extends VanillaCommand {
         }
     }
 
-    private InetSocketAddress resolveAddress(String ip, int port) {
-        try {
-            InetSocketAddress address = new InetSocketAddress(ip, port);
-            return address.isUnresolved() ? null : address;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+    private boolean isValidPort(int port) {
+        return port >= 0 && port <= 65535;
     }
 }
