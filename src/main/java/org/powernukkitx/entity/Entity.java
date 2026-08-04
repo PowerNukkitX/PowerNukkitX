@@ -210,6 +210,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected int lastPlayerNearbyTick = 0;
     public double highestPosition;
     public boolean closed = false;
+    public boolean transferring = false;
     public boolean noClip = false;
     /**
      * Set by {@link BlockBubbleColumn} on every tick the entity is inside a column, and cleared once the entity's
