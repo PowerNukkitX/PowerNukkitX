@@ -1788,7 +1788,7 @@ public class Level implements Metadatable {
             int runtimeId;
             if (b instanceof Block block) {
                 runtimeId = block.getRuntimeId();
-                if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null && holder.getBlockEntity() instanceof BlockEntitySpawnable spawnable) {
+                if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntitySpawnable spawnable) {
                     packets.add(spawnable.getSpawnPacket());
                 }
             } else if (b instanceof Vector3WithRuntimeId vRid) {
