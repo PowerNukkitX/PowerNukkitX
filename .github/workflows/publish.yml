@@ -105,11 +105,16 @@ jobs:
       - name: Extract Minecraft version from Server.getVersion()
         id: mc_version
         run: |
-          cat > /tmp/McVersion.java << 'JAVA'
-          import org.cloudburstmc.protocol.bedrock.codec.v1001.Bedrock_v1001;
+          CODEC_VERSION=$(sed -En 's/.*CODEC = (Bedrock_v[0-9]+)\.CODEC.*/\1/p' src/main/java/org/powernukkitx/network/NetworkConstants.java | head -n 1)
+          if [ -z "$CODEC_VERSION" ]; then
+            echo "Unable to extract codec version from NetworkConstants.java" >&2
+            exit 1
+          fi
+          cat > /tmp/McVersion.java << JAVA
+          import org.cloudburstmc.protocol.bedrock.codec.${CODEC_VERSION};
           public class McVersion {
               public static void main(String[] args) {
-                  System.out.println(Bedrock_v1001.CODEC.getMinecraftVersion());
+                  System.out.println(${CODEC_VERSION}.CODEC.getMinecraftVersion());
               }
           }
           JAVA
