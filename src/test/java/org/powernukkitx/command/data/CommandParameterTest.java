@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,9 +48,23 @@ class CommandParameterTest {
         assertFalse(p.optional);
         assertNull(p.type);
         assertNotNull(p.enumData);
-        assertEquals("modeEnums", p.enumData.getName());
+        assertTrue(p.enumData.getName().matches("modeEnums_\\d+"), p.enumData.getName());
         assertEquals(java.util.List.of("easy", "hard"), p.enumData.getValues());
         assertFalse(p.enumData.isSoft());
+    }
+
+    @Test
+    void newEnumFromValuesGeneratesUniqueEnumNames() {
+        CommandParameter first = CommandParameter.newEnum("mode", new String[]{"easy"});
+        CommandParameter second = CommandParameter.newEnum("mode", new String[]{"hard"});
+        assertNotEquals(first.enumData.getName(), second.enumData.getName());
+    }
+
+    @Test
+    void newEnumWithSoftFlagGeneratesUniqueEnumNames() {
+        CommandParameter first = CommandParameter.newEnum("mode", false, new String[]{"easy"}, true);
+        CommandParameter second = CommandParameter.newEnum("mode", false, new String[]{"hard"}, true);
+        assertNotEquals(first.enumData.getName(), second.enumData.getName());
     }
 
     @Test
