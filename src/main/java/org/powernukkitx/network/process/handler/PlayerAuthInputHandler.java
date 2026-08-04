@@ -43,7 +43,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     @Override
     public void handle(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
-        if (player == null || !player.spawned) {
+        if (player == null) {
             return;
         }
 
