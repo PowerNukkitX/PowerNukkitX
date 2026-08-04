@@ -55,7 +55,8 @@ public class PlayerTest {
                 }
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
             }
         }
         loop.stop();
@@ -88,7 +89,8 @@ public class PlayerTest {
                 }
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
             }
         }
         loop.stop();
@@ -120,7 +122,8 @@ public class PlayerTest {
                 }
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
             }
         }
         if (limit <= 0) {
@@ -136,7 +139,8 @@ public class PlayerTest {
                 }
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
             }
         }
         if (limit2 == 0) {
@@ -151,7 +155,8 @@ public class PlayerTest {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
             }
         }
         Assertions.assertTrue(level.getChunks().containsKey(0L), "spawn chunk 0,0 should keep load");

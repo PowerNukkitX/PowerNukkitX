@@ -9,7 +9,6 @@ import org.powernukkitx.entity.item.EntityItem;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.level.biome.BiomeID;
-import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelProvider;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -111,15 +109,17 @@ public class ChunkTest {
     }
 
     @Test
-    @SneakyThrows
     void test_getOrCreateSection(LevelProvider levelDBProvider) {
         IChunk chunk = levelDBProvider.getChunk(0, 0);
-        Method getOrCreateSection = Chunk.class.getDeclaredMethod("getOrCreateSection", int.class);
-        getOrCreateSection.setAccessible(true);
-        ChunkSection s1 = (ChunkSection) getOrCreateSection.invoke(chunk, -4);
-        Assertions.assertEquals(-4, s1.y());
-        ChunkSection s2 = (ChunkSection) getOrCreateSection.invoke(chunk, 19);
-        Assertions.assertEquals(19, s2.y());
+        ChunkSection[] sections = new ChunkSection[2];
+        chunk.batchProcess(unsafeChunk -> {
+            sections[0] = unsafeChunk.getOrCreateSection(-4);
+            sections[1] = unsafeChunk.getOrCreateSection(19);
+        });
+        Assertions.assertNotNull(sections[0]);
+        Assertions.assertNotNull(sections[1]);
+        Assertions.assertEquals(-4, sections[0].y());
+        Assertions.assertEquals(19, sections[1].y());
     }
 
     @Test
@@ -165,7 +165,8 @@ public class ChunkTest {
             try {
                 t.join();
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
             }
         });
     }
