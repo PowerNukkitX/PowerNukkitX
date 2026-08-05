@@ -1,5 +1,6 @@
 package org.powernukkitx.recipe;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
@@ -9,7 +10,6 @@ import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ShapedRecipePayload;
-import org.cloudburstmc.protocol.common.util.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.DefaultDescriptor;

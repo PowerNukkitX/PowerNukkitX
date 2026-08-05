@@ -4,11 +4,12 @@ import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ShapelessRecipePayload;
-import org.cloudburstmc.protocol.common.util.Preconditions;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.RecipeRegistry;
+
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Collection;

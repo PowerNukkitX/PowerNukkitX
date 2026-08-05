@@ -2,7 +2,8 @@ package org.powernukkitx.recipe;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
-import org.cloudburstmc.protocol.common.util.Preconditions;
+
+import com.google.common.base.Preconditions;
 
 import java.util.UUID;
 
