@@ -1,6 +1,7 @@
 package org.powernukkitx.recipe;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ShapelessRecipePayload;
 import org.powernukkitx.item.Item;
@@ -84,6 +85,287 @@ public class ShapelessRecipe extends CraftingRecipe {
     }
 
     public String getRecipeIdTag() {
-        return "crafting_table";
+        return this.getCraftingTag();
+    }
+
+    /**
+     * Constructs a shapeless recipe from a builder configuration.
+     *
+     * @param builder the recipe builder
+     */
+    protected ShapelessRecipe(Builder builder) {
+        this(
+                builder.validate().recipeId,
+                builder.uuid,
+                builder.netId,
+                builder.priority,
+                builder.result,
+                builder.ingredients,
+                builder.unlockingRequirement
+        );
+
+        this.setCraftingTag(builder.craftingTag);
+    }
+
+    /**
+     * Creates a new builder for a shapeless recipe.
+     *
+     * @return a new shapeless recipe builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder for creating {@link ShapelessRecipe} instances using a fluent API.
+     * <p>
+     * Existing {@link ShapelessRecipe} constructors remain available and are not
+     * affected by this builder.
+     */
+    public static final class Builder {
+        protected String recipeId;
+        protected UUID uuid;
+        protected int netId;
+        protected boolean netIdSet;
+        protected int priority;
+        protected Item result;
+        protected final List<ItemDescriptor> ingredients = new ArrayList<>();
+        protected String craftingTag = "crafting_table";
+        protected RecipeUnlockingRequirement unlockingRequirement;
+
+        protected Builder() {
+        }
+
+        /**
+         * Sets the recipe identifier.
+         *
+         * @param recipeId the recipe identifier
+         * @return this builder
+         */
+        public Builder id(String recipeId) {
+            this.recipeId = recipeId;
+            return this;
+        }
+
+        /**
+         * Sets the UUID used by the recipe on the network.
+         * <p>
+         * When not specified, the recipe registry assigns one during registration.
+         *
+         * @param uuid the recipe UUID
+         * @return this builder
+         */
+        public Builder uuid(UUID uuid) {
+            this.uuid = uuid;
+            return this;
+        }
+
+        /**
+         * Sets the network ID of the recipe.
+         *
+         * @param netId the recipe network ID
+         * @return this builder
+         */
+        public Builder netId(int netId) {
+            this.netId = netId;
+            this.netIdSet = true;
+            return this;
+        }
+
+        /**
+         * Sets the priority of the recipe.
+         * <p>
+         * Lower values have a higher matching priority.
+         *
+         * @param priority the recipe priority
+         * @return this builder
+         */
+        public Builder priority(int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        /**
+         * Sets the result produced by the recipe.
+         *
+         * @param result the recipe result
+         * @return this builder
+         */
+        public Builder result(Item result) {
+            this.result = result;
+            return this;
+        }
+
+        /**
+         * Adds an item as an ingredient of the recipe.
+         *
+         * @param item the ingredient
+         * @return this builder
+         */
+        public Builder ingredient(Item item) {
+            this.ingredients.add(new DefaultDescriptor(item));
+            return this;
+        }
+
+        /**
+         * Adds an item descriptor as an ingredient of the recipe.
+         *
+         * @param descriptor the ingredient descriptor
+         * @return this builder
+         */
+        public Builder ingredient(ItemDescriptor descriptor) {
+            this.ingredients.add(descriptor);
+            return this;
+        }
+
+        /**
+         * Adds multiple items as ingredients of the recipe.
+         *
+         * @param items the ingredients
+         * @return this builder
+         */
+        public Builder ingredients(Item... items) {
+            for (Item item : items) {
+                ingredient(item);
+            }
+            return this;
+        }
+
+        /**
+         * Sets the crafting tag used to associate this recipe with a crafting table.
+         * <p>
+         * The default value is {@code crafting_table}.
+         *
+         * @param craftingTag the crafting table tag
+         * @return this builder
+         */
+        public Builder craftingTag(String craftingTag) {
+            if (craftingTag == null || craftingTag.isBlank()) {
+                throw new IllegalArgumentException("Crafting tag cannot be null or blank");
+            }
+
+            this.craftingTag = craftingTag;
+            return this;
+        }
+
+        /**
+         * Adds an item that can trigger discovery of this recipe.
+         * <p>
+         * Calling this method uses {@link RecipeUnlockingContext#NONE} and cannot
+         * be combined with a contextual unlocking rule.
+         *
+         * @param item the item that unlocks the recipe
+         * @return this builder
+         */
+        public Builder unlockBy(Item item) {
+            return unlockBy(new DefaultDescriptor(item));
+        }
+
+        /**
+         * Adds an item descriptor that can trigger discovery of this recipe.
+         * <p>
+         * Multiple calls may be used to register multiple unlocking ingredients.
+         * This cannot be combined with a contextual unlocking rule.
+         *
+         * @param descriptor the descriptor that unlocks the recipe
+         * @return this builder
+         */
+        public Builder unlockBy(ItemDescriptor descriptor) {
+            if (this.unlockingRequirement == null) {
+                this.unlockingRequirement = new RecipeUnlockingRequirement(
+                        RecipeUnlockingContext.NONE
+                );
+            } else if (this.unlockingRequirement.getUnlockingContext() != RecipeUnlockingContext.NONE) {
+                throw new IllegalStateException(
+                        "Unlocking ingredients cannot be combined with unlocking context " + this.unlockingRequirement.getUnlockingContext()
+                );
+            }
+
+            this.unlockingRequirement.getUnlockingIngredients().add(
+                    descriptor.toNetwork()
+            );
+
+            return this;
+        }
+
+        /**
+         * Configures this recipe to always be unlocked.
+         *
+         * @return this builder
+         */
+        public Builder alwaysUnlocked() {
+            return unlockingContext(RecipeUnlockingContext.ALWAYS_UNLOCKED);
+        }
+
+        /**
+         * Sets a contextual condition used to unlock this recipe, such as
+         * {@link RecipeUnlockingContext#PLAYER_IN_WATER}.
+         * <p>
+         * {@link RecipeUnlockingContext#NONE} is reserved for ingredient-based
+         * unlocking and should be configured using {@link #unlockBy(Item)}.
+         *
+         * @param context the recipe unlocking context
+         * @return this builder
+         */
+        public Builder unlockingContext(RecipeUnlockingContext context) {
+            if (context == null) {
+                throw new IllegalArgumentException("Unlocking context cannot be null");
+            }
+
+            if (context == RecipeUnlockingContext.NONE) {
+                throw new IllegalArgumentException(
+                        "Use unlockBy(...) for RecipeUnlockingContext.NONE"
+                );
+            }
+
+            if (this.unlockingRequirement != null && !this.unlockingRequirement.getUnlockingIngredients().isEmpty()) {
+                throw new IllegalStateException(
+                        "Unlocking context cannot be combined with unlocking ingredients"
+                );
+            }
+
+            this.unlockingRequirement = new RecipeUnlockingRequirement(context);
+            return this;
+        }
+
+        private Builder validate() {
+            if (!this.netIdSet) {
+                throw new IllegalStateException("Network ID must be specified");
+            }
+
+            if (this.result == null) {
+                throw new IllegalStateException("Result must be specified");
+            }
+
+            if (this.ingredients.isEmpty()) {
+                throw new IllegalStateException("At least one ingredient must be specified");
+            }
+
+            return this;
+        }
+
+        /**
+         * Builds the configured shapeless recipe.
+         *
+         * @return the created shapeless recipe
+         * @throws IllegalStateException if the network ID, result, or ingredients have not been specified
+         */
+        public ShapelessRecipe build() {
+            this.validate();
+
+            ShapelessRecipe recipe = new ShapelessRecipe(
+                    this.recipeId,
+                    this.uuid,
+                    this.netId,
+                    this.priority,
+                    this.result,
+                    this.ingredients,
+                    this.unlockingRequirement
+            );
+
+            recipe.setCraftingTag(this.craftingTag);
+
+            return recipe;
+        }
     }
 }

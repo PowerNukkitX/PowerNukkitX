@@ -13,6 +13,7 @@ public abstract class CraftingRecipe extends BaseRecipe {
     private final int priority;
     private final int netId;
     protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
+    private String craftingTag = "crafting_table";
 
     protected CraftingRecipe(String id, int netId, int priority, RecipeUnlockingRequirement recipeUnlockingRequirement) {
         super(id);
@@ -43,6 +44,32 @@ public abstract class CraftingRecipe extends BaseRecipe {
 
     public RecipeUnlockingRequirement getRequirement() {
         return recipeUnlockingRequirement;
+    }
+
+    /**
+     * Returns the crafting table tag used by this recipe on the network.
+     *
+     * @return the crafting tag
+     */
+    public String getCraftingTag() {
+        return craftingTag;
+    }
+
+    /**
+     * Sets the crafting table tag used by this recipe on the network.
+     * <p>
+     * The default value is {@code crafting_table}, preserving vanilla behavior.
+     *
+     * @param craftingTag the crafting tag
+     * @return this recipe
+     */
+    public CraftingRecipe setCraftingTag(String craftingTag) {
+        if (craftingTag == null || craftingTag.isBlank()) {
+            throw new IllegalArgumentException("Crafting tag cannot be null or blank");
+        }
+
+        this.craftingTag = craftingTag;
+        return this;
     }
 
     public int getNetId() {

@@ -360,6 +360,23 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return networkIdRecipeMap.get(networkId);
     }
 
+    /**
+     * Returns the next available crafting recipe network ID.
+     *
+     * @return the next available network ID
+     */
+    private int nextNetworkId() {
+        int networkId = 1;
+
+        for (int id : this.networkIdRecipeMap.keySet()) {
+            if (id >= networkId) {
+                networkId = id + 1;
+            }
+        }
+
+        return networkId;
+    }
+
     public static String computeRecipeIdWithItem(Collection<Item> results, Collection<Item> inputs, RecipeType type) {
         List<Item> inputs1 = new ArrayList<>(inputs);
         return computeRecipeId(results, inputs1.stream().map(DefaultDescriptor::new).toList(), type);
@@ -515,6 +532,30 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             this.register(recipe.getRecipeId(), recipe);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Registers a crafting recipe class using an automatically assigned network ID.
+     * <p>
+     * The recipe class must provide a public constructor accepting a single
+     * {@code int} network ID parameter.
+     *
+     * @param recipeClass the crafting recipe class to register
+     */
+    public void register(Class<? extends CraftingRecipe> recipeClass) {
+        try {
+            CraftingRecipe recipe = recipeClass
+                    .getConstructor(int.class)
+                    .newInstance(nextNetworkId());
+
+            this.register(recipe);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalArgumentException(
+                    "Recipe class must provide a public constructor with a single int networkId parameter: "
+                            + recipeClass.getName(),
+                    e
+            );
         }
     }
 

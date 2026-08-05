@@ -2,6 +2,7 @@ package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.customblock.CustomBlock;
+import org.powernukkitx.block.customblock.CustomBlockComponentBehavior;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import org.powernukkitx.block.property.type.BlockPropertyType;
@@ -294,6 +295,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return the boolean
      */
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (this instanceof CustomBlock) {
+            return CustomBlockComponentBehavior.onActivate(this, player);
+        }
+
         return false;
     }
 
@@ -551,16 +556,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * instead of overriding this method, so it is correctly saved in NBT and synced with client.
      */
     public boolean canBeActivated() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag components = def.getComponents();
-            if (components != null && components.contains("minecraft:custom_components")) {
-                CompoundTag custom = components.getCompound("minecraft:custom_components");
-                if (custom.contains("hasPlayerInteract")) {
-                    return custom.getByte("hasPlayerInteract") != 0;
-                }
-            }
+        if (this instanceof CustomBlock) {
+            return CustomBlockComponentBehavior.canBeActivated(this);
         }
+
         return false;
     }
 
