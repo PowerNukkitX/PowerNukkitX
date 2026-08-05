@@ -95,7 +95,7 @@ public class ShapelessRecipe extends CraftingRecipe {
      */
     protected ShapelessRecipe(Builder builder) {
         this(
-                builder.validate().recipeId,
+                validateBuilder(builder).recipeId,
                 builder.uuid,
                 builder.netId,
                 builder.priority,
@@ -105,6 +105,10 @@ public class ShapelessRecipe extends CraftingRecipe {
         );
 
         this.setCraftingTag(builder.craftingTag);
+    }
+
+    private static Builder validateBuilder(Builder builder) {
+        return builder.validate();
     }
 
     /**
@@ -123,17 +127,17 @@ public class ShapelessRecipe extends CraftingRecipe {
      * affected by this builder.
      */
     public static final class Builder {
-        protected String recipeId;
-        protected UUID uuid;
-        protected int netId;
-        protected boolean netIdSet;
-        protected int priority;
-        protected Item result;
-        protected final List<ItemDescriptor> ingredients = new ArrayList<>();
-        protected String craftingTag = "crafting_table";
-        protected RecipeUnlockingRequirement unlockingRequirement;
+        private String recipeId;
+        private UUID uuid;
+        private int netId;
+        private boolean netIdSet;
+        private int priority;
+        private Item result;
+        private final List<ItemDescriptor> ingredients = new ArrayList<>();
+        private String craftingTag = "crafting_table";
+        private RecipeUnlockingRequirement unlockingRequirement;
 
-        protected Builder() {
+        private Builder() {
         }
 
         /**

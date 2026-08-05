@@ -341,7 +341,7 @@ public class ShapedRecipe extends CraftingRecipe {
      */
     protected ShapedRecipe(Builder builder) {
         this(
-                builder.validate().recipeId,
+                validateBuilder(builder).recipeId,
                 new Data(
                         builder.uuid,
                         builder.netId,
@@ -356,6 +356,10 @@ public class ShapedRecipe extends CraftingRecipe {
         );
 
         this.setCraftingTag(builder.craftingTag);
+    }
+
+    private static Builder validateBuilder(Builder builder) {
+        return builder.validate();
     }
 
     /**

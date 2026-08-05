@@ -12,7 +12,6 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.recipe.Input;
 
-import java.util.List;
 import java.util.Map;
 
 
@@ -102,11 +101,11 @@ public class CustomCraftingTableInventory extends BaseInventory implements Craft
      */
     @Override
     public Input getInput() {
-        Item[] first = List.of(getItem(0), getItem(1), getItem(2)).toArray(Item.EMPTY_ARRAY);
-        Item[] second = List.of(getItem(3), getItem(4), getItem(5)).toArray(Item.EMPTY_ARRAY);
-        Item[] third = List.of(getItem(6), getItem(7), getItem(8)).toArray(Item.EMPTY_ARRAY);
-
-        return new Input(3, 3, new Item[][]{first, second, third});
+        return new Input(3, 3, new Item[][]{
+                {getItem(0), getItem(1), getItem(2)},
+                {getItem(3), getItem(4), getItem(5)},
+                {getItem(6), getItem(7), getItem(8)}
+        });
     }
 
     /**

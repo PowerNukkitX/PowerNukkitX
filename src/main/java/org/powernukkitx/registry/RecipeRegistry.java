@@ -550,10 +550,15 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     .newInstance(nextNetworkId());
 
             this.register(recipe);
-        } catch (ReflectiveOperationException e) {
+        } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(
                     "Recipe class must provide a public constructor with a single int networkId parameter: "
                             + recipeClass.getName(),
+                    e
+            );
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(
+                    "Failed to instantiate recipe class: " + recipeClass.getName(),
                     e
             );
         }
