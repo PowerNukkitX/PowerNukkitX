@@ -61,7 +61,7 @@ public class PowerNukkitX {
     public final static String VERSION = getVersion();
     public final static String CODENAME = dynamic("PowerNukkitX");
     public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("3.0.1");
+    public final static String API_VERSION = dynamic("3.0.2");
     public final static String PATH = System.getProperty("user.dir") + "/";
     public final static String DATA_PATH = System.getProperty("user.dir") + "/";
     public final static String PLUGIN_PATH = DATA_PATH + "plugins";
