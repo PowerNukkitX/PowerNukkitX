@@ -36,10 +36,6 @@ public final class CustomBlockComponentBehavior {
 
         CompoundTag components = definition.getComponents();
 
-        if (components.contains("minecraft:crafting_table")) {
-            return true;
-        }
-
         if (components.contains("minecraft:custom_components")) {
             CompoundTag custom = components.getCompound("minecraft:custom_components");
 
@@ -48,7 +44,7 @@ public final class CustomBlockComponentBehavior {
             }
         }
 
-        return false;
+        return components.contains("minecraft:crafting_table");
     }
 
     /**
@@ -60,7 +56,7 @@ public final class CustomBlockComponentBehavior {
      */
     public static boolean onActivate(@NotNull Block block, @Nullable Player player) {
         CustomBlockDefinition definition = block.getCustomDefinition();
-        if (definition == null) {
+        if (definition == null || !canBeActivated(block)) {
             return false;
         }
 
