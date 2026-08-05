@@ -1,9 +1,7 @@
 package org.powernukkitx.level;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.move.MoveActorDeltaData;
-import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
 import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
-import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -5559,10 +5557,10 @@ public class Level implements Metadatable {
         } else {
             packet.setPositionMode(PositionMode.NORMAL);
         }
-        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
-        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
-
-        packet.setTeleportData(teleportData);
+        // No teleport data: the serializer writes the block whenever it is set, and the client only
+        // reads it back for PositionMode.TELEPORT. This packet carries ordinary movement to every
+        // viewer of the entity, so the surplus block lands on the bystanders rather than on the
+        // player who moved.
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }
