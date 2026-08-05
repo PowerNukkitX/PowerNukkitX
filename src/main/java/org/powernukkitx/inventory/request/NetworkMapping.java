@@ -69,13 +69,17 @@ public class NetworkMapping {
             case CRAFTING_INPUT_CONTAINER -> {
                 if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
                     yield player.getTopWindow().get();
-                } else if (player.getTopWindow().isPresent()
-                        && player.getTopWindow().get() instanceof CraftTypeInventory
-                        && player.getTopWindow().get().getType() == ContainerType.WORKBENCH) {
-                    yield player.getTopWindow().get();
-                } else {
-                    yield player.getCraftingGrid();
                 }
+
+                if (player.getTopWindow().isPresent()) {
+                    Inventory inventory = player.getTopWindow().get();
+
+                    if (inventory instanceof CraftTypeInventory && inventory.getType() == ContainerType.WORKBENCH) {
+                        yield inventory;
+                    }
+                }
+
+                yield player.getCraftingGrid();
             }
             case DYNAMIC_CONTAINER -> {
                 //If player is looking in container. If not, check the players inventory.

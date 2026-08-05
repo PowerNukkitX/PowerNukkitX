@@ -54,14 +54,10 @@ public class CustomCraftingTableInventory extends BaseInventory implements Craft
     @Override
     public void init() {
         BiMap<Integer, Integer> map = super.networkSlotMap();
-
-        for (int i = 0; i < getSize(); i++) {
-            map.put(i, 32 + i);
-        }
-
         Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
 
         for (int i = 0; i < getSize(); i++) {
+            map.put(i, 32 + i);
             map2.put(i, ContainerEnumName.CRAFTING_INPUT_CONTAINER);
             map2.put(i + 32, ContainerEnumName.CRAFTING_INPUT_CONTAINER);
         }

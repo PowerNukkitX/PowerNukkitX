@@ -4,6 +4,7 @@ import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ShapelessRecipePayload;
+import org.cloudburstmc.protocol.common.util.Preconditions;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
@@ -279,11 +280,12 @@ public class ShapelessRecipe extends CraftingRecipe {
                 this.unlockingRequirement = new RecipeUnlockingRequirement(
                         RecipeUnlockingContext.NONE
                 );
-            } else if (this.unlockingRequirement.getUnlockingContext() != RecipeUnlockingContext.NONE) {
-                throw new IllegalStateException(
-                        "Unlocking ingredients cannot be combined with unlocking context " + this.unlockingRequirement.getUnlockingContext()
-                );
             }
+
+            Preconditions.checkState(
+                    this.unlockingRequirement.getUnlockingContext() == RecipeUnlockingContext.NONE,
+                    "Unlocking ingredients cannot be combined with unlocking context " + this.unlockingRequirement.getUnlockingContext()
+            );
 
             this.unlockingRequirement.getUnlockingIngredients().add(
                     descriptor.toNetwork()
@@ -312,38 +314,40 @@ public class ShapelessRecipe extends CraftingRecipe {
          * @return this builder
          */
         public Builder unlockingContext(RecipeUnlockingContext context) {
-            if (context == null) {
-                throw new IllegalArgumentException("Unlocking context cannot be null");
-            }
+            Preconditions.checkArgument(
+                    context != null,
+                    "Unlocking context cannot be null"
+            );
 
-            if (context == RecipeUnlockingContext.NONE) {
-                throw new IllegalArgumentException(
-                        "Use unlockBy(...) for RecipeUnlockingContext.NONE"
-                );
-            }
+            Preconditions.checkArgument(
+                    context != RecipeUnlockingContext.NONE,
+                    "Use unlockBy(...) for RecipeUnlockingContext.NONE"
+            );
 
-            if (this.unlockingRequirement != null && !this.unlockingRequirement.getUnlockingIngredients().isEmpty()) {
-                throw new IllegalStateException(
-                        "Unlocking context cannot be combined with unlocking ingredients"
-                );
-            }
+            Preconditions.checkState(
+                    this.unlockingRequirement == null || this.unlockingRequirement.getUnlockingIngredients().isEmpty(),
+                    "Unlocking context cannot be combined with unlocking ingredients"
+            );
 
             this.unlockingRequirement = new RecipeUnlockingRequirement(context);
             return this;
         }
 
         private Builder validate() {
-            if (!this.netIdSet) {
-                throw new IllegalStateException("Network ID must be specified");
-            }
+            Preconditions.checkState(
+                    this.netIdSet,
+                    "Network ID must be specified"
+            );
 
-            if (this.result == null) {
-                throw new IllegalStateException("Result must be specified");
-            }
+            Preconditions.checkState(
+                    this.result != null,
+                    "Result must be specified"
+            );
 
-            if (this.ingredients.isEmpty()) {
-                throw new IllegalStateException("At least one ingredient must be specified");
-            }
+            Preconditions.checkState(
+                    !this.ingredients.isEmpty(),
+                    "At least one ingredient must be specified"
+            );
 
             return this;
         }

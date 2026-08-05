@@ -556,11 +556,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * instead of overriding this method, so it is correctly saved in NBT and synced with client.
      */
     public boolean canBeActivated() {
-        if (this instanceof CustomBlock) {
-            return CustomBlockComponentBehavior.canBeActivated(this);
-        }
-
-        return false;
+        return CustomBlockComponentBehavior.canBeActivated(this);
     }
 
     public boolean hasEntityCollision() {

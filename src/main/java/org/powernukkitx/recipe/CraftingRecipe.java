@@ -2,6 +2,7 @@ package org.powernukkitx.recipe;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.common.util.Preconditions;
 
 import java.util.UUID;
 
@@ -64,9 +65,10 @@ public abstract class CraftingRecipe extends BaseRecipe {
      * @return this recipe
      */
     public CraftingRecipe setCraftingTag(String craftingTag) {
-        if (craftingTag == null || craftingTag.isBlank()) {
-            throw new IllegalArgumentException("Crafting tag cannot be null or blank");
-        }
+        Preconditions.checkArgument(
+                craftingTag != null && !craftingTag.isBlank(),
+                "Crafting tag cannot be null or blank"
+        );
 
         this.craftingTag = craftingTag;
         return this;
