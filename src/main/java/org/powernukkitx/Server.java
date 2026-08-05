@@ -1777,8 +1777,7 @@ public class Server {
         entry.setXblXUID(xboxUserId);
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        entry.setSkin(skin.getSkin());
-        entry.setTrustedSkin(skin.isTrusted());
+        entry.setSerializedSkin(SkinConverter.toSerializedSkin(skin.getSkin(), skin.isTrusted()));
         entry.setPlayerColor(color.getRGB());
 
         pk.getEntries().add(entry);
@@ -1847,8 +1846,7 @@ public class Server {
             entry.setXblXUID(value.getXUID());
             entry.setPlatformOnlineID("");
             entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-            entry.setSkin(value.getSkin().getSkin());
-            entry.setTrustedSkin(value.getSkin().isTrusted());
+            entry.setSerializedSkin(SkinConverter.toSerializedSkin(value.getSkin().getSkin(), value.getSkin().isTrusted()));
             entry.setPlayerColor(value.getLocatorBarColor().getRGB());
 
             pk.getEntries().add(entry);
