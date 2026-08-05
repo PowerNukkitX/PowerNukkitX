@@ -295,11 +295,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return the boolean
      */
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (this instanceof CustomBlock) {
-            return CustomBlockComponentBehavior.onActivate(this, player);
-        }
-
-        return false;
+        return CustomBlockComponentBehavior.onActivate(this, player);
     }
 
     public void afterRemoval(Block newBlock, boolean update) {

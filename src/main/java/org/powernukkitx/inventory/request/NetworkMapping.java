@@ -67,12 +67,14 @@ public class NetworkMapping {
                 }
             }
             case CRAFTING_INPUT_CONTAINER -> {
-                if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
-                    yield player.getTopWindow().get();
-                }
+                var topWindow = player.getTopWindow();
 
-                if (player.getTopWindow().isPresent()) {
-                    Inventory inventory = player.getTopWindow().get();
+                if (topWindow.isPresent()) {
+                    Inventory inventory = topWindow.get();
+
+                    if (player.getFakeInventoryOpen() && inventory instanceof FakeInventory) {
+                        yield inventory;
+                    }
 
                     if (inventory instanceof CraftTypeInventory && inventory.getType() == ContainerType.WORKBENCH) {
                         yield inventory;
