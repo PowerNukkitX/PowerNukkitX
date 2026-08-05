@@ -4722,10 +4722,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             pk.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         }
 
-        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
-        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
-
-        pk.setTeleportData(teleportData);
+        if (pk.getPositionMode() == PositionMode.TELEPORT) {
+            final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
+            teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
+            pk.setTeleportData(teleportData);
+        }
 
         if (targets != null) {
             Server.broadcastPacket(targets, pk);

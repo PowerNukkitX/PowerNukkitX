@@ -1,9 +1,7 @@
 package org.powernukkitx.level;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.move.MoveActorDeltaData;
-import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
 import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
-import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -5559,10 +5557,6 @@ public class Level implements Metadatable {
         } else {
             packet.setPositionMode(PositionMode.NORMAL);
         }
-        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
-        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
-
-        packet.setTeleportData(teleportData);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }
