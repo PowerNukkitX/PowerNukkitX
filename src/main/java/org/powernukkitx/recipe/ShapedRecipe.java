@@ -592,38 +592,40 @@ public class ShapedRecipe extends CraftingRecipe {
          * @return this builder
          */
         public Builder unlockingContext(RecipeUnlockingContext context) {
-            if (context == null) {
-                throw new IllegalArgumentException("Unlocking context cannot be null");
-            }
+            Preconditions.checkArgument(
+                    context != null,
+                    "Unlocking context cannot be null"
+            );
 
-            if (context == RecipeUnlockingContext.NONE) {
-                throw new IllegalArgumentException(
-                        "Use unlockBy(...) for RecipeUnlockingContext.NONE"
-                );
-            }
+            Preconditions.checkArgument(
+                    context != RecipeUnlockingContext.NONE,
+                    "Use unlockBy(...) for RecipeUnlockingContext.NONE"
+            );
 
-            if (this.unlockingRequirement != null && !this.unlockingRequirement.getUnlockingIngredients().isEmpty()) {
-                throw new IllegalStateException(
-                        "Unlocking context cannot be combined with unlocking ingredients"
-                );
-            }
+            Preconditions.checkState(
+                    this.unlockingRequirement == null || this.unlockingRequirement.getUnlockingIngredients().isEmpty(),
+                    "Unlocking context cannot be combined with unlocking ingredients"
+            );
 
             this.unlockingRequirement = new RecipeUnlockingRequirement(context);
             return this;
         }
 
         private Builder validate() {
-            if (!this.netIdSet) {
-                throw new IllegalStateException("Network ID must be specified");
-            }
+            Preconditions.checkState(
+                    this.netIdSet,
+                    "Network ID must be specified"
+            );
 
-            if (this.result == null) {
-                throw new IllegalStateException("Result must be specified");
-            }
+            Preconditions.checkState(
+                    this.result != null,
+                    "Result must be specified"
+            );
 
-            if (this.shape == null || this.shape.length == 0) {
-                throw new IllegalStateException("Shape must be specified");
-            }
+            Preconditions.checkState(
+                    this.shape != null && this.shape.length > 0,
+                    "Shape must be specified"
+            );
 
             return this;
         }

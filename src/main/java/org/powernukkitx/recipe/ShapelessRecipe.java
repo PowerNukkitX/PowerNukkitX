@@ -245,9 +245,10 @@ public class ShapelessRecipe extends CraftingRecipe {
          * @return this builder
          */
         public Builder craftingTag(String craftingTag) {
-            if (craftingTag == null || craftingTag.isBlank()) {
-                throw new IllegalArgumentException("Crafting tag cannot be null or blank");
-            }
+            Preconditions.checkArgument(
+                    craftingTag != null && !craftingTag.isBlank(),
+                    "Crafting tag cannot be null or blank"
+            );
 
             this.craftingTag = craftingTag;
             return this;
