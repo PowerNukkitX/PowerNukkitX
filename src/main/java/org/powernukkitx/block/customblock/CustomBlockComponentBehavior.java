@@ -36,6 +36,10 @@ public final class CustomBlockComponentBehavior {
 
         CompoundTag components = definition.getComponents();
 
+        if (components.contains("minecraft:crafting_table")) {
+            return true;
+        }
+
         if (components.contains("minecraft:custom_components")) {
             CompoundTag custom = components.getCompound("minecraft:custom_components");
 
@@ -44,7 +48,7 @@ public final class CustomBlockComponentBehavior {
             }
         }
 
-        return components.contains("minecraft:crafting_table");
+        return false;
     }
 
     /**
