@@ -4723,8 +4723,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (pk.getPositionMode() == PositionMode.TELEPORT) {
-            // Only a teleport carries this block; the serializer writes it whenever it is set, so
-            // attaching it to an ordinary move hands the client a field it does not read there.
             final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
             teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
             pk.setTeleportData(teleportData);
