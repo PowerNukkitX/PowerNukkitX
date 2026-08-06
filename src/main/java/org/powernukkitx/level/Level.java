@@ -5590,9 +5590,7 @@ public class Level implements Metadatable {
             data.setRotationYHead((float) headYaw);
             packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_HEAD_YAW);
         }
-        if (entity.onGround) {
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.ON_GROUND);
-        }
+        data.setOnGround(entity.onGround);
 
         packet.setMoveData(data);
 
