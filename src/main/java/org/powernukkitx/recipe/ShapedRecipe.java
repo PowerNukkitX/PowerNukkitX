@@ -171,7 +171,9 @@ public class ShapedRecipe extends CraftingRecipe {
         for (int i = 0; i < input.getRow(); i++) {
             for (int j = 0; j < input.getCol(); j++) {
                 ItemDescriptor ingredient = getIngredient(j, i);
-                if (!ingredient.match(input.getData()[i][j])) {
+                Item inputItem = input.getData()[i][j];
+
+                if (!ingredient.match(inputItem) || inputItem.getCount() < ingredient.getCount()) {
                     if (mirrorInput != null) {
                         checkMirror = true;
                         break next;
@@ -186,7 +188,9 @@ public class ShapedRecipe extends CraftingRecipe {
             for (int i = 0; i < mirrorInput.getRow(); i++) {
                 for (int j = 0; j < mirrorInput.getCol(); j++) {
                     ItemDescriptor ingredient = getIngredient(j, i);
-                    if (!ingredient.match(mirrorInput.getData()[i][j])) {
+                    Item inputItem = mirrorInput.getData()[i][j];
+
+                    if (!ingredient.match(inputItem) || inputItem.getCount() < ingredient.getCount()) {
                         return false;
                     }
                 }

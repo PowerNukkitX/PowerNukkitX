@@ -55,22 +55,35 @@ public class ShapelessRecipe extends CraftingRecipe {
     @Override
     public boolean match(Input input) {
         Item[][] data = input.getData();
-        List<Item> flatInputItem = new ArrayList<>();
-        for (int i = 0; i < input.getRow(); i++) {
-            for (int j = 0; j < input.getCol(); j++) {
-                if (!data[j][i].isNull()) {
-                    flatInputItem.add(data[j][i]);
+        List<ItemDescriptor> remainingIngredients = new ArrayList<>(ingredients);
+
+        for (int row = 0; row < input.getRow(); row++) {
+            for (int col = 0; col < input.getCol(); col++) {
+                Item inputItem = data[row][col];
+
+                if (inputItem.isNull()) {
+                    continue;
+                }
+
+                boolean matched = false;
+
+                for (int i = 0; i < remainingIngredients.size(); i++) {
+                    ItemDescriptor ingredient = remainingIngredients.get(i);
+
+                    if (ingredient.match(inputItem) && inputItem.getCount() >= ingredient.getCount()) {
+                        remainingIngredients.remove(i);
+                        matched = true;
+                        break;
+                    }
+                }
+
+                if (!matched) {
+                    return false;
                 }
             }
         }
-        next:
-        for (var i : flatInputItem) {
-            for (var ingredient : ingredients) {
-                if (ingredient.match(i)) continue next;
-            }
-            return false;
-        }
-        return true;
+
+        return remainingIngredients.isEmpty();
     }
 
     public ShapelessRecipePayload toNetwork() {
