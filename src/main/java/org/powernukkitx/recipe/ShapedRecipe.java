@@ -356,7 +356,9 @@ public class ShapedRecipe extends CraftingRecipe {
                 builder.ingredients,
                 builder.extraResults,
                 builder.mirror,
-                builder.unlockingRequirement
+                builder.unlockingRequirement == null
+                        ? new RecipeUnlockingRequirement(RecipeUnlockingContext.ALWAYS_UNLOCKED)
+                        : builder.unlockingRequirement
         );
 
         this.setCraftingTag(builder.craftingTag);
@@ -656,7 +658,9 @@ public class ShapedRecipe extends CraftingRecipe {
                     this.ingredients,
                     this.extraResults,
                     this.mirror,
-                    this.unlockingRequirement
+                    this.unlockingRequirement == null
+                            ? new RecipeUnlockingRequirement(RecipeUnlockingContext.ALWAYS_UNLOCKED)
+                            : this.unlockingRequirement
             );
 
             recipe.setCraftingTag(this.craftingTag);

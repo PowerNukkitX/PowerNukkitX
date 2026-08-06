@@ -116,7 +116,9 @@ public class ShapelessRecipe extends CraftingRecipe {
                 builder.priority,
                 builder.result,
                 builder.ingredients,
-                builder.unlockingRequirement
+                builder.unlockingRequirement == null
+                        ? new RecipeUnlockingRequirement(RecipeUnlockingContext.ALWAYS_UNLOCKED)
+                        : builder.unlockingRequirement
         );
 
         this.setCraftingTag(builder.craftingTag);
@@ -383,7 +385,9 @@ public class ShapelessRecipe extends CraftingRecipe {
                     this.priority,
                     this.result,
                     this.ingredients,
-                    this.unlockingRequirement
+                    this.unlockingRequirement == null
+                            ? new RecipeUnlockingRequirement(RecipeUnlockingContext.ALWAYS_UNLOCKED)
+                            : this.unlockingRequirement
             );
 
             recipe.setCraftingTag(this.craftingTag);
