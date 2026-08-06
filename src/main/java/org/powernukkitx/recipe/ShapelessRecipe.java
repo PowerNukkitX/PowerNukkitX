@@ -260,8 +260,8 @@ public class ShapelessRecipe extends CraftingRecipe {
          */
         public Builder craftingTag(String craftingTag) {
             Preconditions.checkArgument(
-                    craftingTag != null && !craftingTag.isBlank(),
-                    "Crafting tag cannot be null or blank"
+                    craftingTag != null && !craftingTag.isBlank() && craftingTag.length() <= 64,
+                    "Crafting tag cannot be null, blank, or exceed 64 characters"
             );
 
             this.craftingTag = craftingTag;
