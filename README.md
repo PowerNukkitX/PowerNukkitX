@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0.1-blue.svg?cacheSeconds=2592000" alt="Version">
+  <img src="https://img.shields.io/badge/version-3.0.2-blue.svg?cacheSeconds=2592000" alt="Version">
   <img src="https://img.shields.io/badge/minecraft-v26.40%20(Bedrock)-56383E" alt="Minecraft">
   <img src="https://img.shields.io/badge/protocol-2168-blue" alt="Protocol">
   <img src="https://img.shields.io/badge/action-all%20builds-FF9B21" alt="Action">
