@@ -99,7 +99,7 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
                 ItemStackRequestActionProcessor<ItemStackRequestAction> processor = (ItemStackRequestActionProcessor<ItemStackRequestAction>) PROCESSORS.get(action.getType());
 
                 if (processor == null) {
-                    log.warn("Unhandled inventory action type {}", action.getType());
+                    log.debug("Unhandled inventory action type {}", action.getType());
                     continue;
                 }
 

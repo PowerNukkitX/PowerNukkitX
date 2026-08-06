@@ -16,12 +16,18 @@ public final class PacketRateLimiter {
     private final RateLimiter chat;
     private final RateLimiter formResponse;
     private final RateLimiter movement;
+    private final RateLimiter worldInteraction;
 
     public PacketRateLimiter(RateLimitSettings settings) {
-        this.command = RateLimiter.create(settings.maxCommandsPerSecondPerPlayer());
-        this.chat = RateLimiter.create(settings.maxChatPerSecondPerPlayer());
-        this.formResponse = RateLimiter.create(settings.maxFormResponsesPerSecondPerPlayer());
-        this.movement = RateLimiter.create(settings.maxMovementPacketsPerSecondPerPlayer());
+        this.command = create(settings.maxCommandsPerSecondPerPlayer());
+        this.chat = create(settings.maxChatPerSecondPerPlayer());
+        this.formResponse = create(settings.maxFormResponsesPerSecondPerPlayer());
+        this.movement = create(settings.maxMovementPacketsPerSecondPerPlayer());
+        this.worldInteraction = create(settings.maxWorldInteractionPacketsPerSecondPerPlayer());
+    }
+
+    private static RateLimiter create(int permitsPerSecond) {
+        return RateLimiter.create(Math.max(1, permitsPerSecond));
     }
 
     /** @return true if the command packet should be processed, false if it should be dropped. */
@@ -42,5 +48,9 @@ public final class PacketRateLimiter {
     /** @return true if the movement packet should be processed, false if it should be dropped. */
     public boolean tryMovement() {
         return movement.tryAcquire();
+    }
+
+    public boolean tryWorldInteraction() {
+        return worldInteraction.tryAcquire();
     }
 }

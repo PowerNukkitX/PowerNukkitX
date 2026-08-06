@@ -255,6 +255,9 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void decreaseCount(int slot, int amount) {
+        if (amount <= 0) {
+            return;
+        }
         Item item;
         synchronized (this.slots) {
             item = this.slots.getOrDefault(slot, Item.AIR);

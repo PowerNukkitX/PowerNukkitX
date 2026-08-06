@@ -22,6 +22,7 @@ class PacketRateLimiterTest {
         Mockito.when(s.maxChatPerSecondPerPlayer()).thenReturn(chat);
         Mockito.when(s.maxFormResponsesPerSecondPerPlayer()).thenReturn(forms);
         Mockito.when(s.maxMovementPacketsPerSecondPerPlayer()).thenReturn(movement);
+        Mockito.when(s.maxWorldInteractionPacketsPerSecondPerPlayer()).thenReturn(1000);
         return s;
     }
 

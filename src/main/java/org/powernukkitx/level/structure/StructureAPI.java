@@ -9,36 +9,79 @@ import org.cloudburstmc.nbt.NbtUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class StructureAPI {
-    private static final Map<String, Structure> structureCache = new HashMap<>();
+    private static final Map<String, Structure> structureCache = new ConcurrentHashMap<>();
+
+    private static boolean isNameSafe(String name) {
+        if (name == null || name.isEmpty() || name.length() > 256) {
+            return false;
+        }
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            boolean allowed = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+                    || c == '_' || c == '-' || c == '.' || c == ':';
+            if (!allowed) {
+                return false;
+            }
+        }
+        return !name.contains("..");
+    }
+
+    private static File confine(File candidate) {
+        try {
+            Path root = new File(Server.getInstance().structurePath).getCanonicalFile().toPath();
+            Path resolved = candidate.getCanonicalFile().toPath();
+            if (!resolved.startsWith(root)) {
+                return null;
+            }
+            return resolved.toFile();
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
     private static File resolvePathNamespaced(String name) {
+        if (!isNameSafe(name)) {
+            return null;
+        }
         String relativePath = name.replace(":", File.separator) + ".mcstructure";
-        return new File(Server.getInstance().structurePath, relativePath);
+        return confine(new File(Server.getInstance().structurePath, relativePath));
     }
 
     private static File resolvePathRoot(String name) {
-        return new File(Server.getInstance().structurePath, name + ".mcstructure");
+        if (!isNameSafe(name)) {
+            return null;
+        }
+        return confine(new File(Server.getInstance().structurePath, name + ".mcstructure"));
     }
 
     private static File resolvePathWithFallback(String name) {
         File file = resolvePathNamespaced(name);
-        if (file.exists()) {
+        if (file != null && file.exists()) {
             return file;
         }
         return resolvePathRoot(name);
     }
 
     public static Structure load(String name) {
-        if (structureCache.containsKey(name)) {
-            return structureCache.get(name);
+        Structure cached = structureCache.get(name);
+        if (cached != null) {
+            return cached;
         }
 
-        try (var stream = new FileInputStream(resolvePathWithFallback(name));
+        File source = resolvePathWithFallback(name);
+        if (source == null) {
+            log.debug("Rejected structure name {}", name);
+            return null;
+        }
+
+        try (var stream = new FileInputStream(source);
              var nbtInputStream = NbtUtils.createReaderLE(stream)) {
             NbtMap root = (NbtMap) nbtInputStream.readTag();
 
@@ -58,6 +101,10 @@ public class StructureAPI {
     public static void save(Structure structure, String name) {
         try {
             File file = resolvePathNamespaced(name); // always save in namespace path
+            if (file == null) {
+                log.warn("Rejected structure name {}", name);
+                return;
+            }
             file.getParentFile().mkdirs();
 
             try (var stream = new FileOutputStream(file);
@@ -74,15 +121,24 @@ public class StructureAPI {
     }
 
     public static boolean exists(String name) {
-        return resolvePathNamespaced(name).exists() || resolvePathRoot(name).exists();
+        File namespaced = resolvePathNamespaced(name);
+        if (namespaced != null && namespaced.exists()) {
+            return true;
+        }
+        File root = resolvePathRoot(name);
+        return root != null && root.exists();
     }
 
     public static boolean delete(String name) {
         structureCache.remove(name);
 
         File file = resolvePathNamespaced(name);
-        if (!file.exists()) {
+        if (file == null || !file.exists()) {
             file = resolvePathRoot(name);
+        }
+
+        if (file == null) {
+            return false;
         }
 
         if (file.exists()) {

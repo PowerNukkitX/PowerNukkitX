@@ -51,20 +51,19 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
         }
 
         int success = 0;
-        for (Item clientInputItem : eventItems) {
-            for (RecipeIngredient serverExpect : action.getIngredients()) {
-                boolean match = false;
-                if (serverExpect.getDescriptor() instanceof ItemTagDescriptor tagDescriptor) {
-                    match = this.match(serverExpect, tagDescriptor, clientInputItem);
-                } else if (serverExpect.getDescriptor() instanceof NameDescriptor descriptor) {
-                    match = this.match(serverExpect, descriptor, clientInputItem);
-                } else if (serverExpect.getDescriptor() instanceof InvalidDescriptor) {
-                    match = clientInputItem.equals(Item.AIR);
-                }
-                if (match) {
-                    success++;
-                    break;
-                }
+        for (int i = 0; i < eventItems.length; i++) {
+            RecipeIngredient serverExpect = action.getIngredients().get(i);
+            Item clientInputItem = eventItems[i];
+            boolean match = false;
+            if (serverExpect.getDescriptor() instanceof ItemTagDescriptor tagDescriptor) {
+                match = this.match(serverExpect, tagDescriptor, clientInputItem);
+            } else if (serverExpect.getDescriptor() instanceof NameDescriptor descriptor) {
+                match = this.match(serverExpect, descriptor, clientInputItem);
+            } else if (serverExpect.getDescriptor() instanceof InvalidDescriptor) {
+                match = clientInputItem.equals(Item.AIR);
+            }
+            if (match) {
+                success++;
             }
         }
 
@@ -87,6 +86,24 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                 log.warn("Mismatched consume action count! Expected: {}, Actual: {}", consumeActionCountNeeded, consumeActions.size());
                 return context.error();
             }
+
+            int timesCrafted = resolveTimesCrafted(action);
+            long requiredTotal = 0;
+            for (int i = 0; i < eventItems.length; i++) {
+                if (eventItems[i].isNull()) {
+                    continue;
+                }
+                requiredTotal += (long) Math.max(1, action.getIngredients().get(i).getStackSize()) * timesCrafted;
+            }
+            long consumedTotal = 0;
+            for (ConsumeAction consumeAction : consumeActions) {
+                consumedTotal += Math.max(0, consumeAction.getAmount());
+            }
+            if (consumedTotal < requiredTotal) {
+                log.debug("Auto craft would consume {} but claims {} crafts requiring {}", consumedTotal, timesCrafted, requiredTotal);
+                return context.error();
+            }
+
             if (recipe.getResults().size() == 1) {
                 Item output = recipe.getResults().getFirst().clone();
                 if (recipe instanceof UserDataShapelessRecipe) {
@@ -97,12 +114,24 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                         }
                     }
                 }
-                output.setCount(output.getCount() * action.getTimesCrafted());
+                output.setCount(output.getCount() * timesCrafted);
                 CreativeOutputInventory createdOutput = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
             }
         }
         return null;
+    }
+
+    private static int resolveTimesCrafted(AutoCraftRecipeAction action) {
+        int timesCrafted = action.getTimesCrafted();
+        if (timesCrafted > 0) {
+            return timesCrafted;
+        }
+        int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
+        if (numberOfRequestedCrafts > 0) {
+            return numberOfRequestedCrafts;
+        }
+        return 1;
     }
 
     private boolean match(RecipeIngredient descriptorWithCount, ItemDescriptor descriptor, Item item) {

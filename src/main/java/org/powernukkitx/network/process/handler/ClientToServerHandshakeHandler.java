@@ -23,4 +23,9 @@ public class ClientToServerHandshakeHandler implements PacketHandler<ClientToSer
         holder.setState(SessionState.RESOURCE_PACK);
         holder.sendResourcePacksInfo(server);
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
 }
