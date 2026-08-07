@@ -9,6 +9,15 @@ import org.powernukkitx.registry.CameraRegistry;
 
 import java.util.Objects;
 
+
+/**
+ * Defines a custom camera preset.
+ *
+ * <p>The runtime ID and protocol definition are assigned when the camera is
+ * registered in {@link CameraRegistry}.</p>
+ *
+ * @author Curse
+ */
 public record CustomCameraDefinition(String identifier, CameraPreset preset) {
     public CustomCameraDefinition {
         Objects.requireNonNull(identifier, "identifier");
