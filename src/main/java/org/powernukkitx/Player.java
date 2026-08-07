@@ -174,15 +174,7 @@ import org.powernukkitx.scoreboard.IScoreboardLine;
 import org.powernukkitx.scoreboard.data.DisplaySlot;
 import org.powernukkitx.scoreboard.displayer.IScoreboardViewer;
 import org.powernukkitx.scoreboard.scorer.PlayerScorer;
-import org.powernukkitx.utils.BlockIterator;
-import org.powernukkitx.utils.BossBarColor;
-import org.powernukkitx.utils.DummyBossBar;
-import org.powernukkitx.utils.Identifier;
-import org.powernukkitx.utils.ItemHelper;
-import org.powernukkitx.utils.PortalHelper;
-import org.powernukkitx.utils.SkinConverter;
-import org.powernukkitx.utils.TextFormat;
-import org.powernukkitx.utils.Utils;
+import org.powernukkitx.utils.*;
 
 import java.awt.*;
 import java.net.InetSocketAddress;
@@ -2495,7 +2487,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned && this.level.getProvider() != null) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
+                    try {
+                        entity.spawnTo(this);
+                    } catch (Throwable e){
+                        CrashReporter.log("Spawning an entity to " + this.getName(), entity, e);
+                    }
                 }
             }
         }
@@ -2503,7 +2499,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.level.getProvider() != null) {
             for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
                 if (entity instanceof BlockEntitySpawnable spawnable) {
-                    spawnable.spawnTo(this);
+                    try {
+                        spawnable.spawnTo(this);
+                    } catch (Throwable e) {
+                        CrashReporter.log("Spawning a block entity to " + this.getName(), entity, e);
+                    }
                 }
             }
         }
@@ -2512,7 +2512,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (!this.isConnected() || this.level == null) return;
             for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
                 if ((entity instanceof BlockEntityItemFrame || entity instanceof BlockEntitySign) && !entity.closed) {
-                    ((BlockEntitySpawnable) entity).spawnTo(this);
+                    try {
+                        ((BlockEntitySpawnable) entity).spawnTo(this);
+                    } catch (Throwable e) {
+                        CrashReporter.log("Spawning a block entity spawnable to " + this.getName(), entity, e);
+                    }
                 }
             }
         }, 2);
@@ -2553,12 +2557,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param packet packet to send
      */
     public void sendPacket(BedrockPacket packet) {
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return;
+        try {
+            final PacketSendEvent event = new PacketSendEvent(this, packet);
+            this.server.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+            this.getSession().sendPacket(packet);
+        } catch (Throwable e) {
+            CrashReporter.log("Sending " + packet.getClass().getSimpleName() + " to " + this.getName(), packet, e);
         }
-        this.getSession().sendPacket(packet);
     }
 
     /**
@@ -5827,13 +5835,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isConnected()) {
             return false;
         }
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
+        try {
+            final PacketSendEvent event = new PacketSendEvent(this, packet);
+            this.server.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return false;
+            }
+            this.getSession().sendPacketImmediately(packet);
+            return true;
+        } catch (Throwable e) {
+            CrashReporter.log("Sending " + packet.getClass().getSimpleName() + " to " + this.getName(), packet, e);
             return false;
         }
-        this.getSession().sendPacketImmediately(packet);
-        return true;
     }
 
     /**

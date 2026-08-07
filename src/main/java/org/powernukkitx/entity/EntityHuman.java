@@ -168,7 +168,7 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if(skin.getGeometryData() == null || skin.getGeometryData().isEmpty()) {
-                builder.skinResourcePatch(GEOMETRY_HUMANOID);
+                builder.geometryData(GEOMETRY_HUMANOID);
                 changed = true;
             }
 
@@ -232,8 +232,12 @@ public class EntityHuman extends EntityHumanType {
     @Override
     public void spawnTo(Player player) {
         if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
-            this.hasSpawned.put(player.getLoaderId(), player);
+            if (this.skin == null || !SkinUtils.isValid(this.skin.getSkin())) {
+                throw new IllegalStateException(this.getClass().getSimpleName() + " (id " + this.getId()
+                    + ", name '" + this.getNameTag() + "') has no valid skin assigned");
+            }
 
+            this.hasSpawned.put(player.getLoaderId(), player);
 
             if (!SkinUtils.isValid(this.skin.getSkin())) {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");

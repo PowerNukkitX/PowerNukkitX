@@ -1067,8 +1067,12 @@ public class Server {
     private void checkTickUpdates(int currentTick) {
         boolean tickPlayers = getSettings().levelSettings().alwaysTickPlayers();
         for (Player player : new ArrayList<>(this.players.values())) {
-            if (tickPlayers) player.onUpdate(currentTick);
-            if (!player.spawned) player.checkNetwork();
+            try {
+                if (tickPlayers) player.onUpdate(currentTick);
+                if (!player.spawned) player.checkNetwork();
+            } catch (Throwable e) {
+                CrashReporter.logAndDisconnect(player, "Ticking a player", e);
+            }
         }
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
@@ -1200,14 +1204,22 @@ public class Server {
             for (Level level : this.levelArray) {
                 for (BlockEntity be : level.getBlockEntities().values()) {
                     if (!be.closed) {
-                        be.saveNBT();
-                        be.serializationSnapshot = be.getNbt().copy();
+                        try {
+                            be.saveNBT();
+                            be.serializationSnapshot = be.getNbt().copy();
+                        } catch (Throwable e) {
+                            CrashReporter.log("Snapshotting a block entity for autosave", be, e);
+                        }
                     }
                 }
                 for (Entity entity : level.getEntities()) {
                     if (!(entity instanceof Player) && !entity.closed) {
-                        entity.saveNBT();
-                        entity.serializationSnapshot = entity.getNbt().copy();
+                        try {
+                            entity.saveNBT();
+                            entity.serializationSnapshot = entity.getNbt().copy();
+                        } catch (Throwable e) {
+                            CrashReporter.log("Snapshotting an entity for autosave", entity, e);
+                        }
                     }
                 }
             }

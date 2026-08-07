@@ -97,7 +97,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                         }
                     }
                 }
-                output.setCount(output.getCount() * action.getTimesCrafted());
+                output.setCount(output.getCount() * resolveTimesCrafted(action));
                 CreativeOutputInventory createdOutput = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
             }
@@ -128,4 +128,19 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
         }
         return found;
     }
+
+    private static int resolveTimesCrafted(AutoCraftRecipeAction action) {
+        int timesCrafted = action.getTimesCrafted();
+        if (timesCrafted > 0) {
+            return timesCrafted;
+        }
+        int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
+        if (numberOfRequestedCrafts > 0) {
+            return numberOfRequestedCrafts;
+        }
+        log.debug("Could not determine a usable craft count for this auto-craft request (timesCrafted={}, numberOfRequestedCrafts={}) - defaulting to 1",
+            timesCrafted, numberOfRequestedCrafts);
+        return 1;
+    }
+
 }

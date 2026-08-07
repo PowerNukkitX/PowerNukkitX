@@ -1494,8 +1494,15 @@ public class Level implements Metadatable {
                     if (entity instanceof EntityAsyncPrepare) {
                         seenAsyncPrepare = true;
                     }
-                    if (entity.closed || !entity.onUpdate(currentTick)) {
+                    try {
+                        if (entity.closed || !entity.onUpdate(currentTick)) {
+                            this.updateEntities.remove(id);
+                        }
+                    } catch (Throwable e) {
+                        // If a single entity throws on every tick, it would otherwise stall the entire level
+                        // tick forever. Remove it from the tick loop and let the rest of the level keep running.
                         this.updateEntities.remove(id);
+                        CrashReporter.log("ticking an entity (it will no longer be ticked)", entity, e);
                     }
                 }
                 this.hasAsyncPrepareEntities = seenAsyncPrepare;
@@ -4723,20 +4730,25 @@ public class Level implements Metadatable {
                     try {
                         for (Player player : playersToSend.values()) {
                             if (player.isConnected()) {
-                                final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-                                networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
-                                networkChunkPublisherUpdatePacket.setNewRadiusForView(player.getViewDistance() << 4);
-                                player.sendPacketImmediately(networkChunkPublisherUpdatePacket);
-
-                                final LevelChunkPacket levelChunkPacket;
-                                levelChunkPacket = new LevelChunkPacket();
-                                levelChunkPacket.setChunkX(x);
-                                levelChunkPacket.setChunkZ(z);
-                                levelChunkPacket.setDimension(DimensionType.from(this.getDimensionData().getDimensionId()));
-                                levelChunkPacket.setSubChunksCount(pair.second());
-                                levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/chunkData.retainedDuplicate());
-                                player.sendChunk(x, z, levelChunkPacket);
-                                //player.refreshBlockEntity(chunk);
+                                try {
+                                    final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
+                                    networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
+                                    networkChunkPublisherUpdatePacket.setNewRadiusForView(player.getViewDistance() << 4);
+                                    player.sendPacketImmediately(networkChunkPublisherUpdatePacket);
+                                    final LevelChunkPacket levelChunkPacket;
+                                    levelChunkPacket = new LevelChunkPacket();
+                                    levelChunkPacket.setChunkX(x);
+                                    levelChunkPacket.setChunkZ(z);
+                                    levelChunkPacket.setDimension(DimensionType.from(this.getDimensionData().getDimensionId()));
+                                    levelChunkPacket.setSubChunksCount(pair.second());
+                                    levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/chunkData.retainedDuplicate());
+                                    player.sendChunk(x, z, levelChunkPacket);
+                                    //player.refreshBlockEntity(chunk);
+                                } catch (Throwable e) {
+                                    // Chunk delivery is a shared loop: one player failing to receive this chunk must not
+                                    // block the players queued after them from getting it.
+                                    CrashReporter.log("Sending a chunk to a player", player, e);
+                                }
                             }
                         }
                     } finally {
