@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.network.positiontracking.PositionTracking;
+import org.powernukkitx.network.positiontracking.PositionTrackingService;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

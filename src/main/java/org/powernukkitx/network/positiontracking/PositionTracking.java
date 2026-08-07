@@ -1,4 +1,4 @@
-package org.powernukkitx.positiontracking;
+package org.powernukkitx.network.positiontracking;
 
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;

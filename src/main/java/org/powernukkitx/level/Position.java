@@ -6,7 +6,7 @@ import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.positiontracking.NamedPosition;
+import org.powernukkitx.network.positiontracking.NamedPosition;
 import org.powernukkitx.utils.LevelException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
