@@ -52,7 +52,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -329,8 +328,8 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 }
                 Block target = player.level.getBlock(blockVector.asVector3());
                 Block block = target.getSide(face);
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC));
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC), 1);
+                player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
             case USE -> {
                 Item item;

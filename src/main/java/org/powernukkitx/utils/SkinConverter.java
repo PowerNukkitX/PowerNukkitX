@@ -204,8 +204,7 @@ public class SkinConverter {
         return switch (type) {
             case BODY_32X32 -> org.cloudburstmc.protocol.bedrock.data.skin.AnimatedTextureType.BODY_32X32;
             case BODY_128X128 -> org.cloudburstmc.protocol.bedrock.data.skin.AnimatedTextureType.BODY_128X128;
-            case FACE -> org.cloudburstmc.protocol.bedrock.data.skin.AnimatedTextureType.FACE;
-            case NONE -> org.cloudburstmc.protocol.bedrock.data.skin.AnimatedTextureType.NONE;
+            default -> org.cloudburstmc.protocol.bedrock.data.skin.AnimatedTextureType.FACE;
         };
     }
 

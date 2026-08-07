@@ -172,7 +172,7 @@ public interface CommonBlockProperties {
 
     EnumPropertyType<MinecraftVerticalHalf> MINECRAFT_VERTICAL_HALF = EnumPropertyType.of("minecraft:vertical_half", MinecraftVerticalHalf.class, MinecraftVerticalHalf.values()[0]);
 
-    IntPropertyType MOISTURIZED_AMOUNT = IntPropertyType.of("moisturized_amount", 0, 7, 0);
+    IntPropertyType MOISTURIZED_AMOUNT = IntPropertyType.of("moisturized_amount", 7, 7, 7);
 
     EnumPropertyType<MonsterEggStoneType> MONSTER_EGG_STONE_TYPE = EnumPropertyType.of("monster_egg_stone_type", MonsterEggStoneType.class, MonsterEggStoneType.values()[0]);
 

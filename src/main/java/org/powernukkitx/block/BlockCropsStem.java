@@ -32,7 +32,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             {.1517,.3982,.3484,.1016}, //6
             {.1016,.3484,.3982,.1517}  //7
     };
-    
+
     static {
         for (double[] dropChance : dropChances) {
             double last = dropChance[0];
@@ -81,16 +81,16 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             }
             return 0;
         }
-        
+
         if (type != Level.BLOCK_UPDATE_RANDOM) {
             return 0;
         }
-        
-        if (ThreadLocalRandom.current().nextInt(1, 3) != 1 
+
+        if (ThreadLocalRandom.current().nextInt(1, 3) != 1
                 || getLevel().getFullLight(this) < MINIMUM_LIGHT_LEVEL) {
             return Level.BLOCK_UPDATE_RANDOM;
         }
-        
+
         int growth = getGrowth();
         if (growth < CommonBlockProperties.GROWTH.getMax()) {
             BlockCropsStem block = this.clone();
@@ -98,7 +98,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             BlockGrowEvent ev = new BlockGrowEvent(this, block);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                this.getLevel().setBlock(this, ev.getNewState(), true);
+                this.getLevel().setBlock(this, ev.getNewState(), true, false);
             }
             return Level.BLOCK_UPDATE_RANDOM;
         }
@@ -115,7 +115,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
                 return false;
             }
         }
-        
+
         BlockFace sideFace = BlockFace.Plane.HORIZONTAL.random();
         Block side = this.getSide(sideFace);
         Block d = side.down();
@@ -123,9 +123,9 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             BlockGrowEvent ev = new BlockGrowEvent(side, Block.get(fruitId));
             Server.getInstance().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                this.getLevel().setBlock(side, ev.getNewState(), true);
+                this.getLevel().setBlock(side, ev.getNewState(), true, false);
                 setBlockFace(sideFace);
-                this.getLevel().setBlock(this, this, true);
+                this.getLevel().setBlock(this, this, true, false);
             }
         }
         return true;
@@ -139,17 +139,17 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         double[] dropChance = dropChances[NukkitMath.clamp(getGrowth(), 0, dropChances.length)];
-        
+
         double dice = ThreadLocalRandom.current().nextDouble();
         int count = 0;
         while (dice > dropChance[count]) {
             count++;
         }
-        
+
         if (count == 0) {
             return Item.EMPTY_ARRAY;
         }
-        
+
         return new Item[]{
                 Item.get(getSeedsId(), 0, count)
         };

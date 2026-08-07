@@ -296,6 +296,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int previousInteractTick = 0;
     private final float rotationUpdateThreshold;
     private final float movementDistanceThreshold;
+    private BlockBreakCollisionGuard blockBreakCollisionGuard;
     protected final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     /**
      * Inbound packets handed off from the netty thread to be dispatched on the main tick thread,
@@ -542,6 +543,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
         playerHandle.setInteract();
         if (playerInteractEvent.isCancelled()) {
+            this.denyBlockBreakCollision(blockPos);
             this.inventory.sendHeldItem(this);
             this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
             if (target.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
@@ -574,6 +576,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         boolean canChangeBlock = target.isBlockChangeAllowed(this);
         if (!canChangeBlock) {
+            this.denyBlockBreakCollision(blockPos);
+            this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
             return;
         }
 
@@ -624,7 +628,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.spawned || !this.isAlive()) {
             return;
         }
-
         Item handItem = this.getInventory().getItemInMainHand();
         Item clone = handItem.clone();
 
@@ -644,14 +647,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     log.debug("Tried to set item {} but {} had item {} in their hand slot", handItem.getId(), this.getName(), clone.getId());
                 }
                 inventory.sendHeldItem(this.getViewers().values());
-            } else if (handItem == null)
+            } else if (handItem == null) {
+                this.denyBlockBreakCollision(blockPos);
                 this.level.sendBlocks(new Player[]{this}, new Block[]{this.level.getBlock(blockPos.asVector3())}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+            }
             resetBlockBreak();
             return;
         }
 
         inventory.sendContents(this);
         inventory.sendHeldItem(this);
+        this.denyBlockBreakCollision(blockPos);
 
         if (blockPos.distanceSquared(this) < 100) {
             Block target = this.level.getBlock(blockPos.asVector3());
@@ -663,6 +669,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
         resetBlockBreak();
+    }
+
+    private void denyBlockBreakCollision(BlockVector3 blockPos) {
+        if (this.blockBreakCollisionGuard == null) {
+            this.blockBreakCollisionGuard = new BlockBreakCollisionGuard();
+        }
+        this.blockBreakCollisionGuard.deny(this.level, blockPos);
     }
 
     private void setTitle(String text) {
@@ -979,8 +992,38 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
+        boolean blockBreakCollision = false;
+        boolean blockBreakCorrection = false;
+        if (!invalidMotion && this.blockBreakCollisionGuard != null) {
+            BlockBreakCollisionGuard collisionGuard = this.blockBreakCollisionGuard;
+            if (this.isSpectator() || this.noClip || this.riding != null) {
+                collisionGuard.clear();
+                this.blockBreakCollisionGuard = null;
+            } else {
+                double dx = clientPos.getX() - this.x;
+                double dy = clientPos.getY() - this.y;
+                double dz = clientPos.getZ() - this.z;
+                blockBreakCollision = collisionGuard.blocksMovement(
+                        this.level, this.boundingBox, dx, dy, dz);
+                if (blockBreakCollision) {
+                    blockBreakCorrection = collisionGuard.consumeCorrectionRequired();
+                } else if (collisionGuard.isEmpty()) {
+                    this.blockBreakCollisionGuard = null;
+                }
+                invalidMotion = blockBreakCollision;
+            }
+        }
+
         if (invalidMotion) {
-            this.revertClientMotion(revertPos);
+            if (blockBreakCollision) {
+                if (blockBreakCorrection) {
+                    this.correctBlockBreakCollision(revertPos);
+                } else {
+                    this.rejectBlockBreakCollision(revertPos, clientPos);
+                }
+            } else {
+                this.revertClientMotion(revertPos);
+            }
             this.resetClientMovement();
             return;
         }
@@ -1296,6 +1339,38 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         Vector3 syncPos = originalPos.add(0, 0.00001, 0);
         this.sendPosition(syncPos, originalPos.getYaw(), originalPos.getPitch(), PositionMode.RESPAWN);
+
+        if (this.speed == null) {
+            this.speed = new Vector3(0, 0, 0);
+        } else {
+            this.speed.setComponents(0, 0, 0);
+        }
+    }
+
+    private void correctBlockBreakCollision(Location originalPos) {
+        this.lastX = originalPos.getX();
+        this.lastY = originalPos.getY();
+        this.lastZ = originalPos.getZ();
+        this.lastYaw = originalPos.getYaw();
+        this.lastPitch = originalPos.getPitch();
+
+        this.sendPosition(originalPos, originalPos.getYaw(), originalPos.getPitch(), PositionMode.TELEPORT);
+
+        if (this.speed == null) {
+            this.speed = new Vector3(0, 0, 0);
+        } else {
+            this.speed.setComponents(0, 0, 0);
+        }
+    }
+
+    private void rejectBlockBreakCollision(Location originalPos, Location clientPos) {
+        this.lastX = originalPos.getX();
+        this.lastY = originalPos.getY();
+        this.lastZ = originalPos.getZ();
+        this.lastYaw = clientPos.getYaw();
+        this.lastPitch = clientPos.getPitch();
+        this.lastHeadYaw = clientPos.getHeadYaw();
+        this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
 
         if (this.speed == null) {
             this.speed = new Vector3(0, 0, 0);
