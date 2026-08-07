@@ -16,9 +16,10 @@ public class VoidGenerateStage extends GenerateStage {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
+        int minHeight = context.getGenerator().getDimensionData().getMinHeight();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                chunk.setHeightMap(x, z, 0);
+                chunk.setHeightMap(x, z, minHeight);
             }
         }
         chunk.setChunkState(ChunkState.POPULATED);
