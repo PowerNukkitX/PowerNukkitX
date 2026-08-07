@@ -9,7 +9,6 @@ import org.powernukkitx.registry.CameraRegistry;
 
 import java.util.Objects;
 
-
 /**
  * Defines a custom camera preset.
  *

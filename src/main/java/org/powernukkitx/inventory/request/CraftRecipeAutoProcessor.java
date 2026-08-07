@@ -118,6 +118,20 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
         return false;
     }
 
+    private static int resolveTimesCrafted(AutoCraftRecipeAction action) {
+        int timesCrafted = action.getTimesCrafted();
+        if (timesCrafted > 0) {
+            return timesCrafted;
+        }
+        int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
+        if (numberOfRequestedCrafts > 0) {
+            return numberOfRequestedCrafts;
+        }
+        log.debug("Auto craft request carries no usable craft count (timesCrafted {}, numberOfRequestedCrafts {}), falling back to 1",
+            timesCrafted, numberOfRequestedCrafts);
+        return 1;
+    }
+
     private static List<ConsumeAction> findAllConsumeActions(ItemStackRequestAction[] actions, int startIndex) {
         var found = new ArrayList<ConsumeAction>();
         for (int i = startIndex; i < actions.length; i++) {
