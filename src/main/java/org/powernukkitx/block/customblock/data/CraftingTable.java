@@ -16,6 +16,7 @@ public record CraftingTable(@NotNull String tableName, @Nullable List<String> cr
         }
         return new CompoundTag()
                 .putList("crafting_tags", listTag)
+                .putInt("grid_size", 3)
                 .putString("table_name", tableName);
     }
 }
