@@ -22,6 +22,9 @@ public class EmoteHandler implements PacketHandler<EmotePacket> {
         if (!playerHandle.player.spawned) {
             return;
         }
+        if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {
+            return;
+        }
         if (packet.getActorRuntimeId() != playerHandle.player.getId()) {
             log.warn("{} sent EmotePacket with invalid entity id: {} != {}", playerHandle.getUsername(), packet.getActorRuntimeId(), playerHandle.player.getId());
             return;

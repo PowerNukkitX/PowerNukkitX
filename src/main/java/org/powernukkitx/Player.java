@@ -248,6 +248,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
+    private static final double MAX_BLOCK_BREAK_SECONDS = 300.0;
+    private static final long BLOCK_BREAK_STALL_MS = 5_000L;
     protected final BedrockServerSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
@@ -480,6 +482,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInMainHand(), this);
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
+            if (!this.isBreakStillValid(pos, time, miningTimeRequired)) {
+                this.onBlockBreakAbort(pos);
+                return;
+            }
+
             if (miningTimeRequired > 0) {
                 Item hand = this.inventory.getItemInMainHand();
                 boolean hasCustomDigger = hand != null && !hand.isNull() && hand.getCustomItemComponent("minecraft:digger") != null;
@@ -535,6 +542,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
+        if (!this.canInteract(pos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7)) {
+            return;
+        }
 
         Block target = this.level.getBlock(pos);
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInMainHand(), target, face,
@@ -602,6 +612,29 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.breakingBlockFace = face;
         this.lastBreak = currentBreak;
         this.lastBreakPosition = blockPos;
+    }
+
+    private boolean isBreakStillValid(Vector3 pos, long now, double miningTimeRequired) {
+        if (!this.spawned || !this.isAlive()) {
+            return false;
+        }
+        if (!(miningTimeRequired > 0) || !Double.isFinite(miningTimeRequired)) {
+            return false;
+        }
+        if (miningTimeRequired > MAX_BLOCK_BREAK_SECONDS) {
+            return false;
+        }
+        if (now - this.breakingBlockTime > BLOCK_BREAK_STALL_MS) {
+            return false;
+        }
+        if (this.breakingBlock.getLevel() != this.level) {
+            return false;
+        }
+        if (!this.canInteract(pos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7)) {
+            return false;
+        }
+        Block current = this.level.getBlock(this.breakingBlock, false);
+        return current.getId().equals(this.breakingBlock.getId());
     }
 
     protected void resetBlockBreak() {
@@ -1163,6 +1196,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         while ((packet = this.inboundPackets.poll()) != null) {
             try {
                 processor.accept(packet);
+            } catch (IllegalArgumentException | IllegalStateException | IndexOutOfBoundsException e) {
+                log.debug("Rejected inbound packet {} for player {}: {}", packet.getClass().getSimpleName(), this.getName(), e.getMessage());
             } catch (Exception e) {
                 log.error("Error handling inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName(), e);
             }

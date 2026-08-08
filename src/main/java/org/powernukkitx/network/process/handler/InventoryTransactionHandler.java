@@ -161,6 +161,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
         }
         Item item = player.getInventory().getItemInMainHand();
         if (type.equals(ItemUseOnActorActionType.INTERACT)) {
+            if (!player.canInteract(target, player.isCreative() ? 8 : 5)) {
+                return;
+            }
             PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, Vector3.fromNetwork(transaction.getFromPosition()));
             if (player.isSpectator() || (player.getDataFlag(ActorFlags.SILENT) && !(target instanceof InventoryHolder)))
                 playerInteractEntityEvent.setCancelled();

@@ -87,4 +87,9 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
             }
         }
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
 }
