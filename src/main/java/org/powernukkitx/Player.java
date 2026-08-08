@@ -1107,7 +1107,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             (float) this.yaw,
             (float) this.headYaw
         ));
-        pk.setPositionMode(PositionMode.NORMAL);
+        pk.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         pk.setOnGround(this.onGround);
         pk.setRidingRuntimeID(riding.getId());
         pk.setTick(this.getServer().getTick());
