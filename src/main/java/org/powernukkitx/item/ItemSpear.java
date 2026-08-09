@@ -123,18 +123,21 @@ public abstract class ItemSpear extends ItemTool {
     }
 
     public void applyLunge(Player player) {
-        if(this.canLunge(player)){
+        if (this.canLunge(player)) {
             int lungeLevel = getEnchantmentLevel(Enchantment.ID_LUNGE);
             Vector3 dir = player.getDirectionVector();
-            dir.y = 0;
 
-            if (dir.lengthSquared() == 0) return;
+            if (dir.lengthSquared() == 0) {
+                return;
+            }
 
-            dir = dir.normalize().multiply(0.5 + (lungeLevel * 0.4));
+            double strength = 1.4 + (lungeLevel * 0.6);
 
-            player.setMotion(player.getMotion().add(dir));
+            double x = dir.x * strength;
+            double z = dir.z * strength;
+
+            player.setMotion(new Vector3(x, 0.6, z));
             player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
-            player.getFoodData().exhaust(BASE_LUNGE_EXHAUST * lungeLevel);
         }
     }
 

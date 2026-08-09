@@ -1,5 +1,6 @@
 package org.powernukkitx.recipe;
 
+import com.google.common.base.Preconditions;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 
@@ -13,6 +14,7 @@ public abstract class CraftingRecipe extends BaseRecipe {
     private final int priority;
     private final int netId;
     protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
+    private String craftingTag = "crafting_table";
 
     protected CraftingRecipe(String id, int netId, int priority, RecipeUnlockingRequirement recipeUnlockingRequirement) {
         super(id);
@@ -48,4 +50,32 @@ public abstract class CraftingRecipe extends BaseRecipe {
     public int getNetId() {
         return netId;
     }
+
+    /**
+     * Returns the crafting table tag used by this recipe on the network.
+     *
+     * @return the crafting tag
+     */
+    public String getCraftingTag() {
+        return craftingTag;
+    }
+
+    /**
+     * Sets the crafting table tag used by this recipe on the network.
+     * <p>
+     * The default value is {@code crafting_table}, preserving vanilla behavior.
+     *
+     * @param craftingTag the crafting tag
+     * @return this recipe
+     */
+    public CraftingRecipe setCraftingTag(String craftingTag) {
+        Preconditions.checkArgument(
+            craftingTag != null && !craftingTag.isBlank() && craftingTag.length() <= 64,
+            "Crafting tag cannot be null, blank, or exceed 64 characters"
+        );
+
+        this.craftingTag = craftingTag;
+        return this;
+    }
+
 }
