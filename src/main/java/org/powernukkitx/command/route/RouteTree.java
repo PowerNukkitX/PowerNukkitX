@@ -75,7 +75,7 @@ public class RouteTree {
         RouteNode current = match(root, args, 0, context);
         if (current == null) {
             String usage = command.getUsage();
-            if (usage.equals("/" + command.getName())) {
+            if (usage.equals("/" + command.getLabel())) {
                 sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", "", ""));
             } else {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", usage));
