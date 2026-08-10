@@ -3,10 +3,12 @@ package org.powernukkitx.network.process.handler;
 import io.netty.channel.EventLoop;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
+import org.cloudburstmc.protocol.bedrock.data.PlatformType;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
-import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
+import org.cloudburstmc.protocol.bedrock.data.payload.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
@@ -29,6 +31,7 @@ import org.powernukkitx.network.process.auth.ClientSkinData;
 import org.powernukkitx.utils.SkinUtils;
 
 import javax.crypto.SecretKey;
+import java.net.InetSocketAddress;
 import java.security.PublicKey;
 import java.util.Locale;
 import java.util.Objects;
@@ -42,11 +45,13 @@ import java.util.function.Consumer;
  * serves every other session on that loop, so doing this inline stalls unrelated players whenever
  * a batch of logins arrives.
  * <p>
- * The work therefore runs on the compute pool in two steps, with the checks that read server
- * state - the pre-login event, player count, whitelist and bans - on the event loop between them.
- * That ordering is deliberate: it matches the sequence used when this ran inline, so failures are
- * still reported in the same order, and a login the server is going to refuse anyway never pays
- * for the client JWT or the key exchange.
+ * The work therefore runs on the compute pool in two steps. The identity chain is verified first,
+ * because both the pre-login event and the client JWT validation need its claims. The client JWT
+ * validation and the encryption key exchange then start on the compute pool immediately, in parallel
+ * with the checks that read server state - the pre-login event, player count, whitelist and bans -
+ * on the event loop. An accepted login therefore does not pay for the two crypto steps serially.
+ * The trade-off is that a login the server is going to refuse anyway has already paid for the client
+ * JWT work that was in flight.
  *
  * @author Kaooot
  */
@@ -109,8 +114,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     }
 
     /**
-     * Runs the checks that read server state, then starts the second off-loop step for a login
-     * that passed them.
+     * Runs the checks that read server state. The second off-loop step is started first so it runs
+     * in parallel with these checks; see the class Javadoc for why.
      */
     private void applyChain(ChainOutcome chain, Credentials credentials, PlayerSessionHolder holder, Server server) {
         if (chain.failure() != null) {
@@ -120,7 +125,24 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         final ChainValidationResult.IdentityClaims identityClaims = Objects.requireNonNull(
             chain.identityClaims(), "a chain outcome without a failure always carries identity claims");
 
-        final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
+        final ClientDeviceData deviceData = this.readClientDeviceData(credentials.clientJwt());
+        final PlayerPreLoginEvent event = new PlayerPreLoginEvent(
+            identityClaims,
+            ((InetSocketAddress) holder.getSession().getSocketAddress()).getAddress().getHostAddress(),
+            deviceData.deviceId(),
+            deviceData.deviceModel(),
+            deviceData.deviceOs(),
+            deviceData.platformType(),
+            deviceData.clientRandomId()
+        );
+        // Start the client JWT validation and the key exchange now, before the checks below, so they run
+        // on the compute pool in parallel with the pre-login event and the refusal checks. The completion
+        // callback is queued on this event loop and only runs once the checks below have finished, so a
+        // login refused here is disconnected first and never reaches {@code completeLogin}.
+        offLoop(holder, server,
+            () -> validateClient(credentials, server, identityClaims),
+            client -> completeLogin(client, identityClaims, chain.signed(), holder, server));
+
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             failLogin(holder, server, DisconnectFailReason.UNKNOWN, event.getKickMessage());
@@ -142,17 +164,12 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             final String reason = entry.getReason();
             failLogin(holder, server, DisconnectFailReason.UNKNOWN,
                 !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return;
         }
-
-        offLoop(holder, server,
-            () -> validateClient(credentials, server, identityClaims),
-            client -> completeLogin(client, identityClaims, chain.signed(), holder, server));
     }
 
     /**
-     * Verifies the client JWT and prepares the key exchange. Second off-loop step, reached only
-     * once the server has accepted the identity.
+     * Verifies the client JWT and prepares the key exchange. Runs on the compute pool in parallel
+     * with the server-state checks; its result is only applied if those checks pass.
      */
     private ClientOutcome validateClient(Credentials credentials, Server server, ChainValidationResult.IdentityClaims identityClaims) throws Exception {
         final ClientJwtValidationResult clientJwt = this.validateClientJwt(credentials.clientJwt(), identityClaims.parsedIdentityPublicKey());
@@ -225,6 +242,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
      * session's event loop, so everything touching session or server state stays on one thread.
      * A session that went away in the meantime is dropped, and a failing step disconnects rather
      * than leaving the login stuck in {@link SessionState#AUTHENTICATING}.
+     * <p>
+     * The {@code !holder.isDisconnected()} guard is what makes the parallel client validation safe:
+     * the event loop has already disconnected a refused login before any pending callback runs, so
+     * it must never proceed with {@code then} or a failure.
      */
     private <T> void offLoop(PlayerSessionHolder holder, Server server, ThrowingSupplier<T> work, Consumer<T> then) {
         final EventLoop eventLoop = holder.getSession().getPeer().getChannel().eventLoop();
@@ -235,14 +256,14 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             } catch (Exception e) {
                 log.debug("Error while validating login", e);
                 eventLoop.execute(() -> {
-                    if (holder.getSession().isConnected()) {
+                    if (holder.getSession().isConnected() && !holder.isDisconnected()) {
                         failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
                     }
                 });
                 return;
             }
             eventLoop.execute(() -> {
-                if (holder.getSession().isConnected()) {
+                if (holder.getSession().isConnected() && !holder.isDisconnected()) {
                     then.accept(result);
                 }
             });
@@ -283,7 +304,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             if (clientChainData == null) {
                 return ClientJwtValidationResult.INVALID;
             }
-            final Skin skin = ClientSkinData.readSkin(claims);
+            final SerializedSkin skin = ClientSkinData.readSkin(claims);
             if (skin == null || !SkinUtils.isValid(skin)) {
                 return ClientJwtValidationResult.INVALID;
             }
@@ -296,13 +317,72 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         return ClientJwtValidationResult.INVALID;
     }
 
+    /**
+     * Decodes the device id, device model, device os, platform type and client random id from the client JWT without
+     * verifying its signature - the verified validation happens later in {@link #validateClient}. The payload is only
+     * read so the pre-login event can expose the data for ban checks; the client can forge it, so callers must treat it
+     * as unverified.
+     */
+    private ClientDeviceData readClientDeviceData(@Nullable String clientJwt) {
+        if (clientJwt == null || clientJwt.isEmpty()) {
+            return ClientDeviceData.EMPTY;
+        }
+        try {
+            final JwtContext context = new JwtConsumerBuilder()
+                .setSkipAllValidators()
+                .setSkipSignatureVerification()
+                .build()
+                .process(clientJwt);
+            final JwtClaims claims = context.getJwtClaims();
+            final Object deviceId = claims.getClaimValue("DeviceId");
+            final Object deviceModel = claims.getClaimValue("DeviceModel");
+            final Object deviceOs = claims.getClaimValue("DeviceOS");
+            final Object platformType = claims.getClaimValue("PlatformType");
+            final Object clientRandomId = claims.getClaimValue("ClientRandomId");
+            return new ClientDeviceData(
+                deviceId instanceof String id ? id : null,
+                deviceModel instanceof String model ? model : null,
+                readDeviceOs(deviceOs),
+                readPlatformType(platformType),
+                clientRandomId instanceof Number number ? number.longValue() : 0L
+            );
+        } catch (Exception e) {
+            log.debug("Failed to read device data from client JWT", e);
+            return ClientDeviceData.EMPTY;
+        }
+    }
+
+    /** Maps a DeviceOS claim to its enum, or {@code null} when the claim is absent or maps to {@link BuildPlatform#UNKNOWN}. */
+    private static @Nullable BuildPlatform readDeviceOs(Object value) {
+        if (!(value instanceof Number number)) {
+            return null;
+        }
+        final BuildPlatform platform = BuildPlatform.from(number.intValue());
+        return platform == BuildPlatform.UNKNOWN ? null : platform;
+    }
+
+    /**
+     * Maps a PlatformType claim to its enum, or {@code null} when the claim is absent or holds an unknown ordinal -
+     * {@link PlatformType#from(int)} throws for values outside its range.
+     */
+    private static @Nullable PlatformType readPlatformType(Object value) {
+        if (!(value instanceof Number number)) {
+            return null;
+        }
+        try {
+            return PlatformType.from(number.intValue());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Value
     private static class ClientJwtValidationResult {
         private static final ClientJwtValidationResult INVALID = new ClientJwtValidationResult(false, null, null);
 
         boolean valid;
         ClientChainData clientChainData;
-        Skin skin;
+        SerializedSkin skin;
     }
 
     @FunctionalInterface
@@ -315,6 +395,15 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
      * that nothing reads the packet once the pipeline has moved on from it.
      */
     private record Credentials(PlayerAuthenticationType authenticationType, String token, String clientJwt) {
+    }
+
+    /** Device id, model, os and platform type read unverified from the client JWT - any may be {@code null} when
+     * absent - plus the client random id, {@code 0} when absent. */
+    private record ClientDeviceData(@Nullable String deviceId, @Nullable String deviceModel,
+                                    @Nullable BuildPlatform deviceOs, @Nullable PlatformType platformType,
+                                    long clientRandomId) {
+
+        private static final ClientDeviceData EMPTY = new ClientDeviceData(null, null, null, null, 0L);
     }
 
     /**
@@ -338,7 +427,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
      */
     private record ClientOutcome(
         @Nullable ClientChainData clientChainData,
-        @Nullable Skin skin,
+        @Nullable SerializedSkin skin,
         @Nullable EncryptionHandshake encryption,
         boolean encryptionFailed
     ) {

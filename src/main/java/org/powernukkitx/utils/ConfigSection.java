@@ -70,6 +70,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<?> parseList(List<?> list) {
         List<Object> newList = new ArrayList<>();
 
@@ -688,7 +689,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public List<Map<?, ?>> getMapList(String key) {
-        List<Map<?, ?>> list = (List<Map<?, ?>>) getList(key);
+        List<?> list = getList(key);
         List<Map<?, ?>> result = new ArrayList<>();
 
         if (list == null) {
@@ -696,8 +697,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         }
 
         for (Object object : list) {
-            if (object instanceof Map) {
-                result.add((Map<?, ?>) object);
+            if (object instanceof Map<?, ?> map) {
+                result.add(map);
             }
         }
 

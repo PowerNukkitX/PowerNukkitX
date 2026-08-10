@@ -17,8 +17,6 @@ import org.powernukkitx.scheduler.AsyncTask;
 import org.powernukkitx.utils.DummyBossBar;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
-import lombok.Getter;
-import lombok.Setter;
 import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;

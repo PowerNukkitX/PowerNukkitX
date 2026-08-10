@@ -188,7 +188,7 @@ public class RouteTree {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private CommandParameter createArgumentParameter(RouteNode node) {
         IParamNode<?> paramNode = node.getParamNode();
         Class<? extends ParamNode> nodeClass = (Class<? extends ParamNode>) paramNode.getClass();

@@ -38,8 +38,8 @@ public class SkinConverter {
         serialized.setResourcePatch(orEmpty(skin.getSkinResourcePatch()));
         serialized.setImageData(toSkinImage(skin.getSkinData()));
         serialized.setCapeImageData(toSkinImage(skin.getCapeData()));
-        serialized.setGeometryData(orEmpty(skin.getGeometryData()));
-        serialized.setGeometryDataMinEngineVersion(orEmpty(skin.getGeometryDataEngineVersion()));
+        serialized.setGeometryData(orDefault(skin.getGeometryData(), "{}"));
+        serialized.setGeometryDataMinEngineVersion(orDefault(skin.getGeometryDataEngineVersion(), "0.0.0"));
         serialized.setAnimationData(orEmpty(skin.getAnimationData()));
         serialized.setCapeID(orEmpty(skin.getCapeId()));
         serialized.setFullID(orEmpty(skin.getFullSkinId()));
@@ -132,20 +132,20 @@ public class SkinConverter {
 
         return Skin.of(
                 serialized.getID(),
-                serialized.getPlayFabID(),
+                orEmpty(serialized.getPlayFabID()),
                 serialized.getResourcePatch(),
                 toImageData(serialized.getImageData()),
                 animations,
                 toImageData(serialized.getCapeImageData()),
                 serialized.getGeometryData(),
-                serialized.getGeometryDataMinEngineVersion(),
-                serialized.getAnimationData(),
+                orEmpty(serialized.getGeometryDataMinEngineVersion()),
+                orEmpty(serialized.getAnimationData()),
                 serialized.isPremium(),
                 serialized.isPersona(),
                 serialized.isPersonaCapeOnClassicSkin(),
                 serialized.isPrimaryUser(),
-                serialized.getCapeID(),
-                serialized.getFullID(),
+                orEmpty(serialized.getCapeID()),
+                orEmpty(serialized.getFullID()),
                 serialized.getArmSize() == ArmSizeType.SLIM ? "slim" : "wide",
                 String.format("#%x", serialized.getSkinColor()),
                 personaPieces,
@@ -234,5 +234,9 @@ public class SkinConverter {
 
     private String orEmpty(@Nullable String value) {
         return value == null ? "" : value;
+    }
+    
+    private String orDefault(@Nullable String value, String defaultValue) {
+        return value == null || value.isEmpty() ? defaultValue : value;
     }
 }

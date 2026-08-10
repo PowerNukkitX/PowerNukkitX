@@ -157,6 +157,7 @@ public class EntityCreaking extends EntityMob {
         return true;
     }
 
+    @SuppressWarnings("deprecation") // no replacement event exists; still the mapped id in the current protocol
     public void sendParticleTrail() {
         final LevelEventGenericPacket packet = new LevelEventGenericPacket();
         packet.setType(LevelEvent.PARTICLE_CREAKING_HEART_TRIAL);

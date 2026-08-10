@@ -6,6 +6,7 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.blockentity.BlockEntity;
+import org.powernukkitx.blockentity.BlockEntityInventoryHolder;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
@@ -442,6 +443,21 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return Is the block transparent?
      */
     public boolean isTransparent() {
+        return false;
+    }
+
+    /**
+     * Checks whether this block is a container, that is whether the block entity it holds implements
+     * {@link BlockEntityInventoryHolder} (chests, furnaces, hoppers, barrels and the like). Signs, banners and
+     * spawners are not containers even though they hold a block entity. This is a check on the block type, so it
+     * does not require a level or a loaded chunk.
+     *
+     * @return whether this block can hold an inventory
+     */
+    public boolean hasContainer() {
+        if (this instanceof BlockEntityHolder<?> holder) {
+            return BlockEntityInventoryHolder.class.isAssignableFrom(holder.getBlockEntityClass());
+        }
         return false;
     }
 

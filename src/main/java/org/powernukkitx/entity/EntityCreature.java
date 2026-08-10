@@ -10,7 +10,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
  *
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityCreature extends EntityLiving implements EntityNameable, EntityAgeable {
+public abstract class EntityCreature extends EntityLiving {
 
 
     public EntityCreature(IChunk chunk, CompoundTag nbt) {

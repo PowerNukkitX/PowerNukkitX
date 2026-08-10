@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.experimental.UtilityClass;
+import org.cloudburstmc.protocol.bedrock.data.payload.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
 
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.List;
 
 @UtilityClass
 public class SkinUtils {
+
+    private static final int SINGLE_SKIN_SIZE = 64 * 32 * 4;
 
     public SerializedImage getImage(JsonObject token, String name) {
         if (token.has(name + "Data")) {
@@ -43,6 +46,20 @@ public class SkinUtils {
             colors.add(element.getAsString()); // remove #
         }
         return new PersonaPieceTint(pieceType, colors);
+    }
+
+    public boolean isValid(SerializedSkin skin) {
+        return skin.getID() != null && !skin.getID().trim().isEmpty() && skin.getID().length() < 100 &&
+                skin.getImageData() != null && skin.getImageData().getWidth() >= 32 && skin.getImageData().getHeight() >= 32 &&
+                skin.getImageData().getImageBytes().length >= SINGLE_SKIN_SIZE &&
+                (skin.getPlayFabID() == null || skin.getPlayFabID().length() < 100) &&
+                (skin.getCapeID() == null || skin.getCapeID().length() < 100) &&
+                (skin.getFullID() == null || skin.getFullID().length() < 200) &&
+                (skin.getGeometryDataMinEngineVersion() == null || skin.getGeometryDataMinEngineVersion().length() < 100) &&
+                (skin.getAnimationData() == null || skin.getAnimationData().length() < 1000) &&
+                skin.getAnimatedImageData().size() <= 100 &&
+                skin.getPersonaPieces().size() <= 100 &&
+                skin.getPieceTintColors().size() <= 100 && isValidResourcePatch(skin.getResourcePatch());
     }
 
     public boolean isValid(Skin skin) {

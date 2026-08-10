@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * Stores a sequential range of {@link PositionTracking} objects in a file. The read operation is cached.
@@ -45,7 +45,7 @@ public class PositionTrackingStorage implements Closeable {
     private final long garbagePos;
     private final long stringHeapPos;
     private final RandomAccessFile persistence;
-    private final Cache<Integer, Optional<PositionTracking>> cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).concurrencyLevel(1).build();
+    private final Cache<Integer, Optional<PositionTracking>> cache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(5)).concurrencyLevel(1).build();
     private int nextIndex;
 
     /**

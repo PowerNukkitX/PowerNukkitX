@@ -1251,11 +1251,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
         }
 
         @Override
-        public Long next() {
-            return Long.valueOf(nextLong());
-        }
-
-        @Override
         public Long nextElement() {
             return Long.valueOf(nextLong());
         }

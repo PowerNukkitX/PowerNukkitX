@@ -2,6 +2,7 @@ package org.powernukkitx;
 
 import org.powernukkitx.network.process.auth.ClientChainData;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.data.payload.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
 
 import java.lang.reflect.Constructor;
@@ -48,8 +49,7 @@ public final class PlayerFixture {
                     (ChainValidationResult.IdentityClaims) idClaimsCtor.newInstance(idData, "pubkey");
 
             ClientChainData chainData = mock(ClientChainData.class);
-            org.cloudburstmc.protocol.bedrock.data.skin.Skin cloudburstSkin =
-                    mock(org.cloudburstmc.protocol.bedrock.data.skin.Skin.class);
+            SerializedSkin cloudburstSkin = new SerializedSkin();
 
             Player.PlayerInfo info = new Player.PlayerInfo(identityClaims, chainData, cloudburstSkin, false);
 

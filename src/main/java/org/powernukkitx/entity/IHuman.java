@@ -294,8 +294,9 @@ public interface IHuman extends InventoryHolder {
                 skinTag.putList("PieceTintColors", tintsTag);
             }
 
-            if (!serializedSkin.getPlayFabId().isEmpty()) {
-                skinTag.putString("PlayFabId", serializedSkin.getPlayFabId());
+            String playFabId = serializedSkin.getPlayFabId();
+            if (playFabId != null && !playFabId.isEmpty()) {
+                skinTag.putString("PlayFabId", playFabId);
             }
 
             human.getNbt().putCompound("Skin", skinTag);

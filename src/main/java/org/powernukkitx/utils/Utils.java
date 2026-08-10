@@ -8,6 +8,7 @@ import org.powernukkitx.math.Vector3;
 import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -694,8 +695,20 @@ public class Utils {
             case 12 -> "Switch";
             case 13 -> "Xbox";
             case 14 -> "Windows Phone";
+            case 15 -> "Linux";
             default -> "Unknown";
         };
+    }
+
+    /**
+     * Maps a {@link BuildPlatform} to a human-readable device name, e.g. {@code Android}, {@code iOS}, {@code Windows},
+     * {@code PlayStation} or {@code Xbox}. Unknown or {@code null} platforms map to {@code "Unknown"}.
+     *
+     * @param platform the build platform, may be {@code null}
+     * @return the human-readable device name
+     */
+    public static String mapDeviceOSToString(BuildPlatform platform) {
+        return platform == null ? "Unknown" : mapDeviceOSToString(platform.getId());
     }
 
     public static String getExternalIP() {

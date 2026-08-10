@@ -1,6 +1,7 @@
 package org.powernukkitx.command;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.Player;
 
 import org.powernukkitx.command.data.CommandParameter;
 import org.powernukkitx.command.defaults.*;
@@ -217,6 +218,7 @@ public class SimpleCommandMap implements CommandMap {
      */
     @Override
     public boolean register(String fallbackPrefix, Command command, String label) {
+        final boolean registered;
         synchronized (this.knownCommands) {
             if (label == null) {
                 label = command.getName();
@@ -224,7 +226,7 @@ public class SimpleCommandMap implements CommandMap {
             label = label.trim().toLowerCase(Locale.ENGLISH);
             fallbackPrefix = fallbackPrefix.trim().toLowerCase(Locale.ENGLISH);
 
-            boolean registered = this.registerAlias(command, false, fallbackPrefix, label);
+            registered = this.registerAlias(command, false, fallbackPrefix, label);
 
             List<String> aliases = new ArrayList<>(Arrays.asList(command.getAliases()));
 
@@ -241,9 +243,13 @@ public class SimpleCommandMap implements CommandMap {
             }
 
             command.register(this);
-
-            return registered;
         }
+
+        // the command list shown to connected clients is stale otherwise, so a plugin that
+        // unregisters a vanilla command and registers its own (e.g. /help) takes effect immediately
+        this.resyncAvailableCommands();
+
+        return registered;
     }
 
     /**
@@ -488,6 +494,7 @@ public class SimpleCommandMap implements CommandMap {
             this.knownCommands.clear();
             this.setDefaultCommands();
         }
+        this.resyncAvailableCommands();
     }
 
     /**
@@ -523,6 +530,21 @@ public class SimpleCommandMap implements CommandMap {
                     command.unregister(this);
                 }
             }
+        }
+        this.resyncAvailableCommands();
+    }
+
+    /**
+     * Resends the {@code AvailableCommandsPacket} to every online player so their client-side command
+     * list (suggestions and parameter overloads) reflects the current command map. Only sends when
+     * the server already has online players - harmless during construction, where the map is empty.
+     */
+    private void resyncAvailableCommands() {
+        if (this.server.getOnlinePlayers().isEmpty()) {
+            return;
+        }
+        for (Player player : this.server.getOnlinePlayers().values()) {
+            player.syncAvailableCommands();
         }
     }
 

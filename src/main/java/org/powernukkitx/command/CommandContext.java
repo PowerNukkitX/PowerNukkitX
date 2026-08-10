@@ -34,6 +34,7 @@ public class CommandContext {
     public <T> T getArg(@NotNull String name) {
         return (T) arguments.get(name);
     }
+    @SuppressWarnings("unchecked")
     public <T> T getArg(@NotNull String name, T fallback) {
         return (T) arguments.getOrDefault(name, fallback);
     }

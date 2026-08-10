@@ -5477,8 +5477,8 @@ public class Level implements Metadatable {
 
             int size = toRemove.size();
             if(size > 0) {
-                Set<IChunk> chunksToSave = toRemove.stream()
-                        .map(index -> getChunkIfLoaded(getHashX(index), getHashZ(index)))
+                Set<IChunk> chunksToSave = toRemove.longStream()
+                        .mapToObj(index -> getChunkIfLoaded(getHashX(index), getHashZ(index)))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toUnmodifiableSet());
 
@@ -5568,27 +5568,21 @@ public class Level implements Metadatable {
 
         if (entity.lastX != x) {
             data.setNewPositionX((float) x);
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_X);
         }
         if (entity.lastY != y) {
             data.setNewPositionY((float) y);
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_Y);
         }
         if (entity.lastZ != z) {
             data.setNewPositionZ((float) z);
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_Z);
         }
         if (entity.lastPitch != pitch) {
             data.setRotationX((float) pitch);
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_PITCH);
         }
         if (entity.lastYaw != yaw) {
             data.setRotationY((float) yaw);
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_YAW);
         }
         if (entity.lastHeadYaw != headYaw) {
             data.setRotationYHead((float) headYaw);
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_HEAD_YAW);
         }
         data.setOnGround(entity.onGround);
 

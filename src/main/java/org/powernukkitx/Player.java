@@ -191,7 +191,6 @@ import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -444,7 +443,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         buffer.putLong(this.uuid.getMostSignificantBits());
         buffer.putLong(this.uuid.getLeastSignificantBits());
         this.rawUUID = buffer.array();
-        this.setSkin(new Skin(info.getSkin(), info.clientChainData.isTrustedSkin()));
+        this.setSkin(new Skin(SkinConverter.fromSerializedSkin(info.getSkin()), info.clientChainData.isTrustedSkin()));
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
         this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
         this.movementDistanceThreshold = this.server.getSettings().playerSettings().movementDistanceThreshold();
@@ -5423,6 +5422,59 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.clientChainData;
     }
 
+    /**
+     * Get the device id this player logged in with, or {@code null} when it is not available. Unlike the pre-login
+     * event data, this comes from the verified client chain, so it can be trusted.
+     *
+     * @return the device id, or {@code null}
+     */
+    @Nullable
+    public String getDeviceId() {
+        return this.clientChainData == null ? null : this.clientChainData.getDeviceId();
+    }
+
+    /**
+     * Get the device model this player logged in with, or {@code null} when it is not available. Unlike the pre-login
+     * event data, this comes from the verified client chain, so it can be trusted.
+     *
+     * @return the device model, or {@code null}
+     */
+    @Nullable
+    public String getDeviceModel() {
+        return this.clientChainData == null ? null : this.clientChainData.getDeviceModel();
+    }
+
+    /**
+     * Get the human-readable name of the device operating system this player logged in with, e.g. {@code Android},
+     * {@code iOS}, {@code Windows}, {@code PlayStation} or {@code Xbox}. Unlike the pre-login event data, this comes from
+     * the verified client chain, so it can be trusted. Returns {@code "Unknown"} when the client omitted the device claim.
+     *
+     * @return the human-readable device operating system name
+     */
+    public String getDeviceOS() {
+        return Utils.mapDeviceOSToString(this.clientChainData.getDeviceOS());
+    }
+
+    /**
+     * Get the platform type (desktop, console, mobile) this player logged in with. Unlike the pre-login event data,
+     * this comes from the verified client chain, so it can be trusted.
+     *
+     * @return the platform type
+     */
+    public PlatformType getPlatformType() {
+        return this.clientChainData.getPlatformType();
+    }
+
+    /**
+     * Get the client's random install id. Unlike the pre-login event data, this comes from the verified client chain,
+     * so it can be trusted.
+     *
+     * @return the client random id
+     */
+    public long getClientRandomId() {
+        return this.clientChainData.getClientRandomId();
+    }
+
     @ApiStatus.Internal
     public boolean pickupEntity(Entity entity, boolean near) {
         if (!this.spawned || !this.isAlive() || !this.isOnline() || this.isSpectator() || entity.isClosed()) {
@@ -5870,7 +5922,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void removeLine(IScoreboardLine line) {
         final SetScorePacket packet = new SetScorePacket();
-        packet.setRemove(true);
         var networkInfo = line.toNetworkInfo();
         if (networkInfo != null) {
             packet.getScoreInfo().add(switch (networkInfo) {
@@ -5907,7 +5958,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
-        packet.setRemove(false);
         var networkInfo = line.toNetworkInfo();
         if (networkInfo != null)
             packet.getScoreInfo().add(networkInfo);
@@ -5931,7 +5981,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //client will not storage the score of a scoreboard, so we should send the score to client
         final SetScorePacket setScorePacket = new SetScorePacket();
-        setScorePacket.setRemove(false);
         setScorePacket.getScoreInfo().addAll(
             scoreboard.getLines().values().stream()
                 .map(IScoreboardLine::toNetworkInfo)
@@ -6261,7 +6310,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static class PlayerInfo {
         ChainValidationResult.IdentityClaims identityClaims;
         ClientChainData clientChainData;
-        org.cloudburstmc.protocol.bedrock.data.skin.Skin skin;
+        org.cloudburstmc.protocol.bedrock.data.payload.skin.SerializedSkin skin;
         boolean xboxAuth;
     }
 

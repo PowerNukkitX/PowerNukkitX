@@ -1065,7 +1065,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected void recalculateEffectColor() {
         int[] color = new int[3];
         int count = 0;
-        boolean ambient = true;
         for (Effect effect : effects.values()) {
             if (effect.isVisible()) {
                 Color effectColor = effect.getColor();
@@ -1073,9 +1072,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 color[1] += effectColor.getGreen() * effect.getLevel();
                 color[2] += effectColor.getBlue() * effect.getLevel();
                 count += effect.getLevel();
-                if (!effect.isAmbient()) {
-                    ambient = false;
-                }
             }
         }
 
@@ -1084,13 +1080,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             int g = (color[1] / count) & 0xff;
             int b = (color[2] / count) & 0xff;
             setDataProperties(Map.of(
-                    ActorDataTypes.EFFECT_COLOR, (r << 16) + (g << 8) + b,
-                    ActorDataTypes.EFFECT_AMBIENCE, ambient ? (byte) 1 : 0
+                    ActorDataTypes.EFFECT_COLOR, (r << 16) + (g << 8) + b
             ));
         } else {
             setDataProperties(Map.of(
-                    ActorDataTypes.EFFECT_COLOR, 0,
-                    ActorDataTypes.EFFECT_AMBIENCE, (byte) 0
+                    ActorDataTypes.EFFECT_COLOR, 0
             ));
         }
     }
@@ -5883,6 +5877,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     @NotNull
+    @SuppressWarnings("unchecked")
     public <T> T getDataProperty(ActorDataType<T> key, T d) {
         return (T) this.getActorDataMap().getOrDefault(key, d);
     }

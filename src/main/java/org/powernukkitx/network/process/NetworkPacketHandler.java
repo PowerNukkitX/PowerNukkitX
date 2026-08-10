@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
 import org.cloudburstmc.protocol.common.PacketSignal;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Kaooot
@@ -34,7 +35,7 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
             return PacketSignal.HANDLED;
         }
 
-        if (player != null && firePacketReceive(player, packet)) {
+        if (firePacketReceive(player, packet)) {
             return PacketSignal.UNHANDLED;
         }
         if (packetHandler != null) {
@@ -53,7 +54,7 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
      */
     void processInbound(BedrockPacket packet) {
         final Player player = this.session.getPlayer();
-        if (player == null || firePacketReceive(player, packet)) {
+        if (firePacketReceive(player, packet)) {
             return;
         }
         final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
@@ -63,11 +64,11 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         packetHandler.handle(packet, this.session, this.server);
     }
 
-    private boolean firePacketReceive(Player player, BedrockPacket packet) {
+    private boolean firePacketReceive(@Nullable Player player, BedrockPacket packet) {
         if (PacketReceiveEvent.getHandlers().isEmpty()) {
             return false;
         }
-        final PacketReceiveEvent event = new PacketReceiveEvent(player, packet);
+        final PacketReceiveEvent event = new PacketReceiveEvent(player, this.session, packet);
         this.server.getPluginManager().callEvent(event);
         return event.isCancelled();
     }
@@ -76,7 +77,7 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         if (PacketHandleEvent.getHandlers().isEmpty()) {
             return false;
         }
-        final PacketHandleEvent event = new PacketHandleEvent(player, packet);
+        final PacketHandleEvent event = new PacketHandleEvent(player, this.session, packet);
         this.server.getPluginManager().callEvent(event);
         return event.isCancelled();
     }

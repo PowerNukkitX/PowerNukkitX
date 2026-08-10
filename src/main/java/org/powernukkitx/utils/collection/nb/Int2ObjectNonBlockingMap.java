@@ -1243,15 +1243,10 @@ public class Int2ObjectNonBlockingMap<TypeV>
 
         // Boxed Iterator path
         @Override
-        public Integer next() {
-            return Integer.valueOf(nextInt());
-        }
-
-        @Override
         public boolean hasNext() { return _ss.hasNext(); }
 
         @Override
-        public Integer nextElement() { return next(); }
+        public Integer nextElement() { return Integer.valueOf(nextInt()); }
 
         @Override
         public boolean hasMoreElements() { return hasNext(); }

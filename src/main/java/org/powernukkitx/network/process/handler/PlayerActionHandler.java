@@ -50,12 +50,6 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                     blockFrame.getBlockEntity().dropItem(playerHandle.player);
                 }
             }
-            case PlayerActionType.GET_UPDATED_BLOCK -> {
-                //TODO
-            }
-            case PlayerActionType.DROP_ITEM -> {
-                //TODO
-            }
             case PlayerActionType.START_SLEEPING -> {
 
             }
@@ -116,9 +110,6 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                 } else {
                     player.setSpinAttacking(false);
                 }
-            }
-            case PlayerActionType.INTERACT_WITH_BLOCK -> {
-                //TODO
             }
             case PlayerActionType.PREDICT_DESTROY_BLOCK -> {
                 //TODO

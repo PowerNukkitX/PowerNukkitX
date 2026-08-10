@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -60,7 +61,7 @@ public class LibraryLoader {
 
         File file = new File(folder, fileName);
         if (!file.isFile()) try {
-            URL url = new URL("https://repo1.maven.org/maven2/" + filePath + '/' + fileName);
+            URL url = URI.create("https://repo1.maven.org/maven2/" + filePath + '/' + fileName).toURL();
             LOGGER.info("Get library from " + url + '.');
             Files.copy(url.openStream(), file.toPath());
             LOGGER.info("Get library " + fileName + " done!");
@@ -70,11 +71,11 @@ public class LibraryLoader {
 
         try {
             Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            boolean accessible = method.isAccessible();
+            URLClassLoader classLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+            boolean accessible = method.canAccess(classLoader);
             if (!accessible) {
                 method.setAccessible(true);
             }
-            URLClassLoader classLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
             URL url = file.toURI().toURL();
             method.invoke(classLoader, url);
             method.setAccessible(accessible);
