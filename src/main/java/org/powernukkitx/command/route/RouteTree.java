@@ -75,10 +75,10 @@ public class RouteTree {
         RouteNode current = match(root, args, 0, context);
         if (current == null) {
             String usage = command.getUsage();
-            if (usage == null || usage.isBlank()) {
+            if (usage.equals("/" + command.getName())) {
                 sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", "", ""));
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", command.getUsage()));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", usage));
             }
             return CommandResult.fail();
         }
