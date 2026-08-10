@@ -1,5 +1,6 @@
 package org.powernukkitx;
 
+import org.powernukkitx.math.Vector3;
 import org.powernukkitx.network.process.auth.ClientChainData;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
@@ -60,6 +61,8 @@ public final class PlayerFixture {
 
             player = new TestPlayer(session, info);
             player.setLevel(ServerMockFixture.level);
+            // Normally set by Entity#init, which the fixture player never goes through.
+            player.temporalVector = new Vector3();
             return player;
         } catch (Exception e) {
             throw new IllegalStateException(e);

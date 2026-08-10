@@ -100,7 +100,7 @@ import org.powernukkitx.plugin.PluginLoadOrder;
 import org.powernukkitx.plugin.PluginManager;
 import org.powernukkitx.plugin.service.NKServiceManager;
 import org.powernukkitx.plugin.service.ServiceManager;
-import org.powernukkitx.positiontracking.PositionTrackingService;
+import org.powernukkitx.network.positiontracking.PositionTrackingService;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
