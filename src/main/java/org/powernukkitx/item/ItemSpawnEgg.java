@@ -10,6 +10,7 @@ import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.DoubleTag;
@@ -67,8 +68,9 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) return false;
 
-        double spawnY = (face == BlockFace.UP && target.getBoundingBox() != null)
-            ? target.getBoundingBox().getMaxY() + 0.0001d
+        AxisAlignedBB boundingBox = target.getBoundingBox();
+        double spawnY = (face == BlockFace.UP && boundingBox != null)
+            ? boundingBox.getMaxY() + 0.0001d
             : block.getY() + 0.0001d;
         double spawnX = block.getX() + 0.5d;
         double spawnZ = block.getZ() + 0.5d;
