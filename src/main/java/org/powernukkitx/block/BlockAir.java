@@ -2,6 +2,7 @@ package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -83,4 +84,8 @@ public class BlockAir extends BlockTransparent {
         return false;
     }
 
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return null;
+    }
 }

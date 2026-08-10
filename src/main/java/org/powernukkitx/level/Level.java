@@ -5590,9 +5590,7 @@ public class Level implements Metadatable {
             data.setRotationYHead((float) headYaw);
             packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_HEAD_YAW);
         }
-        if (entity.onGround) {
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.ON_GROUND);
-        }
+        data.setOnGround(entity.onGround);
 
         packet.setMoveData(data);
 
@@ -6112,14 +6110,17 @@ public class Level implements Metadatable {
         Vector3 normalizedDirection = direction.divide(length);
 
         for (double t = 0.0; t < length; t += stepSize) {
-            int x = (int) Math.round(srcX + normalizedDirection.x * t);
-            int y = (int) Math.round(srcY + normalizedDirection.y * t);
-            int z = (int) Math.round(srcZ + normalizedDirection.z * t);
+            double rayX = srcX + normalizedDirection.x * t;
+            double rayY = srcY + normalizedDirection.y * t;
+            double rayZ = srcZ + normalizedDirection.z * t;
+            int x = NukkitMath.floorDouble(rayX);
+            int y = NukkitMath.floorDouble(rayY);
+            int z = NukkitMath.floorDouble(rayZ);
 
             Block block = getBlock(x, y, z);
-            if (block != null && block.getCollisionBoundingBox() != null) {
+            if (block != null && !block.canPassThrough() && block.getCollisionBoundingBox() != null) {
                 AxisAlignedBB bb = block.getCollisionBoundingBox();
-                if (bb.isVectorInside(x, y, z)) {
+                if (bb.isVectorInside(rayX, rayY, rayZ)) {
                     return true;
                 }
             }
@@ -6129,6 +6130,10 @@ public class Level implements Metadatable {
     }
 
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
+        if (boundingBox.isVectorInside(source)) {
+            return 1.0f;
+        }
+
         double diffX = boundingBox.getMaxX() - boundingBox.getMinX();
         double diffY = boundingBox.getMaxY() - boundingBox.getMinY();
         double diffZ = boundingBox.getMaxZ() - boundingBox.getMinZ();
@@ -6140,9 +6145,9 @@ public class Level implements Metadatable {
             return 0.0f;
         }
 
-        double xOffset = (1 - Math.floor(1 / xInterval) * xInterval) / 2;
+        double xOffset = boundingBox.getMinX() + (1 - Math.floor(1 / xInterval) * xInterval) / 2;
         double yOffset = boundingBox.getMinY();
-        double zOffset = (1 - Math.floor(1 / zInterval) * zInterval) / 2;
+        double zOffset = boundingBox.getMinZ() + (1 - Math.floor(1 / zInterval) * zInterval) / 2;
 
         int visibleBlocks = 0;
         int totalBlocks = 0;
@@ -6161,7 +6166,6 @@ public class Level implements Metadatable {
                 }
             }
         }
-
         return (float) visibleBlocks / (float) totalBlocks;
     }
 
