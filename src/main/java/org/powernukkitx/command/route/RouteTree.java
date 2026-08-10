@@ -74,7 +74,7 @@ public class RouteTree {
 
         RouteNode current = match(root, args, 0, context);
         if (current == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", "", ""));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", command.getUsage()));
             return CommandResult.fail();
         }
 
