@@ -3287,33 +3287,60 @@ public class Level implements Metadatable {
         if (!gameplaySettings.enableItemDrops()) {
             return;
         }
-        if (motion == null) {
-            if (dropAround) {
-                float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
-                float f1 = ThreadLocalRandom.current().nextFloat() * ((float) Math.PI * 2);
-
-                motion = new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
-            } else {
-                motion = new Vector3(ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1, 0.2,
-                        ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1);
-            }
-        }
-
         if (item.isNull()) {
             return;
         }
-        EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
-                this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
-                        .putShort("Health", (short) 5)
-                        .putCompound("Item", ItemHelper.write(item))
-                        .putShort("PickupDelay", (short) delay)
-                        .putBoolean("ShouldDespawn", item.shouldDespawn())
-        );
 
-        if (itemEntity != null) {
-            itemEntity.spawnToAll();
+        for (Item stack : splitOversizedStack(item)) {
+            Vector3 stackMotion = motion == null ? randomDropMotion(dropAround) : motion;
+            EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
+                    this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
+                    Entity.getDefaultNBT(source, stackMotion, new Random().nextFloat() * 360, 0)
+                            .putShort("Health", (short) 5)
+                            .putCompound("Item", ItemHelper.write(stack))
+                            .putShort("PickupDelay", (short) delay)
+                            .putBoolean("ShouldDespawn", stack.shouldDespawn())
+            );
+
+            if (itemEntity != null) {
+                itemEntity.spawnToAll();
+            }
         }
+    }
+
+    private static Vector3 randomDropMotion(boolean dropAround) {
+        if (dropAround) {
+            float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
+            float f1 = ThreadLocalRandom.current().nextFloat() * ((float) Math.PI * 2);
+
+            return new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
+        }
+        return new Vector3(ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1, 0.2,
+                ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1);
+    }
+
+    /**
+     * Splits a stack that holds more items than it is allowed to into several valid stacks, because the client
+     * cannot handle item entities holding more than the maximum stack size and disconnects when it receives one.
+     *
+     * @return the resulting stacks, without any item loss
+     */
+    private static List<Item> splitOversizedStack(Item item) {
+        int maxStackSize = item.getMaxStackSize();
+        if (maxStackSize <= 0 || item.getCount() <= maxStackSize) {
+            return Collections.singletonList(item);
+        }
+
+        int remaining = item.getCount();
+        List<Item> stacks = new ArrayList<>((remaining + maxStackSize - 1) / maxStackSize);
+        while (remaining > 0) {
+            int count = Math.min(maxStackSize, remaining);
+            Item stack = item.clone();
+            stack.setCount(count);
+            stacks.add(stack);
+            remaining -= count;
+        }
+        return stacks;
     }
 
     public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item) {
@@ -3328,6 +3355,9 @@ public class Level implements Metadatable {
         return this.dropAndGetItem(source, item, motion, false, delay);
     }
 
+    /**
+     * @return the dropped item entity, or the first one if the stack had to be split into several entities
+     */
     public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
         if (!gameplaySettings.enableItemDrops()) {
             return null;
@@ -3335,35 +3365,30 @@ public class Level implements Metadatable {
         if (item.isNull()) {
             return null;
         }
-        if (motion == null) {
-            if (dropAround) {
-                float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
-                float f1 = ThreadLocalRandom.current().nextFloat() * ((float) Math.PI * 2);
+        EntityItem firstItemEntity = null;
+        for (Item stack : splitOversizedStack(item)) {
+            Vector3 stackMotion = motion == null ? randomDropMotion(dropAround) : motion;
+            CompoundTag itemTag = ItemHelper.write(stack);
+            EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
+                    this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
+                    new CompoundTag().putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(source.getX()))
+                                    .add(new DoubleTag(source.getY())).add(new DoubleTag(source.getZ())))
+                            .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(stackMotion.x))
+                                    .add(new DoubleTag(stackMotion.y)).add(new DoubleTag(stackMotion.z)))
+                            .putList("Rotation", new ListTag<FloatTag>()
+                                    .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
+                                    .add(new FloatTag(0)))
+                            .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
 
-                motion = new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
-            } else {
-                motion = new Vector3(new Random().nextDouble() * 0.2 - 0.1, 0.2,
-                        new Random().nextDouble() * 0.2 - 0.1);
+            if (itemEntity != null) {
+                itemEntity.spawnToAll();
+                if (firstItemEntity == null) {
+                    firstItemEntity = itemEntity;
+                }
             }
         }
 
-        CompoundTag itemTag = ItemHelper.write(item);
-        EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
-                this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                new CompoundTag().putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(source.getX()))
-                                .add(new DoubleTag(source.getY())).add(new DoubleTag(source.getZ())))
-                        .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(motion.x))
-                                .add(new DoubleTag(motion.y)).add(new DoubleTag(motion.z)))
-                        .putList("Rotation", new ListTag<FloatTag>()
-                                .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
-                                .add(new FloatTag(0)))
-                        .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
-
-        if (itemEntity != null) {
-            itemEntity.spawnToAll();
-        }
-
-        return itemEntity;
+        return firstItemEntity;
     }
 
     public Item useBreakOn(@NotNull Vector3 vector) {
