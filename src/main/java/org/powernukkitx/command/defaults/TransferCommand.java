@@ -83,8 +83,7 @@ public class TransferCommand extends VanillaCommand {
                 int port = list.getResult(2);
 
                 if (!isValidPort(port)) {
-                    log.addMessage("commands.transfer.invalid.port");
-                    log.output();
+                    log.addMessage("commands.transferserver.invalid.port").output();
                     return 0;
                 }
 
