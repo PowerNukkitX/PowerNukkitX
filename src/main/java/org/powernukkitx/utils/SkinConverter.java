@@ -38,8 +38,8 @@ public class SkinConverter {
         serialized.setResourcePatch(orEmpty(skin.getSkinResourcePatch()));
         serialized.setImageData(toSkinImage(skin.getSkinData()));
         serialized.setCapeImageData(toSkinImage(skin.getCapeData()));
-        serialized.setGeometryData(orEmpty(skin.getGeometryData()));
-        serialized.setGeometryDataMinEngineVersion(orEmpty(skin.getGeometryDataEngineVersion()));
+        serialized.setGeometryData(orDefault(skin.getGeometryData(), "{}"));
+        serialized.setGeometryDataMinEngineVersion(orDefault(skin.getGeometryDataEngineVersion(), "0.0.0"));
         serialized.setAnimationData(orEmpty(skin.getAnimationData()));
         serialized.setCapeID(orEmpty(skin.getCapeId()));
         serialized.setFullID(orEmpty(skin.getFullSkinId()));
@@ -234,5 +234,9 @@ public class SkinConverter {
 
     private String orEmpty(@Nullable String value) {
         return value == null ? "" : value;
+    }
+
+    private String orDefault(@Nullable String value, String defaultValue) {
+        return value == null || value.isEmpty() ? defaultValue : value;
     }
 }
