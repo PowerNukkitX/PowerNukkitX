@@ -66,6 +66,10 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
     public void handle(InventoryTransactionPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
+        if (!player.spawned || !player.isAlive()) {
+            return;
+        }
+
         if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_USE)) {
             handleUseItem(playerHandle, (ItemUseInventoryTransaction) packet.getTransaction());
         } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_USE_ON_ACTOR)) {
