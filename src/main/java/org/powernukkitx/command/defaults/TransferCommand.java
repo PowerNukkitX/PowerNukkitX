@@ -16,7 +16,7 @@ import java.util.Map;
 public class TransferCommand extends VanillaCommand {
 
     public TransferCommand(String name) {
-        super(name, "commands.transfer.description");
+        super(name, "commands.transferserver.description");
         this.setPermission("nukkit.command.transferserver");
 
         this.commandParameters.clear();
