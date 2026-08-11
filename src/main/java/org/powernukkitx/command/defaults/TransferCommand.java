@@ -75,8 +75,7 @@ public class TransferCommand extends VanillaCommand {
                 }
 
                 if (target == null) {
-                    log.addMessage("commands.generic.player.notFound");
-                    log.output();
+                    log.addMessage("commands.generic.player.notFound").output();
                     return 0;
                 }
 
