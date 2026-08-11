@@ -17,7 +17,7 @@ public class TransferCommand extends VanillaCommand {
 
     public TransferCommand(String name) {
         super(name, "commands.transferserver.description");
-        this.setPermission("nukkit.command.transferserver");
+        this.setPermission("nukkit.command.transfer");
 
         this.commandParameters.clear();
 
