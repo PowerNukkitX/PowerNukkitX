@@ -56,8 +56,7 @@ public class TransferCommand extends VanillaCommand {
                 }
 
                 player.transfer(ip, port);
-                log.addSuccess("commands.transfer.successful");
-                log.output();
+                log.addSuccess("commands.transferserver.successful").output(true);
                 return 1;
             }
             case "target" -> {
