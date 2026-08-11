@@ -43,8 +43,7 @@ public class TransferCommand extends VanillaCommand {
         switch (overload) {
             case "self" -> {
                 if (!(sender instanceof Player player)) {
-                    log.addMessage("nukkit.command.generic.ingame");
-                    log.output();
+                    log.addMessage("nukkit.command.generic.ingame").output();
                     return 0;
                 }
 
