@@ -62,8 +62,7 @@ public class TransferCommand extends VanillaCommand {
             case "target" -> {
                 List<?> rawTargets = list.getResult(0);
                 if (rawTargets.isEmpty()) {
-                    log.addMessage("commands.generic.player.notFound");
-                    log.output();
+                    log.addMessage("commands.generic.player.notFound").output();
                     return 0;
                 }
 
