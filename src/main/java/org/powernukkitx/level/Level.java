@@ -1217,28 +1217,29 @@ public class Level implements Metadatable {
         long chunkHash = Level.chunkHash(chunkX, chunkZ);
 
         Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(chunkHash);
-        if (chunkLoadersIndex != null) {
-            ChunkLoader oldLoader = chunkLoadersIndex.remove(loaderId);
-            if (oldLoader != null) {
-                boolean becameEmpty = chunkLoadersIndex.isEmpty();
-                if (becameEmpty) {
-                    this.chunkLoaders.remove(chunkHash);
-                }
-
-                synchronized (this.loaders) {
-                    int count = this.loaderCounter.get(loaderId);
-                    if (--count <= 0) {
-                        this.loaderCounter.remove(loaderId);
-                        this.loaders.remove(loaderId);
-                    } else {
-                        this.loaderCounter.put(loaderId, count);
-                    }
-                }
-                return becameEmpty ? this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload) : true;
-            }
+        if (chunkLoadersIndex == null || chunkLoadersIndex.remove(loaderId) == null) {
             return false;
         }
-        return false;
+
+        boolean becameEmpty = chunkLoadersIndex.isEmpty();
+        if (becameEmpty) {
+            this.chunkLoaders.remove(chunkHash);
+        }
+
+        synchronized (this.loaders) {
+            int count = this.loaderCounter.get(loaderId);
+            if (--count <= 0) {
+                this.loaderCounter.remove(loaderId);
+                this.loaders.remove(loaderId);
+            } else {
+                this.loaderCounter.put(loaderId, count);
+            }
+        }
+
+        if (becameEmpty) {
+            this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload);
+        }
+        return true;
     }
 
     public boolean unregisterChunkLoader(ChunkLoader loader, int chunkX, int chunkZ) {

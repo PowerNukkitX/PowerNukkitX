@@ -350,10 +350,11 @@ public final class PlayerChunkManager {
     private void unloadChunkForPlayer(long hash) {
         int x = Level.getHashX(hash);
         int z = Level.getHashZ(hash);
-        player.level.unregisterChunkLoader(player, x, z);
-        for (Entity entity : player.level.getChunkEntities(x, z).values()) {
-            if (entity != player) {
-                entity.despawnFrom(player);
+        if (player.level.unregisterChunkLoader(player, x, z)) {
+            for (Entity entity : player.level.getChunkEntities(x, z).values()) {
+                if (entity != player) {
+                    entity.despawnFrom(player);
+                }
             }
         }
     }
