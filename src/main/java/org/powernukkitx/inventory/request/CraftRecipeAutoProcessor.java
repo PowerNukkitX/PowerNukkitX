@@ -115,7 +115,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             return numberOfRequestedCrafts;
         }
         log.debug("Auto craft request carries no usable craft count (timesCrafted {}, numberOfRequestedCrafts {}), falling back to 1",
-            timesCrafted, numberOfRequestedCrafts);
+                timesCrafted, numberOfRequestedCrafts);
         return 1;
     }
 

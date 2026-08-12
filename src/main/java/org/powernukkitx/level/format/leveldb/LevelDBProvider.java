@@ -820,45 +820,7 @@ public class LevelDBProvider implements LevelProvider {
             }
             NbtMap abilities = d.getCompound("abilities");
             NbtMap experiments = d.getCompound("experiments");
-            GameRules gameRules = GameRules.getDefault();
-            gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, this.getBoolean(d, "commandBlockOutput"));
-            gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, this.getBoolean(d, "commandBlocksEnabled"));
-            gameRules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, this.getBoolean(d, "doDayLightCycle"));
-            gameRules.setGameRule(GameRule.DO_ENTITY_DROPS, this.getBoolean(d, "doEntityDrops"));
-            gameRules.setGameRule(GameRule.DO_FIRE_TICK, this.getBoolean(d, "doFireTick"));
-            gameRules.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, this.getBoolean(d, "doImmediateRespawn"));
-            gameRules.setGameRule(GameRule.DO_INSOMNIA, this.getBoolean(d, "doInsomnia"));
-            gameRules.setGameRule(GameRule.DO_LIMITED_CRAFTING, this.getBoolean(d, "doLimitedCrafting"));
-            gameRules.setGameRule(GameRule.DO_MOB_LOOT, this.getBoolean(d, "doMobLoot"));
-            gameRules.setGameRule(GameRule.DO_MOB_SPAWNING, this.getBoolean(d, "doMobSpawning"));
-            gameRules.setGameRule(GameRule.DO_TILE_DROPS, this.getBoolean(d, "doTileDrops"));
-            gameRules.setGameRule(GameRule.DO_WEATHER_CYCLE, this.getBoolean(d, "doWeatherCycle"));
-            gameRules.setGameRule(GameRule.DROWNING_DAMAGE, this.getBoolean(d, "drowningDamage"));
-            gameRules.setGameRule(GameRule.EXPERIMENTAL_GAMEPLAY, this.getBoolean(d, "experimentalGameplay"));
-            gameRules.setGameRule(GameRule.FALL_DAMAGE, this.getBoolean(d, "fallDamage"));
-            gameRules.setGameRule(GameRule.FIRE_DAMAGE, this.getBoolean(d, "fireDamage"));
-            gameRules.setGameRule(GameRule.FREEZE_DAMAGE, this.getBoolean(d, "freezeDamage"));
-            gameRules.setGameRule(GameRule.FUNCTION_COMMAND_LIMIT, d.getInt("functionCommandLimit"));
-            gameRules.setGameRule(GameRule.KEEP_INVENTORY, this.getBoolean(d, "keepInventory"));
-            gameRules.setGameRule(GameRule.LOCATOR_BAR, this.getBoolean(d, "locatorBar"));
-            gameRules.setGameRule(GameRule.MAX_COMMAND_CHAIN_LENGTH, d.getInt("maxCommandChainLength"));
-            gameRules.setGameRule(GameRule.MOB_GRIEFING, this.getBoolean(d, "mobGriefing"));
-            gameRules.setGameRule(GameRule.NATURAL_REGENERATION, this.getBoolean(d, "naturalRegeneration"));
-            gameRules.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, d.getInt("playersSleepingPercentage"));
-            gameRules.setGameRule(GameRule.PROJECTILES_CAN_BREAK_BLOCKS, this.getBoolean(d, "projectilesCanBreakBlocks"));
-            gameRules.setGameRule(GameRule.PVP, this.getBoolean(d, "pvp"));
-            gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, d.getInt("randomTickSpeed"));
-            gameRules.setGameRule(GameRule.RECIPES_UNLOCK, this.getBoolean(d, "recipesUnlock"));
-            gameRules.setGameRule(GameRule.RESPAWN_BLOCKS_EXPLODE, this.getBoolean(d, "respawnBlocksExplode"));
-            gameRules.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, this.getBoolean(d, "sendCommandFeedback"));
-            gameRules.setGameRule(GameRule.SHOW_BORDER_EFFECT, this.getBoolean(d, "showBorderEffect"));
-            gameRules.setGameRule(GameRule.SHOW_COORDINATES, this.getBoolean(d, "showCoordinates"));
-            gameRules.setGameRule(GameRule.SHOW_DAYS_PLAYED, this.getBoolean(d, "showDaysPlayed"));
-            gameRules.setGameRule(GameRule.SHOW_DEATH_MESSAGES, this.getBoolean(d, "showDeathMessages"));
-            gameRules.setGameRule(GameRule.SHOW_TAGS, this.getBoolean(d, "showTags"));
-            gameRules.setGameRule(GameRule.SPAWN_RADIUS, d.getInt("spawnRadius"));
-            gameRules.setGameRule(GameRule.TNT_EXPLODES, this.getBoolean(d, "tntExplodes"));
-            gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, this.getBoolean(d, "tntExplosionDropDecay"));
+            GameRules gameRules = readGameRules(d);
 
             Map<String, Boolean> experimentMap = new HashMap<>();
             for (Map.Entry<String, Object> entry : experiments.entrySet()) {
@@ -1079,5 +1041,29 @@ public class LevelDBProvider implements LevelProvider {
 
     private boolean getBoolean(NbtMap nbtMap, String key) {
         return nbtMap.getByte(key) == (byte) 1;
+    }
+
+    private GameRules readGameRules(NbtMap d) {
+        GameRules gameRules = GameRules.getDefault();
+        for (GameRule rule : GameRule.values()) {
+            if (rule.isDeprecated()) continue;
+            Object tag = findIgnoreCase(d, rule.getName());
+            if (!(tag instanceof Number number)) continue;
+            switch (gameRules.getGameRuleType(rule)) {
+                case BOOLEAN -> gameRules.setGameRule(rule, number.intValue() != 0);
+                case INTEGER -> gameRules.setGameRule(rule, number.intValue());
+                case FLOAT -> gameRules.setGameRule(rule, number.floatValue());
+            }
+        }
+        return gameRules;
+    }
+
+    private Object findIgnoreCase(NbtMap nbtMap, String key) {
+        Object exact = nbtMap.get(key);
+        if (exact != null) return exact;
+        for (Map.Entry<String, Object> entry : nbtMap.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(key)) return entry.getValue();
+        }
+        return null;
     }
 }

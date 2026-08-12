@@ -26,13 +26,14 @@ jobs:
       is_draft: ${{ steps.meta.outputs.is_draft }}
       is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
       title: ${{ steps.meta.outputs.title }}
+      minecraft_version: ${{ steps.mc_version.outputs.minecraft_version }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: true
 
-      - uses: actions/setup-java@v5.6.0
+      - uses: actions/setup-java@v5.7.0
         with:
           distribution: temurin
           java-version: 21
@@ -101,6 +102,25 @@ jobs:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
 
+      - name: Extract Minecraft version from the built jar
+        id: mc_version
+        run: |
+          # Asking the codec itself keeps this working across protocol bumps, since nothing here
+          # names a version. Stderr is left alone so any startup noise stays visible in the log.
+          cat > /tmp/McVersion.java << 'JAVA'
+          public class McVersion {
+              public static void main(String[] args) {
+                  System.out.println(org.powernukkitx.network.NetworkConstants.CODEC.getMinecraftVersion());
+              }
+          }
+          JAVA
+          MINECRAFT_VERSION=$(java -cp build/powernukkitx.jar /tmp/McVersion.java)
+          if ! echo "$MINECRAFT_VERSION" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
+            echo "Unexpected Minecraft version from NetworkConstants.CODEC: '$MINECRAFT_VERSION'" >&2
+            exit 1
+          fi
+          echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
+
       - uses: actions/upload-artifact@v7
         with:
           name: powernukkitx.jar
@@ -128,6 +148,7 @@ jobs:
         run: |
           PROTOCOL_VERSION=$(sed -En 's/.*CODEC = Bedrock_v([0-9]+)\.CODEC.*/\1/p' src/main/java/org/powernukkitx/network/NetworkConstants.java | head -n 1)
           API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/org/powernukkitx/PowerNukkitX.java)
+          MINECRAFT_VERSION="${{ needs.publish.outputs.minecraft_version }}"
           if [ -z "$PROTOCOL_VERSION" ]; then
             echo "Unable to extract protocol version from NetworkConstants.java" >&2
             exit 1
@@ -136,8 +157,13 @@ jobs:
             echo "Unable to extract API version from Nukkit.java" >&2
             exit 1
           fi
+          if [ -z "$MINECRAFT_VERSION" ]; then
+            echo "Minecraft version missing from the publish job outputs" >&2
+            exit 1
+          fi
           echo "protocol_version=$PROTOCOL_VERSION" >> $GITHUB_OUTPUT
           echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
+          echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/download-artifact@v8
         with:
@@ -150,6 +176,7 @@ jobs:
           TAG="${{ needs.publish.outputs.tag }}"
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
+          MINECRAFT_VERSION="${{ steps.versions.outputs.minecraft_version }}"
 
           mkdir -p changelogs
           FILE="changelogs/${TAG}.md"
@@ -165,6 +192,7 @@ jobs:
           |----------|-------|
           | PowerNukkitX Version | $TAG |
           | API Version | $API_VERSION |
+          | Minecraft Version | $MINECRAFT_VERSION |
           | Protocol Version | $PROTOCOL_VERSION |
 
           EOF
@@ -240,6 +268,7 @@ jobs:
           TAG="${{ needs.publish.outputs.tag }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
+          MINECRAFT_VERSION="${{ steps.versions.outputs.minecraft_version }}"
 
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
@@ -250,6 +279,7 @@ jobs:
             git commit -m "docs: add changelog for PowerNukkitX ${TAG} [skip ci]
 
           Release ${TAG}
+          - Minecraft: ${MINECRAFT_VERSION}
           - Protocol: ${PROTOCOL_VERSION}
           - API: ${API_VERSION}
           - See the full changelog at changelogs/${TAG}.md"
@@ -264,6 +294,7 @@ jobs:
           IS_PRERELEASE="${{ needs.publish.outputs.is_prerelease }}"
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
+          MINECRAFT_VERSION="${{ steps.versions.outputs.minecraft_version }}"
 
           cat > release-notes.md << EOF
 
@@ -273,6 +304,7 @@ jobs:
           |---|---|
           | **PowerNukkitX Version** | $TAG |
           | **API Version** | $API_VERSION |
+          | **Minecraft Version** | $MINECRAFT_VERSION |
           | **Protocol Version** | $PROTOCOL_VERSION |
 
           ---

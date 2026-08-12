@@ -1,4 +1,4 @@
-package org.powernukkitx.positiontracking;
+package org.powernukkitx.network.positiontracking;
 
 import org.powernukkitx.math.Vector3;
 import org.jetbrains.annotations.NotNull;

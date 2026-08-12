@@ -1,4 +1,4 @@
-package org.powernukkitx.positiontracking;
+package org.powernukkitx.network.positiontracking;
 
 import org.powernukkitx.math.NukkitMath;
 import com.google.common.base.Preconditions;
@@ -154,7 +154,7 @@ public class PositionTrackingStorage implements Closeable {
     }
 
     private long getAxisPos(int trackingHandler) {
-        //                    max str cur  on  nam len  x   y   z 
+        //                    max str cur  on  nam len  x   y   z
         return HEADER.length + 4 + 4 + 4 + (1 + 8 + 4 + 8 + 8 + 8) * (long) (trackingHandler - startIndex);
     }
 
