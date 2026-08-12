@@ -16,6 +16,7 @@ import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.config.category.GameplaySettings;
 import org.powernukkitx.level.tickingarea.TickingArea;
 import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
+import org.powernukkitx.level.enderdragon.EnderDragonFight;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityAsyncPrepare;
 import org.powernukkitx.entity.EntityID;
@@ -317,6 +318,7 @@ public class Level implements Metadatable {
      */
     public static final AtomicLong GENERATED_CHUNK_COUNT = new AtomicLong();
     private final Server server;
+    private EnderDragonFight enderDragonFight;
     private final int levelId;
     // Loaders still remain single-threaded
     private final Int2ObjectOpenHashMap<ChunkLoader> loaders = new Int2ObjectOpenHashMap<>();
@@ -480,6 +482,9 @@ public class Level implements Metadatable {
             throw new LevelException("Constructor of " + provider + " failed", e);
         }
         LevelProvider levelProvider = requireProvider();
+        if (levelProvider.isTheEnd()) {
+            this.enderDragonFight = new EnderDragonFight(this);
+        }
         //to be changed later as the Dim0 will be deleted to be put in a config.json file of the world
         log.info(this.server.getLanguage().tr("nukkit.level.preparing", TextFormat.GREEN + levelProvider.getName() + TextFormat.RESET));
         levelProvider.updateLevelName(name);
@@ -686,6 +691,16 @@ public class Level implements Metadatable {
 
     public Generator getGenerator() {
         return generator;
+    }
+
+    /**
+     * Returns the End dragon fight controller for this level.
+     *
+     * @return the controller, or {@code null} when this is not an End level
+     */
+    @Nullable
+    public EnderDragonFight getEnderDragonFight() {
+        return enderDragonFight;
     }
 
     public BlockMetadataStore getBlockMetadata() {
@@ -1428,6 +1443,9 @@ public class Level implements Metadatable {
             }
 
             this.levelCurrentTick++;
+            if (this.enderDragonFight != null) {
+                this.enderDragonFight.tick();
+            }
             if (prof) phase[2] = -phaseStart + (phaseStart = System.nanoTime());
 
             if (gameplaySettings.enableEntitySpawning() && getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {

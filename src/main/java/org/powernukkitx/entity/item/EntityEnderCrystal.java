@@ -16,6 +16,8 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author PetteriM1
@@ -33,6 +35,14 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
      */
     protected boolean detonated = false;
 
+    /**
+     * Whether this crystal belongs to an active End dragon respawn sequence.
+     * While {@code true} the crystal is invulnerable.
+     */
+    @Getter
+    @Setter
+    private boolean respawning;
+
     public EntityEnderCrystal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -46,6 +56,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
         if (nbtMap.contains("ShowBottom")) {
             this.setShowBase(nbtMap.getBoolean("ShowBottom"));
         }
+        respawning = nbtMap.getBoolean("Respawning");
     }
 
     @Override
@@ -53,6 +64,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
         super.saveNBT();
 
         this.nbt.putBoolean("ShowBottom", this.showBase());
+        this.nbt.putBoolean("Respawning", respawning);
     }
 
     @Override
@@ -77,7 +89,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (isClosed()) {
+        if (isClosed() || respawning) {
             return false;
         }
 
@@ -150,6 +162,13 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
 
     public void setBeamTarget(BlockVector3 beamTarget) {
         this.setDataProperty(ActorDataTypes.BLOCK_TARGET, beamTarget.toNetwork());
+    }
+
+    /**
+     * Clears the crystal beam target.
+     */
+    public void clearBeamTarget() {
+        this.setDataProperty(ActorDataTypes.BLOCK_TARGET, null);
     }
 
     @Override
