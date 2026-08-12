@@ -638,6 +638,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 String block = (String) recipe.get("block");
 
                 if (block == null) {
+                    Object typeObj = recipe.get("type");
+                    if (recipe.containsKey("base") && recipe.containsKey("addition") && recipe.containsKey("template") && recipe.containsKey("result")) {
+                        block = "smithing_table";
+                    }
+                }
+
+                if (block == null) {
                     // Multi recipes (type 4) have no crafting block. They are client-side
                     // special recipes such as applying a banner pattern to a shield, cloning
                     // maps, crafting fireworks, etc. They must still be registered so the client
