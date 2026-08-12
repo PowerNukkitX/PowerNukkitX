@@ -8,6 +8,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockFire;
 import org.powernukkitx.block.BlockFrame;
 import org.powernukkitx.block.BlockLectern;
 import org.powernukkitx.event.player.PlayerToggleSpinAttackEvent;
@@ -42,11 +43,18 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
         switch (packet.getAction()) {
             case PlayerActionType.CREATIVE_DESTROY_BLOCK -> {
                 // Used by client to get book from lecterns and items from item frame in creative mode since 1.20.70
-                Block blockLectern = playerHandle.player.getLevel().getBlock(pos);
-                if (blockLectern instanceof BlockLectern blockLecternI && blockLectern.distance(playerHandle.player) <= 6) {
+                Block block = player.getLevel().getBlock(pos);
+                Block affectedBlock = block instanceof BlockFire ? block : block.getSide(face);
+                if (affectedBlock instanceof BlockFire && player.isCreative()
+                        && player.canInteract(affectedBlock.add(0.5, 0.5, 0.5), 13)
+                        && affectedBlock.isBlockChangeAllowed(player)) {
+                    player.onBlockBreakStart(pos, face);
+                    return;
+                }
+                if (block instanceof BlockLectern blockLecternI && block.distance(player) <= 6) {
                     blockLecternI.dropBook(playerHandle.player);
                 }
-                if (blockLectern instanceof BlockFrame blockFrame && blockFrame.getBlockEntity() != null) {
+                if (block instanceof BlockFrame blockFrame && blockFrame.getBlockEntity() != null) {
                     blockFrame.getBlockEntity().dropItem(playerHandle.player);
                 }
             }

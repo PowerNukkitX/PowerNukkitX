@@ -61,6 +61,7 @@ import org.powernukkitx.api.UsedByReflection;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockBed;
 import org.powernukkitx.block.BlockEndPortal;
+import org.powernukkitx.block.BlockFire;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockLiquid;
 import org.powernukkitx.block.BlockRespawnAnchor;
@@ -551,8 +552,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         target.onTouch(pos, this.getInventory().getItemInMainHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
 
-        Block block = target.getSide(face);
-        if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
+        Block block = target instanceof BlockFire ? target : target.getSide(face);
+        if (block instanceof BlockFire) {
             this.level.setBlock(block, Block.get(BlockID.AIR), true);
             this.level.addLevelSoundEvent(block, SoundEvent.EXTINGUISH_FIRE);
             return;
