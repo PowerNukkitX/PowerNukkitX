@@ -5881,6 +5881,29 @@ public class Level implements Metadatable {
     public boolean createPortal(Block target) {
         if (this.getDimension() == DIMENSION_THE_END) return false;
         int maxPortalSize = 23;
+        if (this.createPortalAtBase(target, maxPortalSize)) {
+            return true;
+        }
+
+        return this.createPortalBelow(target.asBlockVector3(), maxPortalSize);
+    }
+
+    private boolean createPortalBelow(BlockVector3 vector, int maxPortalSize) {
+        for (int offset = 0; offset < maxPortalSize; offset++) {
+            Block block = this.getBlock(vector.subtract(0, offset, 0).asVector3());
+            if (block.getId().equals(BlockID.OBSIDIAN)) {
+                return this.createPortalAtBase(block, maxPortalSize);
+            } else if (!block.isAir()) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean createPortalAtBase(Block target, int maxPortalSize) {
+        if (!target.getId().equals(BlockID.OBSIDIAN)) {
+            return false;
+        }
         final int targX = target.getFloorX();
         final int targY = target.getFloorY();
         final int targZ = target.getFloorZ();
@@ -6002,6 +6025,12 @@ public class Level implements Metadatable {
                 }
             }
 
+            for (int width = 0; width < innerWidth; width++) {
+                if (!this.getBlock(scanX - width, scanY - 1, scanZ).getId().equals(BlockID.OBSIDIAN)) {
+                    return false;
+                }
+            }
+
             for (int height = 0; height < innerHeight; height++) {
                 for (int width = 0; width < innerWidth; width++) {
                     this.setBlock(new Vector3(scanX - width, scanY + height, scanZ), Block.get(BlockID.PORTAL));
@@ -6084,6 +6113,12 @@ public class Level implements Metadatable {
                             return false;
                         }
                     }
+                }
+            }
+
+            for (int width = 0; width < innerWidth; width++) {
+                if (!this.getBlock(scanX, scanY - 1, scanZ - width).getId().equals(BlockID.OBSIDIAN)) {
+                    return false;
                 }
             }
 

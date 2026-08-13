@@ -41,7 +41,7 @@ public class ItemFlintAndSteel extends ItemTool {
         if (block.isAir() && target.getBurnChance() != -1 && (target.isSolid() || target.getBurnChance() > 0)) {
             if (target.getId().equals(BlockID.OBSIDIAN)) {
                 if (level.getDimension() != Level.DIMENSION_THE_END) {
-                    if (level.createPortal(target)) {
+                    if (level.createPortal(block)) {
                         damageItem(player, block);
                         return true;
                     }
