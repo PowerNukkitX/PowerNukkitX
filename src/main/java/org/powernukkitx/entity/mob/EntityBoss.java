@@ -46,6 +46,7 @@ public abstract class EntityBoss extends EntityMob {
 
     @Override
     public void despawnFrom(Player player) {
+        super.despawnFrom(player);
         if (getViewers().containsKey(player.getLoaderId())) {
             final BossEventPacket bossEventPacket = new BossEventPacket();
             bossEventPacket.setTargetActorID(this.getId());
@@ -53,7 +54,6 @@ public abstract class EntityBoss extends EntityMob {
             bossEventPacket.setEventType(BossEventUpdateType.REMOVE);
             player.sendPacket(bossEventPacket);
         }
-        super.despawnFrom(player);
     }
 
     protected boolean canBreakBlock(Block block) {
