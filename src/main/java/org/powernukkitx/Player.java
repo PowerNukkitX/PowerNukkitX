@@ -4655,7 +4655,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return EntityItem if the item was dropped or null if the item was null
      */
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Item item) {
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Item item) {
         if (!this.spawned || !this.isAlive()) {
             return null;
         }
@@ -4669,7 +4669,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.setDataFlag(ActorFlags.USING_ITEM, false);
 
-        return this.level.dropAndGetItem(this.add(0, 1.3, 0), item, motion, 40);
+        return this.level.dropItemAndGetEntities(this.add(0, 1.3, 0), item, motion, 40);
     }
 
     /**

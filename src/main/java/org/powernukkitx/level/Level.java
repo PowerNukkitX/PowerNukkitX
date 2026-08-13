@@ -59,7 +59,6 @@ import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
 import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.level.particle.Particle;
-import org.powernukkitx.level.tickingarea.TickingArea;
 import org.powernukkitx.level.util.EntityQueryUtils;
 import org.powernukkitx.level.util.SimpleTickCachedBlockStore;
 import org.powernukkitx.level.util.TickCachedBlockStore;
@@ -3343,29 +3342,29 @@ public class Level implements Metadatable {
         return stacks;
     }
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item) {
-        return this.dropAndGetItem(source, item, null);
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item) {
+        return this.dropItemAndGetEntities(source, item, null);
     }
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
-        return this.dropAndGetItem(source, item, motion, 10);
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
+        return this.dropItemAndGetEntities(source, item, motion, 10);
     }
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
-        return this.dropAndGetItem(source, item, motion, false, delay);
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
+        return this.dropItemAndGetEntities(source, item, motion, false, delay);
     }
 
     /**
      * @return the dropped item entity, or the first one if the stack had to be split into several entities
      */
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
         if (!gameplaySettings.enableItemDrops()) {
             return null;
         }
         if (item.isNull()) {
             return null;
         }
-        EntityItem firstItemEntity = null;
+        List<EntityItem> itemEntities = new ArrayList<>();
         for (Item stack : splitOversizedStack(item)) {
             Vector3 stackMotion = motion == null ? randomDropMotion(dropAround) : motion;
             CompoundTag itemTag = ItemHelper.write(stack);
@@ -3382,13 +3381,11 @@ public class Level implements Metadatable {
 
             if (itemEntity != null) {
                 itemEntity.spawnToAll();
-                if (firstItemEntity == null) {
-                    firstItemEntity = itemEntity;
-                }
+                itemEntities.add(itemEntity);
             }
         }
 
-        return firstItemEntity;
+        return itemEntities.toArray(EntityItem[]::new);
     }
 
     public Item useBreakOn(@NotNull Vector3 vector) {
