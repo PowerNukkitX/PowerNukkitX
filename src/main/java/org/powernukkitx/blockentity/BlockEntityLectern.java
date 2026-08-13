@@ -67,6 +67,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if (this.closed || !isValid()) return false;
         if(!this.chunk.isInitiated()) return true; //Update once chunk is initiated.
         updateTotalPages();
         return super.onUpdate();
