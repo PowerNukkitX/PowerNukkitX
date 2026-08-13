@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-    <a href="https://powernukkitx.org">
+    <a href="https://allaymc.org">
       <img src="https://avatars.githubusercontent.com/u/99014792" width=20% alt="PNX Logo">
     </a>
     <p align="center">
