@@ -45,6 +45,7 @@ public class PlayerTest {
 
         GameLoop loop = gameLoop0(p);
 
+        Mockito.clearInvocations(p.getSession());
         p.teleport(new Vector3(10000, 6, 10000));
 
         int limit = 100;
