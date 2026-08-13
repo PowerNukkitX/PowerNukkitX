@@ -638,9 +638,12 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 String block = (String) recipe.get("block");
 
                 if (block == null) {
-                    Object typeObj = recipe.get("type");
-                    if (recipe.containsKey("base") && recipe.containsKey("addition") && recipe.containsKey("template") && recipe.containsKey("result")) {
-                        block = "smithing_table";
+                    if (recipe.containsKey("base") &&
+                        recipe.containsKey("addition") &&
+                        recipe.containsKey("template") &&
+                        recipe.containsKey("result") &&
+                        recipe.get("id").toString().startsWith("minecraft:smithing_")) {
+                            block = "smithing_table";
                     }
                 }
 
