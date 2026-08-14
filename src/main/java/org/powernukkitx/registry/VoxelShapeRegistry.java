@@ -69,16 +69,21 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
             final List<VanillaShape> shapes = new Gson().fromJson(reader, new TypeToken<List<VanillaShape>>() {
             }.getType());
             for (VanillaShape shape : shapes) {
+                if (shape.identifier == null || shape.identifier.isBlank()) {
+                    continue;
+                }
                 final List<VoxelBox> boxes = new ArrayList<>();
                 for (int[][] box : shape.boxes) {
                     boxes.add(new VoxelBox(box[0], box[1]));
                 }
-                register(shape.identifier, boxes);
+                try {
+                    register(shape.identifier, boxes);
+                } catch (RegisterException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
-        } catch (RegisterException e) {
-            e.printStackTrace();
         }
     }
 
@@ -196,6 +201,9 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
 
     @Override
     public void register(String key, VoxelShapes.SerializableVoxelShape value) throws RegisterException {
+        if (key == null || key.isBlank()) {
+            throw new RegisterException("A VoxelShape cannot be registered without an identifier!");
+        }
         if (REGISTRY.putIfAbsent(key, value) != null) {
             throw new RegisterException("The VoxelShape " + key + " has already been registered!");
         }
