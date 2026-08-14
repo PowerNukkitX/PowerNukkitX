@@ -25,13 +25,13 @@ public final class DefaultCameraPresets {
     public static final CameraPreset FIXED_BOOM = CameraPreset.builder()
             .name("minecraft:fixed_boom")
             .viewOffset(Vector2f.ZERO)
-            .entityOffset(Vector3f.ZERO)
+            .entityOffset(Vector3f.from(-0.0f, 0.0f, 0.0f))
             .build();
 
     public static final CameraPreset FOLLOW_ORBIT = CameraPreset.builder()
             .name("minecraft:follow_orbit")
             .viewOffset(Vector2f.ZERO)
-            .entityOffset(Vector3f.ZERO)
+            .entityOffset(Vector3f.from(-0.0f, 0.0f, 0.0f))
             .radius(10.0f)
             .build();
 

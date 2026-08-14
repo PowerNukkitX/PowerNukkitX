@@ -1702,9 +1702,66 @@ public class Server {
     }
 
     @ApiStatus.Internal
+    public void sendSleepingPlayersStatus(Collection<Player> recipients) {
+        this.sendSleepingPlayersStatus(recipients, false);
+    }
+
+    @ApiStatus.Internal
+    public void sendSleepingPlayersStatusImmediately(Collection<Player> recipients) {
+        this.sendSleepingPlayersStatus(recipients, true);
+    }
+
+    private void sendSleepingPlayersStatus(Collection<Player> recipients, boolean immediately) {
+        Level overworld = this.getDefaultLevel();
+
+        int overworldPlayerCount = 0;
+        int sleepingPlayerCount = 0;
+
+        if (overworld != null) {
+            for (Player player : overworld.getPlayers().values()) {
+                overworldPlayerCount++;
+                if (player.isSleeping()) sleepingPlayerCount++;
+            }
+        }
+
+        overworldPlayerCount = Math.max(1, overworldPlayerCount);
+
+        for (Player recipient : recipients) {
+            if (immediately) {
+                recipient.sendSleepingPlayersStatusImmediately(1, overworldPlayerCount, sleepingPlayerCount);
+            } else {
+                recipient.sendSleepingPlayersStatus(1, overworldPlayerCount, sleepingPlayerCount);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void broadcastSleepingPlayersStatus() {
+        this.sendSleepingPlayersStatus(this.playerList.values());
+    }
+
+
+    @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getXUID(), player.getLocatorBarColor());
+
+        final List<Player> recipients = new ArrayList<>(this.playerList.values());
+        recipients.remove(player);
+
+        if (!recipients.isEmpty()) {
+            this.sendSleepingPlayersStatus(recipients);
+
+            this.updatePlayerListData(
+                player.getUniqueId(),
+                player.getId(),
+                player.getDisplayName(),
+                player.getSkin(),
+                player.getXUID(),
+                player.getLocatorBarColor(),
+                recipients
+            );
+        }
+
         this.getNetwork().updatePong(this.getNetwork().getPong().playerCount(playerList.size()));
     }
 
@@ -1712,6 +1769,8 @@ public class Server {
     public void removeOnlinePlayer(Player player) {
         if (this.playerList.containsKey(player.getUniqueId())) {
             this.playerList.remove(player.getUniqueId());
+
+            this.sendSleepingPlayersStatus(this.playerList.values());
 
             final PlayerListPacket pk = new PlayerListPacket();
             final PlayerListRemoveEntry entry = new PlayerListRemoveEntry();
@@ -1852,7 +1911,7 @@ public class Server {
             pk.getEntries().add(entry);
         }
         if (!pk.getEntries().isEmpty()) {
-            player.sendPacket(pk);
+            player.sendPacketImmediately(pk);
         }
     }
 
