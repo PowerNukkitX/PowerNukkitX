@@ -77,6 +77,11 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.kill.other", "Allows the user to kill other players"), kill);
         kill.recalculatePermissibles();
 
+        Permission transferserver = registerPermission(new Permission(ROOT + ".command.transferserver", "Allows the user to transfer players", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.transferserver.self", "Allows the user to transfer themselves to another server", Permission.DEFAULT_TRUE), transferserver);
+        registerPermission(new Permission(ROOT + ".command.transferserver.other", "Allows the user to transfer other players to another server", Permission.DEFAULT_OP), transferserver);
+        transferserver.recalculatePermissibles();
+
         Permission gamemode = registerPermission(new Permission(ROOT + ".command.gamemode", "Allows the user to change the gamemode of players", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.gamemode.survival", "Allows the user to change the gamemode to survival", Permission.DEFAULT_OP), gamemode);
         registerPermission(new Permission(ROOT + ".command.gamemode.creative", "Allows the user to change the gamemode to creative", Permission.DEFAULT_OP), gamemode);
@@ -106,7 +111,6 @@ public abstract class DefaultPermissions {
         //registerPermission(new Permission(ROOT + ".command.dumpmemory", "Allows the user to dump memory contents", Permission.DEFAULT_OP), commands); // this command is not implemented
         registerPermission(new Permission(ROOT + ".command.gamerule", "Sets or queries a game rule value", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.title", "Allows the user to send titles to players", Permission.DEFAULT_OP), commands);
-        registerPermission(new Permission(ROOT + ".command.transferserver", "Allows the user to transfer a player", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.spawnpoint", "Allows the user to change player's spawnpoint", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.setworldspawn", "Allows the user to change the world spawn", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.weather", "Allows the user to change the weather", Permission.DEFAULT_OP), commands);

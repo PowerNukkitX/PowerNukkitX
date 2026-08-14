@@ -17,21 +17,18 @@ public class TransferCommand extends VanillaCommand {
 
     public TransferCommand(String name) {
         super(name, "commands.transferserver.description");
-        this.setPermission("nukkit.command.transfer");
-
+        this.setPermission("nukkit.command.transferserver.self;"
+            + "nukkit.command.transferserver.other");
         this.commandParameters.clear();
-
         this.commandParameters.put("self", new CommandParameter[]{
             CommandParameter.newType("ip", CommandParamType.ID),
             CommandParameter.newType("port", CommandParamType.INT)
         });
-
         this.commandParameters.put("target", new CommandParameter[]{
             CommandParameter.newType("player", CommandParamType.SELECTION),
             CommandParameter.newType("ip", CommandParamType.ID),
             CommandParameter.newType("port", CommandParamType.INT)
         });
-
         this.enableParamTree();
     }
 
@@ -46,26 +43,30 @@ public class TransferCommand extends VanillaCommand {
                     log.addMessage("nukkit.command.generic.ingame").output();
                     return 0;
                 }
-
+                if (!sender.hasPermission("nukkit.command.transferserver.self")) {
+                    log.addError("nukkit.command.generic.permission").output();
+                    return 0;
+                }
                 String ip = list.getResult(0);
                 int port = list.getResult(1);
-
                 if (!isValidPort(port)) {
                     log.addMessage("commands.transferserver.invalid.port").output();
                     return 0;
                 }
-
                 player.transfer(ip, port);
                 log.addSuccess("commands.transferserver.successful").output(true);
                 return 1;
             }
             case "target" -> {
+                if (!sender.hasPermission("nukkit.command.transferserver.other")) {
+                    log.addError("nukkit.command.generic.permission").output();
+                    return 0;
+                }
                 List<?> rawTargets = list.getResult(0);
                 if (rawTargets.isEmpty()) {
                     log.addMessage("commands.generic.player.notFound").output();
                     return 0;
                 }
-
                 Player target = null;
                 for (Object obj : rawTargets) {
                     if (obj instanceof Player p) {
@@ -73,20 +74,16 @@ public class TransferCommand extends VanillaCommand {
                         break;
                     }
                 }
-
                 if (target == null) {
                     log.addMessage("commands.generic.player.notFound").output();
                     return 0;
                 }
-
                 String ip = list.getResult(1);
                 int port = list.getResult(2);
-
                 if (!isValidPort(port)) {
                     log.addMessage("commands.transferserver.invalid.port").output();
                     return 0;
                 }
-
                 target.transfer(ip, port);
                 log.addSuccess("commands.transferserver.successful").output(true);
                 return 1;
