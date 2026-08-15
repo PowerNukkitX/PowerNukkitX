@@ -1500,7 +1500,13 @@ public class Level implements Metadatable {
                 this.hasAsyncPrepareEntities = seenAsyncPrepare;
             }
             if (prof) phase[5] = -phaseStart + (phaseStart = System.nanoTime());
-            this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
+            this.updateBlockEntities.removeIf(blockEntity -> {
+                try {
+                    return !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate());
+                } catch (LevelException e) {
+                    return true;
+                }
+            });
             if (prof) phase[6] = -phaseStart + (phaseStart = System.nanoTime());
 
             this.tickChunks();
