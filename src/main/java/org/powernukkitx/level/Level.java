@@ -1460,8 +1460,8 @@ public class Level implements Metadatable {
             if (!this.updateEntities.isEmpty()) {
                 // skip unless previous tick's serial loop saw entity implementing EntityAsyncPrepare
                 if (this.hasAsyncPrepareEntities) {
-                    CompletableFuture.runAsync(() -> {
-                        for (long id : updateEntities.keySet()) {
+                    CompletableFuture.runAsync(() -> updateEntities.keySet()
+                        .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 try {
@@ -1469,8 +1469,7 @@ public class Level implements Metadatable {
                                 } catch (Exception e) {
                                 }
                             }
-                        }
-                    }, this.scheduler.getAsyncTaskThreadPool()).join();
+                        }), this.scheduler.getAsyncTaskThreadPool()).join();
                 }
                 boolean seenAsyncPrepare = false;
                 for (long id : this.updateEntities.keySetLong()) {
