@@ -123,9 +123,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -173,6 +175,7 @@ public class Level implements Metadatable {
     private static final double INV_CHUNK_SIZE = 1.0d / CHUNK_SIZE;
     // endregion finals - number finals
 
+    private static final long ASYNC_PREPARE_TIMEOUT_MILLIS = 40L;
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
     private static final ThreadLocal<Entity[]> ENTITY_BUFFER = ThreadLocal.withInitial(() -> new Entity[512]);
 
@@ -1460,16 +1463,28 @@ public class Level implements Metadatable {
             if (!this.updateEntities.isEmpty()) {
                 // skip unless previous tick's serial loop saw entity implementing EntityAsyncPrepare
                 if (this.hasAsyncPrepareEntities) {
-                    CompletableFuture.runAsync(() -> updateEntities.keySet()
-                            .longParallelStream().forEach(id -> {
-                                Entity entity = this.updateEntities.get(id);
-                                if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                    try {
-                                        entityAsyncPrepare.asyncPrepare(getTick());
-                                    } catch (Exception e) {
-                                    }
+                    CompletableFuture<Void> asyncPrepareFuture = CompletableFuture.runAsync(() -> {
+                        for (long id : updateEntities.keySet()) {
+                            Entity entity = this.updateEntities.get(id);
+                            if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                try {
+                                    entityAsyncPrepare.asyncPrepare(getTick());
+                                } catch (Exception e) {
                                 }
-                            }), Server.getInstance().getComputeThreadPool()).join();
+                            }
+                        }
+                    }, this.scheduler.getAsyncTaskThreadPool());
+
+                    try {
+                        asyncPrepareFuture.get(ASYNC_PREPARE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+                    } catch (TimeoutException e) {
+                        log.warn("Level \"{}\": asyncPrepare didn't finish within {}ms, main thread moving on without waiting. Task keeps running in background.",
+                            this.getFolderName(), ASYNC_PREPARE_TIMEOUT_MILLIS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e) {
+                        log.error("Error while running asyncPrepare for level \"{}\"", this.getFolderName(), e);
+                    }
                 }
                 boolean seenAsyncPrepare = false;
                 for (long id : this.updateEntities.keySetLong()) {
