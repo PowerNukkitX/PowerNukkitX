@@ -78,6 +78,7 @@ public final class BiomeTags {
     public static final String SPAWN_PIGLIN = "spawn_piglin";
     public static final String SPAWN_ZOMBIFIED_PIGLIN = "spawn_zombified_piglin";
     public static final String STONE = "stone";
+    public static final String SULFUR_CAVES = "sulfur_caves";
     public static final String SUNFLOWER_PLAINS = "sunflower_plains";
     public static final String SWAMP = "swamp";
     public static final String TAIGA = "taiga";

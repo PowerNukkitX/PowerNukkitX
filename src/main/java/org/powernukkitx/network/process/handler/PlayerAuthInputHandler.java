@@ -43,6 +43,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     @Override
     public void handle(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
+        if (player == null) {
+            return;
+        }
+
         Vector3f pos = Vector3f.fromNetwork(packet.getPosition());
         Vector3f rot = Vector3f.fromNetwork(packet.getPosition());
         if (!Float.isFinite(pos.getX()) || !Float.isFinite(pos.getY()) || !Float.isFinite(pos.getZ()) || !Float.isFinite(rot.getX()) || !Float.isFinite(rot.getY()) || !Float.isFinite(rot.getZ())) {

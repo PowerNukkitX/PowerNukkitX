@@ -63,6 +63,7 @@ public class HoppingController extends WalkController {
                     );
 
                     double maxY = Arrays.stream(collisionBlocks)
+                            .filter(b -> b.getCollisionBoundingBox() != null)
                             .map(b -> b.getCollisionBoundingBox().getMaxY())
                             .max(Double::compareTo)
                             .orElse(entity.getY());

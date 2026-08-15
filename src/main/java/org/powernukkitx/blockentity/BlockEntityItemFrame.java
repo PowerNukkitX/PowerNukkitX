@@ -152,13 +152,13 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
         EntityItem itemEntity = null;
         if (this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {
-            itemEntity = level.dropAndGetItem(add(0.5, 0.25, 0.5), drop);
-            if (itemEntity == null) {
+            EntityItem[] entities = level.dropItemAndGetEntities(add(0.5, 0.25, 0.5), drop);
+            if (entities.length == 0) {
                 if (player != null) {
                     spawnTo(player);
                 }
                 return null;
-            }
+            } else itemEntity = entities[0];
         }
 
         setItem(Item.get(BlockID.AIR, 0, 1), true);
