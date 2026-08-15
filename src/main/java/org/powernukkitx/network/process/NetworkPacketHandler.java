@@ -86,11 +86,10 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
     public void onDisconnect(String reason) {
         final Player player = this.session.getPlayer();
         if (player != null) {
-            String effectiveReason = player.transferring ? "Player transferred" : reason;
             if (player.spawned) {
-                player.requestClose(effectiveReason);
+                player.requestClose(reason);
             } else {
-                player.close(effectiveReason);
+                player.close(reason);
             }
         }
         BedrockPacketHandler.super.onDisconnect(reason);

@@ -270,7 +270,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int viewDistance;
     protected Position spawnPoint;
     protected SpawnPointType spawnPointType;
-    public boolean transferring = false;
     /**
      * Represents the number of ticks the player has passed through the air.
      */
@@ -5417,8 +5416,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param address the address
      */
     public void transfer(String address, int port) {
-        transferring = true;
-
         final TransferPacket pk = new TransferPacket();
         pk.setServerAddress(address);
         pk.setServerPort(port);
