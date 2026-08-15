@@ -11,6 +11,7 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author iYozem
@@ -46,22 +47,22 @@ public class TransferCommand extends VanillaCommand {
                     return 0;
                 }
                 if (!sender.hasPermission("nukkit.command.transfer.self")) {
-                    log.addError("nukkit.command.generic.permission").output();
+                    log.addMessage("nukkit.command.generic.permission").output();
                     return 0;
                 }
                 String ip = list.getResult(0);
                 int port = list.getResult(1);
                 if (!isValidPort(port)) {
-                    log.addMessage("commands.transferserver.invalid.port").output();
+                    log.addError("commands.transferserver.invalid.port").output();
                     return 0;
                 }
-                log.addSuccess("commands.transferserver.successful").output(true);
                 player.transfer(new InetSocketAddress(ip, port));
+                log.addSuccess("%commands.transferserver.successful (" + ip + ":" + port + ")").output(true);
                 return 1;
             }
             case "target" -> {
                 if (!sender.hasPermission("nukkit.command.transfer.other")) {
-                    log.addError("nukkit.command.generic.permission").output();
+                    log.addMessage("%nukkit.command.generic.permission").output();
                     return 0;
                 }
                 List<Player> targets = list.getResult(0);
@@ -72,15 +73,17 @@ public class TransferCommand extends VanillaCommand {
                 String ip = list.getResult(1);
                 int port = list.getResult(2);
                 if (!isValidPort(port)) {
-                    log.addMessage("commands.transferserver.invalid.port").output();
+                    log.addError("commands.transferserver.invalid.port").output();
                     return 0;
                 }
-                log.addSuccess("commands.transferserver.successful").output(true);
                 int success = 0;
                 for (Player target : targets) {
                     target.transfer(new InetSocketAddress(ip, port));
                     success++;
                 }
+                log.addSuccess("%commands.transferserver.successful: " + targets.stream()
+                    .map(t -> t.getViewableName(sender)).collect(Collectors.joining(", ")) + " (" + ip + ":" + port + ")")
+                    .output(true);
                 return success;
             }
             default -> {
