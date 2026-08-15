@@ -192,7 +192,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
             case Entity.VILLAGER_V2,
                  Entity.SNOW_GOLEM,
                  Entity.IRON_GOLEM -> true;
-            case Entity.TURTLE -> entity instanceof EntityTurtle turtle && !turtle.isBaby();
+            case Entity.TURTLE -> entity instanceof EntityTurtle turtle && turtle.isBaby();
             default -> false;
         };
     }
