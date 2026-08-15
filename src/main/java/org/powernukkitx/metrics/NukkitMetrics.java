@@ -7,6 +7,7 @@ import org.powernukkitx.network.process.auth.ClientChainData;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.powernukkitx.utils.SHAUtil;
+import org.powernukkitx.utils.Utils;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.ComputerSystem;
@@ -109,7 +110,7 @@ public class NukkitMetrics {
         metrics.addCustomChart(new Metrics.AdvancedPie("player_platform_pie", () -> server.getOnlinePlayers().values().stream()
                 .map(Player::getClientChainData)
                 .map(ClientChainData::getDeviceOS)
-                .collect(groupingBy(buildPlatform -> nukkitMetrics.mapDeviceOSToString(buildPlatform.getId()), countingInt()))));
+                .collect(groupingBy(buildPlatform -> Utils.mapDeviceOSToString(buildPlatform.getId()), countingInt()))));
 
         metrics.addCustomChart(new Metrics.AdvancedPie("player_game_version_pie", () -> server.getOnlinePlayers().values().stream()
                 .map(Player::getClientChainData)
@@ -156,25 +157,6 @@ public class NukkitMetrics {
         }
     }
 
-    private String mapDeviceOSToString(int os) {
-        return switch (os) {
-            case 1 -> "Android";
-            case 2 -> "iOS";
-            case 3 -> "macOS";
-            case 4 -> "Fire OS";
-            case 5 -> "Gear VR";
-            case 6 -> "HoloLens";
-            case 7, 8 -> "Windows";
-            case 9 -> "Dedicated";
-            case 10 -> "tvOS";
-            case 11 -> "PlayStation";
-            case 12 -> "Switch";
-            case 13 -> "Xbox";
-            case 14 -> "Windows Phone";
-            default -> "Unknown";
-        };
-    }
-
     private String buildServerUUID() {
         List<String> identifiers = new ArrayList<>();
         identifiers.add(PowerNukkitX.DATA_PATH);
@@ -219,6 +201,7 @@ public class NukkitMetrics {
             default -> true;
         };
     }
+
     public static synchronized void closeNow() {
         if (metricsInstance != null && metricsInstance.metrics != null) {
             metricsInstance.metrics.close();

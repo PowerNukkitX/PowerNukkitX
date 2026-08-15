@@ -82,8 +82,8 @@ public class LevelDeepSmokeTest {
         safe(() -> level.dropItem(pos, stone, new Vector3(0, 0.1, 0)));
         safe(() -> level.dropItem(pos, stone, new Vector3(0, 0.1, 0), 5));
         safe(() -> level.dropItem(pos, stone, new Vector3(0, 0.1, 0), true, 5));
-        safe(() -> level.dropAndGetItem(pos, stone));
-        safe(() -> level.dropAndGetItem(pos, stone, new Vector3(0, 0.1, 0)));
+        safe(() -> level.dropItemAndGetEntities(pos, stone));
+        safe(() -> level.dropItemAndGetEntities(pos, stone, new Vector3(0, 0.1, 0)));
         safe(() -> level.dropExpOrb(pos, 5));
         safe(() -> level.dropExpOrb(pos, 5, new Vector3(0, 0.1, 0)));
 
