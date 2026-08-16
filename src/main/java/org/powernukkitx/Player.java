@@ -2574,13 +2574,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Get the network latency of the player.
      *
-     * @return long
+     * @return long, or -1 if unavailable (e.g. during disconnection)
      */
     public long getPing() {
-        var rakServerChannel = (RakServerChannel) this.session.getPeer().getChannel().parent();
-        var childChannel = rakServerChannel.getChildChannel(getSocketAddress());
-        var rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
-        return rakSessionCodec.getPing();
+        try {
+            var peer = this.session.getPeer();
+            if (peer == null) return -1;
+
+            var parentChannel = peer.getChannel().parent();
+            if (!(parentChannel instanceof RakServerChannel rakServerChannel)) return -1;
+
+            var childChannel = rakServerChannel.getChildChannel(getSocketAddress());
+            if (childChannel == null) return -1;
+
+            var rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
+            if (rakSessionCodec == null) return -1;
+
+            return rakSessionCodec.getPing();
+        } catch (Exception e){
+            log.debug("Failed to get ping for player {}", this.getName(), e);
+            return -1;
+        }
     }
 
     public boolean sleepOn(Vector3 pos) {

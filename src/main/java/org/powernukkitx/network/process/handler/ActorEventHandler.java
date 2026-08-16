@@ -4,10 +4,13 @@ import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
+
+import java.util.Objects;
 
 /**
  * @author Kaooot
@@ -21,15 +24,22 @@ public class ActorEventHandler implements PacketHandler<ActorEventPacket> {
         if (!player.spawned || !player.isAlive()) {
             return;
         }
+        final ActorEvent type = packet.getType();
+        if (type == null){
+            return;
+        }
 
-
-        if (packet.getType().equals(ActorEvent.FEED) || packet.getType().equals(ActorEvent.DRINK_MILK)) {
+        if (type.equals(ActorEvent.FEED) || type.equals(ActorEvent.DRINK_MILK)) {
             if (packet.getTargetRuntimeID() != player.getId()) {
                 return;
             }
 
             Item hand = player.getInventory().getItemInMainHand();
             if (!hand.isConsumable()) {
+                return;
+            }
+
+            if (type.equals(ActorEvent.DRINK_MILK) && !(Objects.equals(hand.getId(), ItemID.MILK_BUCKET))){
                 return;
             }
 

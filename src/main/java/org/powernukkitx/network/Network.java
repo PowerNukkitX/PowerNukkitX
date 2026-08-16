@@ -216,6 +216,7 @@ public class Network implements NetworkInterface {
     }
 
     public void shutdown() {
+        this.state = NetworkState.STOPPING;
         this.channel.close();
         this.pong = null;
         this.sessionMap.clear();
@@ -381,6 +382,10 @@ public class Network implements NetworkInterface {
 
     @Override
     public void updatePong(BedrockPong pong) {
+        if (pong == null){
+            log.warn("updatePong called with null pong");
+            return;
+        }
         this.pong = pong;
         this.channel.config().setAdvertisement(this.pong.toByteBuf());
     }
@@ -391,7 +396,7 @@ public class Network implements NetworkInterface {
      * @return Byte buffer
      */
     private ByteBuf getAdvertisement() {
-        if (this.state == NetworkState.STARTING || this.state == NetworkState.STOPPING) {
+        if (this.state == NetworkState.STARTING || this.state == NetworkState.STOPPING || this.pong == null) {
             return Unpooled.EMPTY_BUFFER;
         }
         return this.pong.toByteBuf();

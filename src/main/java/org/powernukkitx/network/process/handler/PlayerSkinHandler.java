@@ -24,19 +24,32 @@ public class PlayerSkinHandler implements PacketHandler<PlayerSkinPacket> {
     public void handle(PlayerSkinPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
-        boolean trusted = player.getServer().getSettings().playerSettings().forceSkinTrusted()
-                || SkinConverter.isTrusted(packet.getSerializedSkin());
-        Skin skin = new Skin(SkinConverter.fromSerializedSkin(packet.getSerializedSkin()), trusted);
-
         if (!player.spawned || !player.isAlive()) {
             log.debug("Player {} tried to update skin while not spawned or dead", playerHandle.getUsername());
             return;
         }
 
-        if (!SkinUtils.isValid(skin.getSkin())) {
+        if (packet.getSerializedSkin() == null) {
+            log.warn("{}: PlayerSkinPacket with null skin data", playerHandle.getUsername());
+            return;
+        }
+
+        org.cloudburstmc.protocol.bedrock.data.skin.Skin parsedSkin;
+        try {
+            parsedSkin = SkinConverter.fromSerializedSkin(packet.getSerializedSkin());
+        } catch (Exception e) {
+            log.warn("{}: failed to parse PlayerSkinPacket skin data", playerHandle.getUsername(), e);
+            return;
+        }
+
+        if (!SkinUtils.isValid(parsedSkin)){
             log.warn("{}: PlayerSkinPacket with invalid skin", playerHandle.getUsername());
             return;
         }
+
+        boolean trusted = player.getServer().getSettings().playerSettings().forceSkinTrusted()
+                        || SkinConverter.isTrusted(packet.getSerializedSkin());
+                Skin skin = new Skin(parsedSkin, trusted);
 
         PlayerChangeSkinEvent playerChangeSkinEvent = new PlayerChangeSkinEvent(player, skin);
         var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getSettings().playerSettings().skinChangeCooldown()) > System.currentTimeMillis() - player.lastSkinChange;

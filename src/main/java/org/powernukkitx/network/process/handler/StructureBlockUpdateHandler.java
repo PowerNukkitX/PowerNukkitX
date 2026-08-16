@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
@@ -16,6 +17,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.STRUCTURE_BL
 /**
  * @author Kaooot
  */
+@Slf4j
 public class StructureBlockUpdateHandler implements PacketHandler<StructureBlockUpdatePacket> {
 
     @Override
@@ -30,8 +32,15 @@ public class StructureBlockUpdateHandler implements PacketHandler<StructureBlock
                     )
             );
             if (blockEntity instanceof BlockEntityStructBlock structBlock) {
+                StructureBlockType blockType;
+                try {
+                    blockType = StructureBlockType.valueOf(packet.getStructureData().getStructureBlockType().name());
+                } catch (IllegalArgumentException e){
+                    log.warn("Player {} sent unsupported structure block type {}", playerHandle.player.getName(), packet.getStructureData().getStructureBlockType());
+                    return;
+                }
                 Block sBlock = structBlock.getLevelBlock();
-                sBlock.setPropertyValue(STRUCTURE_BLOCK_TYPE, StructureBlockType.valueOf(packet.getStructureData().getStructureBlockType().name()));
+                sBlock.setPropertyValue(STRUCTURE_BLOCK_TYPE, blockType);
                 structBlock.updateSetting(packet);
                 playerHandle.player.level.setBlock(structBlock, sBlock, true);
                 structBlock.spawnTo(playerHandle.player);

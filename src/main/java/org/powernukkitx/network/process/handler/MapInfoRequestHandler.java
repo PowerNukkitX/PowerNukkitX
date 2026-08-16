@@ -23,8 +23,6 @@ public class MapInfoRequestHandler implements PacketHandler<MapInfoRequestPacket
     @Override
     public void handle(MapInfoRequestPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
-
-
         if (packet.getMapUniqueID() <= 0) {
             log.debug("Player {} sent an invalid map id {}", player.getName(), packet.getMapUniqueID());
             return;
@@ -80,13 +78,25 @@ public class MapInfoRequestHandler implements PacketHandler<MapInfoRequestPacket
                 final int finalIndex = index;
                 final boolean finalOffhand = offhand;
                 player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
+
+                    private int startX;
+                    private int startZ;
+                    private int zoom;
+
                     @Override
                     public void onRun() {
-                        int zoom = Math.max(1, map.getMapScale());
+                        zoom = Math.max(1, map.getMapScale());
                         int mapSize = 128 * zoom;
                         int halfMapSize = mapSize >> 1;
-                        int startX = Math.floorDiv(player.getFloorX() + halfMapSize, mapSize) * mapSize - halfMapSize;
-                        int startZ = Math.floorDiv(player.getFloorZ() + halfMapSize, mapSize) * mapSize - halfMapSize;
+                        startX = Math.floorDiv(player.getFloorX() + halfMapSize, mapSize) * mapSize - halfMapSize;
+                        startZ = Math.floorDiv(player.getFloorZ() + halfMapSize, mapSize) * mapSize - halfMapSize;
+                    }
+
+                    @Override
+                    public void onCompletion(Server server) {
+                        if (!player.isOnline() || !player.isAlive()) {
+                            return;
+                        }
                         map.renderMap(player.getLevel(), startX, startZ, zoom);
                         if (finalOffhand) {
                             if (checkMapItemValid(player.getOffhandInventory().getUnclonedItem(finalIndex), packet))

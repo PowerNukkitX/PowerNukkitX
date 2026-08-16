@@ -39,7 +39,7 @@ public class ModalFormResponseHandler implements PacketHandler<ModalFormResponse
 
         if (!playerHandle.packetRateLimiter.tryFormResponse()) {
             PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(
-                    playerHandle.player, PlayerHackDetectedEvent.HackType.MODAL_SPAM);
+                playerHandle.player, PlayerHackDetectedEvent.HackType.MODAL_SPAM);
             playerHandle.player.getServer().getPluginManager().callEvent(event);
             if (event.isKick()) {
                 playerHandle.player.getSession().close("Exceeding modal spam rate-limit");
@@ -57,37 +57,70 @@ public class ModalFormResponseHandler implements PacketHandler<ModalFormResponse
 
         String formData = jsonResponse == null ? "" : jsonResponse.trim();
 
-        if (playerHandle.getFormWindows().containsKey(packet.getFormID())) {
-            Form<?> window = playerHandle.getFormWindows().remove(packet.getFormID());
+        try {
+            if (playerHandle.getFormWindows().containsKey(packet.getFormID())) {
+                Form<?> window = playerHandle.getFormWindows().remove(packet.getFormID());
 
-            Response response = window.respond(player, formData, cancelReason);
+                Response response = window.respond(player, formData, cancelReason);
 
-            PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, packet.getFormID(), window, response);
-            player.getServer().getPluginManager().callEvent(event);
-        } else if (playerHandle.getServerSettings().containsKey(packet.getFormID())) {
-            Form<?> window = playerHandle.getServerSettings().get(packet.getFormID());
+                PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, packet.getFormID(), window, response);
+                player.getServer().getPluginManager().callEvent(event);
+            } else if (playerHandle.getServerSettings().containsKey(packet.getFormID())) {
+                Form<?> window = playerHandle.getServerSettings().get(packet.getFormID());
 
-            Response response = window.respond(player, formData, cancelReason);
+                Response response = window.respond(player, formData, cancelReason);
 
-            PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, packet.getFormID(), window, response);
-            player.getServer().getPluginManager().callEvent(event);
+                PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, packet.getFormID(), window, response);
+                player.getServer().getPluginManager().callEvent(event);
 
-            // Apply responses as default settings
-            if (!event.isCancelled() && window instanceof CustomForm customForm && response != null) {
-                ((CustomResponse) response).getResponses().forEach((i, res) -> {
-                    ElementCustom e = customForm.elements().get(i);
-                    switch (e) {
-                        case ElementDropdown dropdown -> dropdown.defaultOption(((ElementResponse) res)
-                                .elementId());
-                        case ElementInput input -> input.defaultText(String.valueOf(res));
-                        case ElementSlider slider -> slider.defaultValue((Float) res);
-                        case ElementToggle toggle -> toggle.defaultValue((Boolean) res);
-                        case ElementStepSlider stepSlider -> stepSlider.defaultStep(((ElementResponse) res)
-                                .elementId());
-                        default -> log.warn("Illegal element {} within ServerSettings", e);
-                    }
-                });
+                // Apply responses as default settings
+                if (!event.isCancelled() && window instanceof CustomForm customForm && response != null) {
+                    ((CustomResponse) response).getResponses().forEach((i, res) -> {
+                        ElementCustom e = customForm.elements().get(i);
+                        if (e == null){
+                            log.warn("{} sent unknown element index {} within ServerSettings", player.getName(), i);
+                            return;
+                        }
+                        try {
+                            switch (e) {
+                                case ElementDropdown dropdown -> {
+                                    int option = ((ElementResponse) res).elementId();
+                                    if (option < 0 || option >= dropdown.options().size()) {
+                                        log.warn("{} sent out-of-bounds dropdown option {} for element {}",
+                                            player.getName(), option, i);
+                                        return;
+                                    }
+                                    dropdown.defaultOption(option);
+                                }
+                                case ElementInput input -> input.defaultText(String.valueOf(res));
+                                case ElementSlider slider -> {
+                                    float value = (Float) res;
+                                    if (value < slider.min() || value > slider.max()) {
+                                        log.warn("{} sent out-of-bounds slider value {} for element {}", player.getName(), value, i);
+                                        return;
+                                    }
+                                    slider.defaultValue(value);
+                                }
+                                case ElementToggle toggle -> toggle.defaultValue((Boolean) res);
+                                case ElementStepSlider stepSlider -> {
+                                    int step = ((ElementResponse) res).elementId();
+                                    if (step < 0 || step >= stepSlider.steps().size()) {
+                                        log.warn("{} sent out-of-bounds step index {} for element {}",
+                                            player.getName(), step, i);
+                                        return;
+                                    }
+                                    stepSlider.defaultStep(step);
+                                }
+                                default -> log.warn("Illegal element {} within ServerSettings", e);
+                            }
+                        } catch (ClassCastException ex){
+                            log.warn("{} sent mismatched response type for element {} within ServerSettings", player.getName(), i, ex);
+                        }
+                    });
+                }
             }
-        } else log.warn("{} sent unknown form id {}", player.getName(), packet.getFormID());
+        } catch(Exception e){
+            log.warn("{}: failed to process ModalFormResponsePacket for form {}", player.getName(), packet.getFormID(), e);
+        }
     }
 }
