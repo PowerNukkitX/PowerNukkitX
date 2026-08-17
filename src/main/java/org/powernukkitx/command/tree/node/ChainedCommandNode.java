@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.StringJoiner;
 
+import org.powernukkitx.command.CommandSender;
+
 
 /**
  * Represents a node for parsing chained subcommands in the context of the {@link org.powernukkitx.command.defaults.ExecuteCommand}.
@@ -46,7 +48,21 @@ public class ChainedCommandNode extends EnumNode {
     private final List<String> TMP = new ArrayList<>();
 
     @Override
+    public int getUsedArgs() {
+        return -1;
+    }
+
+    @Override
     public void fill(String arg) {
+        fill(
+            arg, 
+            paramList.getParamTree().getSender(), 
+            paramList.getIndex() == paramList.getParamTree().getArgs().length
+        );
+    }
+
+    @Override
+    public void fill(String arg, CommandSender sender, boolean isLastArg) {
         if (arg.contains(" ")) {
             arg = "\"" + arg + "\"";
         }
@@ -58,9 +74,8 @@ public class ChainedCommandNode extends EnumNode {
             TMP.add(arg);
             remain = true;
         } else {
-            if (this.paramList.getIndex() != this.paramList.getParamTree().getArgs().length) TMP.add(arg);
-            else {
-                TMP.add(arg);
+            TMP.add(arg);
+            if (isLastArg) {
                 var join = new StringJoiner(" ", "execute ", "");
                 TMP.forEach(join::add);
                 this.value = join.toString();

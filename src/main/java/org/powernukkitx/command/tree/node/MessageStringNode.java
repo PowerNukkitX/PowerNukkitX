@@ -1,5 +1,6 @@
 package org.powernukkitx.command.tree.node;
 
+import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.exceptions.SelectorSyntaxException;
 import org.powernukkitx.command.selector.EntitySelectorAPI;
 import org.powernukkitx.entity.Entity;
@@ -46,11 +47,23 @@ public class MessageStringNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 
     @Override
-    public void fill(String arg) {
-        if (this.paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
-        else {
-            TMP.add(arg);
+    public int getUsedArgs() {
+        return -1;
+    }
 
+    @Override
+    public void fill(String arg) {
+        if (paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
+        else {
+            fill(arg, paramList.getParamTree().getSender(), true);
+        }
+    }
+
+    @Override
+    public void fill(String arg, CommandSender sender, boolean isLastArg) {
+        TMP.add(arg);
+
+        if (isLastArg) {
             String str = String.join(" ", TMP);
             Matcher match = EntitySelectorAPI.ENTITY_SELECTOR.matcher(str);
             this.value = match.replaceAll(r -> {
@@ -68,7 +81,7 @@ public class MessageStringNode extends ParamNode<String> {
                 if (EntitySelectorAPI.getAPI().checkValid(m)) {
                     StringJoiner join = new StringJoiner(", ");
                     try {
-                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), m)) {
+                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(sender, m)) {
                             String name = entity.getName();
                             if (name.isBlank()) name = entity.getOriginalName();
                             join.add(name);
