@@ -53,10 +53,11 @@ public class MessageStringNode extends ParamNode<String> {
 
     @Override
     public void fill(String arg) {
-        if (paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
-        else {
-            fill(arg, paramList.getParamTree().getSender(), true);
-        }
+        fill(
+            arg, 
+            paramList.getParamTree().getSender(), 
+            paramList.getIndex() == paramList.getParamTree().getArgs().length
+        );
     }
 
     @Override
