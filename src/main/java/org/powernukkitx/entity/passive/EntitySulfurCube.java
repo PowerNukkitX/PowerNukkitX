@@ -134,6 +134,8 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         if (isFromBucket()) {
             setPersistent(true);
         }
+        
+        this.recalculateBoundingBox();
     }
 
     @Override
