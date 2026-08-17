@@ -140,7 +140,7 @@ public class RouteTree {
                 return child.isExecutable() ? child : null;
             }
 
-            RouteNode result = match(child, args, index + 1, context);
+            RouteNode result = match(child, args, index + child.getParamNode().getUsedArgs(), context);
             if (result != null) {
                 return result;
             }
