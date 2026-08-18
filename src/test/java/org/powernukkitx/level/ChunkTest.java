@@ -215,7 +215,7 @@ public class ChunkTest {
             pool.shutdownNow();
         }
 
-        assertTrue(finishedInTime, "Deadlock détecté : batchProcessCompleted=" + batchProcessCompleted.get()
+        assertTrue(finishedInTime, "Deadlock detected : batchProcessCompleted=" + batchProcessCompleted.get()
             + ", heightMapColumnCompleted=" + heightMapColumnCompleted.get());
     }
 
