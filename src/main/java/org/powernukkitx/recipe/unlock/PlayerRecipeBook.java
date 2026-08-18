@@ -44,6 +44,7 @@ public class PlayerRecipeBook implements InventoryListener {
     private final Player player;
     private final Set<String> unlockedRecipes = new ObjectOpenHashSet<>();
     private boolean discovering;
+    private boolean wasInWater;
 
     public PlayerRecipeBook(@NotNull Player player) {
         this.player = player;
@@ -111,8 +112,23 @@ public class PlayerRecipeBook implements InventoryListener {
         if (!this.discovering) {
             return;
         }
+
+        final RecipeUnlockIndex index = Registries.RECIPE.getUnlockIndex();
+
         this.unlockedRecipes.removeIf(recipeId -> Registries.RECIPE.get(recipeId) == null);
+        this.addAllWithoutPacket(index.getAlwaysUnlockedRecipes());
+
+        this.wasInWater = this.player.isTouchingWater();
+        if (this.wasInWater) {
+            this.addAllWithoutPacket(index.getPlayerInWaterRecipes());
+        }
+
+        if (this.hasManyItems()) {
+            this.addAllWithoutPacket(index.getPlayerHasManyItemsRecipes());
+        }
+
         this.sendPacket(UnlockedRecipesPacket.UnlockedRecipesPacketType.INITIALLY_UNLOCKED, this.unlockedRecipes);
+
         this.player.getInventory().addListener(this);
         this.discoverFromInventory();
     }
@@ -159,15 +175,55 @@ public class PlayerRecipeBook implements InventoryListener {
         if (!this.discovering) {
             return;
         }
+
         final Item current = inventory.getUnclonedItem(slot);
-        if (current.isNull()) {
+
+        if (!current.isNull()) {
+            final Set<String> candidates = Registries.RECIPE.getUnlockIndex().getCandidates(current.getId());
+            if (!candidates.isEmpty()) this.unlockAll(candidates);
+        }
+
+        this.checkPlayerHasManyItems();
+    }
+
+    public void updateWaterState() {
+        if (!this.discovering) {
             return;
         }
-        final Set<String> candidates = Registries.RECIPE.getUnlockIndex().getCandidates(current.getId());
-        if (candidates.isEmpty()) {
-            return;
+
+        final boolean inWater = this.player.isTouchingWater();
+
+        if (inWater && !this.wasInWater) {
+            this.unlockAll(Registries.RECIPE.getUnlockIndex().getPlayerInWaterRecipes());
         }
-        this.unlockAll(candidates);
+
+        this.wasInWater = inWater;
+    }
+
+    public void onPlayerHasManyItems() {
+        if (!this.discovering) return;
+
+        this.unlockAll(Registries.RECIPE.getUnlockIndex().getPlayerHasManyItemsRecipes());
+    }
+
+    private boolean hasManyItems() {
+        final HumanInventory inventory = this.player.getInventory();
+        int occupiedSlots = 0;
+
+        for (int slot = 0; slot < HumanInventory.ARMORS_INDEX; slot++) {
+            if (!inventory.getUnclonedItem(slot).isNull()) {
+                occupiedSlots++;
+                if (occupiedSlots >= 10) return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void checkPlayerHasManyItems() {
+        if (this.hasManyItems()) {
+            this.onPlayerHasManyItems();
+        }
     }
 
     private void discoverFromInventory() {
@@ -182,6 +238,16 @@ public class PlayerRecipeBook implements InventoryListener {
         }
         if (!candidates.isEmpty()) {
             this.unlockAll(candidates);
+        }
+    }
+
+    private void addAllWithoutPacket(Collection<String> candidates) {
+        for (String recipeId : candidates) {
+            if (this.unlockedRecipes.contains(recipeId)) continue;
+
+            final Recipe recipe = Registries.RECIPE.get(recipeId);
+            if (recipe == null) continue;
+            this.addUnlocked(recipe);
         }
     }
 

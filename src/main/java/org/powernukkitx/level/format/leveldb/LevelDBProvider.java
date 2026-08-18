@@ -1025,8 +1025,10 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.put("sendCommandFeedback", worldData.getGameRules().getGameRules().get(GameRule.SEND_COMMAND_FEEDBACK).getTag());
         levelDat.put("showBorderEffect", worldData.getGameRules().getGameRules().get(GameRule.SHOW_BORDER_EFFECT).getTag());
         levelDat.put("showCoordinates", worldData.getGameRules().getGameRules().get(GameRule.SHOW_COORDINATES).getTag());
+        levelDat.put("playerWaypoints", worldData.getGameRules().getGameRules().get(GameRule.PLAYER_WAYPOINTS).getTag());
         levelDat.put("showDaysPlayed", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DAYS_PLAYED).getTag());
         levelDat.put("showDeathMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DEATH_MESSAGES).getTag());
+        levelDat.put("showRecipeMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_RECIPE_MESSAGES).getTag());
         levelDat.put("showTags", worldData.getGameRules().getGameRules().get(GameRule.SHOW_TAGS).getTag());
         levelDat.put("spawnRadius", worldData.getGameRules().getGameRules().get(GameRule.SPAWN_RADIUS).getTag());
         levelDat.put("tntExplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());

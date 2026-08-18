@@ -104,6 +104,11 @@ import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.InitializeRegistryData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.SyncStateData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.SyncWorldClockStateData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.TimeMarkerData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.WorldClockData;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUsePredictedResult;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUseTriggerType;
@@ -160,6 +165,18 @@ public class Level implements Metadatable {
     public static final int TIME_MIDNIGHT = 18000;
     public static final int TIME_SUNRISE = 23000;
     public static final int TIME_FULL = 24000;
+
+    private static final long OVERWORLD_CLOCK_ID = 7194480507151251734L;
+
+    private static final List<TimeMarkerData> OVERWORLD_TIME_MARKERS = List.of(
+            createTimeMarker(2625810911898139949L, "minecraft:sunrise", 23000, 24000),
+            createTimeMarker(4918950784056990566L, "minecraft:night", 13000, 24000),
+            createTimeMarker(6827470627776846754L, "minecraft:noon", 6000, 24000),
+            createTimeMarker(-7184653752370368672L, "minecraft:midnight", 18000, 24000),
+            createTimeMarker(-4807795260250801598L, "minecraft:day", 1000, 24000),
+            createTimeMarker(-1781951082890426794L, "minecraft:sunset", 12000, 24000)
+    );
+    
     public static final int DIMENSION_OVERWORLD = 0;
     public static final int DIMENSION_NETHER = 1;
     public static final int DIMENSION_THE_END = 2;
@@ -1260,14 +1277,41 @@ public class Level implements Metadatable {
     }
 
     public void sendTime(Player... players) {
-        final SetTimePacket pk = new SetTimePacket();
-        pk.setTime((int) this.time);
+        final SyncWorldClockStateData clockState = new SyncWorldClockStateData();
+        clockState.setClockId(OVERWORLD_CLOCK_ID);
+        clockState.setTime((int) this.time);
+        clockState.setPaused(this.isWorldClockPaused());
 
-        Server.broadcastPacket(players, pk);
+        final SyncStateData syncState = new SyncStateData();
+        syncState.getClockData().add(clockState);
+
+        final SyncWorldClocksPacket packet = new SyncWorldClocksPacket();
+        packet.setData(syncState);
+
+        for (Player player : players) {
+            player.sendPacketImmediately(packet);
+        }
     }
 
     public void sendTime() {
         this.sendTime(this.players.values().toArray(Player.EMPTY_ARRAY));
+    }
+
+    public void sendWorldClock(Player player) {
+        final WorldClockData worldClock = new WorldClockData();
+        worldClock.setId(OVERWORLD_CLOCK_ID);
+        worldClock.setName("minecraft:overworld");
+        worldClock.setTime((int) this.time);
+        worldClock.setPaused(this.isWorldClockPaused());
+        worldClock.getTimeMarkers().addAll(OVERWORLD_TIME_MARKERS);
+
+        final InitializeRegistryData registryData = new InitializeRegistryData();
+        registryData.getClockData().add(worldClock);
+
+        final SyncWorldClocksPacket packet = new SyncWorldClocksPacket();
+        packet.setData(registryData);
+
+        player.sendPacketImmediately(packet);
     }
 
     public GameRules getGameRules() {
@@ -1399,9 +1443,9 @@ public class Level implements Metadatable {
             updateBlockLight();
             if (prof) phase[1] = -phaseStart + (phaseStart = System.nanoTime());
             this.checkTime();
-            if (this.tickTime >= nextTimeSendMillis) { // Send time to client every 30 seconds to make sure it
+            if (this.tickTime >= nextTimeSendMillis) {
                 this.sendTime();
-                nextTimeSendMillis = this.tickTime + 30_000L;
+                nextTimeSendMillis = this.tickTime + 12_800L;
             }
 
             // check highlighted chunks (the 3x3 chunks around players)
@@ -1798,14 +1842,14 @@ public class Level implements Metadatable {
             }
         }
 
-        if (playerCount > 0 && sleepingPlayerCount / playerCount * 100 >= this.gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
+        if (playerCount > 0 && sleepingPlayerCount * 100 / playerCount >= this.gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
             int time = (int) (this.getTime() % Level.TIME_FULL);
 
             if (isNight() || isThundering()) {
                 this.setTime(this.getTime() + Level.TIME_FULL - time);
 
                 for (Player p : this.getPlayers().values()) {
-                    p.stopSleep();
+                    p.stopSleep(false);
                 }
                 this.noSleepNights = 0;
             }
@@ -4672,17 +4716,23 @@ public class Level implements Metadatable {
     }
 
     public Position getFuzzySpawnLocation() {
+        return this.getFuzzySpawnLocation(Math.max(0, gameRules.getInteger(GameRule.SPAWN_RADIUS)));
+    }
+
+    public Position getFuzzySpawnLocation(int radius) {
         Position spawn = getSpawnLocation();
-        int radius = gameRules.getInteger(GameRule.SPAWN_RADIUS);
+
         if (radius > 0) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             int negativeFlags = random.nextInt(4);
+
             spawn = spawn.add(
                     radius * random.nextDouble() * ((negativeFlags & 1) > 0 ? -1 : 1),
                     0,
                     radius * random.nextDouble() * ((negativeFlags & 2) > 0 ? -1 : 1)
             );
         }
+
         return spawn;
     }
 
@@ -5095,10 +5145,31 @@ public class Level implements Metadatable {
     }
 
     public Position getSafeSpawn() {
-        return getSafeSpawn(null);
+        int spawnRadius = Math.max(0, gameRules.getInteger(GameRule.SPAWN_RADIUS));
+        Position worldSpawn = this.getSpawnLocation().add(0.5, 0, 0.5);
+
+        if (spawnRadius == 0) {
+            Position safeSpawn = this.getSafeSpawnAtColumn(worldSpawn, true);
+            return safeSpawn != null ? safeSpawn : worldSpawn;
+        }
+
+        for (int attempt = 0; attempt < 16; attempt++) {
+            Position randomizedSpawn = this.getFuzzySpawnLocation(spawnRadius);
+            Position safeSpawn = this.getSafeSpawnAtColumn(randomizedSpawn, true);
+
+            if (safeSpawn != null) {
+                return safeSpawn;
+            }
+        }
+
+        return getSafeSpawn(worldSpawn, spawnRadius, true);
     }
 
     public Position getSafeSpawn(Vector3 spawn) {
+        if (spawn == null) {
+            return getSafeSpawn();
+        }
+
         return getSafeSpawn(spawn, getServer().getSettings().playerSettings().spawnRadius());
     }
 
@@ -5112,14 +5183,9 @@ public class Level implements Metadatable {
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder, boolean checkHighest) {
         if (spawn == null) {
-            Vector3 worldSpawn = this.getSpawnLocation().add(0.5, 0, 0.5);
-            if (horizontalMaxOffset == 0 || standable(worldSpawn, allowWaterUnder))
-                return Position.fromObject(worldSpawn, this);
-            spawn = this.getFuzzySpawnLocation();
+            return getSafeSpawn();
         }
-        if (spawn == null)
-            return null;
-        if (standable(spawn, allowWaterUnder) || horizontalMaxOffset == 0)
+        if (standable(spawn, allowWaterUnder))
             return Position.fromObject(spawn, this);
 
         int maxY = getDimensionData().getMaxHeight();
@@ -5154,6 +5220,54 @@ public class Level implements Metadatable {
         return Position.fromObject(spawn, this);
     }
 
+    private Position getSafeSpawnAtColumn(Vector3 spawn, boolean allowWaterUnder) {
+        if (spawn == null) {
+            return null;
+        }
+
+        Position spawnPosition = Position.fromObject(spawn, this);
+
+        if (standable(spawnPosition, allowWaterUnder)) {
+            return spawnPosition;
+        }
+
+        int highestY = getHighestBlockAt(spawn.getFloorX(), spawn.getFloorZ());
+        Position highestPosition = Position.fromObject(spawn.setY(highestY), this);
+
+        if (standable(highestPosition, allowWaterUnder)) {
+            return highestPosition;
+        }
+
+        int maxY = getDimensionData().getMaxHeight();
+        int minY = getDimensionData().getMinHeight();
+
+        for (int offset = 1; offset <= maxY - minY; offset++) {
+            int upY = highestY + offset;
+            if (upY <= maxY) {
+                Position checkUp = Position.fromObject(new Vector3(spawn.x, upY, spawn.z), this);
+
+                if (standable(checkUp, allowWaterUnder)) {
+                    return checkUp;
+                }
+            }
+
+            int downY = highestY - offset;
+            if (downY >= minY) {
+                Position checkDown = Position.fromObject(new Vector3(spawn.x, downY, spawn.z), this);
+
+                if (standable(checkDown, allowWaterUnder)) {
+                    return checkDown;
+                }
+            }
+
+            if (upY > maxY && downY < minY) {
+                break;
+            }
+        }
+
+        return null;
+    }
+
     public boolean standable(Vector3 vec) {
         return standable(vec, false);
     }
@@ -5170,11 +5284,11 @@ public class Level implements Metadatable {
         if (!allowWaterUnder)
             return !blockUnder.canPassThrough()
                     && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || block.canPassThrough());
+                    && (blockUpper.isAir() || blockUpper.canPassThrough());
         else
             return (!blockUnder.canPassThrough() || blockUnder instanceof BlockFlowingWater)
                     && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || block.canPassThrough());
+                    && (blockUpper.isAir() || blockUpper.canPassThrough());
     }
 
     public boolean isTicked() {
@@ -5231,6 +5345,19 @@ public class Level implements Metadatable {
 
     public boolean isNight() {
         return (getDayTime() > 13184 && getDayTime() < 22800);
+    }
+
+    private static TimeMarkerData createTimeMarker(long id, String name, int time, int period) {
+        final TimeMarkerData marker = new TimeMarkerData();
+        marker.setId(id);
+        marker.setName(name);
+        marker.setTime(time);
+        marker.setPeriod(period);
+        return marker;
+    }
+
+    public boolean isWorldClockPaused() {
+        return false;
     }
 
     /**
