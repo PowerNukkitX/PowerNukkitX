@@ -117,6 +117,9 @@ public class PowerNukkitX {
         // Netty logger for debug info
         InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
 
+        Thread.setDefaultUncaughtExceptionHandler((thread, thrown) ->
+            log.error("Thread {} died on an uncaught throwable", thread.getName(), thrown));
+
         // Define args
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
