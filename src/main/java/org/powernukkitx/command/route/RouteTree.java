@@ -116,10 +116,8 @@ public class RouteTree {
             return node.isExecutable() ? node : null;
         }
 
-        String arg = args[index];
-
         for (RouteNode child : node.getChildren()) {
-            if (child.getType() == NodeType.LITERAL && child.getName().equalsIgnoreCase(arg)) {
+            if (child.getType() == NodeType.LITERAL && child.getName().equalsIgnoreCase(args[index])) {
                 RouteNode result = match(child, args, index + 1, context);
                 if (result != null) {
                     return result;
@@ -131,12 +129,18 @@ public class RouteTree {
             if (child.getType() != NodeType.ARGUMENT) {
                 continue;
             }
-            Object parsed = parseArg(child, arg);
+
+            Object parsed = parseArg(child, args, index, context.getSender());
             if (parsed == null) {
                 continue;
             }
             context.putArg(child.getName(), parsed);
-            RouteNode result = match(child, args, index + 1, context);
+
+            if (child.getParamNode().getUsedArgs() == -1) {        // If the node consumes all the tokens, then...
+                return child.isExecutable() ? child : null;
+            }
+
+            RouteNode result = match(child, args, index + child.getParamNode().getUsedArgs(), context);
             if (result != null) {
                 return result;
             }
@@ -146,19 +150,38 @@ public class RouteTree {
     }
 
     /**
-     * Parses a single token against the node's param node, returning the parsed value or
+     * Parses a certain number of tokens (defined by {@link org.powernukkitx.command.tree.node.IParamNode#getUsedArgs()}) against the node's param node, returning the parsed value or
      * {@code null} if it does not match. The fill/get/reset sequence is synchronized on the
      * (shared, per-node) param node so concurrent dispatches do not corrupt each other.
+     * 
+     * @see org.powernukkitx.command.tree.node.IParamNode#getUsedArgs()
      */
-    private Object parseArg(RouteNode child, String arg) {
+    private Object parseArg(RouteNode child, String args[], int index, CommandSender sender) {
         IParamNode<?> paramNode = child.getParamNode();
+
         synchronized (paramNode) {
             paramNode.reset();
-            paramNode.fill(arg);
+
+            if (paramNode.getUsedArgs() == -1) {        // If the node consumes all the tokens, then...
+                if (index >= args.length) {
+                    return null;
+                }
+                for (int i = index; i < args.length; i++) {
+                    paramNode.fill(args[i], sender, i == args.length - 1);
+                }
+            } else {
+                if (index + paramNode.getUsedArgs() > args.length) {
+                    return null;
+                }
+                for (int i = 0; i < paramNode.getUsedArgs(); i++) {
+                    paramNode.fill(args[index + i], sender);
+                }
+            }
+
             boolean matched = paramNode.hasResult();
-            Object parsed = matched ? paramNode.get() : null;
+            Object parsed = matched ? paramNode.get(sender) : null;
             paramNode.reset();
-            return matched ? parsed : null;
+            return parsed;
         }
     }
 

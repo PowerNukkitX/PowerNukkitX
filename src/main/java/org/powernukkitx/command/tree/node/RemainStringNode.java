@@ -3,6 +3,8 @@ package org.powernukkitx.command.tree.node;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.powernukkitx.command.CommandSender;
+
 /**
  * Parses all remaining command arguments as a single {@code String} value for PowerNukkitX command trees.
  * <p>
@@ -41,10 +43,23 @@ public class RemainStringNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 
     @Override
+    public int getUsedArgs() {
+        return -1;
+    }
+
+    @Override
     public void fill(String arg) {
-        if (this.paramList.getIndex() != paramList.getParamTree().getArgs().length) TMP.add(arg);
-        else {
-            TMP.add(arg);
+        fill(
+            arg, 
+            paramList.getParamTree().getSender(), 
+            paramList.getIndex() == paramList.getParamTree().getArgs().length
+        );
+    }
+
+    @Override
+    public void fill(String arg, CommandSender sender, boolean isLastArg) {
+        TMP.add(arg);
+        if (isLastArg) {
             this.value = String.join("", TMP);
         }
     }
