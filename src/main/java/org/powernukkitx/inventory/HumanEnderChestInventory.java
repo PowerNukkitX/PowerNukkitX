@@ -68,14 +68,14 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         this.sendContents(who);
 
         final BlockEventPacket blockEventPacket = new BlockEventPacket();
-        blockEventPacket.setBlockPosition(Vector3i.from(this.getHolder().getX(), this.getHolder().getY(), this.getHolder().getZ()));
+        blockEventPacket.setBlockPosition(Vector3i.from(enderChest.getX(), enderChest.getY(), enderChest.getZ()));
         blockEventPacket.setEventType(1);
         blockEventPacket.setEventValue(2);
 
-        Level level = this.getHolder().getLevel();
+        Level level = enderChest.getLevel();
         if (level != null) {
-            level.addSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTOPEN);
-            level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
+            level.addSound(enderChest.add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTOPEN);
+            level.addChunkPacket((int) enderChest.getX() >> 4, (int) enderChest.getZ() >> 4, blockEventPacket);
         }
     }
 
@@ -106,10 +106,10 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         blockEventPacket.setEventType(1);
         blockEventPacket.setEventValue(0);
 
-        Level level = this.getHolder().getLevel();
+        Level level = enderChest.getLevel();
         if (level != null) {
-            level.addSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTCLOSED);
-            level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
+            level.addSound(enderChest.add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTCLOSED);
+            level.addChunkPacket((int) enderChest.getX() >> 4, (int) enderChest.getZ() >> 4, blockEventPacket);
         }
         setBlockEntityEnderChest(who, null);
         super.onClose(who);
