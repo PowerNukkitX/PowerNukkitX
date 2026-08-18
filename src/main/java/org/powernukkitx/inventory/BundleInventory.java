@@ -16,6 +16,7 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 @Slf4j
 public class BundleInventory extends BaseInventory {
@@ -46,8 +47,11 @@ public class BundleInventory extends BaseInventory {
 
     @Override
     public boolean setItem(int index, Item item, boolean send) {
-        if (getWeight() + getWeight(item) > MAX_FILL) {
-            log.warn("Tried to overfill bundle!");
+        Item previous = getUnclonedItem(index);
+        int previousWeight = previous.isNull() ? 0 : getWeight(previous);
+        int newWeight = getWeight() - previousWeight + getWeight(item);
+        if (newWeight > MAX_FILL) {
+            log.warn("Tried to overfill bundle! {}", newWeight);
             return false;
         }
         if (super.setItem(index, item, send)) {
@@ -65,9 +69,23 @@ public class BundleInventory extends BaseInventory {
     @Override
     public boolean clear(int index, boolean send) {
         if (super.clear(index, send)) {
+            compactContents();
             getHolder().saveNBT();
             return true;
         } else return false;
+    }
+
+    private void compactContents() {
+        synchronized (slots) {
+            Map<Integer, Item> contents = new TreeMap<>(slots);
+            slots.clear();
+            int index = 0;
+            for (Item item : contents.values()) {
+                if (!item.isNull()) {
+                    slots.put(index++, item);
+                }
+            }
+        }
     }
 
     protected int getWeight(Item item) {
@@ -87,23 +105,24 @@ public class BundleInventory extends BaseInventory {
     @Override
     public void sendContents(Player... players) {
         final InventoryContentPacket pk = new InventoryContentPacket();
-        for (int i = 0; i < this.getSize(); i++) {
+        int contentSize = getNetworkContentSize();
+        for (int i = 0; i < contentSize; i++) {
             pk.getSlots().add(this.getUnclonedItem(i).toNetwork());
         }
         pk.setStorageItem(this.getHolder().toNetwork());
         pk.setFullContainerName(
-                new FullContainerName(ContainerEnumName.DYNAMIC_CONTAINER, this.getHolder().getBundleId())
+            new FullContainerName(ContainerEnumName.DYNAMIC_CONTAINER, this.getHolder().getBundleId())
         );
 
         for (Player player : players) {
             int id = ContainerId.CONTAINER_ID_REGISTRY;
-            if (!player.spawned) {
-                this.close(player);
-                continue;
-            }
             pk.setContainerId(id);
             player.sendPacket(pk);
         }
+    }
+
+    private int getNetworkContentSize() {
+        return getContents().keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1;
     }
 
     @Override
