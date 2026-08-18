@@ -31,10 +31,12 @@ public final class CameraAnimation {
         }
     }
 
-    public void addProgressKeyFrame(CameraProgressKeyFrame keyFrame) {
+    public CameraAnimation addProgressKeyFrame(CameraProgressKeyFrame keyFrame) {
         this.progressKeyFrames.add(
                 Objects.requireNonNull(keyFrame, "keyFrame")
         );
+
+        return this;
     }
 
     public List<CameraRotationKeyFrame> getRotationKeyFrames() {
@@ -53,9 +55,11 @@ public final class CameraAnimation {
         }
     }
 
-    public void addRotationKeyFrame(CameraRotationKeyFrame keyFrame) {
+    public CameraAnimation addRotationKeyFrame(CameraRotationKeyFrame keyFrame) {
         this.rotationKeyFrames.add(
                 Objects.requireNonNull(keyFrame, "keyFrame")
         );
+
+        return this;
     }
 }

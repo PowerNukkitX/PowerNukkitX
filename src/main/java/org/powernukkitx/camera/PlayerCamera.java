@@ -87,6 +87,23 @@ public final class PlayerCamera {
     }
 
     /**
+     * Sets the active camera preset and transform.
+     *
+     * @param presetIdentifier camera preset identifier
+     * @param transform camera transform
+     */
+    public void setCamera(String presetIdentifier, CameraTransform transform) {
+        Objects.requireNonNull(transform, "transform");
+
+        this.setCamera(
+                presetIdentifier,
+                transform.position(),
+                transform.pitch(),
+                transform.yaw()
+        );
+    }
+
+    /**
      * Plays a dynamic spline camera animation.
      *
      * @param spline spline path
@@ -103,6 +120,8 @@ public final class PlayerCamera {
         );
 
         spline.validate();
+
+        validateAnimation(animation, totalTimeSeconds);
 
         CameraSplineInstruction instruction = new CameraSplineInstruction();
 
@@ -171,6 +190,44 @@ public final class PlayerCamera {
         );
 
         return preset;
+    }
+
+    private static void validateAnimation(CameraAnimation animation, float totalTimeSeconds) {
+        float previousProgressTime = -1.0f;
+
+        for (CameraProgressKeyFrame keyFrame : animation.getProgressKeyFrames()) {
+            Preconditions.checkArgument(
+                    keyFrame.timeSeconds() <= totalTimeSeconds,
+                    "Camera progress key frame time %s exceeds total animation duration %s",
+                    keyFrame.timeSeconds(),
+                    totalTimeSeconds
+            );
+
+            Preconditions.checkArgument(
+                    keyFrame.timeSeconds() >= previousProgressTime,
+                    "Camera progress key frames must be ordered by time"
+            );
+
+            previousProgressTime = keyFrame.timeSeconds();
+        }
+
+        float previousRotationTime = -1.0f;
+
+        for (CameraRotationKeyFrame keyFrame : animation.getRotationKeyFrames()) {
+            Preconditions.checkArgument(
+                    keyFrame.timeSeconds() <= totalTimeSeconds,
+                    "Camera rotation key frame time %s exceeds total animation duration %s",
+                    keyFrame.timeSeconds(),
+                    totalTimeSeconds
+            );
+
+            Preconditions.checkArgument(
+                    keyFrame.timeSeconds() >= previousRotationTime,
+                    "Camera rotation key frames must be ordered by time"
+            );
+
+            previousRotationTime = keyFrame.timeSeconds();
+        }
     }
 
     private static Vector3f toNetwork(Vector3 vector) {

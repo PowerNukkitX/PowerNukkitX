@@ -29,6 +29,14 @@ public record CameraRotationKeyFrame(float timeSeconds, Vector3 rotation, Easing
         );
 
         Preconditions.checkNotNull(rotation, "rotation");
+
+        Preconditions.checkArgument(
+            Double.isFinite(rotation.x)
+                && Double.isFinite(rotation.y)
+                && Double.isFinite(rotation.z),
+            "Camera rotation coordinates must be finite"
+        );
+
         Preconditions.checkNotNull(easing, "easing");
     }
 }
