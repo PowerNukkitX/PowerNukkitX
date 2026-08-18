@@ -34,18 +34,23 @@
 - 🗃️ **Full Item, Block and Container Support**
 - 🗿 **More features to discover...**
 
-## Getting Started
+## 🛠️ Getting Started
 
 To get started, check out our [documentation](https://powernukkitx.org/docs/).
 
-## Community & Support
+## ❤️ Community & Support
 
 Join our [Discord](https://discord.gg/apwd7uauZg) server to chat with other users, developers and server owners.
 
+## 🌟 Plugins
+
+Browse community-made plugins for your server in our [Plugin Hub](https://powernukkitx.org/plugins).<br />
+Want to create your own? Our [documentation](https://powernukkitx.org/docs/development) will help you get started.
+
 ## 🤝 Contributing to PowerNukkitX
 
-Contributions, issues and feature requests are welcome!<br />Feel free to
-check [issues page](https://github.com/PowerNukkitX/PowerNukkitX/issues). Also take a look at
+Contributions, issues and feature requests are welcome!<br />
+Feel free to check [issues page](https://github.com/PowerNukkitX/PowerNukkitX/issues). Also take a look at
 the [contributing guide](.github/CONTRIBUTING.md).
 
 ## 📝 License Information
