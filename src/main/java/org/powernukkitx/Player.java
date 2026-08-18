@@ -5400,7 +5400,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Teleport the player to another server
+     * Transfers the player to another server
      *
      * @param address the address
      */
