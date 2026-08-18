@@ -91,6 +91,7 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             ItemStackResponseInfo itemStackResponse = new ItemStackResponseInfo(ItemStackNetResult.SUCCESS, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>());
             Map<ContainerEnumName, ItemStackResponseContainerInfo> responseContainerMap = new LinkedHashMap<>();
             Set<Inventory> affectedInventories = new LinkedHashSet<>();
+            boolean failed = false;
 
             for (int index = 0; index < actions.length; index++) {
                 ItemStackRequestAction action = actions[index];
@@ -106,7 +107,13 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
                 affectedInventories.addAll(resolveAffectedInventories(player, action));
 
                 ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
-                TransferItemEventCaller.call(event);
+                try {
+                    TransferItemEventCaller.call(event);
+                } catch (Throwable t) {
+                    log.debug("Failed to call transfer item event for action {}", action.getType(), t);
+                    failed = true;
+                    break;
+                }
                 Server.getInstance().getPluginManager().callEvent(event);
 
                 Optional<Inventory> topWindow = player.getTopWindow();
@@ -120,12 +127,18 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
                 } else if (event.isCancelled()) {
                     response = context.error();
                 } else {
-                    response = processor.handle(action, player, context);
+                    try {
+                        response = processor.handle(action, player, context);
+                    } catch (Throwable t) {
+                        log.debug("Failed to process inventory action {}", action.getType(), t);
+                        failed = true;
+                        break;
+                    }
                 }
 
                 if (response != null) {
                     if (!response.ok()) {
-                        responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
+                        failed = true;
                         break;
                     }
 
@@ -143,6 +156,12 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             }
 
             resyncInventories(player, affectedInventories);
+
+            if (failed) {
+                responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
+                continue;
+            }
+
             itemStackResponse.getContainers().addAll(responseContainerMap.values());
             responses.add(itemStackResponse);
         }
@@ -237,6 +256,8 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             Integer dynamicId = transferResult.source.getFullContainerName().getDynamicID();
 
             Inventory sourceInventory = NetworkMapping.getInventory(player, transferResult.source.getFullContainerName().getContainerName(), dynamicId);
+            if (sourceInventory == null) return;
+
             int sourceSlot = sourceInventory.fromNetworkSlot(transferResult.source.getSlot());
 
             Optional<Inventory> destinationInventory = transferResult.destination
