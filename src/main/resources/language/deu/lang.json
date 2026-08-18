@@ -1087,7 +1087,7 @@
   "nukkit.command.whitelist.description": "Eine Liste der Spieler die den Server bei aktivierter Whitelist betreten darf",
   "nukkit.command.xp.description": "Gibt einem Spieler eine bestimmte Anzahl an Erfahrung",
   "nukkit.command.xp.usage": "/xp \u003cAnzahl\u003e [Spieler] ODER /xp \u003cLevel\u003eL [Spieler]",
-  "nukkit.crash.archive": "\"Eine Crash-Datei wurde in Archiv abgelegt. Du kannst es auf {%0} oder mit der ID #{%1} anschauen.",
+  "nukkit.crash.archive": "Eine Crash-Datei wurde in Archiv abgelegt. Du kannst es auf {%0} oder mit der ID #{%1} anschauen.",
   "nukkit.crash.create": "Es trat ein unbekannter Fehler auf bei dem der Server gecrasht ist. Eine Crash-Datei wird erstellt...",
   "nukkit.crash.error": "Eine Crash-Datei konnte nicht erstellt werden: {%0}",
   "nukkit.crash.submit": "Bitte lade die \"{%0}\" Datei in das Crash Archive hoch und erstelle einen Bugreport auf der Bugreport-Seite. Gebe uns so viele Informationen wie du kannst.",
