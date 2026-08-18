@@ -180,7 +180,10 @@ public interface IHuman extends InventoryHolder {
         final CompoundTag nbtMap = human.getNbt();
 
         if (human.nbt.contains("SelectedInventorySlot")) {
-            this.getInventory().setHeldItemSlot(NukkitMath.clamp(nbtMap.getInt("SelectedInventorySlot"), 0, 8));
+            this.getInventory().setHeldItemIndex(
+                NukkitMath.clamp(nbtMap.getInt("SelectedInventorySlot"), 0, 8),
+                false
+            );
         }
 
         if (nbtMap.containsList("Inventory")) {

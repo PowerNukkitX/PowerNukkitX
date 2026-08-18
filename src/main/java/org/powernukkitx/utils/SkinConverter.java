@@ -29,6 +29,7 @@ import java.util.UUID;
 public class SkinConverter {
 
     private final String PERSONA_PREFIX = "persona_";
+    private final String EMPTY_GEOMETRY_DATA = "{}";
     private final int TINT_COLOR_COUNT = 4;
 
     public SerializedSkin toSerializedSkin(Skin skin, boolean trusted) {
@@ -38,7 +39,7 @@ public class SkinConverter {
         serialized.setResourcePatch(orEmpty(skin.getSkinResourcePatch()));
         serialized.setImageData(toSkinImage(skin.getSkinData()));
         serialized.setCapeImageData(toSkinImage(skin.getCapeData()));
-        serialized.setGeometryData(orDefault(skin.getGeometryData(), "{}"));
+        serialized.setGeometryData(geometryDataOrEmptyObject(skin.getGeometryData()));
         serialized.setGeometryDataMinEngineVersion(orDefault(skin.getGeometryDataEngineVersion(), "0.0.0"));
         serialized.setAnimationData(orEmpty(skin.getAnimationData()));
         serialized.setCapeID(orEmpty(skin.getCapeId()));
@@ -237,5 +238,13 @@ public class SkinConverter {
 
     private String orDefault(@Nullable String value, String defaultValue) {
         return value == null || value.isEmpty() ? defaultValue : value;
+    }
+
+    private String geometryDataOrEmptyObject(@Nullable String geometryData) {
+        if (geometryData == null) {
+            return EMPTY_GEOMETRY_DATA;
+        }
+        final String trimmed = geometryData.trim();
+        return trimmed.startsWith("{") ? trimmed : EMPTY_GEOMETRY_DATA;
     }
 }

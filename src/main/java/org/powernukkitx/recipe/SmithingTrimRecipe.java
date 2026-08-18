@@ -45,7 +45,7 @@ public class SmithingTrimRecipe extends BaseRecipe {
         payload.setTemplateIngredient(this.getIngredients().getFirst().toNetwork());
         payload.setBaseIngredient(this.getIngredients().get(1).toNetwork());
         payload.setAdditionIngredient(this.getIngredients().getLast().toNetwork());
-        payload.setTag("smithing_table");
+        payload.setTag(this.tag);
         payload.setNetId(new RecipeNetId(this.netId));
         return payload;
     }

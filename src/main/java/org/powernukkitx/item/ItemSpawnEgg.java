@@ -67,9 +67,9 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) return false;
 
-        double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
-        double spawnX = target.getX() + fx;
-        double spawnZ = target.getZ() + fz;
+        double spawnY = block.getY() + 0.0001d;
+        double spawnX = block.getX() + 0.5d;
+        double spawnZ = block.getZ() + 0.5d;
         Location loc = new Location(spawnX, spawnY, spawnZ, 0f, 0f, level).setYawFacing(player);
 
         IChunk chunk = level.getChunk((int) Math.floor(loc.getX()) >> 4, (int) Math.floor(loc.getZ()) >> 4);
