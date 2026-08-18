@@ -68,6 +68,7 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.format.LevelProviderFactory;
 import org.powernukkitx.level.format.LevelProviderManager;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.tickingarea.manager.SimpleTickingAreaManager;
@@ -2657,7 +2658,7 @@ public class Server {
             }
         } else {
             // verify the provider
-            Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
+            LevelProviderFactory provider = LevelProviderManager.getProviderFactory(path);
             if (provider == null) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "Unknown provider"));
                 return null;
@@ -2671,7 +2672,7 @@ public class Server {
                 DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
             map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
                 DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
-            levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
+            levelConfig = new LevelConfig(provider.getName(), true, map);
             try {
                 config.createNewFile();
                 FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
@@ -2701,9 +2702,9 @@ public class Server {
         }
         String pathS = Path.of(path).toString();
 
-        Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(pathS);
+        LevelProviderFactory provider = LevelProviderManager.getProviderFactory(pathS);
         if (provider == null) {
-            provider = LevelProviderManager.getProviderByName(levelConfig.format());
+            provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
         }
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
@@ -2783,11 +2784,15 @@ public class Server {
         }
         for (var entry : levelConfig.generators().entrySet()) {
             LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
-            var provider = LevelProviderManager.getProviderByName(levelConfig.format());
+            var provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
+            if (provider == null) {
+                log.error(this.getLanguage().tr("nukkit.level.generationError", name,
+                    "Unknown provider " + levelConfig.format()));
+                return false;
+            }
             Level level;
             try {
-                provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class)
-                    .invoke(null, path, name, generatorConfig);
+                provider.generate(path, name, generatorConfig);
                 String levelName = name
                     + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
                 if (this.isLevelLoaded(levelName)) {
