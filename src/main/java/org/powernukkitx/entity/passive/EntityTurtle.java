@@ -118,17 +118,11 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.6f;
-        }
         return 1.2f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.2f;
-        }
         return 0.4f;
     }
 

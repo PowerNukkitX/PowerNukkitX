@@ -471,16 +471,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     private float getWidthR() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     private float getHeightR() {
-        if (this.isBaby()) {
-            return 0.95f;
-        }
         return 1.9f;
     }
 

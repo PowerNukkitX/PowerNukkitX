@@ -251,13 +251,19 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
+    public float getBabyScale() {
+        // ghastlings are 0.95 across against the adult's 4.0
+        return 0.2375f;
+    }
+
+    @Override
     public float getWidth() {
-        return isBaby() ? 0.95f : 4f;
+        return 4f;
     }
 
     @Override
     public float getHeight() {
-        return isBaby() ? 0.95f : 4f;
+        return 4f;
     }
 
     @Override

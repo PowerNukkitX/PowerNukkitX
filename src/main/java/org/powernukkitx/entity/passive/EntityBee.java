@@ -155,17 +155,11 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.275f;
-        }
         return 0.55f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.25f;
-        }
         return 0.5f;
     }
 
