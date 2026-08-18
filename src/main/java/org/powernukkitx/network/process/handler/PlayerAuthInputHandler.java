@@ -263,7 +263,8 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                     //When a block is broken instantaneous, the client sometimes just sends a START_DESTROY_BLOCK, but never completes or aborts it. On the client side, the block is also broken.
                     double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTime(player.getInventory().getItemInMainHand(), player);
                     boolean canCompleteBreak = Long.sum(player.lastBreak, (long) (breakTime * 1000)) <= System.currentTimeMillis() + 50;
-                    if (canCompleteBreak && lastAction.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
+                    if (canCompleteBreak && player.isBreakingBlock()
+                            && lastAction.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
                         player.onBlockBreakComplete(lastBreakPos, BlockFace.fromIndex(lastAction.getFacing()));
                     } else {
                         playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
@@ -274,7 +275,11 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                 switch (action.getPlayerActionType()) {
                     case START_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
                     case ABORT_DESTROY_BLOCK -> playerHandle.onBlockBreakAbort(Vector3.fromNetwork(blockPos.toFloat()));
-                    case PREDICT_DESTROY_BLOCK -> playerHandle.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
+                    case PREDICT_DESTROY_BLOCK -> {
+                        if (player.isBreakingBlock()) {
+                            playerHandle.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
+                        }
+                    }
 
                 }
                 player.setLastBlockAction(action);

@@ -556,6 +556,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (block instanceof BlockFire) {
             this.level.setBlock(block, Block.get(BlockID.AIR), true);
             this.level.addLevelSoundEvent(block, SoundEvent.EXTINGUISH_FIRE);
+            resetBlockBreak();
             return;
         }
 
