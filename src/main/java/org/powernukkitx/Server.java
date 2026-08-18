@@ -65,6 +65,7 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.LevelProviderManager;
@@ -1198,16 +1199,26 @@ public class Server {
         if (this.autoSave && tickTime - this.lastAutoSaveMillis >= this.autoSaveTicks * 50L) {
             this.lastAutoSaveMillis = tickTime;
             for (Level level : this.levelArray) {
-                for (BlockEntity be : level.getBlockEntities().values()) {
-                    if (!be.closed) {
-                        be.saveNBT();
-                        be.serializationSnapshot = be.getNbt().copy();
-                    }
+                LevelProvider levelProvider = level.getProvider();
+                if (levelProvider == null) {
+                    continue;
                 }
-                for (Entity entity : level.getEntities()) {
-                    if (!(entity instanceof Player) && !entity.closed) {
-                        entity.saveNBT();
-                        entity.serializationSnapshot = entity.getNbt().copy();
+
+                for (IChunk chunk : levelProvider.getLoadedChunks().values()) {
+                    if (!chunk.hasChanged()) {
+                        continue;
+                    }
+                    for (BlockEntity be : chunk.getBlockEntities().values()) {
+                        if (!be.closed) {
+                            be.saveNBT();
+                            be.serializationSnapshot = be.getNbt().copy();
+                        }
+                    }
+                    for (Entity entity : chunk.getEntities().values()) {
+                        if (!(entity instanceof Player) && !entity.closed) {
+                            entity.saveNBT();
+                            entity.serializationSnapshot = entity.getNbt().copy();
+                        }
                     }
                 }
             }

@@ -5506,6 +5506,9 @@ public class Level implements Metadatable {
 
                 if (!chunksToSave.isEmpty() && getAutoSave()) {
                     for (IChunk c : chunksToSave) {
+                        if (!c.hasChanged()) {
+                            continue;
+                        }
                         for (BlockEntity be : c.getBlockEntities().values()) {
                             if (!be.closed) {
                                 be.saveNBT();
