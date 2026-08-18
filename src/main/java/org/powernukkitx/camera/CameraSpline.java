@@ -57,13 +57,76 @@ public abstract class CameraSpline {
      * @param controlPoint control point
      */
     public void addControlPoint(Vector3 controlPoint) {
-        this.controlPoints.add(
-                Objects.requireNonNull(controlPoint, "controlPoint")
+        Objects.requireNonNull(controlPoint, "controlPoint");
+
+        Preconditions.checkArgument(
+                Double.isFinite(controlPoint.x)
+                        && Double.isFinite(controlPoint.y)
+                        && Double.isFinite(controlPoint.z),
+                "Camera control point coordinates must be finite"
         );
+
+        this.controlPoints.add(controlPoint);
     }
 
     CameraSplineType getType() {
         return this.type;
+    }
+
+    /**
+     * Returns the approximate normalized progress of a control point along this spline.
+     * <p>
+     * Progress is calculated from the cumulative straight-line distance between
+     * control points and normalized to the range {@code [0, 1]}.
+     * </p>
+     *
+     * @param controlPointIndex control point index
+     * @return approximate normalized spline progress
+     */
+    public float getApproximateProgressAtControlPoint(int controlPointIndex) {
+        Preconditions.checkElementIndex(
+                controlPointIndex,
+                this.controlPoints.size(),
+                "controlPointIndex"
+        );
+
+        if (controlPointIndex == 0) {
+            return 0.0f;
+        }
+
+        double totalDistance = 0.0d;
+        double targetDistance = 0.0d;
+
+        for (int i = 1; i < this.controlPoints.size(); i++) {
+            Vector3 previous = this.controlPoints.get(i - 1);
+            Vector3 current = this.controlPoints.get(i);
+
+            double deltaX = current.x - previous.x;
+            double deltaY = current.y - previous.y;
+            double deltaZ = current.z - previous.z;
+
+            double distance = Math.sqrt(
+                    deltaX * deltaX +
+                    deltaY * deltaY +
+                    deltaZ * deltaZ
+            );
+
+            totalDistance += distance;
+
+            if (i <= controlPointIndex) {
+                targetDistance += distance;
+            }
+        }
+
+        Preconditions.checkState(
+                totalDistance > 0.0d,
+                "Camera spline requires a non-zero path distance"
+        );
+
+        return (float) (
+                targetDistance /
+                totalDistance
+        );
     }
 
     void validate() {
