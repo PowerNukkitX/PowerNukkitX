@@ -106,6 +106,7 @@ import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.RegistryCache;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
+import org.powernukkitx.resourcepacks.loader.CdnResourcePackLoader;
 import org.powernukkitx.resourcepacks.loader.JarPluginResourcePackLoader;
 import org.powernukkitx.resourcepacks.loader.ZippedResourcePackLoader;
 import org.powernukkitx.scheduler.ServerScheduler;
@@ -599,7 +600,8 @@ public class Server {
         }
         this.resourcePackManager = new ResourcePackManager(
             new ZippedResourcePackLoader(new File(PowerNukkitX.DATA_PATH, "resource_packs")),
-            new JarPluginResourcePackLoader(new File(this.pluginPath)));
+            new JarPluginResourcePackLoader(new File(this.pluginPath)),
+            new CdnResourcePackLoader(this.settings.gameplaySettings()));
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
