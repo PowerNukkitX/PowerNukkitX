@@ -228,6 +228,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_VISITOR = 0;
     private static final byte PLAYER_FLAG_SLEEP = 0x2;
     private static final long POST_TELEPORT_GRACE_MS = 1000L;
+    private static final int BLOCK_BREAK_PROGRESS_SCALE = 65535;
+    // The level-event speed is consumed by the Bedrock client's fixed-rate game tick, not the configurable server loop.
+    private static final int BEDROCK_CLIENT_TICKS_PER_SECOND = 20;
     /// static fields
     public boolean playedBefore;
     public boolean spawned = false;
@@ -506,12 +509,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 boolean useServerSideBreakVisuals = this.breakingBlock instanceof CustomBlock || hasCustomDigger;
 
                 if (useServerSideBreakVisuals) {
-                    int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-
                     final LevelEventPacket pk = new LevelEventPacket();
                     pk.setType(LevelEvent.BLOCK_UPDATE_BREAK);
                     pk.setPosition(Vector3f.from(this.breakingBlock.x, this.breakingBlock.y, this.breakingBlock.z));
-                    pk.setData(65535 / breakTick);
+                    pk.setData(calculateNetworkBlockBreakSpeed(miningTimeRequired));
                     this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
                 }
 
@@ -522,7 +523,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 long timeDiff = time - breakingBlockTime;
                 blockBreakProgress += timeDiff / (miningTimeRequired * 1000.0);
 
-                if (blockBreakProgress >= 0.99) {
+                if (blockBreakProgress >= 1) {
                     if (useServerSideBreakVisuals) {
                         final LevelEventPacket stopPk = new LevelEventPacket();
                         stopPk.setType(LevelEvent.BLOCK_STOP_BREAK);
@@ -606,13 +607,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             Item hand = this.inventory.getItemInMainHand();
             double miningTimeRequired = target instanceof CustomBlock customBlock ? customBlock.breakTime(hand, this) : target.calculateBreakTime(hand, this);
-            int breakTime = (int) Math.ceil(miningTimeRequired * 20);
+            int breakSpeed = calculateNetworkBlockBreakSpeed(miningTimeRequired);
 
-            if (breakTime > 0) {
+            if (breakSpeed > 0) {
                 final LevelEventPacket pk = new LevelEventPacket();
                 pk.setType(LevelEvent.BLOCK_START_BREAK);
                 pk.setPosition(pos.toNetwork());
-                pk.setData(65535 / breakTime);
+                pk.setData(breakSpeed);
                 this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
 
                 if (this.getLevel().isAntiXrayEnabled() && this.getLevel().getAntiXraySystem().isPreDeObfuscate()) {
@@ -625,6 +626,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.breakingBlockFace = face;
         this.lastBreak = currentBreak;
         this.lastBreakPosition = blockPos;
+    }
+
+    static int calculateNetworkBlockBreakSpeed(double miningTimeRequired) {
+        if (!Double.isFinite(miningTimeRequired) || miningTimeRequired <= 0) {
+            return 0;
+        }
+
+        double progressPerClientTick = 1 / (miningTimeRequired * BEDROCK_CLIENT_TICKS_PER_SECOND);
+        return (int) Math.min(BLOCK_BREAK_PROGRESS_SCALE,
+            Math.max(1, BLOCK_BREAK_PROGRESS_SCALE * progressPerClientTick));
     }
 
     protected void resetBlockBreak() {
