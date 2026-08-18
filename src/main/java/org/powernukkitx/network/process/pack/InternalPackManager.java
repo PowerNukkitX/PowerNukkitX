@@ -104,12 +104,13 @@ public class InternalPackManager {
                     dataPacket.setPackVersion(m.pack.getPackVersion());
                     dataPacket.setChunkID(m.nextToSend);
                     dataPacket.setByteOffset((long) m.maxChunkSize * m.nextToSend);
-                    dataPacket.setChunkData(Unpooled.wrappedBuffer(m.pack.getPackChunk(m.maxChunkSize * m.nextToSend, m.maxChunkSize)));
-                    if (dataPacket.getChunkData() == null) {
+                    byte[] chunkBytes = m.pack.getPackChunk(m.maxChunkSize * m.nextToSend, m.maxChunkSize);
+                    if (chunkBytes == null) {
                         log.warn("RP chunk out of range or null data: pack={} chunk={}", m.packId, m.nextToSend);
                         this.session.close("disconnectionScreen.resourcePack");
                         return;
                     }
+                    dataPacket.setChunkData(Unpooled.wrappedBuffer(chunkBytes));
 
                     // Enqueue to the baseline paced RP FIFO; pacer handles rate limiting
                     session.sendPacketImmediately(dataPacket);
