@@ -56,9 +56,13 @@ public interface GenericParameter {
     CommandParameterSupplier<CommandParameter> ITEM_NAME = (optional) -> CommandParameter.newEnum("itemName", optional, CommandEnum.ENUM_ITEM, new ItemNode());
     /**
      * Supplier for chained command parameters.
-     * Produces a parameter named "chainedCommand" using {@link CommandEnum#CHAINED_COMMAND_ENUM}, {@link org.powernukkitx.command.tree.node.ChainedCommandNode}, and {@link CommandParamOption#ENUM_AS_CHAINED_COMMAND}.
+     * Produces a parameter named "chainedCommand" using {@link CommandEnum#CHAINED_COMMAND_ENUM} and {@link org.powernukkitx.command.tree.node.ChainedCommandNode}.
+     * <p>
+     * The {@link CommandParamOption#ENUM_AS_CHAINED_COMMAND} option is deliberately not set: it makes the client resolve
+     * the enum value against the command's chained subcommand table, which the server never sends, and the client crashes
+     * on the empty lookup.
      */
-    CommandParameterSupplier<CommandParameter> CHAINED_COMMAND = (optional) -> CommandParameter.newEnum("chainedCommand", optional, CommandEnum.CHAINED_COMMAND_ENUM, new ChainedCommandNode(), CommandParamOption.ENUM_AS_CHAINED_COMMAND);
+    CommandParameterSupplier<CommandParameter> CHAINED_COMMAND = (optional) -> CommandParameter.newEnum("chainedCommand", optional, CommandEnum.CHAINED_COMMAND_ENUM, new ChainedCommandNode());
     /**
      * Supplier for origin selector parameters.
      * Produces a parameter named "origin" using {@link CommandParamType#SELECTION}.
