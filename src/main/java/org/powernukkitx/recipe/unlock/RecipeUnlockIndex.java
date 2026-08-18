@@ -38,6 +38,9 @@ import java.util.Set;
 public final class RecipeUnlockIndex {
     private final Map<String, Set<String>> recipesByItemId = new Object2ObjectOpenHashMap<>();
     private final Map<String, Set<String>> recipesByItemTag = new Object2ObjectOpenHashMap<>();
+    private final Set<String> alwaysUnlockedRecipes = new ObjectOpenHashSet<>();
+    private final Set<String> playerInWaterRecipes = new ObjectOpenHashSet<>();
+    private final Set<String> playerHasManyItemsRecipes = new ObjectOpenHashSet<>();
 
     /**
      * Indexes a recipe by its unlock trigger items. Recipes without an item based unlock
@@ -55,19 +58,47 @@ public final class RecipeUnlockIndex {
     }
 
     private void index(String recipeId, RecipeUnlockingRequirement requirement) {
-        if (requirement == null || requirement.getUnlockingContext() != RecipeUnlockingContext.NONE) {
+        if (requirement == null) {
             return;
         }
-        for (RecipeIngredient trigger : requirement.getUnlockingIngredients()) {
-            switch (trigger.getDescriptor()) {
-                case NameDescriptor descriptor ->
-                    recipesByItemId.computeIfAbsent(descriptor.getItemId().getIdentifier(), id -> new ObjectOpenHashSet<>()).add(recipeId);
-                case ItemTagDescriptor descriptor ->
-                    recipesByItemTag.computeIfAbsent(descriptor.getItemTag(), tag -> new ObjectOpenHashSet<>()).add(recipeId);
-                default -> {
+
+        final RecipeUnlockingContext context = requirement.getUnlockingContext();
+        if (context == null) {
+            return;
+        }
+
+        switch (context) {
+            case NONE -> {
+                for (RecipeIngredient trigger : requirement.getUnlockingIngredients()) {
+                    switch (trigger.getDescriptor()) {
+                        case NameDescriptor descriptor ->
+                            recipesByItemId.computeIfAbsent(descriptor.getItemId().getIdentifier(), id -> new ObjectOpenHashSet<>()).add(recipeId);
+                        case ItemTagDescriptor descriptor ->
+                            recipesByItemTag.computeIfAbsent(descriptor.getItemTag(), tag -> new ObjectOpenHashSet<>()).add(recipeId);
+                        default -> {
+                        }
+                    }
                 }
             }
+            case ALWAYS_UNLOCKED ->
+                alwaysUnlockedRecipes.add(recipeId);
+            case PLAYER_IN_WATER ->
+                playerInWaterRecipes.add(recipeId);
+            case PLAYER_HAS_MANY_ITEMS ->
+                playerHasManyItemsRecipes.add(recipeId);
         }
+    }
+
+    public @NotNull @UnmodifiableView Set<String> getAlwaysUnlockedRecipes() {
+        return Collections.unmodifiableSet(this.alwaysUnlockedRecipes);
+    }
+
+    public @NotNull @UnmodifiableView Set<String> getPlayerInWaterRecipes() {
+        return Collections.unmodifiableSet(this.playerInWaterRecipes);
+    }
+
+    public @NotNull @UnmodifiableView Set<String> getPlayerHasManyItemsRecipes() {
+        return Collections.unmodifiableSet(this.playerHasManyItemsRecipes);
     }
 
     /**
@@ -103,5 +134,8 @@ public final class RecipeUnlockIndex {
     public void clear() {
         recipesByItemId.clear();
         recipesByItemTag.clear();
+        alwaysUnlockedRecipes.clear();
+        playerInWaterRecipes.clear();
+        playerHasManyItemsRecipes.clear();
     }
 }

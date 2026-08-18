@@ -146,7 +146,7 @@ jobs:
       - name: Extract release metadata from source
         id: versions
         run: |
-          PROTOCOL_VERSION=$(sed -En 's/.*CODEC = Bedrock_v([0-9]+)\.CODEC.*/\1/p' src/main/java/org/powernukkitx/network/NetworkConstants.java | head -n 1)
+          PROTOCOL_VERSION=$(sed -En 's/.*CODEC = Bedrock_v([0-9]+)(_[a-zA-Z0-9]+)*\.CODEC.*/\1/p' src/main/java/org/powernukkitx/network/NetworkConstants.java | head -n 1)
           API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/org/powernukkitx/PowerNukkitX.java)
           MINECRAFT_VERSION="${{ needs.publish.outputs.minecraft_version }}"
           if [ -z "$PROTOCOL_VERSION" ]; then

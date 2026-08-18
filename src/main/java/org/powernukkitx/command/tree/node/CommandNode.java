@@ -1,6 +1,7 @@
 package org.powernukkitx.command.tree.node;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,21 @@ public class CommandNode extends ParamNode<String> {
     private boolean first = true;
 
     @Override
+    public int getUsedArgs() {
+        return -1;
+    }
+
+    @Override
     public void fill(String arg) {
+        fill(
+            arg, 
+            paramList.getParamTree().getSender(), 
+            paramList.getIndex() == paramList.getParamTree().getArgs().length
+        );
+    }
+
+    @Override 
+    public void fill(String arg, CommandSender sender, boolean isLastArg) {
         if (arg.contains(" ")) {
             arg = "\"" + arg + "\"";
         }
@@ -50,11 +65,9 @@ public class CommandNode extends ParamNode<String> {
             this.error("commands.generic.unknown", arg);
             return;
         }
-        if (this.paramList.getIndex() != this.paramList.getParamTree().getArgs().length) {
-            first = false;
-            TMP.add(arg);
-        } else {
-            TMP.add(arg);
+        first = false;
+        TMP.add(arg);
+        if (isLastArg) {
             this.value = String.join(" ", TMP);
             first = true;
         }

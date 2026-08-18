@@ -23,13 +23,13 @@ public enum SulfurCubeArchetype {
     BOUNCY("bouncy", 2.0f, 0.3f, 0.01f, 0.33f, 0.07f, true),
     REGULAR("regular", 1.0f, 0.3f, 0.1f, 0.33f, 0.06f, true),
     SLOW_BOUNCY("slow_bouncy", -0.4f, 0.3f, 0.05f, 0.33f, 0.16f, true),
+    SLOW_FLAT("slow_flat", -0.5f, 0.4f, 0.1f, 0.33f, 0.07f, false),
     FAST_FLAT("fast_flat", 1.0f, 0.2f, 0.01f, 0.73f, 0.06f, false),
     LIGHT("light", 1.0f, 0.3f, 1.8f, 0.33f, 0.12f, true),
     FAST_SLIDING("fast_sliding", -0.5f, 0.05f, 0.01f, 0.53f, 0.06f, false),
-    HIGH_RESISTANCE("high_resistance", -0.7f, 1.0f, 0.01f, 0.33f, 0.06f, false),
-    SLOW_FLAT("slow_flat", -0.5f, 0.4f, 0.1f, 0.33f, 0.07f, false),
     SLOW_SLIDING("slow_sliding", -0.8f, 0.05f, 0.01f, 0.33f, 0.06f, false),
     STICKY("sticky", 2.0f, 2.0f, 0.01f, 0.33f, 0.06f, false),
+    HIGH_RESISTANCE("high_resistance", -0.7f, 1.0f, 0.01f, 0.33f, 0.06f, false),
     EXPLOSIVE("explosive", 1.0f, 0.3f, 0.3f, 0.33f, 0.06f, true),
     HOT("hot", 1.0f, 0.3f, 0.1f, 0.33f, 0.06f, true);
 

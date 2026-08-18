@@ -91,6 +91,8 @@ public abstract class Item implements Cloneable, ItemID {
     protected Integer netId = null;
     protected Block block = null;
     protected boolean hasMeta = true;
+    private boolean recipeBlockDefinitionOverridden = false;
+    private Integer recipeBlockRuntimeId = null;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
     private CompoundTag cachedNBT;
     private static int STACK_NETWORK_ID_COUNTER = 1;
@@ -1408,6 +1410,14 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
+    @ApiStatus.Internal
+    public void setRecipeBlockDefinition(@Nullable BlockState blockState) {
+        this.recipeBlockDefinitionOverridden = true;
+        this.recipeBlockRuntimeId = blockState != null
+                ? blockState.blockStateHash()
+                : null;
+    }
+
     public final String getId() {
         return id;
     }
@@ -2705,13 +2715,30 @@ public abstract class Item implements Cloneable, ItemID {
 
     public ItemData toRecipeNetwork() {
         final CompoundTag nbt = this.getNbt();
+        final ItemData itemData;
+
         if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
-            return this.toNetwork();
+            itemData = this.toNetwork();
+        } else {
+            final Item stripped = this.clone();
+            final CompoundTag strippedNbt = nbt.copy().remove("Damage");
+            stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
+            itemData = stripped.toNetwork();
         }
-        final Item stripped = this.clone();
-        final CompoundTag strippedNbt = nbt.copy().remove("Damage");
-        stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
-        return stripped.toNetwork();
+
+        return itemData.toBuilder()
+                .blockDefinition(
+                        this.recipeBlockDefinitionOverridden
+                                ? this.recipeBlockRuntimeId != null
+                                        ? new RuntimeBlockDefinition(this.recipeBlockRuntimeId)
+                                        : null
+                                : this.isBlock()
+                                        ? itemData.getBlockDefinition()
+                                        : null
+                )
+                .usingNetId(false)
+                .netId(0)
+                .build();
     }
 
     public ItemData toCreativeNetwork() {

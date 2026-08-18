@@ -65,8 +65,10 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.format.LevelProviderFactory;
 import org.powernukkitx.level.format.LevelProviderManager;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.tickingarea.manager.SimpleTickingAreaManager;
@@ -106,6 +108,7 @@ import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.RegistryCache;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
+import org.powernukkitx.resourcepacks.loader.CdnResourcePackLoader;
 import org.powernukkitx.resourcepacks.loader.JarPluginResourcePackLoader;
 import org.powernukkitx.resourcepacks.loader.ZippedResourcePackLoader;
 import org.powernukkitx.scheduler.ServerScheduler;
@@ -599,7 +602,8 @@ public class Server {
         }
         this.resourcePackManager = new ResourcePackManager(
             new ZippedResourcePackLoader(new File(PowerNukkitX.DATA_PATH, "resource_packs")),
-            new JarPluginResourcePackLoader(new File(this.pluginPath)));
+            new JarPluginResourcePackLoader(new File(this.pluginPath)),
+            new CdnResourcePackLoader(this.settings.gameplaySettings()));
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
@@ -1198,16 +1202,26 @@ public class Server {
         if (this.autoSave && tickTime - this.lastAutoSaveMillis >= this.autoSaveTicks * 50L) {
             this.lastAutoSaveMillis = tickTime;
             for (Level level : this.levelArray) {
-                for (BlockEntity be : level.getBlockEntities().values()) {
-                    if (!be.closed) {
-                        be.saveNBT();
-                        be.serializationSnapshot = be.getNbt().copy();
-                    }
+                LevelProvider levelProvider = level.getProvider();
+                if (levelProvider == null) {
+                    continue;
                 }
-                for (Entity entity : level.getEntities()) {
-                    if (!(entity instanceof Player) && !entity.closed) {
-                        entity.saveNBT();
-                        entity.serializationSnapshot = entity.getNbt().copy();
+
+                for (IChunk chunk : levelProvider.getLoadedChunks().values()) {
+                    if (!chunk.hasChanged()) {
+                        continue;
+                    }
+                    for (BlockEntity be : chunk.getBlockEntities().values()) {
+                        if (!be.closed) {
+                            be.saveNBT();
+                            be.serializationSnapshot = be.getNbt().copy();
+                        }
+                    }
+                    for (Entity entity : chunk.getEntities().values()) {
+                        if (!(entity instanceof Player) && !entity.closed) {
+                            entity.saveNBT();
+                            entity.serializationSnapshot = entity.getNbt().copy();
+                        }
                     }
                 }
             }
@@ -1702,9 +1716,66 @@ public class Server {
     }
 
     @ApiStatus.Internal
+    public void sendSleepingPlayersStatus(Collection<Player> recipients) {
+        this.sendSleepingPlayersStatus(recipients, false);
+    }
+
+    @ApiStatus.Internal
+    public void sendSleepingPlayersStatusImmediately(Collection<Player> recipients) {
+        this.sendSleepingPlayersStatus(recipients, true);
+    }
+
+    private void sendSleepingPlayersStatus(Collection<Player> recipients, boolean immediately) {
+        Level overworld = this.getDefaultLevel();
+
+        int overworldPlayerCount = 0;
+        int sleepingPlayerCount = 0;
+
+        if (overworld != null) {
+            for (Player player : overworld.getPlayers().values()) {
+                overworldPlayerCount++;
+                if (player.isSleeping()) sleepingPlayerCount++;
+            }
+        }
+
+        overworldPlayerCount = Math.max(1, overworldPlayerCount);
+
+        for (Player recipient : recipients) {
+            if (immediately) {
+                recipient.sendSleepingPlayersStatusImmediately(1, overworldPlayerCount, sleepingPlayerCount);
+            } else {
+                recipient.sendSleepingPlayersStatus(1, overworldPlayerCount, sleepingPlayerCount);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void broadcastSleepingPlayersStatus() {
+        this.sendSleepingPlayersStatus(this.playerList.values());
+    }
+
+
+    @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getXUID(), player.getLocatorBarColor());
+
+        final List<Player> recipients = new ArrayList<>(this.playerList.values());
+        recipients.remove(player);
+
+        if (!recipients.isEmpty()) {
+            this.sendSleepingPlayersStatus(recipients);
+
+            this.updatePlayerListData(
+                player.getUniqueId(),
+                player.getId(),
+                player.getDisplayName(),
+                player.getSkin(),
+                player.getXUID(),
+                player.getLocatorBarColor(),
+                recipients
+            );
+        }
+
         this.getNetwork().updatePong(this.getNetwork().getPong().playerCount(playerList.size()));
     }
 
@@ -1712,6 +1783,8 @@ public class Server {
     public void removeOnlinePlayer(Player player) {
         if (this.playerList.containsKey(player.getUniqueId())) {
             this.playerList.remove(player.getUniqueId());
+
+            this.sendSleepingPlayersStatus(this.playerList.values());
 
             final PlayerListPacket pk = new PlayerListPacket();
             final PlayerListRemoveEntry entry = new PlayerListRemoveEntry();
@@ -1852,7 +1925,7 @@ public class Server {
             pk.getEntries().add(entry);
         }
         if (!pk.getEntries().isEmpty()) {
-            player.sendPacket(pk);
+            player.sendPacketImmediately(pk);
         }
     }
 
@@ -2585,7 +2658,7 @@ public class Server {
             }
         } else {
             // verify the provider
-            Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
+            LevelProviderFactory provider = LevelProviderManager.getProviderFactory(path);
             if (provider == null) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "Unknown provider"));
                 return null;
@@ -2599,7 +2672,7 @@ public class Server {
                 DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
             map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
                 DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
-            levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
+            levelConfig = new LevelConfig(provider.getName(), true, map);
             try {
                 config.createNewFile();
                 FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
@@ -2629,9 +2702,9 @@ public class Server {
         }
         String pathS = Path.of(path).toString();
 
-        Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(pathS);
+        LevelProviderFactory provider = LevelProviderManager.getProviderFactory(pathS);
         if (provider == null) {
-            provider = LevelProviderManager.getProviderByName(levelConfig.format());
+            provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
         }
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
@@ -2711,11 +2784,15 @@ public class Server {
         }
         for (var entry : levelConfig.generators().entrySet()) {
             LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
-            var provider = LevelProviderManager.getProviderByName(levelConfig.format());
+            var provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
+            if (provider == null) {
+                log.error(this.getLanguage().tr("nukkit.level.generationError", name,
+                    "Unknown provider " + levelConfig.format()));
+                return false;
+            }
             Level level;
             try {
-                provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class)
-                    .invoke(null, path, name, generatorConfig);
+                provider.generate(path, name, generatorConfig);
                 String levelName = name
                     + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
                 if (this.isLevelLoaded(levelName)) {

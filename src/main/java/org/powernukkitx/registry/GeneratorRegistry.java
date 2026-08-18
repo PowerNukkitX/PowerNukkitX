@@ -5,6 +5,7 @@ import org.powernukkitx.level.generator.Generator;
 import org.powernukkitx.level.generator.Nether;
 import org.powernukkitx.level.generator.Normal;
 import org.powernukkitx.level.generator.TheEnd;
+import org.powernukkitx.level.generator.VoidGenerator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Locale;
@@ -23,6 +24,7 @@ public class GeneratorRegistry implements IRegistry<String, Class<? extends Gene
             register("normal", Normal.class);
             register("nether", Nether.class);
             register("the_end", TheEnd.class);
+            register("void", VoidGenerator.class);
         } catch (RegisterException e) {
             throw new IllegalStateException(e);
         }

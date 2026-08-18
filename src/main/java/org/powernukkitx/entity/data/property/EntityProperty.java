@@ -41,7 +41,7 @@ public abstract class EntityProperty {
     public static void buildEntityProperty() {
         entityPropertyCache.clear();
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
-            List<NbtMap> listProperty = buildPropertyList(entry.getValue());
+            List<NbtMap> listProperty = buildActorPropertyList(entry.getValue());
             NbtMap tag = NbtMap.builder().putList(PROPERTIES_KEY, NbtType.COMPOUND, listProperty).putString("type", entry.getKey()).build();
             entityPropertyCache.add(tag);
         }
@@ -80,6 +80,39 @@ public abstract class EntityProperty {
     public abstract NbtMap populateTag(NbtMap tag);
 
     public abstract boolean isClientSync();
+
+    private static List<NbtMap> buildActorPropertyList(List<EntityProperty> properties) {
+        final List<NbtMap> listProperty = new ObjectArrayList<>();
+        for (EntityProperty entityProperty : properties) {
+            if (!entityProperty.isClientSync()) continue;
+
+            NbtMap propertyTag = NbtMap.builder()
+                    .putString("name", entityProperty.getIdentifier())
+                    .build();
+
+            if (entityProperty instanceof IntEntityProperty intProperty) {
+                propertyTag = propertyTag.toBuilder()
+                        .putInt("type", 0)
+                        .putInt("min", intProperty.getMinValue())
+                        .putInt("max", intProperty.getMaxValue())
+                        .build();
+            } else if (entityProperty instanceof EnumEntityProperty enumProperty) {
+                propertyTag = propertyTag.toBuilder()
+                        .putInt("type", 3)
+                        .putList("enum", NbtType.STRING, List.of(enumProperty.getEnums()))
+                        .build();
+            } else if (entityProperty instanceof BooleanEntityProperty) {
+                propertyTag = propertyTag.toBuilder()
+                        .putInt("type", 2)
+                        .build();
+            } else {
+                propertyTag = entityProperty.populateTag(propertyTag);
+            }
+
+            listProperty.add(propertyTag);
+        }
+        return listProperty;
+    }
 
     private static List<NbtMap> buildPropertyList(List<EntityProperty> properties) {
         final List<NbtMap> listProperty = new ObjectArrayList<>();

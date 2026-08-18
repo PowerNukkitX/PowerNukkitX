@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeGroupInfoPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemCategory;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemEntryPayload;
@@ -53,6 +52,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     public static final ObjectLinkedOpenHashSet<CreativeItemEntryPayload> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
+    private static final Map<String, BlockState> ITEM_BLOCK_STATES = new HashMap<>();
 
     public static int LAST_CONSTRUCTION_INDEX = -1;
     public static int LAST_EQUIPMENTS_INDEX = -1;
@@ -124,6 +124,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                         log.warn("load creative item {} blockHash {} is null", name, blockHash);
                     } else {
                         item.setBlockUnsafe(block.toBlock());
+                        ITEM_BLOCK_STATES.put(name + "#" + damage, block);
+
                         Item updateDamage = block.toBlock().toItem();
                         if (updateDamage.getDamage() != 0) {
                             item.setDamage(updateDamage.getDamage());
@@ -211,6 +213,16 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public BlockState getItemBlockState(String id, int damage) {
+        BlockState state = ITEM_BLOCK_STATES.get(id + "#" + damage);
+
+        if (state == null) {
+            state = ITEM_BLOCK_STATES.get(id + "#0");
+        }
+
+        return state;
     }
 
     public int getCreativeItemGroupIndex(String id) {
@@ -383,6 +395,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         isLoad.set(false);
         MAP.clear();
         INTERNAL_DIFF_ITEM.clear();
+        ITEM_BLOCK_STATES.clear();
         if (enabled) {
             init();
         } else {
