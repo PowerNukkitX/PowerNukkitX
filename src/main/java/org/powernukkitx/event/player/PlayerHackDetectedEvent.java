@@ -33,6 +33,7 @@ public class PlayerHackDetectedEvent extends PlayerEvent {
         PACKET_FLOOD,
         PERMISSION_REQUEST,
         INVALID_PVP,
-        INVALID_PVE
+        INVALID_PVE,
+        BAD_PACKET
     }
 }
