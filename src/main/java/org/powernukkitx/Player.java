@@ -36,6 +36,7 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginType;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.InventoryLayout;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.InventoryLeftTabIndex;
 import org.cloudburstmc.protocol.bedrock.data.inventory.InventoryRightTabIndex;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
@@ -6948,17 +6949,34 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         packet.setContainerId(ContainerId.UI);
 
         for (int i = 0; i < 54; ++i) {
-            packet.getSlots().add(Item.AIR.toNetwork());
+            packet.getSlots().add(ItemData.AIR);
         }
 
-        packet.getSlots().set(0, this.getCursorInventory().getUnclonedItem(0).toNetwork());
+        final Item cursorItem = this.getCursorInventory().getUnclonedItem(0);
+        packet.getSlots().set(
+                0,
+                cursorItem.isNull()
+                        ? ItemData.AIR
+                        : cursorItem.toNetwork()
+        );
 
         for (int i = 0; i < 4; ++i) {
-            packet.getSlots().set(28 + i, this.getCraftingGrid().getUnclonedItem(i).toNetwork());
+            final Item craftingItem = this.getCraftingGrid().getUnclonedItem(i);
+            packet.getSlots().set(
+                    28 + i,
+                    craftingItem.isNull()
+                            ? ItemData.AIR
+                            : craftingItem.toNetwork()
+            );
         }
 
         final Item creativeOutput = this.getCreativeOutputInventory().getUnclonedItem(0);
-        packet.getSlots().set(50, creativeOutput == null ? Item.AIR.toNetwork() : creativeOutput.toNetwork());
+        packet.getSlots().set(
+                50,
+                creativeOutput == null || creativeOutput.isNull()
+                        ? ItemData.AIR
+                        : creativeOutput.toNetwork()
+        );
 
         this.sendPacketImmediately(packet);
     }
@@ -6972,7 +6990,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         final Item offhandItem = this.getOffhandInventory().getUnclonedItem(0);
         packet.getSlots().add(
-                offhandItem == null ? Item.AIR.toNetwork() : offhandItem.toNetwork()
+                offhandItem == null || offhandItem.isNull()
+                        ? ItemData.AIR
+                        : offhandItem.toNetwork()
         );
 
         this.sendPacketImmediately(packet);

@@ -748,7 +748,9 @@ public class HumanInventory extends BaseInventory {
         inventoryContentPacket.setContainerId(ContainerId.INVENTORY);
 
         for (int i = 0; i < ARMORS_INDEX; ++i) {
-            inventoryContentPacket.getSlots().add(this.getUnclonedItem(i).toNetwork());
+            final Item item = this.getUnclonedItem(i);
+            inventoryContentPacket.getSlots().add(item.isNull() ? ItemData.AIR : item.toNetwork()
+            );
         }
 
         player.sendPacketImmediately(inventoryContentPacket);
@@ -769,10 +771,12 @@ public class HumanInventory extends BaseInventory {
         inventoryContentPacket.setContainerId(ContainerId.ARMOR);
 
         for (final Item item : this.getArmorContents()) {
-            inventoryContentPacket.getSlots().add(item.toNetwork());
+            inventoryContentPacket.getSlots().add(
+                    item.isNull() ? ItemData.AIR : item.toNetwork()
+            );
         }
 
-        inventoryContentPacket.getSlots().add(Item.AIR.toNetwork());
+        inventoryContentPacket.getSlots().add(ItemData.AIR);
 
         player.sendPacketImmediately(inventoryContentPacket);
     }
