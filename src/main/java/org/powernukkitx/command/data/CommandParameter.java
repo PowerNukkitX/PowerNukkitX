@@ -327,6 +327,22 @@ public class CommandParameter {
         return result;
     }
 
+    public boolean isRestOfLine() {
+        return this.enumData == null
+                && (this.type == CommandParamType.MESSAGE
+                || this.type == CommandParamType.MESSAGE_ROOT
+                || this.type == CommandParamType.MESSAGE_EXP);
+    }
+
+    public CommandParameter asRequired() {
+        if (!this.optional) {
+            return this;
+        }
+        final CommandParameter copy = new CommandParameter(this.name, false, this.type, this.enumData, this.postFix, this.paramNode);
+        copy.paramOptions = this.paramOptions;
+        return copy;
+    }
+
     public CommandParamData toNetwork() {
         final CommandParamData data = new CommandParamData();
         data.setName(this.name);
