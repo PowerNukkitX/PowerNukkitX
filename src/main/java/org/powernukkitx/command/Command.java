@@ -188,12 +188,18 @@ public abstract class Command {
         NukkitCommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
-            List<String> aliases = new ArrayList<>(Arrays.asList(getAliases()));
-            if (!aliases.contains(this.name)) {
+            final CommandMap commandMap = player.getServer().getCommandMap();
+            List<String> aliases = new ArrayList<>();
+            for (String alias : getAliases()) {
+                if (commandMap.getCommand(alias) == this) {
+                    aliases.add(alias);
+                }
+            }
+            if (!aliases.contains(this.name) && commandMap.getCommand(this.name) == this) {
                 aliases.add(this.name);
             }
 
-            customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
+            customData.aliases = aliases.isEmpty() ? null : new CommandEnum(this.name + "Aliases", aliases);
         }
 
         if (plugin == InternalPlugin.INSTANCE) {
