@@ -72,7 +72,12 @@ public class TrailRuinsStructure extends JigsawStructure {
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
         Level level = helper.getLevel();
-        helper.addHook(() -> populatePendingBrushLoot(level));
+        for (Map.Entry<BlockVector3, TrailRuinsLoot> entry : pendingBrushLoot.entrySet()) {
+            BlockVector3 pos = entry.getKey();
+            TrailRuinsLoot loot = entry.getValue();
+            helper.addHook(pos, () -> populateBrushLoot(level, pos, loot));
+        }
+        pendingBrushLoot.clear();
 
         helper.applySubChunkUpdate();
 
@@ -120,16 +125,13 @@ public class TrailRuinsStructure extends JigsawStructure {
         }
     }
 
-    private void populatePendingBrushLoot(Level level) {
-        for (Map.Entry<BlockVector3, TrailRuinsLoot> entry : pendingBrushLoot.entrySet()) {
-            Block block = level.getBlock(entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ());
-            if (!(block instanceof BlockBrushable brushable)) {
-                continue;
-            }
-            BlockEntityBrushable blockEntity = brushable.getOrCreateBlockEntity();
-            blockEntity.setItem(entry.getValue().roll(createRandom(level, entry.getKey())));
+    private void populateBrushLoot(Level level, BlockVector3 pos, TrailRuinsLoot loot) {
+        Block block = level.getBlock(pos.getX(), pos.getY(), pos.getZ());
+        if (!(block instanceof BlockBrushable brushable)) {
+            return;
         }
-        pendingBrushLoot.clear();
+        BlockEntityBrushable blockEntity = brushable.getOrCreateBlockEntity();
+        blockEntity.setItem(loot.roll(createRandom(level, pos)));
     }
 
     private RandomSourceProvider createRandom(Level level, BlockVector3 pos) {

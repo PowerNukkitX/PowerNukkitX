@@ -244,7 +244,7 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
                         case 1, 2 -> TREASURE;
                         default -> SUPPLY;
                     };
-                    manager.addHook(() -> {
+                    manager.addHook(block, () -> {
                         container.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }

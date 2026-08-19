@@ -49,13 +49,17 @@ public class WoodlandMansionPopulator extends Populator implements PopulatorStru
         pieceRandom.setSeed((long) chunkX * pieceRandom.nextInt() ^ (long) chunkZ * pieceRandom.nextInt() ^ level.getSeed());
         WoodlandMansionPieces.PostPlacement postPlacement = WoodlandMansionPieces.place(manager, origin, rotation, pieceRandom);
         if (!postPlacement.chests().isEmpty() || !postPlacement.mobSpawns().isEmpty() || !postPlacement.spiderSpawnerPositions().isEmpty()) {
-            manager.addHook(() -> WoodlandMansionPieces.populatePlacedData(
-                    level,
-                    postPlacement.chests(),
-                    postPlacement.mobSpawns(),
-                    postPlacement.spiderSpawnerPositions(),
-                    new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ))
-            ));
+            for (var part : postPlacement.byChunk().long2ObjectEntrySet()) {
+                long chunkHash = part.getLongKey();
+                WoodlandMansionPieces.PostPlacement placed = part.getValue();
+                manager.addHook(Level.getHashX(chunkHash), Level.getHashZ(chunkHash), () -> WoodlandMansionPieces.populatePlacedData(
+                        level,
+                        placed.chests(),
+                        placed.mobSpawns(),
+                        placed.spiderSpawnerPositions(),
+                        new Xoroshiro128(level.getSeed() ^ chunkHash)
+                ));
+            }
         }
         queueObject(chunk, manager);
     }

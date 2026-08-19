@@ -149,35 +149,35 @@ public class TrialChambersStructure extends JigsawStructure {
             switch (block) {
                 case BlockChest chest -> {
                     if (container != null) {
-                        blockManager.addHook(() -> {
+                        blockManager.addHook(block, () -> {
                             container.create(chest.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
                         });
                     }
                 }
                 case BlockBarrel barrel -> {
-                    blockManager.addHook(() -> {
+                    blockManager.addHook(block, () -> {
                         INTERSECTION_BARREL.create(barrel.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
                     });
                 }
                 case BlockDispenser dispenser -> {
-                    blockManager.addHook(() -> {
+                    blockManager.addHook(block, () -> {
                         dispenserLootContainer.create(dispenser.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
                     });
                 }
                 case BlockDecoratedPot decoratedPot -> {
-                    blockManager.addHook(() -> {
+                    blockManager.addHook(block, () -> {
                         DECORATED_POT.create(decoratedPot.getOrCreateBlockEntity(), createRandom(level, block.asBlockVector3()));
                     });
                 }
                 case BlockCopperBulb copperBulb -> {
-                    blockManager.addHook(() -> {
+                    blockManager.addHook(block, () -> {
                         level.updateBlockSkyLight(copperBulb.getFloorX(), copperBulb.getFloorY(), copperBulb.getFloorZ());
                     });
                 }
                 case BlockTrialSpawner trialSpawner -> {
                     String entityId = getTrialSpawnerEntityId(structureName);
                     if (entityId != null) {
-                        blockManager.addHook(() -> {
+                        blockManager.addHook(block, () -> {
                             BlockEntityTrialSpawner blockEntity = trialSpawner.getOrCreateBlockEntity();
                             blockEntity.setSpawnEntityType(entityId);
                             blockEntity.applyTrialChamberDefaults(structureName);

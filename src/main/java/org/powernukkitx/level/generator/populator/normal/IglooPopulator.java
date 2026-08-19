@@ -95,7 +95,7 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
                 vec.y -= BOTTOM.getSizeY();
 
                 BOTTOM.preparePlace(new Position(vec.x, vec.y, vec.z, level), object);
-                object.addHook(() -> {
+                object.addHook(vec, () -> {
                     var villager = Entity.createEntity(Entity.VILLAGER_V2, chunk, Entity.getDefaultNBT(vec.asVector3().add(2.5, 1, 1.5)));
                     var zombie = Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, Entity.getDefaultNBT(vec.asVector3().add(4.5, 1, 1.5)));
                     villager.spawnToAll();
@@ -108,22 +108,22 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
                 if (block instanceof BlockIce)
                     object.setBlockStateAt(block, BlockPackedIce.PROPERTIES.getDefaultState());
                 if (block instanceof BlockBrewingStand stand) {
-                    object.addHook(() -> {
+                    object.addHook(block, () -> {
                         stand.getOrCreateBlockEntity().getInventory().setResult(2, ItemSplashPotion.get(ItemPotion.SPLASH_POTION, PotionType.WEAKNESS.id()));
                     });
                 }
                 if (block instanceof BlockChest chest) {
-                    object.addHook(() -> {
+                    object.addHook(block, () -> {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
                 if (block instanceof BlockBed bed) {
-                    object.addHook(() -> {
+                    object.addHook(block, () -> {
                         bed.createBlockEntity(new CompoundTag().putByte("color", 14));
                     });
                 }
                 if (block instanceof BlockFlowerPot pot) {
-                    object.addHook(() -> {
+                    object.addHook(block, () -> {
                         pot.setFlower(Item.get(Block.CACTUS));
                     });
                 }

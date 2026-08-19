@@ -34,6 +34,9 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -423,6 +426,38 @@ public final class EndCityPieces {
         public List<BlockVector3> shulkerMarkers() {
             return this.shulkerMarkers;
         }
+
+        /**
+         * Splits what is left to populate by the chunk it falls in, so that each chunk can be
+         * populated as soon as it is generated.
+         *
+         * @return the part of this placement that falls in each chunk, keyed by
+         * {@link Level#chunkHash(int, int)}
+         */
+        public Long2ObjectMap<PostPlacement> byChunk() {
+            LongOpenHashSet chunks = new LongOpenHashSet();
+            for (List<BlockVector3> positions : List.of(this.chests, this.banners, this.itemFrames, this.brewingStands, this.shulkerMarkers)) {
+                positions.forEach(pos -> chunks.add(chunkHash(pos)));
+            }
+            Long2ObjectOpenHashMap<PostPlacement> parts = new Long2ObjectOpenHashMap<>();
+            for (long chunk : chunks) {
+                parts.put(chunk, new PostPlacement(
+                        inChunk(this.chests, chunk),
+                        inChunk(this.banners, chunk),
+                        inChunk(this.itemFrames, chunk),
+                        inChunk(this.brewingStands, chunk),
+                        inChunk(this.shulkerMarkers, chunk)));
+            }
+            return parts;
+        }
+    }
+
+    private static long chunkHash(BlockVector3 pos) {
+        return Level.chunkHash(pos.getChunkX(), pos.getChunkZ());
+    }
+
+    private static List<BlockVector3> inChunk(List<BlockVector3> positions, long chunkHash) {
+        return positions.stream().filter(pos -> chunkHash(pos) == chunkHash).toList();
     }
 
     public static final class EndCityPiece {
