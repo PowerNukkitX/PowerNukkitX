@@ -13,7 +13,6 @@ import org.powernukkitx.command.simple.SimpleCommand;
 import org.powernukkitx.command.utils.CommandLogger;
 
 import org.powernukkitx.lang.CommandOutputContainer;
-import org.powernukkitx.lang.TranslationContainer;
 
 import org.powernukkitx.plugin.InternalPlugin;
 
@@ -469,7 +468,7 @@ public class SimpleCommandMap implements CommandMap {
             }
         } catch (Exception e) {
             log.error(this.server.getLanguage().tr("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
+            sender.sendMessage(TextFormat.RED + this.server.getLanguage().tr("commands.generic.exception"));
             output = 0;
         }
 
