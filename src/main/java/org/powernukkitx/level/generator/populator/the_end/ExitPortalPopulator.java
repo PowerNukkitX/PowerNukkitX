@@ -21,7 +21,7 @@ public class ExitPortalPopulator extends Populator {
 
         if(chunkX == 1 && chunkZ == 0) {
             BlockManager object = new BlockManager(level);
-            ObjectExitPortal exitPortal = new ObjectExitPortal();
+            ObjectExitPortal exitPortal = new ObjectExitPortal(false);
             exitPortal.generate(object, null, new Vector3(0, chunk.getHeightMap(0, 0), 0));
             object.applySubChunkUpdate();
         }
