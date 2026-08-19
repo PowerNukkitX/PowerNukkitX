@@ -161,7 +161,7 @@ public class Network implements NetworkInterface {
                     session.getPeer().getChannel().pipeline().replace(
                         BedrockPacketCodec.NAME,
                         BedrockPacketCodec.NAME,
-                        new BedrockPacketCodec_v3(false)
+                        new BedrockPacketCodec_v3(log.isDebugEnabled())
                     );
                     session.getPeer().getChannel().pipeline().addAfter(
                         BedrockPacketCodec.NAME,
