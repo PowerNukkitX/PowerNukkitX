@@ -13,7 +13,8 @@ public interface Supportable {
     }
 
     default boolean isSupportDirtSandClay(Block down) {
-        if(down instanceof BlockHardenedClay) return true;
-        return down.hasTag(BlockTags.DIRT) || down.hasTag(BlockTags.SAND);
+        return down instanceof BlockHardenedClay ||
+               down.hasTag(BlockTags.DIRT) ||
+               down.hasTag(BlockTags.SAND);
     }
 }
