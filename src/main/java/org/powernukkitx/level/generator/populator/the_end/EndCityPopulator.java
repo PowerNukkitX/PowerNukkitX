@@ -49,7 +49,7 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
         EndCityPieces.PostPlacement postPlacement = EndCityPieces.place(manager, origin, rotation, pieceRandom);
 
         if (!postPlacement.chests().isEmpty() || !postPlacement.banners().isEmpty() || !postPlacement.itemFrames().isEmpty() || !postPlacement.brewingStands().isEmpty() || !postPlacement.shulkerMarkers().isEmpty()) {
-            manager.addHook(() -> {
+            manager.addHook(postPlacement.coveredChunks(), () -> {
                 EndCityPieces.populatePlacedData(
                         level,
                         postPlacement.chests(),

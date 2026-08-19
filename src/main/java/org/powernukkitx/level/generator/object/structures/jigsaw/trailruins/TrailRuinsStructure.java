@@ -72,7 +72,10 @@ public class TrailRuinsStructure extends JigsawStructure {
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
         Level level = helper.getLevel();
-        helper.addHook(() -> populatePendingBrushLoot(level));
+        Map<BlockVector3, TrailRuinsLoot> brushLoot = new HashMap<>(pendingBrushLoot);
+        pendingBrushLoot.clear();
+        helper.addHook(BlockManager.chunkHashesOfPositions(brushLoot.keySet()),
+                () -> populatePendingBrushLoot(level, brushLoot));
 
         helper.applySubChunkUpdate();
 
@@ -120,8 +123,8 @@ public class TrailRuinsStructure extends JigsawStructure {
         }
     }
 
-    private void populatePendingBrushLoot(Level level) {
-        for (Map.Entry<BlockVector3, TrailRuinsLoot> entry : pendingBrushLoot.entrySet()) {
+    private void populatePendingBrushLoot(Level level, Map<BlockVector3, TrailRuinsLoot> brushLoot) {
+        for (Map.Entry<BlockVector3, TrailRuinsLoot> entry : brushLoot.entrySet()) {
             Block block = level.getBlock(entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ());
             if (!(block instanceof BlockBrushable brushable)) {
                 continue;
@@ -129,7 +132,6 @@ public class TrailRuinsStructure extends JigsawStructure {
             BlockEntityBrushable blockEntity = brushable.getOrCreateBlockEntity();
             blockEntity.setItem(entry.getValue().roll(createRandom(level, entry.getKey())));
         }
-        pendingBrushLoot.clear();
     }
 
     private RandomSourceProvider createRandom(Level level, BlockVector3 pos) {

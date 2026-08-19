@@ -34,6 +34,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -422,6 +423,15 @@ public final class EndCityPieces {
 
         public List<BlockVector3> shulkerMarkers() {
             return this.shulkerMarkers;
+        }
+
+        public LongOpenHashSet coveredChunks() {
+            LongOpenHashSet hashes = BlockManager.chunkHashesOfPositions(this.chests);
+            hashes.addAll(BlockManager.chunkHashesOfPositions(this.banners));
+            hashes.addAll(BlockManager.chunkHashesOfPositions(this.itemFrames));
+            hashes.addAll(BlockManager.chunkHashesOfPositions(this.brewingStands));
+            hashes.addAll(BlockManager.chunkHashesOfPositions(this.shulkerMarkers));
+            return hashes;
         }
     }
 

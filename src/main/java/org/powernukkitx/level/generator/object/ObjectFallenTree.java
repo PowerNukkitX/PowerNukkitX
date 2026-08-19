@@ -53,8 +53,9 @@ public class ObjectFallenTree extends TreeGenerator {
             this.decorateFallenLog(level, rand, fallenLog);
         }
 
-        level.addHook(() -> {
-            for(Block block : level.getBlocks()) {
+        List<Block> placed = level.getBlocks();
+        level.addHook(BlockManager.chunkHashesOfBlocks(placed), () -> {
+            for(Block block : placed) {
                 if(block.up() instanceof BlockFlower flower && !flower.canPlantOn(block)) {
                     level.getLevel().setBlock(block.up(), BlockAir.STATE.toBlock());
                 }
