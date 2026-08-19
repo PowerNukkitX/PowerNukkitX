@@ -178,6 +178,7 @@ public class Server {
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
     private static Server instance = null;
 
+    private static final int AUTOSAVE_PARALLEL_SNAPSHOT_THRESHOLD = 64;
     private BanList banByName;
     private BanList banByIP;
     private Config operators;
@@ -193,6 +194,7 @@ public class Server {
      * Long: at high tick rates an int overflows within hours (2^31 ticks ≈ 13 h at 45k TPS).
      * Int-typed consumers (scheduler, onUpdate) receive a truncated view that wraps.
      */
+
     private long tickCounter;
     private long nextTick;
     private long nextTickNanos;
@@ -1038,13 +1040,25 @@ public class Server {
         this.forceShutdown();
     }
 
-    public void tickProcessor() {
-        getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, new Task() {
-            @Override
-            public void onRun(int currentTick) {
-                System.gc();
+    private static void snapshotChunkForSave(IChunk chunk) {
+        for (BlockEntity be : chunk.getBlockEntities().values()) {
+            if (!be.closed) {
+                be.saveNBT();
+                be.serializationSnapshot = be.getNbt().copy();
             }
-        }, 60);
+        }
+        for (Entity entity : chunk.getEntities().values()) {
+            if (!(entity instanceof Player) && !entity.closed) {
+                entity.saveNBT();
+                entity.serializationSnapshot = entity.getNbt().copy();
+            }
+        }
+    }
+
+    public void tickProcessor() {
+        // Note: no explicit System.gc() here. Forcing a full GC fights the collector's own
+        // heuristics (G1/ZGC) and causes an avoidable stop-the-world pause. Let the JVM manage it;
+        // admins who really want a manual collection can use the /gc command.
 
         this.nextTick = System.currentTimeMillis();
         this.nextTickNanos = System.nanoTime();
@@ -1067,7 +1081,7 @@ public class Server {
 
     private void checkTickUpdates(int currentTick) {
         boolean tickPlayers = getSettings().levelSettings().alwaysTickPlayers();
-        for (Player player : new ArrayList<>(this.players.values())) {
+        for (Player player : this.players.values()) {
             if (tickPlayers) player.onUpdate(currentTick);
             if (!player.spawned) player.checkNetwork();
         }
@@ -1132,7 +1146,7 @@ public class Server {
 
     public void doAutoSave() {
         if (this.getAutoSave()) {
-            for (Player player : new ArrayList<>(this.players.values())) {
+            for (Player player : this.players.values()) {
                 if (player.isOnline()) {
                     if (!player.closed) {
                         try {
@@ -1198,28 +1212,27 @@ public class Server {
 
         if (this.autoSave && tickTime - this.lastAutoSaveMillis >= this.autoSaveTicks * 50L) {
             this.lastAutoSaveMillis = tickTime;
+
+            List<IChunk> changedChunks = new ArrayList<>();
             for (Level level : this.levelArray) {
                 LevelProvider levelProvider = level.getProvider();
                 if (levelProvider == null) {
                     continue;
                 }
-
                 for (IChunk chunk : levelProvider.getLoadedChunks().values()) {
-                    if (!chunk.hasChanged()) {
-                        continue;
+                    if (chunk.hasChanged()) {
+                        changedChunks.add(chunk);
                     }
-                    for (BlockEntity be : chunk.getBlockEntities().values()) {
-                        if (!be.closed) {
-                            be.saveNBT();
-                            be.serializationSnapshot = be.getNbt().copy();
-                        }
-                    }
-                    for (Entity entity : chunk.getEntities().values()) {
-                        if (!(entity instanceof Player) && !entity.closed) {
-                            entity.saveNBT();
-                            entity.serializationSnapshot = entity.getNbt().copy();
-                        }
-                    }
+                }
+            }
+
+            if (changedChunks.size() >= AUTOSAVE_PARALLEL_SNAPSHOT_THRESHOLD) {
+                CompletableFuture.runAsync(
+                    () -> changedChunks.parallelStream().forEach(Server::snapshotChunkForSave),
+                    this.computeThreadPool).join();
+            } else {
+                for (IChunk chunk : changedChunks) {
+                    snapshotChunkForSave(chunk);
                 }
             }
             CompletableFuture.runAsync(this::doAutoSave);
