@@ -2683,6 +2683,27 @@ public class Server {
         return levelConfig;
     }
 
+    private Map<Integer, LevelConfig.GeneratorConfig> enabledGenerators(LevelConfig levelConfig) {
+        final Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
+        if ((this.allowNether && this.allowTheEnd) || generators == null || generators.isEmpty()) {
+            return generators;
+        }
+
+        final Map<Integer, LevelConfig.GeneratorConfig> enabled = new LinkedHashMap<>(generators);
+        if (!this.allowNether) {
+            enabled.remove(Level.DIMENSION_NETHER);
+        }
+        if (!this.allowTheEnd) {
+            enabled.remove(Level.DIMENSION_THE_END);
+        }
+
+        if (enabled.isEmpty()) {
+            log.warn("Every dimension of this level is disabled by allow-nether/allow-the-end, loading it unchanged");
+            return generators;
+        }
+        return enabled;
+    }
+
     /**
      * Loads the selected level by its folder name
      *
@@ -2707,7 +2728,7 @@ public class Server {
             provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
         }
 
-        Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
+        Map<Integer, LevelConfig.GeneratorConfig> generators = enabledGenerators(levelConfig);
         for (var entry : generators.entrySet()) {
             String levelName = levelFolderName
                 + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
@@ -2782,7 +2803,8 @@ public class Server {
             log.error("Could not load level " + name, new LevelException("Level config is not a valid"));
             return false;
         }
-        for (var entry : levelConfig.generators().entrySet()) {
+        Map<Integer, LevelConfig.GeneratorConfig> generators = enabledGenerators(levelConfig);
+        for (var entry : generators.entrySet()) {
             LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
             var provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
             if (provider == null) {
@@ -2794,12 +2816,12 @@ public class Server {
             try {
                 provider.generate(path, name, generatorConfig);
                 String levelName = name
-                    + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
+                    + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
                 if (this.isLevelLoaded(levelName)) {
                     log.warn("level {} has already been loaded!", levelName);
                     continue;
                 }
-                level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
+                level = new Level(this, levelName, path, generators.size(), provider, generatorConfig);
 
                 this.getLevels().put(level.getId(), level);
                 level.initLevel();
