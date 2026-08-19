@@ -491,14 +491,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
     }
 
-    private static int breakAnimationData(double miningTimeRequiredSeconds) {
-        double breakTimeTicks = miningTimeRequiredSeconds * 20.0;
-        if (breakTimeTicks <= 1.0) {
-            return 65535;
-        }
-        return (int) (65535 / breakTimeTicks);
-    }
-
     protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
@@ -509,13 +501,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
             if (miningTimeRequired > 0) {
-                 int breakTick = Math.max(1, (int) Math.ceil(miningTimeRequired * 20));
+                int breakTick = Math.max(1, (int) Math.ceil(miningTimeRequired * 20));
 
-                 if (breakTick != this.lastSentBreakTick) {
+                if (breakTick != this.lastSentBreakTick) {
                     final LevelEventPacket pk = new LevelEventPacket();
                     pk.setType(LevelEvent.BLOCK_UPDATE_BREAK);
                     pk.setPosition(Vector3f.from(this.breakingBlock.x, this.breakingBlock.y, this.breakingBlock.z));
-                    pk.setData(breakAnimationData(miningTimeRequired));
+                    pk.setData(65535 / breakTick);
                     this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
                     this.lastSentBreakTick = breakTick;
                 }
@@ -613,7 +605,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 final LevelEventPacket pk = new LevelEventPacket();
                 pk.setType(LevelEvent.BLOCK_START_BREAK);
                 pk.setPosition(pos.toNetwork());
-                pk.setData(breakAnimationData(miningTimeRequired));
+                pk.setData(65535 / breakTime);
                 this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
                 this.lastSentBreakTick = breakTime;
 
@@ -647,7 +639,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
-            this.level.getBlock(blockPos.asVector3()).getId(), System.currentTimeMillis() - this.lastBreak, this.blockBreakProgress);
         if (!this.spawned || !this.isAlive()) {
             return;
         }
