@@ -694,7 +694,7 @@ public class StrongholdPieces {
                     int fx = block.getFloorX();
                     int fy = block.getFloorY();
                     int fz = block.getFloorZ();
-                    level.addHook(() -> {
+                    level.addHook(block, () -> {
                         @SuppressWarnings("unchecked")
                         var holder = (BlockEntityHolder<BlockEntityChest>) level.getBlockAt(fx, fy, fz);
                         CORRIDOR.create(holder.getOrCreateBlockEntity().getInventory(), random);
@@ -1016,7 +1016,7 @@ public class StrongholdPieces {
 
                     BlockVector3 vec = new BlockVector3(this.getWorldX(3, 8), this.getWorldY(4), this.getWorldZ(3, 8));
                     if (boundingBox.isInside(vec)) {
-                    level.addHook(() -> {
+                    level.addHook(vec, () -> {
                         @SuppressWarnings("unchecked")
                         var holder = (BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z);
                         CROSSING.create(holder.getOrCreateBlockEntity().getInventory(), random);
@@ -1224,7 +1224,7 @@ public class StrongholdPieces {
             BlockVector3 vec = new BlockVector3(this.getWorldX(3, 5), this.getWorldY(3), this.getWorldZ(3, 5));
             if (boundingBox.isInside(vec)) {
                 if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
-                    level.addHook(() -> {
+                    level.addHook(blockChest, () -> {
                         LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
@@ -1237,7 +1237,7 @@ public class StrongholdPieces {
                 vec.setComponents(this.getWorldX(12, 1), this.getWorldY(8), this.getWorldZ(12, 1));
                 if (boundingBox.isInside(vec)) {
                     if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
-                        level.addHook(() -> {
+                        level.addHook(blockChest, () -> {
                             LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
                         });
                     }
@@ -1470,7 +1470,7 @@ public class StrongholdPieces {
                 if (boundingBox.isInside(vec)) {
                     this.hasPlacedSpawner = true;
                     level.setBlockStateAt(vec.x, vec.y, vec.z, SPAWNER);
-                    level.addHook(() -> {
+                    level.addHook(vec, () -> {
                         @SuppressWarnings("unchecked")
                         var holder = (BlockEntityHolder<BlockEntityMobSpawner>) level.getBlockAt(vec.x, vec.y, vec.z);
                         holder.getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.SILVERFISH));

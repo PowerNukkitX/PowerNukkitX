@@ -159,7 +159,7 @@ public class AncientCityStructure extends JigsawStructure {
         RandomizableContainer loot = structureName.contains("ice_box") ? ICE_BOX_CHEST : CITY_CHEST;
         for (Block block : blockManager.getBlocks()) {
             if (block instanceof BlockChest chest) {
-                blockManager.addHook(() -> {
+                blockManager.addHook(block, () -> {
                     loot.create(chest.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
                 });
             }
