@@ -140,6 +140,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         if (isAlive()) {
             super.onUpdate(currentTick);
 
+            if (this.closed) {
+                return false;
+            }
+
             // The damage token
             if (getHealthCurrent() < 20) {
                 setHealthCurrent(getHealthCurrent() + 1);
