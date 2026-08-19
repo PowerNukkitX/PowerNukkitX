@@ -78,18 +78,18 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable, Entity
     }
 
     @Override
+    public float getBabyScale() {
+        // baby rabbit is 0.268 across against the adult's 0.402
+        return 0.6667f;
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.268f;
-        }
         return 0.402f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.268f;
-        }
         return 0.402f;
     }
 

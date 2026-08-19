@@ -47,17 +47,11 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.7f;
-        }
         return 1.4f;
     }
 

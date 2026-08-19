@@ -73,18 +73,11 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.85f;
-        }
         return 1.7f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            if (isSitting()) return 0.472f;
-            return 1.1875f;
-        }
         if (isSitting()) return 0.945f;
         return 2.375f;
     }

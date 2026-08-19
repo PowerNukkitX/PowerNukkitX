@@ -91,17 +91,11 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.4f;
-        }
         return 0.8f;
     }
 

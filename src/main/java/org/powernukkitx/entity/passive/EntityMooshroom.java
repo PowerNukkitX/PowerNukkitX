@@ -107,17 +107,11 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.45f;
-        }
         return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 

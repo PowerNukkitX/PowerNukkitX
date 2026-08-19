@@ -91,18 +91,18 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public float getBabyScale() {
+        // baby hoglin is 0.85 wide against the adult's 1.4
+        return 0.6071f;
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 

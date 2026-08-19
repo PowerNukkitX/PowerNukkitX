@@ -3897,6 +3897,20 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
+     * The scale applied to this entity while it is a baby.
+     * <p>
+     * Baby size is driven entirely by this factor, so {@link #getWidth()} and {@link #getHeight()}
+     * must always report the adult dimensions. Override this for entities whose baby form is not
+     * half the size of the adult.
+     * </p>
+     *
+     * @return the baby scale factor, {@code 0.5} by default.
+     */
+    public float getBabyScale() {
+        return 0.5f;
+    }
+
+    /**
      * Sets whether this entity is a baby.
      * <p>
      * Updates the {@link ActorFlags#BABY} data flag and applies the corresponding scale.
@@ -3908,7 +3922,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public void setBaby(boolean value) {
         this.setDataFlag(ActorFlags.BABY, value);
-        this.setScale(value ? 0.5f : 1f);
+        this.setScale(value ? getBabyScale() : 1f);
 
         if (this.isAgeable()) {
             if (!value) {
@@ -4065,7 +4079,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         boolean baby = left > 0;
 
         setDataFlag(ActorFlags.BABY, baby, false);
-        setScale(baby ? 0.5f : 1f);
+        setScale(baby ? getBabyScale() : 1f);
 
         ticksGrowLeft = left;
 
