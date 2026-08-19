@@ -3277,6 +3277,11 @@ public class Level implements Metadatable {
 
         blockPrevious.afterRemoval(block, update);
 
+        if (layer == 0 && !(block instanceof BlockLiquid) && !(blockPrevious instanceof BlockLiquid)
+                && chunk.getBlockState(x & 0xF, y, z & 0xF, 1) != BlockAir.STATE) {
+            BlockLiquid.normalizeWaterloggedLayer(this, x, y, z);
+        }
+
         if (block instanceof CustomBlock customBlock) {
             CustomBlockDefinition def = customBlock.getDefinition();
             if (def != null && def.tickSettings() != null) {
