@@ -5199,7 +5199,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void sendPosition(Vector3 pos, double yaw, double pitch, PositionMode mode, Player[] targets) {
         final MovePlayerPacket pk = new MovePlayerPacket();
         pk.setPlayerRuntimeID(this.getId());
-        pk.setPosition(Vector3f.from(pos.x, pos.y + this.getEyeHeight(), pos.z));
+        pk.setPosition(Vector3f.from(pos.x, pos.y + this.getBaseOffset(), pos.z));
         pk.setRotation(Vector3f.from(pitch, yaw, yaw));
         pk.setPositionMode(mode);
         pk.setOnGround(this.onGround);
