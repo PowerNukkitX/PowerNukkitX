@@ -53,6 +53,14 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         }
     }
 
+    protected CampfireRecipe findRecipe(Item item) {
+        if (getBlock().getId().equals(BlockID.SOUL_CAMPFIRE)) {
+            return this.server.getRecipeRegistry().findSoulCampfireRecipe(item);
+        }
+
+        return this.server.getRecipeRegistry().findCampfireRecipe(item);
+    }
+
     @Override
     public boolean onUpdate() {
         boolean needsUpdate = false;
@@ -66,7 +74,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
             } else if (!keepItem[slot]) {
                 CampfireRecipe recipe = recipes[slot];
                 if (recipe == null) {
-                    recipe = this.server.getRecipeRegistry().findCampfireRecipe(item);
+                    recipe = findRecipe(item);
                     if (recipe == null) {
                         inventory.setItem(slot, Item.AIR);
                         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -196,7 +204,9 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId().equals(BlockID.CAMPFIRE);
+        final String blockId = getBlock().getId();
+        return blockId.equals(BlockID.CAMPFIRE)
+                || blockId.equals(BlockID.SOUL_CAMPFIRE);
     }
 
     public int getSize() {
