@@ -176,7 +176,7 @@ public class Level implements Metadatable {
             createTimeMarker(-4807795260250801598L, "minecraft:day", 1000, 24000),
             createTimeMarker(-1781951082890426794L, "minecraft:sunset", 12000, 24000)
     );
-    
+
     public static final int DIMENSION_OVERWORLD = 0;
     public static final int DIMENSION_NETHER = 1;
     public static final int DIMENSION_THE_END = 2;
@@ -1424,6 +1424,8 @@ public class Level implements Metadatable {
         return max;
     }
 
+    private static final int ASYNC_PREPARE_PARALLEL_THRESHOLD = 256;
+
     public void doTick(int currentTick) {
         if (getProvider() == null) return; // level is closing
         this.tickTime = System.currentTimeMillis();
@@ -1504,8 +1506,23 @@ public class Level implements Metadatable {
             if (!this.updateEntities.isEmpty()) {
                 // skip unless previous tick's serial loop saw entity implementing EntityAsyncPrepare
                 if (this.hasAsyncPrepareEntities) {
-                    CompletableFuture.runAsync(() -> updateEntities.keySet()
-                        .longParallelStream().forEach(id -> {
+                    // asyncPrepare() must finish for every entity before any onUpdate() below.
+                    // Only parallelize past a threshold: below it, dispatching to the pool and
+                    // join()-ing blocks the level thread for far longer than the work takes, so we
+                    // run the same pass serially here (also strictly safer: no cross-thread access).
+                    if (this.updateEntities.size() >= ASYNC_PREPARE_PARALLEL_THRESHOLD) {
+                        CompletableFuture.runAsync(() -> updateEntities.keySet()
+                            .longParallelStream().forEach(id -> {
+                                Entity entity = this.updateEntities.get(id);
+                                if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                    try {
+                                        entityAsyncPrepare.asyncPrepare(getTick());
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            }), this.scheduler.getAsyncTaskThreadPool()).join();
+                    } else {
+                        for (long id : this.updateEntities.keySetLong()) {
                             Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
                                 try {
@@ -1513,7 +1530,8 @@ public class Level implements Metadatable {
                                 } catch (Exception e) {
                                 }
                             }
-                        }), this.scheduler.getAsyncTaskThreadPool()).join();
+                        }
+                    }
                 }
                 boolean seenAsyncPrepare = false;
                 for (long id : this.updateEntities.keySetLong()) {
