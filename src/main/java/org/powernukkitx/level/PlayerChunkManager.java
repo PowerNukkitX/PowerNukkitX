@@ -37,6 +37,8 @@ public final class PlayerChunkManager {
      */
     private static final long CHUNK_LOAD_TIMEOUT_MICROS = 10L;
 
+    private static final int CHUNK_VISITS_PER_SEND = 4;
+
     private static final double MIN_FOV_CHECK_DISTANCE_SQUARED = MIN_FOV_CHECK_DISTANCE * MIN_FOV_CHECK_DISTANCE;
 
     private int comparatorLoaderChunkX;
@@ -120,11 +122,12 @@ public final class PlayerChunkManager {
         int loaderChunkZ = player.getChunkZ();
         updateInRadiusChunks(1, loaderChunkX, loaderChunkZ);
         removeOutOfRadiusChunks();
-        updateInRadiusChunks(8, loaderChunkX, loaderChunkZ);
+        updateInRadiusChunks(player.getViewDistance(), loaderChunkX, loaderChunkZ);
         pruneLoadingQueueOutOfRadius();
         pruneQueueOutOfRadius(chunkReadyToSend, true);
         updateChunkSendingQueue();
-        loadQueuedChunks(8, true);
+        sendViewPublisherUpdate();
+        loadQueuedChunks(trySendChunkCountPerTick, true);
         sendChunk();
     }
 
@@ -225,13 +228,15 @@ public final class PlayerChunkManager {
         }
     }
 
-    private void loadQueuedChunks(int trySendChunkCountPerTick, boolean force) {
+    private void loadQueuedChunks(int sendBudget, boolean force) {
         if (chunkSendQueue.isEmpty()) return;
-        int triedSendChunkCount = 0;
+        int readiedChunkCount = 0;
+        int visitedChunkCount = 0;
+        long visitLimit = (long) sendBudget * CHUNK_VISITS_PER_SEND;
         LongOpenHashSet enqueue = requeueScratch;
         enqueue.clear();
         do {
-            triedSendChunkCount++;
+            visitedChunkCount++;
             long chunkHash = chunkSendQueue.dequeueLong();
             int chunkX = Level.getHashX(chunkHash);
             int chunkZ = Level.getHashZ(chunkHash);
@@ -259,6 +264,7 @@ public final class PlayerChunkManager {
                     chunkLoadingQueue.remove(chunkHash);
                     player.level.registerChunkLoader(player, chunkX, chunkZ, false);
                     chunkReadyToSend.enqueue(chunkHash);
+                    readiedChunkCount++;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     chunkLoadingQueue.remove(chunkHash);
@@ -276,16 +282,22 @@ public final class PlayerChunkManager {
             } else {
                 enqueue.add(chunkHash);
             }
-        } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < trySendChunkCountPerTick);
+        } while (!chunkSendQueue.isEmpty()
+                && readiedChunkCount < sendBudget
+                && visitedChunkCount < visitLimit);
         enqueue.forEach(chunkSendQueue::enqueue);
+    }
+
+    private void sendViewPublisherUpdate() {
+        final NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
+        packet.setNewPositionForView(Vector3i.from(player.getFloorX(), player.getFloorY(), player.getFloorZ()));
+        packet.setNewRadiusForView(player.getViewDistance() << 4);
+        player.sendPacket(packet);
     }
 
     private void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
-            final NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
-            packet.setNewPositionForView(Vector3i.from(player.getFloorX(), player.getFloorY(), player.getFloorZ()));
-            packet.setNewRadiusForView(player.getViewDistance() << 4);
-            player.sendPacket(packet);
+            sendViewPublisherUpdate();
             while (!chunkReadyToSend.isEmpty()) {
                 long chunkHash = chunkReadyToSend.dequeueLong();
                 if (!inRadiusChunks.contains(chunkHash)) {

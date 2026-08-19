@@ -4759,15 +4759,6 @@ public class Level implements Metadatable {
         }
     }
 
-    private void sendChunk(int x, int z, long index, BedrockPacket packet) {
-        for (Player player : this.chunkSendQueue.get(index).values()) {
-            if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(index)) {
-                player.sendChunk(x, z, packet);
-            }
-        }
-        this.chunkSendQueue.remove(index);
-    }
-
     public void subTick(GameLoop currentTick) {
         try {
             processChunkRequest();
@@ -4804,11 +4795,6 @@ public class Level implements Metadatable {
                     try {
                         for (Player player : playersToSend.values()) {
                             if (player.isConnected()) {
-                                final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
-                                networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
-                                networkChunkPublisherUpdatePacket.setNewRadiusForView(player.getViewDistance() << 4);
-                                player.sendPacketImmediately(networkChunkPublisherUpdatePacket);
-
                                 final LevelChunkPacket levelChunkPacket;
                                 levelChunkPacket = new LevelChunkPacket();
                                 levelChunkPacket.setChunkX(x);
