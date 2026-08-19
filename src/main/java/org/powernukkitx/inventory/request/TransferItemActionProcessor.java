@@ -49,7 +49,13 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         }
         if (sourItem.isUsingNetId()) {
             if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
-                log.warn("mismatch source stack network id!");
+                log.warn("mismatch source stack network id! player={} action={} src={}[net={} native={}] item={}x{} serverNetId={} clientNetId={} dst={}[net={} native={} clientNetId={}] amount={}",
+                    player.getName(), action.getType(),
+                    sourceSlotType, action.getSource().getSlot(), sourceSlot,
+                    sourItem.getId(), sourItem.getCount(),
+                    sourItem.getNetId(), sourceStackNetworkId,
+                    destinationSlotType, action.getDestination().getSlot(), destinationSlot,
+                    destinationStackNetworkId, count);
                 return context.error();
             }
         }

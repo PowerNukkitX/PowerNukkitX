@@ -92,54 +92,78 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             Map<ContainerEnumName, ItemStackResponseContainerInfo> responseContainerMap = new LinkedHashMap<>();
             Set<Inventory> affectedInventories = new LinkedHashSet<>();
 
-            for (int index = 0; index < actions.length; index++) {
-                ItemStackRequestAction action = actions[index];
-                context.setCurrentActionIndex(index);
+            boolean failed = false;
+            boolean desynced = false;
+            boolean refused = false;
+            try {
+                for (int index = 0; index < actions.length; index++) {
+                    ItemStackRequestAction action = actions[index];
+                    context.setCurrentActionIndex(index);
 
-                ItemStackRequestActionProcessor<ItemStackRequestAction> processor = (ItemStackRequestActionProcessor<ItemStackRequestAction>) PROCESSORS.get(action.getType());
+                    ItemStackRequestActionProcessor<ItemStackRequestAction> processor = (ItemStackRequestActionProcessor<ItemStackRequestAction>) PROCESSORS.get(action.getType());
 
-                if (processor == null) {
-                    log.warn("Unhandled inventory action type {}", action.getType());
-                    continue;
-                }
-
-                affectedInventories.addAll(resolveAffectedInventories(player, action));
-
-                ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
-                TransferItemEventCaller.call(event);
-                Server.getInstance().getPluginManager().callEvent(event);
-
-                Optional<Inventory> topWindow = player.getTopWindow();
-                if (topWindow.isPresent() && topWindow.get() instanceof FakeInventory fakeInventory) {
-                    fakeInventory.handle(event);
-                }
-
-                ActionResponse response;
-                if (event.getResponse() != null) {
-                    response = event.getResponse();
-                } else if (event.isCancelled()) {
-                    response = context.error();
-                } else {
-                    response = processor.handle(action, player, context);
-                }
-
-                if (response != null) {
-                    if (!response.ok()) {
-                        responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
-                        break;
+                    if (processor == null) {
+                        log.warn("Unhandled inventory action type {}", action.getType());
+                        continue;
                     }
 
-                    for (var container : response.containers()) {
-                        responseContainerMap.compute(container.getFullContainerName().getContainerName(), (key, oldValue) -> {
-                            if (oldValue == null) {
-                                return container;
-                            } else {
-                                oldValue.getSlots().addAll(container.getSlots());
-                                return oldValue;
-                            }
-                        });
+                    affectedInventories.addAll(resolveAffectedInventories(player, action));
+
+                    ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
+                    TransferItemEventCaller.call(event);
+                    Server.getInstance().getPluginManager().callEvent(event);
+
+                    Optional<Inventory> topWindow = player.getTopWindow();
+                    if (topWindow.isPresent() && topWindow.get() instanceof FakeInventory fakeInventory) {
+                        fakeInventory.handle(event);
+                    }
+
+                    ActionResponse response;
+                    boolean refusedByPlugin = true;
+                    if (event.getResponse() != null) {
+                        response = event.getResponse();
+                    } else if (event.isCancelled()) {
+                        response = context.error();
+                    } else {
+                        refusedByPlugin = false;
+                        response = processor.handle(action, player, context);
+                    }
+
+                    if (response != null) {
+                        if (!response.ok()) {
+                            responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
+                            refused = true;
+                            desynced = !refusedByPlugin;
+                            break;
+                        }
+
+                        for (var container : response.containers()) {
+                            responseContainerMap.compute(container.getFullContainerName().getContainerName(), (key, oldValue) -> {
+                                if (oldValue == null) {
+                                    return container;
+                                } else {
+                                    oldValue.getSlots().addAll(container.getSlots());
+                                    return oldValue;
+                                }
+                            });
+                        }
                     }
                 }
+            } catch (Exception e) {
+                failed = true;
+                log.debug("Failed to handle item stack request for player {}", player.getName(), e);
+            }
+
+            if (failed) {
+                responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
+            }
+
+            if (failed || desynced) {
+                player.sendAllInventories();
+            }
+
+            if (failed || refused) {
+                continue;
             }
 
             resyncInventories(player, affectedInventories);
