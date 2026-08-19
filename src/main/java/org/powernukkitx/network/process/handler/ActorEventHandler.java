@@ -22,6 +22,9 @@ public class ActorEventHandler implements PacketHandler<ActorEventPacket> {
             return;
         }
 
+        if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {
+            return;
+        }
 
         if (packet.getType().equals(ActorEvent.FEED) || packet.getType().equals(ActorEvent.DRINK_MILK)) {
             if (packet.getTargetRuntimeID() != player.getId()) {

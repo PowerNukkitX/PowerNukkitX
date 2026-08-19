@@ -74,4 +74,9 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
         }
         return false;
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
 }

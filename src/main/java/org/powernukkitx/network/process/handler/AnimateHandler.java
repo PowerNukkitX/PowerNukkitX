@@ -21,6 +21,10 @@ public class AnimateHandler implements PacketHandler<AnimatePacket> {
             return;
         }
 
+        if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {
+            return;
+        }
+
         AnimatePacket.Action animation = packet.getAction();
 
         // prevent client send illegal packet to server and broadcast to other client and make other client crash

@@ -359,4 +359,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     /** Encryption material derived off the event loop, applied once back on it. */
     private record EncryptionHandshake(SecretKey secretKey, String handshakeJwt) {
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
 }

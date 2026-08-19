@@ -154,11 +154,14 @@ public class PlayerSessionHolder {
     }
 
     public void disconnect(DisconnectFailReason reason, String message) {
+        this.disconnected = true;
+
         final DisconnectPacket packet = new DisconnectPacket();
         packet.setReason(reason);
         packet.setMessages(new DisconnectPacketMessages(message, ""));
 
         this.session.sendPacketImmediately(packet);
+        this.session.close(message);
 
         SocketAddress socketAddress = this.getSession().getSocketAddress();
 

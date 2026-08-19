@@ -151,7 +151,6 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     if (checkTrade(tradeRecipe.getCompound("buyB"), second, reductionB)) return context.error();
                     if (tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses"))
                         return context.error();
-                    player.getCreativeOutputInventory().setItem(output);
                 }
             } else if (ca) {
                 if (first.isNull()) {
@@ -161,23 +160,25 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     if (checkTrade(tradeRecipe.getCompound("buyA"), first, reductionA)) return context.error();
                     if (tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts() > tradeRecipe.getInt("maxUses"))
                         return context.error();
-                    inventory.sendContents(player);
-                    player.getCreativeOutputInventory().setItem(output);
                 }
             }
             if (ca) {
                 int craftsN = action.getNumberOfRequestedCrafts();
                 int requiredA = Math.max(tradeRecipe.getCompound("buyA").getByte("Count") - reductionA, 1);
-                if (requiredA * craftsN > first.getCount()) {
+                if ((long) requiredA * craftsN > first.getCount()) {
                     return context.error();
                 }
                 int requiredB = 0;
                 if (cb) {
                     requiredB = Math.max(tradeRecipe.getCompound("buyB").getByte("Count") - reductionB, 1);
-                    if (requiredB * craftsN > second.getCount()) {
+                    if ((long) requiredB * craftsN > second.getCount()) {
                         return context.error();
                     }
                 }
+                if (!cb) {
+                    inventory.sendContents(player);
+                }
+                player.getCreativeOutputInventory().setItem(output);
                 inventory.decreaseCount(0, requiredA * craftsN);
                 if (cb) {
                     inventory.decreaseCount(1, requiredB * craftsN);

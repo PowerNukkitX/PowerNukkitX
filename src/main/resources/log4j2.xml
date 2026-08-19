@@ -24,6 +24,11 @@
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </AsyncRoot>
+        <Logger name="org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <BurstFilter level="ERROR" rate="2" maxBurst="10"/>
+        </Logger>
         <!--    disable useless debug log foreign library    -->
         <Logger name="oshi.hardware" level="info"/>
         <Logger name="oshi" level="info"/>
