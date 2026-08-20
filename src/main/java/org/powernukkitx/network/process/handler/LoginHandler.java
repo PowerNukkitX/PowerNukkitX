@@ -62,10 +62,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final int clientNetworkVersion = packet.getClientNetworkVersion();
-        final int serverNetworkVersion = NetworkConstants.CODEC.getProtocolVersion();
 
-        if (clientNetworkVersion != serverNetworkVersion) {
-            final boolean serverOutdated = clientNetworkVersion > serverNetworkVersion;
+        if (NetworkConstants.codecForProtocolVersion(clientNetworkVersion) == null) {
+            final boolean serverOutdated = NetworkConstants.isServerOutdated(clientNetworkVersion);
             holder.sendPlayStatus(
                 serverOutdated ?
                     PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
@@ -203,6 +202,11 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA, null);
             return;
         }
+
+        holder.getSession().setCodec(NetworkConstants.codecForGameVersion(
+            holder.getSession().getCodec().getProtocolVersion(),
+            clientChainData.getGameVersion()
+        ));
 
         holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
 
