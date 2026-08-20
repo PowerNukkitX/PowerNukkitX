@@ -84,6 +84,17 @@ public class CommandEnum {
     public static final CommandEnum ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
 
     /**
+     * Every summonable entity identifier, resolved lazily so entities registered by plugins after startup are included.
+     */
+    public static final CommandEnum ENUM_SUMMONABLE_ENTITY = new CommandEnum("EntityType", () -> Registries.ENTITY.getKnownEntities().keySet().stream()
+            .filter(id -> {
+                var definition = Registries.ENTITY.getEntityDefinition(id);
+                return definition != null && definition.isSummonable();
+            })
+            .map(id -> id.startsWith(Identifier.DEFAULT_NAMESPACE) ? id.substring(10) : id)
+            .toList());
+
+    /**
      * The name of the enum, used for display and identification.
      */
     private final String name;
