@@ -31,7 +31,15 @@ public class MobEquipmentHandler implements PacketHandler<MobEquipmentPacket> {
             player.close("§cPacket handling error");
             return;
         }
-        final Item itemFromNetwork = Item.fromNetwork(packet.getItem());
+        final Item itemFromNetwork;
+        try {
+            itemFromNetwork = Item.fromNetwork(packet.getItem());
+        } catch (Exception e){
+            log.debug("Player {} sent malformed item data in MobEquipmentPacket", playerHandle.getUsername(), e);
+            player.close("§cPacket handling error");
+            return;
+        }
+
         if (!itemFromNetwork.isNull()) {
             if (itemFromNetwork.getEnchantments().length > Enchantment.getEnchantments().length) { // Last Enchant Id
                 player.close("§cPacket handling error");
@@ -55,6 +63,12 @@ public class MobEquipmentHandler implements PacketHandler<MobEquipmentPacket> {
 
         if (inv == null) {
             log.debug("Player {} has no open container with window ID {}", player.getName(), packet.getContainerId());
+            return;
+        }
+
+        if (packet.getSelectedSlot() >= inv.getSize()){
+            log.debug("Player {} sent out-of-bounds slot {} for container {} (size {})", playerHandle.getUsername(), packet.getSelectedSlot(), packet.getContainerId(), inv.getSize());
+            player.close("§cPacket handling error");
             return;
         }
 

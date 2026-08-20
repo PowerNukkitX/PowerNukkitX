@@ -75,7 +75,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final PlayerAuthenticationType type = packet.getAuthenticationType();
-        if (type.equals(PlayerAuthenticationType.UNKNOWN)) {
+        if (type == null || type.equals(PlayerAuthenticationType.UNKNOWN)) {
             failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
             return;
         }
@@ -254,10 +254,23 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             }
             eventLoop.execute(() -> {
                 if (holder.getSession().isConnected()) {
-                    then.accept(result);
+                    try {
+                        then.accept(result);
+                    } catch (Exception e){
+                        log.error("Unhandled exception while completing login for {}", holder.getSession().getSocketAddress(), e);
+                        safeFailLogin(holder, server);
+                    }
                 }
             });
         });
+    }
+
+    private void safeFailLogin(PlayerSessionHolder holder, Server server){
+        try {
+            failLogin(holder, server, DisconnectFailReason.UNKNOWN, null);
+        } catch (Exception e){
+            log.error("Unhandled exception while failing login for {}", holder.getSession().getSocketAddress(), e);
+        }
     }
 
     /**

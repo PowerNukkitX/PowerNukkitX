@@ -17,16 +17,20 @@ public class ShowCreditsHandler implements PacketHandler<ShowCreditsPacket> {
 
     @Override
     public void handle(ShowCreditsPacket packet, PlayerSessionHolder holder, Server server) {
+        PlayerHandle playerHandle = holder.getPlayerHandle();
+        Player player = playerHandle.player;
+        if (!player.spawned || !player.isAlive()) {
+            return;
+        }
         if (packet.getCreditsState().equals(ShowCreditsPacket.CreditsState.END_CREDITS)) {
-            PlayerHandle playerHandle = holder.getPlayerHandle();
             if (playerHandle.getShowingCredits()) {
-                playerHandle.player.setShowingCredits(false);
+                player.setShowingCredits(false);
                 Position spawn;
-                if (playerHandle.player.getSpawn().right() == Player.SpawnPointType.WORLD) {
-                    spawn = PortalHelper.convertPosBetweenEndAndOverworld(playerHandle.player.getLocation());
-                } else spawn = playerHandle.player.getSpawn().left();
+                if (player.getSpawn().right() == Player.SpawnPointType.WORLD) {
+                    spawn = PortalHelper.convertPosBetweenEndAndOverworld(player.getLocation());
+                } else spawn = player.getSpawn().left();
                 if (spawn != null) {
-                    playerHandle.player.teleport(spawn, PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                    player.teleport(spawn, PlayerTeleportEvent.TeleportCause.END_PORTAL);
                 }
             }
         }

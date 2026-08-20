@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import lombok.experimental.UtilityClass;
+import org.cloudburstmc.protocol.bedrock.data.skin.AnimationData;
+import org.cloudburstmc.protocol.bedrock.data.skin.ImageData;
 import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
 
 import java.util.ArrayList;
@@ -12,8 +14,9 @@ import java.util.List;
 
 @UtilityClass
 public class SkinUtils {
+    private static final int MAX_SKIN_DIMENSION = 128;
 
-    public SerializedImage getImage(JsonObject token, String name) {
+    public static SerializedImage getImage(JsonObject token, String name) {
         if (token.has(name + "Data")) {
             byte[] skinImage = Base64.getDecoder().decode(token.get(name + "Data").getAsString());
             if (token.has(name + "ImageHeight") && token.has(name + "ImageWidth")) {
@@ -27,7 +30,7 @@ public class SkinUtils {
         return SerializedImage.EMPTY;
     }
 
-    public PersonaPiece getPersonaPiece(JsonObject object) {
+    public static PersonaPiece getPersonaPiece(JsonObject object) {
         String pieceId = object.get("PieceId").getAsString();
         String pieceType = object.get("PieceType").getAsString();
         String packId = object.get("PackId").getAsString();
@@ -36,7 +39,7 @@ public class SkinUtils {
         return new PersonaPiece(pieceId, pieceType, packId, isDefault, productId);
     }
 
-    public PersonaPieceTint getTint(JsonObject object) {
+    public static PersonaPieceTint getTint(JsonObject object) {
         String pieceType = object.get("PieceType").getAsString();
         List<String> colors = new ArrayList<>();
         for (JsonElement element : object.get("Colors").getAsJsonArray()) {
@@ -46,29 +49,59 @@ public class SkinUtils {
     }
 
     public boolean isValid(Skin skin) {
-        return skin.getSkinId() != null && !skin.getSkinId().trim().isEmpty() && skin.getSkinId().length() < 100 &&
-                skin.getSkinData() != null && skin.getSkinData().getWidth() >= 32 && skin.getSkinData().getHeight() >= 32 &&
-                skin.getSkinData().getImage().length >= Skin.SINGLE_SKIN_SIZE &&
-                (skin.getPlayFabId() == null || skin.getPlayFabId().length() < 100) &&
-                (skin.getCapeId() == null || skin.getCapeId().length() < 100) &&
-                (skin.getSkinColor() == null || skin.getSkinColor().length() < 100) &&
-                (skin.getArmSize() == null || skin.getArmSize().length() < 100) &&
-                (skin.getFullSkinId() == null || skin.getFullSkinId().length() < 200) &&
-                (skin.getGeometryDataEngineVersion() == null || skin.getGeometryDataEngineVersion().length() < 100) &&
-                (skin.getAnimationData() == null || skin.getAnimationData().length() < 1000) &&
-                skin.getAnimations().size() <= 100 &&
-                skin.getPersonaPieces().size() <= 100 &&
-                skin.getTintColors().size() <= 100 && isValidResourcePatch(skin.getSkinResourcePatch());
+        if (skin.getSkinId() == null || skin.getSkinId().trim().isEmpty() || skin.getSkinId().length() >= 100) {
+            return false;
+        }
+        if (!isValidImage(skin.getSkinData(), true)) {
+            return false;
+        }
+        if (!isValidImage(skin.getCapeData(), true)) {
+            return false;
+        }
+        if (skin.getAnimations().size() > 100) {
+            return false;
+        }
+        for (AnimationData animationData : skin.getAnimations()) {
+            if (!isValidImage(animationData.getImage(), false)) {
+                return false;
+            }
+        }
+        return (skin.getPlayFabId() == null || skin.getPlayFabId().length() < 100) &&
+            (skin.getCapeId() == null || skin.getCapeId().length() < 100) &&
+            (skin.getSkinColor() == null || skin.getSkinColor().length() < 100) &&
+            (skin.getArmSize() == null || skin.getArmSize().length() < 100) &&
+            (skin.getFullSkinId() == null || skin.getFullSkinId().length() < 200) &&
+            (skin.getGeometryDataEngineVersion() == null || skin.getGeometryDataEngineVersion().length() < 100) &&
+            (skin.getAnimationData() == null || skin.getAnimationData().length() < 1000) &&
+            skin.getPersonaPieces().size() <= 100 &&
+            skin.getTintColors().size() <= 100 &&
+            isValidResourcePatch(skin.getSkinResourcePatch());
     }
 
-    public boolean isValidResourcePatch(String skinResourcePatch) {
+    private static boolean isValidImage(ImageData imageData, boolean requireMinSize){
+        if (imageData == null || imageData.getImage() == null){
+            return false;
+        }
+        int width = imageData.getWidth();
+        int height = imageData.getHeight();
+        if (width <= 0 || height <= 0 || width > MAX_SKIN_DIMENSION || height > MAX_SKIN_DIMENSION){
+            return false;
+        }
+        long expected = (long) width * height * 4L;
+        if (expected != imageData.getImage().length){
+            return false;
+        }
+        return !requireMinSize || imageData.getImage().length > Skin.SINGLE_SKIN_SIZE;
+    }
+
+    public static boolean isValidResourcePatch(String skinResourcePatch) {
         if (skinResourcePatch == null || skinResourcePatch.length() > 1000) {
             return false;
         }
         try {
             JsonObject object = Utils.GSON.fromJson(skinResourcePatch, JsonObject.class);
             JsonObject geometry = object.getAsJsonObject("geometry");
-            return geometry.has("default") && geometry.get("default").isJsonPrimitive() && geometry.get("default").getAsJsonPrimitive().isString();
+            return geometry != null && geometry.has("default") && geometry.get("default").isJsonPrimitive() && geometry.get("default").getAsJsonPrimitive().isString();
         } catch (ClassCastException | NullPointerException | JsonSyntaxException e) {
             return false;
         }

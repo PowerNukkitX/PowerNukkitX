@@ -29,22 +29,29 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         final Player player = this.session.getPlayer();
         final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
 
-        if (packetHandler != null && !packetHandler.runsOnNetworkThread() && player != null && player.spawned) {
-            this.session.getPlayerHandle().handlePacket(packet);
-            return PacketSignal.HANDLED;
-        }
+        try {
+            if (packetHandler != null && !packetHandler.runsOnNetworkThread() && player != null && player.spawned) {
+                this.session.getPlayerHandle().handlePacket(packet);
+                return PacketSignal.HANDLED;
+            }
 
-        if (player != null && firePacketReceive(player, packet)) {
-            return PacketSignal.UNHANDLED;
-        }
-        if (packetHandler != null) {
-            if (player != null && firePacketHandle(player, packet)) {
+            if (player != null && firePacketReceive(player, packet)) {
                 return PacketSignal.UNHANDLED;
             }
-            packetHandler.handle(packet, this.session, this.server);
+            if (packetHandler != null) {
+                if (player != null && firePacketHandle(player, packet)) {
+                    return PacketSignal.UNHANDLED;
+                }
+                packetHandler.handle(packet, this.session, this.server);
+                return PacketSignal.HANDLED;
+            }
+            return BedrockPacketHandler.super.handlePacket(packet);
+        } catch (Exception e) {
+            log.error("Unhandled exception while processing packet {} for {}",
+                packet.getClass().getSimpleName(),
+                player != null ? player.getName() : this.session.getSession().getSocketAddress(), e);
             return PacketSignal.HANDLED;
         }
-        return BedrockPacketHandler.super.handlePacket(packet);
     }
 
     /**
@@ -53,16 +60,23 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
      */
     void processInbound(BedrockPacket packet) {
         final Player player = this.session.getPlayer();
-        if (player == null || firePacketReceive(player, packet)) {
+        if (player == null) {
             return;
         }
-        final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
-        if (packetHandler == null || firePacketHandle(player, packet)) {
-            return;
+        try {
+            if (firePacketReceive(player, packet)) {
+                return;
+            }
+            final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
+            if (packetHandler == null || firePacketHandle(player, packet)) {
+                return;
+            }
+            packetHandler.handle(packet, this.session, this.server);
+        } catch (Exception e) {
+            log.error("Unhandled exception while processing queued packet {} for {}",
+                packet.getClass().getSimpleName(), player.getName(), e);
         }
-        packetHandler.handle(packet, this.session, this.server);
     }
-
     private boolean firePacketReceive(Player player, BedrockPacket packet) {
         if (PacketReceiveEvent.getHandlers().isEmpty()) {
             return false;
@@ -86,10 +100,14 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
     public void onDisconnect(String reason) {
         final Player player = this.session.getPlayer();
         if (player != null) {
-            if (player.spawned) {
-                player.requestClose(reason);
-            } else {
-                player.close(reason);
+            try {
+                if (player.spawned) {
+                    player.requestClose(reason);
+                } else {
+                    player.close(reason);
+                }
+            } catch (Exception e) {
+                log.error("Error while closing player {} on disconnect", player.getName(), e);
             }
         }
         BedrockPacketHandler.super.onDisconnect(reason);

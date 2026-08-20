@@ -1,5 +1,6 @@
 package org.powernukkitx.network.query.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.powernukkitx.event.server.QueryRegenerateEvent;
 import org.powernukkitx.network.query.QueryEventListener;
 import org.powernukkitx.network.query.enveloped.DirectAddressedQueryPacket;
@@ -15,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+@Slf4j
 public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddressedQueryPacket> {
     private final QueryEventListener listener;
     private byte[] token;
@@ -25,27 +27,36 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
         this.token = this.generateToken();
     }
 
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DirectAddressedQueryPacket packet) {
-        if (packet.content() instanceof HandshakePacket handshake) {
-            handshake.setToken(getTokenString(packet.sender()));
-            ctx.writeAndFlush(new DirectAddressedQueryPacket(handshake, packet.sender(), packet.recipient()), ctx.voidPromise());
-        }
-        if (packet.content() instanceof StatisticsPacket statistics) {
-            if (statistics.getToken() != getTokenInt(packet.sender())) {
-                return;
+        try {
+            if (packet.content() instanceof HandshakePacket handshake) {
+                handshake.setToken(getTokenString(packet.sender()));
+                ctx.writeAndFlush(new DirectAddressedQueryPacket(handshake, packet.sender(), packet.recipient()), ctx.voidPromise());
             }
 
-            QueryRegenerateEvent data = this.listener.onQuery(packet.sender());
+            if (packet.content() instanceof StatisticsPacket statistics) {
+                if (statistics.getToken() != getTokenInt(packet.sender())) {
+                    return;
+                }
 
-            if (statistics.isFull()) {
-                statistics.setPayload(data.getLongQuery());
-            } else {
-                statistics.setPayload(data.getShortQuery());
+                QueryRegenerateEvent data = this.listener.onQuery(packet.sender());
+
+                if (statistics.isFull()) {
+                    statistics.setPayload(data.getLongQuery());
+                } else {
+                    statistics.setPayload(data.getShortQuery());
+                }
+                ctx.writeAndFlush(new DirectAddressedQueryPacket(statistics, packet.sender(), packet.recipient()), ctx.voidPromise());
             }
-            ctx.writeAndFlush(new DirectAddressedQueryPacket(statistics, packet.sender(), packet.recipient()), ctx.voidPromise());
+        } catch (Exception e){
+            log.warn("Failed to process query packet from {}", packet.sender(), e);
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.warn("Unhandled exception in QueryPacketHandler", cause);
     }
 
     private byte[] generateToken() {
