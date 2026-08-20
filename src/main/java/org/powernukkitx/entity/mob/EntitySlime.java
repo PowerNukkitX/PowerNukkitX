@@ -211,12 +211,16 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
 
     @Override
     public void kill() {
-        if (getVariant() != SIZE_SMALL) {
+        if (!this.justCreated && getVariant() != SIZE_SMALL) {
+            final int smaller = getSmaller();
             for (int i = 1; i < Utils.rand(2, 5); i++) {
-                EntitySlime slime = new EntitySlime(this.getChunk(), this.getNbt());
-                slime.setPosition(this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
+                CompoundTag childNbt = Entity.getDefaultNBT(
+                    this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
+                childNbt.putInt(TAG_SLIME_SIZE, smaller);
+
+                EntitySlime slime = new EntitySlime(this.getChunk(), childNbt);
                 slime.setRotation(this.yaw, this.pitch);
-                slime.setVariant(getSmaller());
+                slime.setVariant(smaller);
                 slime.spawnToAll();
             }
         }
