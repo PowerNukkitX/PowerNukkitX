@@ -204,8 +204,6 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             return;
         }
 
-        holder.getSession().setCodec(NetworkConstants.codecForGameVersion(clientChainData.getGameVersion()));
-
         holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
 
         if (client.encryptionFailed()) {
