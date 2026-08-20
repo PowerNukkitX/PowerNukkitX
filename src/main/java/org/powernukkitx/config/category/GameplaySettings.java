@@ -40,10 +40,6 @@ public class GameplaySettings extends OkaeriConfig {
     boolean pvp = true;
     @Comment("pnx.settings.gameplay.difficulty")
     int difficulty = 1;
-    @Comment("pnx.settings.gameplay.allowNether")
-    boolean allowNether = true;
-    @Comment("pnx.settings.gameplay.allowEnd")
-    boolean allowTheEnd = true;
     @Comment("pnx.settings.gameplay.forceResources")
     boolean forceResources = false;
     @Comment("pnx.settings.gameplay.allowClientPacks")
