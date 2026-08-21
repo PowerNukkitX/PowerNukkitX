@@ -3,6 +3,7 @@ package org.powernukkitx.network.process.handler;
 import io.netty.channel.EventLoop;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
@@ -62,8 +63,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final int clientNetworkVersion = packet.getClientNetworkVersion();
+        final BedrockCodec codec = NetworkConstants.codecForProtocolVersion(clientNetworkVersion);
 
-        if (NetworkConstants.codecForProtocolVersion(clientNetworkVersion) == null) {
+        if (codec == null) {
             final boolean serverOutdated = NetworkConstants.isServerOutdated(clientNetworkVersion);
             holder.sendPlayStatus(
                 serverOutdated ?
@@ -72,6 +74,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT, null);
             return;
         }
+
+        holder.getSession().setCodec(codec);
 
         final PlayerAuthenticationType type = packet.getAuthenticationType();
         if (type.equals(PlayerAuthenticationType.UNKNOWN)) {
