@@ -252,6 +252,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public long lastSkinChange;
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
+    protected int lastSentBreakTick = 0;
     protected final BedrockServerSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
@@ -501,18 +502,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
             if (miningTimeRequired > 0) {
-                Item hand = this.inventory.getItemInMainHand();
-                boolean hasCustomDigger = hand != null && !hand.isNull() && hand.getCustomItemComponent("minecraft:digger") != null;
-                boolean useServerSideBreakVisuals = this.breakingBlock instanceof CustomBlock || hasCustomDigger;
+                int breakTick = Math.max(1, (int) Math.ceil(miningTimeRequired * 20));
 
-                if (useServerSideBreakVisuals) {
-                    int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-
+                if (breakTick != this.lastSentBreakTick) {
                     final LevelEventPacket pk = new LevelEventPacket();
                     pk.setType(LevelEvent.BLOCK_UPDATE_BREAK);
                     pk.setPosition(Vector3f.from(this.breakingBlock.x, this.breakingBlock.y, this.breakingBlock.z));
                     pk.setData(65535 / breakTick);
                     this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
+                    this.lastSentBreakTick = breakTick;
                 }
 
                 if (face != null && !this.server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
@@ -520,19 +518,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
 
                 long timeDiff = time - breakingBlockTime;
-                blockBreakProgress += timeDiff / (miningTimeRequired * 1000.0);
+                blockBreakProgress += timeDiff / (breakTick * 50.0);
 
-                if (blockBreakProgress >= 0.99) {
-                    if (useServerSideBreakVisuals) {
-                        final LevelEventPacket stopPk = new LevelEventPacket();
-                        stopPk.setType(LevelEvent.BLOCK_STOP_BREAK);
-                        stopPk.setPosition(pos.toNetwork());
-                        this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, stopPk);
-                    }
+                if (blockBreakProgress >= 1.0) {
+                    final LevelEventPacket stopPk = new LevelEventPacket();
+                    stopPk.setType(LevelEvent.BLOCK_STOP_BREAK);
+                    stopPk.setPosition(pos.toNetwork());
+                    this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, stopPk);
 
                     this.blockBreakProgress = 0;
                     this.breakingBlock = null;
                     this.breakingBlockFace = null;
+                    this.lastSentBreakTick = 0;
 
                     this.onBlockBreakComplete(pos.asBlockVector3(), face);
                     return;
@@ -611,6 +608,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 pk.setPosition(pos.toNetwork());
                 pk.setData(65535 / breakTime);
                 this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+                this.lastSentBreakTick = breakTime;
 
                 if (this.getLevel().isAntiXrayEnabled() && this.getLevel().getAntiXraySystem().isPreDeObfuscate()) {
                     this.getLevel().getAntiXraySystem().deObfuscateBlock(this, face, target);
@@ -628,6 +626,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.blockBreakProgress = 0;
         this.breakingBlock = null;
         this.breakingBlockFace = null;
+        this.lastSentBreakTick = 0;
     }
 
     public void onBlockBreakAbort(Vector3 pos) {
