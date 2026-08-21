@@ -41,7 +41,7 @@ public class BlockObsidian extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 35; /* 50 in PC */
+        return 35;
     }
 
     @Override
