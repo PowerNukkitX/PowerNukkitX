@@ -5658,7 +5658,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return boolean
      */
     public boolean setMotion(Vector3 motion) {
-        if (!this.justCreated) {
+        if (!this.justCreated && !EntityMotionEvent.getHandlers().isEmpty()) {
             EntityMotionEvent ev = new EntityMotionEvent(this, motion);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
