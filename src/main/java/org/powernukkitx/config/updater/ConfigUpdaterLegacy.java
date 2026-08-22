@@ -160,8 +160,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .achievements(oldProp.get(LegacyServerPropertiesKeys.ACHIEVEMENTS, game.achievements()))
                 .announceAchievements(oldProp.get(LegacyServerPropertiesKeys.ANNOUNCE_PLAYER_ACHIEVEMENTS, game.announceAchievements()))
                 .spawnProtection(oldProp.get(LegacyServerPropertiesKeys.SPAWN_PROTECTION, game.spawnProtection()))
-                .allowNether(oldProp.get(LegacyServerPropertiesKeys.ALLOW_NETHER, game.allowNether()))
-                .allowTheEnd(oldProp.get(LegacyServerPropertiesKeys.ALLOW_THE_END, game.allowTheEnd()))
                 .gamemode(parseGamemode(oldProp, game.gamemode()))
                 .forceGamemode(oldProp.get(LegacyServerPropertiesKeys.FORCE_GAMEMODE, game.forceGamemode()))
                 .hardcore(oldProp.get(LegacyServerPropertiesKeys.HARDCORE, game.hardcore()))

@@ -294,8 +294,6 @@ public class Server {
 
     // default levels
     private Level defaultLevel = null;
-    private boolean allowNether;
-    private boolean allowTheEnd;
     private List<ExperimentToggle> experiments;
 
     private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
@@ -419,8 +417,6 @@ public class Server {
             return;
         }
 
-        this.allowNether = this.settings.gameplaySettings().allowNether();
-        this.allowTheEnd = this.settings.gameplaySettings().allowTheEnd();
         this.checkLoginTime = this.settings.networkSettings().checkLoginTime();
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
@@ -3193,14 +3189,6 @@ public class Server {
 
     public void setProxyAuthProvider(ProxyAuthProvider proxyAuthProvider) {
         this.proxyAuthProvider = proxyAuthProvider;
-    }
-
-    public boolean isNetherAllowed() {
-        return this.allowNether;
-    }
-
-    public boolean isTheEndAllowed() {
-        return this.allowTheEnd;
     }
 
     public boolean canLogPacket(Class<? extends BedrockPacket> clazz) {

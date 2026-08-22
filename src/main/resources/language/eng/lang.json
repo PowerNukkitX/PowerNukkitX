@@ -103,8 +103,6 @@
   "pnx.settings.gameplay.hardcore": "Whether to enable hardcore mode",
   "pnx.settings.gameplay.pvp": "Whether to enable PVP",
   "pnx.settings.gameplay.difficulty": "Game difficulty",
-  "pnx.settings.gameplay.allowNether": "Whether to allow the Nether",
-  "pnx.settings.gameplay.allowEnd": "Whether to allow the End",
   "pnx.settings.gameplay.forceResources": "Whether to force resources",
   "pnx.settings.gameplay.allowClientPacks": "Whether to allow client packs",
   "pnx.settings.gameplay.serverAuthoritativeMovement": "Whether to enable server authoritative movement",
