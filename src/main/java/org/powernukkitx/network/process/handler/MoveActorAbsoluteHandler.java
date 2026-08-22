@@ -47,11 +47,14 @@ public class MoveActorAbsoluteHandler implements PacketHandler<MoveActorAbsolute
             return;
         }
 
-        Location from = movedEntity.getLocation();
+        boolean fireMoveEvent = !VehicleMoveEvent.getHandlers().isEmpty();
+        Location from = fireMoveEvent ? movedEntity.getLocation() : null;
         movedEntity.setPositionAndRotation(player.temporalVector, rot.getZ(), 0);
-        Location to = movedEntity.getLocation();
-        if (!from.equals(to)) {
-            player.getServer().getPluginManager().callEvent(new VehicleMoveEvent(player, from, to));
+        if (fireMoveEvent) {
+            Location to = movedEntity.getLocation();
+            if (!from.equals(to)) {
+                player.getServer().getPluginManager().callEvent(new VehicleMoveEvent(player, from, to));
+            }
         }
     }
 }

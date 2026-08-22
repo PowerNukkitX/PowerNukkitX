@@ -211,12 +211,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
             setRotation(yawToChange, pitch);
 
-            Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-            Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+            boolean fireMoveEvent = !VehicleMoveEvent.getHandlers().isEmpty();
+            Location from = fireMoveEvent ? new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level) : null;
+            Location to = fireMoveEvent ? new Location(this.x, this.y, this.z, this.yaw, this.pitch, level) : null;
 
-            this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+            if (!VehicleUpdateEvent.getHandlers().isEmpty()) {
+                this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+            }
 
-            if (!from.equals(to)) {
+            if (fireMoveEvent && !from.equals(to)) {
                 this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
             }
 
