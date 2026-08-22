@@ -19,6 +19,8 @@ import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.RuntimeBlockDefinition;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongCollection;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.cloudburstmc.protocol.bedrock.data.ActorBlockSyncMessageId;
@@ -26,18 +28,36 @@ import org.cloudburstmc.protocol.bedrock.data.BlockChangeEntry;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateSubChunkBlocksPacket;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 public class BlockManager {
     private static final String PENDING_SUB_CHUNK_UPDATES = "pendingSubChunkUpdates";
+
+    private static final int MAX_PENDING_HOOK_CHUNKS = 4096;
+
+    private static final LinkedHashMap<PendingHookKey, List<Runnable>> PENDING_HOOKS = new LinkedHashMap<>() {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<PendingHookKey, List<Runnable>> eldest) {
+            return size() > MAX_PENDING_HOOK_CHUNKS;
+        }
+    };
+
+    private record PendingHookKey(int levelId, long chunkHash) {
+    }
 
     private final Level level;
     private final Long2ObjectOpenHashMap<Block> caches;
     private final Long2ObjectOpenHashMap<Block> places;
 
     protected final ObjectOpenHashSet<Runnable> hooks;
+
+    private final Long2ObjectOpenHashMap<ObjectArrayList<Runnable>> chunkHooks;
 
     private long hashXYZ(int x, int y, int z, int layer) {
         return (((long) (x + 30_000_000) & 0x3FFFFFFL) << 37)
@@ -51,19 +71,100 @@ public class BlockManager {
         this.caches = new Long2ObjectOpenHashMap<>();
         this.places = new Long2ObjectOpenHashMap<>();
         this.hooks = new ObjectOpenHashSet<>();
+        this.chunkHooks = new Long2ObjectOpenHashMap<>();
     }
 
     public void addHook(Runnable runnable) {
         this.hooks.add(runnable);
     }
 
+    public void addHook(int chunkX, int chunkZ, Runnable runnable) {
+        this.chunkHooks.computeIfAbsent(Level.chunkHash(chunkX, chunkZ), k -> new ObjectArrayList<>()).add(runnable);
+    }
+
+    public void addHook(Block block, Runnable runnable) {
+        this.addHook(block.getChunkX(), block.getChunkZ(), runnable);
+    }
+
+    public void addHook(BlockVector3 pos, Runnable runnable) {
+        this.addHook(pos.getX() >> 4, pos.getZ() >> 4, runnable);
+    }
+
+    public void addHook(LongCollection chunkHashes, Runnable runnable) {
+        LongOpenHashSet distinct = new LongOpenHashSet(chunkHashes);
+        if (distinct.isEmpty()) {
+            this.addHook(runnable);
+            return;
+        }
+        AtomicInteger remaining = new AtomicInteger(distinct.size());
+        for (long chunkHash : distinct) {
+            this.chunkHooks.computeIfAbsent(chunkHash, k -> new ObjectArrayList<>()).add(() -> {
+                if (remaining.decrementAndGet() == 0) {
+                    runnable.run();
+                }
+            });
+        }
+    }
+
+    public static LongOpenHashSet chunkHashesOfPositions(Collection<BlockVector3> positions) {
+        LongOpenHashSet hashes = new LongOpenHashSet();
+        for (BlockVector3 pos : positions) {
+            hashes.add(Level.chunkHash(pos.getX() >> 4, pos.getZ() >> 4));
+        }
+        return hashes;
+    }
+
+    public static LongOpenHashSet chunkHashesOfBlocks(Collection<Block> blocks) {
+        LongOpenHashSet hashes = new LongOpenHashSet();
+        for (Block block : blocks) {
+            hashes.add(Level.chunkHash(block.getChunkX(), block.getChunkZ()));
+        }
+        return hashes;
+    }
+
     public ObjectOpenHashSet<Runnable> getHooks() {
         return this.hooks;
     }
 
+    public Long2ObjectOpenHashMap<ObjectArrayList<Runnable>> getChunkHooks() {
+        return this.chunkHooks;
+    }
+
     protected void applyHooks() {
+        for (var entry : this.chunkHooks.long2ObjectEntrySet()) {
+            long chunkHash = entry.getLongKey();
+            IChunk chunk = this.level.getChunk(Level.getHashX(chunkHash), Level.getHashZ(chunkHash));
+            if (chunk != null && chunk.isGenerated()) {
+                this.hooks.addAll(entry.getValue());
+            } else {
+                deferHooks(this.level, chunkHash, entry.getValue());
+            }
+        }
+        this.chunkHooks.clear();
+
         hooks.parallelStream().forEach(Runnable::run);
         hooks.clear();
+    }
+
+    private static void deferHooks(Level level, long chunkHash, List<Runnable> runnables) {
+        PendingHookKey key = new PendingHookKey(level.getId(), chunkHash);
+        synchronized (PENDING_HOOKS) {
+            PENDING_HOOKS.computeIfAbsent(key, k -> new ObjectArrayList<>()).addAll(runnables);
+        }
+    }
+
+    private static void runPendingHooks(Level level, IChunk chunk) {
+        PendingHookKey key = new PendingHookKey(level.getId(), Level.chunkHash(chunk.getX(), chunk.getZ()));
+        List<Runnable> runnables;
+        synchronized (PENDING_HOOKS) {
+            runnables = PENDING_HOOKS.remove(key);
+        }
+        if (runnables == null) {
+            return;
+        }
+        for (Runnable runnable : runnables) {
+            runnable.run();
+        }
     }
 
     public String getBlockIdIfCachedOrLoaded(int x, int y, int z) {
@@ -183,6 +284,7 @@ public class BlockManager {
     public void merge(BlockManager manager) {
         if (manager.places.isEmpty()) {
             this.hooks.addAll(manager.getHooks());
+            this.mergeChunkHooks(manager);
             return;
         }
         if (this.level == manager.level) {
@@ -200,6 +302,18 @@ public class BlockManager {
             }
         }
         this.hooks.addAll(manager.getHooks());
+        this.mergeChunkHooks(manager);
+    }
+
+    private void mergeChunkHooks(BlockManager manager) {
+        for (var entry : manager.chunkHooks.long2ObjectEntrySet()) {
+            this.chunkHooks.computeIfAbsent(entry.getLongKey(), k -> new ObjectArrayList<>()).addAll(entry.getValue());
+        }
+    }
+
+    public void mergeHooks(BlockManager manager) {
+        this.hooks.addAll(manager.getHooks());
+        this.mergeChunkHooks(manager);
     }
 
     public Level getLevel() {
@@ -441,6 +555,11 @@ public class BlockManager {
             return;
         }
 
+        applyPendingBlocks(level, chunk);
+        runPendingHooks(level, chunk);
+    }
+
+    private static void applyPendingBlocks(Level level, IChunk chunk) {
         ListTag<IntArrayTag> pending;
         synchronized (chunk) {
             CompoundTag extraData = chunk.getExtraData();

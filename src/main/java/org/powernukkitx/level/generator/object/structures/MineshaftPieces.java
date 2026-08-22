@@ -423,7 +423,7 @@ public class MineshaftPieces {
             if (boundingBox.isInside(vec) && level.getBlockIdAt(vec.x, vec.y, vec.z) == Block.AIR && level.getBlockIdAt(vec.x, vec.y - 1, vec.z) != Block.AIR) {
                 this.placeBlock(level, random.nextBoolean() ? RAIL__NS : RAIL__EW, x, y, z, boundingBox);
 
-                level.addHook(() -> {
+                level.addHook(vec.x >> 4, vec.z >> 4, () -> {
                     IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                     if (chunk != null) {
                         EntityChestMinecart minecart = (EntityChestMinecart) Entity.createEntity(Entity.CHEST_MINECART,
@@ -494,7 +494,7 @@ public class MineshaftPieces {
                         this.hasPlacedSpider = true;
                         level.setBlockStateAt(vec.x, vec.y, vec.z, SPAWNER);
                         Block block = level.getBlockAt(vec.x, vec.y, vec.z);
-                        level.addHook(() -> {
+                        level.addHook(vec.x >> 4, vec.z >> 4, () -> {
                             if (block instanceof BlockMobSpawner spawner) {
                                 spawner.getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.CAVE_SPIDER));
                             }

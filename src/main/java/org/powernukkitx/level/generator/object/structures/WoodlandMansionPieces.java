@@ -22,6 +22,7 @@ import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.StructureRotationUtil;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,8 @@ public final class WoodlandMansionPieces {
         }
         afterPlaceFoundationFill(manager, pieces);
         if (!wallPositions.isEmpty()) {
-            manager.addHook(() -> refreshWallConnections(manager.getLevel(), wallPositions));
+            manager.addHook(BlockManager.chunkHashesOfPositions(wallPositions),
+                    () -> refreshWallConnections(manager.getLevel(), wallPositions));
         }
 
         List<BlockVector3> chests = new ArrayList<>();
@@ -1591,6 +1593,15 @@ public final class WoodlandMansionPieces {
 
         public List<BlockVector3> spiderSpawnerPositions() {
             return this.spiderSpawnerPositions;
+        }
+
+        public LongOpenHashSet coveredChunks() {
+            LongOpenHashSet hashes = BlockManager.chunkHashesOfPositions(this.chests);
+            hashes.addAll(BlockManager.chunkHashesOfPositions(this.spiderSpawnerPositions));
+            for (MobSpawn spawn : this.mobSpawns) {
+                hashes.add(Level.chunkHash(spawn.position().getX() >> 4, spawn.position().getZ() >> 4));
+            }
+            return hashes;
         }
     }
 
