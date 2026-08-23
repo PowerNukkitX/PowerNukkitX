@@ -1584,7 +1584,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      */
     @Nullable
     public Inventory getContainer() {
-        if (!hasContainer() || getLevel() == null) {
+        if (!hasContainer() || !isValid()) {
             return null;
         }
         return ((BlockEntityHolder<?>) this).getBlockEntity() instanceof InventoryHolder holder ? holder.getInventory() : null;
