@@ -14,6 +14,8 @@ import org.powernukkitx.event.player.PlayerInteractEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.MovingObjectPosition;
@@ -1564,6 +1566,28 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public boolean isFertilizable() {
         return false;
+    }
+
+    /**
+     * Check if this block type holds a block entity that provides an inventory, like a chest or a furnace.
+     * This only looks at the block type, use {@link #getContainer()} to access the actual inventory.
+     */
+    public boolean hasContainer() {
+        return this instanceof BlockEntityHolder<?> holder
+                && InventoryHolder.class.isAssignableFrom(holder.getBlockEntityClass());
+    }
+
+    /**
+     * Get the inventory of the block entity placed at this position.
+     *
+     * @return The inventory, or null if this block has no container or the block entity is missing
+     */
+    @Nullable
+    public Inventory getContainer() {
+        if (!hasContainer() || !isValid()) {
+            return null;
+        }
+        return ((BlockEntityHolder<?>) this).getBlockEntity() instanceof InventoryHolder holder ? holder.getInventory() : null;
     }
 
     /**
