@@ -353,6 +353,9 @@ public class CommandParameter {
             if (type == null) {
                 type = CommandParamType.RAW_TEXT;
             }
+            if (type == CommandParamType.MESSAGE) {
+                type = CommandParamType.MESSAGE_ROOT;
+            }
             final Field field = CommandParam.class.getDeclaredField(type.name());
             final CommandParam param = (CommandParam) field.get(null);
             data.setType(param);
