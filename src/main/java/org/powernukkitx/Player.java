@@ -3350,7 +3350,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.addMotion(this.motionX, this.motionY, this.motionZ);  // Send it to others
                 final SetActorMotionPacket packet = new SetActorMotionPacket();
                 packet.setTargetRuntimeID(this.getId());
-                packet.setMotion(Vector3f.from(motion.x, motion.y, motion.z));
+                packet.setMotion(Vector3f.from(this.motionX, this.motionY, this.motionZ));
                 this.sendPacket(packet);  // Send it to self
             }
             if (this.motionY > 0) {
