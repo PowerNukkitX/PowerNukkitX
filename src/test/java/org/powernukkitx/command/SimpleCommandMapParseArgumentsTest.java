@@ -42,28 +42,9 @@ class SimpleCommandMapParseArgumentsTest {
     }
 
     @Test
-    @Timeout(value = 60, unit = TimeUnit.SECONDS)
+    @Timeout(value = 30, unit = TimeUnit.SECONDS)
     void parsingManyQuotesStaysLinear() {
-        int size = 100_000;
-        parseQuotes(size);
-        parseQuotes(2 * size);
-
-        long single = timeParseQuotes(size);
-        long that = timeParseQuotes(2 * size);
-        double growth = (double) that / Math.max(single, 1);
-
-        assertTrue(growth < 3.0,
-                "doubling the quote count multiplied the parsing cost by " + String.format("%.1f", growth)
-                        + ", expected about 2 for linear parsing (" + single + " ns then " + that + " ns)");
-    }
-
-    private static long timeParseQuotes(int quotes) {
-        long start = System.nanoTime();
-        parseQuotes(quotes);
-        return System.nanoTime() - start;
-    }
-
-    private static void parseQuotes(int quotes) {
-        assertNotNull(SimpleCommandMap.parseArguments("help [" + "\"".repeat(quotes)));
+        // quadratic parsing needs ~10^12 character moves for this input and cannot finish in time
+        assertNotNull(SimpleCommandMap.parseArguments("help [" + "\"".repeat(1_000_000)));
     }
 }
