@@ -117,6 +117,7 @@ import org.powernukkitx.event.player.PlayerTeleportEvent.TeleportCause;
 import org.powernukkitx.event.server.PacketSendEvent;
 import org.powernukkitx.form.window.Form;
 import org.powernukkitx.inventory.CraftTypeInventory;
+import org.powernukkitx.inventory.CrafterInventory;
 import org.powernukkitx.inventory.CraftingGridInventory;
 import org.powernukkitx.inventory.CreativeOutputInventory;
 import org.powernukkitx.inventory.EntityHandItem;
@@ -124,6 +125,7 @@ import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.PlayerCursorInventory;
 import org.powernukkitx.inventory.fake.FakeInventory;
+import org.powernukkitx.inventory.fake.FakeInventoryType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemArmor;
 import org.powernukkitx.item.ItemArrow;
@@ -3300,11 +3302,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        if (!this.isCreative() && !this.isSpectator()) {
-            return super.getDrops(weapon);
+        if (this.isCreative() || this.isSpectator()) {
+            return Item.EMPTY_ARRAY;
         }
 
-        return Item.EMPTY_ARRAY;
+        List<Item> drops = new ArrayList<>(Arrays.asList(super.getDrops(weapon)));
+        for (Inventory inventory : this.getInventoriesDroppedOnDeath()) {
+            for (Item item : inventory.getContents().values()) {
+                if (!item.isNull() && !item.keepOnDeath()) {
+                    drops.add(item);
+                }
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @ApiStatus.Internal
@@ -4737,6 +4748,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         }
                     });
                 }
+                for (Inventory uiInventory : this.getInventoriesDroppedOnDeath()) {
+                    new HashMap<>(uiInventory.getContents()).forEach((slot, item) -> {
+                        if (!item.keepOnDeath()) {
+                            uiInventory.clear(slot);
+                        }
+                    });
+                }
             }
 
             if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
@@ -5749,6 +5767,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 removeWindow(value);
             }
         }
+    }
+
+    private List<Inventory> getInventoriesDroppedOnDeath() {
+        List<Inventory> inventories = new ArrayList<>(3);
+        if (this.craftingGridInventory != null) {
+            inventories.add(this.craftingGridInventory);
+        }
+        if (this.playerCursorInventory != null) {
+            inventories.add(this.playerCursorInventory);
+        }
+        this.getTopWindow().filter(Player::isDroppedOnDeath).ifPresent(inventories::add);
+        return inventories;
+    }
+
+    private static boolean isDroppedOnDeath(Inventory inventory) {
+        if (inventory instanceof CrafterInventory) {
+            return false;
+        }
+        return inventory instanceof CraftTypeInventory
+                || (inventory instanceof FakeInventory fakeInventory
+                && fakeInventory.getFakeInventoryType() == FakeInventoryType.WORKBENCH);
     }
 
     private void returnItemsFromInventory(Inventory inventory) {
