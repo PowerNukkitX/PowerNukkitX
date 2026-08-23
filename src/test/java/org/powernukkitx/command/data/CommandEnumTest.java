@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -43,6 +44,15 @@ class CommandEnumTest {
     void hashCodeIsBasedOnName() {
         CommandEnum e = new CommandEnum("Same", "a");
         assertEquals("Same".hashCode(), e.hashCode());
+    }
+
+    @Test
+    void toNetworkCanCarryADeltaInsteadOfEveryValue() {
+        CommandEnum e = new CommandEnum("Colors", Arrays.asList("red", "green"), true);
+        var data = e.toNetwork(List.of("green"));
+        assertEquals("Colors", data.getName());
+        assertTrue(data.isSoft());
+        assertEquals(Set.of("green"), data.getValues().keySet());
     }
 
     @Test
