@@ -225,22 +225,35 @@ public abstract class BlockLiquid extends BlockTransparent {
         return 1;
     }
 
+    public static boolean normalizeWaterloggedLayer(Level level, int x, int y, int z) {
+        if (!(level.getBlock(x, y, z, 1) instanceof BlockLiquid liquid)) {
+            return false;
+        }
+        Block layer0 = level.getBlock(x, y, z, 0);
+        if (layer0.isAir()) {
+            level.setBlock(x, y, z, 1, Block.get(BlockID.AIR), false, false);
+            level.setBlock(x, y, z, 0, liquid, false, false);
+            return true;
+        }
+        if (layer0.getWaterloggingLevel() <= 0
+                || layer0.getWaterloggingLevel() == 1 && liquid.getLiquidDepth() > 0) {
+            level.setBlockStateAt(x, y, z, 1, BlockAir.STATE);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL && layer > 0
+                && normalizeWaterloggedLayer(this.level, getFloorX(), getFloorY(), getFloorZ())) {
+            return 0;
+        }
         if (!this.level.getGameplaySettings().enableLiquidFlow()) {
             return 0;
         }
         if (type == Level.BLOCK_UPDATE_NORMAL) {//for normal update tick
             this.checkForMixing();
-            if (usesWaterLogging() && layer > 0) {
-                Block layer0 = this.level.getBlock(this, 0);
-                if (layer0.isAir()) {
-                    this.level.setBlock(this, 1, Block.get(BlockID.AIR), false, false);
-                    this.level.setBlock(this, 0, this, false, false);
-                } else if (layer0.getWaterloggingLevel() <= 0 || layer0.getWaterloggingLevel() == 1 && getLiquidDepth() > 0) {
-                    this.level.setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), 1, BlockAir.STATE);
-                }
-            }
             this.level.scheduleUpdate(this, this.tickRate());
             return 0;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
