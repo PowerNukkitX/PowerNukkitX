@@ -255,6 +255,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected final BedrockServerSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
+    protected final Set<UUID> hiddenFromPlayerList = new HashSet<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
     protected int messageLimitCounter = 2;
@@ -2127,11 +2128,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param player Players who want to hide
      */
     public void hidePlayer(Player player) {
+        this.hidePlayer(player, false);
+    }
+
+    /**
+     * Hide the specified player from the view of the current player instance
+     *
+     * @param player               Players who want to hide
+     * @param hideFromPlayerList   Whether the player should also be removed from the player list
+     */
+    public void hidePlayer(Player player, boolean hideFromPlayerList) {
         if (this == player) {
             return;
         }
         this.hiddenPlayers.put(player.getUniqueId(), player);
         player.despawnFrom(this);
+
+        if (hideFromPlayerList && this.hiddenFromPlayerList.add(player.getUniqueId())) {
+            this.server.removePlayerListData(player.getUniqueId(), this);
+        }
     }
 
     /**
@@ -2145,7 +2160,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.hiddenPlayers.remove(player.getUniqueId());
         if (player.isOnline()) {
+            if (this.hiddenFromPlayerList.remove(player.getUniqueId())) {
+                this.server.updatePlayerListData(
+                    player.getUniqueId(),
+                    player.getId(),
+                    player.getDisplayName(),
+                    player.getSkin(),
+                    player.getXUID(),
+                    player.getLocatorBarColor(),
+                    new Player[]{this}
+                );
+            }
             player.spawnTo(this);
+        } else {
+            this.hiddenFromPlayerList.remove(player.getUniqueId());
         }
     }
 
@@ -4344,6 +4372,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.windows.clear();
         this.hiddenPlayers.clear();
+        this.hiddenFromPlayerList.clear();
         //remove player from player list
         this.server.removeOnlinePlayer(this);
         //remove player from player map
