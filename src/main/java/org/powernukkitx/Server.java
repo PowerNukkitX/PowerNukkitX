@@ -905,8 +905,6 @@ public class Server {
             }
         }
 
-        this.getSettings().save();
-
         try {
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
@@ -2864,6 +2862,7 @@ public class Server {
 
     public void setWhitelistMessage(String message) {
         this.settings.baseSettings().allowListMessage(message);
+        this.settings.save();
     }
 
     public boolean isOp(String name) {
@@ -3036,6 +3035,7 @@ public class Server {
         if (value > 3)
             value = 3;
         this.settings.gameplaySettings().difficulty(value);
+        this.settings.save();
     }
 
     /**
@@ -3043,6 +3043,16 @@ public class Server {
      */
     public boolean hasWhitelist() {
         return this.settings.baseSettings().allowList();
+    }
+
+    /**
+     * Enable or disable the server whitelist and persist the change.
+     *
+     * @param value whether the whitelist should be enforced
+     */
+    public void setWhitelist(boolean value) {
+        this.settings.baseSettings().allowList(value);
+        this.settings.save();
     }
 
     /**
@@ -3093,6 +3103,7 @@ public class Server {
      */
     public void setMotd(String motd) {
         this.settings.baseSettings().motd(motd);
+        this.settings.save();
         this.getNetwork().updatePong(this.getNetwork().getPong().motd(motd));
     }
 
@@ -3114,6 +3125,7 @@ public class Server {
      */
     public void setSubMotd(String subMotd) {
         this.settings.baseSettings().subMotd(subMotd);
+        this.settings.save();
         this.getNetwork().updatePong(this.getNetwork().getPong().subMotd(subMotd));
     }
 
