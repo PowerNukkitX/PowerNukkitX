@@ -1022,22 +1022,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 return;
             }
 
-            PlayerMoveEvent.Type moveType;
+            PlayerMoveEvent ev = null;
 
-            if (positionChanged && rotationChanged) {
-                moveType = PlayerMoveEvent.Type.ALL;
-            } else if (positionChanged) {
-                moveType = PlayerMoveEvent.Type.POSITION_CHANGE;
-            } else {
-                moveType = PlayerMoveEvent.Type.ROTATE;
+            if (!PlayerMoveEvent.getHandlers().isEmpty()) {
+                PlayerMoveEvent.Type moveType;
+
+                if (positionChanged && rotationChanged) {
+                    moveType = PlayerMoveEvent.Type.ALL;
+                } else if (positionChanged) {
+                    moveType = PlayerMoveEvent.Type.POSITION_CHANGE;
+                } else {
+                    moveType = PlayerMoveEvent.Type.ROTATE;
+                }
+
+                ev = new PlayerMoveEvent(this, last, now, true, moveType);
+
+                this.server.getPluginManager().callEvent(ev);
             }
 
-            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now, true, moveType);
-
-            this.server.getPluginManager().callEvent(ev);
-
-            if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
-                if (!now.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
+            if (!(invalidMotion = ev != null && ev.isCancelled())) { //Yes, this is intended
+                if (ev != null && !now.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
                     if (this.getGamemode() != Player.SPECTATOR)
                         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                     this.teleport(ev.getTo(), null);
