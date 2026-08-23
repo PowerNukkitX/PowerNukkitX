@@ -36,4 +36,9 @@ public class EntityBreezeWindCharge extends EntityWindCharge {
     public double getKnockbackStrength() {
         return 0.18f;
     }
+
+    @Override
+    protected boolean resetsFallDistance() {
+        return false;
+    }
 }

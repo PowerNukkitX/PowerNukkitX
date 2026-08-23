@@ -143,6 +143,10 @@ public class EntityWindCharge extends EntityProjectile {
         return 0.2f;
     }
 
+    protected boolean resetsFallDistance() {
+        return true;
+    }
+
     protected void knockBack(Entity entity) {
         Vector3 knockback = new Vector3(entity.motionX, entity.motionY, entity.motionZ);
         knockback.x /= 2d;
@@ -153,5 +157,9 @@ public class EntityWindCharge extends EntityProjectile {
         knockback.z -= (this.getZ() - entity.getZ()) * getKnockbackStrength();
 
         entity.setMotion(knockback);
+
+        if (this.resetsFallDistance()) {
+            entity.resetFallDistance();
+        }
     }
 }
