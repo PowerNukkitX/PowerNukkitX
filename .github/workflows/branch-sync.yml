@@ -35,6 +35,8 @@ jobs:
           git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
 
       - name: Merge "stable" into "beta" and push changes
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           LOWER_BRANCH="stable"
           TARGET_BRANCH="beta"
@@ -43,6 +45,6 @@ jobs:
 
           git commit \
             -m "Merge '$LOWER_BRANCH' into '$TARGET_BRANCH'" \
-            -m "Automatic merge performed by: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            -m "Automatic merge performed by: $RUN_URL" \
             || true
           git push
