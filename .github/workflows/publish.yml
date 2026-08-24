@@ -139,9 +139,25 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.PNX_BOT_APP_ID }}
+          private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Set Git config
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          git config user.name "$APP_SLUG[bot]"
+          git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
 
       - name: Extract release metadata from source
         id: versions
@@ -178,8 +194,6 @@ jobs:
             -e "s|(badge/protocol-)[0-9]+(-blue)|\1${PROTOCOL_VERSION}\2|" \
             README.md
 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
           git add README.md
           if git diff --staged --quiet; then
             echo "README badges already up to date"
@@ -283,7 +297,7 @@ jobs:
 
           echo "created=${FILE}" >> $GITHUB_OUTPUT
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Commit and push changelog
         if: needs.publish.outputs.tag != 'nightly'
@@ -293,8 +307,6 @@ jobs:
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
           MINECRAFT_VERSION="${{ steps.versions.outputs.minecraft_version }}"
 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
           git add "changelogs/${TAG}.md"
           if git diff --staged --quiet; then
             echo "Changelog already exists, skipping commit"
@@ -383,11 +395,11 @@ jobs:
           echo "is_draft=$IS_DRAFT" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Create or update release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           TAG="${{ steps.notes.outputs.tag }}"
           TITLE="${{ needs.publish.outputs.title }}"
@@ -396,6 +408,10 @@ jobs:
 
           if gh release view "$TAG" --json id &>/dev/null 2>&1; then
             echo "Updating existing release $TAG"
+            # Rolling tags like "nightly" are reused, so the tag has to follow the new commit -
+            # gh release edit leaves it pointing at whatever it was created from.
+            git tag -f "$TAG" "$GITHUB_SHA"
+            git push -f origin "refs/tags/$TAG"
             gh release upload "$TAG" build/powernukkitx.jar --clobber
             gh release edit "$TAG" \
               --notes-file release-notes.md \
@@ -406,6 +422,7 @@ jobs:
             gh release create "$TAG" \
               --title "$TITLE" \
               --notes-file release-notes.md \
+              --target "$GITHUB_SHA" \
               --draft="$IS_DRAFT" \
               --prerelease="$IS_PRERELEASE" \
               --latest=false \
