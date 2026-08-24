@@ -3,7 +3,7 @@ name: PowerNukkitX Publish
 on:
   push:
     branches:
-      - stable
+      - beta
       - r/**
       - b/**
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
             echo "is_draft=${{ inputs.draft }}"              >> $GITHUB_OUTPUT
             echo "is_prerelease=false"                       >> $GITHUB_OUTPUT
 
-          elif [ "${{ github.ref_name }}" = "master" ]; then
+          elif [ "${{ github.ref_name }}" = "beta" ]; then
             echo "tag=nightly"                               >> $GITHUB_OUTPUT
             echo "title=Dev Build (nightly)"                 >> $GITHUB_OUTPUT
             echo "skip_release=false"                        >> $GITHUB_OUTPUT
@@ -88,7 +88,7 @@ jobs:
 
       - name: Build & Publish to Maven
         run: |
-          if [ "${{ github.ref_name }}" = "master" ]; then
+          if [ "${{ github.ref_name }}" = "beta" ]; then
             VERSION="nightly-SNAPSHOT"
           elif [[ "${{ github.ref_name }}" == b/* ]]; then
             BRANCH="${{ github.ref_name }}"
