@@ -3,7 +3,7 @@ name: PowerNukkitX Publish
 on:
   push:
     branches:
-      - master
+      - stable
       - r/**
       - b/**
   workflow_dispatch:

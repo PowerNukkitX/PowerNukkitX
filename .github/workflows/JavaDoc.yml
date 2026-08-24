@@ -3,7 +3,8 @@ name: Build & Deploy Javadoc
 on:
   push:
     branches:
-      - master
+      - stable
+      - beta
   workflow_dispatch:
 
 jobs:
