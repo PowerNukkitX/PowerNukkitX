@@ -165,6 +165,29 @@ jobs:
           echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
           echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
 
+      - name: Sync README version badges
+        env:
+          PROTOCOL_VERSION: ${{ steps.versions.outputs.protocol_version }}
+          MINECRAFT_VERSION: ${{ steps.versions.outputs.minecraft_version }}
+        run: |
+          # Badges drop the leading "1." the codec reports, matching how Bedrock releases are named.
+          BADGE_MC="${MINECRAFT_VERSION#1.}"
+
+          sed -i -E \
+            -e "s|(badge/minecraft-)[^-]*(-56383E)|\1v${BADGE_MC}%20(Bedrock)\2|" \
+            -e "s|(badge/protocol-)[0-9]+(-blue)|\1${PROTOCOL_VERSION}\2|" \
+            README.md
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          if git diff --staged --quiet; then
+            echo "README badges already up to date"
+          else
+            git commit -m "docs: update README badges to Minecraft ${MINECRAFT_VERSION} (protocol ${PROTOCOL_VERSION}) [skip ci]"
+            git push
+          fi
+
       - uses: actions/download-artifact@v8
         with:
           name: powernukkitx.jar
