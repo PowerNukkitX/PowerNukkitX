@@ -21,6 +21,13 @@ public class FreezableArrayManager {
      * Maximum working time; if compression keeps running past this time, the compression (freezing) of the remaining arrays is abandoned.
      */
     private int maxCompressionTime = 50;
+    /**
+     * Hard cap on how many arrays a single cycle may compress, on top of {@link #maxCompressionTime}.
+     * The time budget alone lets one cycle occupy a compute thread until it expires; capping the
+     * count keeps the pool available for chunk work, and anything skipped is simply retried on the
+     * next pass over the same bucket.
+     */
+    private int maxCompressionsPerCycle = 2048;
     private final AtomicInteger currentArrayId = new AtomicInteger(0);
     /**
      * Guards against stacking up cycle tasks on the compute thread pool when a cycle takes longer than
@@ -130,6 +137,15 @@ public class FreezableArrayManager {
         return this;
     }
 
+    public int getMaxCompressionsPerCycle() {
+        return maxCompressionsPerCycle;
+    }
+
+    public FreezableArrayManager setMaxCompressionsPerCycle(int maxCompressionsPerCycle) {
+        this.maxCompressionsPerCycle = maxCompressionsPerCycle;
+        return this;
+    }
+
     public ByteArrayWrapper createByteArray(int length) {
         if (enable) {
             var tmp = new FreezableByteArray(length, this);
@@ -171,24 +187,36 @@ public class FreezableArrayManager {
         if (set == null) return;
         if (!cycleRunning.compareAndSet(false, true)) return;
         // freeze arrays
-        var start = System.currentTimeMillis();
+        //
+        // The deadline is taken here, on the tick thread, and not where the cycle starts running on
+        // the compute pool. The caller sets maxCompressionTime to whatever is left of the current
+        // tick, so the window belongs to this tick: a cycle that cannot get a compute thread before
+        // the tick is over is meant to give up rather than run into the next one.
+        final long deadline = System.currentTimeMillis() + maxCompressionTime;
+        final int budgetStart = maxCompressionsPerCycle;
         // clean up dead references
         CompletableFuture.runAsync(() -> {
+            int budget = budgetStart;
+            boolean budgetSpent = false;
             for (AutoFreezable e : set) {
                 if (e == null) continue;
                 int temp = e.getTemperature();
+                // Cooling continues for the whole bucket even once the compression budget is gone.
+                // Stopping the loop outright would starve its tail: the same arrays are visited in
+                // the same order every cycle, so the ones past the cut-off would never cool down.
                 e.colder(1);
-                if (temp <= getFreezingPoint() + 1) {
-                    if (System.currentTimeMillis() - start > maxCompressionTime) {
-                        continue;
-                    }
-                    if (e.getFreezeStatus() == AutoFreezable.FreezeStatus.NONE || e.getFreezeStatus() == AutoFreezable.FreezeStatus.FREEZE) {
-                        if (e.getTemperature() == absoluteZero) {
-                            e.deepFreeze();
-                        } else {
-                            e.freeze();
-                        }
-                    }
+                if (budgetSpent) continue;
+                if (temp > getFreezingPoint() + 1) continue;
+                var status = e.getFreezeStatus();
+                if (status != AutoFreezable.FreezeStatus.NONE && status != AutoFreezable.FreezeStatus.FREEZE) continue;
+                if (budget-- <= 0 || System.currentTimeMillis() > deadline) {
+                    budgetSpent = true;
+                    continue;
+                }
+                if (e.getTemperature() == absoluteZero) {
+                    e.deepFreeze();
+                } else {
+                    e.freeze();
                 }
             }
         }, Server.getInstance().getComputeThreadPool())

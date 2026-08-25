@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable {
     private final FreezableArrayManager manager;
     private final AtomicReference<FreezeStatus> freezeStatus = new AtomicReference<>(FreezeStatus.NONE);
-    private int temperature;
+    private volatile int temperature;
     private final int rawLength;
     private byte[] data;
 
@@ -41,19 +41,28 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public void warmer(int temperature) {
-        this.temperature = Math.min(manager.getBoilingPoint(), this.temperature + temperature);
+        int current = this.temperature;
+        int boilingPoint = manager.getBoilingPoint();
+        if (current >= boilingPoint) return;
+        this.temperature = Math.min(boilingPoint, current + temperature);
     }
 
     @Override
     public void colder(int temperature) {
-        this.temperature = Math.max(manager.getAbsoluteZero(), this.temperature - temperature);
+        // Guarded so an array already at absolute zero does not take a volatile write. The freeze
+        // cycle cools every tracked array on every pass, and on a server with many worlds most of
+        // them are permanently at the floor - writing the same value back dirtied a cache line for
+        // each one, on every pass, across every compute thread.
+        int current = this.temperature;
+        int absoluteZero = manager.getAbsoluteZero();
+        if (current <= absoluteZero) return;
+        this.temperature = Math.max(absoluteZero, current - temperature);
     }
 
     @Override
     public void freeze() {
         if (temperature > manager.getFreezingPoint()) return;
-        if (freezeStatus.get() != FreezeStatus.NONE) return;
-        freezeStatus.set(FreezeStatus.FREEZING);
+        if (!freezeStatus.compareAndSet(FreezeStatus.NONE, FreezeStatus.FREEZING)) return;
         data = LZ4Freezer.compressor.compress(data);
         freezeStatus.set(FreezeStatus.FREEZE);
     }
