@@ -640,4 +640,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             super.close();
         }
     }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return player.isOp() ? this.getCleanedNBT() : null;
+    }
 }
