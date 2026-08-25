@@ -63,7 +63,7 @@ public class ItemChorusFruit extends ItemFood {
             while (y >= 0 && !level.getBlock(new Vector3(x, y + 1, z)).isSolid()) {
                 y--;
             }
-            y++; // Back up to non solid
+            y++; // Back up to non-solid
 
             Block blockUp = level.getBlock(new Vector3(x, y + 1, z));
             Block blockUp2 = level.getBlock(new Vector3(x, y + 2, z));

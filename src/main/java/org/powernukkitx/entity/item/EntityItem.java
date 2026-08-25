@@ -317,7 +317,7 @@ public class EntityItem extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        if (this.item != null) { // Yes, a item can be null... I don't know what causes this, but it can happen.
+        if (this.item != null) { // Yes, an item can be null... I don't know what causes this, but it can happen.
             this.nbt.putCompound("Item", ItemHelper.write(this.item, -1))
                     .putShort("Health", (short) this.getHealthCurrent())
                     .putShort("Age", (short) this.age)

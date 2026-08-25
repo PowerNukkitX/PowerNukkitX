@@ -180,7 +180,7 @@ public class Level implements Metadatable {
             createTimeMarker(-4807795260250801598L, "minecraft:day", 1000, 24000),
             createTimeMarker(-1781951082890426794L, "minecraft:sunset", 12000, 24000)
     );
-    
+
     public static final int DIMENSION_OVERWORLD = 0;
     public static final int DIMENSION_NETHER = 1;
     public static final int DIMENSION_THE_END = 2;
@@ -420,7 +420,7 @@ public class Level implements Metadatable {
     /// antiXray system
     private AntiXraySystem antiXraySystem;
     private GameplaySettings gameplaySettings;
-    /** Cached {@code chunk-settings.lightUpdates}: gates all block/sky light work (boot-time only). */
+    /** Cached {@code chunk-settings.lightUpdates}: gates all block/skylight work (boot-time only). */
     private boolean lightUpdatesEnabled;
     /** Chunk hashes covered by ticking areas of this level; rebuilt when the ticking-area version changes. */
     private LongOpenHashSet tickingAreaChunkHashes;
@@ -5063,7 +5063,7 @@ public class Level implements Metadatable {
     }
 
     /**
-     * submit a unload chunk request.
+     * submit an unload chunk request.
      *
      * @param x    the x
      * @param z    the z
@@ -6410,7 +6410,7 @@ public class Level implements Metadatable {
     }
 
     /**
-     * Actual level ticks executed per wall-clock second, sampled over a ~1 second window.
+     * Actual level ticks executed per wall-clock second, sampled over a ~1-second window.
      * Unlike {@link GameLoop#getTps()} (a per-tick capacity estimate clamped to the target),
      * this reflects what the loop really achieved. 0 until the first window completes.
      */

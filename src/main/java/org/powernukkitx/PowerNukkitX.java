@@ -295,7 +295,7 @@ public class PowerNukkitX {
     }
 
     private static boolean requiresShortTitle() {
-        //Shorter title for windows 8/2012
+        //Shorter title for Microsoft Windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
         return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }

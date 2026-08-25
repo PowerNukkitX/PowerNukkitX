@@ -410,7 +410,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
         //this optimization only applies to entities in non-active chunks
         if (entity.isActive()) return true;
-        //the endpoint changed or it's the first calculation, so recalculation is needed
+        //the endpoint changed, or it's the first calculation, so recalculation is needed
         if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity))
             return true;
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);

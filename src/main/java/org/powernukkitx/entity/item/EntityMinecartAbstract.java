@@ -789,7 +789,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     /**
      * Set the minecart display block
      *
-     * @param block The block that will changed. Set {@code null} for BlockAir
+     * @param block The block that will be changed. Set {@code null} for BlockAir
      * @return {@code true} if the block is normal block
      */
     public boolean setDisplayBlock(Block block) {
@@ -799,7 +799,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     /**
      * Set the minecart display block
      *
-     * @param block  The block that will changed. Set {@code null} for BlockAir
+     * @param block  The block that will be changed. Set {@code null} for BlockAir
      * @param update Do update for the block. (This state changes if you want to show the block)
      * @return {@code true} if the block is normal block
      */
