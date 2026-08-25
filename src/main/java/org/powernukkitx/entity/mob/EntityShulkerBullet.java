@@ -2,8 +2,7 @@ package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.SpaceMoveController;
@@ -38,10 +37,9 @@ public class EntityShulkerBullet extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, true), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, true))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
                 .controllers(new SpaceMoveController(), new LiftController())
                 .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
                 .build();

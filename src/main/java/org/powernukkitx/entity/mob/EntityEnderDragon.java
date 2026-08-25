@@ -11,8 +11,7 @@ import org.powernukkitx.entity.Attribute;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.IController;
 import org.powernukkitx.entity.ai.controller.LiftController;
@@ -80,26 +79,27 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERDRAGON_GROWL), new RandomSoundEvaluator(), 2, 1)
-                )
-                .behaviors(
-                        new Behavior(new PerchingExecutor(), entity -> getMemoryStorage().get(CoreMemoryTypes.FORCE_PERCHING), 5, 1),
-                        new Behavior(new StrafeExecutor(), all(
+        return EntityAI.of(this)
+                .coreBehavior(new PlaySoundExecutor(Sound.MOB_ENDERDRAGON_GROWL))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new PerchingExecutor())
+                        .when(entity -> getMemoryStorage().get(CoreMemoryTypes.FORCE_PERCHING))
+                .behavior(new StrafeExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_ENDER_CRYSTAL_DESTROY)
-                        ), 4, 1),
-                        new Behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 82, 12, 5), all(
+                        ))
+                .behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 82, 12, 5))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY)
-                        ), 3, 1),
-                        new Behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 48, 8, 4), all(
+                        ))
+                .behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 48, 8, 4))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY)
-                        ), 2, 1)
-                )
+                        ))
                 .sensors(
                         new NearestPlayerSensor(512, 0, 20),
                         new NearestEntitySensor(EntityEnderCrystal.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 192, 0, 10)

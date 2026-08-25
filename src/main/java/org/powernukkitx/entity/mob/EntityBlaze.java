@@ -2,8 +2,7 @@ package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.EntityFlyable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -50,17 +49,19 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_BLAZE_BREATHE), new RandomSoundEvaluator(), 5, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 1, false, 30), all(
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_BLAZE_BREATHE))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 1, false, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 1)
-                        ), 4, 1),
-                        new Behavior(new BlazeShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 100, 40), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
-                        new Behavior(new BlazeShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 100, 40), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
-                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new BlazeShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 100, 40))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new BlazeShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 100, 40))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10))
                 .sensors(new NearestPlayerSensor(40, 0, 20))
                 .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
                 .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))

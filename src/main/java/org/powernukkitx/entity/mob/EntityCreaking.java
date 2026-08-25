@@ -9,8 +9,7 @@ import org.powernukkitx.block.BlockResinClump;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntityCreakingHeart;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -92,14 +91,16 @@ public class EntityCreaking extends EntityMob {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new DoNothingExecutor(), new EntityCheckEvaluator(CoreMemoryTypes.STARING_PLAYER), 5, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_CREAKING_AMBIENT), all(new RandomSoundEvaluator(), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new DoNothingExecutor())
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.STARING_PLAYER))
+                .behavior(new PlaySoundExecutor(Sound.MOB_CREAKING_AMBIENT))
+                        .when(all(new RandomSoundEvaluator(), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new PlayerStaringCreakingSensor(40, 70, true),
                         new NearestPlayerCreakingSensor(40, 0, 0)

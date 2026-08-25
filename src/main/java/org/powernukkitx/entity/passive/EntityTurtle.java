@@ -5,8 +5,7 @@ import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntitySwimmable;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.ConditionalController;
 import org.powernukkitx.entity.ai.controller.DiveController;
@@ -158,54 +157,33 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
-                )
-                .behaviors(
-                    new Behavior(
-                        new TurtleMoveToWaterExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.1f),
-                            entity -> !entity.isInsideOfWater() && entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK),
-                        5, 1
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.12f, 12, 40, true, 100, true, 10),
-                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.1f, true, false, false, 10, 2.0f, null, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            new ProbabilityEvaluator(4, 10),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10),
-                            entity -> !entity.isInsideOfWater(),
-                        1, 1
-                    ),
-                    new Behavior(
-                        new SpaceRandomRoamExecutor(0.12f, 30, 15, 80, false, 160, false, 10),
-                            entity -> entity.isInsideOfWater(),
-                        1, 1
-                    )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                            e -> e.isAgeable(),
+                            e -> e.isBaby(),
+                            e -> !e.isGrowthPaused(),
+                            e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new TurtleMoveToWaterExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.1f))
+                        .when(entity -> !entity.isInsideOfWater() && entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK))
+                .behavior(new FlatRandomRoamExecutor(0.12f, 12, 40, true, 100, true, 10))
+                        .when(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100))
+                .behavior(new TemptExecutor(1.1f, true, false, false, 10, 2.0f, null, TEMPT_ITEMS))
+                        .when(all(
+                            e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                            e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ProbabilityEvaluator(4, 10))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                        .when(entity -> !entity.isInsideOfWater())
+                        .alongsidePrevious()
+                .behavior(new SpaceRandomRoamExecutor(0.12f, 30, 15, 80, false, 160, false, 10))
+                        .when(entity -> entity.isInsideOfWater())
+                        .alongsidePrevious()
                 .sensors(
                     new NearestPlayerSensor(8, 0, 20),
                     new BlockSensor(BlockFlowingWater.class, CoreMemoryTypes.NEAREST_BLOCK, 16, 5, 10)

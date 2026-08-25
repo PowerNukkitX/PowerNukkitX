@@ -30,18 +30,15 @@ public class NearestPlayerSensor implements ISensor {
     @Override
     public void sense(EntityIntelligent entity) {
         Player player = null;
+        double nearestSquared = Double.MAX_VALUE;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
         //Find the nearest player within range
         for (Player p : entity.getLevel().getPlayers().values()) {
-            if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared) {
-                if (player == null) {
-                    player = p;
-                } else {
-                    if (entity.distanceSquared(p) < entity.distanceSquared(player)) {
-                        player = p;
-                    }
-                }
+            double distanceSquared = entity.distanceSquared(p);
+            if (distanceSquared <= rangeSquared && distanceSquared >= minRangeSquared && distanceSquared < nearestSquared) {
+                player = p;
+                nearestSquared = distanceSquared;
             }
         }
         entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_PLAYER, player);

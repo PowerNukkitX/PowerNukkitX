@@ -1,8 +1,7 @@
 package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.entity.EntitySwimmable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.DiveController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -38,12 +37,8 @@ public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(
-                                new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
-                                entity -> true, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10))
                 .controllers(new SpaceMoveController(), new LookController(true, true), new DiveController())
                 .routeFinder(new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
                 .build();

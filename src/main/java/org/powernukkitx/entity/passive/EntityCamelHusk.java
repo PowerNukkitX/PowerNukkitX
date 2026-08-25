@@ -3,8 +3,6 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.ai.EntityAI;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -267,63 +265,46 @@ public class EntityCamelHusk extends EntityCamel {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(
-                                new MoveToRiderTargetExecutor(this.getMovementSpeedDefault() * 4.00f, true),
-                                e -> this.isRiddenByMob(),
-                                5, 1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
-                                all(
-                                        e -> !this.isRiddenByMob(),
-                                        e -> e.passengers.isEmpty(),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new TemptExecutor(2.5f, TEMPT_ITEMS),
-                                all(
-                                        e -> !this.isRiddenByMob(),
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ProbabilityEvaluator(4, 10),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                        e -> {
-                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                            return p != null && !e.isPassenger(p);
-                                        },
-                                        e -> e.passengers == null || e.passengers.isEmpty()
-                                ),
-                                2, 1, 100
-                        ),
-                        new Behavior(
-                                new CamelSittingExecutor(8),
-                                all(
-                                        e -> !this.isRiddenByMob(),
-                                        e -> !((EntityCamel) e).isSitting(),
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> Utils.rand(1, 35) == 1
-                                ),
-                                2, 1, 200
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
-                                all(
-                                        e -> !this.isRiddenByMob(),
-                                        e -> !((EntityCamel) e).isSitting()
-                                ),
-                                1, 1
-                        )
-                )
+        return EntityAI.of(this)
+                .behavior(new MoveToRiderTargetExecutor(this.getMovementSpeedDefault() * 4.00f, true))
+                        .when(e -> this.isRiddenByMob())
+                .behavior(new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10))
+                        .when(all(
+                                e -> !this.isRiddenByMob(),
+                                e -> e.passengers.isEmpty(),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                        ))
+                .behavior(new TemptExecutor(2.5f, TEMPT_ITEMS))
+                        .when(all(
+                                e -> !this.isRiddenByMob(),
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !e.isPassenger(p);
+                                },
+                                e -> e.passengers == null || e.passengers.isEmpty()
+                        ))
+                        .period(100)
+                .behavior(new CamelSittingExecutor(8))
+                        .when(all(
+                                e -> !this.isRiddenByMob(),
+                                e -> !((EntityCamel) e).isSitting(),
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> Utils.rand(1, 35) == 1
+                        ))
+                        .alongsidePrevious()
+                        .period(200)
+                .behavior(new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10))
+                        .when(all(
+                                e -> !this.isRiddenByMob(),
+                                e -> !((EntityCamel) e).isSitting()
+                        ))
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20)
                 )

@@ -59,22 +59,22 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     @Override
     public Set<IBehavior> getBehaviors() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
     public Set<IBehavior> getCoreBehaviors() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
     public Set<IBehavior> getRunningBehaviors() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
     public Set<IBehavior> getRunningCoreBehaviors() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override

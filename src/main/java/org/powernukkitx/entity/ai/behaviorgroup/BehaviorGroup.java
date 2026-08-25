@@ -1,48 +1,35 @@
 package org.powernukkitx.entity.ai.behaviorgroup;
 
-import org.powernukkitx.Server;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.EntityAI;
-import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behavior.BehaviorState;
 import org.powernukkitx.entity.ai.behavior.IBehavior;
 import org.powernukkitx.entity.ai.controller.IController;
 import org.powernukkitx.entity.ai.memory.IMemoryStorage;
 import org.powernukkitx.entity.ai.memory.MemoryStorage;
-import org.powernukkitx.entity.ai.route.RouteFindingManager;
-import org.powernukkitx.entity.ai.route.data.Node;
+import org.powernukkitx.entity.ai.route.RouteUpdater;
 import org.powernukkitx.entity.ai.route.finder.IRouteFinder;
 import org.powernukkitx.entity.ai.sensor.ISensor;
-import org.powernukkitx.level.DimensionData;
-import org.powernukkitx.level.Level;
-import org.powernukkitx.math.Vector3;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.ToIntFunction;
 
 /**
- * Standard behavior group implementation
+ * Standard behavior group implementation.
+ * <p>
+ * The group owns the scheduling of its behaviors and sensors; pathfinding is delegated to a
+ * {@link RouteUpdater} and debug rendering to a {@link BehaviorDebugRenderer}.
  */
 
 @Getter
-@Setter
 public class BehaviorGroup implements IBehaviorGroup {
-
-    /**
-     * Determines how many gt between each path update
-     */
-    protected static int ROUTE_UPDATE_CYCLE = 16;//gt
-
 
     /**
      * "Core" behaviors that will not be overridden by other behaviors
@@ -70,42 +57,30 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected final Set<IBehavior> runningBehaviors = new HashSet<>();
     /**
-     * Stores the number of gt elapsed since each core behavior was last evaluated
-     */
-    protected final Map<IBehavior, Integer> coreBehaviorPeriodTimer = new HashMap<>();
-    /**
-     * Stores the number of gt elapsed since each behavior was last evaluated
-     */
-    protected final Map<IBehavior, Integer> behaviorPeriodTimer = new HashMap<>();
-    /**
-     * Stores the number of gt elapsed since each sensor was last refreshed
-     */
-    protected final Map<ISensor, Integer> sensorPeriodTimer = new HashMap<>();
-    /**
      * Memory storage
      */
     protected final IMemoryStorage memoryStorage;
     /**
-     * Pathfinder (not asynchronous, because it isn't necessary - the mob AI is already parallelized)
-     */
-    protected final IRouteFinder routeFinder;
-    /**
      * The entity this behavior group belongs to
      */
     protected final EntityIntelligent entity;
+
+    @Getter(AccessLevel.NONE)
+    private final List<PeriodicTrigger<IBehavior>> coreBehaviorTriggers;
+    @Getter(AccessLevel.NONE)
+    private final List<PeriodicTrigger<IBehavior>> behaviorTriggers;
+    @Getter(AccessLevel.NONE)
+    private final List<PeriodicTrigger<ISensor>> sensorTriggers;
+    @Getter(AccessLevel.NONE)
+    private final RouteUpdater routeUpdater;
+    @Getter(AccessLevel.NONE)
+    private final BehaviorDebugRenderer debugRenderer = new BehaviorDebugRenderer(this);
     /**
-     * Pathfinding task
+     * Scratch space for {@link #evaluateBehaviors(EntityIntelligent)}, reused because that method runs
+     * for every mob on every tick. A group is only ever evaluated by one thread at a time.
      */
-    protected RouteFindingManager.RouteFindingTask routeFindingTask;
-
-    protected long blockChangeCache;
-
-    /**
-     * Records the number of gt elapsed since the last path update
-     */
-    protected int currentRouteUpdateTick;//gt
-
-    protected boolean forceUpdateRoute = false;
+    @Getter(AccessLevel.NONE)
+    private final List<IBehavior> evaluationResult = new ArrayList<>();
 
     public BehaviorGroup(int startRouteUpdateTick,
                          Set<IBehavior> coreBehaviors,
@@ -114,16 +89,16 @@ public class BehaviorGroup implements IBehaviorGroup {
                          Set<IController> controllers,
                          IRouteFinder routeFinder,
                          EntityIntelligent entity) {
-        //this parameter staggers the path update timing of each entity, to avoid submitting too many path update tasks within a single gt
-        this.currentRouteUpdateTick = startRouteUpdateTick;
         this.coreBehaviors = coreBehaviors;
         this.behaviors = behaviors;
         this.sensors = sensors;
         this.controllers = controllers;
-        this.routeFinder = routeFinder;
         this.entity = entity;
         this.memoryStorage = new MemoryStorage(entity);
-        this.initPeriodTimer();
+        this.routeUpdater = new RouteUpdater(routeFinder, startRouteUpdateTick);
+        this.coreBehaviorTriggers = createTriggers(coreBehaviors, IBehavior::getPeriod);
+        this.behaviorTriggers = createTriggers(behaviors, IBehavior::getPeriod);
+        this.sensorTriggers = createTriggers(sensors, ISensor::getPeriod);
     }
 
     /**
@@ -133,6 +108,164 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     public static Builder builder(@NotNull EntityIntelligent entity) {
         return new Builder(entity);
+    }
+
+    @Override
+    public IRouteFinder getRouteFinder() {
+        return routeUpdater.getRouteFinder();
+    }
+
+    /**
+     * Runs and refreshes the currently running behaviors
+     */
+    @Override
+    public void tickRunningBehaviors(EntityIntelligent entity) {
+        if (tickRunning(entity, runningBehaviors)) {
+            evaluateBehaviors(entity);
+        }
+    }
+
+    @Override
+    public void tickRunningCoreBehaviors(EntityIntelligent entity) {
+        tickRunning(entity, runningCoreBehaviors);
+    }
+
+    @Override
+    public void collectSensorData(EntityIntelligent entity) {
+        for (int i = 0; i < sensorTriggers.size(); i++) {
+            PeriodicTrigger<ISensor> trigger = sensorTriggers.get(i);
+            if (trigger.isDue()) trigger.value().sense(entity);
+        }
+    }
+
+    @Override
+    public void evaluateCoreBehaviors(EntityIntelligent entity) {
+        for (int i = 0; i < coreBehaviorTriggers.size(); i++) {
+            PeriodicTrigger<IBehavior> trigger = coreBehaviorTriggers.get(i);
+            IBehavior coreBehavior = trigger.value();
+            //if it's already running, there's no need to evaluate it
+            if (runningCoreBehaviors.contains(coreBehavior)) continue;
+            if (!trigger.isDue() || !coreBehavior.evaluate(entity)) continue;
+            start(entity, coreBehavior, runningCoreBehaviors);
+        }
+    }
+
+    /**
+     * Evaluates all behaviors, and hands the entity over to the highest-priority ones that pass
+     *
+     * @param entity the entity object being evaluated
+     */
+    @Override
+    public void evaluateBehaviors(EntityIntelligent entity) {
+        //stores the highest-priority behaviors that evaluated successfully
+        var evalSucceed = evaluationResult;
+        evalSucceed.clear();
+        int highestPriority = Integer.MIN_VALUE;
+        for (int i = 0; i < behaviorTriggers.size(); i++) {
+            PeriodicTrigger<IBehavior> trigger = behaviorTriggers.get(i);
+            IBehavior behavior = trigger.value();
+            //if it's already running, there's no need to evaluate it
+            if (runningBehaviors.contains(behavior)) continue;
+            if (!trigger.isDue() || !behavior.evaluate(entity)) continue;
+            if (behavior.getPriority() < highestPriority) continue;
+            if (behavior.getPriority() > highestPriority) {
+                evalSucceed.clear();
+                highestPriority = behavior.getPriority();
+            }
+            evalSucceed.add(behavior);
+        }
+        //return if there are no evaluation results
+        if (evalSucceed.isEmpty()) return;
+        IBehavior running = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
+        int runningPriority = running != null ? running.getPriority() : Integer.MIN_VALUE;
+        boolean runningStillValid = running == null || !running.shouldReevaluate() || running.evaluate(entity);
+        //if the result's priority is lower than the still valid running behavior, keep running it
+        if (highestPriority < runningPriority && runningStillValid) return;
+        //if the result wins on priority, or the running behavior is no longer valid, replace all running behaviors
+        if (highestPriority > runningPriority || !runningStillValid) {
+            interruptAllRunningBehaviors(entity);
+        }
+        //otherwise the priorities are equal, so the results simply join the running behaviors
+        for (int i = 0; i < evalSucceed.size(); i++) {
+            start(entity, evalSucceed.get(i), runningBehaviors);
+        }
+    }
+
+    @Override
+    public void applyController(EntityIntelligent entity) {
+        for (IController controller : controllers) {
+            controller.control(entity);
+        }
+    }
+
+    @Override
+    public void updateRoute(EntityIntelligent entity) {
+        routeUpdater.update(entity);
+    }
+
+    @Override
+    public boolean isForceUpdateRoute() {
+        return routeUpdater.isForceUpdate();
+    }
+
+    @Override
+    public void setForceUpdateRoute(boolean forceUpdateRoute) {
+        routeUpdater.setForceUpdate(forceUpdateRoute);
+    }
+
+    @Override
+    public void debugTick(EntityIntelligent entity) {
+        debugRenderer.render(entity);
+    }
+
+    /**
+     * Executes the given running behaviors, and drops the ones that were interrupted or that finished
+     *
+     * @return whether at least one behavior stopped running
+     */
+    protected boolean tickRunning(EntityIntelligent entity, Set<IBehavior> running) {
+        boolean stoppedBehavior = false;
+        Iterator<IBehavior> iterator = running.iterator();
+        while (iterator.hasNext()) {
+            IBehavior behavior = iterator.next();
+            if (behavior.shouldReevaluate() && !behavior.evaluate(entity)) {
+                behavior.onInterrupt(entity);
+            } else if (!behavior.execute(entity)) {
+                behavior.onStop(entity);
+            } else continue;
+            behavior.setBehaviorState(BehaviorState.STOP);
+            iterator.remove();
+            stoppedBehavior = true;
+        }
+        return stoppedBehavior;
+    }
+
+    /**
+     * Starts a behavior and adds it to the given set of running behaviors
+     */
+    protected void start(EntityIntelligent entity, IBehavior behavior, Set<IBehavior> running) {
+        behavior.onStart(entity);
+        behavior.setBehaviorState(BehaviorState.ACTIVE);
+        running.add(behavior);
+    }
+
+    /**
+     * Interrupts all currently running behaviors
+     */
+    protected void interruptAllRunningBehaviors(EntityIntelligent entity) {
+        for (IBehavior behavior : runningBehaviors) {
+            behavior.onInterrupt(entity);
+            behavior.setBehaviorState(BehaviorState.STOP);
+        }
+        runningBehaviors.clear();
+    }
+
+    private <T> List<PeriodicTrigger<T>> createTriggers(Collection<T> elements, ToIntFunction<T> period) {
+        var triggers = new ArrayList<PeriodicTrigger<T>>(elements.size());
+        for (T element : elements) {
+            triggers.add(new PeriodicTrigger<>(element, () -> period.applyAsInt(element)));
+        }
+        return triggers;
     }
 
     /**
@@ -206,387 +339,6 @@ public class BehaviorGroup implements IBehaviorGroup {
 
         public BehaviorGroup build() {
             return new BehaviorGroup(startRouteUpdateTick, coreBehaviors, behaviors, sensors, controllers, routeFinder, entity);
-        }
-    }
-
-    /**
-     * Runs and refreshes the currently running behaviors
-     */
-    @Override
-    public void tickRunningBehaviors(EntityIntelligent entity) {
-        boolean stoppedBehavior = false;
-        var iterator = runningBehaviors.iterator();
-        while (iterator.hasNext()) {
-            IBehavior behavior = iterator.next();
-            if (behavior instanceof Behavior normalBehavior) {
-                if (normalBehavior.isReevaluate() && !normalBehavior.evaluate(entity)) {
-                    behavior.onInterrupt(entity);
-                    behavior.setBehaviorState(BehaviorState.STOP);
-                    iterator.remove();
-                    stoppedBehavior = true;
-                    continue;
-                }
-            }
-            if (!behavior.execute(entity)) {
-                behavior.onStop(entity);
-                behavior.setBehaviorState(BehaviorState.STOP);
-                iterator.remove();
-                stoppedBehavior = true;
-            }
-        }
-        if (stoppedBehavior) {
-            evaluateBehaviors(entity);
-        }
-    }
-
-    @Override
-    public void tickRunningCoreBehaviors(EntityIntelligent entity) {
-        var iterator = runningCoreBehaviors.iterator();
-        while (iterator.hasNext()) {
-            IBehavior coreBehavior = iterator.next();
-            if(coreBehavior instanceof Behavior behavior) {
-                if(behavior.isReevaluate() && !behavior.evaluate(entity)) {
-                    coreBehavior.onInterrupt(entity);
-                    coreBehavior.setBehaviorState(BehaviorState.STOP);
-                    iterator.remove();
-                    continue;
-                }
-            }
-            if (!coreBehavior.execute(entity)) {
-                coreBehavior.onStop(entity);
-                coreBehavior.setBehaviorState(BehaviorState.STOP);
-                iterator.remove();
-            }
-        }
-    }
-
-    @Override
-    public void collectSensorData(EntityIntelligent entity) {
-        sensorPeriodTimer.forEach((sensor, tick) -> {
-            //refresh the gt count
-            sensorPeriodTimer.put(sensor, ++tick);
-            //don't evaluate until the period is reached
-            if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) return;
-            sensorPeriodTimer.put(sensor, 0);
-            sensor.sense(entity);
-        });
-    }
-
-    @Override
-    public void evaluateCoreBehaviors(EntityIntelligent entity) {
-        coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
-            //if it's already running, there's no need to evaluate it
-            if (runningCoreBehaviors.contains(coreBehavior)) return;
-            int nextTick = ++tick;
-            //refresh the gt count
-            coreBehaviorPeriodTimer.put(coreBehavior, nextTick);
-            //don't evaluate until the period is reached
-            if (nextTick < coreBehavior.getPeriod()) return;
-            coreBehaviorPeriodTimer.put(coreBehavior, 0);
-            if (coreBehavior.evaluate(entity)) {
-                coreBehavior.onStart(entity);
-                coreBehavior.setBehaviorState(BehaviorState.ACTIVE);
-                runningCoreBehaviors.add(coreBehavior);
-            }
-        });
-    }
-
-    /**
-     * Evaluates all behaviors
-     *
-     * @param entity the entity object being evaluated
-     */
-    @Override
-    public void evaluateBehaviors(EntityIntelligent entity) {
-        //stores the behaviors that evaluated successfully (priority not yet filtered)
-        var evalSucceed = new HashSet<IBehavior>(behaviors.size());
-        int highestPriority = Integer.MIN_VALUE;
-        for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
-            IBehavior behavior = entry.getKey();
-            //if it's already running, there's no need to evaluate it
-            if (runningBehaviors.contains(behavior)) continue;
-            int tick = entry.getValue();
-            int nextTick = ++tick;
-            //refresh the gt count
-            behaviorPeriodTimer.put(behavior, nextTick);
-            //don't evaluate until the period is reached
-            if (nextTick < behavior.getPeriod()) continue;
-            behaviorPeriodTimer.put(behavior, 0);
-            if (behavior.evaluate(entity)) {
-                if (behavior.getPriority() > highestPriority) {
-                    evalSucceed.clear();
-                    highestPriority = behavior.getPriority();
-                } else if (behavior.getPriority() < highestPriority) {
-                    continue;
-                }
-                evalSucceed.add(behavior);
-            }
-        }
-        //return if there are no evaluation results
-        if (evalSucceed.isEmpty()) return;
-        IBehavior first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
-        int runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
-        boolean firstEval = true;
-        if(first != null) {
-            if(first instanceof Behavior behavior) {
-                if(behavior.isReevaluate()) {
-                    firstEval = first.evaluate(entity);
-                }
-            }
-        }
-        //if the result's priority is lower than the currently running behavior, do nothing
-        if (highestPriority < runningBehaviorPriority && firstEval) {
-            //do nothing
-        } else if (highestPriority > runningBehaviorPriority || !firstEval) {
-            //if the result's priority is higher than the currently running behavior, replace all currently running behaviors
-            interruptAllRunningBehaviors(entity);
-            addToRunningBehaviors(entity, evalSucceed);
-        } else {
-            //if the result's priority equals the currently running behavior, add the result's behaviors
-            addToRunningBehaviors(entity, evalSucceed);
-        }
-    }
-
-    @Override
-    public void applyController(EntityIntelligent entity) {
-        for (IController controller : controllers) {
-            controller.control(entity);
-        }
-    }
-
-    @Override
-    public void updateRoute(EntityIntelligent entity) {
-        currentRouteUpdateTick++;
-        boolean reachUpdateCycle = currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
-        if (reachUpdateCycle) currentRouteUpdateTick = 0;
-        Vector3 target = entity.getMoveTarget();
-        if (target == null) {
-            //no path target, so clear the path information
-            entity.setMoveDirectionStart(null);
-            entity.setMoveDirectionEnd(null);
-            return;
-        }
-        //when the update cycle is reached, start recalculating the new path
-        if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity))) {
-            //if there is a path target, calculate the new path
-            boolean reSubmit = false;
-            //         first calculation                 previous calculation finished                          timed out, resubmit the task
-            if (routeFindingTask == null || routeFindingTask.getFinished() || (reSubmit = (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
-                if (reSubmit) routeFindingTask.cancel(true);
-                //clone to prevent potential modification by the pathfinder
-                RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
-                    updateMoveDirection(entity);
-                    entity.setShouldUpdateMoveDirection(false);
-                    setForceUpdateRoute(false);
-                    //write the section change record
-                    cacheSectionBlockChange(entity.level, calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level));
-                }).setStart(entity.clone()).setTarget(target));
-            }
-        }
-        if (routeFindingTask != null && routeFindingTask.getFinished() && !hasNewUnCalMoveTarget(entity)) {
-            //if it can no longer move and there is no pathfinding task in progress, clear the path information
-            var reachableTarget = routeFinder.getReachableTarget();
-            if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
-                entity.setMoveTarget(null);
-                entity.setMoveDirectionStart(null);
-                entity.setMoveDirectionEnd(null);
-                return;
-            }
-        }
-        if (entity.isShouldUpdateMoveDirection()) {
-            if (routeFinder.hasNext()) {
-                //if there is a new movement direction, update it
-                updateMoveDirection(entity);
-                entity.setShouldUpdateMoveDirection(false);
-            }
-        }
-    }
-
-    /**
-     * Checks whether the path needs to be updated. This method detects whether the ChunkSections the path passes through have changed
-     *
-     * @return whether the path needs to be updated
-     */
-    protected boolean shouldUpdateRoute(EntityIntelligent entity) {
-        //this optimization only applies to entities in non-active chunks
-        if (entity.isActive()) return true;
-        //the endpoint changed or it's the first calculation, so recalculation is needed
-        if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity))
-            return true;
-        Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
-        long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
-        //a Section changed, so recalculation is needed
-        return blockChangeCache != total;
-    }
-
-    /**
-     * Confirms whether the entity has set a new, uncalculated moveTarget by comparing the moveTarget set in the pathfinder with the entity's moveTarget
-     *
-     * @param entity the entity
-     * @return whether a new, uncalculated pathfinding target exists
-     */
-    protected boolean hasNewUnCalMoveTarget(EntityIntelligent entity) {
-        return !entity.getMoveTarget().equals(this.routeFinder.getTarget());
-    }
-
-    /**
-     * Caches the section's blockChanges into blockChangeCache
-     */
-
-    protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
-        this.blockChangeCache = vecs.stream().mapToLong(vector3 -> getSectionBlockChange(level, vector3)).sum();
-    }
-
-    /**
-     * Returns the blockChanges of the section corresponding to the sectionVector
-     */
-    protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
-        var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
-        return chunk.getSectionBlockChanges(vector.sectionY);
-    }
-
-    /**
-     * Calculates the ChunkSections that the set of coordinates passes through
-     *
-     * @return (chunkX | chunkSectionY | chunkZ)
-     */
-    protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
-        return nodes.stream()
-                .map(vector3 -> {
-                    final DimensionData dimensionData = level.getDimensionData();
-                    final int chunkX = vector3.getChunkX();
-                    final int y = Math.min(dimensionData.getMaxHeight(), Math.max(dimensionData.getMinHeight(), vector3.getFloorY() - dimensionData.getMinHeight()));
-                    final int chunkZ = vector3.getChunkZ();
-                    return new ChunkSectionVector(chunkX, y >> 4, chunkZ);
-                })
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public void debugTick(EntityIntelligent entity) {
-
-        var strBuilder = new StringBuilder();
-
-        if(EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
-            var sortedMemory = new ArrayList<>(getMemoryStorage().getAll().entrySet());
-            sortedMemory.sort(Comparator.comparing(s -> s.getKey().getIdentifier().getPath(), String::compareTo));
-            Collections.reverse(sortedMemory);
-
-            for (var memory : sortedMemory) {
-                strBuilder.append("§e" + memory.getKey().getIdentifier().getPath());
-                strBuilder.append("=");
-                strBuilder.append("§7" + memory.getValue().toString());
-                strBuilder.append("\n");
-            }
-            strBuilder.append("\n\n");
-        }
-
-        if(EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) {
-            if(!coreBehaviors.isEmpty()) {
-                var sortedCoreBehaviors = new ArrayList<>(coreBehaviors);
-                sortedCoreBehaviors.sort(Comparator.comparing(IBehavior::getPriority, Integer::compareTo));
-                Collections.reverse(sortedCoreBehaviors);
-
-                for (var behavior : sortedCoreBehaviors) {
-                    strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7");
-                    strBuilder.append(behavior);
-                    strBuilder.append("\n");
-                }
-                strBuilder.append("\n\n");
-            }
-
-            var sortedBehaviors = new ArrayList<>(behaviors);
-            sortedBehaviors.sort(Comparator.comparing(IBehavior::getPriority, Integer::compareTo));
-            Collections.reverse(sortedBehaviors);
-
-            for (var behavior : sortedBehaviors) {
-                strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7");
-                strBuilder.append(behavior);
-                strBuilder.append("\n");
-            }
-        }
-
-        entity.setNameTag(strBuilder.toString());
-        entity.setNameTagAlwaysVisible(true);
-    }
-
-    /**
-     * Calculates the active entity delay
-     *
-     * @param entity        the entity
-     * @param originalDelay the original delay
-     * @return if the entity is inactive, the delay is multiplied by 4, otherwise the original delay is returned
-     */
-    protected int calcActiveDelay(@NotNull EntityIntelligent entity, int originalDelay) {
-        if (!entity.isActive()) {
-            return originalDelay << 2;
-        }
-        return originalDelay;
-    }
-
-    protected void initPeriodTimer() {
-        coreBehaviors.forEach(coreBehavior -> coreBehaviorPeriodTimer.put(coreBehavior, 0));
-        behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
-        sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
-    }
-
-    protected void updateMoveDirection(EntityIntelligent entity) {
-        Vector3 end = entity.getMoveDirectionEnd();
-        if (end == null) {
-            end = entity.clone();
-        }
-        var next = routeFinder.next();
-        if (next != null) {
-            entity.setMoveDirectionStart(end);
-            entity.setMoveDirectionEnd(next.getVector3());
-        }
-    }
-
-    /**
-     * Adds the successfully evaluated behaviors to {@link BehaviorGroup#runningBehaviors}
-     *
-     * @param entity    the entity being evaluated
-     * @param behaviors the behaviors to add
-     */
-    protected void addToRunningBehaviors(EntityIntelligent entity, @NotNull Set<IBehavior> behaviors) {
-        behaviors.forEach((behavior) -> {
-            behavior.onStart(entity);
-            behavior.setBehaviorState(BehaviorState.ACTIVE);
-            runningBehaviors.add(behavior);
-        });
-    }
-
-    /**
-     * Interrupts all currently running behaviors
-     */
-    protected void interruptAllRunningBehaviors(EntityIntelligent entity) {
-        for (IBehavior behavior : runningBehaviors) {
-            behavior.onInterrupt(entity);
-            behavior.setBehaviorState(BehaviorState.STOP);
-        }
-        runningBehaviors.clear();
-    }
-
-    /**
-     * Describes the position of a ChunkSection
-     *
-     * @param chunkX
-     * @param sectionY
-     * @param chunkZ
-     */
-    protected record ChunkSectionVector(int chunkX, int sectionY, int chunkZ) {
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof ChunkSectionVector other)) {
-                return false;
-            }
-
-            return this.chunkX == other.chunkX && this.sectionY == other.sectionY && this.chunkZ == other.chunkZ;
-        }
-
-        @Override
-        public int hashCode() {
-            return (chunkX ^ (chunkZ << 12)) ^ (sectionY << 24);
         }
     }
 }

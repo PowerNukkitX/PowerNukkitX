@@ -2,8 +2,7 @@ package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -51,15 +50,14 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_GHAST_MOAN), new RandomSoundEvaluator(), 2, 1),
-                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 200, false, -1, true, 10), none(), 1, 1)
-                )
-                .behaviors(
-                        new Behavior(new GhastShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 64, true, 60, 10), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 2, 1),
-                        new Behavior(new GhastShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 28, true, 60, 10), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 1, 1)
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new PlaySoundExecutor(Sound.MOB_GHAST_MOAN))
+                        .when(new RandomSoundEvaluator())
+                .coreBehavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 200, false, -1, true, 10))
+                .behavior(new GhastShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 64, true, 60, 10))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new GhastShootExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 28, true, 60, 10))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
                 .sensors(new NearestPlayerSensor(64, 0, 20))
                 .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
                 .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))

@@ -5,8 +5,6 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.ai.EntityAI;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -395,88 +393,61 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.35f),
-                                all(
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                6, 1
-                        ),
-                        new Behavior(
-                                new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true),
-                                all(
-                                        e -> e.isBaby(),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.STAY_NEARBY)
-                                ),
-                                5, 1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
-                                all(
-                                        e -> e.passengers.isEmpty(),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new TemptExecutor(2.5f, TEMPT_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ProbabilityEvaluator(4, 10),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                        e -> {
-                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                            return p != null && !e.isPassenger(p);
-                                        },
-                                        e -> e.passengers == null || e.passengers.isEmpty()
-                                ),
-                                2, 1, 100
-                        ),
-                        new Behavior(
-                                new CamelSittingExecutor(8),
-                                all(
-                                        e -> !((EntityCamel) e).isSitting(),
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> Utils.rand(1, 35) == 1
-                                ),
-                                2, 1, 200
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
-                                all(
-                                        e -> !((EntityCamel) e).isSitting()
-                                ),
-                                1, 1
-                        )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new BreedingExecutor(16, 200, 0.35f))
+                        .when(all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true))
+                        .when(all(
+                                e -> e.isBaby(),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.STAY_NEARBY)
+                        ))
+                .behavior(new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10))
+                        .when(all(
+                                e -> e.passengers.isEmpty(),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                        ))
+                .behavior(new TemptExecutor(2.5f, TEMPT_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !e.isPassenger(p);
+                                },
+                                e -> e.passengers == null || e.passengers.isEmpty()
+                        ))
+                        .period(100)
+                .behavior(new CamelSittingExecutor(8))
+                        .when(all(
+                                e -> !((EntityCamel) e).isSitting(),
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> Utils.rand(1, 35) == 1
+                        ))
+                        .alongsidePrevious()
+                        .period(200)
+                .behavior(new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10))
+                        .when(all(
+                                e -> !((EntityCamel) e).isSitting()
+                        ))
                 .sensors(
                         new FollowEntitySensor(6f, 2f),
                         new NearestPlayerSensor(8, 0, 20)

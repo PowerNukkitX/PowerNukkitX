@@ -26,8 +26,7 @@ import org.powernukkitx.block.BlockPumpkin;
 import org.powernukkitx.entity.Attribute;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -82,9 +81,9 @@ public class EntityIronGolem extends EntityGolem {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30), all(
+        return EntityAI.of(this)
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 not(any(
                                         entity -> entity.getServer().getDifficulty() == 0,
@@ -92,14 +91,14 @@ public class EntityIronGolem extends EntityGolem {
                                                 entity -> attackingPlayer = getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player,
                                                 entity -> hasOwner(false)
                                         )))
-                        ), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.2f, 40, true, 30), all(
+                        ))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.2f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
                                 entity -> attackTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_SHARED_ENTITY)),
                                 not(entity -> attackingPlayer = false)
-                        ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestEntitySensor(EntityMob.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0))
                 .controllers(new WalkController(), new LookController(true, true))
                 .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))

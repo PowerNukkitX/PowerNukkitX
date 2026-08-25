@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockSoulSand;
 import org.powernukkitx.entity.EntityArthropod;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -47,14 +46,16 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMITE_SAY), new RandomSoundEvaluator(), 6, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 16, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, 16, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 16, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_ENDERMITE_SAY))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 16, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, 16, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 16, false, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestPlayerSensor(16, 0, 0),
                         new NearestEntitySensor(EntityIronGolem.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0),

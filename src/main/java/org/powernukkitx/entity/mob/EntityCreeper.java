@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -58,40 +57,39 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 4), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 5, 1),
-                        new Behavior(
-                                new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE),
-                                all(
-                                        entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true),
-                                        any(
-                                                entity -> !entity.getMemoryStorage().get(CoreMemoryTypes.EXPLODE_CANCELLABLE),
-                                                all(
-                                                        new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
-                                                        entity -> hasClearLineOfSight(entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER))
-                                                ),
-                                                all(
-                                                        new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                                        entity -> hasClearLineOfSight(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
-                                                )
+        return EntityAI.of(this)
+                .behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 4))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
+                .behavior(new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE))
+                        .when(all(
+                                entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true),
+                                any(
+                                        entity -> !entity.getMemoryStorage().get(CoreMemoryTypes.EXPLODE_CANCELLABLE),
+                                        all(
+                                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
+                                                entity -> hasClearLineOfSight(entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER))
+                                        ),
+                                        all(
+                                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                                entity -> hasClearLineOfSight(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
                                         )
-                                ), 4, 1
-                        ),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, true, 16f, 3f, true), all(
+                                )
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, true, 16f, 3f, true))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
-                        ), 3, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, true, 16f, 3f), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, true, 16f, 3f))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
                                     Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return player.isSurvival();
                                 }
-                        ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestPlayerSensor(16, 0, 20),
                         new NearestEntitySensor(EntityCat.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),
                         new NearestEntitySensor(EntityOcelot.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),

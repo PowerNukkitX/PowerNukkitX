@@ -5,8 +5,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntitySmite;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -57,23 +56,27 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PHANTOM_IDLE, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator()), 6, 1),
-                        new Behavior(new CircleAboveTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, true), all(
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_PHANTOM_IDLE, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(new RandomSoundEvaluator()))
+                .behavior(new CircleAboveTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, true))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_ATTACK_ENTITY),
                                 not(new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, Utils.rand(200, 400)))
-                        ), 5, 1),
-                        new Behavior(new CircleAboveTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.4f, true), all(
+                        ))
+                .behavior(new CircleAboveTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.4f, true))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_ATTACK_ENTITY),
                                 not(new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, Utils.rand(200, 400)))
-                        ), 4, 1),
-                        new Behavior(new PhantomMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 64, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 3, 1),
-                        new Behavior(new PhantomMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 64, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
-                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
-                )
+                        ))
+                .behavior(new PhantomMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 64, false, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new PhantomMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 64, false, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET))
+                .behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10))
+                        .when((entity -> true))
                 .sensors(
                         new NearestPlayerSensor(64, 0, 20),
                         new NearestTargetEntitySensor<>(0, 64, 20,

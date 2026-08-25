@@ -1,8 +1,7 @@
 package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -120,36 +119,23 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
-                )
-                .behaviors(
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
-                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            new ProbabilityEvaluator(4, 10),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                            e -> e.isAgeable(),
+                            e -> e.isBaby(),
+                            e -> !e.isGrowthPaused(),
+                            e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10))
+                        .when(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ProbabilityEvaluator(4, 10))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when((entity -> true))
+                        .alongsidePrevious()
                 .sensors(
                     new NearestPlayerSensor(8, 0, 20)
                 )

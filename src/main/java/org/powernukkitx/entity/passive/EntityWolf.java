@@ -9,8 +9,7 @@ import org.powernukkitx.entity.EntityColor;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -450,129 +449,101 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                2, 1, 1200
-                        ),
-                        new Behavior( // Refresh attack target
-                                entity -> {
-                                    var storage = getMemoryStorage();
-                                    var hasOwner = hasOwner();
-                                    Entity attackTarget = null;
-                                    var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                    EntityDamageByEntityEvent attackByEntityEvent = null;
-                                    if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
-                                        attackByEntityEvent = attackByEntityEv;
-                                    boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
-                                    if (hasOwner) {
-                                        // Tamed
-                                        if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
-                                            // Attacks creatures that attack their master (excluding themselves).
-                                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
-                                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
-                                        } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
-                                            // The creature that attacks its master
-                                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
-                                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
-                                        } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
-                                            // Attacks creatures that attack themselves (except their owners).
-                                            attackTarget = attackByEntityEvent.getDamager();
-                                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
-                                            // Attack the nearest skeleton
-                                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
-                                            storage.clear(CoreMemoryTypes.NEAREST_SKELETON);
-                                        }
-                                    } else {
-                                        // Untamed
-                                        if (validAttacker) {
-                                            // Attack the creature that attacks itself
-                                            attackTarget = attackByEntityEvent.getDamager();
-                                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
-                                            // Attack the nearest suitable creature
-                                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                            storage.clear(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                        }
-                                    }
-                                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                    return false;
-                                },
-                                entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_WOLF_BARK),
-                                new RandomSoundEvaluator(),
-                                6, 1
-                        ),
-                        new Behavior(
-                                new BegExecutor(true, 8, BEG_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> BegExecutor.hasBeggingPlayer(e, false, 10, BEG_ITEMS)
-                                ),
-                                5, 1
-                        ),
-                        // Attack the target of hatred (todo) and summon allies.
-                        new Behavior(
-                                new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
-                                all(
-                                        e -> !this.isSitting(),
-                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.35f),
-                                all(
-                                        e -> !this.isSitting(),
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new EntityMoveToOwnerExecutor(0.7f, true, 15),
-                                entity -> {
-                                    if (this.isSitting()) return false;
-
-                                    if (this.hasOwner()) {
-                                        var player = getOwner();
-                                        if (!player.isOnGround()) return false;
-                                        var distanceSquared = this.distanceSquared(player);
-                                        return distanceSquared >= 100;
-                                    } else return false;
-                                },
-                                2, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10)
-                                ),
-                                1, 1, 25
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                // Refresh attack target
+                .coreBehavior(entity -> {
+                    var storage = getMemoryStorage();
+                    var hasOwner = hasOwner();
+                    Entity attackTarget = null;
+                    var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                    EntityDamageByEntityEvent attackByEntityEvent = null;
+                    if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
+                        attackByEntityEvent = attackByEntityEv;
+                    boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
+                    if (hasOwner) {
+                        // Tamed
+                        if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
+                            // Attacks creatures that attack their master (excluding themselves).
+                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                        } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
+                            // The creature that attacks its master
+                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                        } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
+                            // Attacks creatures that attack themselves (except their owners).
+                            attackTarget = attackByEntityEvent.getDamager();
+                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
+                            // Attack the nearest skeleton
+                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
+                            storage.clear(CoreMemoryTypes.NEAREST_SKELETON);
+                        }
+                    } else {
+                        // Untamed
+                        if (validAttacker) {
+                            // Attack the creature that attacks itself
+                            attackTarget = attackByEntityEvent.getDamager();
+                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                            // Attack the nearest suitable creature
+                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                            storage.clear(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                        }
+                    }
+                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                    return false;
+                })
+                        .when(entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new PlaySoundExecutor(Sound.MOB_WOLF_BARK))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new BegExecutor(true, 8, BEG_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> BegExecutor.hasBeggingPlayer(e, false, 10, BEG_ITEMS)
+                        ))
+                // Attack the target of hatred (todo) and summon allies.
+                .behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20))
+                        .when(all(
                                 e -> !this.isSitting(),
-                                1, 1, 50
-                        )
-                )
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
+                        ))
+                .behavior(new BreedingExecutor(16, 200, 0.35f))
+                        .when(all(
+                                e -> !this.isSitting(),
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new EntityMoveToOwnerExecutor(0.7f, true, 15))
+                        .when(entity -> {
+                            if (this.isSitting()) return false;
+
+                            if (this.hasOwner()) {
+                                var player = getOwner();
+                                if (!player.isOnGround()) return false;
+                                var distanceSquared = this.distanceSquared(player);
+                                return distanceSquared >= 100;
+                            } else return false;
+                        })
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                                new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10)
+                        ))
+                        .period(25)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10))
+                        .when(e -> !this.isSitting())
+                        .alongsidePrevious()
+                        .period(50)
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 20, 20,

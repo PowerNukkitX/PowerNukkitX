@@ -7,8 +7,7 @@ import org.powernukkitx.block.BlockWitherRose;
 import org.powernukkitx.blockentity.BlockEntityBeehive;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -109,30 +108,16 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(
-                                new BeeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
-                                all(
-                                        new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                        entity -> hasSting()
-                                ),
-                                6,
-                                1
-                        ),
-                        new Behavior(
-                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.32f, true),
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
-                                4,
-                                1
-                        ),
-                        new Behavior(
-                                new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10),
-                                (entity -> !(entity instanceof EntityBee bee) || !bee.isPollinating()),
-                                1,
-                                1
-                        )
-                )
+        return EntityAI.of(this)
+                .behavior(new BeeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20))
+                        .when(all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                entity -> hasSting()
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.32f, true))
+                        .when(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK))
+                .behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10))
+                        .when((entity -> !(entity instanceof EntityBee bee) || !bee.isPollinating()))
                 .sensors(
                         new BeeMemorizedBlockSensor(32, 6, 20)
                 )

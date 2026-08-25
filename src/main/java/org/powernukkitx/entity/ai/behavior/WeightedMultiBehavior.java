@@ -38,6 +38,14 @@ public class WeightedMultiBehavior extends AbstractBehavior {
         this.behaviors = behaviors;
     }
 
+    /**
+     * The evaluation picks a new child behavior, so it must not run again while a child is active
+     */
+    @Override
+    public boolean shouldReevaluate() {
+        return false;
+    }
+
     @Override
     public boolean evaluate(EntityIntelligent entity) {
         var result = evaluateBehaviors(entity);
