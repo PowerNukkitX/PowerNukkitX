@@ -3,12 +3,14 @@ name: PowerNukkitX Build
 on:
   pull_request:
     branches:
-      - master
+      - stable
+      - beta
       - r/**
       - b/**
   push:
     branches:
-      - master
+      - stable
+      - beta
       - r/**
       - b/**
 

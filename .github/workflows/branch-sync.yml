@@ -1,0 +1,50 @@
+name: Sync primary branches
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: pnx_branch_sync
+
+jobs:
+  merge:
+    name: Sync beta branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.PNX_BOT_APP_ID }}
+          private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Set Git config
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          git config user.name "$APP_SLUG[bot]"
+          git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
+
+      - name: Merge "stable" into "beta" and push changes
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          LOWER_BRANCH="stable"
+          TARGET_BRANCH="beta"
+          git checkout -f "$TARGET_BRANCH"
+          git pull --no-commit --ff origin "$LOWER_BRANCH" || (git diff && exit 1)
+
+          git commit \
+            -m "Merge '$LOWER_BRANCH' into '$TARGET_BRANCH'" \
+            -m "Automatic merge performed by: $RUN_URL" \
+            || true
+          git push
