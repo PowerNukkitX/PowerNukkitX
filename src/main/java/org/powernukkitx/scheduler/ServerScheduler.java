@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerScheduler {
     public static int WORKERS = 4;
     private final AsyncPool asyncPool;
+    private final boolean ownsAsyncPool;
 
     private final Queue<TaskHandler> pending;
     private final Map<Integer, ArrayDeque<TaskHandler>> queueMap;
@@ -31,11 +32,23 @@ public class ServerScheduler {
     private volatile int currentTick = -1;
 
     public ServerScheduler() {
+        this(null);
+    }
+
+    /**
+     * Creates a scheduler that submits its asynchronous tasks to an existing pool instead of
+     * allocating its own. Every scheduler owning a pool costs up to {@code cores * WORKERS} threads,
+     * so schedulers created per level must share the server pool.
+     *
+     * @param sharedAsyncPool the pool to borrow, or null to create a dedicated one
+     */
+    public ServerScheduler(AsyncPool sharedAsyncPool) {
         this.pending = new ConcurrentLinkedQueue<>();
         this.currentTaskId = new AtomicInteger();
         this.queueMap = new ConcurrentHashMap<>();
         this.taskMap = new ConcurrentHashMap<>();
-        this.asyncPool = new AsyncPool(WORKERS);
+        this.ownsAsyncPool = sharedAsyncPool == null;
+        this.asyncPool = this.ownsAsyncPool ? new AsyncPool(WORKERS) : sharedAsyncPool;
     }
 
     /**
@@ -492,6 +505,10 @@ public class ServerScheduler {
     }
 
     public void close() {
+        // A borrowed pool outlives this scheduler and is shut down by whoever created it.
+        if (!this.ownsAsyncPool) {
+            return;
+        }
         this.asyncPool.shutdown();
         try {
             if (!this.asyncPool.awaitTermination(10, TimeUnit.SECONDS)) {

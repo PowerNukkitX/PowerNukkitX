@@ -555,7 +555,9 @@ public class Level implements Metadatable {
         this.clearChunksOnTick = this.server.getSettings().chunkSettings().clearTickList();
         this.chunkTickList.clear();
         this.temporalVector = new Vector3(0, 0, 0);
-        this.scheduler = new ServerScheduler();
+        // Share the server's async pool: a dedicated pool per level would cost WORKERS threads for
+        // every world, none of which is busy enough to justify its own.
+        this.scheduler = new ServerScheduler(this.server.getScheduler().getAsyncTaskThreadPool());
         this.tickRate = 1;
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
