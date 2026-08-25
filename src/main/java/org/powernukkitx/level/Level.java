@@ -2348,10 +2348,15 @@ public class Level implements Metadatable {
 
     public void updateAround(Vector3 pos) {
         Block block = getBlock(pos);
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             final Block side = block.getSideAtLayer(0, face);
             normalUpdateQueue.add(new QueuedUpdate(side, face));
-            normalUpdateQueue.add(new QueuedUpdate(side.getLevelBlockAtLayer(1), face));
+            // Layer 1 is the waterlogging layer and is air nearly everywhere. Queueing an update for
+            // it unconditionally built a Block through the registry's reflective constructor, per
+            // face, per propagation step, for something that would then do nothing.
+            if (getBlockState(side.getFloorX(), side.getFloorY(), side.getFloorZ(), 1, false) != BlockAir.STATE) {
+                normalUpdateQueue.add(new QueuedUpdate(side.getLevelBlockAtLayer(1), face));
+            }
         }
     }
 
@@ -2370,17 +2375,30 @@ public class Level implements Metadatable {
      * @param pos the specified position
      */
     public void neighborChangeAroundImmediately(Vector3 pos) {
-        for (var face : BlockFace.values()) {
-            var neighborBlock = getBlock(pos.getSide(face));
-            neighborBlock.onNeighborChange(face.getOpposite());
+        int px = pos.getFloorX();
+        int py = pos.getFloorY();
+        int pz = pos.getFloorZ();
+        for (var face : BlockFace.getValues()) {
+            // The neighbour is genuinely needed here, but the Vector3 that addressed it was not.
+            getBlock(px + face.getXOffset(), py + face.getYOffset(), pz + face.getZOffset())
+                    .onNeighborChange(face.getOpposite());
         }
     }
 
     public void updateAroundObserver(Vector3 pos) {
-        for (var face : BlockFace.values()) {
-            var neighborBlock = getBlock(pos.getSide(face));
-            if (neighborBlock.getId() == BlockID.OBSERVER)
-                neighborBlock.onNeighborChange(face.getOpposite());
+        int px = pos.getFloorX();
+        int py = pos.getFloorY();
+        int pz = pos.getFloorZ();
+        for (var face : BlockFace.getValues()) {
+            int x = px + face.getXOffset();
+            int y = py + face.getYOffset();
+            int z = pz + face.getZOffset();
+            // Observers are rare, so resolve the state first: the old shape allocated a Vector3 and
+            // a Block per face only to read an identifier off them.
+            if (!BlockID.OBSERVER.equals(getBlockState(x, y, z, 0, false).getIdentifier())) {
+                continue;
+            }
+            getBlock(x, y, z).onNeighborChange(face.getOpposite());
         }
     }
 
@@ -2870,7 +2888,7 @@ public class Level implements Metadatable {
     public Set<Block> getBlockAround(Vector3 pos) {
         Set<Block> around = new HashSet<>();
         Block block = getBlock(pos);
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             Block side = block.getSideAtLayer(0, face);
             around.add(side);
         }
@@ -6022,10 +6040,16 @@ public class Level implements Metadatable {
     }
 
     public int getStrongPower(Vector3 pos) {
-        if (pos instanceof BlockPistonBase || this.getBlock(pos) instanceof BlockPistonBase) return 0;
+        // The old guard built a Block purely to run an instanceof, and did so even when pos already
+        // was one, because || only short-circuits on a true left side.
+        if (pos instanceof Block block) {
+            if (block instanceof BlockPistonBase) return 0;
+        } else if (this.getBlock(pos) instanceof BlockPistonBase) {
+            return 0;
+        }
 
         int i = 0;
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             i = Math.max(i, this.getStrongPower(temporalVector.setComponentsAdding(pos, face), face));
 
             if (i >= 15) {
@@ -6059,7 +6083,7 @@ public class Level implements Metadatable {
     }
 
     public boolean isBlockPowered(Vector3 pos) {
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             if (this.getRedstonePower(temporalVector.setComponentsAdding(pos, face), face) > 0) {
                 return true;
             }
@@ -6071,7 +6095,7 @@ public class Level implements Metadatable {
     public int isBlockIndirectlyGettingPowered(Vector3 pos) {
         int power = 0;
 
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             int blockPower = this.getRedstonePower(temporalVector.setComponentsAdding(pos, face), face);
 
             if (blockPower >= 15) {
