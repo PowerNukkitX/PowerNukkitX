@@ -538,7 +538,7 @@ public class Server {
                 computeThreadPool);
             CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
             CompletableFuture<Void> creativeF = creativeInventoryEnabled
-                    ? CompletableFuture.allOf(itemF, blockStateF)
+                    ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
                             .thenRunAsync(
                                     registryCache != null
                                             ? () -> registryCache.restoreCreative(Registries.CREATIVE)
