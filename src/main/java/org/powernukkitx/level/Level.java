@@ -2672,15 +2672,20 @@ public class Level implements Metadatable {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        // Block x occupies [x, x+1), so a box ending at 0.8 cannot touch the block at ceil(0.8).
+        // ceil combined with an inclusive bound scanned one extra layer on every axis.
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<AxisAlignedBB> collides = new ArrayList<>();
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
+                    // Air always passes through, so resolving the state first skips building a Block
+                    // for the overwhelming majority of positions in an entity's box.
+                    if (getBlockState(x, y, z, 0, false) == BlockAir.STATE) continue;
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
                         for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
@@ -2716,15 +2721,17 @@ public class Level implements Metadatable {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        // See getCollisionCubes: ceil over-scanned a whole layer per axis.
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<AxisAlignedBB> collides = new ArrayList<>();
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
+                    if (getBlockState(x, y, z, 0, false) == BlockAir.STATE) continue;
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
                         for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
