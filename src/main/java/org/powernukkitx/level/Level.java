@@ -2920,25 +2920,33 @@ public class Level implements Metadatable {
     }
 
     public Block getBlock(int x, int y, int z, int layer, boolean load) {
-        BlockState fullState = BlockAir.STATE;
-        if (isYInRange(y)) {
-            int cx = x >> 4;
-            int cz = z >> 4;
-            IChunk chunk;
-            if (load) {
-                chunk = getChunk(cx, cz);
-            } else {
-                chunk = getChunkIfLoaded(cx, cz);
-            }
-            if (chunk != null) {
-                if(chunk.isFinished()) {
-                    fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
-                } else {
-                    fullState = new UnsafeChunk((Chunk) chunk).getBlockState(x & 0xF, y, z & 0xF, layer);
-                }
-            }
+        return Registries.BLOCK.get(getBlockState(x, y, z, layer, load), x, y, z, layer, this);
+    }
+
+    /**
+     * Resolves the block state at a position without materialising a {@link Block}.
+     * <p>
+     * Every {@code Block} comes out of the registry's reflective constructor, so on scans where most
+     * positions turn out to be air - entity collision boxes above all - reading the state first and
+     * only building the block for the few non-air hits removes nearly all of that allocation.
+     *
+     * @return the state, or {@link BlockAir#STATE} when the position is out of range or its chunk is
+     * not available, which is what {@link #getBlock(int, int, int, int, boolean)} resolves to there
+     */
+    public BlockState getBlockState(int x, int y, int z, int layer, boolean load) {
+        if (!isYInRange(y)) {
+            return BlockAir.STATE;
         }
-        return Registries.BLOCK.get(fullState, x, y, z, layer, this);
+        int cx = x >> 4;
+        int cz = z >> 4;
+        IChunk chunk = load ? getChunk(cx, cz) : getChunkIfLoaded(cx, cz);
+        if (chunk == null) {
+            return BlockAir.STATE;
+        }
+        if (chunk.isFinished()) {
+            return chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
+        }
+        return new UnsafeChunk((Chunk) chunk).getBlockState(x & 0xF, y, z & 0xF, layer);
     }
 
     public String getBlockIdAt(int x, int y, int z) {
