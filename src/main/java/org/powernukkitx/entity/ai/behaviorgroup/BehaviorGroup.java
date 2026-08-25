@@ -21,12 +21,11 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,6 +41,11 @@ public class BehaviorGroup implements IBehaviorGroup {
      * Determines how many gt between each path update
      */
     protected static int ROUTE_UPDATE_CYCLE = 16;//gt
+
+    /**
+     * How far the move target must drift before an active entity is repathed, squared.
+     */
+    private static final double ROUTE_TARGET_EPSILON_SQUARED = 1.0;
 
 
     /**
@@ -70,17 +74,29 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected final Set<IBehavior> runningBehaviors = new HashSet<>();
     /**
+     * Flattened views of the behavior/sensor sets. They are fixed at construction, so the per-tick
+     * loops iterate arrays and keep their gt counters in parallel int arrays instead of boxing them
+     * into a map on every tick.
+     */
+    protected final IBehavior[] coreBehaviorArray;
+    protected final IBehavior[] behaviorArray;
+    protected final ISensor[] sensorArray;
+    /**
      * Stores the number of gt elapsed since each core behavior was last evaluated
      */
-    protected final Map<IBehavior, Integer> coreBehaviorPeriodTimer = new HashMap<>();
+    protected final int[] coreBehaviorPeriodTimer;
     /**
      * Stores the number of gt elapsed since each behavior was last evaluated
      */
-    protected final Map<IBehavior, Integer> behaviorPeriodTimer = new HashMap<>();
+    protected final int[] behaviorPeriodTimer;
     /**
      * Stores the number of gt elapsed since each sensor was last refreshed
      */
-    protected final Map<ISensor, Integer> sensorPeriodTimer = new HashMap<>();
+    protected final int[] sensorPeriodTimer;
+    /**
+     * Reusable buffer holding the indices into {@link #behaviorArray} that evaluated successfully
+     */
+    private final int[] evalSucceedBuffer;
     /**
      * Memory storage
      */
@@ -123,6 +139,13 @@ public class BehaviorGroup implements IBehaviorGroup {
         this.routeFinder = routeFinder;
         this.entity = entity;
         this.memoryStorage = new MemoryStorage(entity);
+        this.coreBehaviorArray = coreBehaviors.toArray(new IBehavior[0]);
+        this.behaviorArray = behaviors.toArray(new IBehavior[0]);
+        this.sensorArray = sensors.toArray(new ISensor[0]);
+        this.coreBehaviorPeriodTimer = new int[this.coreBehaviorArray.length];
+        this.behaviorPeriodTimer = new int[this.behaviorArray.length];
+        this.sensorPeriodTimer = new int[this.sensorArray.length];
+        this.evalSucceedBuffer = new int[this.behaviorArray.length];
         this.initPeriodTimer();
     }
 
@@ -262,33 +285,34 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     @Override
     public void collectSensorData(EntityIntelligent entity) {
-        sensorPeriodTimer.forEach((sensor, tick) -> {
+        for (int i = 0; i < sensorArray.length; i++) {
+            ISensor sensor = sensorArray[i];
             //refresh the gt count
-            sensorPeriodTimer.put(sensor, ++tick);
+            int nextTick = ++sensorPeriodTimer[i];
             //don't evaluate until the period is reached
-            if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) return;
-            sensorPeriodTimer.put(sensor, 0);
+            if (nextTick < sensor.getPeriod()) continue;
+            sensorPeriodTimer[i] = 0;
             sensor.sense(entity);
-        });
+        }
     }
 
     @Override
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
-        coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
+        for (int i = 0; i < coreBehaviorArray.length; i++) {
+            IBehavior coreBehavior = coreBehaviorArray[i];
             //if it's already running, there's no need to evaluate it
-            if (runningCoreBehaviors.contains(coreBehavior)) return;
-            int nextTick = ++tick;
+            if (runningCoreBehaviors.contains(coreBehavior)) continue;
             //refresh the gt count
-            coreBehaviorPeriodTimer.put(coreBehavior, nextTick);
+            int nextTick = ++coreBehaviorPeriodTimer[i];
             //don't evaluate until the period is reached
-            if (nextTick < coreBehavior.getPeriod()) return;
-            coreBehaviorPeriodTimer.put(coreBehavior, 0);
+            if (nextTick < coreBehavior.getPeriod()) continue;
+            coreBehaviorPeriodTimer[i] = 0;
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
                 coreBehavior.setBehaviorState(BehaviorState.ACTIVE);
                 runningCoreBehaviors.add(coreBehavior);
             }
-        });
+        }
     }
 
     /**
@@ -299,31 +323,29 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void evaluateBehaviors(EntityIntelligent entity) {
         //stores the behaviors that evaluated successfully (priority not yet filtered)
-        var evalSucceed = new HashSet<IBehavior>(behaviors.size());
+        int evalSucceedCount = 0;
         int highestPriority = Integer.MIN_VALUE;
-        for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
-            IBehavior behavior = entry.getKey();
+        for (int i = 0; i < behaviorArray.length; i++) {
+            IBehavior behavior = behaviorArray[i];
             //if it's already running, there's no need to evaluate it
             if (runningBehaviors.contains(behavior)) continue;
-            int tick = entry.getValue();
-            int nextTick = ++tick;
             //refresh the gt count
-            behaviorPeriodTimer.put(behavior, nextTick);
+            int nextTick = ++behaviorPeriodTimer[i];
             //don't evaluate until the period is reached
             if (nextTick < behavior.getPeriod()) continue;
-            behaviorPeriodTimer.put(behavior, 0);
+            behaviorPeriodTimer[i] = 0;
             if (behavior.evaluate(entity)) {
                 if (behavior.getPriority() > highestPriority) {
-                    evalSucceed.clear();
+                    evalSucceedCount = 0;
                     highestPriority = behavior.getPriority();
                 } else if (behavior.getPriority() < highestPriority) {
                     continue;
                 }
-                evalSucceed.add(behavior);
+                evalSucceedBuffer[evalSucceedCount++] = i;
             }
         }
         //return if there are no evaluation results
-        if (evalSucceed.isEmpty()) return;
+        if (evalSucceedCount == 0) return;
         IBehavior first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
         int runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
         boolean firstEval = true;
@@ -340,10 +362,10 @@ public class BehaviorGroup implements IBehaviorGroup {
         } else if (highestPriority > runningBehaviorPriority || !firstEval) {
             //if the result's priority is higher than the currently running behavior, replace all currently running behaviors
             interruptAllRunningBehaviors(entity);
-            addToRunningBehaviors(entity, evalSucceed);
+            addToRunningBehaviors(entity, evalSucceedBuffer, evalSucceedCount);
         } else {
             //if the result's priority equals the currently running behavior, add the result's behaviors
-            addToRunningBehaviors(entity, evalSucceed);
+            addToRunningBehaviors(entity, evalSucceedBuffer, evalSucceedCount);
         }
     }
 
@@ -408,10 +430,22 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @return whether the path needs to be updated
      */
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
-        //this optimization only applies to entities in non-active chunks
-        if (entity.isActive()) return true;
-        //the endpoint changed or it's the first calculation, so recalculation is needed
-        if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity))
+        Vector3 lastTarget = this.routeFinder.getTarget();
+        //first calculation, so recalculation is needed
+        if (lastTarget == null) return true;
+
+        Vector3 current = entity.getMoveTarget();
+        if (current == null) return true;
+
+        //An active entity used to repath on every cycle unconditionally. A moving target drifts by
+        //fractions of a block per tick, and rerunning A* for that produces the same path, so only
+        //repath once the target has actually moved somewhere else.
+        if (entity.isActive()) {
+            return current.distanceSquared(lastTarget) >= ROUTE_TARGET_EPSILON_SQUARED;
+        }
+
+        //the endpoint changed, so recalculation is needed
+        if (hasNewUnCalMoveTarget(entity))
             return true;
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
         long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
@@ -525,9 +559,9 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     protected void initPeriodTimer() {
-        coreBehaviors.forEach(coreBehavior -> coreBehaviorPeriodTimer.put(coreBehavior, 0));
-        behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
-        sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
+        Arrays.fill(coreBehaviorPeriodTimer, 0);
+        Arrays.fill(behaviorPeriodTimer, 0);
+        Arrays.fill(sensorPeriodTimer, 0);
     }
 
     protected void updateMoveDirection(EntityIntelligent entity) {
@@ -554,6 +588,19 @@ public class BehaviorGroup implements IBehaviorGroup {
             behavior.setBehaviorState(BehaviorState.ACTIVE);
             runningBehaviors.add(behavior);
         });
+    }
+
+    /**
+     * Adds the behaviors referenced by the first {@code count} indices of {@code behaviorIndices}
+     * to the running set, without materialising an intermediate collection.
+     */
+    protected void addToRunningBehaviors(EntityIntelligent entity, int @NotNull [] behaviorIndices, int count) {
+        for (int i = 0; i < count; i++) {
+            IBehavior behavior = behaviorArray[behaviorIndices[i]];
+            behavior.onStart(entity);
+            behavior.setBehaviorState(BehaviorState.ACTIVE);
+            runningBehaviors.add(behavior);
+        }
     }
 
     /**
