@@ -52,7 +52,7 @@ Want to create your own? Our [documentation](https://powernukkitx.org/docs/devel
 
 Contributions, issues and feature requests are welcome!<br />
 Feel free to check [issues page](https://github.com/PowerNukkitX/PowerNukkitX/issues). Also take a look at
-the [contributing guide](.github/CONTRIBUTING.md).
+the [contributing guide](./CONTRIBUTING.md).
 
 ## Give a ⭐️ if this project helped you
 
