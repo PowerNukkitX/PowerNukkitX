@@ -1,5 +1,6 @@
 package org.powernukkitx.level;
 
+import org.jspecify.annotations.NonNull;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
@@ -26,12 +27,10 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 public final class PlayerChunkManager {
 
-
     /**
      * Chunks closer than this distance to the player are always considered to be in the field of view.
      */
     private static final double MIN_FOV_CHECK_DISTANCE = 4.0;
-
     /**
      * Timeout for asynchronously loading a chunk before retrying or generating it, in microseconds.
      */
@@ -98,6 +97,13 @@ public final class PlayerChunkManager {
     private final LongOpenHashSet pruneScratch;
     private long lastLoaderChunkPosHashed = Long.MAX_VALUE;
 
+    private static final int RESYNC_INTERVAL_TICKS = 10;
+    private static final int RESYNC_BATCH = 6;
+    private final LongArrayList resyncOrder = new LongArrayList();
+    private int resyncCursor = 0;
+    private int resyncCooldown = RESYNC_INTERVAL_TICKS;
+    private boolean resyncArmed = false;
+
     public PlayerChunkManager(Player player) {
         this.player = player;
         this.sentChunks = new LongOpenHashSet();
@@ -118,9 +124,10 @@ public final class PlayerChunkManager {
         refreshComparatorContext();
         int loaderChunkX = player.getChunkX();
         int loaderChunkZ = player.getChunkZ();
+        int initialRadius = Math.min(player.getViewDistance(), 8);
         updateInRadiusChunks(1, loaderChunkX, loaderChunkZ);
         removeOutOfRadiusChunks();
-        updateInRadiusChunks(8, loaderChunkX, loaderChunkZ);
+        updateInRadiusChunks(initialRadius, loaderChunkX, loaderChunkZ);
         pruneLoadingQueueOutOfRadius();
         pruneQueueOutOfRadius(chunkReadyToSend, true);
         updateChunkSendingQueue();
@@ -134,14 +141,57 @@ public final class PlayerChunkManager {
         long currentLoaderChunkPosHashed;
         int loaderChunkX = player.getChunkX();
         int loaderChunkZ = player.getChunkZ();
-        if ((currentLoaderChunkPosHashed = Level.chunkHash(loaderChunkX, loaderChunkZ)) != lastLoaderChunkPosHashed) {
+        boolean posChanged =
+            (currentLoaderChunkPosHashed = Level.chunkHash(loaderChunkX, loaderChunkZ)) != lastLoaderChunkPosHashed;
+        if (posChanged) {
             lastLoaderChunkPosHashed = currentLoaderChunkPosHashed;
             updateInRadiusChunks(player.getViewDistance(), loaderChunkX, loaderChunkZ);
-            removeOutOfRadiusChunks();
+            pruneLoadingQueueOutOfRadius();
             updateChunkSendingQueue();
         }
+        if (chunkSendQueue.isEmpty() && !chunkLoadingQueue.containsKey(currentLoaderChunkPosHashed)) {
+            IChunk currentChunk = player.level.getChunkIfLoaded(loaderChunkX, loaderChunkZ);
+            if (currentChunk == null || !currentChunk.getChunkState().canSend()) {
+                sentChunks.remove(currentLoaderChunkPosHashed);
+                chunkSendQueue.enqueue(currentLoaderChunkPosHashed);
+            }
+        }
+        backgroundResync(posChanged);
         loadQueuedChunks(trySendChunkCountPerTick, false);
         sendChunk();
+    }
+
+    private void backgroundResync(boolean posChanged) {
+        boolean settled = chunkSendQueue.isEmpty() && chunkReadyToSend.isEmpty() && chunkLoadingQueue.isEmpty();
+        if (posChanged || !settled) {
+            resyncArmed = false;
+            resyncOrder.clear();
+            resyncCursor = 0;
+            return;
+        }
+        if (!resyncArmed) {
+            resyncArmed = true;
+            resyncCursor = 0;
+            resyncCooldown = RESYNC_INTERVAL_TICKS;
+            resyncOrder.clear();
+            LongIterator it = inRadiusChunks.longIterator();
+            while (it.hasNext()) {
+                long h = it.nextLong();
+                if (sentChunks.contains(h)) resyncOrder.add(h);
+            }
+            resyncOrder.sort(chunkDistanceAndFovComparator);
+        }
+        if (resyncCursor >= resyncOrder.size()) return;
+        if (--resyncCooldown > 0) return;
+        resyncCooldown = RESYNC_INTERVAL_TICKS;
+        int batch = Math.clamp(trySendChunkCountPerTick, 1, RESYNC_BATCH);
+        int end = Math.min(resyncCursor + batch, resyncOrder.size());
+        for (; resyncCursor < end; resyncCursor++) {
+            long h = resyncOrder.getLong(resyncCursor);
+            if (inRadiusChunks.contains(h) && sentChunks.remove(h)) {
+                chunkSendQueue.enqueue(h);
+            }
+        }
     }
 
     public synchronized void handleViewDistanceChange() {
@@ -161,7 +211,7 @@ public final class PlayerChunkManager {
     }
 
     @ApiStatus.Internal
-    public LongOpenHashSet getInRadiusChunks() {
+    public @NonNull LongOpenHashSet getInRadiusChunks() {
         return inRadiusChunks;
     }
 
@@ -202,36 +252,25 @@ public final class PlayerChunkManager {
     }
 
     private void removeOutOfRadiusChunks() {
-        LongArrayList toRemove = null;
         LongIterator iter = sentChunks.longIterator();
         while (iter.hasNext()) {
             long hash = iter.nextLong();
             if (!inRadiusChunks.contains(hash)) {
-                if (toRemove == null) {
-                    toRemove = new LongArrayList();
-                }
-                toRemove.add(hash);
+                unloadChunkForPlayer(hash);
+                iter.remove();
             }
-        }
-        if (toRemove == null) {
-            return;
-        }
-        // Unload blocks that are out of range
-        for (int i = 0; i < toRemove.size(); i++) {
-            long hash = toRemove.getLong(i);
-            unloadChunkForPlayer(hash);
-            // The intersection of the remaining sentChunks and inRadiusChunks
-            sentChunks.remove(hash);
         }
     }
 
     private void loadQueuedChunks(int trySendChunkCountPerTick, boolean force) {
         if (chunkSendQueue.isEmpty()) return;
-        int triedSendChunkCount = 0;
+        int workChunkCount = 0;
+        int scannedChunkCount = 0;
+        int scanLimit = trySendChunkCountPerTick * 3;
         LongOpenHashSet enqueue = requeueScratch;
         enqueue.clear();
         do {
-            triedSendChunkCount++;
+            scannedChunkCount++;
             long chunkHash = chunkSendQueue.dequeueLong();
             int chunkX = Level.getHashX(chunkHash);
             int chunkZ = Level.getHashZ(chunkHash);
@@ -254,11 +293,13 @@ public final class PlayerChunkManager {
                         player.level.generateChunk(chunkX, chunkZ, force);
                         enqueue.add(chunkHash);
                         chunkLoadingQueue.remove(chunkHash);
+                        workChunkCount++;
                         continue;
                     }
                     chunkLoadingQueue.remove(chunkHash);
                     player.level.registerChunkLoader(player, chunkX, chunkZ, false);
                     chunkReadyToSend.enqueue(chunkHash);
+                    workChunkCount++;
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     chunkLoadingQueue.remove(chunkHash);
@@ -276,7 +317,9 @@ public final class PlayerChunkManager {
             } else {
                 enqueue.add(chunkHash);
             }
-        } while (!chunkSendQueue.isEmpty() && triedSendChunkCount < trySendChunkCountPerTick);
+        } while (!chunkSendQueue.isEmpty()
+                && workChunkCount < trySendChunkCountPerTick
+                && scannedChunkCount < scanLimit);
         enqueue.forEach(chunkSendQueue::enqueue);
     }
 
