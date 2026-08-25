@@ -329,6 +329,12 @@ public class Level implements Metadatable {
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Entity> entities = new Long2ObjectNonBlockingMap<>();
     private final ConcurrentLinkedQueue<BlockEntity> updateBlockEntities = new ConcurrentLinkedQueue<>();
+    /**
+     * Membership index for {@link #updateBlockEntities}. The queue keeps the tick order, but
+     * {@code contains} on it is a linear walk, and scheduling an update ran that walk over every
+     * queued block entity on a level that can hold thousands of them.
+     */
+    private final Set<BlockEntity> updateBlockEntitySet = ConcurrentHashMap.newKeySet();
     private final ConcurrentHashMap<Long, Boolean> chunkGenerationQueue = new ConcurrentHashMap<>();
     private int chunkGenerationQueueSize = 8;
     /**
@@ -1556,7 +1562,13 @@ public class Level implements Metadatable {
                 this.hasAsyncPrepareEntities = seenAsyncPrepare;
             }
             if (prof) phase[5] = -phaseStart + (phaseStart = System.nanoTime());
-            this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
+            this.updateBlockEntities.removeIf(blockEntity -> {
+                if (!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()) {
+                    return false;
+                }
+                this.updateBlockEntitySet.remove(blockEntity);
+                return true;
+            });
             if (prof) phase[6] = -phaseStart + (phaseStart = System.nanoTime());
 
             this.tickChunks();
@@ -3292,7 +3304,9 @@ public class Level implements Metadatable {
         }
 
         if (update) {
-            if (lightUpdatesEnabled) {
+            // Only relight when the change can actually alter light. Most block swaps keep the same
+            // emission and opacity, and updateAllLight walks a whole neighbourhood.
+            if (lightUpdatesEnabled && BlockLightProperties.packed(statePrevious) != BlockLightProperties.packed(state)) {
                 updateAllLight(block);
             }
 
@@ -4920,17 +4934,16 @@ public class Level implements Metadatable {
     public void scheduleBlockEntityUpdate(BlockEntity entity) {
         Preconditions.checkNotNull(entity, "entity");
         Preconditions.checkArgument(entity.getLevel() == this, "BlockEntity is not in this level");
-        if (!updateBlockEntities.contains(entity)) {
+        if (updateBlockEntitySet.add(entity)) {
             updateBlockEntities.add(entity);
         }
     }
 
     /**
      * Diagnostics: number of block entities currently queued for per-tick updates.
-     * O(n) — intended for commands like /debug mspt, not for hot paths.
      */
     public int getPendingBlockEntityUpdateCount() {
-        return updateBlockEntities.size();
+        return updateBlockEntitySet.size();
     }
 
     /** Diagnostics: total block entities registered in this level. */
@@ -4947,7 +4960,9 @@ public class Level implements Metadatable {
         Preconditions.checkNotNull(entity, "entity");
         Preconditions.checkArgument(entity.getLevel() == this, "BlockEntity is not in this level");
         blockEntities.remove(entity.getId());
-        updateBlockEntities.remove(entity);
+        if (updateBlockEntitySet.remove(entity)) {
+            updateBlockEntities.remove(entity);
+        }
     }
 
     /**
