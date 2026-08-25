@@ -457,6 +457,9 @@ public class PlayerSessionHolder {
             this.player.setInboundProcessor(networkPacketHandler::processInbound);
         }
         Server.getInstance().onPlayerLogin((InetSocketAddress) this.session.getSocketAddress(), player);
+        if (!this.player.isConnected()) {
+            return;
+        }
         this.playerHandle.processLogin();
     }
 
