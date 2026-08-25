@@ -1,6 +1,7 @@
 package org.powernukkitx.level.format;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.level.format.palette.BlockPalette;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
@@ -429,11 +430,27 @@ public class Chunk implements IChunk {
     @Override
     public void populateSkyLight() {
         batchProcess(unsafe -> {
+            final int maxHeight = getDimensionData().getMaxHeight();
+            final int minHeight = getDimensionData().getMinHeight();
+
+            // Fast path for a chunk with nothing in it, which is every chunk of a void or empty
+            // world. Sky light is a uniform 15 there, so the whole nibble array can be filled in one
+            // Arrays.fill per section instead of 16x16x(height) individual nibble writes - each of
+            // which otherwise goes through the freezable-array read/modify/write and reheats it.
+            if (isEmptyExceptAir(unsafe)) {
+                int minSectionY = getDimensionData().getMinSectionY();
+                for (int i = 0; i < getDimensionData().getChunkSectionCount(); i++) {
+                    ChunkSection section = unsafe.getOrCreateSection(minSectionY + i);
+                    if (section != null) section.skyLights().fill((byte) 15);
+                }
+                return;
+            }
+
             // basic light calculation; properties are read from the shared precomputed table (no per-cell Block alloc)
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
                     int level = 15;
-                    for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
+                    for (int y = maxHeight; y >= minHeight; y--) {
                         BlockState state = unsafe.getBlockState(x, y, z);
                         int packed = BlockLightProperties.packed(state);
                         if (!BlockLightProperties.isTransparent(packed)) {
@@ -449,6 +466,20 @@ public class Chunk implements IChunk {
                 }
             }
         });
+    }
+
+    /**
+     * Whether every section of this chunk holds nothing but air on both layers, so sky light does
+     * not need to be traced column by column.
+     */
+    private static boolean isEmptyExceptAir(UnsafeChunk unsafe) {
+        for (ChunkSection section : unsafe.getSections()) {
+            if (section == null) continue;
+            for (BlockPalette layer : section.blockLayer()) {
+                if (!layer.isEmpty()) return false;
+            }
+        }
+        return true;
     }
 
     public void batchProcess(Consumer<UnsafeChunk> unsafeChunkConsumer) {
