@@ -35,6 +35,18 @@ public class EntityItem extends Entity {
         return ITEM;
     }
 
+    /**
+     * How often a resting item rescans the blocks it touches. Scanning the surrounding blocks is by
+     * far the most expensive part of ticking large item piles, and an item that sits still on the
+     * ground touches the same blocks every tick.
+     */
+    private static final int RESTING_SCAN_INTERVAL = 5;
+    private static final double RESTING_MOTION_EPSILON = 0.00001;
+
+    private static final int FLUID_NONE = 0;
+    private static final int FLUID_SUBMERGED = 1;
+    private static final int FLUID_RISING = 2;
+
     protected String owner;
     protected String thrower;
     protected Item item;
@@ -42,6 +54,10 @@ public class EntityItem extends Entity {
     private boolean mergeItems;
     private boolean shouldDespawn;
     private boolean isDisplayOnly;
+    private int restingTicks;
+    private boolean scanWorldThisTick = true;
+    private int fluidMode = FLUID_NONE;
+    private boolean insideWaterPhysics;
 
     public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -167,6 +183,76 @@ public class EntityItem extends Entity {
                         !Objects.equals(this.item.getId(), Item.NETHER_STAR))) && super.attack(source);
     }
 
+    /**
+     * True while the item lies still on the ground, so per-tick world scans can be spread out.
+     */
+    private boolean isResting() {
+        return this.onGround && !this.justCreated && !this.inBubbleColumn
+                && Math.abs(this.motionX) <= RESTING_MOTION_EPSILON
+                && Math.abs(this.motionY) <= RESTING_MOTION_EPSILON
+                && Math.abs(this.motionZ) <= RESTING_MOTION_EPSILON;
+    }
+
+    /**
+     * Decides whether this tick pays for the world scans a resting item does not need: block
+     * collision, step-on sensors, obstruction, fire and lava contact and the fluid probe above the
+     * item. All of them read the same blocks every tick while the item lies still.
+     */
+    private void updateWorldScanBudget() {
+        if (isResting()) {
+            if (++this.restingTicks < RESTING_SCAN_INTERVAL) {
+                this.scanWorldThisTick = false;
+                return;
+            }
+            this.restingTicks = 0;
+        } else {
+            this.restingTicks = 0;
+        }
+        this.scanWorldThisTick = true;
+    }
+
+    @Override
+    protected void checkBlockCollision() {
+        if (!this.scanWorldThisTick) {
+            return;
+        }
+        super.checkBlockCollision();
+    }
+
+    @Override
+    protected void checkBlockStepOn() {
+        if (!this.scanWorldThisTick) {
+            return;
+        }
+        super.checkBlockStepOn();
+    }
+
+    /**
+     * Resolves which fluid, if any, the item is sitting in. Folded into one method so the result can
+     * be remembered across the ticks a resting item skips.
+     */
+    private int resolveFluidMode(boolean lavaResistant) {
+        int bx = (int) this.x;
+        int by = (int) this.boundingBox.getMaxY();
+        int bz = (int) this.z;
+        String layer0 = this.level.getBlockIdAt(bx, by, bz, 0);
+        if (Objects.equals(layer0, BlockID.FLOWING_WATER) || Objects.equals(layer0, BlockID.WATER)) {
+            return FLUID_SUBMERGED;
+        }
+        String layer1 = this.level.getBlockIdAt(bx, by, bz, 1);
+        if (Objects.equals(layer1, BlockID.FLOWING_WATER) || Objects.equals(layer1, BlockID.WATER)) {
+            return FLUID_SUBMERGED;
+        }
+        if (lavaResistant && (Objects.equals(layer0, BlockID.FLOWING_LAVA) || Objects.equals(layer0, BlockID.LAVA)
+                || Objects.equals(layer1, BlockID.FLOWING_LAVA) || Objects.equals(layer1, BlockID.LAVA))) {
+            return FLUID_SUBMERGED;
+        }
+        if (this.isInsideOfWater() || lavaResistant && this.isInsideOfLava()) {
+            return FLUID_RISING;
+        }
+        return FLUID_NONE;
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -180,6 +266,8 @@ public class EntityItem extends Entity {
         }
 
         this.lastUpdate = currentTick;
+
+        updateWorldScanBudget();
 
         if (this.mergeItems && this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
             if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
@@ -216,7 +304,7 @@ public class EntityItem extends Entity {
 
         boolean lavaResistant = fireProof || item != null && item.isLavaResistant();
 
-        if (!lavaResistant && (isInsideOfFire() || isInsideOfLava())) {
+        if (!lavaResistant && this.scanWorldThisTick && (isInsideOfFire() || isInsideOfLava())) {
             this.kill();
         }
 
@@ -236,30 +324,22 @@ public class EntityItem extends Entity {
                 }
             }*/
 
-            String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
+            if (this.scanWorldThisTick) {
+                this.fluidMode = resolveFluidMode(lavaResistant);
+            }
+
             if (this.inBubbleColumn) {
                 hasUpdate = true;
-            } else if (Objects.equals(bid, BlockID.FLOWING_WATER) || Objects.equals(bid, BlockID.WATER)
-                    || Objects.equals(bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_WATER)
-                    || Objects.equals(bid, BlockID.WATER)
-            ) {
-                //item is fully in water or in still water
+            } else if (this.fluidMode == FLUID_SUBMERGED) {
+                //item is fully in water or lava, or in a still one of either
                 this.motionY -= this.getGravity() * -0.015;
-            } else if (lavaResistant && (
-                    Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.FLOWING_LAVA)
-                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.LAVA)
-                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_LAVA)
-                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.LAVA)
-            )) {
-                //item is fully in lava or in still lava
-                this.motionY -= this.getGravity() * -0.015;
-            } else if (this.isInsideOfWater() || lavaResistant && this.isInsideOfLava()) {
+            } else if (this.fluidMode == FLUID_RISING) {
                 this.motionY = this.getGravity() - 0.06; //item is going up in water, don't let it go back down too fast
             } else {
                 this.motionY -= this.getGravity(); //item is not in water
             }
 
-            if (this.checkObstruction(this.x, this.y, this.z)) {
+            if (this.scanWorldThisTick && this.checkObstruction(this.x, this.y, this.z)) {
                 hasUpdate = true;
             }
 
@@ -301,7 +381,11 @@ public class EntityItem extends Entity {
             }
         }
 
-        return hasUpdate || !this.onGround || this.isInsideOfWaterPhysics()
+        if (this.scanWorldThisTick) {
+            this.insideWaterPhysics = this.isInsideOfWaterPhysics();
+        }
+
+        return hasUpdate || !this.onGround || this.insideWaterPhysics
                 || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
