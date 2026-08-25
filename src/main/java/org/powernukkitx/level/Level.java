@@ -2564,9 +2564,9 @@ public class Level implements Metadatable {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<Block> collides = new ArrayList<>();
 
@@ -2627,9 +2627,9 @@ public class Level implements Metadatable {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<Block> collides = new ArrayList<>();
 

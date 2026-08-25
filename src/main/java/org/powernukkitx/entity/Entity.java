@@ -5282,11 +5282,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
             int minY = NukkitMath.floorDouble(this.boundingBox.getMinY());
             int minZ = NukkitMath.floorDouble(this.boundingBox.getMinZ());
-            int maxX = NukkitMath.ceilDouble(this.boundingBox.getMaxX());
-            int maxY = NukkitMath.ceilDouble(this.boundingBox.getMaxY());
-            int maxZ = NukkitMath.ceilDouble(this.boundingBox.getMaxZ());
+            int maxX = NukkitMath.floorDouble(this.boundingBox.getMaxX());
+            int maxY = NukkitMath.floorDouble(this.boundingBox.getMaxY());
+            int maxZ = NukkitMath.floorDouble(this.boundingBox.getMaxZ());
 
-            this.blocksAround = new ArrayList<>();
+            this.blocksAround = new ArrayList<>((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1));
 
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
@@ -5307,11 +5307,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
             int minY = NukkitMath.floorDouble(this.boundingBox.getMinY());
             int minZ = NukkitMath.floorDouble(this.boundingBox.getMinZ());
-            int maxX = NukkitMath.ceilDouble(this.boundingBox.getMaxX());
-            int maxY = NukkitMath.ceilDouble(this.boundingBox.getMaxY());
-            int maxZ = NukkitMath.ceilDouble(this.boundingBox.getMaxZ());
+            int maxX = NukkitMath.floorDouble(this.boundingBox.getMaxX());
+            int maxY = NukkitMath.floorDouble(this.boundingBox.getMaxY());
+            int maxZ = NukkitMath.floorDouble(this.boundingBox.getMaxZ());
 
-            this.blocksAround = new ArrayList<>();
+            this.blocksAround = new ArrayList<>((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1));
 
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
