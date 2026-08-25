@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - beta
-      - r/**
       - b/**
   workflow_dispatch:
     inputs:
@@ -53,6 +52,10 @@ jobs:
         id: meta
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ github.ref_name }}" != "stable" ]; then
+              echo "Releases can only be cut from 'stable', got '${{ github.ref_name }}'" >&2
+              exit 1
+            fi
             echo "tag=${{ inputs.version }}"                 >> $GITHUB_OUTPUT
             echo "title=PowerNukkitX ${{ inputs.version }}"  >> $GITHUB_OUTPUT
             echo "skip_release=false"                        >> $GITHUB_OUTPUT
@@ -64,15 +67,6 @@ jobs:
             echo "title=Dev Build (nightly)"                 >> $GITHUB_OUTPUT
             echo "skip_release=false"                        >> $GITHUB_OUTPUT
             echo "is_draft=false"                            >> $GITHUB_OUTPUT
-            echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
-
-          elif [[ "${{ github.ref_name }}" == r/* ]]; then
-            VERSION="${{ github.ref_name }}"
-            VERSION="${VERSION#r/}"
-            echo "tag=$VERSION"                              >> $GITHUB_OUTPUT
-            echo "title=PowerNukkitX $VERSION"               >> $GITHUB_OUTPUT
-            echo "skip_release=false"                        >> $GITHUB_OUTPUT
-            echo "is_draft=true"                             >> $GITHUB_OUTPUT
             echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
 
           else
@@ -158,6 +152,19 @@ jobs:
         run: |
           git config user.name "$APP_SLUG[bot]"
           git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
+
+      - name: Create release branch
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          TAG: ${{ needs.publish.outputs.tag }}
+        run: |
+          BRANCH="r/${TAG}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "Branch $BRANCH already exists, leaving it untouched"
+          else
+            git branch "$BRANCH" "$GITHUB_SHA"
+            git push origin "refs/heads/$BRANCH"
+          fi
 
       - name: Extract release metadata from source
         id: versions
