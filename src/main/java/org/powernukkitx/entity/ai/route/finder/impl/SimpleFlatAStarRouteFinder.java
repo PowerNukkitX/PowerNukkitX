@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -102,6 +103,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.setEnableFloydSmooth(this.entity.isActive());
         //Clear openList and closeList
         openList.clear();
+        openIndex.clear();
         closeList.clear();
         closeHashSet.clear();
         //Reset the pathfinding depth
@@ -128,7 +130,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             putNeighborNodeIntoOpen(currentNode);
             //If the pathfinding depth is not exceeded, get the lowest-cost node and set it as currentNode
             if (openList.peek() != null && currentSearchDepth-- > 0) {
-                closeList.add(currentNode = openList.poll());
+                closeList.add(currentNode = pollOpenNode());
                 closeHashSet.add(currentNode.getVector3());
             } else {
                 this.searching = false;
@@ -206,7 +208,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 if (!existInCloseList(vec)) {
                     Node nodeNear = getOpenNode(vec);
                     if (nodeNear == null) {
-                        this.openList.offer(new Node(vec, node, node.getG(), calH(vec, target)));
+                        offerOpenNode(new Node(vec, node, node.getG(), calH(vec, target)));
                     } else {
                         if (node.getG() < nodeNear.getG()) {
                             nodeNear.setParent(node);
@@ -224,7 +226,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -241,7 +243,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -258,7 +260,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -275,7 +277,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -294,7 +296,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -311,7 +313,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -328,7 +330,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -345,7 +347,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -358,17 +360,24 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     protected Node getOpenNode(Vector3 vector2) {
-        for (Node node : this.openList) {
-            if (vector2.equals(node.getVector3())) {
-                return node;
-            }
-        }
-
-        return null;
+        return this.openIndex.get(vector2);
     }
 
     protected boolean existInOpenList(Vector3 vector2) {
-        return getOpenNode(vector2) != null;
+        return this.openIndex.containsKey(vector2);
+    }
+
+    protected void offerOpenNode(Node node) {
+        this.openList.offer(node);
+        this.openIndex.put(node.getVector3(), node);
+    }
+
+    protected Node pollOpenNode() {
+        Node node = this.openList.poll();
+        if (node != null) {
+            this.openIndex.remove(node.getVector3());
+        }
+        return node;
     }
 
     protected Node getCloseNode(Vector3 vector2) {

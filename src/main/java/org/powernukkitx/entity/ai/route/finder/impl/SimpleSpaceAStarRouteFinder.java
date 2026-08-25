@@ -48,7 +48,7 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
                         if (cost < 0) continue;
                         var nodeNear = getOpenNode(vec);
                         if (nodeNear == null) {
-                            this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                            offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                         } else {
                             if (cost < nodeNear.getG()) {
                                 nodeNear.setParent(node);
