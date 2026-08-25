@@ -2,16 +2,15 @@ package org.powernukkitx.level.util;
 
 import org.powernukkitx.block.Block;
 import org.powernukkitx.level.Level;
-
-import java.util.concurrent.ConcurrentHashMap;
+import org.powernukkitx.utils.collection.nb.Int2ObjectNonBlockingMap;
 
 
 public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
-    private final ConcurrentHashMap<Integer, Block> tickCachedBlockStore;
+    private final Int2ObjectNonBlockingMap<Block> tickCachedBlockStore;
     private final Level level;
 
     public SimpleTickCachedBlockStore(Level level) {
-        this.tickCachedBlockStore = new ConcurrentHashMap<>(32, 0.75f);
+        this.tickCachedBlockStore = new Int2ObjectNonBlockingMap<>(64);
         this.level = level;
     }
 
@@ -38,7 +37,19 @@ public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
     }
 
     @Override
+    public Block putIfAbsentInCachedStore(Block block, int x, int y, int z, int layer) {
+        Block previous = tickCachedBlockStore.putIfAbsent(Level.localBlockHash(x, y, z, layer, level), block);
+        return previous != null ? previous : block;
+    }
+
+    @Override
     public Block computeFromCachedStore(int x, int y, int z, int layer, CachedBlockComputer cachedBlockComputer) {
-        return tickCachedBlockStore.computeIfAbsent(Level.localBlockHash(x, y, z, layer, level), ignore -> cachedBlockComputer.compute());
+        int key = Level.localBlockHash(x, y, z, layer, level);
+        Block cached = tickCachedBlockStore.get(key);
+        if (cached != null) return cached;
+        Block computed = cachedBlockComputer.compute();
+        if (computed == null) return null;
+        Block previous = tickCachedBlockStore.putIfAbsent(key, computed);
+        return previous != null ? previous : computed;
     }
 }

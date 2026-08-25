@@ -350,7 +350,8 @@ public class Level implements Metadatable {
     @NonComputationAtomic
     private final LongArraySet unloadingChunks = new LongArraySet();
     private final Long2ObjectNonBlockingMap<Long> unloadQueue = new Long2ObjectNonBlockingMap<>();
-    private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
+    @NonComputationAtomic
+    private final Long2ObjectNonBlockingMap<TickCachedBlockStore> tickCachedBlocks = new Long2ObjectNonBlockingMap<>();
     private final LongSet highLightChunks = new LongOpenHashSet();
     // Avoid OOM, gc'd references result in whole chunk being sent (possibly higher cpu)
     private final Long2ObjectOpenHashMap<SoftReference<Int2ObjectOpenHashMap<Object>>> changedBlocks = new Long2ObjectOpenHashMap<>();
@@ -1329,17 +1330,14 @@ public class Level implements Metadatable {
     }
 
     public void releaseTickCachedBlocks() {
-        if (this.tickCachedBlocks.isEmpty()) {
-            return;
-        }
-        for (Long key : this.tickCachedBlocks.keySet()) {
-            this.tickCachedBlocks.computeIfPresent(key, (ignore, store) -> {
-                if (store.isCachedStoreEmpty()) {
-                    return null;
-                }
+        var iterator = this.tickCachedBlocks.values().iterator();
+        while (iterator.hasNext()) {
+            var store = iterator.next();
+            if (store.isCachedStoreEmpty()) {
+                iterator.remove();
+            } else {
                 store.clearCachedStore();
-                return store;
-            });
+            }
         }
     }
 
@@ -2894,8 +2892,25 @@ public class Level implements Metadatable {
     }
 
     public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
-        return tickCachedBlocks.computeIfAbsent(Level.chunkHash(x >> 4, z >> 4), key -> new SimpleTickCachedBlockStore(this))
-                .computeFromCachedStore(x, y, z, layer, () -> getBlock(x, y, z, layer, load));
+        // Deliberately not computeIfAbsent: this runs for every block an entity touches every tick,
+        // and the two capturing lambdas plus the boxed chunk key cost 672 bytes of garbage per
+        // player-sized hitbox scan. The get-then-putIfAbsent shape below allocates nothing on the
+        // hit path and keeps the same one-Block-per-position-per-tick guarantee.
+        final long chunkKey = Level.chunkHash(x >> 4, z >> 4);
+
+        TickCachedBlockStore store = tickCachedBlocks.get(chunkKey);
+        if (store == null) {
+            TickCachedBlockStore created = new SimpleTickCachedBlockStore(this);
+            TickCachedBlockStore previous = tickCachedBlocks.putIfAbsent(chunkKey, created);
+            store = previous != null ? previous : created;
+        }
+
+        Block cached = store.getFromCachedStore(x, y, z, layer);
+        if (cached != null) return cached;
+
+        Block computed = getBlock(x, y, z, layer, load);
+        if (computed == null) return null;
+        return store.putIfAbsentInCachedStore(computed, x, y, z, layer);
     }
 
     public Block getBlock(Vector3 pos) {
@@ -5174,6 +5189,9 @@ public class Level implements Metadatable {
                 }
             }
             levelProvider.unloadChunk(x, z, safe);
+            // The per-tick block cache is keyed by chunk, so an unloaded chunk would otherwise keep
+            // its entry - and the Block objects it holds - alive until something touched it again.
+            this.tickCachedBlocks.remove(Level.chunkHash(x, z));
             this.tickChunkCacheDirty = true;
         } catch (Exception e) {
             log.error(this.server.getLanguage().tr("nukkit.level.chunkUnloadError", e.toString()), e);
