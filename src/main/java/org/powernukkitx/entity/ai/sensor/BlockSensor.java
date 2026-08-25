@@ -3,7 +3,6 @@ package org.powernukkitx.entity.ai.sensor;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.MemoryType;
-import org.powernukkitx.level.Location;
 import org.powernukkitx.level.entity.condition.Condition;
 import org.powernukkitx.level.entity.condition.ConditionTrue;
 import lombok.Getter;
@@ -41,19 +40,22 @@ public class BlockSensor implements ISensor {
 
     @Override
     public void sense(EntityIntelligent entity) {
-        double distance = Double.MAX_VALUE;
+        //the offsets are the only thing the distance depends on, so it stays an integer comparison
+        int distanceSquared = Integer.MAX_VALUE;
         Block block = null;
+        int baseX = entity.getFloorX();
+        int baseY = entity.getFloorY();
+        int baseZ = entity.getFloorZ();
         for(int x = -range; x<=range; x++) {
             for(int z = -range; z<=range; z++) {
                 for(int y = -lookY; y<=lookY; y++) {
-                    Location lookLocation = entity.add(x, y, z);
-                    double lookDist = lookLocation.distance(entity);
-                    if(lookDist < distance) {
-                        Block lookBlock = lookLocation.getLevelBlock();
+                    int lookDistSquared = x * x + y * y + z * z;
+                    if(lookDistSquared < distanceSquared) {
+                        Block lookBlock = entity.level.getBlock(baseX + x, baseY + y, baseZ + z);
                         if(blockClass.isAssignableFrom(lookBlock.getClass())) {
                             if(condition.evaluate(lookBlock)) {
                                 block = lookBlock;
-                                distance = lookDist;
+                                distanceSquared = lookDistSquared;
                             }
                         }
                     }
