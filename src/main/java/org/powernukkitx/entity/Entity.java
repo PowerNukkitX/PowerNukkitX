@@ -6223,7 +6223,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (change) {
             IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
             if (prop != null && prop.isClientSync()) {
-                this.sendData(this.getViewers().values().toArray(new Player[0]));
+                this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
             }
         }
         return change;
@@ -6235,7 +6235,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (change) {
             BooleanEntityProperty property = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
             if (property != null && property.isClientSync()) {
-                this.sendData(this.getViewers().values().toArray(new Player[0]));
+                this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
             }
         }
         return change;
@@ -6247,7 +6247,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (change) {
             FloatEntityProperty property = getTypedEntityProperty(identifier, FloatEntityProperty.class);
             if (property != null && property.isClientSync()) {
-                this.sendData(this.getViewers().values().toArray(new Player[0]));
+                this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
             }
         }
 
@@ -6264,7 +6264,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 intProperties.put(identifier, index);
                 this.clientSyncPropertiesCache = null;
                 if (property.isClientSync()) {
-                    this.sendData(this.getViewers().values().toArray(new Player[0]));
+                    this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
                 }
                 return true;
             }
