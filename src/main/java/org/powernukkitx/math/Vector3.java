@@ -459,7 +459,13 @@ public class Vector3 implements Cloneable {
 
     @Override
     public int hashCode() {
-        return ((int) x ^ ((int) z << 12)) ^ ((int) y << 24);
+        // The old shape shifted y by 24 bits, which kept only its low 8 bits and aliased positions
+        // 256 apart in y. Mix all three coordinates so the low bits HashMap buckets on stay spread.
+        int hash = (int) x;
+        hash = hash * 31 + (int) y;
+        hash = hash * 31 + (int) z;
+        hash ^= hash >>> 16;
+        return hash;
     }
 
     public int rawHashCode() {

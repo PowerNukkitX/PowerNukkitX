@@ -586,7 +586,11 @@ public class BehaviorGroup implements IBehaviorGroup {
 
         @Override
         public int hashCode() {
-            return (chunkX ^ (chunkZ << 12)) ^ (sectionY << 24);
+            int hash = chunkX;
+            hash = hash * 31 + sectionY;
+            hash = hash * 31 + chunkZ;
+            hash ^= hash >>> 16;
+            return hash;
         }
     }
 }
