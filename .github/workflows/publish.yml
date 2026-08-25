@@ -3,6 +3,7 @@ name: PowerNukkitX Publish
 on:
   push:
     branches:
+      - stable
       - beta
       - b/**
   workflow_dispatch:
@@ -69,6 +70,13 @@ jobs:
             echo "is_draft=false"                            >> $GITHUB_OUTPUT
             echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
 
+          elif [ "${{ github.ref_name }}" = "stable" ]; then
+            echo "tag=snapshot"                              >> $GITHUB_OUTPUT
+            echo "title=Snapshot Build (snapshot)"           >> $GITHUB_OUTPUT
+            echo "skip_release=false"                        >> $GITHUB_OUTPUT
+            echo "is_draft=false"                            >> $GITHUB_OUTPUT
+            echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
+
           else
             # b/* branches: publish to Maven only, no GitHub release
             BRANCH="${{ github.ref_name }}"
@@ -82,14 +90,17 @@ jobs:
 
       - name: Build & Publish to Maven
         run: |
-          if [ "${{ github.ref_name }}" = "beta" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ steps.meta.outputs.tag }}-SNAPSHOT"
+          elif [ "${{ github.ref_name }}" = "beta" ]; then
             VERSION="nightly-SNAPSHOT"
-          elif [[ "${{ github.ref_name }}" == b/* ]]; then
+          elif [ "${{ github.ref_name }}" = "stable" ]; then
+            VERSION="stable-SNAPSHOT"
+          else
+            # b/* branches keep their own coordinate so they never collide with a release line
             BRANCH="${{ github.ref_name }}"
             SAFE_BRANCH=$(echo "$BRANCH" | sed 's|[^a-zA-Z0-9._-]|-|g')
             VERSION="${SAFE_BRANCH}-SNAPSHOT"
-          else
-            VERSION="${{ steps.meta.outputs.tag }}-SNAPSHOT"
           fi
           ./gradlew publish --no-configuration-cache -PbuildVersion="$VERSION"
         env:
@@ -215,7 +226,7 @@ jobs:
           path: build
 
       - name: Create changelog file
-        if: needs.publish.outputs.tag != 'nightly'
+        if: needs.publish.outputs.tag != 'nightly' && needs.publish.outputs.tag != 'snapshot'
         run: |
           TAG="${{ needs.publish.outputs.tag }}"
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
@@ -307,7 +318,7 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Commit and push changelog
-        if: needs.publish.outputs.tag != 'nightly'
+        if: needs.publish.outputs.tag != 'nightly' && needs.publish.outputs.tag != 'snapshot'
         run: |
           TAG="${{ needs.publish.outputs.tag }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
