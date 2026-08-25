@@ -237,12 +237,31 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     /**
      * Get the move cost of the block at the given position
      *
-     * @param level
-     * @param pos
+     * <p>Reads with {@code load = false}: a pathfinding thread must never trigger a synchronous
+     * chunk load or generation. An unloaded chunk simply contributes no extra cost, which is why
+     * both lookups are null-guarded.
+     *
+     * @param level the level
+     * @param pos   the position
      * @return cost
      */
     protected int getBlockMoveCostAt(@NotNull Level level, Vector3 pos) {
-        return level.getTickCachedBlock(pos).getWalkThroughExtraCost() + level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
+        Block at = level.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), 0, false);
+        Block below = level.getTickCachedBlock(pos.getFloorX(), pos.getFloorY() - 1, pos.getFloorZ(), 0, false);
+        int cost = 0;
+        if (at != null) cost += at.getWalkThroughExtraCost();
+        if (below != null) cost += below.getWalkThroughExtraCost();
+        return cost;
+    }
+
+    /**
+     * Packs a block position into a single long: 26 bits x | 26 bits z | 12 bits y.
+     * Y is biased by 64 so the usual -64..320 world range stays inside 12 bits.
+     */
+    protected static long posKey(int x, int y, int z) {
+        return ((long) (x & 0x3FFFFFF) << 38)
+                | ((long) (z & 0x3FFFFFF) << 12)
+                | ((y + 64) & 0xFFF);
     }
 
     /**

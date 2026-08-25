@@ -1,5 +1,6 @@
 package org.powernukkitx.entity.ai.route.finder.impl;
 
+import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.route.data.Node;
 import org.powernukkitx.entity.ai.route.posevaluator.IPosEvaluator;
@@ -23,11 +24,15 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
 
     public SimpleSpaceAStarRouteFinder(IPosEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator, entity);
+        // 3D A* expands 26 neighbours per node instead of 8, so the default depth of 100 costs
+        // roughly three times as much per search as it does for the flat finder.
+        setMaxSearchDepth(40);
     }
 
     @Override
     protected int getBlockMoveCostAt(@NotNull Level level, Vector3 pos) {
-        return level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
+        Block below = level.getTickCachedBlock(pos.getFloorX(), pos.getFloorY() - 1, pos.getFloorZ(), 0, false);
+        return below == null ? 0 : below.getWalkThroughExtraCost();
     }
 
     @Override
@@ -36,8 +41,11 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
                     var vec = centeredNode.add(dx, dy, dz);
-                    if (!existInCloseList(vec) && evalPos(vec)) {
+                    // centeredNode is grid aligned and the offsets are integers, so the memoised
+                    // variant is safe here.
+                    if (!existInCloseList(vec) && evalGridPos(vec)) {
                         // Calculate the cost of moving 1 block
                         var cost = switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {
                             case 1 -> DIRECT_MOVE_COST;
@@ -63,12 +71,19 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
     }
 
     /**
-     * Determines whether there is an obstacle between two Nodes
+     * Determines whether there is an obstacle between two Nodes.
+     *
+     * <p>Reads with {@code load = false} so path smoothing cannot pull chunks in from disk on a
+     * pathfinding thread. An unloaded position is treated as a barrier, which is the conservative
+     * choice.
      */
+    @Override
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
         for (Vector3 pos : VectorMath.getPassByVector3(pos1, pos2)) {
-            if (!evalPos(this.entity.level.getTickCachedBlock(pos.add(0, -1)))) {
+            Block below = this.entity.level.getTickCachedBlock(
+                    pos.getFloorX(), pos.getFloorY() - 1, pos.getFloorZ(), 0, false);
+            if (below == null || !evalPos(below)) {
                 return true;
             }
         }
