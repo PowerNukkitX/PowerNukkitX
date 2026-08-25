@@ -748,7 +748,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return
      */
     public Item setCustomName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.clearCustomName();
         }
 
