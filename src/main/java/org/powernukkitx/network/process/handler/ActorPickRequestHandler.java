@@ -25,6 +25,10 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
     public void handle(ActorPickRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         final Player player = playerHandle.player;
+        if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to send an entity pick request while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
         final Entity entity = player.level.getEntity(packet.getActorID());
         if (entity == null) {
             log.debug("{}: Entity pick request contained an invalid entity", playerHandle.getUsername());
@@ -57,7 +61,7 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
             return;
         }
 
-        if (packet.isWithData()) {
+        if (packet.isWithData() && player.isCreative()) {
             final CompoundTag nbt = this.getCleanedNBT(entity);
             if (nbt != null) {
                 ((SpawnEggPickable) item).setEntityNBT(nbt);
@@ -76,7 +80,7 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
         if (!pickEvent.isCancelled()) {
             boolean itemExists = false;
             int itemSlot = -1;
-            for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+            for (int slot = 0; slot < HumanInventory.ARMORS_INDEX; slot++) {
                 if (player.getInventory().getItem(slot).equals(pickEvent.getItem())) {
                     if (slot < player.getInventory().getHotbarSize()) {
                         player.getInventory().setHeldItemSlot(slot);
