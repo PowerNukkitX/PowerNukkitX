@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeGroupInfoPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemCategory;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemEntryPayload;
@@ -312,20 +311,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
         final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
         entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
-        entryPayload.setItemInstance(toCreativeItemData(value));
+        entryPayload.setItemInstance(value.toCreativeNetwork());
         entryPayload.setGroupIndex(groupIndex);
         ITEM_DATA.add(entryPayload);
-    }
-
-    private static ItemData toCreativeItemData(Item value) {
-        final CompoundTag nbt = value.getNbt();
-        if (nbt != null && nbt.contains("Damage") && nbt.getInt("Damage") == 0) {
-            final Item pristine = value.clone();
-            final CompoundTag stripped = nbt.copy().remove("Damage");
-            pristine.setNbt(stripped.isEmpty() ? null : stripped);
-            return pristine.toNetwork();
-        }
-        return value.toNetwork();
     }
 
     @Override
@@ -337,7 +325,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } else {
             final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
             entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
-            entryPayload.setItemInstance(toCreativeItemData(value));
+            entryPayload.setItemInstance(value.toCreativeNetwork());
             entryPayload.setGroupIndex(CreativeItemRegistry.LAST_ITEMS_INDEX);
             ITEM_DATA.add(entryPayload);
         }
