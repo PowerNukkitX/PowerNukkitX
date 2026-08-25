@@ -23,7 +23,7 @@ public class NearestItemSensor implements ISensor {
     protected int period;
 
     public NearestItemSensor(double range, double minRange) {
-        this(range, minRange, 1);
+        this(range, minRange, DEFAULT_PERIOD);
     }
 
     public NearestItemSensor(double range, double minRange, int period) {

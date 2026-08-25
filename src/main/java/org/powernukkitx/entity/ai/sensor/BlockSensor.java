@@ -24,7 +24,7 @@ public class BlockSensor implements ISensor {
     protected Condition condition;
 
     public BlockSensor(Class<? extends Block> blockClass, MemoryType<Block> memory, int range, int lookY) {
-        this(blockClass, memory, range, lookY, 1);
+        this(blockClass, memory, range, lookY, DEFAULT_PERIOD);
     }
 
     public BlockSensor(@NotNull Class<? extends Block> blockClass, @NotNull MemoryType<Block> memory, int range, int lookY, int period) {

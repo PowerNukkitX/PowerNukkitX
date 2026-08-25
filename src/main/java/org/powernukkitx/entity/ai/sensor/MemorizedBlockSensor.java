@@ -15,7 +15,7 @@ public class MemorizedBlockSensor implements ISensor {
     protected int period;
 
     public MemorizedBlockSensor(int range, int lookY) {
-        this(range, lookY, 1);
+        this(range, lookY, DEFAULT_PERIOD);
     }
 
     public MemorizedBlockSensor(int range, int lookY, int period) {

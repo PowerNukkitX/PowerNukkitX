@@ -24,7 +24,7 @@ public class NearestEntitySensor implements ISensor {
     protected MemoryType<Entity> memoryType;
 
     public NearestEntitySensor(Class<? extends Entity> entityClass, MemoryType<Entity> memoryType, double range, double minRange) {
-        this(entityClass, memoryType, range, minRange, 1);
+        this(entityClass, memoryType, range, minRange, DEFAULT_TARGETING_PERIOD);
     }
 
     public NearestEntitySensor(Class<? extends Entity> entityClass, MemoryType<Entity> memoryType, double range, double minRange, int period) {
