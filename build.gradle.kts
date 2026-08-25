@@ -74,6 +74,9 @@ dependencies {
     annotationProcessor(libs.lombok)
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
+    // Generates META-INF/BenchmarkList for src/test/java/jmh; without it the benchmarks compile but
+    // fail at runtime with "Unable to find the resource: /META-INF/BenchmarkList".
+    testAnnotationProcessor(libs.jmh.generator)
 }
 
 configurations.all {
@@ -86,7 +89,12 @@ configurations.all {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = ENCODING
-    options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+    // Only the main compile gets its processor path pinned. Forcing it onto compileTestJava as well
+    // dropped the JMH generator from the test source set, so every benchmark under src/test/java/jmh
+    // compiled but had no generated BenchmarkList to run against.
+    if (name == "compileJava") {
+        options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+    }
     options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000", "-nowarn"))
     options.isWarnings = false
 }
@@ -221,6 +229,19 @@ tasks.register<DefaultTask>("checkFast") {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = "Compile main/test sources and run fast unit checks"
     dependsOn(tasks.compileJava, tasks.compileTestJava, tasks.test)
+}
+
+tasks.register<JavaExec>("jmh") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Run the JMH benchmarks in src/test/java/jmh. Filter with -Pjmh.include=<regex>."
+    dependsOn(tasks.compileTestJava)
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("org.openjdk.jmh.Main")
+    val include = providers.gradleProperty("jmh.include").orElse(".*")
+    val extra = providers.gradleProperty("jmh.args").orElse("")
+    argumentProviders.add(CommandLineArgumentProvider {
+        listOf(include.get()) + extra.get().split(" ").filter { it.isNotBlank() }
+    })
 }
 
 tasks.named<JacocoReport>("jacocoTestReport") {
