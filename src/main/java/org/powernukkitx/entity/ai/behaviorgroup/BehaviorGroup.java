@@ -473,9 +473,9 @@ public class BehaviorGroup implements IBehaviorGroup {
             Collections.reverse(sortedMemory);
 
             for (var memory : sortedMemory) {
-                strBuilder.append("§e" + memory.getKey().getIdentifier().getPath());
+                strBuilder.append("§e").append(memory.getKey().getIdentifier().getPath());
                 strBuilder.append("=");
-                strBuilder.append("§7" + memory.getValue().toString());
+                strBuilder.append("§7").append(memory.getValue().toString());
                 strBuilder.append("\n");
             }
             strBuilder.append("\n\n");
