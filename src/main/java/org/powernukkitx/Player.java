@@ -387,7 +387,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private static final int FERTILIZER_USE_COOLDOWN = 4;
     private int lastFertilizerUseTick = Integer.MIN_VALUE;
     @Getter
-    @Setter
     protected Item lastUsedItem = null;
 
     // inventory system
@@ -2567,10 +2566,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public int getLastUseTick(String itemId) {
         return lastUseItemMap.getOrDefault(itemId, -1);
-    }
-
-    public Item getLastUsedItem() {
-        return lastUsedItem;
     }
 
     public void setLastUsedItem(Item item) {
