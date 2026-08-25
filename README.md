@@ -20,6 +20,7 @@
   <img src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" alt="Discord">
   <img src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" alt="Documentation">
   <img src="https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3" alt="Codecov">
+  <img src="https://app.codacy.com/project/badge/Grade/756e509c721e4c7296ec98bca95194d9" alt="Codacy">
   <img src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" alt="License">
 </p>
 
@@ -27,12 +28,12 @@
 
 **Feature-rich, highly customizable third-party server software for Minecraft: Bedrock Edition.**
 
-- 🪄 **Custom Item, Block and Entity support**
-- 🤖 **Vanilla-like Mob AI**
-- 🪴 **Vanilla-like world generation**
-- ✏️ **Full Vanilla Command Support**
-- 🗃️ **Full Item, Block and Container Support**
-- 🗿 **More features to discover...**
+- 🪄 Custom Item, Block and Entity support
+- 🤖 Vanilla-like Mob AI
+- 🪴 Vanilla World Generation
+- ✏️ Full Vanilla Command Support
+- 🗃️ Full Item, Block and Container Support
+- 🗿 More features to discover...
 
 ## 🛠️ Getting Started
 
@@ -51,12 +52,12 @@ Want to create your own? Our [documentation](https://powernukkitx.org/docs/devel
 
 Contributions, issues and feature requests are welcome!<br />
 Feel free to check [issues page](https://github.com/PowerNukkitX/PowerNukkitX/issues). Also take a look at
-the [contributing guide](.github/CONTRIBUTING.md).
-
-## 📝 License Information
-
-This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
+the [contributing guide](./CONTRIBUTING.md).
 
 ## Give a ⭐️ if this project helped you
 
 [![Contributors](https://contrib.rocks/image?repo=PowerNukkitX/PowerNukkitX)](https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors)
+
+## 📝 License Information
+
+This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
