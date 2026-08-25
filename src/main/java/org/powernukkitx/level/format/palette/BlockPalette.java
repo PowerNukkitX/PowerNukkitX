@@ -112,6 +112,7 @@ public class BlockPalette extends Palette<BlockState> {
             write = obfuscatePalette;
         }
 
+        write.ensureWordCapacity(byteBuf, MAX_VARINT_BYTES);
         byteBuf.writeByte(getPaletteHeader(write.bitArray.version(), true));
         for (int word : write.bitArray.words()) byteBuf.writeIntLE(word);
         this.bitArray.writeSizeToNetwork(byteBuf, write.palette.size());
