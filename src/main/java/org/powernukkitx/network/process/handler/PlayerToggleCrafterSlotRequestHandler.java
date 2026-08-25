@@ -1,10 +1,10 @@
 package org.powernukkitx.network.process.handler;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockCrafter;
 import org.powernukkitx.blockentity.BlockEntityCrafter;
-import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -17,17 +17,28 @@ public class PlayerToggleCrafterSlotRequestHandler implements PacketHandler<Play
 
     @Override
     public void handle(PlayerToggleCrafterSlotRequestPacket packet, PlayerSessionHolder holder, Server server) {
-        Level level = holder.getPlayer().getLevel();
+        Player player = holder.getPlayer();
+        if (!player.spawned || !player.isAlive()) {
+            return;
+        }
+
         BlockVector3 position = BlockVector3.fromNetwork(packet.getPos());
-        Block block = level.getBlock(position.asVector3());
+        player.temporalVector.setComponents(position.x, position.y, position.z);
+        if (!player.canInteract(player.temporalVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
+            return;
+        }
+
+        Block block = player.getLevel().getBlock(position.x, position.y, position.z, false);
         if (!(block instanceof BlockCrafter crafter)) {
             return;
         }
 
         BlockEntityCrafter blockEntity = crafter.getOrCreateBlockEntity();
         int slot = packet.getSlotIndex();
-        boolean state = !packet.isDisabled();
+        if (slot < 0 || slot >= blockEntity.getInventory().getSize()) {
+            return;
+        }
 
-        blockEntity.getInventory().setSlotState(slot, state);
+        blockEntity.getInventory().setSlotState(slot, !packet.isDisabled());
     }
 }
