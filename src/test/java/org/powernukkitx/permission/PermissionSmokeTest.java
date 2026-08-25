@@ -119,7 +119,7 @@ class PermissionSmokeTest {
                 att.getPlugin();
                 player.hasPermission("custom.flag");
                 player.isPermissionSet("custom.flag");
-                att.unsetPermission("custom.flag", true);
+                att.unsetPermission("custom.flag");
                 player.removeAttachment(att);
             });
             safe(() -> {
