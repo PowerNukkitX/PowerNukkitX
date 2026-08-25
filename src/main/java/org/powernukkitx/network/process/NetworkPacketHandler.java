@@ -42,7 +42,7 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
             if (player != null && firePacketHandle(player, packet)) {
                 return PacketSignal.UNHANDLED;
             }
-            packetHandler.handle(packet, this.session, this.server);
+            dispatch(packetHandler, packet);
             return PacketSignal.HANDLED;
         }
         return BedrockPacketHandler.super.handlePacket(packet);
@@ -61,7 +61,23 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         if (packetHandler == null || firePacketHandle(player, packet)) {
             return;
         }
-        packetHandler.handle(packet, this.session, this.server);
+        dispatch(packetHandler, packet);
+    }
+
+    /**
+     * Runs a packet handler, containing any exception it throws so a single malformed or malicious
+     * packet cannot tear down the session. Logged at debug: this path is client-controlled, so a
+     * client able to trigger a failure reliably must not be able to flood the logs (or fill the disk)
+     * with per-packet stack traces.
+     */
+    private void dispatch(PacketHandler packetHandler, BedrockPacket packet) {
+        try {
+            packetHandler.handle(packet, this.session, this.server);
+        } catch (Exception e) {
+            final Player player = this.session.getPlayer();
+            log.debug("Failed to handle {} for {}", packet.getClass().getSimpleName(),
+                    player == null ? "unknown" : player.getName(), e);
+        }
     }
 
     private boolean firePacketReceive(@Nullable Player player, BedrockPacket packet) {
