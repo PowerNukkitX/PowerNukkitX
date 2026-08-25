@@ -14,6 +14,9 @@ import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.Utils;
+import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +44,54 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     //Diagonal move cost
     protected final static int OBLIQUE_MOVE_COST = 14;
 
+    // ---------------------------------------------------------------------
+    // Per-search memoisation
+    //
+    // During a single search() the world is read exclusively through getTickCachedBlock, so it is
+    // effectively frozen and these lookups are pure functions of position. Neighbouring nodes
+    // overlap heavily - the node at (x,z) probes (x+1,z) and the node at (x+1,z) probes (x,z) right
+    // back - so the same column was previously evaluated four to eight times per search. All caches
+    // are cleared at the START of search(), not the end, so the interrupt early-return cannot leave
+    // stale entries behind.
+    //
+    // Encoding note: fastutil's default return value for an absent key is 0 for both byte and int
+    // maps, so 0 is used as "not cached". That avoids depending on defaultReturnValue() entirely.
+    // ---------------------------------------------------------------------
+
+    /** Absent-key marker shared by the boolean caches. */
+    private static final byte UNCACHED = 0;
+    private static final byte CACHED_FALSE = 1;
+    private static final byte CACHED_TRUE = 2;
+
+    /**
+     * getHighestUnder results are stored as {@code y + Y_OFFSET} so a real Y can never be confused
+     * with the 0 "not cached" marker or with {@link #NO_BLOCK_FOUND}.
+     */
+    private static final int Y_OFFSET = 4096;
+    /** Stored when a column has no valid standing block, so misses are cached too. */
+    private static final int NO_BLOCK_FOUND = 1;
+
+    /**
+     * The only {@code limit} value getHighestUnder results are cached for. The cache key holds
+     * (x, startY, z) but not the limit, so a call with any other limit must bypass the cache rather
+     * than read an entry produced with a different scan depth.
+     */
+    protected static final int CACHED_LIMIT = 4;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final Long2ByteOpenHashMap standingCache = new Long2ByteOpenHashMap();
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final Long2ByteOpenHashMap gridPosCache = new Long2ByteOpenHashMap();
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final Long2IntOpenHashMap highestUnderCache = new Long2IntOpenHashMap();
+
     protected final PriorityQueue<Node> openList = new PriorityQueue<>();
+    protected final HashMap<Vector3, Node> openIndex = new HashMap<>();
 
     protected final List<Node> closeList = new ArrayList<>();
     protected final HashSet<Vector3> closeHashSet = new HashSet<>();
@@ -106,6 +156,11 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         openIndex.clear();
         closeList.clear();
         closeHashSet.clear();
+        //Clear the per-search memoisation. Done here rather than at the end so the interrupt
+        //early-return below cannot carry entries into the next search.
+        standingCache.clear();
+        gridPosCache.clear();
+        highestUnderCache.clear();
         //Reset the pathfinding depth
         currentSearchDepth = maxSearchDepth;
 
@@ -408,36 +463,93 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     /**
      * Get the highest valid point at the target coordinate (checking downwards along the Y axis)
+     *
+     * <p>Results are memoised per search, but only for {@link #CACHED_LIMIT}: the key holds
+     * (x, startY, z) and not the limit, so a different scan depth must not read an entry produced
+     * by another one.
      */
     public Block getHighestUnder(Vector3 vector3, int limit) {
+        final int x = vector3.getFloorX();
+        final int z = vector3.getFloorZ();
+        final int startY = vector3.getFloorY();
+
         if (limit > 0) {
-            for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
-                Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-                if (evalStandingBlock(block))
-                    return block;
+            final boolean cacheable = limit == CACHED_LIMIT;
+            final long key = cacheable ? posKey(x, startY, z) : 0L;
+
+            if (cacheable) {
+                int cached = highestUnderCache.get(key);
+                if (cached != 0) {
+                    if (cached == NO_BLOCK_FOUND) return null;
+                    return this.entity.level.getTickCachedBlock(x, cached - Y_OFFSET, z, false);
+                }
             }
+
+            for (int y = startY; y >= startY - limit; y--) {
+                Block block = this.entity.level.getTickCachedBlock(x, y, z, false);
+                if (evalStandingBlock(block)) {
+                    if (cacheable) highestUnderCache.put(key, y + Y_OFFSET);
+                    return block;
+                }
+            }
+            if (cacheable) highestUnderCache.put(key, NO_BLOCK_FOUND);
             return null;
         }
-        for (int y = vector3.getFloorY(); y >= -64; y--) {
-            Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-            if (evalStandingBlock(block))
-                return block;
+
+        for (int y = startY; y >= -64; y--) {
+            Block block = this.entity.level.getTickCachedBlock(x, y, z, false);
+            if (evalStandingBlock(block)) return block;
         }
         return null;
     }
 
     /**
-     * Whether the given position can serve as a valid node
+     * Whether the given position can serve as a valid node.
+     *
+     * <p>Deliberately NOT memoised. Callers disagree on coordinate convention:
+     * {@code putNeighborNodeIntoOpen} passes centres of the {@code .5} grid while {@code hasBarrier}
+     * passes interpolated sample points. Both floor to the same cell, but the flying evaluator
+     * builds its collision box around the raw vector, so the two produce boxes offset by a fraction
+     * of a block and can legitimately disagree. A shared cache would feed one caller the other's
+     * answer and let mobs clip through walls or stall in mid-air.
+     *
+     * <p>Callers that can guarantee grid-aligned input should use {@link #evalGridPos}.
      */
     protected boolean evalPos(Vector3 pos) {
         return evalPos.evalPos(entity, pos);
     }
 
     /**
-     * Whether the space above the given block can serve as a valid node
+     * Memoised {@link #evalPos} for positions guaranteed to sit on the {@code .5} grid, which makes
+     * flooring a lossless key.
+     *
+     * <p>Only safe from call sites that build their positions as {@code floor().add(0.5, 0.5, 0.5)}
+     * plus integer offsets. Do not call this with arbitrary coordinates; use {@link #evalPos}.
+     */
+    protected boolean evalGridPos(Vector3 gridPos) {
+        long key = posKey(gridPos.getFloorX(), gridPos.getFloorY(), gridPos.getFloorZ());
+        byte cached = gridPosCache.get(key);
+        if (cached != UNCACHED) return cached == CACHED_TRUE;
+        boolean result = evalPos.evalPos(entity, gridPos);
+        gridPosCache.put(key, result ? CACHED_TRUE : CACHED_FALSE);
+        return result;
+    }
+
+    /**
+     * Whether the space above the given block can serve as a valid node.
+     *
+     * <p>Memoised per search. Unlike {@link #evalPos} this is safe to key on the floored position
+     * because a Block always carries whole-block coordinates, so there is only ever one convention
+     * in play.
      */
     protected boolean evalStandingBlock(Block block) {
-        return evalPos.evalStandingBlock(entity, block);
+        if (block == null) return false;
+        long key = posKey(block.getFloorX(), block.getFloorY(), block.getFloorZ());
+        byte cached = standingCache.get(key);
+        if (cached != UNCACHED) return cached == CACHED_TRUE;
+        boolean result = evalPos.evalStandingBlock(entity, block);
+        standingCache.put(key, result ? CACHED_TRUE : CACHED_FALSE);
+        return result;
     }
 
     /**
@@ -445,7 +557,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      * @return the highest reachable point at the given coordinate (limit=4)
      */
     protected int getAvailableHorizontalOffset(Vector3 vector3) {
-        var block = getHighestUnder(vector3, 4);
+        var block = getHighestUnder(vector3, CACHED_LIMIT);
         if (block != null) {
             return block.getFloorY() - vector3.getFloorY() + 1;
         }
