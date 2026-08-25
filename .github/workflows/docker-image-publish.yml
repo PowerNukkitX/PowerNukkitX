@@ -3,7 +3,7 @@ name: Update Docker Hub images
 on:
   push:
     branches:
-      - beta
+      - stable
   release:
     types:
       - published
