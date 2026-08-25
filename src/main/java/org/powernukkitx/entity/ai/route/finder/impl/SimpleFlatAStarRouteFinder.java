@@ -681,8 +681,16 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected Node getNearestNodeFromCloseList(Vector3 vector3) {
         double min = Double.MAX_VALUE;
         Node node = null;
-        for (Node n : closeList) {
-            double distanceSquared = n.getVector3().floor().distanceSquared(vector3.floor());
+        int targetX = vector3.getFloorX();
+        int targetY = vector3.getFloorY();
+        int targetZ = vector3.getFloorZ();
+        for (int i = 0, size = closeList.size(); i < size; i++) {
+            Node n = closeList.get(i);
+            Vector3 pos = n.getVector3();
+            double dx = pos.getFloorX() - targetX;
+            double dy = pos.getFloorY() - targetY;
+            double dz = pos.getFloorZ() - targetZ;
+            double distanceSquared = dx * dx + dy * dy + dz * dz;
             if (distanceSquared < min) {
                 min = distanceSquared;
                 node = n;
