@@ -5,6 +5,7 @@ import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockBubbleColumn;
 import org.powernukkitx.block.BlockEndPortal;
 import org.powernukkitx.block.BlockFence;
@@ -5435,26 +5436,54 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         boolean portal = false;
         boolean scaffolding = false;
         boolean endPortal = false;
-        for (var block : this.getTickCachedCollisionBlocks()) {
-            switch (block.getId()) {
-                case Block.PORTAL -> portal = true;
-                case BlockID.SCAFFOLDING -> scaffolding = true;
-                case BlockID.END_PORTAL -> endPortal = true;
-            }
 
-            block.onEntityCollide(this);
-            block.getTickCachedLevelBlockAtLayer(1).onEntityCollide(this);
-            if (needsRecalcCurrent)
-                block.addVelocityToEntity(this, vector);
+        // Scanned directly rather than through getTickCachedCollisionBlocks(). Block.getBoundingBox
+        // defaults to the full cube and BlockAir does not override it, so the collision list holds
+        // an air Block for nearly every position in the box - each one built through the registry's
+        // reflective constructor only to have every callback below do nothing. Reading the state
+        // first costs no allocation and skips them.
+        int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
+        int minY = NukkitMath.floorDouble(this.boundingBox.getMinY());
+        int minZ = NukkitMath.floorDouble(this.boundingBox.getMinZ());
+        int maxX = NukkitMath.floorDouble(this.boundingBox.getMaxX());
+        int maxY = NukkitMath.floorDouble(this.boundingBox.getMaxY());
+        int maxZ = NukkitMath.floorDouble(this.boundingBox.getMaxZ());
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    boolean layer0Air = this.level.getBlockState(x, y, z, 0, false) == BlockAir.STATE;
+                    boolean layer1Air = this.level.getBlockState(x, y, z, 1, false) == BlockAir.STATE;
+                    if (layer0Air && layer1Air) continue;
+
+                    if (!layer0Air) {
+                        Block block = this.level.getTickCachedBlock(x, y, z, 0, false);
+                        if (block != null && block.collidesWithBB(this.boundingBox, true)) {
+                            switch (block.getId()) {
+                                case Block.PORTAL -> portal = true;
+                                case BlockID.SCAFFOLDING -> scaffolding = true;
+                                case BlockID.END_PORTAL -> endPortal = true;
+                            }
+
+                            block.onEntityCollide(this);
+                            if (needsRecalcCurrent)
+                                block.addVelocityToEntity(this, vector);
+                        }
+                    }
+
+                    if (!layer1Air) {
+                        Block layer1 = this.level.getTickCachedBlock(x, y, z, 1, false);
+                        if (layer1 != null && layer1.collidesWithBB(this.boundingBox, true)) {
+                            layer1.onEntityCollide(this);
+                        }
+                    }
+                }
+            }
         }
 
         setDataFlag(ActorFlags.IN_SCAFFOLDING, scaffolding);
 
         if (Math.abs(this.y % 1) > 0.125) {
-            int minX = NukkitMath.floorDouble(boundingBox.getMinX());
-            int minZ = NukkitMath.floorDouble(boundingBox.getMinZ());
-            int maxX = NukkitMath.ceilDouble(boundingBox.getMaxX());
-            int maxZ = NukkitMath.ceilDouble(boundingBox.getMaxZ());
             int Y = (int) y;
 
             outerScaffolding:
