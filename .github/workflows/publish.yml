@@ -27,11 +27,22 @@ jobs:
       is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
       title: ${{ steps.meta.outputs.title }}
       minecraft_version: ${{ steps.mc_version.outputs.minecraft_version }}
+      sha: ${{ steps.api_version.outputs.sha }}
+    permissions:
+      contents: write
     steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.PNX_BOT_APP_ID }}
+          private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: true
+          token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/setup-java@v5.7.0
         with:
@@ -86,6 +97,46 @@ jobs:
             echo "skip_release=true"                         >> $GITHUB_OUTPUT
             echo "is_draft=false"                            >> $GITHUB_OUTPUT
             echo "is_prerelease=false"                       >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync API version with the release version
+        id: api_version
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          # Only a dispatched release names a version - every other trigger builds the source as-is.
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "sha=$GITHUB_SHA" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+(\.[0-9]+)+(-[a-zA-Z0-9.]+)?$'; then
+            echo "Release version '$VERSION' is not a valid API version" >&2
+            exit 1
+          fi
+
+          FILE=src/main/java/org/powernukkitx/PowerNukkitX.java
+          sed -i -E "s|(API_VERSION = dynamic\(\")[^\"]*(\"\))|\1${VERSION}\2|" "$FILE"
+
+          CURRENT=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' "$FILE")
+          if [ "$CURRENT" != "$VERSION" ]; then
+            echo "Failed to set API_VERSION to '$VERSION' in $FILE" >&2
+            exit 1
+          fi
+
+          git config user.name "$APP_SLUG[bot]"
+          git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
+
+          git add "$FILE"
+          if git diff --staged --quiet; then
+            echo "API_VERSION already at $VERSION"
+            echo "sha=$GITHUB_SHA" >> $GITHUB_OUTPUT
+          else
+            git commit -m "chore: bump API version to ${VERSION} [skip ci]"
+            git push origin "HEAD:${{ github.ref_name }}"
+            echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           fi
 
       - name: Build & Publish to Maven
@@ -143,6 +194,10 @@ jobs:
     needs: publish
     permissions:
       contents: write
+    env:
+      # The API version bump lands as its own commit, so the release must point at that commit
+      # rather than the one the workflow was triggered from.
+      RELEASE_SHA: ${{ needs.publish.outputs.sha }}
     steps:
       - name: Generate bot token
         uses: actions/create-github-app-token@v2
@@ -173,7 +228,7 @@ jobs:
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
             echo "Branch $BRANCH already exists, leaving it untouched"
           else
-            git branch "$BRANCH" "$GITHUB_SHA"
+            git branch "$BRANCH" "$RELEASE_SHA"
             git push origin "refs/heads/$BRANCH"
           fi
 
@@ -254,7 +309,7 @@ jobs:
 
           LAST=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
           if [ -n "$LAST" ] && [ "$LAST" != "$TAG" ]; then
-            COMPARE=$(gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}")
+            COMPARE=$(gh api "repos/${{ github.repository }}/compare/$LAST...${RELEASE_SHA}")
 
             TOTAL_COMMITS=$(echo "$COMPARE" | jq '.total_commits')
             FILES_CHANGED=$(echo "$COMPARE" | jq '.files | length')
@@ -369,7 +424,7 @@ jobs:
           > [!IMPORTANT]
           > This release is a **draft** — pending review. Publish it manually from the Releases page once verified.
 
-          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          **Commit:** [${RELEASE_SHA}](https://github.com/${{ github.repository }}/commit/${RELEASE_SHA})
 
           EOF
           elif [ "$IS_PRERELEASE" = "true" ]; then
@@ -379,12 +434,12 @@ jobs:
           >
           > Report issues on [Discord](https://discord.gg/apwd7uauZg) or [GitHub Issues](https://github.com/${{ github.repository }}/issues).
 
-          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          **Commit:** [${RELEASE_SHA}](https://github.com/${{ github.repository }}/commit/${RELEASE_SHA})
 
           EOF
           else
             cat >> release-notes.md << EOF
-          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          **Commit:** [${RELEASE_SHA}](https://github.com/${{ github.repository }}/commit/${RELEASE_SHA})
 
           EOF
           fi
@@ -394,7 +449,7 @@ jobs:
             echo "" >> release-notes.md
             echo "### ✨ Changes since $LAST" >> release-notes.md
             echo "" >> release-notes.md
-            gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}" \
+            gh api "repos/${{ github.repository }}/compare/$LAST...${RELEASE_SHA}" \
               --jq '.commits | map(.commit.message | split("\n")[0]) | sort | .[] | "- \(.)"' \
               >> release-notes.md 2>/dev/null || true
           fi
@@ -428,7 +483,7 @@ jobs:
             echo "Updating existing release $TAG"
             # Rolling tags like "nightly" are reused, so the tag has to follow the new commit -
             # gh release edit leaves it pointing at whatever it was created from.
-            git tag -f "$TAG" "$GITHUB_SHA"
+            git tag -f "$TAG" "$RELEASE_SHA"
             git push -f origin "refs/tags/$TAG"
             gh release upload "$TAG" build/powernukkitx.jar --clobber
             gh release edit "$TAG" \
@@ -440,7 +495,7 @@ jobs:
             gh release create "$TAG" \
               --title "$TITLE" \
               --notes-file release-notes.md \
-              --target "$GITHUB_SHA" \
+              --target "$RELEASE_SHA" \
               --draft="$IS_DRAFT" \
               --prerelease="$IS_PRERELEASE" \
               --latest=false \
