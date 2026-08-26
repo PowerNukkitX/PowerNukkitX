@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -62,26 +61,29 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
 
     @Override
     protected IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_EVOCATION_ILLAGER_AMBIENT), new RandomSoundEvaluator(), 10, 1),
-                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.5f, true, 9), all(
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_EVOCATION_ILLAGER_AMBIENT))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.5f, true, 9))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8),
                                 any(
                                         new MemoryCheckEmptyEvaluator(LAST_MAGIC),
                                         entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.NONE
                                 )
-                        ), 9, 1),
-                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, true, 11), all(
+                        ))
+                .behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, true, 11))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 10),
                                 any(
                                         new MemoryCheckEmptyEvaluator(LAST_MAGIC),
                                         entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.NONE
                                 )
-                        ), 8, 1),
-                        new Behavior(new ColorConversionExecutor(), all(
+                        ))
+                .behavior(new ColorConversionExecutor())
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_CONVERSION, 100),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 40),
@@ -101,8 +103,9 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                                         entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.COLOR_CONVERSION
                                 ),
                                 entity -> entity.getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING)
-                        ), 7, 1),
-                        new Behavior(new VexSummonExecutor(), all(
+                        ))
+                .behavior(new VexSummonExecutor())
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_SUMMON, 340),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 40),
@@ -118,8 +121,9 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                                         entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.NONE,
                                         entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.SUMMON
                                 )
-                        ), 6, 1),
-                        new Behavior(new FangCircleExecutor(), all(
+                        ))
+                .behavior(new FangCircleExecutor())
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_CAST, 100),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 40),
@@ -129,24 +133,26 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                                         entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.NONE,
                                         entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.CAST_CIRLCE
                                 )
-                        ), 5, 1),
-                        new Behavior(new FangLineExecutor(), all(
-                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_CAST, 100),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 40),
-                                any(
-                                        new MemoryCheckEmptyEvaluator(LAST_MAGIC),
-                                        entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.NONE,
-                                        entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.CAST_LINE
-                                )
-                                ), 4, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 1), all(
+                        ))
+                .behavior(new FangLineExecutor())
+                        .when(all(
+                        new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
+                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_CAST, 100),
+                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 40),
+                        any(
+                                new MemoryCheckEmptyEvaluator(LAST_MAGIC),
+                                entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.NONE,
+                                entity -> entity.getMemoryStorage().get(LAST_MAGIC) == SPELL.CAST_LINE
+                        )
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 1))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 entity -> !entity.getDataFlag(ActorFlags.CASTING)
-                        ), 3, 1),
-                        new Behavior(new DoNothingExecutor(), entity -> entity.getDataFlag(ActorFlags.CASTING), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new DoNothingExecutor())
+                        .when(entity -> entity.getDataFlag(ActorFlags.CASTING))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),

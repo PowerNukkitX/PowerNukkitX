@@ -8,8 +8,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -201,94 +200,57 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.35f),
-                                all(
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                9, 1
-                        ),
-                        new Behavior(
-                                new HoglinTransformExecutor(),
-                                all(
-                                        entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
-                                        entity -> !isImmobile(),
-                                        entity -> !entity.getNbt().getBoolean("IsImmuneToZombification")
-                                ),
-                                8, 1
-                        ),
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_HOGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f),
-                                all(
-                                        new RandomSoundEvaluator(),
-                                        entity -> isAngry()
-                                ),
-                                7, 1
-                        ),
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_HOGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f),
-                                all(
-                                        new RandomSoundEvaluator(),
-                                        entity -> !isAngry()
-                                ),
-                                6, 1
-                        ),
-                        new Behavior(
-                                new HoglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30),
-                                all(
-                                        new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                                ),
-                                5, 1
-                        ),
-                        new Behavior(
-                                new HoglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30),
-                                all(
-                                        new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new HoglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK),
-                                all(
-                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
-                                ),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new MoveToTargetExecutor(CoreMemoryTypes.PARENT, this.getMovementSpeedDefault() * 1.9f, true, 64, 3),
-                                all(
-                                        new EntityCheckEvaluator(CoreMemoryTypes.PARENT),
-                                        new DistanceEvaluator(CoreMemoryTypes.PARENT, 5),
-                                        entity -> isBaby()
-                                ),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10),
-                                none(),
-                                1, 1
-                        )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new BreedingExecutor(16, 200, 0.35f))
+                        .when(all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new HoglinTransformExecutor())
+                        .when(all(
+                                entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
+                                entity -> !isImmobile(),
+                                entity -> !entity.getNbt().getBoolean("IsImmuneToZombification")
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_HOGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(
+                                new RandomSoundEvaluator(),
+                                entity -> isAngry()
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_HOGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(
+                                new RandomSoundEvaluator(),
+                                entity -> !isAngry()
+                        ))
+                .behavior(new HoglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30))
+                        .when(all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)
+                        ))
+                .behavior(new HoglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30))
+                        .when(all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER)
+                        ))
+                .behavior(new HoglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK))
+                        .when(all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.PARENT, this.getMovementSpeedDefault() * 1.9f, true, 64, 3))
+                        .when(all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.PARENT),
+                                new DistanceEvaluator(CoreMemoryTypes.PARENT, 5),
+                                entity -> isBaby()
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestPlayerSensor(40, 0, 20),
                         new BlockSensor(BlockPortal.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 2, 20),

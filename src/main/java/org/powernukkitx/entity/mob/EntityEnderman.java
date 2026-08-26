@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -59,14 +58,14 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(new StaringAttackTargetExecutor(), none(), 1, 1, 1, true)
-                )
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_IDLE, 0.8f, 1.2f, 1, 1), all(not(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)), new RandomSoundEvaluator()), 6, 1, 1, true),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_SCREAM, 0.8f, 1.2f, 1, 1), all(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), new RandomSoundEvaluator(10, 7)), 5, 1, 1, true),
-                        new Behavior(new TeleportExecutor(16, 5, 16), any(
+        return EntityAI.of(this)
+                .coreBehavior(new StaringAttackTargetExecutor())
+                .behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_IDLE, 0.8f, 1.2f, 1, 1))
+                        .when(all(not(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)), new RandomSoundEvaluator()))
+                .behavior(new PlaySoundExecutor(Sound.MOB_ENDERMEN_SCREAM, 0.8f, 1.2f, 1, 1))
+                        .when(all(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), new RandomSoundEvaluator(10, 7)))
+                .behavior(new TeleportExecutor(16, 5, 16))
+                        .when(any(
                                 all(entity -> getLevel().isRaining(),
                                         entity -> !isUnderBlock(),
                                         entity -> getLevel().getTick()%10 == 0),
@@ -80,21 +79,22 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
                                         new ProbabilityEvaluator(1, 20),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 10)
                                 )
-                        ), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.45f, 64, true, 30), all(
+                        ))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.45f, 64, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 any(
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player holder && holder.getInventory() != null && !holder.getInventory().getHelmet().getId().equals(Block.CARVED_PUMPKIN),
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntityIntelligent
                                 )
-                        ), 3, 1),
-                        new Behavior(new EndermanBlockExecutor(), all(
+                        ))
+                .behavior(new EndermanBlockExecutor())
+                        .when(all(
                                 entity -> getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING),
                                 entity -> getLevel().getTick()%60 == 0,
                                 new ProbabilityEvaluator(1,20)
-                        ), 2, 1, 1, true),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new PlayerStaringSensor(64, 20, false),
                         new NearestEntitySensor(EntityEndermite.class, CoreMemoryTypes.NEAREST_ENDERMITE, 64, 0)

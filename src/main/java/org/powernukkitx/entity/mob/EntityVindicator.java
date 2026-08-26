@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -56,14 +55,16 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_VINDICATOR_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 7, 1),
-                        new Behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 3, 1),
-                        new Behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.5f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_VINDICATOR_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET))
+                .behavior(new FlatRandomRoamExecutor(0.5f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
                         new NearestPlayerSensor(16, 0, 0)

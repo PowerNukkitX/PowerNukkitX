@@ -7,8 +7,7 @@ import org.powernukkitx.block.BlockPumpkin;
 import org.powernukkitx.block.BlockSnow;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -62,18 +61,17 @@ public class EntitySnowGolem extends EntityGolem {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new SnowGolemShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 16, true, 20, 0), all(
-                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                entity -> !(getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntitySnowGolem)),
-                                3, 1),
-                        new Behavior(new SnowGolemShootExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, 10, true, 20, 0), all(
+        return EntityAI.of(this)
+                .behavior(new SnowGolemShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 16, true, 20, 0))
+                        .when(all(
+                        new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                        entity -> !(getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntitySnowGolem)))
+                .behavior(new SnowGolemShootExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, 10, true, 20, 0))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
                                 entity -> attackTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
-                        ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestEntitySensor(EntityMob.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0))
                 .controllers(new WalkController(), new LookController(true, true))
                 .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))

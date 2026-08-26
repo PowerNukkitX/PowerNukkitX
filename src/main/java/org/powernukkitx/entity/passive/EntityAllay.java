@@ -2,8 +2,7 @@ package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.EntityFlyable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -67,20 +66,23 @@ public class EntityAllay extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.22f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM), 5, 1),
-                        new Behavior(new EntityMoveToOwnerExecutor(0.4f, true, 64, -1), entity -> {
+        return EntityAI.of(this)
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.22f, true))
+                        .when(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM))
+                .behavior(new EntityMoveToOwnerExecutor(0.4f, true, 64, -1))
+                        .when(entity -> {
                             if (this.hasOwner()) {
                                 var player = getOwner();
                                 var distanceSquared = this.distanceSquared(player);
                                 return distanceSquared >= 100;
                             } else return false;
-                        }, 4, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
-                                1, 1, 25),
-                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
-                )
+                        })
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10))
+                        .period(25)
+                .behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10))
+                        .when((entity -> true))
+                        .alongsidePrevious()
                 .sensors(
                         new NearestItemSensor(32, 0 , 20),
                         new NearestPlayerSensor(64, 0, 20)

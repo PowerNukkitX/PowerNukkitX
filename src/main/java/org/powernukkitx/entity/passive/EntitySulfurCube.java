@@ -6,8 +6,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityLiving;
 import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.HoppingController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -150,15 +149,13 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.35f, true, 9f, 1f),
-                                entity -> canSwallow() && isSwallowable(getMemoryStorage().get(CoreMemoryTypes.NEAREST_ITEM)), 3, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.35f, true, 10f, 2f),
-                                entity -> canSwallow() && isOfferingSwallowable(getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER)), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.35f, 12, 100, false, -1, true, 10),
-                                entity -> !hasSwallowedBlock(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.35f, true, 9f, 1f))
+                        .when(entity -> canSwallow() && isSwallowable(getMemoryStorage().get(CoreMemoryTypes.NEAREST_ITEM)))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.35f, true, 10f, 2f))
+                        .when(entity -> canSwallow() && isOfferingSwallowable(getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER)))
+                .behavior(new FlatRandomRoamExecutor(0.35f, 12, 100, false, -1, true, 10))
+                        .when(entity -> !hasSwallowedBlock())
                 .sensors(
                         new NearestItemSensor(9, 0, 20),
                         new NearestPlayerSensor(10, 0, 20)

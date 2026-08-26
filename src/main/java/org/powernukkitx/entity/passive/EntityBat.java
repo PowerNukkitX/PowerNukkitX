@@ -1,8 +1,7 @@
 package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.entity.EntityFlyable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -34,10 +33,9 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new SpaceRandomRoamExecutor(0.3f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new SpaceRandomRoamExecutor(0.3f, 12, 100, 20, false, -1, true, 10))
+                        .when((entity -> true))
                 .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
                 .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
                 .build();

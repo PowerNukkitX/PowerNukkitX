@@ -9,8 +9,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityAnimation;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -78,14 +77,15 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PiglinTransformExecutor(), all(
+        return EntityAI.of(this)
+                .behavior(new PiglinTransformExecutor())
+                        .when(all(
                                 entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
                                 entity -> !isImmobile(),
                                 entity -> !entity.getNbt().getBoolean("IsImmuneToZombification")
-                        ), 13, 1),
-                        new Behavior(new PiglinTradeExecutor(), all(
+                        ))
+                .behavior(new PiglinTradeExecutor())
+                        .when(all(
                                 entity -> !getItemInOffhand().isNull(),
                                 entity -> !isAngry(),
                                 not(
@@ -94,20 +94,27 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                                                 entity -> entity.getLevel().getTick() - getMemoryStorage().get(CoreMemoryTypes.LAST_BE_ATTACKED_TIME) <= 1
                                         )
                                 )
-                        ), 12, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_JEALOUS, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> getViewers().values().stream().noneMatch(p -> p.distance(entity) < 8 && likesItem(p.getInventory().getItemInMainHand()) && p.level.raycastBlocks(p, entity).isEmpty())), 12, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> isAngry()), 11, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> !isAngry()), 10, 1),
-                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 80), all(
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_JEALOUS, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(new RandomSoundEvaluator(), entity -> getViewers().values().stream().noneMatch(p -> p.distance(entity) < 8 && likesItem(p.getInventory().getItemInMainHand()) && p.level.raycastBlocks(p, entity).isEmpty())))
+                        .alongsidePrevious()
+                .behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(new RandomSoundEvaluator(), entity -> isAngry()))
+                .behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(new RandomSoundEvaluator(), entity -> !isAngry()))
+                .behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 80))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 entity -> getItemInHand() instanceof ItemCrossbow
-                        ), 9, 1),
-                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80), all(
+                        ))
+                .behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item.isWearable() && item.getTier() == Item.WEARABLE_TIER_GOLD),
                                 entity -> getItemInHand() instanceof ItemCrossbow
-                        ), 8, 1),
-                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80), all(
+                        ))
+                .behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 entity -> !entity.getNbt().getBoolean("CannotHunt"),
                                 entity -> getItemInHand() instanceof ItemCrossbow,
@@ -115,27 +122,28 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME) == 0,
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, 6000)
                                 )
-                        ), 7, 1),
-                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30), all(
+                        ))
+                .behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                        ), 6, 1),
-                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30), all(
+                        ))
+                .behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item.isWearable() && item.getTier() == Item.WEARABLE_TIER_GOLD)
-                        ), 5, 1),
-                        new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), all(
+                        ))
+                .behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 entity -> !entity.getNbt().getBoolean("CannotHunt"),
                                 any(
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME) == 0,
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, 6000)
                                 )
-                        ), 5, 1),
-                        new Behavior(new PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
-                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockSoulFire
-                        ), 2, 1),
-                        new Behavior(new PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY), all(
+                        ))
+                        .alongsidePrevious()
+                .behavior(new PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
                                 entity -> {
                                     if (isBaby()) {
@@ -147,9 +155,13 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                                         return true;
                                     }
                                 }
-                        ), 3, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK))
+                        .when(all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockSoulFire
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),

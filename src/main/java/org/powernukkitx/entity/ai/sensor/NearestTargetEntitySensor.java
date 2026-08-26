@@ -5,11 +5,8 @@ import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.MemoryType;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.NukkitMath;
-import org.powernukkitx.utils.SortedList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -77,57 +74,59 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
             if (current != null && current.isAlive()) return;
 
             //Find the nearest entity within range
-            var entities = Collections.synchronizedList(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
+            Entity nearest = null;
+            double nearestSquared = Double.MAX_VALUE;
             for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
                 for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
                     for (Entity p : level.getChunkEntities(chunkX, chunkZ, false).values()) {
                         double distanceSquared = entity.distanceSquared(p);
-                        if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared && !p.equals(entity)) {
-                            entities.add(p);
+                        if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared
+                                && distanceSquared < nearestSquared && !p.equals(entity)) {
+                            nearest = p;
+                            nearestSquared = distanceSquared;
                         }
                     }
                 }
             }
 
-            if (entities.isEmpty()) {
+            if (nearest == null) {
                 entity.getMemoryStorage().clear(currentMemory);
-            } else entity.getMemoryStorage().put(currentMemory, entities.get(0));
+            } else entity.getMemoryStorage().put(currentMemory, nearest);
             return;
         }
         if (allTargetFunction != null) {
-            List<List<Entity>> sortEntities = new ArrayList<>(memories.size());
-
-            for (int i = 0, len = memories.size(); i < len; ++i) {
-                sortEntities.add(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
-            }
+            int len = memories.size();
+            Entity[] nearest = new Entity[len];
+            double[] nearestSquared = new double[len];
+            Arrays.fill(nearestSquared, Double.MAX_VALUE);
 
             for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
                 for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
                     for (Entity p : level.getChunkEntities(chunkX, chunkZ, false).values()) {
                         double distanceSquared = entity.distanceSquared(p);
                         if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared && !p.equals(entity)) {
-                            int i = 0;
-                            for (var targetFunction : allTargetFunction) {
+                            for (int i = 0; i < len; ++i) {
+                                if (distanceSquared >= nearestSquared[i]) continue;
                                 @SuppressWarnings("unchecked")
                                 T castedP = (T) p;
-                                if (targetFunction.apply(castedP)) {
-                                    sortEntities.get(i).add(p);
+                                if (allTargetFunction[i].apply(castedP)) {
+                                    nearest[i] = p;
+                                    nearestSquared[i] = distanceSquared;
                                 }
-                                ++i;
                             }
                         }
                     }
                 }
             }
 
-            for (int i = 0, len = sortEntities.size(); i < len; ++i) {
+            for (int i = 0; i < len; ++i) {
                 var currentMemory = memories.get(i);
                 var current = entity.getMemoryStorage().get(currentMemory);
                 if (current != null && current.isAlive()) continue;
 
-                if (sortEntities.get(i).isEmpty()) {
+                if (nearest[i] == null) {
                     entity.getMemoryStorage().clear(currentMemory);
-                } else entity.getMemoryStorage().put(currentMemory, sortEntities.get(i).get(0));
+                } else entity.getMemoryStorage().put(currentMemory, nearest[i]);
             }
         }
     }

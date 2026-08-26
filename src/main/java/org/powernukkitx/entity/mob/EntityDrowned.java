@@ -6,8 +6,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntitySwimmable;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -64,22 +63,27 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(new NearestBlockIncementExecutor(), entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK) && getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockTurtleEgg, 1, 1)
-                )
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_DROWNED_SAY_WATER), all(new RandomSoundEvaluator(), entity -> isInsideOfWater()), 11, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_DROWNED_SAY), all(new RandomSoundEvaluator(), entity -> !isInsideOfWater()), 10, 1),
-                        new Behavior(new JumpExecutor(), all(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK), entity -> entity.getCollisionBlocks().stream().anyMatch(block -> block instanceof BlockTurtleEgg)), 9, 1, 10),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.3f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK), 8, 1),
-                        new Behavior(new TridentThrowExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), all(
+        return EntityAI.of(this)
+                .coreBehavior(new NearestBlockIncementExecutor())
+                        .when(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK) && getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockTurtleEgg)
+                .behavior(new PlaySoundExecutor(Sound.MOB_DROWNED_SAY_WATER))
+                        .when(all(new RandomSoundEvaluator(), entity -> isInsideOfWater()))
+                .behavior(new PlaySoundExecutor(Sound.MOB_DROWNED_SAY))
+                        .when(all(new RandomSoundEvaluator(), entity -> !isInsideOfWater()))
+                .behavior(new JumpExecutor())
+                        .when(all(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK), entity -> entity.getCollisionBlocks().stream().anyMatch(block -> block instanceof BlockTurtleEgg)))
+                        .period(10)
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.3f, true))
+                        .when(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK))
+                .behavior(new TridentThrowExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 32, 3),
                             entity -> getItemInHand().getId().equals(Item.TRIDENT),
                                 new SightEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                        ), 7, 1),
-                        new Behavior(new TridentThrowExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, false, 30, 20), all(
+                        ))
+                .behavior(new TridentThrowExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, false, 30, 20))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 32, 3),
                                 entity -> getItemInHand().getId().equals(Item.TRIDENT),
@@ -88,24 +92,27 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) != null && getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER).isInsideOfWater()
                                 ),
                                 new SightEvaluator(CoreMemoryTypes.NEAREST_PLAYER)
-                        ), 6, 1),
-                        new Behavior(new TridentThrowExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, false, 30, 20), all(
+                        ))
+                .behavior(new TridentThrowExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, false, 30, 20))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 32, 3),
                                 entity -> getItemInHand().getId().equals(Item.TRIDENT),
                                 new SightEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET)
-                        ), 5, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30), all(
+                        ))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 any(
                                         entity -> getLevel().isNight(),
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) != null && getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER).isInsideOfWater()
                                 )
-                        ), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, false, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, false, 10))
                 .sensors(
                         new AttackSensor(CoreMemoryTypes.ATTACK_TARGET),
                         new NearestPlayerSensor(64, 0, 0),

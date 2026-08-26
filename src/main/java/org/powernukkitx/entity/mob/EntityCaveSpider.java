@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityArthropod;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.ClimbController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -55,17 +54,19 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-            .behaviors(
-                new Behavior(new PlaySoundExecutor(Sound.MOB_SPIDER_SAY), new RandomSoundEvaluator(), 6, 1),
-                new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 9), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 5, 1),
-                new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30), all(
-                    new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                    entity -> getLevel().getFullLight(this) <= 11
-                ), 3, 1),
-                new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-            )
+        return EntityAI.of(this)
+            .behavior(new PlaySoundExecutor(Sound.MOB_SPIDER_SAY))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 9))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(all(
+                            new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
+                            entity -> getLevel().getFullLight(this) <= 11
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
             .sensors(
                 new NearestTargetEntitySensor<>(0, 16, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
                 new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0)

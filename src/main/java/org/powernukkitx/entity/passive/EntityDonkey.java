@@ -7,8 +7,6 @@ import org.powernukkitx.entity.Attribute;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.EntityAI;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -374,77 +372,52 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.25f),
-                                all(
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                6, 1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10),
-                                all(
-                                        e -> !e.isTamed(),
-                                        e -> e.passengers.isEmpty(),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                                ),
-                                5, 1
-                        ),
-                        new Behavior(
-                                new RideableTameExecutor(0.4f, 12, 40, true, 100, true, 10, 35),
-                                all(
-                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
-                                        e -> !this.hasOwner(false)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new TemptExecutor(1.2f, TEMPT_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ProbabilityEvaluator(4, 10),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                        e -> {
-                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                            return p != null && !e.isPassenger(p);
-                                        },
-                                        e -> e.passengers == null || e.passengers.isEmpty()
-                                ),
-                                1, 1, 100
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                                (entity -> true),
-                                1, 1
-                        )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new BreedingExecutor(16, 200, 0.25f))
+                        .when(all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10))
+                        .when(all(
+                                e -> !e.isTamed(),
+                                e -> e.passengers.isEmpty(),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                        ))
+                .behavior(new RideableTameExecutor(0.4f, 12, 40, true, 100, true, 10, 35))
+                        .when(all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
+                                e -> !this.hasOwner(false)
+                        ))
+                .behavior(new TemptExecutor(1.2f, TEMPT_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !e.isPassenger(p);
+                                },
+                                e -> e.passengers == null || e.passengers.isEmpty()
+                        ))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when((entity -> true))
+                        .alongsidePrevious()
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20))
                 .controllers(

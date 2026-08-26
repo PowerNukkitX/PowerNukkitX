@@ -39,6 +39,16 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
     }
 
     /**
+     * Returns whether this behavior must keep passing its evaluator while it is running. A behavior that
+     * returns false is only evaluated once, right before it starts, and then runs until its executor stops it.
+     *
+     * @return whether the evaluator is re-checked on every tick
+     */
+    default boolean shouldReevaluate() {
+        return true;
+    }
+
+    /**
      * @return the current state of this behavior
      */
     BehaviorState getBehaviorState();

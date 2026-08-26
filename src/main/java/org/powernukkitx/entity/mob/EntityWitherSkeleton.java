@@ -6,8 +6,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -56,28 +55,24 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                entity -> {
-                                    var storage = getMemoryStorage();
-                                    if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
-                                    Entity attackTarget = null;
-                                    if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
-                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                    }
-                                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                    return false;
-                                },
-                                entity -> true, 20
-                        )
-                )
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_WITHER_AMBIENT), new RandomSoundEvaluator(), 5, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.WITHER).setDuration(200)), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.get(EffectType.WITHER).setDuration(200)), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .coreBehavior(entity -> {
+                    var storage = getMemoryStorage();
+                    if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
+                    Entity attackTarget = null;
+                    if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                    }
+                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                    return false;
+                })
+                .behavior(new PlaySoundExecutor(Sound.MOB_WITHER_AMBIENT))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.WITHER).setDuration(200)))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.get(EffectType.WITHER).setDuration(200)))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)

@@ -6,8 +6,6 @@ import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.EntityAI;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -378,62 +376,45 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new SkeletonHorseTrapExecutor(),
-                                e -> ((EntitySkeletonHorse) e).isStartedTrap(),
-                                4, 1, 1
-                        ),
-                        new Behavior( // Follow rider ONLY if rider has an attack target
-                                new FollowRiderExecutor(),
-                                all(
-                                        new RiderItemControllableEvaluator(),
-                                        e -> e.hasControllingPassenger(),
-                                        e -> {
-                                            Entity rider = e.getRider();
-                                            if (rider == null || !rider.isAlive()) return false;
-                                            if (rider instanceof EntityIntelligent ri) {
-                                                return ri.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
-                                                        && ri.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null;
-                                            }
-                                            return false;
-                                        }
-                                ),
-                                3,
-                                1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                                e -> e.passengers == null || e.passengers.isEmpty(),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ProbabilityEvaluator(4, 10),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                        e -> {
-                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                            return p != null && !e.isPassenger(p);
-                                        },
-                                        e -> e.passengers == null || e.passengers.isEmpty()
-                                ),
-                                1, 1, 100
-                        )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new SkeletonHorseTrapExecutor())
+                        .when(e -> ((EntitySkeletonHorse) e).isStartedTrap())
+                // Follow rider ONLY if rider has an attack target
+                .behavior(new FollowRiderExecutor())
+                        .when(all(
+                                new RiderItemControllableEvaluator(),
+                                e -> e.hasControllingPassenger(),
+                                e -> {
+                                    Entity rider = e.getRider();
+                                    if (rider == null || !rider.isAlive()) return false;
+                                    if (rider instanceof EntityIntelligent ri) {
+                                        return ri.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
+                                                && ri.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null;
+                                    }
+                                    return false;
+                                }
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when(e -> e.passengers == null || e.passengers.isEmpty())
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !e.isPassenger(p);
+                                },
+                                e -> e.passengers == null || e.passengers.isEmpty()
+                        ))
+                        .period(100)
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new SkeletonHorseTrapSensor(10, 3)

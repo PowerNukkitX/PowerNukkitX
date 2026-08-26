@@ -3,8 +3,7 @@ package org.powernukkitx.entity.mob;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityVariant;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.evaluator.DistanceEvaluator;
@@ -52,19 +51,19 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     }
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 2, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_SHULKER_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), new RandomSoundEvaluator(20, 20), 1, 1)
-                )
-                .behaviors(
-                        new Behavior(new ShulkerIdleExecutor(), new RandomSoundEvaluator(20, 10), 2, 1),
-                        new Behavior(new ShulkerAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER), all(
+        return EntityAI.of(this)
+                .coreBehavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ProbabilityEvaluator(4, 10))
+                .coreBehavior(new PlaySoundExecutor(Sound.MOB_SHULKER_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(new RandomSoundEvaluator(20, 20))
+                .behavior(new ShulkerIdleExecutor())
+                        .when(new RandomSoundEvaluator(20, 10))
+                .behavior(new ShulkerAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 16),
                                 not(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 60))
-                        ), 1, 1)
-                )
+                        ))
                 .sensors(new NearestPlayerSensor(40, 0, 20))
                 .controllers(new LookController(true, true))
                 .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))

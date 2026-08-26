@@ -5,8 +5,7 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -171,73 +170,49 @@ public class EntitySniffer extends EntityAnimal {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                    Entity::isAgeable,
-                                    Entity::isBaby,
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
-                )
-                .behaviors(
-                    new Behavior(
-                        new SnifferDigExecutor(),
-                            all(
-                                e -> e instanceof EntitySniffer sniffer && sniffer.canStartDigging(),
-                                new ProbabilityEvaluator(1, 20)
-                            ),
-                        5, 1, 1, false
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
-                            all(
-                                e -> !((EntitySniffer) e).isDigging(),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new SnifferBreedingExecutor(16, 200, 0.25f),
-                            all(
-                                e -> !((EntitySniffer) e).isDigging(),
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.25f, TEMPT_ITEMS),
-                            all(
-                                e -> !((EntitySniffer) e).isDigging(),
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                e -> !((EntitySniffer) e).isDigging(),
-                                new ProbabilityEvaluator(4, 10)
-                            ),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                            entity -> !((EntitySniffer) entity).isDigging(),
-                        1, 1
-                    )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                Entity::isAgeable,
+                                Entity::isBaby,
+                            e -> !e.isGrowthPaused(),
+                            e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new SnifferDigExecutor())
+                        .when(all(
+                            e -> e instanceof EntitySniffer sniffer && sniffer.canStartDigging(),
+                            new ProbabilityEvaluator(1, 20)
+                        ))
+                        .evaluateOnce()
+                .behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10))
+                        .when(all(
+                            e -> !((EntitySniffer) e).isDigging(),
+                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100)
+                        ))
+                .behavior(new SnifferBreedingExecutor(16, 200, 0.25f))
+                        .when(all(
+                            e -> !((EntitySniffer) e).isDigging(),
+                            e -> !e.isBaby(),
+                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new TemptExecutor(1.25f, TEMPT_ITEMS))
+                        .when(all(
+                            e -> !((EntitySniffer) e).isDigging(),
+                            e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                            e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                            e -> !((EntitySniffer) e).isDigging(),
+                            new ProbabilityEvaluator(4, 10)
+                        ))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when(entity -> !((EntitySniffer) entity).isDigging())
+                        .alongsidePrevious()
                 .sensors(
                     new NearestPlayerSensor(8, 0, 20)
                 )

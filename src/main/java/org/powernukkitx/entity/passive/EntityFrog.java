@@ -3,8 +3,7 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.HoppingController;
@@ -117,40 +116,23 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVa
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        3, 1
-                    )
-                )
-                .behaviors(
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
-                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                        4, 1
-                    ),
-                    // TODO: Pregnant logic
-                    new Behavior(
-                        new TemptExecutor(1.25f, true, false, false, 10, 2.0f, null, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, true, 10, TEMPT_ITEMS)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            new ProbabilityEvaluator(4, 10),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10))
+                        .when(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100))
+                // TODO: Pregnant logic
+                .behavior(new TemptExecutor(1.25f, true, false, false, 10, 2.0f, null, TEMPT_ITEMS))
+                        .when(all(
+                            e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                            e -> TemptExecutor.hasTemptingPlayer(e, true, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ProbabilityEvaluator(4, 10))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when((entity -> true))
+                        .alongsidePrevious()
                 .sensors(
                     new NearestPlayerSensor(8, 0, 20)
                 )

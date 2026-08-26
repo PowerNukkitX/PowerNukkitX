@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -64,23 +63,26 @@ public class EntityVex extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_VEX_AMBIENT), new RandomSoundEvaluator(), 5, 1),
-                        new Behavior(new VexMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), all(
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_VEX_AMBIENT))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new VexMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 80, Integer.MAX_VALUE)
-                        ), 4, 1),
-                        new Behavior(new VexMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30), all(
+                        ))
+                .behavior(new VexMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 80, Integer.MAX_VALUE)
-                        ), 3, 1),
-                        new Behavior(new VexMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30), all(
+                        ))
+                .behavior(new VexMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 80, Integer.MAX_VALUE)
-                        ), 2, 1),
-                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
-                )
+                        ))
+                .behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10))
+                        .when((entity -> true))
                 .sensors(
                         new NearestPlayerSensor(70, 0, 20),
                         new NearestTargetEntitySensor<>(0, 70, 20,

@@ -15,8 +15,7 @@ import org.powernukkitx.block.property.enums.MinecraftCardinalDirection;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -112,57 +111,64 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new ChestInteractionFailExecutor(), entity -> {
+        return EntityAI.of(this)
+                .behavior(new ChestInteractionFailExecutor())
+                        .when(entity -> {
                             String interaction = getEnumEntityProperty(PROPERTIES[0].getIdentifier());
                             return "take_fail".equals(interaction) || "put_fail".equals(interaction);
-                        }, 8, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), all(
+                        })
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when(all(
                             entity -> entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) > 0,
                             entity -> {
                                 entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING,
                                     entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) - 1);
                                 return true;
                             }
-                        ), 7, 1),
-                        new Behavior(new PutInChestExecutor(), all(
+                        ))
+                .behavior(new PutInChestExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 3.1f)
-                        ), 6, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.2f, true), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.2f, true))
+                        .when(all(
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
-                        ), 5, 1),
-                        new Behavior(new TakeFromCopperChestExecutor(), all(
+                        ))
+                .behavior(new TakeFromCopperChestExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2),
                                 entity -> inventory.getItemInHand().isNull(),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2, 3.1f)
-                        ), 4, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK_2, 0.2f, true), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK_2, 0.2f, true))
+                        .when(all(
                                 entity -> inventory.getItemInHand().isNull(),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2)
-                        ), 3, 1),
-                        new Behavior(entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
-                            entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).clear();
-                            return true;
-                        }, all(
+                        ))
+                .behavior(entity -> {
+                    entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
+                    entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).clear();
+                    return true;
+                })
+                        .when(all(
                                 entity -> inventory.getItemInHand().isNull(),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2),
                                 entity -> !entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).isEmpty()
-                        ), 2, 1),
-                        new Behavior(entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
-                            entity.getMemoryStorage().get(CoreMemoryTypes.CHESTS).clear();
-                            return true;
-                        }, all(
+                        ))
+                .behavior(entity -> {
+                    entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
+                    entity.getMemoryStorage().get(CoreMemoryTypes.CHESTS).clear();
+                    return true;
+                })
+                        .when(all(
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
-                        ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                        .alongsidePrevious()
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new BlockSensor(BlockChest.class, CoreMemoryTypes.NEAREST_BLOCK, 32, 8, 20, new ChestCondition(false)),
                         new BlockSensor(BlockCopperChest.class, CoreMemoryTypes.NEAREST_BLOCK_2, 32, 8, 20, new ChestCondition(true))

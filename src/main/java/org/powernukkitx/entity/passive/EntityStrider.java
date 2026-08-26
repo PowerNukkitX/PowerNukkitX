@@ -6,8 +6,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -484,94 +483,64 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_STRIDER_IDLE), new RandomSoundEvaluator(), 8, 1),
-                        new Behavior(
-                                new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true),
-                                all(
-                                        e -> e.isBaby(),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.STAY_NEARBY)
-                                ),
-                                9, 1
-                        ),
-                        new Behavior(
-                                new FollowRiderExecutor(),
-                                new RiderItemControllableEvaluator(),
-                                8, 1
-                        ),
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.25f),
-                                all(
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                7, 1
-                        ),
-                        new Behavior(
-                                new StriderMoveToLavaExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getMovementSpeedDefault() * 3.0f),
-                                all(
-                                        e -> !(e.getRider() instanceof Player),
-                                        e -> !((EntityStrider) e).isWarm(),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK),
-                                        e -> ((EntityStrider) e).shouldReturnToLavaNow()
-                                ),
-                                6, 1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
-                                all(
-                                        e -> e.passengers.isEmpty(),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                                ),
-                                5, 1
-                        ),
-                        new Behavior(
-                                new TemptExecutor(1.2f, false, true, false, 10, 2.0f, new TemptExecutor.TemptSound("tempt", 2.0f, 5.0f), TEMPT_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ProbabilityEvaluator(4, 10),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                        e -> {
-                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                            return p != null && !e.isPassenger(p);
-                                        },
-                                        e -> e.passengers == null || e.passengers.isEmpty()
-                                ),
-                                1, 1, 100
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
-                                (entity -> true),
-                                1, 1
-                        )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true))
+                        .when(all(
+                                e -> e.isBaby(),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.STAY_NEARBY)
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_STRIDER_IDLE))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new FollowRiderExecutor())
+                        .when(new RiderItemControllableEvaluator())
+                        .alongsidePrevious()
+                .behavior(new BreedingExecutor(16, 200, 0.25f))
+                        .when(all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new StriderMoveToLavaExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getMovementSpeedDefault() * 3.0f))
+                        .when(all(
+                                e -> !(e.getRider() instanceof Player),
+                                e -> !((EntityStrider) e).isWarm(),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK),
+                                e -> ((EntityStrider) e).shouldReturnToLavaNow()
+                        ))
+                .behavior(new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10))
+                        .when(all(
+                                e -> e.passengers.isEmpty(),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                        ))
+                .behavior(new TemptExecutor(1.2f, false, true, false, 10, 2.0f, new TemptExecutor.TemptSound("tempt", 2.0f, 5.0f), TEMPT_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !e.isPassenger(p);
+                                },
+                                e -> e.passengers == null || e.passengers.isEmpty()
+                        ))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10))
+                        .when((entity -> true))
+                        .alongsidePrevious()
                 .sensors(
                         new FollowEntitySensor(6f, 2f),
                         new StriderLavaSensor(24, 200),

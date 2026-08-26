@@ -25,6 +25,8 @@ public final class MemoryType<Data> {
     @Getter
     private final Identifier identifier;
     private final Supplier<Data> defaultData;
+    //every memory read hashes this type, so the identifier hash is only computed once
+    private final int hash;
     @Getter
     @Nullable
     private IMemoryCodec<Data> codec;
@@ -56,6 +58,7 @@ public final class MemoryType<Data> {
     public MemoryType(Identifier identifier, Supplier<Data> defaultData) {
         this.identifier = identifier;
         this.defaultData = defaultData;
+        this.hash = identifier.hashCode();
     }
 
     public static Set<MemoryType<?>> getPersistentMemories() {
@@ -100,7 +103,7 @@ public final class MemoryType<Data> {
 
     @Override
     public int hashCode() {
-        return identifier.hashCode();
+        return hash;
     }
 
     @Override

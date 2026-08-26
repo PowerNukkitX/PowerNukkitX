@@ -3,8 +3,7 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.entity.ClimateVariant;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -203,78 +202,52 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new PlaySoundExecutor(Sound.MOB_CHICKEN_SAY))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new BreedingExecutor(16, 200, 0.35f))
+                        .when(all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.22f, 12, 40, true, 100, true, 10))
+                        .when(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100))
+                .behavior(new TemptExecutor(1.0f, TEMPT_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ProbabilityEvaluator(4, 10))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.22f, 12, 100, false, -1, true, 10))
+                        .when((entity -> true))
+                        .alongsidePrevious()
+                .behavior(entity -> {
+                    entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, getLevel().getTick());
+                    entity.getLevel().dropItem(entity, getEgg());
+                    entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
+                    return false;
+                })
+                        .when(any(
                                 all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
+                                        new ProbabilityEvaluator(20, 100)
                                 ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_CHICKEN_SAY),
-                                new RandomSoundEvaluator(),
-                                7, 1
-                        ),
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.35f),
-                                all(
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                6
-                        ),
-                        new Behavior(
-                                new TemptExecutor(1.0f, TEMPT_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.22f, 12, 40, true, 100, true, 10),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                new ProbabilityEvaluator(4, 10),
-                                1, 1, 100
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.22f, 12, 100, false, -1, true, 10),
-                                (entity -> true),
-                                1, 1
-                        ),
-                        new Behavior(
-                                entity -> {
-                                    entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, getLevel().getTick());
-                                    entity.getLevel().dropItem(entity, getEgg());
-                                    entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
-                                    return false;
-                                },
-                                any(
-                                        all(
-                                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
-                                                new ProbabilityEvaluator(20, 100)
-                                        ),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 12000, Integer.MAX_VALUE)
-                                ),
-                                1, 1, 20
-                        )
-                )
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 12000, Integer.MAX_VALUE)
+                        ))
+                        .alongsidePrevious()
+                        .period(20)
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20)
                 )

@@ -15,14 +15,13 @@ public class EntityCheckEvaluator implements IBehaviorEvaluator {
     }
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        if (entity.getMemoryStorage().isEmpty(memoryType)) {
+        Entity e = entity.getMemoryStorage().get(memoryType);
+        if (e == null) {
             return false;
-        } else {
-            Entity e = entity.getMemoryStorage().get(memoryType);
-            if (e instanceof Player player) {
-                return (player.spawned && player.isOnline() && (player.isSurvival() || player.isAdventure()) && player.isAlive());
-            }
-            return !e.isClosed();
         }
+        if (e instanceof Player player) {
+            return (player.spawned && player.isOnline() && (player.isSurvival() || player.isAdventure()) && player.isAlive());
+        }
+        return !e.isClosed();
     }
 }

@@ -6,8 +6,7 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityShearable;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -269,77 +268,53 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.5f, 12, 40, true, 100, true, 10),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                                6, 1
-                        ),
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.25f),
-                                all(
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                5, 1
-                        ),
-                        new Behavior(
-                                new TemptExecutor(1.25f, TEMPT_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new EatGrassExecutor(40),
-                                all(
-                                        any(
-                                                all(
-                                                        entity -> entity instanceof EntityAnimal animal && !animal.isBaby(),
-                                                        new ProbabilityEvaluator(1, 100)
-                                                ),
-                                                all(
-                                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby(),
-                                                        new ProbabilityEvaluator(43, 50)
-                                                )
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new FlatRandomRoamExecutor(0.5f, 12, 40, true, 100, true, 10))
+                        .when(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100))
+                .behavior(new BreedingExecutor(16, 200, 0.25f))
+                        .when(all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new TemptExecutor(1.25f, TEMPT_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new EatGrassExecutor(40))
+                        .when(all(
+                                any(
+                                        all(
+                                                entity -> entity instanceof EntityAnimal animal && !animal.isBaby(),
+                                                new ProbabilityEvaluator(1, 100)
                                         ),
-                                        any(
-                                                new BlockCheckEvaluator(Block.GRASS_BLOCK, new Vector3(0, -1, 0)),
-                                                new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO)
+                                        all(
+                                                entity -> entity instanceof EntityAnimal animal && animal.isBaby(),
+                                                new ProbabilityEvaluator(43, 50)
                                         )
                                 ),
-                                3, 1, 100
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                new ProbabilityEvaluator(4, 10),
-                                1, 1, 100
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                                (entity -> true),
-                                1, 1
-                        )
-                )
+                                any(
+                                        new BlockCheckEvaluator(Block.GRASS_BLOCK, new Vector3(0, -1, 0)),
+                                        new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO)
+                                )
+                        ))
+                        .period(100)
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ProbabilityEvaluator(4, 10))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when((entity -> true))
+                        .alongsidePrevious()
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20)
                 )
