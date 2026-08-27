@@ -7,6 +7,7 @@ import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -25,6 +26,11 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+/**
+ * Villagers claim POIs from within {@link org.powernukkitx.level.format.Chunk#initChunk()}, which runs while the
+ * chunk monitor is held. To keep the manager monitor a leaf lock, no method synchronized on this manager may
+ * trigger a chunk load - block reads below are always non-loading.
+ */
 public final class VillageManager {
     public static final int INITIAL_HORIZONTAL_RADIUS = 32;
     public static final int INITIAL_VERTICAL_RADIUS = 12;
@@ -361,7 +367,7 @@ public final class VillageManager {
                     : updateOwnerCount(position, ownerCount -> ownerCount + 1, true);
         }
 
-        PoiType type = getPoiType(level.getBlock(position.x, position.y, position.z));
+        PoiType type = getPoiType(level.getBlock(position.x, position.y, position.z, false));
         if (type == null) {
             return false;
         }
@@ -478,11 +484,15 @@ public final class VillageManager {
     }
 
     private BlockVector3 getHomeCenter(BlockVector3 position) {
-        Block block = level.getBlock(position.x, position.y, position.z);
-        if (block instanceof BlockBed bed) {
-            BlockBed head = bed.getHeadPart();
-            if (head != null) {
-                return head.asBlockVector3();
+        if (level.getBlock(position.x, position.y, position.z, false) instanceof BlockBed bed) {
+            if (bed.isHeadPiece()) {
+                return position;
+            }
+            BlockFace face = bed.getBlockFace();
+            BlockVector3 head = position.getSide(face);
+            if (level.getBlock(head.x, head.y, head.z, false) instanceof BlockBed headPart
+                    && headPart.isHeadPiece() && headPart.getBlockFace() == face) {
+                return head;
             }
         }
         return position;
