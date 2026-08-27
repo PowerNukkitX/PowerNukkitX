@@ -87,7 +87,7 @@ public class BlockReeds extends BlockFlowable {
                 }
 
                 if (success) {
-                    if (player != null && (player.isSurvival() || player.isAdventure())) {
+                    if (player != null && !player.isCreative()) {
                         item.count--;
                     }
 

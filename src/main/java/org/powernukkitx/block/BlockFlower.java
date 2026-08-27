@@ -54,7 +54,7 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bone meal
-            if (player != null && (player.isSurvival() || player.isAdventure())) {
+            if (player != null && !player.isCreative()) {
                 item.count--;
             }
 

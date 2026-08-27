@@ -125,7 +125,7 @@ public class BlockWeepingVines extends BlockVinesNether {
         }
 
         // Consume item if player not in creative
-        if (player != null && (player.isSurvival() || player.isAdventure())) {
+        if (player != null && !player.isCreative()) {
             item.count--;
         }
 
