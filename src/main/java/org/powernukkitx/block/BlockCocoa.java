@@ -159,7 +159,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
                 }
                 this.level.addParticle(new BoneMealParticle(this));
 
-                if (player != null && (player.gamemode & 0x01) == 0) {
+                if (player != null && (player.isSurvival() || player.isAdventure())) {
                     item.count--;
                 }
             }

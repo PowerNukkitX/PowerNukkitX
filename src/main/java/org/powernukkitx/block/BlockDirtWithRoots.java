@@ -50,7 +50,7 @@ public class BlockDirtWithRoots extends BlockDirt {
         Vector3 vector = new Vector3(this.x, this.y - 1, this.z);
 
         if (item.isFertilizer() && this.level.getBlock(vector).isAir()) {
-            if (player != null && (player.gamemode & 0x01) == 0) {
+            if (player != null && (player.isSurvival() || player.isAdventure())) {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));

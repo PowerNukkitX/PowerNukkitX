@@ -145,7 +145,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
                 case SYRINGA:
                 case ROSE:
                 case PAEONIA:
-                    if (player != null && (player.gamemode & 0x01) == 0) {
+                    if (player != null && (player.isSurvival() || player.isAdventure())) {
                         item.count--;
                     }
                     this.level.addParticle(new BoneMealParticle(this));
