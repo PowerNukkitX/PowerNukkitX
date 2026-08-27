@@ -120,7 +120,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             nbt.putCompound("vanilla_block_data",
                     new CompoundTag()
                             .putInt("block_id", block_id)
-                            .putString("material", "dirt") // No one knows what its for, but it's required for making the blocks work
+                            .putString("material", "dirt") // No one knows what it's for, but it's required for making the blocks work
             );
         }
 

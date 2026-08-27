@@ -1357,7 +1357,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
 
-    // Try heal entity by using item / food
+    // Try to heal entity by using item / food
     protected boolean tryHeal(Player player, Item item) {
         HealableComponent healable = getComponentHealable();
         if (healable == null || healable.isEmpty()) return false;

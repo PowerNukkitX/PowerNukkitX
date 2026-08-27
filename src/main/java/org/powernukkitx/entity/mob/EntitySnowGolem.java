@@ -178,9 +178,9 @@ public class EntitySnowGolem extends EntityGolem {
                         Item.get(ItemID.SNOWBALL, 0, random.nextInt(8, 17))
                 };
             case 2:
-                return new Item[0];
+                return Item.EMPTY_ARRAY;
             default:
-                return new Item[0];
+                return Item.EMPTY_ARRAY;
         }
     }
 

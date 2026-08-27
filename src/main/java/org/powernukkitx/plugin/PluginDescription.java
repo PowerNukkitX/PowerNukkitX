@@ -96,7 +96,7 @@ public class PluginDescription {
 
     private void loadMap(Map<String, Object> plugin) throws PluginException {
         this.name = ((String) plugin.get("name")).replaceAll("[^A-Za-z0-9 _.-]", "");
-        if (this.name.equals("")) {
+        if (this.name.isEmpty()) {
             throw new PluginException("Invalid PluginDescription name");
         }
         this.name = this.name.replace(" ", "_");

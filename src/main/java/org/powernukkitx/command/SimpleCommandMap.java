@@ -307,7 +307,7 @@ public class SimpleCommandMap implements CommandMap {
         boolean alreadyRegistered = this.knownCommands.containsKey(label);
         Command existingCommand = this.knownCommands.get(label);
         boolean existingCommandIsNotVanilla = alreadyRegistered && !(existingCommand instanceof VanillaCommand);
-        //basically, if we're an alias and it's already registered, or we're a vanilla command, then we can't override it
+        //basically, if we're an alias, and it's already registered, or we're a vanilla command, then we can't override it
         if ((command instanceof VanillaCommand || isAlias) && alreadyRegistered && existingCommandIsNotVanilla) {
             return false;
         }

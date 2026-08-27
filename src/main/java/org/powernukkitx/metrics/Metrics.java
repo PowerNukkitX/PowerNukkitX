@@ -352,7 +352,7 @@ public class Metrics {
     }
 
     /**
-     * Represents a custom drill down pie.
+     * Represents a custom drill-down pie.
      */
     @SuppressWarnings("SpellCheckingInspection")
 

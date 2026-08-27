@@ -27,7 +27,7 @@ import java.util.function.Predicate;
  * <b>Features:</b>
  * <ul>
  *   <li>Supports the 'scores' selector argument for scoreboard-based entity filtering.</li>
- *   <li>Allows multiple objectives, each with a single value, a value range (min..max), or negation (prefix with '!').</li>
+ *   <li>Allows multiple objectives, each with a single value, a value range (min-max), or negation (prefix with '!').</li>
  *   <li>Parses the argument as a map of objective names to conditions, supporting both exact and ranged values.</li>
  *   <li>Returns a predicate that checks if an entity's score for each objective matches the specified condition(s).</li>
  *   <li>Integrates with the PowerNukkitX selector argument system via {@link CachedSimpleSelectorArgument}.</li>
@@ -53,7 +53,7 @@ import java.util.function.Predicate;
  * <ul>
  *   <li>Only one argument is allowed (throws if more).</li>
  *   <li>Argument must be a valid map in the form {objective=value,...}.</li>
- *   <li>Each value can be a single integer, a range (min..max), or negated by prefixing with '!'.</li>
+ *   <li>Each value can be a single integer, a range (min-max), or negated by prefixing with '!'.</li>
  *   <li>Empty score entries are not allowed.</li>
  * </ul>
  *

@@ -387,7 +387,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private static final int FERTILIZER_USE_COOLDOWN = 4;
     private int lastFertilizerUseTick = Integer.MIN_VALUE;
     @Getter
-    @Setter
     protected Item lastUsedItem = null;
 
     // inventory system
@@ -2362,7 +2361,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Returns this player's name as it should be shown to {@code viewer} in command output.
      * <p>
-     * By default the display name (nick) is returned to preserve nick systems. A viewer holding
+     * By default, the display name (nick) is returned to preserve nick systems. A viewer holding
      * {@link #VIEW_REAL_NAME_PERMISSION} sees the real login name instead.
      * <p>
      * Note: this resolves against a single viewer. Messages broadcast to multiple recipients are
@@ -2567,10 +2566,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public int getLastUseTick(String itemId) {
         return lastUseItemMap.getOrDefault(itemId, -1);
-    }
-
-    public Item getLastUsedItem() {
-        return lastUsedItem;
     }
 
     public void setLastUsedItem(Item item) {
@@ -3930,7 +3925,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Send a JSON text in the player chat bar
      *
-     * @param text Json text
+     * @param text JSON text
      */
 
     public void sendRawTextMessage(RawText text) {
@@ -4381,7 +4376,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         // Close temporary windows through the normal window-removal path before saving/teardown.
-        // Otherwise shared inventories keep stale viewers after reconnects or UI transitions.
+        // Otherwise, shared inventories keep stale viewers after reconnects or UI transitions.
         this.removeAllWindows(false);
 
         if (ev != null && ev.getAutoSave() && this.nbt != null) {
@@ -5510,7 +5505,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param text   The BossBar message
      * @param length The BossBar percentage
-     * @return bossBarId bossBarId, you should store it if you want to remove or update the BossBar later
+     * @return bossBarId, you should store it if you want to remove or update the BossBar later
      */
     public long createBossBar(String text, int length) {
         DummyBossBar bossBar = new DummyBossBar.Builder(this).text(text).length(length).build();
