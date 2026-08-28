@@ -38,19 +38,22 @@ public class ClearCommand extends VanillaCommand {
             List<Player> targets = sender.isPlayer() ? List.of(sender.asPlayer()) : List.of();
             int maxCount = -1;
             Item item = null;
+            boolean checkData = false;
 
             if (list.hasResult(0)) {
                 targets = list.getResult(0);
                 if (list.hasResult(1)) {
                     item = list.getResult(1);
-                    int data = -1;
                     if (list.hasResult(2)) {
-                        data = list.getResult(2);
+                        int data = list.getResult(2);
+                        if (data != -1) {
+                            item.setDamage(data);
+                            checkData = true;
+                        }
                         if (list.hasResult(3)) {
                             maxCount = list.getResult(3);
                         }
                     }
-                    item.setDamage(data);
                 }
             }
 
@@ -93,13 +96,13 @@ public class ClearCommand extends VanillaCommand {
                     for (Map.Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
                         Item slot = entry.getValue();
 
-                        if (item.equals(slot, item.hasMeta(), false)) {
+                        if (item.equals(slot, checkData, false)) {
                             count += slot.getCount();
                         }
                     }
 
                     Item slot = offhand.getItem(0);
-                    if (item.equals(slot, item.hasMeta(), false)) {
+                    if (item.equals(slot, checkData, false)) {
                         count += slot.getCount();
                     }
 
@@ -115,14 +118,14 @@ public class ClearCommand extends VanillaCommand {
                     for (Map.Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
                         Item slot = entry.getValue();
 
-                        if (item.equals(slot, item.hasMeta(), false)) {
+                        if (item.equals(slot, checkData, false)) {
                             count += slot.getCount();
                             inventory.clear(entry.getKey());
                         }
                     }
 
                     Item slot = offhand.getItem(0);
-                    if (item.equals(slot, item.hasMeta(), false)) {
+                    if (item.equals(slot, checkData, false)) {
                         count += slot.getCount();
                         offhand.clear(0);
                     }
@@ -139,7 +142,7 @@ public class ClearCommand extends VanillaCommand {
                     for (Map.Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
                         Item slot = entry.getValue();
 
-                        if (item.equals(slot, item.hasMeta(), false)) {
+                        if (item.equals(slot, checkData, false)) {
                             int count = slot.getCount();
                             int amount = Math.min(count, remaining);
 
@@ -154,12 +157,12 @@ public class ClearCommand extends VanillaCommand {
 
                     if (remaining > 0) {
                         Item slot = offhand.getItem(0);
-                        if (item.equals(slot, item.hasMeta(), false)) {
+                        if (item.equals(slot, checkData, false)) {
                             int count = slot.getCount();
                             int amount = Math.min(count, remaining);
 
                             slot.setCount(count - amount);
-                            inventory.setItem(0, slot);
+                            offhand.setItem(0, slot);
                             remaining -= amount;
                         }
                     }
