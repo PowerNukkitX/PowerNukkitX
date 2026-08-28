@@ -15,6 +15,7 @@ import org.cloudburstmc.protocol.bedrock.packet.LevelSoundEventPacket;
 public class LevelSoundEventHandler implements PacketHandler<LevelSoundEventPacket> {
 
     private static final int MAX_IDENTIFIER_LENGTH = 64;
+    private static final float MAX_SOUND_DISTANCE = 16.0f;
 
     @Override
     public void handle(LevelSoundEventPacket packet, PlayerSessionHolder holder, Server server) {
@@ -42,7 +43,7 @@ public class LevelSoundEventHandler implements PacketHandler<LevelSoundEventPack
 
         final LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.setSoundEvent(soundEvent);
-        pk.setPosition(Vector3f.from(player.x, player.y, player.z));
+        pk.setPosition(clampToPlayer(packet.getPosition(), player));
         pk.setData(packet.getData());
         pk.setActorIdentifier(identifier);
         pk.setBaby(packet.isBaby());
@@ -50,5 +51,21 @@ public class LevelSoundEventHandler implements PacketHandler<LevelSoundEventPack
         pk.setActorUniqueId(player.getId());
 
         player.level.addChunkPacket(player.getChunkX(), player.getChunkZ(), pk);
+    }
+
+    private static Vector3f clampToPlayer(Vector3f position, Player player) {
+        if (position == null || !Float.isFinite(position.getX())
+                || !Float.isFinite(position.getY()) || !Float.isFinite(position.getZ())) {
+            return Vector3f.from(player.x, player.y, player.z);
+        }
+        double dx = position.getX() - player.x;
+        double dy = position.getY() - player.y;
+        double dz = position.getZ() - player.z;
+        double distanceSquared = dx * dx + dy * dy + dz * dz;
+        if (distanceSquared <= MAX_SOUND_DISTANCE * MAX_SOUND_DISTANCE) {
+            return position;
+        }
+        double scale = MAX_SOUND_DISTANCE / Math.sqrt(distanceSquared);
+        return Vector3f.from(player.x + dx * scale, player.y + dy * scale, player.z + dz * scale);
     }
 }
