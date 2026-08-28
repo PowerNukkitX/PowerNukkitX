@@ -25,7 +25,7 @@ public class BlockActorDataHandler implements PacketHandler<BlockActorDataPacket
         }
 
         BlockVector3 position = BlockVector3.fromNetwork(packet.getBlockPosition());
-        if (!player.canInteract(position.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
+        if (!player.canInteract(position.add(0.5, 0.5, 0.5))) {
             return;
         }
 

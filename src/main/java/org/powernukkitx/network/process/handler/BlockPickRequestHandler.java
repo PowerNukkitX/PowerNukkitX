@@ -33,7 +33,7 @@ public class BlockPickRequestHandler implements PacketHandler<BlockPickRequestPa
         }
 
         BlockVector3 position = BlockVector3.fromNetwork(packet.getPosition());
-        if (!player.canInteract(position.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
+        if (!player.canInteract(position.add(0.5, 0.5, 0.5))) {
             log.debug("{}: Block pick request for a block too far away", playerHandle.getUsername());
             return;
         }
