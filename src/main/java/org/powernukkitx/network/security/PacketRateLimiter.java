@@ -26,8 +26,15 @@ public final class PacketRateLimiter {
         this.worldInteraction = create(settings.maxWorldInteractionPacketsPerSecondPerPlayer());
     }
 
+    /**
+     * Builds one category's limiter.
+     *
+     * @param permitsPerSecond the configured limit, where zero or less means no limit at all. Guava
+     *                         rejects a rate of zero, so an unreachable rate stands in for it.
+     * @return the limiter for that category
+     */
     private static RateLimiter create(int permitsPerSecond) {
-        return RateLimiter.create(Math.max(1, permitsPerSecond));
+        return RateLimiter.create(permitsPerSecond > 0 ? permitsPerSecond : Double.MAX_VALUE);
     }
 
     /** @return true if the command packet should be processed, false if it should be dropped. */

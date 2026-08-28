@@ -79,6 +79,17 @@ class PacketRateLimiterTest {
     }
 
     @Test
+    void zeroMeansNoLimit() {
+        PacketRateLimiter limiter = new PacketRateLimiter(settingsWith(0, 0, 0, 0));
+        for (int i = 0; i < 1000; i++) {
+            assertTrue(limiter.tryCommand(), "A limit of 0 must not throttle commands");
+            assertTrue(limiter.tryChat(), "A limit of 0 must not throttle chat");
+            assertTrue(limiter.tryFormResponse(), "A limit of 0 must not throttle form responses");
+            assertTrue(limiter.tryMovement(), "A limit of 0 must not throttle movement");
+        }
+    }
+
+    @Test
     void limitersAreIndependent() {
         PacketRateLimiter limiter = new PacketRateLimiter(settingsWith(1, 1000, 1000, 1000));
 
