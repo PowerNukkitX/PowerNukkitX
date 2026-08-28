@@ -234,6 +234,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
     private static final byte PLAYER_FLAG_SLEEP = 0x2;
+    private static final double CREATIVE_BLOCK_REACH = 13;
+    private static final double SURVIVAL_BLOCK_REACH = 7;
     private static final long POST_TELEPORT_GRACE_MS = 1000L;
     /// static fields
     public boolean playedBefore;
@@ -656,7 +658,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Item handItem = this.getInventory().getItemInMainHand();
         Item clone = handItem.clone();
 
-        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
+        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5));
         if (canInteract) {
             handItem = this.level.useBreakOn(blockPos.asVector3(), face, handItem, this, true);
             if (handItem != null && this.isSurvival()) {
@@ -3685,6 +3687,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
             this.doFirstSpawn();
         }
+    }
+
+    /**
+     * Same as {@link #canInteract(Vector3, double)} with the reach a player is allowed for block
+     * interactions, which is longer in creative mode.
+     *
+     * @param pos the position the client claims to be acting on
+     * @return whether this player is close enough to it, and facing it
+     */
+    public boolean canInteract(Vector3 pos) {
+        return this.canInteract(pos, this.isCreative() ? CREATIVE_BLOCK_REACH : SURVIVAL_BLOCK_REACH);
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance) {

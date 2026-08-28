@@ -300,7 +300,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             case PLACE -> {
                 final Item itemInHandNet = Item.fromNetwork(transaction.getItem());
                 if (!itemInHandNet.canBeActivated()) player.setDataFlag(ActorFlags.USING_ITEM, false);
-                if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
+                if (player.canInteract(blockVector.add(0.5, 0.5, 0.5))) {
                     if (player.isCreative()) {
                         Item i = player.getInventory().getItemInMainHand();
                         if (player.level.useItemOn(blockVector.asVector3(), i, face, transaction, player) != null) {

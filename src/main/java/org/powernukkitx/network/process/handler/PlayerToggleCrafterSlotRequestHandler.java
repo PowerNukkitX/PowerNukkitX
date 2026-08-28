@@ -24,7 +24,7 @@ public class PlayerToggleCrafterSlotRequestHandler implements PacketHandler<Play
 
         BlockVector3 position = BlockVector3.fromNetwork(packet.getPos());
         player.temporalVector.setComponents(position.x, position.y, position.z);
-        if (!player.canInteract(player.temporalVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
+        if (!player.canInteract(player.temporalVector.add(0.5, 0.5, 0.5))) {
             return;
         }
 
