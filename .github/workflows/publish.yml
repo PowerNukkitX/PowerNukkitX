@@ -228,6 +228,14 @@ jobs:
           git config user.name "$APP_SLUG[bot]"
           git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
 
+      - name: Sync with the branch tip
+        run: |
+          # The publish job pushes the API version bump after this job has already checked out, so
+          # the local branch is behind and every commit made here would be rejected on push.
+          git fetch origin "$GITHUB_REF_NAME"
+          git switch "$GITHUB_REF_NAME"
+          git reset --hard "origin/$GITHUB_REF_NAME"
+
       - name: Create release branch
         if: github.event_name == 'workflow_dispatch'
         env:
