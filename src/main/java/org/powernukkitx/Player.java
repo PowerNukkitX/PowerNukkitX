@@ -248,7 +248,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
     private static final double MAX_BLOCK_BREAK_SECONDS = 300.0;
-    private static final long BLOCK_BREAK_STALL_MS = 5_000L;
     protected final BedrockServerSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
@@ -621,9 +620,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
         if (miningTimeRequired > MAX_BLOCK_BREAK_SECONDS) {
-            return false;
-        }
-        if (now - this.breakingBlockTime > BLOCK_BREAK_STALL_MS) {
             return false;
         }
         if (this.breakingBlock.getLevel() != this.level) {
