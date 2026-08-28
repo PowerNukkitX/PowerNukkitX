@@ -94,7 +94,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 sign.spawnToAll();
                 sign.setDirty();
                 this.level.addLevelEvent(this, LevelEvent.SOUND_DYE_USED);
-                if ((player.getGamemode() & 0x01) == 0) {
+                if (!player.isCreative()) {
                     item.count--;
                 }
                 return;
@@ -113,7 +113,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 sign.spawnToAll();
                 sign.setDirty();
                 this.level.addLevelEvent(this, LevelEvent.SOUND_INK_SACE_USED);
-                if ((player.getGamemode() & 0x01) == 0) {
+                if (!player.isCreative()) {
                     item.count--;
                 }
                 return;
@@ -127,7 +127,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 sign.setWaxed(true);
                 sign.spawnToAll();
                 this.getLevel().addParticle(new WaxOnParticle(this));
-                if ((player.getGamemode() & 0x01) == 0) {
+                if (!player.isCreative()) {
                     item.count--;
                 }
                 return;
