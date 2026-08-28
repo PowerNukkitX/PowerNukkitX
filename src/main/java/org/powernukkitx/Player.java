@@ -3715,6 +3715,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             message = TextFormat.clean(message, true);
         }
 
+        if (message.startsWith("/")) {
+            Server.getInstance().executeCommand(this, message);
+            return true;
+        }
+
         for (String msg : message.split("\n")) {
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageLimitCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
