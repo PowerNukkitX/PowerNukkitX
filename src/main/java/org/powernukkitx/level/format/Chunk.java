@@ -571,7 +571,7 @@ public class Chunk implements IChunk {
         if (this.entities.put(entity.getId(), entity) == null) {
             this.entityCount.incrementAndGet();
         }
-        indexEntitySection(entity, sectionIndexOf(entity.y));
+        reindexEntitySection(entity);
         if (!(entity instanceof Player) && this.isInit) {
             this.setChanged();
         }
@@ -633,6 +633,22 @@ public class Chunk implements IChunk {
      * Re-buckets an entity whose Y has moved it into another section. Called from the same place
      * that re-buckets an entity between chunks, so the two indexes stay in step.
      */
+    /**
+     * Places an entity in its bucket unconditionally, dropping any bucket of this chunk it was
+     * previously in. Used when an entity joins this chunk: it may already carry the section index
+     * it held in a different chunk, so {@link #updateEntitySection} - which short-circuits when the
+     * index already matches - would leave it unindexed here.
+     */
+    private void reindexEntitySection(Entity entity) {
+        int section = sectionIndexOf(entity.y);
+        int previous = entity.chunkSectionIndex;
+        if (previous >= 0 && previous < this.entitySections.length && previous != section
+                && this.entitySections[previous].remove(entity.getId()) != null) {
+            this.indexedEntityCount.decrementAndGet();
+        }
+        indexEntitySection(entity, section);
+    }
+
     public void updateEntitySection(Entity entity) {
         int section = sectionIndexOf(entity.y);
         int previous = entity.chunkSectionIndex;
