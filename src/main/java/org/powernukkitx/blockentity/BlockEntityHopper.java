@@ -238,13 +238,21 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
-        if (this.getLocation().getLevel() == null) return true;
+        // was: this.getLocation().getLevel() == null, which built a Location per hopper per tick
+        // just to reach the level it was copied from.
+        if (this.level == null) return true;
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
-        HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
-        this.server.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
+        // Every hopper fired this event on every tick it was off cooldown, allocating it even with
+        // no listener registered. Hoppers are numerous and tick constantly.
+        boolean searchCancelled = false;
+        if (!HopperSearchItemEvent.getHandlers().isEmpty()) {
+            HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
+            this.server.getPluginManager().callEvent(event);
+            searchCancelled = event.isCancelled();
+        }
+        if (!searchCancelled) {
             if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
                 changed = pullItems(this, this) || changed;
             } else {
