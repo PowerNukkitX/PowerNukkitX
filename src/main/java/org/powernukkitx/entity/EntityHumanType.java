@@ -79,20 +79,22 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
 
         if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER) {
             int armorPoints = 0;
+            int toughnessPoints = 0;
             int epf = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
+                toughnessPoints += armor.getToughness();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
+                source.setDamage(-calculateDamageReduction(
+                        source.getFinalDamage(), armorPoints, toughnessPoints), DamageModifier.ARMOR);
             }
 
             source.setDamage(-source.getFinalDamage() * Math.min(Math.min(NukkitMath.ceilFloat(Math.min(epf, 25)), 20) * 0.04f, 0.8f),
                     DamageModifier.ARMOR_ENCHANTMENTS);
-
         }
 
         if (super.attack(source)) {
@@ -161,6 +163,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }

@@ -92,10 +92,10 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         if (item.isShears())
             this.level.dropItem(this, this.toItem());
         if (this.getSide(BlockFace.UP).getId().equals(BlockID.SMALL_DRIPLEAF_BLOCK)) {
-            this.level.getBlock(this.getSide(BlockFace.UP)).onBreak(null);
+            this.level.getBlock(this.getSide(BlockFace.UP)).onBreak(Item.AIR);
         }
         if (this.getSide(BlockFace.DOWN).getId().equals(BlockID.SMALL_DRIPLEAF_BLOCK)) {
-            this.level.getBlock(this.getSide(BlockFace.DOWN)).onBreak(null);
+            this.level.getBlock(this.getSide(BlockFace.DOWN)).onBreak(Item.AIR);
         }
         return true;
     }
@@ -149,5 +149,4 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
                 || blockDown instanceof BlockSmallDripleafBlock dripLeaf && !dripLeaf.isUpperBlock()
                 || blockHere instanceof BlockFlowingWater && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleafBlock) && (blockDown instanceof BlockDirt || blockDown instanceof BlockMossBlock);
     }
-
-    }
+}

@@ -244,14 +244,8 @@ public class EntityBoat extends EntityVehicle {
             setRollingAmplitude(getRollingAmplitude() - 1);
         }
 
-        // A killer task
-        if (this.level != null) {
-            if (y < this.level.getMinHeight() - 16) {
-                kill();
-                return false;
-            }
-        } else if (y < -16) {
-            kill();
+        if (y < (this.level == null ? -16 : this.level.getMinHeight() - 16)) {
+            this.close();
             return false;
         }
 
@@ -302,7 +296,9 @@ public class EntityBoat extends EntityVehicle {
                 }
             }
         }
-        this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+        if (!VehicleUpdateEvent.getHandlers().isEmpty()) {
+            this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+        }
 
         return hasUpdated;
     }
@@ -341,16 +337,19 @@ public class EntityBoat extends EntityVehicle {
     private void moveBoat() {
         checkObstruction(this.x, this.y, this.z);
 
-        Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
+        boolean fireMoveEvent = !VehicleMoveEvent.getHandlers().isEmpty();
+        Location from = fireMoveEvent ? new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level) : null;
 
         if(passengers.isEmpty()) {
             move(this.motionX, this.motionY, this.motionZ);
         }
 
-        Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+        if (fireMoveEvent) {
+            Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
 
-        if (!from.equals(to)) {
-            this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
+            if (!from.equals(to)) {
+                this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
+            }
         }
     }
 

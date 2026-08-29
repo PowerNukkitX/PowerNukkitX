@@ -87,19 +87,27 @@ public class PlayerFood {
      * @param saturation The new saturation level
      */
     public void setFood(int food, float saturation) {
+        this.setFood(food, saturation, true);
+    }
+
+    void setFood(int food, float saturation, boolean send) {
         food = Math.max(0, Math.min(food, 20));
         if (food <= 6 && this.food > 6 && this.player.isSprinting()) {
             this.player.setSprinting(false);
         }
+
         PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(this.player, food, saturation);
         Server.getInstance().getPluginManager().callEvent(event);
+
         if (event.isCancelled()) {
-            this.sendFood(this.food);
+            if (send) this.sendFood(this.food);
             return;
         }
+
         this.food = event.getFoodLevel();
         this.saturation = Math.min(event.getFoodSaturationLevel(), food);
-        this.sendFood();
+
+        if (send) this.send();
     }
 
     /**
@@ -131,6 +139,7 @@ public class PlayerFood {
         Server.getInstance().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             this.saturation = event.getFoodSaturationLevel();
+            this.sendSaturation();
         }
     }
 
@@ -179,6 +188,21 @@ public class PlayerFood {
             Attribute attribute = player.getAttributes().computeIfAbsent(Attribute.FOOD, Attribute::getAttribute);
             if (attribute.getValue() != food) {
                 attribute.setValue(food);
+                this.player.syncAttribute(attribute);
+            }
+        }
+    }
+
+    public void send() {
+        this.sendFood();
+        this.sendSaturation();
+    }
+
+    public void sendSaturation() {
+        if (this.player.spawned) {
+            Attribute attribute = player.getAttributes().computeIfAbsent(Attribute.SATURATION, Attribute::getAttribute);
+            if (attribute.getValue() != this.saturation) {
+                attribute.setValue(this.saturation);
                 this.player.syncAttribute(attribute);
             }
         }
@@ -269,7 +293,7 @@ public class PlayerFood {
         this.saturation = 20;
         this.exhaustion = 0;
         this.foodTickTimer = 0;
-        this.sendFood();
+        this.send();
     }
 
     /**
@@ -319,7 +343,8 @@ public class PlayerFood {
      * @return True if enabled
      */
     public boolean isEnabled() {
-        return !(player.isCreative() || player.isFlying() || player.isSpectator()) && this.enabled;
+        return !(player.isCreative() || player.isFlying() || player.isSpectator()) && this.enabled
+                && player.getLevel().getGameplaySettings().enableHunger();
     }
 
     /**

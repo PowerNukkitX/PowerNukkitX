@@ -75,8 +75,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .autosaveDelay(baseOld.autosave())
                 .saveUnknownBlock(baseOld.saveUnknownBlock())
                 .forceServerTranslate(baseOld.forceServerTranslate())
-                .safeSpawn(baseOld.safeSpawn())
-                .waterdogpe(baseOld.waterdogpe());
+                .safeSpawn(baseOld.safeSpawn());
 
         ChunkSettings chunk = settings.chunkSettings();
         LegacyServerSettings.ChunkSettings chunkOld = legacyNukkit.chunkSettings();
@@ -161,8 +160,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .achievements(oldProp.get(LegacyServerPropertiesKeys.ACHIEVEMENTS, game.achievements()))
                 .announceAchievements(oldProp.get(LegacyServerPropertiesKeys.ANNOUNCE_PLAYER_ACHIEVEMENTS, game.announceAchievements()))
                 .spawnProtection(oldProp.get(LegacyServerPropertiesKeys.SPAWN_PROTECTION, game.spawnProtection()))
-                .allowNether(oldProp.get(LegacyServerPropertiesKeys.ALLOW_NETHER, game.allowNether()))
-                .allowTheEnd(oldProp.get(LegacyServerPropertiesKeys.ALLOW_THE_END, game.allowTheEnd()))
                 .gamemode(parseGamemode(oldProp, game.gamemode()))
                 .forceGamemode(oldProp.get(LegacyServerPropertiesKeys.FORCE_GAMEMODE, game.forceGamemode()))
                 .hardcore(oldProp.get(LegacyServerPropertiesKeys.HARDCORE, game.hardcore()))
@@ -170,8 +167,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .difficulty(oldProp.get(LegacyServerPropertiesKeys.DIFFICULTY, game.difficulty()))
                 .forceResources(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES, game.forceResources()))
                 .allowClientPacks(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, game.allowClientPacks()));
-
-        misc.enableTerra(oldProp.get(LegacyServerPropertiesKeys.USE_TERRA, misc.enableTerra()));
 
         net.enableQuery(oldProp.get(LegacyServerPropertiesKeys.ENABLE_QUERY, net.enableQuery()))
                 .networkEncryption(oldProp.get(LegacyServerPropertiesKeys.NETWORK_ENCRYPTION, net.networkEncryption()))

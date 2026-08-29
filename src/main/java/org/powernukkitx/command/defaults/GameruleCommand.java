@@ -72,7 +72,6 @@ public class GameruleCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         GameRules rules = sender.getPosition().level.getGameRules();
         var list = result.getValue();
-        String ruleStr = list.getResult(0);
         if (result.getKey().equals("default")) {
             StringJoiner rulesJoiner = new StringJoiner(", ");
             for (GameRule rule : rules.getRules()) {
@@ -80,7 +79,10 @@ public class GameruleCommand extends VanillaCommand {
             }
             log.addSuccess(rulesJoiner.toString()).output();
             return 1;
-        } else if (!list.hasResult(1)) {
+        }
+
+        String ruleStr = list.getResult(0);
+        if (!list.hasResult(1)) {
             Optional<GameRule> gameRule = GameRule.parseString(ruleStr);
             if (gameRule.isEmpty() || !rules.hasRule(gameRule.get())) {
                 log.addSyntaxErrors(0).output();

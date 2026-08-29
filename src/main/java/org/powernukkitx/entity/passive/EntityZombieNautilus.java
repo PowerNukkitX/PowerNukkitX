@@ -3,7 +3,6 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -17,11 +16,12 @@ import org.powernukkitx.entity.ai.executor.TemptExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.SwimmingPosEvaluator;
-import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.EquippableComponent;
 import org.powernukkitx.entity.components.RideableComponent;
+import org.powernukkitx.entity.data.property.EntityProperty;
+import org.powernukkitx.entity.data.property.EnumEntityProperty;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
@@ -33,6 +33,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,15 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2025/12/15
  */
 public class EntityZombieNautilus extends EntityNautilus {
+
+    private static final String[] VARIANTS = {
+        "default",
+        "coral"
+    };
+
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:variant", VARIANTS, "default", true)
+    };
 
     @Override
     @NotNull
@@ -156,6 +166,12 @@ public class EntityZombieNautilus extends EntityNautilus {
     public void initEntity() {
         super.initEntity();
 
+        if (this.nbt.contains("variant")) {
+            setZombieNautilusVariant(this.nbt.getString("variant"));
+        } else {
+            setZombieNautilusVariant(resolveSpawnVariant());
+        }
+
         if (this.nbt != null && this.nbt.contains(NBT_RIDEABLE_TYPE)) {
             this.jockeyType = SpawnRiderType.fromId(this.getNbt().getInt(NBT_RIDEABLE_TYPE));
         } else {
@@ -246,6 +262,30 @@ public class EntityZombieNautilus extends EntityNautilus {
         return false;
     }
 
+    private String resolveSpawnVariant() {
+        List<String> biomeTags = Registries.BIOME.getTags(
+                getLevel().getBiomeId((int) x, (int) y, (int) z)
+        );
+
+        if (biomeTags != null
+                && biomeTags.contains("ocean")
+                && biomeTags.contains("warm")
+                && !biomeTags.contains("deep")) {
+            return "coral";
+        }
+
+        return "default";
+    }
+
+    private void setZombieNautilusVariant(String variant) {
+        if (!"coral".equals(variant)) {
+            variant = "default";
+        }
+
+        this.nbt.putString("variant", variant);
+        setEnumEntityProperty("minecraft:variant", variant);
+    }
+
     private SpawnRiderType rollInitialRideableType() {
         // Weights:
         //  - 10% normal
@@ -304,11 +344,8 @@ public class EntityZombieNautilus extends EntityNautilus {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
-                ),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(
                                 new MoveToRiderTargetExecutor(this.getEnvironmentalMoveSpeed() * 2.00f, true),
                                 e -> this.isRiddenByMob(),
@@ -362,33 +399,15 @@ public class EntityZombieNautilus extends EntityNautilus {
                                 },
                                 1
                         )
-                ),
-                Set.of(
-                        new ISensor() {
-                            @Override
-                            public void sense(EntityIntelligent entity) {
-                                EntityNautilus n = (EntityNautilus) entity;
-
-                                if (!n.isTamed()) return;
-                                Block home = n.getHomePosition();
-                                if (home == null) return;
-                                entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
-                            }
-
-                            @Override
-                            public int getPeriod() {
-                                return 60;
-                            }
-                        }
-                ),
-                Set.of(
+                )
+                .sensors()
+                .controllers(
                         new SpaceMoveController(),
                         new LookController(true, true),
                         new DiveController()
-                ),
-                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
+                .build();
     }
 
 }

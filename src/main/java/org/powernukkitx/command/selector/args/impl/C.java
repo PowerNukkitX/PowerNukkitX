@@ -8,9 +8,11 @@ import org.powernukkitx.command.selector.args.CachedFilterSelectorArgument;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.Location;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 /**
@@ -18,7 +20,7 @@ import java.util.function.Function;
  * <p>
  * The 'c' argument is used to limit the number of entities returned by a selector, optionally reversing the order
  * to select the farthest entities instead of the nearest. This class sorts the entity list by distance to the
- * reference location and returns a sublist of the specified size. Negative values reverse the order.
+ * reference location and returns up to the specified number of entities. Negative values reverse the order.
  * <p>
  * <b>Features:</b>
  * <ul>
@@ -76,12 +78,37 @@ public class C extends CachedFilterSelectorArgument {
         ParseUtils.cannotReversed(arguments[0]);
         final var c = Integer.parseInt(arguments[0]);
         if (c == 0) throw new SelectorSyntaxException("C cannot be zero!");
+        final Location referencePos = basePos.clone();
         return entities -> {
-            entities.sort(Comparator.comparingDouble(e -> e.distanceSquared(basePos)));
-            if (c < 0)
-                Collections.reverse(entities);
-            return entities.subList(0, Math.abs(c));
+            if (selectorType == SelectorType.RANDOM_PLAYER) {
+                Collections.shuffle(entities, ThreadLocalRandom.current());
+            } else {
+                entities.sort(Comparator.comparingDouble(e -> e.distanceSquared(referencePos)));
+                if (c < 0)
+                    Collections.reverse(entities);
+            }
+
+            int limit = (int) Math.min(Math.abs((long) c), entities.size());
+            return new ArrayList<>(entities.subList(0, limit));
         };
+    }
+
+    /**
+     * Returns the filter function for the given arguments.
+     * <p>
+     * The filter is position dependent, so it is rebuilt for every sender instead of being served from the
+     * shared argument cache.
+     *
+     * @param selectorType the selector type
+     * @param sender the command sender
+     * @param basePos the reference location
+     * @param arguments the argument values
+     * @return the computed filter function
+     * @throws SelectorSyntaxException if the argument is invalid
+     */
+    @Override
+    public Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+        return cache(selectorType, sender, basePos, arguments);
     }
 
     /**
@@ -95,12 +122,13 @@ public class C extends CachedFilterSelectorArgument {
     }
 
     /**
-     * Returns the priority for this argument (3).
+     * Returns the priority for this argument.
+     * The count limit is applied after all other selector filters.
      *
-     * @return the integer 3
+     * @return the integer 1000
      */
     @Override
     public int getPriority() {
-        return 3;
+        return 1000;
     }
 }

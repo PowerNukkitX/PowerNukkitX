@@ -220,8 +220,9 @@ public class EntitySelectorAPI {
             // There are no entities that meet the conditions, return
             if (entities.isEmpty()) return entities;
         }
+        boolean hasCountArg = arguments.containsKey("c");
         // Randomly select one
-        if (selectorType == RANDOM_PLAYER && !entities.isEmpty()) {
+        if (selectorType == RANDOM_PLAYER && !entities.isEmpty() && !hasCountArg) {
             var index = ThreadLocalRandom.current().nextInt(entities.size()) + 1;
             Entity currentEntity = null;
             int i = 1;
@@ -235,7 +236,7 @@ public class EntitySelectorAPI {
             return Lists.newArrayList(currentEntity);
         }
         // Select Recent Player
-        if (selectorType == NEAREST_PLAYER && entities.size() != 1) {
+        if (selectorType == NEAREST_PLAYER && entities.size() != 1 && !hasCountArg) {
             Entity nearest = null;
             double min = Double.MAX_VALUE;
             for (var entity : entities) {
@@ -279,17 +280,18 @@ public class EntitySelectorAPI {
 
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
-                var split = StringUtils.fastSplit(ARGUMENT_JOINER, arg, 2);
-                String argName = split.get(0);
+                var split = StringUtils.fastSplit(ARGUMENT_JOINER, arg.trim(), 2);
+                String argName = split.get(0).trim();
+                String argValue = split.size() > 1 ? split.get(1).trim() : "";
 
                 if (!registry.containsKey(argName)) {
                     throw new SelectorSyntaxException("Unknown selector argument: " + argName);
                 }
 
                 if (!args.containsKey(argName)) {
-                    args.put(argName, Lists.newArrayList(split.size() > 1 ? split.get(1) : ""));
+                    args.put(argName, Lists.newArrayList(argValue));
                 } else {
-                    args.get(argName).add(split.size() > 1 ? split.get(1) : "");
+                    args.get(argName).add(argValue);
                 }
             }
         }

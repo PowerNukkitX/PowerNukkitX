@@ -202,6 +202,10 @@ public interface IChunk {
 
     Map<Long, Entity> getEntities();
 
+    default boolean hasEntities() {
+        return !getEntities().isEmpty();
+    }
+
     void doMobSpawning();
 
     BlockUpdateScheduler getBlockUpdateScheduler();

@@ -9,6 +9,7 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
@@ -46,6 +47,7 @@ dependencies {
     api(libs.fastutil)
     api(libs.snakeyaml)
     api(libs.stateless4j)
+    api(libs.bedrock.connection)
 
     implementation(libs.bundles.leveldb)
     implementation(libs.rng.simple)
@@ -56,16 +58,16 @@ dependencies {
     implementation(libs.disruptor)
     implementation(libs.oshi)
     implementation(libs.fastreflection)
-    implementation(libs.terra)
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
-    implementation(libs.bedrock.connection)
+    implementation(libs.pnxgamedata)
+    implementation(libs.commonslang3)
+    implementation(libs.caffeine)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
-    testImplementation(libs.commonslang3)
-    
+
     testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)
@@ -83,6 +85,7 @@ configurations.all {
 }
 
 tasks.withType<JavaCompile>().configureEach {
+    options.encoding = ENCODING
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
     options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000", "-nowarn"))
     options.isWarnings = false
@@ -127,19 +130,19 @@ tasks.processTestResources {
 
 tasks.register<DefaultTask>("buildFast") {
     group = ALPHA_BUILD
-    description = "Fast build without documentation and tests - for rapid development"
+    description = "Compile resources and create the plain jar without tests, docs, or shadow packaging"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar)
 }
 
 tasks.register<DefaultTask>("buildSkipChores") {
     group = ALPHA_BUILD
-    description = "Build without documentation and tests"
+    description = "Build the runnable jar without tests or documentation"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
 tasks.register<DefaultTask>("buildForGithubAction") {
     group = GH_BUILD
-    description = "Optimized build for CI/CD pipelines (without tests)"
+    description = "CI packaging build used by GitHub Actions; tests are covered by checkFast"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
@@ -151,7 +154,7 @@ tasks.build {
 tasks.clean {
     group = ALPHA_BUILD
     description = "Deletes the build directory and generated files"
-    delete("pnx.yml", "terra", "services")
+    delete("pnx.yml", "services")
 }
 
 tasks.compileJava {
@@ -182,7 +185,7 @@ tasks.test {
     jvmArgs(
         "--add-opens", "java.base/java.lang=ALL-UNNAMED",
         "--add-opens", "java.base/java.io=ALL-UNNAMED",
-        "-Xmx1g", // Limit test JVM memory
+        "-Xmx2g", // Limit test JVM memory - smoke tests boot real levels and run terrain generation
         "-XX:+UseG1GC", // Use G1GC for tests
         "-XX:MaxGCPauseMillis=200" // Lower GC pause time
     )
@@ -206,6 +209,18 @@ tasks.test {
 
 tasks.withType<Test>().configureEach {
     onlyIf { !project.hasProperty("skipTests") }
+}
+
+tasks.register<DefaultTask>("testFast") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Run the unit test suite without documentation or packaging tasks"
+    dependsOn(tasks.test)
+}
+
+tasks.register<DefaultTask>("checkFast") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Compile main/test sources and run fast unit checks"
+    dependsOn(tasks.compileJava, tasks.compileTestJava, tasks.test)
 }
 
 tasks.named<JacocoReport>("jacocoTestReport") {
@@ -338,14 +353,6 @@ publishing {
             }
         }
     }
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = ENCODING
-}
-
-tasks.withType<Javadoc> {
-    options.encoding = ENCODING
 }
 
 // Task optimization - disable unnecessary tasks for faster builds

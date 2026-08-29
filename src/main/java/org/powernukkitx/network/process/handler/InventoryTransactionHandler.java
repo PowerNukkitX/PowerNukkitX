@@ -17,12 +17,12 @@ import org.powernukkitx.event.player.PlayerDropItemEvent;
 import org.powernukkitx.event.player.PlayerHackDetectedEvent;
 import org.powernukkitx.event.player.PlayerInteractEntityEvent;
 import org.powernukkitx.event.player.PlayerInteractEvent;
-import org.powernukkitx.event.player.PlayerItemConsumeEvent;
 import org.powernukkitx.event.player.PlayerKickEvent;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
+import org.powernukkitx.item.ItemFireworkRocket;
 import org.powernukkitx.item.ItemMace;
 import org.powernukkitx.item.ItemSpear;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -82,7 +82,11 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                         Item item = player.getInventory().getItemInMainHand();
 
                         int ticksUsed = player.getLevel().getTick() - lastUseTick;
-                        if (!item.onRelease(player, ticksUsed)) {
+                        if (item.isEdible() && ticksUsed >= item.getUsingTicks()) {
+                            if (item.onUse(player, ticksUsed)) {
+                                item.afterUse(player);
+                            }
+                        } else if (!item.onRelease(player, ticksUsed)) {
                             player.getInventory().sendContents(player);
                         }
 
@@ -214,12 +218,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             }
             if (!player.canInteract(target, player.isCreative() ? 8 : 5)) {
                 return;
-            } else if (target instanceof Player) {
-                if ((((Player) target).getGamemode() & 0x01) > 0) {
-                    return;
-                } else if (!player.getServer().getSettings().gameplaySettings().pvp()) {
-                    return;
-                }
+            } else if (target instanceof Player targetPlayer
+                    && (targetPlayer.isCreative() || !player.getServer().getSettings().gameplaySettings().pvp())) {
+                return;
             }
 
             player.interruptShieldBlockingForAttack();
@@ -349,21 +350,16 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 } else {
                     item = serverItemInHand;
                 }
-                PlayerItemConsumeEvent consumeEvent = null;
-                if (item.isEdible()) {
-                    consumeEvent = new PlayerItemConsumeEvent(player, item.clone());
-                    player.getServer().getPluginManager().callEvent(consumeEvent);
-                }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 playerHandle.setInteract();
-                if (consumeEvent != null && consumeEvent.isCancelled()) {
-                    player.getInventory().sendSlot(transaction.getSlot(), player);
-                    return;
-                }
-                if (interactEvent.isCancelled() && (consumeEvent == null || !consumeEvent.isBypassInteract())) {
-                    if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
+                if (interactEvent.isCancelled()) {
+                    if (interactEvent.getItem() != null && interactEvent.getItem().isWearable()) {
                         player.getInventory().sendArmorContents(player);
+                    }
+                    // Client predicts the elytra boost locally, so we resync its motion to undo it
+                    if (interactEvent.getItem() instanceof ItemFireworkRocket && player.isGliding()) {
+                        player.setMotion(player.getMotion());
                     }
                     player.getInventory().sendSlot(transaction.getSlot(), player);
                     return;

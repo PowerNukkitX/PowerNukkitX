@@ -1,18 +1,16 @@
 package org.powernukkitx.entity.ai.executor.villager;
 
 import org.powernukkitx.Server;
-import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockBed;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.executor.BreedingExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
-import org.powernukkitx.level.Location;
+import org.powernukkitx.level.village.Village;
+import org.powernukkitx.level.village.VillagePoi;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
-
-import java.util.Arrays;
 
 public class VillagerBreedingExecutor extends BreedingExecutor {
     public VillagerBreedingExecutor(int findingRange, int duration, float moveSpeed) {
@@ -87,46 +85,37 @@ public class VillagerBreedingExecutor extends BreedingExecutor {
 
     @Override
     protected void breed(EntityIntelligent parent1, EntityIntelligent parent2) {
-        int range = 48;
-        int lookY = 5;
-        BlockBed block = null;
-
-        for (int x = -range; x <= range; x++) {
-            for (int z = -range; z <= range; z++) {
-                for (int y = -lookY; y <= lookY; y++) {
-                    Location lookLocation = parent1.add(x, y, z);
-                    Block lookBlock = lookLocation.getLevelBlock();
-
-                    if (lookBlock instanceof BlockBed bed) {
-                        boolean occupied = Arrays.stream(parent1.getLevel().getEntities())
-                                .anyMatch(e -> e instanceof EntityVillagerV2 v
-                                        && v.getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)
-                                        && v.getBed().equals(bed));
-
-                        if (!bed.isHeadPiece() && !occupied) {
-                            block = bed.getFootPart();
-                            break;
-                        }
-                    }
-                }
-                if (block != null) break;
-            }
-            if (block != null) break;
-        }
-
-        if (block == null) {
+        var villageManager = parent1.getLevel().getVillageManager();
+        Village village = villageManager.getVillageForDweller(parent1.getId()).orElse(null);
+        if (village == null || villageManager.getVillageForDweller(parent2.getId())
+                .filter(other -> other.uuid().equals(village.uuid())).isEmpty()) {
             sendAngryParticles(parent1);
             sendAngryParticles(parent2);
             return;
-        } else {
-            sendInLoveParticles(parent1);
-            sendInLoveParticles(parent2);
+        }
+
+        VillagePoi home = villageManager.findClosestAvailableHome(village.uuid(), parent1).orElse(null);
+        if (home == null || !(parent1.getLevel().getBlock(home.position().x, home.position().y,
+                home.position().z, false) instanceof BlockBed bed) || !bed.isBedValid() || bed.isOccupied()) {
+            sendAngryParticles(parent1);
+            sendAngryParticles(parent2);
+            return;
         }
 
         EntityVillagerV2 baby = (EntityVillagerV2) Entity.createEntity(parent1.getNetworkId(), parent1.getPosition());
         if (baby == null) return;
 
         baby.setBaby(true);
+        baby.setBed(bed.getFootPart());
+        if (baby.getBed() == null || !village.uuid().equals(baby.getVillageUuid())) {
+            baby.close();
+            sendAngryParticles(parent1);
+            sendAngryParticles(parent2);
+            return;
+        }
+
+        sendInLoveParticles(parent1);
+        sendInLoveParticles(parent2);
 
         // prevent baby breeding instantly
         baby.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, parent1.level.getTick());

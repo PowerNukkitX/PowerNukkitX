@@ -39,18 +39,11 @@ public class BlockGlowingobsidian extends BlockSolid {
     }
 
     @Override
-    public Item toItem() {
-        return new ItemBlock(Block.get(BlockID.OBSIDIAN));
-    }
-
-    
-    @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() > ItemTool.TIER_DIAMOND) {
-            return new Item[] { toItem() };
+            return new Item[] { new ItemBlock(Block.get(BlockID.OBSIDIAN)) };
         } else {
             return Item.EMPTY_ARRAY;
         }
     }
-
-    }
+}

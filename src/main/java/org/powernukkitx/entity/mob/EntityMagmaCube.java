@@ -83,20 +83,17 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(new NearestTargetEntitySensor<>(0, 16, 20,
-                        List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)),
-                Set.of(new HoppingController(40), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .sensors(new NearestTargetEntitySensor<>(0, 16, 20,
+                        List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget))
+                .controllers(new HoppingController(40), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override
@@ -227,12 +224,16 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     public void kill() {
-        if (getVariant() != SIZE_SMALL) {
+        if (!this.justCreated && getVariant() != SIZE_SMALL) {
+            final int smaller = getSmaller();
             for (int i = 1; i < Utils.rand(2, 5); i++) {
-                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), this.getNbt());
-                magmaCube.setPosition(this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
+                CompoundTag childNbt = Entity.getDefaultNBT(
+                    this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
+                childNbt.putInt(TAG_SLIME_SIZE, smaller);
+
+                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), childNbt);
                 magmaCube.setRotation(this.yaw, this.pitch);
-                magmaCube.setVariant(getSmaller());
+                magmaCube.setVariant(smaller);
                 magmaCube.spawnToAll();
             }
         }

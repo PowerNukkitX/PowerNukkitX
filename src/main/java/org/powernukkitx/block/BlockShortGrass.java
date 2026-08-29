@@ -70,6 +70,11 @@ public class BlockShortGrass extends BlockFlowable implements Supportable {
     }
 
     @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             Block up = this.up();
@@ -114,5 +119,4 @@ public class BlockShortGrass extends BlockFlowable implements Supportable {
 
         return drops.toArray(Item.EMPTY_ARRAY);
     }
-
-    }
+}

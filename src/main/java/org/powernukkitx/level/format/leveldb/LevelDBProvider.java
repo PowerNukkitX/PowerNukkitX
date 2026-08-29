@@ -25,8 +25,10 @@ import org.powernukkitx.utils.ChunkException;
 import org.powernukkitx.utils.SemVersion;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +59,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * @author CoolLoong (PNX Project)
@@ -75,6 +78,23 @@ public class LevelDBProvider implements LevelProvider {
     protected final String path;
     protected CompoundTag worldDynamicProperties;
     protected boolean worldDynamicPropertiesDirty = false;
+    /**
+     * Network bytes an absent section serialises to, indexed by section Y offset into the byte
+     * range. Sized from {@link Byte} because {@link ChunkSection#y()} is a {@code byte} that the
+     * wire format writes as a single signed byte, so a taller dimension cannot widen this without
+     * changing the section format first.
+     * <p>
+     * Shared by every level: the bytes depend only on the section Y, so two dimensions at the
+     * same Y - and two worlds of the same dimension - produce identical output. See
+     * {@link #emptySectionPayload(int)}.
+     */
+    private static final AtomicReferenceArray<byte[]> EMPTY_SECTION_PAYLOADS =
+            new AtomicReferenceArray<>(1 << Byte.SIZE);
+    /**
+     * Network bytes the biome palette of an absent section serialises to. One value for the whole
+     * server: unlike the section payload this does not encode the section Y.
+     */
+    private static volatile byte[] emptyBiomePayload;
 
     /**
      * @return int The nether coordinate scale for the world
@@ -115,6 +135,7 @@ public class LevelDBProvider implements LevelProvider {
         CompoundTag dp = this.storage.readWorldDynamicProperties();
         this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
         this.worldDynamicPropertiesDirty = false;
+        this.level.getVillageManager().load(this.storage.readVillages(getDimensionData()));
     }
 
     @UsedByReflection
@@ -309,7 +330,8 @@ public class LevelDBProvider implements LevelProvider {
         AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
-            final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+            final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer();
+            boolean success = false;
             try {
                 final ChunkSection[] sections = unsafeChunk.getSections();
                 int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
@@ -319,28 +341,34 @@ public class LevelDBProvider implements LevelProvider {
                     }
                 }
                 int total = subChunkCount + 1;
+                final int minSectionY = unsafeChunk.getDimensionData().getMinSectionY();
                 //write block
                 if (level != null && level.isAntiXrayEnabled()) {
                     for (int i = 0; i < total; i++) {
                         if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                            sections[i] = new ChunkSection((byte) (i + minSectionY));
                         }
-                        assert sections[i] != null;
                         sections[i].writeObfuscatedToBuf(level, byteBuf);
                     }
                 } else {
                     for (int i = 0; i < total; i++) {
-                        if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                        final ChunkSection section = sections[i];
+                        if (section != null) {
+                            section.writeToBuf(byteBuf);
+                        } else {
+                            byteBuf.writeBytes(emptySectionPayload(i + minSectionY));
                         }
-                        assert sections[i] != null;
-                        sections[i].writeToBuf(byteBuf);
                     }
                 }
 
                 // Write biomes
                 for (int i = 0; i < total; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
+                    final ChunkSection section = sections[i];
+                    if (section != null) {
+                        section.biomes().writeToNetwork(byteBuf, Integer::intValue);
+                    } else {
+                        byteBuf.writeBytes(emptyBiomePayload());
+                    }
                 }
 
                 writeBorderBlockData(byteBuf, chunk);
@@ -366,13 +394,72 @@ public class LevelDBProvider implements LevelProvider {
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
-                data.set(byteBuf.copy());
+                data.set(byteBuf);
                 subChunkCountRef.set(total);
+                success = true;
             } finally {
-                byteBuf.release();
+                // only release on early bail-out
+                if (!success) {
+                    byteBuf.release();
+                }
             }
         });
         return Pair.of(data.get(), subChunkCountRef.get());
+    }
+
+    /**
+     * The serialised form of a section the chunk does not have.
+     * <p>
+     * A chunk send used to fill each empty slot with a real {@link ChunkSection} and store it
+     * back into the chunk, so every chunk ever sent to a player permanently held block palettes,
+     * a biome palette and two light arrays for each of its empty sections. A heap dump of a busy
+     * server showed 23.8 of a possible 24 sections materialised per chunk, the resulting
+     * {@code int[]} and {@code byte[]} being most of the heap.
+     * <p>
+     * An empty section always serialises to the same bytes for a given section index, so they are
+     * produced once from a real {@link ChunkSection} - rather than by hand, which would duplicate
+     * the wire format - and reused. That removes both the retention and the per-send allocation.
+     * <p>
+     * Anti-xray does not use this: obfuscation keeps per-section state and rewrites the palette,
+     * so that path still materialises absent sections exactly as it always has.
+     *
+     * @param sectionY the section's Y, as written into the payload
+     * @return bytes to append, which the caller must not modify
+     */
+    private static byte[] emptySectionPayload(int sectionY) {
+        final byte y = (byte) sectionY;
+        final int slot = y - Byte.MIN_VALUE;
+        byte[] payload = EMPTY_SECTION_PAYLOADS.get(slot);
+        if (payload == null) {
+            final ByteBuf scratch = Unpooled.buffer();
+            try {
+                new ChunkSection(y).writeToBuf(scratch);
+                payload = ByteBufUtil.getBytes(scratch);
+            } finally {
+                scratch.release();
+            }
+            EMPTY_SECTION_PAYLOADS.compareAndSet(slot, null, payload);
+            payload = EMPTY_SECTION_PAYLOADS.get(slot);
+        }
+        return payload;
+    }
+
+    /**
+     * @return the biome bytes of an absent section, which the caller must not modify
+     */
+    private static byte[] emptyBiomePayload() {
+        byte[] payload = emptyBiomePayload;
+        if (payload == null) {
+            final ByteBuf scratch = Unpooled.buffer();
+            try {
+                new ChunkSection((byte) 0).biomes().writeToNetwork(scratch, Integer::intValue);
+                payload = ByteBufUtil.getBytes(scratch);
+            } finally {
+                scratch.release();
+            }
+            emptyBiomePayload = payload;
+        }
+        return payload;
     }
 
     private void writeBorderBlockData(ByteBuf byteBuf, IChunk chunk) {
@@ -539,8 +626,11 @@ public class LevelDBProvider implements LevelProvider {
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
             CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
-                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
+                // Clear the dirty flag before serializing so a change made
+                // mid-save (e.g. taking an item from a chest) re-marks the chunk
+                // dirty and gets persisted on the next save instead of being lost.
                 chunk.setChanged(false);
+                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
             }), Server.getInstance().getComputeThreadPool()).join();
             helper.write(batch);
             helper.close();
@@ -580,6 +670,7 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void saveLevelData() {
         flushWorldDynamicProperties();
+        storage.writeVillages(getDimensionData(), level.getVillageManager().getVillages());
         writeLevelDat(path, getDimensionData(), this.levelDat);
     }
 
@@ -729,45 +820,7 @@ public class LevelDBProvider implements LevelProvider {
             }
             NbtMap abilities = d.getCompound("abilities");
             NbtMap experiments = d.getCompound("experiments");
-            GameRules gameRules = GameRules.getDefault();
-            gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, this.getBoolean(d, "commandBlockOutput"));
-            gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, this.getBoolean(d, "commandBlocksEnabled"));
-            gameRules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, this.getBoolean(d, "doDayLightCycle"));
-            gameRules.setGameRule(GameRule.DO_ENTITY_DROPS, this.getBoolean(d, "doEntityDrops"));
-            gameRules.setGameRule(GameRule.DO_FIRE_TICK, this.getBoolean(d, "doFireTick"));
-            gameRules.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, this.getBoolean(d, "doImmediateRespawn"));
-            gameRules.setGameRule(GameRule.DO_INSOMNIA, this.getBoolean(d, "doInsomnia"));
-            gameRules.setGameRule(GameRule.DO_LIMITED_CRAFTING, this.getBoolean(d, "doLimitedCrafting"));
-            gameRules.setGameRule(GameRule.DO_MOB_LOOT, this.getBoolean(d, "doMobLoot"));
-            gameRules.setGameRule(GameRule.DO_MOB_SPAWNING, this.getBoolean(d, "doMobSpawning"));
-            gameRules.setGameRule(GameRule.DO_TILE_DROPS, this.getBoolean(d, "doTileDrops"));
-            gameRules.setGameRule(GameRule.DO_WEATHER_CYCLE, this.getBoolean(d, "doWeatherCycle"));
-            gameRules.setGameRule(GameRule.DROWNING_DAMAGE, this.getBoolean(d, "drowningDamage"));
-            gameRules.setGameRule(GameRule.EXPERIMENTAL_GAMEPLAY, this.getBoolean(d, "experimentalGameplay"));
-            gameRules.setGameRule(GameRule.FALL_DAMAGE, this.getBoolean(d, "fallDamage"));
-            gameRules.setGameRule(GameRule.FIRE_DAMAGE, this.getBoolean(d, "fireDamage"));
-            gameRules.setGameRule(GameRule.FREEZE_DAMAGE, this.getBoolean(d, "freezeDamage"));
-            gameRules.setGameRule(GameRule.FUNCTION_COMMAND_LIMIT, d.getInt("functionCommandLimit"));
-            gameRules.setGameRule(GameRule.KEEP_INVENTORY, this.getBoolean(d, "keepInventory"));
-            gameRules.setGameRule(GameRule.LOCATOR_BAR, this.getBoolean(d, "locatorBar"));
-            gameRules.setGameRule(GameRule.MAX_COMMAND_CHAIN_LENGTH, d.getInt("maxCommandChainLength"));
-            gameRules.setGameRule(GameRule.MOB_GRIEFING, this.getBoolean(d, "mobGriefing"));
-            gameRules.setGameRule(GameRule.NATURAL_REGENERATION, this.getBoolean(d, "naturalRegeneration"));
-            gameRules.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, d.getInt("playersSleepingPercentage"));
-            gameRules.setGameRule(GameRule.PROJECTILES_CAN_BREAK_BLOCKS, this.getBoolean(d, "projectilesCanBreakBlocks"));
-            gameRules.setGameRule(GameRule.PVP, this.getBoolean(d, "pvp"));
-            gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, d.getInt("randomTickSpeed"));
-            gameRules.setGameRule(GameRule.RECIPES_UNLOCK, this.getBoolean(d, "recipesUnlock"));
-            gameRules.setGameRule(GameRule.RESPAWN_BLOCKS_EXPLODE, this.getBoolean(d, "respawnBlocksExplode"));
-            gameRules.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, this.getBoolean(d, "sendCommandFeedback"));
-            gameRules.setGameRule(GameRule.SHOW_BORDER_EFFECT, this.getBoolean(d, "showBorderEffect"));
-            gameRules.setGameRule(GameRule.SHOW_COORDINATES, this.getBoolean(d, "showCoordinates"));
-            gameRules.setGameRule(GameRule.SHOW_DAYS_PLAYED, this.getBoolean(d, "showDaysPlayed"));
-            gameRules.setGameRule(GameRule.SHOW_DEATH_MESSAGES, this.getBoolean(d, "showDeathMessages"));
-            gameRules.setGameRule(GameRule.SHOW_TAGS, this.getBoolean(d, "showTags"));
-            gameRules.setGameRule(GameRule.SPAWN_RADIUS, d.getInt("spawnRadius"));
-            gameRules.setGameRule(GameRule.TNT_EXPLODES, this.getBoolean(d, "tntExplodes"));
-            gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, this.getBoolean(d, "tntExplosionDropDecay"));
+            GameRules gameRules = readGameRules(d);
 
             Map<String, Boolean> experimentMap = new HashMap<>();
             for (Map.Entry<String, Object> entry : experiments.entrySet()) {
@@ -972,8 +1025,10 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.put("sendCommandFeedback", worldData.getGameRules().getGameRules().get(GameRule.SEND_COMMAND_FEEDBACK).getTag());
         levelDat.put("showBorderEffect", worldData.getGameRules().getGameRules().get(GameRule.SHOW_BORDER_EFFECT).getTag());
         levelDat.put("showCoordinates", worldData.getGameRules().getGameRules().get(GameRule.SHOW_COORDINATES).getTag());
+        levelDat.put("playerWaypoints", worldData.getGameRules().getGameRules().get(GameRule.PLAYER_WAYPOINTS).getTag());
         levelDat.put("showDaysPlayed", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DAYS_PLAYED).getTag());
         levelDat.put("showDeathMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DEATH_MESSAGES).getTag());
+        levelDat.put("showRecipeMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_RECIPE_MESSAGES).getTag());
         levelDat.put("showTags", worldData.getGameRules().getGameRules().get(GameRule.SHOW_TAGS).getTag());
         levelDat.put("spawnRadius", worldData.getGameRules().getGameRules().get(GameRule.SPAWN_RADIUS).getTag());
         levelDat.put("tntExplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());
@@ -988,5 +1043,29 @@ public class LevelDBProvider implements LevelProvider {
 
     private boolean getBoolean(NbtMap nbtMap, String key) {
         return nbtMap.getByte(key) == (byte) 1;
+    }
+
+    private GameRules readGameRules(NbtMap d) {
+        GameRules gameRules = GameRules.getDefault();
+        for (GameRule rule : GameRule.values()) {
+            if (rule.isDeprecated()) continue;
+            Object tag = findIgnoreCase(d, rule.getName());
+            if (!(tag instanceof Number number)) continue;
+            switch (gameRules.getGameRuleType(rule)) {
+                case BOOLEAN -> gameRules.setGameRule(rule, number.intValue() != 0);
+                case INTEGER -> gameRules.setGameRule(rule, number.intValue());
+                case FLOAT -> gameRules.setGameRule(rule, number.floatValue());
+            }
+        }
+        return gameRules;
+    }
+
+    private Object findIgnoreCase(NbtMap nbtMap, String key) {
+        Object exact = nbtMap.get(key);
+        if (exact != null) return exact;
+        for (Map.Entry<String, Object> entry : nbtMap.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(key)) return entry.getValue();
+        }
+        return null;
     }
 }

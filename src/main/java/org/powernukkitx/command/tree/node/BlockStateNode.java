@@ -74,10 +74,10 @@ public class BlockStateNode extends ParamNode<BlockState> {
             for (var propertyType : propertyTypeSet) {
                 if (propertyType.getName().equals(key)) {
                     if (propertyType.getType() == BlockPropertyType.Type.ENUM) {
-                        if (propertyType.getValidValues().contains(value)) {
+                        try {
                             result = result.setPropertyValue(properties, propertyType.tryCreateValue(value));
                             break;
-                        } else {
+                        } catch (IllegalArgumentException | NullPointerException e) {
                             this.error();
                             return;
                         }

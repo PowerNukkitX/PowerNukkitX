@@ -4,7 +4,7 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.item.UnknownItem;
+import org.powernukkitx.item.ItemUnknown;
 import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.level.updater.item.ItemUpdaters;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -53,7 +53,6 @@ public class ItemHelper {
             return Item.AIR;
         }
 
-        //upgrade item
         if (tag.contains("version")) {
             int ver = tag.getInt("version");
             if (ver < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
@@ -65,8 +64,11 @@ public class ItemHelper {
         int damage = !tag.contains("Damage") ? 0 : tag.getShort("Damage");
         int amount = tag.getByte("Count");
         Item item = Item.get(name, damage, amount);
+        if (item == Item.AIR) {
+            item = new ItemUnknown(name, damage, amount, null);
+        }
         Tag tagTag = tag.get("tag");
-        if (!item.isNull() && tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty()) {
+        if (tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty()) {
             item.setNbt(compoundTag);
         }
 
@@ -74,9 +76,8 @@ public class ItemHelper {
             CompoundTag block = tag.getCompound("Block");
             boolean isUnknownBlock = block.getString("name").equals(BlockID.UNKNOWN) && block.contains("Block");
             if (isUnknownBlock) {
-                block = block.getCompound("Block");//originBlock
+                block = block.getCompound("Block");
             }
-            //upgrade block
             if (block.contains("version")) {
                 int ver = block.getInt("version");
                 if (ver < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
@@ -84,17 +85,25 @@ public class ItemHelper {
                 }
             }
             BlockState blockState = getBlockStateHelper(block);
+
+            boolean wasUnknownItem = item instanceof ItemUnknown;
+
             if (blockState != null) {
-                if (isUnknownBlock) {//restore unknown block item
-                    item = blockState.toItem();
+                if (isUnknownBlock || wasUnknownItem) {
+                    Item resolvedItem = wasUnknownItem
+                        ? Item.get(item.getId(), damage, amount)
+                        : blockState.toItem();
+
+                    item = resolvedItem != Item.AIR ? resolvedItem : blockState.toItem();
+
                     if (damage != 0) {
                         item.setDamage(damage);
                     }
                     item.setCount(amount);
                 }
                 item.setBlockUnsafe(blockState.toBlock());
-            } else if (item.isNull()) {//write unknown block item
-                item = new UnknownItem(BlockID.UNKNOWN, damage, amount);
+            } else if (item.isNull() || wasUnknownItem) {
+                item = new ItemUnknown(BlockID.UNKNOWN, damage, amount, null);
                 NbtMap compoundTag = NbtMap.builder()
                         .putString("name", block.getString("name"))
                         .putCompound("states", NbtMap.fromMap(new TreeMap<>(block.getCompound("states").toNetwork())))
@@ -103,19 +112,6 @@ public class ItemHelper {
                 compoundTag = compoundTag.toBuilder().putInt("version", block.getInt("version")).build();
                 BlockState unknownBlockState = BlockState.makeUnknownBlockState(hash, compoundTag);
                 item.setBlockUnsafe(new BlockUnknown(unknownBlockState));
-            }
-        } else {
-            if (item.isNull()) {//write unknown item
-                item = new UnknownItem(BlockID.UNKNOWN, damage, amount);
-                item.getOrCreateNbt()
-                        .putCompound("Item", new CompoundTag()
-                                .putString("Name", name));
-            } else if (item.getId().equals(BlockID.UNKNOWN) && item.getOrCreateNbt().contains("Item")) {//restore unknown item
-                CompoundTag removeTag = item.getNbt().removeAndGet("Item");
-                String originItemName = removeTag.getString("Name");
-                Item originItem = Item.get(originItemName, damage, amount);
-                originItem.setNbt(item.getNbt());
-                item = originItem;
             }
         }
         return item;

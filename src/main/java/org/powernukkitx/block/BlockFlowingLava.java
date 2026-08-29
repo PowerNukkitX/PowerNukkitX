@@ -26,7 +26,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockFlowingLava extends BlockLiquid {
-
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
     public static final BlockDefinition DEFINITION = BlockLiquid.DEFINITION.toBuilder()
             .lightEmission(15)

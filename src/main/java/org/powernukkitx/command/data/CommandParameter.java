@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Represents a parameter definition for a command in PowerNukkitX.
@@ -50,6 +51,9 @@ import java.util.List;
  * @see IParamNode
  */
 public class CommandParameter {
+
+    private static final AtomicLong ENUM_COUNTER = new AtomicLong();
+
     /**
      * An empty array of CommandParameter, used for commands with no arguments.
      */
@@ -210,7 +214,7 @@ public class CommandParameter {
      * @see #newEnum(String, boolean, CommandEnum)
      */
     public static CommandParameter newEnum(String name, boolean optional, String[] values) {
-        return newEnum(name, optional, new CommandEnum(name + "Enums", values));
+        return newEnum(name, optional, new CommandEnum(name + "Enums_" + ENUM_COUNTER.incrementAndGet(), values));
     }
 
     /**
@@ -224,7 +228,7 @@ public class CommandParameter {
      * @see #newEnum(String, boolean, CommandEnum)
      */
     public static CommandParameter newEnum(String name, boolean optional, String[] values, boolean soft) {
-        return newEnum(name, optional, new CommandEnum(name + "Enums", Arrays.asList(values), soft));
+        return newEnum(name, optional, new CommandEnum(name + "Enums_" + ENUM_COUNTER.incrementAndGet(), Arrays.asList(values), soft));
     }
 
     /**
@@ -323,6 +327,22 @@ public class CommandParameter {
         return result;
     }
 
+    public boolean isRestOfLine() {
+        return this.enumData == null
+                && (this.type == CommandParamType.MESSAGE
+                || this.type == CommandParamType.MESSAGE_ROOT
+                || this.type == CommandParamType.MESSAGE_EXP);
+    }
+
+    public CommandParameter asRequired() {
+        if (!this.optional) {
+            return this;
+        }
+        final CommandParameter copy = new CommandParameter(this.name, false, this.type, this.enumData, this.postFix, this.paramNode);
+        copy.paramOptions = this.paramOptions;
+        return copy;
+    }
+
     public CommandParamData toNetwork() {
         final CommandParamData data = new CommandParamData();
         data.setName(this.name);
@@ -332,6 +352,9 @@ public class CommandParameter {
             CommandParamType type = this.type;
             if (type == null) {
                 type = CommandParamType.RAW_TEXT;
+            }
+            if (type == CommandParamType.MESSAGE) {
+                type = CommandParamType.MESSAGE_ROOT;
             }
             final Field field = CommandParam.class.getDeclaredField(type.name());
             final CommandParam param = (CommandParam) field.get(null);

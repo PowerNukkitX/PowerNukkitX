@@ -103,7 +103,31 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2"
+            "minecraft:deprecated_purpur_block_2",
+            // 1.26.40 additions that have no implementation yet
+            "minecraft:orange_poplar_leaves",
+            "minecraft:poplar_button",
+            "minecraft:poplar_door",
+            "minecraft:poplar_double_slab",
+            "minecraft:poplar_fence",
+            "minecraft:poplar_fence_gate",
+            "minecraft:poplar_hanging_sign",
+            "minecraft:poplar_log",
+            "minecraft:poplar_planks",
+            "minecraft:poplar_pressure_plate",
+            "minecraft:poplar_sapling",
+            "minecraft:poplar_shelf",
+            "minecraft:poplar_slab",
+            "minecraft:poplar_stairs",
+            "minecraft:poplar_standing_sign",
+            "minecraft:poplar_trapdoor",
+            "minecraft:poplar_wall_sign",
+            "minecraft:poplar_wood",
+            "minecraft:red_poplar_leaves",
+            "minecraft:straw_bed",
+            "minecraft:stripped_poplar_log",
+            "minecraft:stripped_poplar_wood",
+            "minecraft:yellow_poplar_leaves"
     );
 
     @Override

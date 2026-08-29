@@ -15,7 +15,7 @@ public class ClientToServerHandshakeHandler implements PacketHandler<ClientToSer
 
     @Override
     public void handle(ClientToServerHandshakePacket packet, PlayerSessionHolder holder, Server server) {
-        if (holder.getState().equals(SessionState.RESOURCE_PACK)) {
+        if (!holder.getState().equals(SessionState.ENCRYPTION)) {
             holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
             return;
         }

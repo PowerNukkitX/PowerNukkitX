@@ -3,8 +3,10 @@ package org.powernukkitx.level.generator.populator.normal;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockChest;
+import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockStructureBlock;
 import org.powernukkitx.block.BlockWater;
+import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
@@ -22,6 +24,9 @@ import org.powernukkitx.tags.BiomeTags;
 import com.google.common.collect.Sets;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
@@ -90,6 +95,75 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
             RIGHTSIDEUP_BACKHALF_DEGRADED
     };
 
+    protected enum ShipwreckWood {
+        OAK(Block.STRIPPED_OAK_LOG, Block.OAK_PLANKS, Block.OAK_STAIRS, Block.OAK_SLAB, Block.OAK_FENCE, Block.TRAPDOOR, Block.WOODEN_DOOR),
+        SPRUCE(Block.STRIPPED_SPRUCE_LOG, Block.SPRUCE_PLANKS, Block.SPRUCE_STAIRS, Block.SPRUCE_SLAB, Block.SPRUCE_FENCE, Block.SPRUCE_TRAPDOOR, Block.SPRUCE_DOOR),
+        BIRCH(Block.STRIPPED_BIRCH_LOG, Block.BIRCH_PLANKS, Block.BIRCH_STAIRS, Block.BIRCH_SLAB, Block.BIRCH_FENCE, Block.BIRCH_TRAPDOOR, Block.BIRCH_DOOR),
+        JUNGLE(Block.STRIPPED_JUNGLE_LOG, Block.JUNGLE_PLANKS, Block.JUNGLE_STAIRS, Block.JUNGLE_SLAB, Block.JUNGLE_FENCE, Block.JUNGLE_TRAPDOOR, Block.JUNGLE_DOOR),
+        ACACIA(Block.STRIPPED_ACACIA_LOG, Block.ACACIA_PLANKS, Block.ACACIA_STAIRS, Block.ACACIA_SLAB, Block.ACACIA_FENCE, Block.ACACIA_TRAPDOOR, Block.ACACIA_DOOR),
+        DARK_OAK(Block.STRIPPED_DARK_OAK_LOG, Block.DARK_OAK_PLANKS, Block.DARK_OAK_STAIRS, Block.DARK_OAK_SLAB, Block.DARK_OAK_FENCE, Block.DARK_OAK_TRAPDOOR, Block.DARK_OAK_DOOR);
+
+        final String strippedLog;
+        final String planks;
+        final String stairs;
+        final String slab;
+        final String fence;
+        final String trapdoor;
+        final String door;
+
+        ShipwreckWood(String strippedLog, String planks, String stairs, String slab, String fence, String trapdoor, String door) {
+            this.strippedLog = strippedLog;
+            this.planks = planks;
+            this.stairs = stairs;
+            this.slab = slab;
+            this.fence = fence;
+            this.trapdoor = trapdoor;
+            this.door = door;
+        }
+    }
+
+    protected static final List<Map<String, String>> WOOD_PALETTES = List.of(
+            woodPalette(ShipwreckWood.OAK, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.OAK, ShipwreckWood.BIRCH),
+            woodPalette(ShipwreckWood.OAK, ShipwreckWood.DARK_OAK),
+            woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.OAK),
+            woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.JUNGLE),
+            woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.DARK_OAK),
+            woodPalette(ShipwreckWood.BIRCH, ShipwreckWood.OAK),
+            woodPalette(ShipwreckWood.BIRCH, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.JUNGLE, ShipwreckWood.OAK),
+            woodPalette(ShipwreckWood.JUNGLE, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.JUNGLE, ShipwreckWood.ACACIA),
+            woodPalette(ShipwreckWood.SPRUCE, ShipwreckWood.ACACIA),
+            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.SPRUCE),
+            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.JUNGLE),
+            woodPalette(ShipwreckWood.DARK_OAK, ShipwreckWood.ACACIA)
+    );
+
+    protected static Map<String, String> woodPalette(ShipwreckWood primary, ShipwreckWood secondary) {
+        Map<String, String> mapping = new HashMap<>();
+        mapping.put(Block.OAK_LOG, primary.strippedLog);
+        mapping.put(Block.OAK_PLANKS, primary.planks);
+        mapping.put(Block.OAK_STAIRS, primary.stairs);
+        mapping.put(Block.OAK_SLAB, primary.slab);
+        mapping.put(Block.OAK_FENCE, primary.fence);
+        mapping.put(Block.TRAPDOOR, primary.trapdoor);
+        mapping.put(Block.WOODEN_DOOR, primary.door);
+        mapping.put(Block.SPRUCE_LOG, secondary.strippedLog);
+        mapping.put(Block.SPRUCE_PLANKS, secondary.planks);
+        mapping.put(Block.SPRUCE_STAIRS, secondary.stairs);
+        mapping.put(Block.SPRUCE_SLAB, secondary.slab);
+        mapping.put(Block.SPRUCE_FENCE, secondary.fence);
+        return mapping;
+    }
+
+    protected static BlockState applyWood(BlockState state, Map<String, String> mapping) {
+        String target = mapping.get(state.getIdentifier());
+        if (target == null || target.equals(state.getIdentifier())) return state;
+        var values = state.getBlockPropertyValues();
+        return Registries.BLOCK.getBlockProperties(target).getBlockState(values.toArray(BlockPropertyType.BlockPropertyValue[]::new));
+    }
+
     public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
             .salt(165745295L)
             .minDistance(4)
@@ -119,6 +193,9 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
             } else {
                 template = STRUCTURE_LOCATION_OCEAN[random.nextInt(STRUCTURE_LOCATION_OCEAN.length)];
             }
+
+            Map<String, String> wood = WOOD_PALETTES.get(random.nextInt(WOOD_PALETTES.size()));
+            template = template.withPalette(state -> applyWood(state, wood));
 
             BlockVector3 size = new BlockVector3(template.getSizeX(), template.getSizeY(), template.getSizeZ());
             int sumY = 0;
@@ -171,7 +248,7 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
                         container.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
-                if(block.getFloorY() <= SEA_LEVEL) {
+                if(block.getFloorY() < SEA_LEVEL) {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }

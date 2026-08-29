@@ -91,18 +91,18 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public float getBabyScale() {
+        // baby hoglin is 0.85 wide against the adult's 1.4
+        return 0.6071f;
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
@@ -201,9 +201,8 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -219,8 +218,8 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new BreedingExecutor(16, 200, 0.35f),
                                 all(
@@ -289,20 +288,19 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                                 none(),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(40, 0, 20),
                         new BlockSensor(BlockPortal.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 2, 20),
                         new BlockSensor(BlockWarpedFungus.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 2, 20),
                         new BlockSensor(BlockRespawnAnchor.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 2, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true)
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     protected static class HoglinMeleeAttackExecutor extends MeleeAttackExecutor {

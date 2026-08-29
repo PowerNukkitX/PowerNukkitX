@@ -13,13 +13,16 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.network.protocol.types.TrimData;
+import org.powernukkitx.network.protocol.types.ArmorTrim;
 import org.powernukkitx.recipe.Input;
 import org.powernukkitx.recipe.MultiRecipe;
 import org.powernukkitx.recipe.Recipe;
+import org.powernukkitx.recipe.ShapedRecipe;
+import org.powernukkitx.recipe.ShapelessRecipe;
 import org.powernukkitx.recipe.SmithingTransformRecipe;
 import org.powernukkitx.recipe.UserDataShapelessRecipe;
 import org.powernukkitx.recipe.SmithingTrimRecipe;
+import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
 import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
@@ -96,7 +99,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             EnchantItemEvent event = new EnchantItemEvent((EnchantInventory) inventory, first.clone().autoAssignStackNetworkId(), item, enchantOptionData.getCost(), player);
             Server.getInstance().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                if ((player.getGamemode() & 0x01) == 0) {
+                if (!player.isCreative()) {
                     int lapisCost = enchantOptionWithEntry.getEntry() + 1;
                     if (inventory.getItem(1).getCount() < lapisCost) {
                         return context.error();
@@ -199,6 +202,11 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         }
         int numberOfRequestedCrafts = action.getNumberOfRequestedCrafts();
         Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetId().getRawId());
+        if (recipe == null) {
+            log.debug("Rejecting craft request for unknown recipe network id {} (recipe registry {})",
+                    action.getRecipeNetId().getRawId(), Registries.RECIPE.isEnabled() ? "enabled" : "disabled");
+            return context.error();
+        }
         Input input = craft.getInput();
         Item[][] data = input.getData();
         ArrayList<Item> items = new ArrayList<>();
@@ -217,24 +225,25 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             } else if (recipe instanceof SmithingTransformRecipe smithingTransformRecipe) {
                 return handleSmithingUpgrade(smithingTransformRecipe, player, context);
             }
-            log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetId(), recipe.getRecipeId(), recipe.getType());
+            log.debug("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetId(), recipe.getRecipeId(), recipe.getType());
             return context.error();
         } else {
             Inventory craftInventory = (Inventory) craft;
-            for (int slot = 0; slot < craftInventory.getSize(); slot++) {
-                Item ingredient = craftInventory.getItem(slot);
-                if (ingredient.isNull()) continue;
-                if (ingredient.getCount() < numberOfRequestedCrafts) {
-                    log.warn("Not enough ingredients in slot {}! Expected: {}, Actual: {}", slot, numberOfRequestedCrafts, ingredient.getCount());
+            if (recipe instanceof ShapelessRecipe shapelessRecipe) {
+                if (!consumeShapelessRecipe(shapelessRecipe, craftInventory, numberOfRequestedCrafts)) {
+                    return context.error();
+                }
+            } else if (recipe instanceof ShapedRecipe shapedRecipe) {
+                if (!consumeShapedRecipe(shapedRecipe, craftInventory, input, data, numberOfRequestedCrafts)) {
+                    return context.error();
+                }
+            } else {
+                if (!consumeDefaultRecipe(craftInventory, numberOfRequestedCrafts)) {
                     return context.error();
                 }
             }
-            for (int slot = 0; slot < craftInventory.getSize(); slot++) {
-                if (!craftInventory.getItem(slot).isNull()) {
-                    craftInventory.decreaseCount(slot, numberOfRequestedCrafts);
-                }
-            }
             context.put(GRID_CONSUMED_KEY, true);
+            player.getRecipeBook().unlock(recipe);
             if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
                 context.put(RECIPE_DATA_KEY, recipe);
             } else if (recipe.getResults().size() == 1) {
@@ -277,7 +286,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         ItemDescriptor expectEquipment = recipe.getBase();
         ItemDescriptor expectIngredient = recipe.getAddition();
         ItemDescriptor expectTemplate = recipe.getTemplate();
-        boolean match = expectEquipment.match(equipment);
+        boolean match;
+        if (expectEquipment instanceof DefaultDescriptor dd) {
+            match = equipment.getId().equals(dd.getItem().getId());
+        } else {
+            match = expectEquipment.match(equipment);
+        }
         match &= expectIngredient.match(ingredient);
         match &= expectTemplate.match(template);
         if (match) {
@@ -285,6 +299,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             CompoundTag tag = equipment.getNbt();
             if (tag != null) {
                 result.setNbt(tag);
+            }
+            if (equipment.getDamage() > 0) {
+                result.setDamage(equipment.getDamage());
             }
             player.getCreativeOutputInventory().setItem(result);
             smithingInventory.decreaseCount(0, 1);
@@ -310,22 +327,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         Item template = smithingInventory.getTemplate();
 
         if (!ingredient.isNull() && !template.isNull()) {
-            Optional<TrimPattern> find1 = TrimData.trimPatterns.stream().filter(trimPattern -> template.getId().equals(trimPattern.getItemName())).findFirst();
-            Optional<TrimMaterial> find2 = TrimData.trimMaterials.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.getItemName())).findFirst();
+            Optional<TrimPattern> find1 = Registries.TRIM.getPattern(template.getId());
+            Optional<TrimMaterial> find2 = Registries.TRIM.getMaterial(ingredient.getId());
             if (equipment.isNull() || find1.isEmpty() || find2.isEmpty()) {
                 return context.error();
             }
-            TrimPattern trimPattern = find1.get();
-            TrimMaterial trimMaterial = find2.get();
-            Item result = equipment.clone();
-            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.getMaterialId())
-                    .putString("Pattern", trimPattern.getPatternId());
-            CompoundTag compound = ingredient.getNbt();
-            if (compound == null) {
-                compound = result.getOrCreateNbt();
-            } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
-            compound.putCompound("Trim", trim);
-            result.setNbt(compound);
+            Item result = ArmorTrim.of(find1.get(), find2.get()).applyTo(equipment);
             player.getCreativeOutputInventory().setItem(result);
             smithingInventory.decreaseCount(0, 1);
             smithingInventory.decreaseCount(1, 1);
@@ -338,5 +345,140 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     @Override
     public ItemStackRequestActionType getType() {
         return ItemStackRequestActionType.CRAFT_RECIPE;
+    }
+
+    private boolean consumeShapelessRecipe(ShapelessRecipe recipe, Inventory craftInventory, int numberOfRequestedCrafts) {
+        List<ItemDescriptor> remainingIngredients = new ArrayList<>(recipe.getIngredients());
+
+        for (int slot = 0; slot < craftInventory.getSize(); slot++) {
+            Item inputItem = craftInventory.getItem(slot);
+
+            if (inputItem.isNull()) {
+                continue;
+            }
+
+            ItemDescriptor matchedIngredient = null;
+
+            for (ItemDescriptor ingredient : remainingIngredients) {
+                if (ingredient.match(inputItem)
+                        && inputItem.getCount() >= ingredient.getCount() * numberOfRequestedCrafts) {
+                    matchedIngredient = ingredient;
+                    break;
+                }
+            }
+
+            if (matchedIngredient == null) {
+                return false;
+            }
+
+            remainingIngredients.remove(matchedIngredient);
+        }
+
+        if (!remainingIngredients.isEmpty()) {
+            return false;
+        }
+
+        remainingIngredients = new ArrayList<>(recipe.getIngredients());
+
+        for (int slot = 0; slot < craftInventory.getSize(); slot++) {
+            Item inputItem = craftInventory.getItem(slot);
+
+            if (inputItem.isNull()) {
+                continue;
+            }
+
+            for (ItemDescriptor ingredient : remainingIngredients) {
+                if (ingredient.match(inputItem)) {
+                    craftInventory.decreaseCount(
+                            slot,
+                            ingredient.getCount() * numberOfRequestedCrafts
+                    );
+
+                    remainingIngredients.remove(ingredient);
+                    break;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean consumeShapedRecipe(ShapedRecipe recipe, Inventory craftInventory, Input input, Item[][] data, int numberOfRequestedCrafts) {
+        Item[][] inputData = input.getData();
+
+        int startRow = Integer.MAX_VALUE;
+        int startCol = Integer.MAX_VALUE;
+
+        for (int row = 0; row < data.length; row++) {
+            for (int col = 0; col < data[row].length; col++) {
+                if (!data[row][col].isNull()) {
+                    startRow = Math.min(startRow, row);
+                    startCol = Math.min(startCol, col);
+                }
+            }
+        }
+
+        for (int row = 0; row < inputData.length; row++) {
+            for (int col = 0; col < inputData[row].length; col++) {
+                Item inputItem = inputData[row][col];
+
+                if (inputItem.isNull()) {
+                    continue;
+                }
+
+                ItemDescriptor ingredient = recipe.getIngredient(col, row);
+                int requiredCount = ingredient.getCount() * numberOfRequestedCrafts;
+
+                if (inputItem.getCount() < requiredCount) {
+                    return false;
+                }
+            }
+        }
+
+        for (int row = 0; row < inputData.length; row++) {
+            for (int col = 0; col < inputData[row].length; col++) {
+                Item inputItem = inputData[row][col];
+
+                if (inputItem.isNull()) {
+                    continue;
+                }
+
+                ItemDescriptor ingredient = recipe.getIngredient(col, row);
+                int requiredCount = ingredient.getCount() * numberOfRequestedCrafts;
+                int slot = (startRow + row) * data[0].length + startCol + col;
+
+                craftInventory.decreaseCount(slot, requiredCount);
+            }
+        }
+
+        return true;
+    }
+
+    private boolean consumeDefaultRecipe(Inventory craftInventory, int numberOfRequestedCrafts) {
+        for (int slot = 0; slot < craftInventory.getSize(); slot++) {
+            Item ingredient = craftInventory.getItem(slot);
+
+            if (ingredient.isNull()) {
+                continue;
+            }
+
+            if (ingredient.getCount() < numberOfRequestedCrafts) {
+                log.debug(
+                        "Not enough ingredients in slot {}! Expected: {}, Actual: {}",
+                        slot,
+                        numberOfRequestedCrafts,
+                        ingredient.getCount()
+                );
+                return false;
+            }
+        }
+
+        for (int slot = 0; slot < craftInventory.getSize(); slot++) {
+            if (!craftInventory.getItem(slot).isNull()) {
+                craftInventory.decreaseCount(slot, numberOfRequestedCrafts);
+            }
+        }
+
+        return true;
     }
 }

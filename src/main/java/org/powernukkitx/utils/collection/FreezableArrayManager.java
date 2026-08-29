@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -21,6 +22,11 @@ public class FreezableArrayManager {
      */
     private int maxCompressionTime = 50;
     private final AtomicInteger currentArrayId = new AtomicInteger(0);
+    /**
+     * Guards against stacking up cycle tasks on the compute thread pool when a cycle takes longer than
+     * {@link #cycleTick} ticks to finish.
+     */
+    private final AtomicBoolean cycleRunning = new AtomicBoolean(false);
     private int currentTick;
 
     /**
@@ -127,7 +133,7 @@ public class FreezableArrayManager {
     public ByteArrayWrapper createByteArray(int length) {
         if (enable) {
             var tmp = new FreezableByteArray(length, this);
-            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
+            var set = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
             set.add(tmp);
             return tmp;
         } else {
@@ -138,7 +144,7 @@ public class FreezableArrayManager {
     public ByteArrayWrapper wrapByteArray(@NotNull byte[] array) {
         if (enable) {
             var tmp = new FreezableByteArray(array, this);
-            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
+            var set = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
             set.add(tmp);
             return tmp;
         } else {
@@ -149,7 +155,7 @@ public class FreezableArrayManager {
     public ByteArrayWrapper cloneByteArray(@NotNull byte[] array) {
         if (enable) {
             var tmp = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
-            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
+            var set = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
             set.add(tmp);
             return tmp;
         } else {
@@ -160,28 +166,38 @@ public class FreezableArrayManager {
     public void tick() {
         currentTick++;
         if (!enable) return;
-        var dt = currentTick % cycleTick;
+        var dt = Math.floorMod(currentTick, cycleTick);
         var set = tickArrayMap.get(dt);
         if (set == null) return;
+        if (!cycleRunning.compareAndSet(false, true)) return;
         // freeze arrays
         var start = System.currentTimeMillis();
         // clean up dead references
-        CompletableFuture.runAsync(() -> set.parallelForeach(e -> {
-            if (e == null) return;
-            int temp = e.getTemperature();
-            e.colder(1);
-            if (temp <= getFreezingPoint() + 1) {
-                if (System.currentTimeMillis() - start > maxCompressionTime) {
-                    return;
-                }
-                if (e.getFreezeStatus() == AutoFreezable.FreezeStatus.NONE || e.getFreezeStatus() == AutoFreezable.FreezeStatus.FREEZE) {
-                    if (e.getTemperature() == absoluteZero) {
-                        e.deepFreeze();
-                    } else {
-                        e.freeze();
+        CompletableFuture.runAsync(() -> {
+            for (AutoFreezable e : set) {
+                if (e == null) continue;
+                int temp = e.getTemperature();
+                e.colder(1);
+                if (temp <= getFreezingPoint() + 1) {
+                    if (System.currentTimeMillis() - start > maxCompressionTime) {
+                        continue;
+                    }
+                    if (e.getFreezeStatus() == AutoFreezable.FreezeStatus.NONE || e.getFreezeStatus() == AutoFreezable.FreezeStatus.FREEZE) {
+                        if (e.getTemperature() == absoluteZero) {
+                            e.deepFreeze();
+                        } else {
+                            e.freeze();
+                        }
                     }
                 }
             }
-        }), Server.getInstance().getComputeThreadPool()).thenRun(set::clearDeadReferences);
+        }, Server.getInstance().getComputeThreadPool())
+                .whenComplete((ignored, throwable) -> {
+                    try {
+                        set.clearDeadReferences();
+                    } finally {
+                        cycleRunning.set(false);
+                    }
+                });
     }
 }

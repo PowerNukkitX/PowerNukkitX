@@ -77,17 +77,11 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.45f;
-        }
         return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 
@@ -214,9 +208,8 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new LoveTimeoutExecutor(20 * 30),
                             e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -232,8 +225,8 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
                             ),
                         1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
                         new PlaySoundExecutor(Sound.MOB_COW_SAY),
                             new RandomSoundEvaluator(),
@@ -270,18 +263,17 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
                             (entity -> true),
                         1, 1
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                     new WalkController(),
                     new LookController(true, true),
                     new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

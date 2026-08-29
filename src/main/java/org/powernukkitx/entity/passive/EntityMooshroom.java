@@ -1,9 +1,12 @@
 package org.powernukkitx.entity.passive;
 
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityShearable;
+import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -41,19 +44,62 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-// TODO: Variantes logic
-public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable {
+public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityVariant {
+
+    /**
+     * The mooshroom variants. Adding a new one only means adding a constant here - the id, the
+     * mushroom it is sheared into and the lightning cycle all follow from the declaration order.
+     */
+    public enum Variant {
+        RED(BlockID.RED_MUSHROOM),
+        BROWN(BlockID.BROWN_MUSHROOM);
+
+        private static final Variant[] VALUES = values();
+
+        private final String mushroom;
+
+        Variant(String mushroom) {
+            this.mushroom = mushroom;
+        }
+
+        public int getId() {
+            return ordinal();
+        }
+
+        /**
+         * The mushroom dropped when a mooshroom of this variant is sheared.
+         */
+        public String getMushroom() {
+            return mushroom;
+        }
+
+        /**
+         * The variant a lightning strike converts this one into, wrapping back to the first.
+         */
+        public Variant next() {
+            return VALUES[(ordinal() + 1) % VALUES.length];
+        }
+
+        public static Variant byId(int id) {
+            return id >= 0 && id < VALUES.length ? VALUES[id] : RED;
+        }
+    }
+
+    private static final int[] VARIANTS = Arrays.stream(Variant.values()).mapToInt(Variant::getId).toArray();
+
+    private static final int SHEAR_MUSHROOM_COUNT = 5;
+
     @Override
     @NotNull public String getIdentifier() {
         return MOOSHROOM;
     }
-    
 
     public EntityMooshroom(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -61,17 +107,11 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.45f;
-        }
         return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 
@@ -93,6 +133,28 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     @Override
     public Set<String> typeFamily() {
         return Set.of("mushroomcow", "mob");
+    }
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+        if (!hasVariant()) {
+            setVariant(Variant.RED.getId());
+        }
+    }
+
+    @Override
+    public int[] getAllVariant() {
+        return VARIANTS;
+    }
+
+    public Variant getVariantType() {
+        return Variant.byId(getVariant());
+    }
+
+    public void setVariantType(Variant variant) {
+        setVariant(variant.getId());
+        setDataProperty(ActorDataTypes.VARIANT, variant.getId());
     }
 
     @Override
@@ -182,7 +244,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     @Override
     public boolean shear() {
         this.close();
-        this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
+        this.level.dropItem(this, Item.get(getVariantType().getMushroom(), 0, SHEAR_MUSHROOM_COUNT));
         this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
         this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
         EntityCow cow = new EntityCow(this.getChunk(), this.getNbt());
@@ -194,75 +256,80 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         return true;
     }
 
+    @Override
+    public void onStruckByLightning(Entity entity) {
+        super.onStruckByLightning(entity);
+
+        setVariantType(getVariantType().next());
+    }
+
     private static final Set<String> TEMPT_ITEMS = Set.of(
         BlockID.WHEAT
     );
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
+        return BehaviorGroup.builder(this)
+            .coreBehaviors(
+                new Behavior(
+                    new LoveTimeoutExecutor(20 * 30),
+                    e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                    2, 1
                 ),
-                Set.of(
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10),
-                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                        4, 1
+                new Behavior(
+                    new AnimalGrowExecutor(),
+                    all(
+                        e -> e.isAgeable(),
+                        e -> e.isBaby(),
+                        e -> !e.isGrowthPaused(),
+                        e -> e.getTicksGrowLeft() > 0
                     ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.25f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.25f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            new ProbabilityEvaluator(4, 10),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    )
+                    1, 1, 1200
+                )
+            )
+            .behaviors(
+                new Behavior(
+                    new FlatRandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10),
+                    new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                    4, 1
                 ),
-                Set.of(
-                    new NearestPlayerSensor(8, 0, 20)
+                new Behavior(
+                    new BreedingExecutor(16, 200, 0.25f),
+                    all(
+                        e -> !e.isBaby(),
+                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                    ),
+                    3, 1
                 ),
-                Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                new Behavior(
+                    new TemptExecutor(1.25f, TEMPT_ITEMS),
+                    all(
+                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                    ),
+                    2, 1
                 ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                new Behavior(
+                    new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                    new ProbabilityEvaluator(4, 10),
+                    1, 1, 100
+                ),
+                new Behavior(
+                    new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10),
+                    (entity -> true),
+                    1, 1
+                )
+            )
+            .sensors(
+                new NearestPlayerSensor(8, 0, 20)
+            )
+            .controllers(
+                new WalkController(),
+                new LookController(true, true),
+                new FluctuateController()
+            )
+            .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+            .build();
     }
 
 }

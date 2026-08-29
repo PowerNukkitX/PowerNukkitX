@@ -29,8 +29,6 @@ import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
-import org.powernukkitx.entity.data.property.EntityProperty;
-import org.powernukkitx.entity.data.property.EnumEntityProperty;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.level.Sound;
@@ -51,7 +49,8 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EntitySniffer extends EntityAnimal {
-    private static final int DIG_COOLDOWN_TICKS = 20 * 60 * 8;
+    private static final int DIG_COOLDOWN_MIN_TICKS = 20 * 400;
+    private static final int DIG_COOLDOWN_MAX_TICKS = 20 * 500;
     private static final int SEARCH_START_TICK = 35;
     private static final int DIGGING_START_TICK = 70;
     private static final int DIGGING_PARTICLES_DELAY_TICKS = 34;
@@ -60,18 +59,6 @@ public class EntitySniffer extends EntityAnimal {
     private static final int RISING_START_TICK = DIGGING_START_TICK + DIGGING_DROP_SEED_OFFSET_TICKS + 10;
     private static final int DIG_DURATION_TICKS = RISING_START_TICK + 20;
     private static final int MAX_RECENT_DIG_POSITIONS = 20;
-
-    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-            new EnumEntityProperty("minecraft:sniffer_state", new String[]{
-                    "idling",
-                    "feeling_happy",
-                    "scenting",
-                    "sniffing",
-                    "searching",
-                    "digging",
-                    "rising"
-            }, "idling", true)
-    };
 
     private int nextDigTick;
     private final Deque<BlockVector3> recentDigPositions = new ArrayDeque<>();
@@ -87,18 +74,21 @@ public class EntitySniffer extends EntityAnimal {
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.855F;
-        }
         return 1.9f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.7875F;
-        }
         return 1.75f;
+    }
+
+    @Override
+    public void setBaby(boolean value) {
+        super.setBaby(value);
+
+        if (value) {
+            setScale(0.45f);
+        }
     }
 
     @Override
@@ -181,9 +171,8 @@ public class EntitySniffer extends EntityAnimal {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new LoveTimeoutExecutor(20 * 30),
                             e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -199,8 +188,8 @@ public class EntitySniffer extends EntityAnimal {
                             ),
                         1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
                         new SnifferDigExecutor(),
                             all(
@@ -248,25 +237,26 @@ public class EntitySniffer extends EntityAnimal {
                             entity -> !((EntitySniffer) entity).isDigging(),
                         1, 1
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                     new WalkController(),
                     new LookController(true, true),
                     new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.nextDigTick = level.getTick() + DIG_COOLDOWN_TICKS;
-        setSnifferState(SnifferState.IDLING);
+
+        if (isBaby()) setScale(0.45f);
+
+        this.nextDigTick = level.getTick() + getRandomDigCooldownTicks();
         setAmbientSoundEvent(Sound.MOB_SNIFFER_IDLE);
     }
 
@@ -277,6 +267,13 @@ public class EntitySniffer extends EntityAnimal {
 
     public boolean isDigging() {
         return getDataFlag(ActorFlags.DIGGING);
+    }
+
+    private int getRandomDigCooldownTicks() {
+        return ThreadLocalRandom.current().nextInt(
+                DIG_COOLDOWN_MIN_TICKS,
+                DIG_COOLDOWN_MAX_TICKS + 1
+        );
     }
 
     private boolean canStartDigging() {
@@ -332,24 +329,6 @@ public class EntitySniffer extends EntityAnimal {
         }
     }
 
-    private void setSnifferState(SnifferState state) {
-        setEnumEntityProperty("minecraft:sniffer_state", state.value);
-    }
-
-    private enum SnifferState {
-        IDLING("idling"),
-        SNIFFING("sniffing"),
-        SEARCHING("searching"),
-        DIGGING("digging"),
-        RISING("rising");
-
-        private final String value;
-
-        SnifferState(String value) {
-            this.value = value;
-        }
-    }
-
     private static final class SnifferDigExecutor implements IBehaviorExecutor {
         private int startTick;
         private BlockVector3 digPosition;
@@ -369,7 +348,7 @@ public class EntitySniffer extends EntityAnimal {
             this.startedRising = false;
             sniffer.setMovementSpeed(0);
             sniffer.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, true);
-            sniffer.setSnifferState(SnifferState.SNIFFING);
+            sniffer.setDataFlag(ActorFlags.TIMER_FLAG_1, true);
             sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_LONG_SNIFF);
         }
 
@@ -381,14 +360,15 @@ public class EntitySniffer extends EntityAnimal {
 
             if (!this.startedSearching && elapsed >= SEARCH_START_TICK) {
                 this.startedSearching = true;
-                sniffer.setSnifferState(SnifferState.SEARCHING);
+                sniffer.setDataFlag(ActorFlags.TIMER_FLAG_1, false);
+                sniffer.setDataFlag(ActorFlags.SEARCHING, true);
                 sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_SEARCHING);
             }
 
             if (!this.startedDigging && elapsed >= DIGGING_START_TICK) {
                 this.startedDigging = true;
+                sniffer.setDataFlag(ActorFlags.SEARCHING, false);
                 sniffer.setDataFlag(ActorFlags.DIGGING, true);
-                sniffer.setSnifferState(SnifferState.DIGGING);
                 sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_DIGGING);
             }
 
@@ -402,7 +382,8 @@ public class EntitySniffer extends EntityAnimal {
 
             if (!this.startedRising && elapsed >= RISING_START_TICK) {
                 this.startedRising = true;
-                sniffer.setSnifferState(SnifferState.RISING);
+                sniffer.setDataFlag(ActorFlags.DIGGING, false);
+                sniffer.setDataFlag(ActorFlags.TIMER_FLAG_2, true);
                 sniffer.getLevel().addSound(sniffer, Sound.MOB_SNIFFER_STAND_UP);
             }
 
@@ -424,13 +405,14 @@ public class EntitySniffer extends EntityAnimal {
         }
 
         private void stop(EntitySniffer sniffer) {
-            if (this.startedDigging) {
-                sniffer.setDataFlag(ActorFlags.DIGGING, false);
-            }
+            sniffer.setDataFlag(ActorFlags.TIMER_FLAG_1, false);
+            sniffer.setDataFlag(ActorFlags.SEARCHING, false);
+            sniffer.setDataFlag(ActorFlags.DIGGING, false);
+            sniffer.setDataFlag(ActorFlags.TIMER_FLAG_2, false);
+            sniffer.setDataFlag(ActorFlags.TIMER_FLAG_3, false);
             sniffer.setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, false);
-            sniffer.setSnifferState(SnifferState.IDLING);
             sniffer.setMovementSpeed(sniffer.getMovementSpeedDefault());
-            sniffer.nextDigTick = sniffer.getLevel().getTick() + DIG_COOLDOWN_TICKS;
+            sniffer.nextDigTick = sniffer.getLevel().getTick() + sniffer.getRandomDigCooldownTicks();
         }
     }
 

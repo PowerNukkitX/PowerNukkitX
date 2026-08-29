@@ -118,17 +118,11 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.6f;
-        }
         return 1.2f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.2f;
-        }
         return 0.4f;
     }
 
@@ -164,9 +158,8 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                     new Behavior(
                         new AnimalGrowExecutor(),
                             all(
@@ -177,8 +170,8 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
                             ),
                         1, 1, 1200
                     )
-                ),
-                Set.of(
+                )
+                .behaviors(
                     new Behavior(
                         new TurtleMoveToWaterExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.1f),
                             entity -> !entity.isInsideOfWater() && entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK),
@@ -212,12 +205,12 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
                             entity -> entity.isInsideOfWater(),
                         1, 1
                     )
-                ),
-                Set.of(
+                )
+                .sensors(
                     new NearestPlayerSensor(8, 0, 20),
                     new BlockSensor(BlockFlowingWater.class, CoreMemoryTypes.NEAREST_BLOCK, 16, 5, 10)
-                ),
-                Set.of(
+                )
+                .controllers(
                     new LookController(true, true),
                     new ConditionalController(
                         Pair.of(entity -> entity.isInsideOfWater(), new DiveController()),
@@ -225,13 +218,12 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
                         Pair.of(entity -> !entity.isInsideOfWater(), new WalkController()),
                         Pair.of(entity -> !entity.isInsideOfWater(), new FluctuateController())
                     )
-                ),
-                new ConditionalAStarRouteFinder(
+                )
+                .routeFinder(new ConditionalAStarRouteFinder(
                     this,
                     Pair.of(entity -> !entity.isInsideOfWater(), new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)),
                     Pair.of(entity -> entity.isInsideOfWater(), new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
-                ),
-                this
-        );
+                ))
+                .build();
     }
 }
