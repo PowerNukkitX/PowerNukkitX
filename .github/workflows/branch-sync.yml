@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Generate bot token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.PNX_BOT_APP_ID }}
