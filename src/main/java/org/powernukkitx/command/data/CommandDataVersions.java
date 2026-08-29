@@ -41,9 +41,13 @@ public class CommandDataVersions {
     public List<NukkitCommandData> versions = new ArrayList<>();
 
     public List<CommandData> toNetwork() {
+        return toNetwork(null);
+    }
+
+    public List<CommandData> toNetwork(String nameOverride) {
         final List<CommandData> list = new ObjectArrayList<>();
         for (NukkitCommandData version : this.versions) {
-            list.add(version.toNetwork());
+            list.add(nameOverride == null ? version.toNetwork() : version.toNetwork(nameOverride));
         }
         return list;
     }

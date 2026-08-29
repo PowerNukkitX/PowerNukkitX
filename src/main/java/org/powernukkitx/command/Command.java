@@ -188,7 +188,15 @@ public abstract class Command {
         NukkitCommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
-            List<String> aliases = new ArrayList<>(Arrays.asList(getAliases()));
+            final Map<String, Command> known = player.getServer().getCommandMap().getCommands();
+            List<String> aliases = new ArrayList<>();
+            for (String alias : getAliases()) {
+                Command owner = known.get(alias.toLowerCase(Locale.ENGLISH));
+                if (owner != null && owner != this) {
+                    continue;
+                }
+                aliases.add(alias);
+            }
             if (!aliases.contains(this.name)) {
                 aliases.add(this.name);
             }
