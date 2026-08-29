@@ -53,7 +53,59 @@ public class ShapelessRecipe extends CraftingRecipe {
     }
 
     @Override
+    /**
+     * Matching runs over every candidate recipe of the right size, and the copy of the ingredient
+     * list that each call used to make was pure overhead. A bit per ingredient tracks what has been
+     * consumed instead, so the common case allocates nothing.
+     */
     public boolean match(Input input) {
+        int ingredientCount = ingredients.size();
+        if (ingredientCount > Long.SIZE) {
+            return matchWithCopy(input);
+        }
+
+        Item[][] data = input.getData();
+        long consumed = 0L;
+        int remaining = ingredientCount;
+
+        for (int row = 0; row < input.getRow(); row++) {
+            for (int col = 0; col < input.getCol(); col++) {
+                Item inputItem = data[row][col];
+
+                if (inputItem.isNull()) {
+                    continue;
+                }
+
+                boolean matched = false;
+
+                for (int i = 0; i < ingredientCount; i++) {
+                    if ((consumed & (1L << i)) != 0) {
+                        continue;
+                    }
+                    ItemDescriptor ingredient = ingredients.get(i);
+
+                    if (ingredient.match(inputItem) && inputItem.getCount() >= ingredient.getCount()) {
+                        consumed |= 1L << i;
+                        remaining--;
+                        matched = true;
+                        break;
+                    }
+                }
+
+                if (!matched) {
+                    return false;
+                }
+            }
+        }
+
+        return remaining == 0;
+    }
+
+    /**
+     * Fallback for recipes with more ingredients than a {@code long} has bits. No shapeless recipe
+     * that can fit a crafting grid reaches this, but custom recipes are not bounded by that.
+     */
+    private boolean matchWithCopy(Input input) {
         Item[][] data = input.getData();
         List<ItemDescriptor> remainingIngredients = new ArrayList<>(ingredients);
 
