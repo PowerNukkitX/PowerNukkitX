@@ -17,6 +17,7 @@ import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.level.entity.spawners.SpawnRule;
 import org.powernukkitx.level.generator.densityfunction.DensityCommon;
 import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -60,6 +61,18 @@ public class Chunk implements IChunk {
     protected final AtomicLong changes;
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
+    /**
+     * The same entities bucketed by 16-block Y section, so height-bounded queries do not have to
+     * walk the whole column. Fixed length - one bucket per section of this dimension - so the array
+     * itself is never reallocated and can be read without synchronisation.
+     */
+    protected final Long2ObjectNonBlockingMap<Entity>[] entitySections;
+    /**
+     * How many entities are currently placed in {@link #entitySections}. If this ever drifts from
+     * {@link #entityCount} the index is incomplete, and queries fall back to the full entity map
+     * rather than returning a short answer.
+     */
+    protected final AtomicInteger indexedEntityCount = new AtomicInteger();
     /**
      * Live entity count. The non-blocking map computes size()/isEmpty() by summing a
      * striped counter, which is too slow for the per-chunk-per-tick emptiness checks
@@ -121,6 +134,7 @@ public class Chunk implements IChunk {
         this.sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
         this.heightMap = new short[256];
         this.entities = new Long2ObjectNonBlockingMap<>();
+        this.entitySections = newEntitySections(levelProvider);
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
         this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
@@ -151,6 +165,7 @@ public class Chunk implements IChunk {
         this.sections = sections;
         this.heightMap = heightMap;
         this.entities = new Long2ObjectNonBlockingMap<>();
+        this.entitySections = newEntitySections(levelProvider);
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
         this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
@@ -556,6 +571,7 @@ public class Chunk implements IChunk {
         if (this.entities.put(entity.getId(), entity) == null) {
             this.entityCount.incrementAndGet();
         }
+        indexEntitySection(entity, sectionIndexOf(entity.y));
         if (!(entity instanceof Player) && this.isInit) {
             this.setChanged();
         }
@@ -569,9 +585,89 @@ public class Chunk implements IChunk {
                 if (this.entities.remove(entity.getId()) != null) {
                     this.entityCount.decrementAndGet();
                 }
+                unindexEntitySection(entity);
                 if (!(entity instanceof Player) && this.isInit) {
                     this.setChanged();
                 }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Long2ObjectNonBlockingMap<Entity>[] newEntitySections(LevelProvider levelProvider) {
+        int count = levelProvider.getDimensionData().getChunkSectionCount();
+        Long2ObjectNonBlockingMap<Entity>[] sections = new Long2ObjectNonBlockingMap[count];
+        for (int i = 0; i < count; i++) {
+            sections[i] = new Long2ObjectNonBlockingMap<>();
+        }
+        return sections;
+    }
+
+    /**
+     * Index of the 16-block tall section holding {@code worldY}, clamped to this chunk's range.
+     */
+    private int sectionIndexOf(double worldY) {
+        int section = (NukkitMath.floorDouble(worldY) >> 4) - getDimensionData().getMinSectionY();
+        if (section < 0) return 0;
+        int last = this.entitySections.length - 1;
+        return section > last ? last : section;
+    }
+
+    private void indexEntitySection(Entity entity, int section) {
+        if (this.entitySections[section].put(entity.getId(), entity) == null) {
+            this.indexedEntityCount.incrementAndGet();
+        }
+        entity.chunkSectionIndex = section;
+    }
+
+    private void unindexEntitySection(Entity entity) {
+        int previous = entity.chunkSectionIndex;
+        if (previous >= 0 && previous < this.entitySections.length
+                && this.entitySections[previous].remove(entity.getId()) != null) {
+            this.indexedEntityCount.decrementAndGet();
+        }
+        entity.chunkSectionIndex = -1;
+    }
+
+    /**
+     * Re-buckets an entity whose Y has moved it into another section. Called from the same place
+     * that re-buckets an entity between chunks, so the two indexes stay in step.
+     */
+    public void updateEntitySection(Entity entity) {
+        int section = sectionIndexOf(entity.y);
+        int previous = entity.chunkSectionIndex;
+        if (section == previous) {
+            return;
+        }
+        if (previous >= 0 && previous < this.entitySections.length
+                && this.entitySections[previous].remove(entity.getId()) != null) {
+            this.indexedEntityCount.decrementAndGet();
+        }
+        indexEntitySection(entity, section);
+    }
+
+    /**
+     * Visits the entities whose section overlaps the given world Y range.
+     * <p>
+     * The flat {@link #getEntities()} map stays authoritative; this is an accelerator for queries
+     * that only care about a few blocks of height, which would otherwise walk every entity in a
+     * 16 x 16 x 384 column. Near an item pile or a mob farm that is the difference between visiting
+     * every entity in the chunk and visiting one section's worth.
+     */
+    public void forEachEntityInYRange(double minY, double maxY, Consumer<Entity> action) {
+        if (this.indexedEntityCount.get() != this.entityCount.get()) {
+            // The index is not accounting for every entity, so trust the authoritative map. This
+            // degrades to the old full-column scan instead of silently missing an entity.
+            for (Entity entity : this.entities.values()) {
+                action.accept(entity);
+            }
+            return;
+        }
+        int from = sectionIndexOf(minY);
+        int to = sectionIndexOf(maxY);
+        for (int i = from; i <= to; i++) {
+            for (Entity entity : this.entitySections[i].values()) {
+                action.accept(entity);
             }
         }
     }

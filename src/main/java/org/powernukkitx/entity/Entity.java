@@ -101,6 +101,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
 import org.cloudburstmc.protocol.bedrock.data.actor.MoveActorAbsoluteData;
 import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
 import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -160,6 +161,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public final static int DEFAULT_HEALTH = 20;
 
     public IChunk chunk;
+    /**
+     * Which 16-block Y section of {@link #chunk} this entity is currently indexed under, or -1 when
+     * it is not indexed. Maintained by the chunk; see {@code Chunk.updateEntitySection}.
+     */
+    @ApiStatus.Internal
+    public int chunkSectionIndex = -1;
     public List<Block> blocksAround = new ArrayList<>();
     public List<Block> collisionBlocks = new ArrayList<>();
     public List<Block> stepOnBlocks = new ArrayList<>();
@@ -5651,6 +5658,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
 
             this.chunk.addEntity(this);
+            return;
+        }
+
+        updateChunkSection();
+    }
+
+    /**
+     * Keeps this entity in the right 16-block Y bucket of its chunk. Called from the two
+     * {@code checkChunks} implementations - {@link Entity} and {@link org.powernukkitx.Player} -
+     * which between them are reached by every path that moves an entity, since each of the three
+     * places that assign {@code y} calls {@code checkChunks} immediately afterwards.
+     */
+    protected final void updateChunkSection() {
+        if (this.chunk instanceof org.powernukkitx.level.format.Chunk concreteChunk) {
+            concreteChunk.updateEntitySection(this);
         }
     }
 

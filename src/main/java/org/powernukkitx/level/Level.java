@@ -4228,6 +4228,43 @@ public class Level implements Metadatable {
         return this.getCollidingEntities(bb, null);
     }
 
+    /**
+     * Largest entity height the Y-section index is expected to cover. Entities are bucketed by the
+     * position of their feet, so a query has to start one bucket low enough that a tall entity
+     * standing below the range is still visited. Nothing in vanilla comes close to 32 blocks.
+     */
+    private static final double MAX_INDEXED_ENTITY_HEIGHT = 32;
+
+    /** Mutable cursor so the per-column visitor can append into the shared result buffer. */
+    private static final class EntityBuffer {
+        private int index;
+        private ArrayList<Entity> overflow;
+    }
+
+    /**
+     * Visits the entities of one chunk column whose Y could put them inside {@code bb}.
+     * <p>
+     * Chunk granularity alone is far too coarse for these queries: finding what is within a few
+     * blocks of a player used to walk every entity in a 16 x 16 x 384 column, which is exactly the
+     * shape that degrades near item piles and mob farms. Chunk implementations that keep a section
+     * index answer from it; anything else falls back to the full entity map, so the result set is
+     * the same either way.
+     */
+    private void forEachEntityInColumn(int chunkX, int chunkZ, AxisAlignedBB bb, boolean loadChunks,
+                                       java.util.function.Consumer<Entity> action) {
+        IChunk chunk = loadChunks ? this.getChunk(chunkX, chunkZ) : this.getChunkIfLoaded(chunkX, chunkZ);
+        if (chunk == null) {
+            return;
+        }
+        if (chunk instanceof org.powernukkitx.level.format.Chunk concreteChunk) {
+            concreteChunk.forEachEntityInYRange(bb.getMinY() - MAX_INDEXED_ENTITY_HEIGHT, bb.getMaxY(), action);
+            return;
+        }
+        for (Entity ent : chunk.getEntities().values()) {
+            action.accept(ent);
+        }
+    }
+
     public Entity[] getCollidingEntities(AxisAlignedBB bb, Entity entity) {
         int index = 0;
 
@@ -4239,17 +4276,20 @@ public class Level implements Metadatable {
             int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
             int maxZ = NukkitMath.floorDouble((bb.getMaxZ() + 2) / 16);
 
+            EntityBuffer buffer = new EntityBuffer();
             for (int x = minX; x <= maxX; ++x) {
                 for (int z = minZ; z <= maxZ; ++z) {
-                    for (Entity ent : this.getChunkEntities(x, z, false).values()) {
+                    forEachEntityInColumn(x, z, bb, false, ent -> {
                         if ((entity == null || (ent != entity && entity.canCollideWith(ent)))
                                 && ent.boundingBox.intersectsWith(bb)) {
-                            overflow = addEntityToBuffer(index, overflow, ent);
-                            index++;
+                            buffer.overflow = addEntityToBuffer(buffer.index, buffer.overflow, ent);
+                            buffer.index++;
                         }
-                    }
+                    });
                 }
             }
+            index = buffer.index;
+            overflow = buffer.overflow;
         }
 
         return getEntitiesFromBuffer(index, overflow);
@@ -4390,18 +4430,19 @@ public class Level implements Metadatable {
 
         ArrayList<Entity> overflow = null;
 
+        EntityBuffer buffer = new EntityBuffer();
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
-                for (Entity ent : this.getChunkEntities(x, z, loadChunks).values()) {
+                forEachEntityInColumn(x, z, bb, loadChunks, ent -> {
                     if (ent != null && ent != entity && ent.boundingBox.intersectsWith(bb)) {
-                        overflow = addEntityToBuffer(index, overflow, ent);
-                        index++;
+                        buffer.overflow = addEntityToBuffer(buffer.index, buffer.overflow, ent);
+                        buffer.index++;
                     }
-                }
+                });
             }
         }
 
-        return getEntitiesFromBuffer(index, overflow);
+        return getEntitiesFromBuffer(buffer.index, buffer.overflow);
     }
 
     public List<Entity> fastNearbyEntities(AxisAlignedBB bb) {
