@@ -2002,6 +2002,10 @@ public class Level implements Metadatable {
         int range = Math.min(3 + chunksPerLoader / 30, this.chunkTickRadius);
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
+        // Resolved once: the selection loop below can run hundreds of attempts per loader per tick,
+        // and this was a call on every one of them.
+        LevelProvider tickProvider = requireProvider();
+
         synchronized (this.loaders) {
             for (ChunkLoader loader : this.loaders.values()) {
                 int chunkX = (int) loader.getX() >> 4;
@@ -2024,7 +2028,7 @@ public class Level implements Metadatable {
                         continue;
                     }
 
-                    if (requireProvider().isChunkLoaded(hash)) {
+                    if (tickProvider.isChunkLoaded(hash)) {
                         this.chunkTickList.put(hash, -1);
                     }
 
@@ -2041,22 +2045,26 @@ public class Level implements Metadatable {
                 while (iter.hasNext()) {
                     Long2IntMap.Entry entry = iter.next();
                     long index = entry.getLongKey();
+
+                    int chunkX = getHashX(index);
+                    int chunkZ = getHashZ(index);
+
+                    // The chunk's own lookup runs first so an entry for an unloaded chunk is
+                    // rejected by one probe instead of the four the neighbour check costs. Same
+                    // ordering as addResolvedTickChunk.
+                    IChunk chunk = this.getChunk(chunkX, chunkZ, false);
+                    if (chunk == null) {
+                        iter.remove();
+                        continue;
+                    }
+
                     if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
                             && !areNeighboringChunksLoaded(index)) {
                         iter.remove();
                         continue;
                     }
 
-                    int loaders = entry.getIntValue();
-
-                    int chunkX = getHashX(index);
-                    int chunkZ = getHashZ(index);
-
-                    IChunk chunk;
-                    if ((chunk = this.getChunk(chunkX, chunkZ, false)) == null) {
-                        iter.remove();
-                        continue;
-                    } else if (loaders <= 0) {
+                    if (entry.getIntValue() <= 0) {
                         iter.remove();
                     }
 
