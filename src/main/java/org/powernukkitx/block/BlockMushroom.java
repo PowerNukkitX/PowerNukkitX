@@ -58,7 +58,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
-            if (player != null && (player.gamemode & 0x01) == 0) {
+            if (player != null && !player.isCreative()) {
                 item.count--;
             }
 

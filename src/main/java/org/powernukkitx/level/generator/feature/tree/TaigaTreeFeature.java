@@ -1,5 +1,7 @@
 package org.powernukkitx.level.generator.feature.tree;
 
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockFlowable;
 import org.powernukkitx.block.BlockSnowLayer;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.enums.WoodType;
@@ -52,8 +54,13 @@ public class TaigaTreeFeature extends GriddedFeature {
                     int cx = x + (chunk.getX() << 4);
                     int cz = z + (chunk.getZ() << 4);
                     if(chunk.getBiomeId(x, y, z) == BiomeID.COLD_TAIGA) {
-                        if(object.getBlockAt(cx, y+1, cz).isAir()) {
+                        // root holds trunks placed by super.apply this pass - checking object would read
+                        // the uncommitted level and bury the tree's lowest log under snow
+                        Block above = root.getCachedBlock(cx, y + 1, cz);
+                        if(above.isAir()) {
                             object.setBlockStateAt(cx, y + 1, cz, SNOW_LAYER);
+                        } else if(above instanceof BlockFlowable) {
+                            object.setBlockStateAt(cx, y + 1, cz, 1, SNOW_LAYER);
                         }
                     }
                 }

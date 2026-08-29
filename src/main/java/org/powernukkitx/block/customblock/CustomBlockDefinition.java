@@ -161,7 +161,7 @@ public class CustomBlockDefinition extends BlockDefinition {
             nbt.putCompound("vanilla_block_data",
                     new CompoundTag()
                             .putInt("block_id", block_id)
-                            .putString("material", "dirt") // No one knows what its for, but it's required for making the blocks work
+                            .putString("material", "dirt") // No one knows what it's for, but it's required for making the blocks work
             );
         }
 
@@ -735,6 +735,10 @@ public class CustomBlockDefinition extends BlockDefinition {
 
     public @Nullable AxisAlignedBB getBoundingBox(Block block) {
         return CustomBlockUtils.getBoundingBox(this, block);
+    }
+
+    public AxisAlignedBB[] getCollisionBoxes(Block block) {
+        return CustomBlockUtils.getCollisionBoxes(this, block);
     }
 
     public record BlockTickSettings(int minTicks, int maxTicks, boolean looping) {

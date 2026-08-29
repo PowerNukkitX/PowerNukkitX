@@ -47,8 +47,13 @@ public final class GameLoop {
     private volatile Thread loopThread;
     private final float[] tickSummary = new float[20];
     private final float[] MSPTSummary = new float[20];
-    @Getter
-    private int tick;
+    /**
+     * Circular write index into the summary arrays. Overwriting one slot per tick is
+     * far cheaper than the previous arraycopy shift, which costs real budget at
+     * sub-microsecond tick periods.
+     */
+    private int summaryIndex;
+    private long tick;
 
     private GameLoop(Runnable onStart, Consumer<GameLoop> onTick, Runnable onStop, int loopCountPerSec) {
         if (loopCountPerSec <= 0)
@@ -99,6 +104,14 @@ public final class GameLoop {
             sum += mspt;
         }
         return sum / count;
+    }
+
+    public int getTick() {
+        return (int) tick;
+    }
+
+    public long getTickLong() {
+        return tick;
     }
 
     public void tick() {
@@ -208,13 +221,12 @@ public final class GameLoop {
 
     private void updateTPS(long timeTakenToTick) {
         float tick = Math.max(0, Math.min(loopCountPerSec, 1000000000f / (timeTakenToTick == 0 ? 1 : timeTakenToTick)));
-        System.arraycopy(tickSummary, 1, tickSummary, 0, tickSummary.length - 1);
-        tickSummary[tickSummary.length - 1] = tick;
+        tickSummary[summaryIndex] = tick;
+        summaryIndex = (summaryIndex + 1) % tickSummary.length;
     }
 
     private void updateMSTP(float timeTakenToTick, float[] mstpSummary) {
-        System.arraycopy(mstpSummary, 1, mstpSummary, 0, mstpSummary.length - 1);
-        mstpSummary[mstpSummary.length - 1] = timeTakenToTick / 1000000f;
+        mstpSummary[summaryIndex] = timeTakenToTick / 1000000f;
     }
 
     public void stop() {

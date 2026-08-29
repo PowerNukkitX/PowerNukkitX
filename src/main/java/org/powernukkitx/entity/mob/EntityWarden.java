@@ -70,9 +70,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior((entity) -> {
                             // Refresh and play sound
                             if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
@@ -115,8 +114,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             // Calculate Heartbeat Interval
                             this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
                             return false;
-                        }, (entity) -> true, 1, 1, 20)),
-                Set.of(
+                        }, (entity) -> true, 1, 1, 20))
+                .behaviors(
                         new Behavior(new WardenEmergingAnimationExecutor(20 * 6), entity -> entity.getAge() < 20 * 6, 6),
                         new Behavior(
                                 new WardenViolentAnimationExecutor((int) (4.2 * 20)), all(
@@ -152,12 +151,11 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         ),
                         new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
                         new Behavior(new FlatRandomRoamExecutor(0.1f, 12, 100, true, -1, true, 10), (entity -> true), 1)
-                ),
-                Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .sensors(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME))
+                .controllers(new WalkController(), new LookController(true, true), new FluctuateController())
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 

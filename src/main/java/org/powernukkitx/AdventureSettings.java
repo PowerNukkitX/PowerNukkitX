@@ -266,6 +266,21 @@ public class AdventureSettings implements Cloneable {
     }
 
     public void updateAdventureSettings() {
+        this.sendAdventureSettings(false);
+    }
+
+    /**
+     * Sends the player's adventure settings immediately.
+     * <p>
+     * This is intended for ordered protocol initialization
+     * Normal runtime updates should continue using {@link #updateAdventureSettings()}.
+     * </p>
+     */
+    public void updateAdventureSettingsImmediately() {
+        this.sendAdventureSettings(true);
+    }
+
+    private void sendAdventureSettings(boolean immediately) {
         final UpdateAdventureSettingsPacket packet = new UpdateAdventureSettingsPacket();
         packet.setAutoJump(this.get(Type.AUTO_JUMP));
         packet.setNoPvM(this.get(Type.NO_PVM));
@@ -273,7 +288,12 @@ public class AdventureSettings implements Cloneable {
         packet.setImmutableWorld(this.get(Type.WORLD_IMMUTABLE));
         packet.setShowNameTags(this.get(Type.SHOW_NAME_TAGS));
 
-        this.player.sendPacket(packet);
+        if (immediately) {
+            this.player.sendPacketImmediately(packet);
+        } else {
+            this.player.sendPacket(packet);
+        }
+
         this.player.resetInAirTicks();
     }
 

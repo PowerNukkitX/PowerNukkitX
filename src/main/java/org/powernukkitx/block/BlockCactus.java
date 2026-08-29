@@ -12,7 +12,6 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
-import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.tags.BlockTags;
 import org.powernukkitx.utils.Utils;
@@ -21,8 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.AGE_16;
-public class BlockCactus extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock, Natural {
+import static org.powernukkitx.math.AxisAlignedBB.collisionEpsilon;
 
+public class BlockCactus extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock, Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS,
             AGE_16);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
@@ -41,7 +41,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public BlockCactus() {
         this(PROPERTIES.getDefaultState());
     }
-  
+
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
@@ -79,7 +79,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 1, this.z + 1);
+        return grow(collisionEpsilon(this.x), collisionEpsilon(this.y), collisionEpsilon(this.z));
     }
 
     @Override

@@ -16,7 +16,7 @@ import java.util.Random;
  * @author xtypr
  * @since 2015/12/2
  */
-public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEADBUSH);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeReplaced(true)
@@ -45,22 +45,17 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (isSupportValid(down())) {
+        if (isSupportDirtSandClay(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
         return false;
     }
-    
-    public static boolean isSupportValid(Block down) {
-        if(down instanceof BlockHardenedClay) return true;
-        return down.hasTag(BlockTags.DIRT) || down.hasTag(BlockTags.SAND);
-    }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!isSupportValid(down())) {
+            if (!isSupportDirtSandClay(down())) {
                 this.getLevel().useBreakOn(this);
 
                 return Level.BLOCK_UPDATE_NORMAL;

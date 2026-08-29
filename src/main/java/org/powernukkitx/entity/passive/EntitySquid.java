@@ -38,19 +38,15 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(
                                 new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
                                 entity -> true, 1)
-                ),
-                Set.of(),
-                Set.of(new SpaceMoveController(), new LookController(true, true), new DiveController()),
-                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(true, true), new DiveController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
+                .build();
     }
 
     @Override

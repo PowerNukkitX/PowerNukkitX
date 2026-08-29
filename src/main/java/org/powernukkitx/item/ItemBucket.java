@@ -126,6 +126,7 @@ public class ItemBucket extends Item {
             case PUFFERFISH_BUCKET -> EntityID.PUFFERFISH;
             case AXOLOTL_BUCKET -> EntityID.AXOLOTL;
             case TADPOLE_BUCKET -> EntityID.TADPOLE;
+            case SULFUR_CUBE_BUCKET -> EntityID.SULFUR_CUBE;
             default -> null;
         };
     }
@@ -309,7 +310,7 @@ public class ItemBucket extends Item {
     /**
      * update the count of bucket and set to inventory
      */
-    private void updateBucketItem(Player player, PlayerBucketEmptyEvent ev) {
+    protected void updateBucketItem(Player player, PlayerBucketEmptyEvent ev) {
         if (player.isSurvival()) {
             if (this.getCount() - 1 <= 0) {
                 player.getInventory().setItemInMainHand(ev.getItem());
@@ -340,25 +341,44 @@ public class ItemBucket extends Item {
         Sound sound = this.isLava() ? Sound.BUCKET_EMPTY_LAVA : Sound.BUCKET_EMPTY_WATER;
         level.addSound(block, sound);
 
-        this.spawnFishEntity(block.add(0.5, 0.5, 0.5));
+        this.spawnBucketEntity(block.add(0.5, 0.5, 0.5));
     }
 
+    /**
+     * @deprecated Use {@link #spawnBucketEntity(Position)} instead. Buckets can now carry mobs that are
+     * not fish, so the name no longer describes what the method does.
+     *
+     * <p>Planned removal: after 6 months (&gt;= 2027-02-04).</p>
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
     public void spawnFishEntity(Position spawnPos) {
-        var fishEntityId = getFishEntityId();
-        if (fishEntityId != null) {
-            Entity fishEntity = Entity.createEntity(fishEntityId, spawnPos);
-            if (fishEntity == null) {
-                return;
-            }
+        this.spawnBucketEntity(spawnPos);
+    }
 
-            if (fishEntity instanceof EntityVariant variant
-                    && this.getNbt() != null
-                    && this.getNbt().contains("Variant")) {
-                variant.setVariant(getNbt().getInt("Variant"));
-            }
-
-            fishEntity.spawnToAll();
+    /**
+     * Releases whatever mob this bucket holds at {@code spawnPos}.
+     *
+     * @return {@code true} if a mob was spawned
+     */
+    public boolean spawnBucketEntity(Position spawnPos) {
+        var bucketEntityId = getFishEntityId();
+        if (bucketEntityId == null) {
+            return false;
         }
+
+        Entity bucketEntity = Entity.createEntity(bucketEntityId, spawnPos);
+        if (bucketEntity == null) {
+            return false;
+        }
+
+        if (bucketEntity instanceof EntityVariant variant
+                && this.getNbt() != null
+                && this.getNbt().contains("Variant")) {
+            variant.setVariant(getNbt().getInt("Variant"));
+        }
+
+        bucketEntity.spawnToAll();
+        return true;
     }
 
     @Override

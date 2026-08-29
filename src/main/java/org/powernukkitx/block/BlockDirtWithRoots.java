@@ -46,11 +46,9 @@ public class BlockDirtWithRoots extends BlockDirt {
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         Vector3 vector = new Vector3(this.x, this.y - 1, this.z);
-        if (!this.up().canBeReplaced()) {
-            return false;
-        }
+
         if (item.isFertilizer() && this.level.getBlock(vector).isAir()) {
-            if (player != null && (player.gamemode & 0x01) == 0) {
+            if (player != null && !player.isCreative()) {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
@@ -58,21 +56,24 @@ public class BlockDirtWithRoots extends BlockDirt {
             return true;
         }
         if (item.isHoe()) {
-            vector.setY(this.y+1);
-            item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(DIRT), true);
-            this.getLevel().dropItem(vector, new ItemBlock(Block.get(HANGING_ROOTS)));
-            if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+            if (up().isAir()) {
+                item.useOn(this);
+                this.getLevel().setBlock(this, Block.get(DIRT), true);
+                this.getLevel().dropItem(this, new ItemBlock(Block.get(HANGING_ROOTS)));
+                if (player != null) {
+                    player.getLevel().addSound(player, Sound.USE_GRASS);
+                }
+                return true;
             }
-            return true;
         } else if (item.isShovel()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(GRASS_PATH));
-            if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+            if (up().isAir()) {
+                item.useOn(this);
+                this.getLevel().setBlock(this, Block.get(GRASS_PATH));
+                if (player != null) {
+                    player.getLevel().addSound(player, Sound.USE_GRASS);
+                }
+                return true;
             }
-            return true;
         }
 
         return false;

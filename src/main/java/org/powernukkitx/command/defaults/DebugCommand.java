@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.powernukkitx.math.NukkitMath.formatNanos;
+
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
         super(name, "commands.debug.description");
@@ -482,35 +484,45 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 + " §7 measured TPS: §f" + NukkitMath.round(server.getTicksPerSecond(), 2));
         boolean levelThread = server.isLevelThreadMode();
         for (Level level : server.getLevels().values()) {
+            String levelLine = "§7  level " + level.getName() + ": §f"
+                    + "measured TPS " + NukkitMath.round(level.getMeasuredTps(), 2);
             if (levelThread) {
-                sender.sendMessage("§7  level " + level.getName() + ": §f"
-                        + NukkitMath.round(level.getBaseTickGameLoop().getMSPT(), 3) + " ms avg, TPS "
-                        + NukkitMath.round(level.getBaseTickGameLoop().getTps(), 2));
+                levelLine += " §7 avg tick: §f"
+                        + formatNanos((long) (level.getBaseTickGameLoop().getMSPT() * 1_000_000f));
             }
+            levelLine += " §7 entities: §f" + level.getEntityCount()
+                    + " §7 blockEntities: §f" + level.getBlockEntityCount()
+                    + " §7(updating: §f" + level.getPendingBlockEntityUpdateCount() + "§7)";
+            sender.sendMessage(levelLine);
+            long[] phaseMax = level.snapshotTickPhaseMaxNanos(true);
             long[] phases = level.snapshotTickPhaseAvgNanos(true);
+            long phaseSum = 0;
             StringBuilder sb = new StringBuilder("§7    phases: §f");
             boolean any = false;
             for (int i = 0; i < phases.length; i++) {
+                phaseSum += phases[i];
                 if (phases[i] <= 0) continue;
                 if (any) sb.append("§7, §f");
                 sb.append(Level.TICK_PHASE_NAMES[i]).append(' ').append(formatNanos(phases[i]));
                 any = true;
             }
             if (any) {
-                sender.sendMessage((levelThread ? "" : "§7  level " + level.getName() + ":\n") + sb);
+                sb.append("§7  (sum ").append(formatNanos(phaseSum)).append(")");
+                sender.sendMessage(sb.toString());
+                StringBuilder mx = new StringBuilder("§7    worst tick: §f");
+                boolean anyMax = false;
+                for (int i = 0; i < phaseMax.length; i++) {
+                    if (phaseMax[i] < 1_000) continue;
+                    if (anyMax) mx.append("§7, §f");
+                    mx.append(Level.TICK_PHASE_NAMES[i]).append(' ').append(formatNanos(phaseMax[i]));
+                    anyMax = true;
+                }
+                if (anyMax) {
+                    sender.sendMessage(mx.toString());
+                }
             }
         }
         return 1;
-    }
-
-    private static String formatNanos(long nanos) {
-        if (nanos >= 1_000_000L) {
-            return NukkitMath.round(nanos / 1_000_000d, 3) + " ms";
-        }
-        if (nanos >= 1_000L) {
-            return NukkitMath.round(nanos / 1_000d, 2) + " µs";
-        }
-        return nanos + " ns";
     }
 
     private int handleTps(CommandSender sender, ParamList value, CommandLogger log) {

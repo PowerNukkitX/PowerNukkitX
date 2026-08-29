@@ -77,6 +77,11 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.kill.other", "Allows the user to kill other players"), kill);
         kill.recalculatePermissibles();
 
+        Permission transfer = registerPermission(new Permission(ROOT + ".command.transfer", "Allows the user to transfer players", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.transfer.self", "Allows the user to transfer themselves to another server", Permission.DEFAULT_TRUE), transfer);
+        registerPermission(new Permission(ROOT + ".command.transfer.other", "Allows the user to transfer other players to another server", Permission.DEFAULT_OP), transfer);
+        transfer.recalculatePermissibles();
+
         Permission gamemode = registerPermission(new Permission(ROOT + ".command.gamemode", "Allows the user to change the gamemode of players", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.gamemode.survival", "Allows the user to change the gamemode to survival", Permission.DEFAULT_OP), gamemode);
         registerPermission(new Permission(ROOT + ".command.gamemode.creative", "Allows the user to change the gamemode to creative", Permission.DEFAULT_OP), gamemode);

@@ -44,8 +44,8 @@ public class ClientChainData {
     boolean trustedSkin;
     UserInterfaceProfile uiProfile;
     boolean isEduMode;
-    WaterdogData waterdogData;
     int clientEditorConnectionIntent;
+    Map<String, Object> rawClaims;
 
     public static ClientChainData from(JwtClaims claims) {
         final Map<String, Object> map = claims.getClaimsMap();
@@ -131,16 +131,17 @@ public class ClientChainData {
             return null;
         }
         UUID selfSignedId;
-        try {
-            selfSignedId = UUID.fromString(selfSignedIdStr);
-        } catch (Exception e) {
-            return null;
+        if (selfSignedIdStr.isEmpty()) {
+            // some clients (e.g. connecting through a proxy) send an empty SelfSignedId - it is only
+            // stored, never trusted, so fall back to a nil UUID instead of rejecting the login
+            selfSignedId = new UUID(0L, 0L);
+        } else {
+            try {
+                selfSignedId = UUID.fromString(selfSignedIdStr);
+            } catch (Exception e) {
+                return null;
+            }
         }
-        final WaterdogData waterdogData = !map.containsKey("Waterdog_IP") && !map.containsKey("Waterdog_XUID") ? null :
-                new WaterdogData(
-                        map.get("Waterdog_IP").toString(),
-                        map.get("Waterdog_XUID").toString()
-                );
         if (!map.containsKey("ClientEditorConnectionIntent")) {
             return null;
         }
@@ -170,8 +171,8 @@ public class ClientChainData {
                 trustedSkin || Server.getInstance().getSettings().playerSettings().forceSkinTrusted(),
                 uiProfile,
                 map.containsKey("IsEduMode"),
-                waterdogData,
-                clientEditorConnectionIntent
+                clientEditorConnectionIntent,
+                Map.copyOf(map)
         );
     }
 

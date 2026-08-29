@@ -23,6 +23,7 @@ import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.math.VectorMath;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -168,7 +169,7 @@ public abstract class EntityProjectile extends Entity {
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        return (entity instanceof EntityLiving || entity instanceof EntityEnderCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat) && !this.onGround;
+        return (entity instanceof EntityLiving || entity instanceof EntityProjectile || entity instanceof EntityEnderCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat) && !this.onGround;
     }
 
     @Override
@@ -285,11 +286,14 @@ public abstract class EntityProjectile extends Entity {
             if (this.isCollided && !this.hadCollision) { //collide with block
                 this.hadCollision = true;
 
+                BlockFace face = VectorMath.calculateFace(motion, getMotion());
+                Block block = getLevelBlock().getSide(face.getOpposite());
+
                 this.motionX = 0;
                 this.motionY = 0;
                 this.motionZ = 0;
 
-                this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ(), BlockFace.UP, this)));
+                this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), face, this)));
                 onCollideWithBlock(position, motion);
                 addHitEffect();
                 return false;

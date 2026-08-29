@@ -136,7 +136,7 @@ public record ChunkSection(byte y,
     }
 
     public boolean isEmpty() {
-        return blockLayer[0].isEmpty() && blockLayer[0].get(0) == BlockAir.STATE;
+        return blockLayer[0].isEmpty();
     }
 
     public void setNeedReObfuscate() {

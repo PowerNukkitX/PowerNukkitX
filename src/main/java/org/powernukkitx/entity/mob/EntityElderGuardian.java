@@ -62,10 +62,8 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_ELDERGUARDIAN_IDLE, 0.8f, 1.2f, 1, 1), all(entity -> isInsideOfWater(), new RandomSoundEvaluator()), 6, 1, 1, true),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_GUARDIAN_LAND_IDLE, 0.8f, 1.2f, 1, 1), all(entity -> !isInsideOfWater(), new RandomSoundEvaluator()), 5, 1, 1, true),
                         new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, true, 9), all(
@@ -79,15 +77,14 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
                         ), 3, 1),
                         new Behavior(new GuardianAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 60, 40), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
                         new Behavior(new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10), none(), 1, 1)
-                ),
-                Set.of(new NearestPlayerSensor(40, 0, 20),
+                )
+                .sensors(new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
-                ),
-                Set.of(new SpaceMoveController(), new LookController(true, true), new DiveController()),
-                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(true, true), new DiveController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
+                .build();
     }
 
 
@@ -169,7 +166,7 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     public boolean onUpdate(int currentTick) {
         if (!this.closed && this.isAlive()) {
             for (Player p : this.getViewers().values()) {
-                if (p.locallyInitialized && p.getGamemode() % 2 == 0 && p.distance(this) < 50 && !p.hasEffect(EffectType.MINING_FATIGUE)) {
+                if (p.locallyInitialized && (p.isSurvival() || p.isAdventure()) && p.distance(this) < 50 && !p.hasEffect(EffectType.MINING_FATIGUE)) {
                     p.addEffect(Effect.get(EffectType.MINING_FATIGUE).setAmplifier(2).setDuration(6000));
                     final LevelEventPacket pk = new LevelEventPacket();
                     pk.setType(LevelEvent.PARTICLE_SOUND_GUARDIAN_GHOST);

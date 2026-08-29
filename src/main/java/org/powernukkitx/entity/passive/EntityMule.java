@@ -69,17 +69,11 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.7f;
-        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.8f;
-        }
         return 1.6f;
     }
 
@@ -295,7 +289,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
         drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
@@ -347,9 +341,8 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new AnimalGrowExecutor(),
                                 all(
@@ -360,8 +353,8 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.2f, 18, 8, true, 80, true, 10),
                                 all(
@@ -405,18 +398,17 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
                                 (entity -> true),
                                 1, 1
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

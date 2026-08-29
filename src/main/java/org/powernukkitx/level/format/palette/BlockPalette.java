@@ -22,6 +22,8 @@ public class BlockPalette extends Palette<BlockState> {
     private boolean needReObfuscate = true;
     private BlockPalette obfuscatePalette;
     protected long blockChangeCache = 0;
+    // -1 means unknown/dirty; recomputed lazily on next isEmpty() call
+    private int nonAirCount = -1;
 
     public BlockPalette(BlockState first) {
         super(first, new ReferenceArrayList<>(16), BitArrayVersion.V2);
@@ -37,10 +39,41 @@ public class BlockPalette extends Palette<BlockState> {
 
     @Override
     public void set(int index, BlockState value) {
+        if (nonAirCount >= 0) {
+            boolean wasAir = get(index) == BlockAir.STATE;
+            boolean isAir = value == BlockAir.STATE;
+            if (wasAir != isAir) nonAirCount += isAir ? -1 : 1;
+        }
         super.set(index, value);
         if (obfuscatePalette != null) {
             obfuscatePalette.set(index, value);
         }
+    }
+
+    @Override
+    protected void clearPalette() {
+        super.clearPalette();
+        this.nonAirCount = -1;
+    }
+
+    @Override
+    public void copyTo(Palette<BlockState> palette) {
+        super.copyTo(palette);
+        if (palette instanceof BlockPalette blockPalette) {
+            blockPalette.nonAirCount = -1;
+        }
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if (nonAirCount < 0) {
+            int count = 0;
+            for (int i = 0; i < ChunkSection.SIZE; i++) {
+                if (get(i) != BlockAir.STATE) count++;
+            }
+            nonAirCount = count;
+        }
+        return nonAirCount == 0;
     }
 
     public void writeObfuscatedToNetwork(Level level, AtomicLong blockChanges, ByteBuf byteBuf, RuntimeDataSerializer<BlockState> serializer) {

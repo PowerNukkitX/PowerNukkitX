@@ -53,7 +53,7 @@ public class NukkitCollections {
 
             // Dump array back into list
             // instead of using a raw type here, it's possible to capture
-            // the wildcard but it will require a call to a supplementary
+            // the wildcard, but it will require a call to a supplementary
             // private method
             ListIterator it = list.listIterator();
             for (Object o : arr) {

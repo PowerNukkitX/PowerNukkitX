@@ -36,6 +36,7 @@ public class NearestFeedingPlayerSensor implements ISensor {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void sense(EntityIntelligent entity) {
         if (entity instanceof EntityAnimal entityAnimal) {
             Player player = null;

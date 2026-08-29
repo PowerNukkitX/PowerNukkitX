@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockChest;
 import org.powernukkitx.block.copper.chest.BlockCopperChest;
 import org.powernukkitx.inventory.BaseInventory;
@@ -10,6 +11,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -33,10 +35,15 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         if (!closed) {
             DoubleChestInventory dblInv = this.doubleInventory;
             if (dblInv != null) {
-                dblInv.getViewers().forEach(p -> p.removeWindow(dblInv));
+                for (Player player : new HashSet<>(dblInv.getViewers())) {
+                    player.removeWindow(dblInv);
+                }
                 this.doubleInventory = null;
             }
-            this.getRealInventory().getViewers().forEach(p -> p.removeWindow(this.getRealInventory()));
+            ChestInventory realInv = this.getRealInventory();
+            for (Player player : new HashSet<>(realInv.getViewers())) {
+                player.removeWindow(realInv);
+            }
 
             this.closed = true;
             if (this.chunk != null) {

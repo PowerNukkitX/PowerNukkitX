@@ -50,7 +50,7 @@ import java.util.regex.Pattern;
  *
  * <h2>Thread Safety:</h2>
  * <p>
- * This class is not thread-safe. If used in a multi-threaded context, external synchronization is required.
+ * This class is not thread-safe. If used in a multithreaded context, external synchronization is required.
  * </p>
  *
  * @author PowerNukkitX Team

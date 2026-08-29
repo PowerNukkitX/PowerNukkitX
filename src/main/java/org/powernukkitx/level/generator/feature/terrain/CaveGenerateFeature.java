@@ -366,8 +366,12 @@ public class CaveGenerateFeature extends GenerateFeature {
             return;
         }
 
+        if (chunk.getBlockState(x, y + 1, z) != BlockAir.STATE) {
+            return;
+        }
+
         BlockState belowState = chunk.getBlockState(x, y, z);
-        if (!DIRT_BLOCK_IDS.contains(belowState.getIdentifier())) {
+        if (!DIRT_BLOCK_IDS.contains(belowState.getIdentifier()) || GRASS_BLOCK_ID.equals(belowState.getIdentifier())) {
             return;
         }
 

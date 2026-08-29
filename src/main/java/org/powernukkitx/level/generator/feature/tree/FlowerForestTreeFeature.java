@@ -36,6 +36,11 @@ public class FlowerForestTreeFeature extends ForestTreeFeature {
     }
 
     @Override
+    protected float getBeeNestChance() {
+        return 0.03F;
+    }
+
+    @Override
     public String name() {
         return NAME;
     }

@@ -5,7 +5,7 @@ import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
-import org.powernukkitx.positiontracking.PositionTracking;
+import org.powernukkitx.network.positiontracking.PositionTracking;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBClientRequestPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBServerBroadcastPacket;

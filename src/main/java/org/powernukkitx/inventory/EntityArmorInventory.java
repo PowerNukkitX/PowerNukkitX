@@ -23,7 +23,7 @@ public class EntityArmorInventory extends BaseInventory {
     public static final int SLOT_CHEST = 1;
     public static final int SLOT_LEGS = 2;
     public static final int SLOT_FEET = 3;
-    public static final int SLOT_BODY = 4; // This is not part of the armor inventory, but its used for happy ghasts
+    public static final int SLOT_BODY = 4; // This is not part of the armor inventory, but it's used for happy ghasts
 
     /**
      * @param holder an Entity which implements {@link InventoryHolder}.

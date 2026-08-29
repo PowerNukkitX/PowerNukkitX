@@ -57,10 +57,8 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_PHANTOM_IDLE, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator()), 6, 1),
                         new Behavior(new CircleAboveTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, true), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
@@ -75,16 +73,15 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
                         new Behavior(new PhantomMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 64, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 3, 1),
                         new Behavior(new PhantomMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 64, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
                         new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(64, 0, 20),
                         new NearestTargetEntitySensor<>(0, 64, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
-                ),
-                Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
-                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
+                .build();
     }
 
     @Override

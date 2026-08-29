@@ -38,17 +38,13 @@ public class EntityShulkerBullet extends EntityMob implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, true), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 1, 1)
-                ),
-                Set.of(),
-                Set.of(new SpaceMoveController(), new LiftController()),
-                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LiftController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
+                .build();
     }
 
     @Override

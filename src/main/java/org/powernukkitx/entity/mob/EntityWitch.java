@@ -51,13 +51,12 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
 
     @Override
     protected IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_WITCH_AMBIENT), new RandomSoundEvaluator(), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new UsePotionExecutor(0.3f, 30, 20), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME),
                                 entity -> entity.getLevel().getTick() - getMemoryStorage().get(CoreMemoryTypes.LAST_BE_ATTACKED_TIME) <= 1
@@ -65,15 +64,14 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
                         new Behavior(new PotionThrowExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
                         new Behavior(new PotionThrowExecutor(CoreMemoryTypes.NEAREST_GOLEM, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM), 2, 1),
                         new Behavior(new PotionThrowExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(16, 0, 20),
                         new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0)
-                ),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

@@ -27,8 +27,4 @@ public class ItemCopperHelmet extends ItemArmor {
         return 122;
     }
 
-    @Override
-    public int getToughness() {
-        return 2;
-    }
 }

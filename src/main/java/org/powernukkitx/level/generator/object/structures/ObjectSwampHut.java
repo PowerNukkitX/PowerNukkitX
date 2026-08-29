@@ -39,7 +39,9 @@ public class ObjectSwampHut extends ObjectGenerator {
 
         builder.setBlockStateAt(1, 3, 5, FLOWER_POT);
         if(builder.getBlockAt(1, 3, 5) instanceof BlockFlowerPot pot) {
-            pot.setFlower(Item.get(Block.RED_MUSHROOM));
+            object.addHook(() -> {
+                pot.setFlower(Item.get(Block.RED_MUSHROOM));
+            });
         }
 
         builder.setBlockStateAt(new BlockVector3(2, 3, 2), OAK_FENCE);

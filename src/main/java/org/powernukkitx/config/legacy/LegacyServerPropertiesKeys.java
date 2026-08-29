@@ -23,7 +23,6 @@ public enum LegacyServerPropertiesKeys {
     LEVEL_SEED("level-seed"),
     ALLOW_NETHER("allow-nether"),
     ALLOW_THE_END("allow-the_end"),
-    USE_TERRA("use-terra"),
     ENABLE_QUERY("enable-query"),
     ENABLE_RCON("enable-rcon"),
     RCON_PASSWORD("rcon.password"),

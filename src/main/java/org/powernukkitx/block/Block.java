@@ -2,6 +2,7 @@ package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.customblock.CustomBlock;
+import org.powernukkitx.block.customblock.CustomBlockComponentBehavior;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import org.powernukkitx.block.property.type.BlockPropertyType;
@@ -13,12 +14,15 @@ import org.powernukkitx.event.player.PlayerInteractEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.MovingObjectPosition;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.metadata.MetadataValue;
 import org.powernukkitx.metadata.Metadatable;
@@ -394,7 +398,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return the boolean
      */
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        return false;
+        return CustomBlockComponentBehavior.onActivate(this, player);
     }
 
     public void afterRemoval(Block newBlock, boolean update) {
@@ -1053,11 +1057,43 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public AxisAlignedBB getCollisionBoundingBox() {
-        return this.recalculateCollisionBoundingBox();
+        return recalculateCollisionBoundingBox();
+    }
+
+    public AxisAlignedBB[] getCollisionBoxes() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null && def.getComponents().contains("minecraft:collision_box")) {
+            return def.getCollisionBoxes(this);
+        }
+        AxisAlignedBB box = this.getBoundingBox();
+        return box == null ? AxisAlignedBB.EMPTY_ARRAY : new AxisAlignedBB[]{box};
     }
 
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return getBoundingBox();
+        AxisAlignedBB[] boxes = this.getCollisionBoxes();
+        if (boxes.length == 0) {
+            return null;
+        } else if(boxes.length == 1) {
+            return boxes[0];
+        }
+
+        double minX = Double.POSITIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        double maxZ = Double.NEGATIVE_INFINITY;
+
+        for (AxisAlignedBB box : boxes) {
+            minX = Math.min(minX, box.getMinX());
+            minY = Math.min(minY, box.getMinY());
+            minZ = Math.min(minZ, box.getMinZ());
+            maxX = Math.max(maxX, box.getMaxX());
+            maxY = Math.max(maxY, box.getMaxY());
+            maxZ = Math.max(maxZ, box.getMaxZ());
+        }
+
+        return new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public AxisAlignedBB getBoundingBox() {
@@ -1314,6 +1350,28 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
 
         return boundingBox.getMaxY() == getY() + 1;
+    }
+
+    /**
+     * Check if this block type holds a block entity that provides an inventory, like a chest or a furnace.
+     * This only looks at the block type, use {@link #getContainer()} to access the actual inventory.
+     */
+    public boolean hasContainer() {
+        return this instanceof BlockEntityHolder<?> holder
+                && InventoryHolder.class.isAssignableFrom(holder.getBlockEntityClass());
+    }
+
+    /**
+     * Get the inventory of the block entity placed at this position.
+     *
+     * @return The inventory, or null if this block has no container or the block entity is missing
+     */
+    @Nullable
+    public Inventory getContainer() {
+        if (!hasContainer() || !isValid()) {
+            return null;
+        }
+        return ((BlockEntityHolder<?>) this).getBlockEntity() instanceof InventoryHolder holder ? holder.getInventory() : null;
     }
 
     /**
@@ -1691,17 +1749,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * instead of overriding this method, so it is correctly saved in NBT and synced with client.
      */
     public boolean canBeActivated() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag components = def.getComponents();
-            if (components != null && components.contains("minecraft:custom_components")) {
-                CompoundTag custom = components.getCompound("minecraft:custom_components");
-                if (custom.contains("hasPlayerInteract")) {
-                    return custom.getByte("hasPlayerInteract") != 0;
-                }
-            }
-        }
-        return definition.isCanBeActivated();
+        return definition.isCanBeActivated() || CustomBlockComponentBehavior.canBeActivated(this);
     }
 
     public boolean hasEntityCollision() {

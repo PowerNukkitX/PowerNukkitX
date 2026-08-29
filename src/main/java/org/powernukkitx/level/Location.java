@@ -41,7 +41,7 @@ public class Location extends Position {
     }
 
     public Location(double x, double y, double z, double yaw, double pitch, Level level) {
-        this(x, y, z, yaw, pitch, 0, level);
+        this(x, y, z, yaw, pitch, yaw, level);
     }
 
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw) {

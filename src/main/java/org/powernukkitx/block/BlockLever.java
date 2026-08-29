@@ -137,7 +137,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     public static boolean isSupportValid(Block support, BlockFace face) {
         switch (support.getId()) {
             case FARMLAND, GRASS_PATH -> {
-                return true;
+                return face == BlockFace.DOWN;
             }
             default -> {
             }

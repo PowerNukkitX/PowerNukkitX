@@ -2,14 +2,10 @@ package org.powernukkitx.level.generator.object;
 
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonBlockProperties;
-import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.level.GameRule;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
-import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import lombok.Setter;
 
@@ -43,6 +39,8 @@ public class ObjectMangroveTree extends TreeGenerator {
 
     @Setter
     private boolean withBeenest = false;
+    @Setter
+    private int beeCount = 3;
     private final boolean tall;
 
     public ObjectMangroveTree() {
@@ -292,22 +290,13 @@ public class ObjectMangroveTree extends TreeGenerator {
         }
 
         BlockVector3 attachment = foliageAttachments.get(random.nextInt(foliageAttachments.size()));
-        BlockFace face = randomHorizontal(random);
-        BlockVector3 nestPos = attachment.down().getSide(face);
-        if (!level.getBlockIfCachedOrLoaded(nestPos.asVector3()).isAir()) {
+        BlockVector3 nestPos = attachment.down().getSide(BlockFace.SOUTH);
+        if (!level.getBlockIfCachedOrLoaded(nestPos.asVector3()).isAir()
+                || level.getBlockIfCachedOrLoaded(nestPos.up().asVector3()).isAir()) {
             return;
         }
 
-        level.setBlockStateAt(nestPos, BlockBeeNest.PROPERTIES.getBlockState(
-                CommonBlockProperties.DIRECTION.createValue(face.getOpposite().getHorizontalIndex()),
-                CommonBlockProperties.HONEY_LEVEL.createValue(NukkitMath.randomRange(random, 0, 3))
-        ));
-        if (level.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            Registries.ENTITY.provideEntity(EntityID.BEE, level.getLevel().getChunk(nestPos.x >> 4, nestPos.z >> 4),
-                    Entity.getDefaultNBT(new Vector3(nestPos.x, nestPos.y - 1, nestPos.z)));
-            Registries.ENTITY.provideEntity(EntityID.BEE, level.getLevel().getChunk(nestPos.x >> 4, nestPos.z >> 4),
-                    Entity.getDefaultNBT(new Vector3(nestPos.x, nestPos.y - 1, nestPos.z)));
-        }
+        BeeNestGenerator.placeAt(level, nestPos, beeCount);
     }
 
     private Set<BlockVector3> collectPlacedLeaves(BlockManager level, List<BlockVector3> foliageAttachments) {

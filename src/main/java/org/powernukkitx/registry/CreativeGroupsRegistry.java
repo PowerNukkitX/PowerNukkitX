@@ -2,10 +2,8 @@ package org.powernukkitx.registry;
 
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeGroupInfoPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemEntryPayload;
-import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemNetId;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
 import org.powernukkitx.network.protocol.types.inventory.creative.CreativeCustomGroups;

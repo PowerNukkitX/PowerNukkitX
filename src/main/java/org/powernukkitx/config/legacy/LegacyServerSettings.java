@@ -59,8 +59,6 @@ public final class LegacyServerSettings extends OkaeriConfig {
         boolean safeSpawn = true;
         @Comment("nukkit.server.settings.baseSettings.installSpark")
         boolean installSpark = true;
-        @Comment("nukkit.server.settings.baseSettings.waterdogpe")
-        boolean waterdogpe = false;
         @Comment("nukkit.server.settings.baseSettings.autosave")
         int autosave = 6000;
         @Comment("nukkit.server.settings.baseSettings.saveUnknownBlock")

@@ -72,7 +72,7 @@ public class ProfessionShepherd extends Profession {
                         .setTraderExp(20)
                         .setPriceMultiplierA(0.05f)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 3), Item.get("minecraft:" + DyeColor.values()[random.nextInt(DyeColor.values().length)].name() + "_bed"))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 3), Item.get("minecraft:" + DyeColor.values()[random.nextInt(DyeColor.values().length)].name().toLowerCase() + "_bed"))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(3)

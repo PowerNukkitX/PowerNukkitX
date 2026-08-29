@@ -102,12 +102,16 @@ public class EntityFishingHook extends SlenderProjectile {
         if (target != 0L) {
             Entity entity = getLevel().getEntity(target);
             if (entity == null || !entity.isAlive()) {
-                setDataProperty(ActorDataTypes.TARGET, 0L);
+                setTarget(0L);
             } else {
                 Vector3f offset = entity.getAttachmentOffset(this);
                 setPosition(new Vector3(entity.x + offset.x, entity.y + offset.y, entity.z + offset.z));
+                this.motionX = 0;
+                this.motionY = 0;
+                this.motionZ = 0;
+                updateMovement();
+                return true;
             }
-            return false;
         }
 
         hasUpdate = super.onUpdate(currentTick);
@@ -324,7 +328,7 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     public void setTarget(long eid) {
-        this.setDataProperty(ActorDataTypes.OWNER, eid);
+        this.setDataProperty(ActorDataTypes.TARGET, eid);
         this.canCollide = eid == 0;
     }
 

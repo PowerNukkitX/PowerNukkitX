@@ -57,17 +57,24 @@ public class GiveCommand extends VanillaCommand {
             log.addError("commands.give.block.notFound", item.getDisplayName()).output();
             return 0;
         }
-        int count;
         if (list.hasResult(2)) {
-            count = list.getResult(2);
+            int count = list.getResult(2);
             if (count <= 0) {
                 log.addNumTooSmall(2, 1).output();
+                return 0;
+            }
+            if (count > 32767) {
+                log.addError("commands.generic.num.tooBig", String.valueOf(count), String.valueOf(32767)).output();
                 return 0;
             }
             item.setCount(count);
         }
         if (list.hasResult(3)) {
             int damage = list.getResult(3);
+            if (damage < 0) {
+                log.addNumTooSmall(3, 0).output();
+                return 0;
+            }
             item.setDamage(damage);
         }
         if (list.hasResult(4)) {
@@ -81,31 +88,23 @@ public class GiveCommand extends VanillaCommand {
             List<Item> drops = new ArrayList<>();
             for (Item returned : returns) {
                 int maxStackSize = returned.getMaxStackSize();
-                if (returned.getCount() <= maxStackSize) {
+                while (returned.getCount() > maxStackSize) {
+                    Item drop = returned.clone();
+                    drop.setCount(maxStackSize);
+                    returned.setCount(returned.getCount() - maxStackSize);
+                    drops.add(drop);
+                }
+                if (!returned.isNull()) {
                     drops.add(returned);
-                } else {
-                    while (returned.getCount() > maxStackSize) {
-                        Item drop = returned.clone();
-                        int toDrop = Math.min(returned.getCount(), maxStackSize);
-                        drop.setCount(toDrop);
-                        returned.setCount(returned.getCount() - toDrop);
-                        drops.add(drop);
-                    }
-                    if (!returned.isNull()) {
-                        drops.add(returned);
-                    }
                 }
             }
-
             for (Item drop : drops) {
                 player.dropItem(drop);
             }
-            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getDisplayName() + " (" + item.getId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
-                    String.valueOf(item.getCount()));
         }
-        log.addSuccess("commands.give.success", item.getDisplayName() + " (" + item.getId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+        log.addSuccess("commands.give.success", item.getDisplayName(),
                 String.valueOf(item.getCount()),
-                players.stream().map(p -> p.getViewableName(sender)).collect(Collectors.joining(","))).successCount(players.size()).output(true);
+                players.stream().map(p -> p.getViewableName(sender)).collect(Collectors.joining(", "))).successCount(players.size()).output(true);
         return players.size();
     }
 }

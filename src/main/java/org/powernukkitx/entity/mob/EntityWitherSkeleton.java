@@ -56,9 +56,8 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 entity -> {
                                     var storage = getMemoryStorage();
@@ -72,21 +71,20 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
                                 },
                                 entity -> true, 20
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_WITHER_AMBIENT), new RandomSoundEvaluator(), 5, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.WITHER).setDuration(200)), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.get(EffectType.WITHER).setDuration(200)), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(new NearestPlayerSensor(40, 0, 20),
+                )
+                .sensors(new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
-                ),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 

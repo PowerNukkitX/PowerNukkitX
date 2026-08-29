@@ -2,7 +2,10 @@ package org.powernukkitx.inventory.request;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
+import org.powernukkitx.block.BlockAir;
+import org.powernukkitx.block.BlockAnvil;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.property.enums.Damage;
 import org.powernukkitx.inventory.AnvilInventory;
 import org.powernukkitx.inventory.CartographyTableInventory;
 import org.powernukkitx.inventory.Inventory;
@@ -28,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 /**
@@ -64,6 +68,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 if (!anvilResult.result().isNull()) {
                     anvilInventory.clear(AnvilInventory.INPUT, false);
                     anvilInventory.decreaseCount(AnvilInventory.MATERIAL, anvilResult.materialConsumed());
+                    applyAnvilDamage(player, anvilInventory);
                 }
             } else {
                 return context.error();
@@ -91,6 +96,30 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
     }
 
     public record AnvilResult(Item result, int cost, int materialConsumed) {
+    }
+
+    private void applyAnvilDamage(Player player, AnvilInventory inventory) {
+        if (player.isCreative()) {
+            return;
+        }
+        if (!(inventory.getHolder() instanceof BlockAnvil holder)) {
+            return;
+        }
+        Level level = holder.getLevel();
+        if (!(level.getBlock(holder) instanceof BlockAnvil anvil)) {
+            return;
+        }
+        if (ThreadLocalRandom.current().nextFloat() < 0.12f) {
+            Damage next = anvil.getAnvilDamage().next();
+            if (next == Damage.BROKEN) {
+                level.setBlock(anvil, BlockAir.STATE.toBlock(), true);
+                level.addSound(anvil, Sound.RANDOM_ANVIL_BREAK, 1, 1);
+                return;
+            }
+            anvil.setAnvilDamage(next);
+            level.setBlock(anvil, anvil, true);
+        }
+        level.addSound(anvil, Sound.RANDOM_ANVIL_USE, 1, 1);
     }
 
     public @Nullable AnvilResult updateAnvilResult(Player player, AnvilInventory inventory, @Nullable String filterString) {

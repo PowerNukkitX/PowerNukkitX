@@ -48,7 +48,7 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.nbt.remove("CustomName");
             return;
         }

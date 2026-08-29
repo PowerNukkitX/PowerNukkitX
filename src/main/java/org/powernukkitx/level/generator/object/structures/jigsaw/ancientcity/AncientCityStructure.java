@@ -3,16 +3,17 @@ package org.powernukkitx.level.generator.object.structures.jigsaw.ancientcity;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockChest;
+import org.powernukkitx.block.BlockDeepslate;
 import org.powernukkitx.block.BlockSculkShrieker;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
+import org.powernukkitx.level.generator.object.structures.jigsaw.Beardifier;
 import org.powernukkitx.level.generator.object.structures.jigsaw.JigsawStructure;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePool;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
-import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -42,10 +43,9 @@ public class AncientCityStructure extends JigsawStructure {
             CAN_SUMMON.createValue(true)
     );
 
-    private static final int BEARD_KERNEL_RADIUS = 12;
-    private static final int BEARD_KERNEL_SIZE = BEARD_KERNEL_RADIUS * 2;
     private static final double BEARD_CARVE_THRESHOLD = -0.03;
-    private static final double[] BEARD_KERNEL = createBeardKernel();
+    private static final double BEARD_FILL_THRESHOLD = 0.03;
+    private static final BlockState DEEPSLATE = BlockDeepslate.PROPERTIES.getDefaultState();
     private static final AncientCityChestPopulator CITY_CHEST = new AncientCityChestPopulator();
     private static final AncientCityIceBoxPopulator ICE_BOX_CHEST = new AncientCityIceBoxPopulator();
 
@@ -183,90 +183,13 @@ public class AncientCityStructure extends JigsawStructure {
     }
 
     @Override
-    protected void postProcessStructure(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
-        applyBeardBoxTerrainAdjustment(helper, occupiedBoxes);
+    protected void postProcessStructure(
+            StructureHelper helper,
+            List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces
+    ) {
+        Beardifier.apply(helper, terrainAdaptationPieces, Beardifier.carveAndFill(
+                BlockAir.STATE, BEARD_CARVE_THRESHOLD, DEEPSLATE, BEARD_FILL_THRESHOLD));
         helper.applySubChunkUpdate();
-    }
-
-    private void applyBeardBoxTerrainAdjustment(StructureHelper helper, List<BoundingBox> occupiedBoxes) {
-        BlockVector3 origin = helper.getOrigin();
-        int minHeight = helper.getMinHeight();
-        int maxHeight = helper.getMaxHeight() - 1;
-        List<BoundingBox> absoluteBoxes = new ArrayList<>(occupiedBoxes.size());
-
-        for (BoundingBox relativeBox : occupiedBoxes) {
-            absoluteBoxes.add(relativeBox.moved(origin.getX(), origin.getY(), origin.getZ()));
-        }
-
-        for (BoundingBox box : absoluteBoxes) {
-            int minX = box.x0 - BEARD_KERNEL_RADIUS;
-            int maxX = box.x1 + BEARD_KERNEL_RADIUS;
-            int minY = Math.max(minHeight, box.y0 - BEARD_KERNEL_RADIUS);
-            int maxY = Math.min(maxHeight, box.y1 + BEARD_KERNEL_RADIUS);
-            int minZ = box.z0 - BEARD_KERNEL_RADIUS;
-            int maxZ = box.z1 + BEARD_KERNEL_RADIUS;
-
-            for (int x = minX; x <= maxX; x++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    int dx = Math.max(0, Math.max(box.x0 - x, x - box.x1));
-                    int dz = Math.max(0, Math.max(box.z0 - z, z - box.z1));
-                    if (dx >= BEARD_KERNEL_RADIUS || dz >= BEARD_KERNEL_RADIUS) {
-                        continue;
-                    }
-
-                    for (int y = minY; y <= maxY; y++) {
-                        BlockVector3 position = new BlockVector3(x, y, z);
-                        if (helper.isCached(position)) {
-                            continue;
-                        }
-
-                        int dy = Math.max(0, Math.max(box.y0 - y, y - box.y1));
-                        if (dy >= BEARD_KERNEL_RADIUS) {
-                            continue;
-                        }
-
-                        int yToGround = y - box.y0;
-                        if (getBeardContribution(dx, dy, dz, yToGround) * 0.8 < BEARD_CARVE_THRESHOLD) {
-                            helper.setBlockStateAt(x - origin.getX(), y - origin.getY(), z - origin.getZ(), BlockAir.STATE);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static double getBeardContribution(int dx, int dy, int dz, int yToGround) {
-        int xi = dx + BEARD_KERNEL_RADIUS;
-        int yi = dy + BEARD_KERNEL_RADIUS;
-        int zi = dz + BEARD_KERNEL_RADIUS;
-        if (!isInKernelRange(xi) || !isInKernelRange(yi) || !isInKernelRange(zi)) {
-            return 0.0;
-        }
-
-        double dyWithOffset = yToGround + 0.5;
-        double distanceSqr = dx * (double) dx + dyWithOffset * dyWithOffset + dz * (double) dz;
-        double value = -dyWithOffset / Math.sqrt(distanceSqr / 2.0) / 2.0;
-        return value * BEARD_KERNEL[zi * BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE + xi * BEARD_KERNEL_SIZE + yi];
-    }
-
-    private static boolean isInKernelRange(int index) {
-        return index >= 0 && index < BEARD_KERNEL_SIZE;
-    }
-
-    private static double[] createBeardKernel() {
-        double[] kernel = new double[BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE];
-        for (int zi = 0; zi < BEARD_KERNEL_SIZE; zi++) {
-            for (int xi = 0; xi < BEARD_KERNEL_SIZE; xi++) {
-                for (int yi = 0; yi < BEARD_KERNEL_SIZE; yi++) {
-                    int dx = xi - BEARD_KERNEL_RADIUS;
-                    double dy = yi - BEARD_KERNEL_RADIUS + 0.5;
-                    int dz = zi - BEARD_KERNEL_RADIUS;
-                    double distanceSqr = dx * (double) dx + dy * dy + dz * (double) dz;
-                    kernel[zi * BEARD_KERNEL_SIZE * BEARD_KERNEL_SIZE + xi * BEARD_KERNEL_SIZE + yi] = Math.exp(-distanceSqr / 16.0);
-                }
-            }
-        }
-        return kernel;
     }
 
     protected RandomSourceProvider createRandom(Level level, BlockVector3 pos) {

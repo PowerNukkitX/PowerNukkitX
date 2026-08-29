@@ -66,10 +66,8 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new PiglinTransformExecutor(), all(
                                 entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
                                 entity -> !isImmobile(),
@@ -84,18 +82,17 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
                                 entity -> !isBaby()
                         ), 3, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(new NearestPlayerSensor(40, 0, 20),
+                )
+                .sensors(new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
                         new NearestPlayerAngryPiglinSensor(),
                         new NearestEntitySensor(EntityZombiePigman.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 8 , 0),
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK, 2, 2, 20)
-                ),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

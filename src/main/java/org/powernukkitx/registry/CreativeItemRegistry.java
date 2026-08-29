@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeGroupInfoPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemCategory;
 import org.cloudburstmc.protocol.bedrock.data.payload.creative.CreativeItemEntryPayload;
@@ -47,11 +46,13 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final Int2ObjectLinkedOpenHashMap<Item> MAP = new Int2ObjectLinkedOpenHashMap<>();
     static final Int2ObjectOpenHashMap<Item> INTERNAL_DIFF_ITEM = new Int2ObjectOpenHashMap<>();
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static volatile boolean enabled = true;
 
     static final ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> GROUPS = new ObjectLinkedOpenHashSet<>();
     public static final ObjectLinkedOpenHashSet<CreativeItemEntryPayload> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
+    private static final Map<String, BlockState> ITEM_BLOCK_STATES = new HashMap<>();
 
     public static int LAST_CONSTRUCTION_INDEX = -1;
     public static int LAST_EQUIPMENTS_INDEX = -1;
@@ -123,6 +124,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                         log.warn("load creative item {} blockHash {} is null", name, blockHash);
                     } else {
                         item.setBlockUnsafe(block.toBlock());
+                        ITEM_BLOCK_STATES.put(name + "#" + damage, block);
+
                         Item updateDamage = block.toBlock().toItem();
                         if (updateDamage.getDamage() != 0) {
                             item.setDamage(updateDamage.getDamage());
@@ -190,6 +193,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Add an item to {@link CreativeItemRegistry}
      */
     public void addCreativeItem(Item item) {
+        if (!enabled) return;
         int i = MAP.lastIntKey();
         try {
             this.register(i + 1, item.clone());
@@ -202,12 +206,23 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Add an item to {@link CreativeItemRegistry} with a specific group index.
      */
     public void addCreativeItem(Item item, int groupIndex) {
+        if (!enabled) return;
         int i = MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1;
         try {
             this.register(i, item.clone(), groupIndex);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public BlockState getItemBlockState(String id, int damage) {
+        BlockState state = ITEM_BLOCK_STATES.get(id + "#" + damage);
+
+        if (state == null) {
+            state = ITEM_BLOCK_STATES.get(id + "#0");
+        }
+
+        return state;
     }
 
     public int getCreativeItemGroupIndex(String id) {
@@ -290,6 +305,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Register a creative item and specify its group index directly.
      */
     public void register(Integer key, Item value, int groupIndex) throws RegisterException {
+        if (!enabled) return;
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
         }
@@ -302,6 +318,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     @Override
     public void register(Integer key, Item value) throws RegisterException {
+        if (!enabled) return;
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
@@ -378,7 +395,32 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         isLoad.set(false);
         MAP.clear();
         INTERNAL_DIFF_ITEM.clear();
-        init();
+        ITEM_BLOCK_STATES.clear();
+        if (enabled) {
+            init();
+        } else {
+            initDisabled();
+        }
+    }
+
+    /**
+     * Whether the creative inventory registry is enabled. When disabled via
+     * {@code gameplay-settings.enable-creative-inventory}, the registry is empty
+     * and clients receive an empty creative inventory.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Initializes the registry in disabled state: no creative items or groups are
+     * loaded, so clients receive an empty creative inventory. All lookups return
+     * {@code null}/empty results.
+     */
+    public void initDisabled() {
+        if (isLoad.getAndSet(true)) return;
+        enabled = false;
+        log.info("Creative inventory registry disabled by gameplay settings; clients will receive an empty creative inventory");
     }
 
     public int resolveGroupIndexFromBlockDefinition(String identifier, CompoundTag nbt) {

@@ -17,7 +17,14 @@ public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
 
     @Override
     public void clearCachedStore() {
-        this.tickCachedBlockStore.clear();
+        if (!this.tickCachedBlockStore.isEmpty()) {
+            this.tickCachedBlockStore.clear();
+        }
+    }
+
+    @Override
+    public boolean isCachedStoreEmpty() {
+        return this.tickCachedBlockStore.isEmpty();
     }
 
     @Override

@@ -219,6 +219,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return false;
     }

@@ -168,7 +168,7 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if(skin.getGeometryData() == null || skin.getGeometryData().isEmpty()) {
-                builder.skinResourcePatch(GEOMETRY_HUMANOID);
+                builder.geometryData(GEOMETRY_HUMANOID);
                 changed = true;
             }
 

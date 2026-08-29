@@ -1,5 +1,6 @@
 package org.powernukkitx.command.tree.node;
 
+import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.math.BVector3;
@@ -58,6 +59,11 @@ public abstract class PositionNode extends ParamNode<Position> {
         return this.get(paramList.getParamTree().getSender().getPosition());
     }
 
+    @Override
+    public <E> E get(CommandSender sender) {
+        return this.get(sender.getPosition());
+    }
+
     @SuppressWarnings("unchecked")
     public <E> E get(Position basePos) {
         if (this.value == null) return null;
@@ -74,7 +80,17 @@ public abstract class PositionNode extends ParamNode<Position> {
     }
 
     @Override
+    public int getUsedArgs() {
+        return 3;
+    }
+
+    @Override
     public void fill(String arg) {
+        fill(arg, paramList.getParamTree().getSender());
+    }
+
+    @Override
+    public void fill(String arg, CommandSender sender) {
         TMP.clear();
         //check
         var matcher = pattern.matcher(arg);
@@ -87,7 +103,7 @@ public abstract class PositionNode extends ParamNode<Position> {
         else {
             //parse
             try {
-                Location loc = paramList.getParamTree().getSender().getLocation();
+                Location loc = sender.getLocation();
                 for (String s : TMP) {
                     if (s.charAt(0) == '~') {
                         this.setRelative(index);

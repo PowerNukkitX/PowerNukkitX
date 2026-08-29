@@ -67,8 +67,11 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
-        return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
-                (pos) -> !evalPos(this.entity.level.getTickCachedBlock(pos.add(0, -1)))
-        );
+        for (Vector3 pos : VectorMath.getPassByVector3(pos1, pos2)) {
+            if (!evalPos(this.entity.level.getTickCachedBlock(pos.add(0, -1)))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

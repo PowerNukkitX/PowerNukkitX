@@ -90,12 +90,12 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     // Cat body sizes from Wiki https://minecraft.wiki/w/Cat
     @Override
     public float getWidth() {
-        return this.isBaby() ? 0.24f : 0.48f;
+        return 0.48f;
     }
 
     @Override
     public float getHeight() {
-        return this.isBaby() ? 0.28f : 0.56f;
+        return 0.56f;
     }
 
     @Override
@@ -134,7 +134,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
+            Long ownerEid = getDataProperty(ActorDataTypes.OWNER);
+            if (owner != null && !Long.valueOf(owner.getId()).equals(ownerEid)) {
                 this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
             }
         }
@@ -283,9 +284,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior( // Untamed cats will seek out and attack rabbits and baby turtles within 15 blocks
                                 entity -> {
                                     if (this.hasOwner(false)) return false;
@@ -329,8 +329,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
                                 (entity) -> true,
                                 1, 1, 20
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior( // Sleep Priority 7
                                 new SleepOnOwnerBedExecutor(),
                                 entity -> {
@@ -409,19 +409,18 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
                                 new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
                                 1, 1, 25
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 15, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

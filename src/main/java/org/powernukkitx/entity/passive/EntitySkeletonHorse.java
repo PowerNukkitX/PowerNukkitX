@@ -378,9 +378,8 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new AnimalGrowExecutor(),
                                 all(
@@ -391,8 +390,8 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                                 ),
                                 1, 1, 1200
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new SkeletonHorseTrapExecutor(),
                                 e -> ((EntitySkeletonHorse) e).isStartedTrap(),
@@ -434,19 +433,18 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                                 ),
                                 1, 1, 100
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new SkeletonHorseTrapSensor(10, 3)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

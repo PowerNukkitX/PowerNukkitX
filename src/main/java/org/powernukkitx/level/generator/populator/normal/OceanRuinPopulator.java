@@ -185,7 +185,7 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
                 }
-                if(block.getFloorY() <= SEA_LEVEL) {
+                if(block.getFloorY() < SEA_LEVEL) {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }

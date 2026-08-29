@@ -40,6 +40,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
     protected final T equineHolder;
     private boolean revertingSlot = false;
     private final EquippableComponent equippable;
+    private boolean loading;
 
     public HorseInventory(T holder, int size) {
         super(holder, ContainerType.HORSE, Math.max(size, resolveMinSize(holder)));
@@ -160,7 +161,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
                 } else if (getHolder().hasDashAction()) {
                     getHolder().setCanDash(false);
                 }
-                if (getHolder().hasHome()) getHolder().setHomePosition();
+                if (!this.loading && getHolder().hasHome()) getHolder().setHomePosition();
             } else {
                 getHolder().getLevel().addLevelSoundEvent(getHolder(), SoundEvent.SADDLE, -1, getHolder().getIdentifier(), false, false);
                 getHolder().setSaddle(true);
@@ -171,7 +172,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
                 } else if (getHolder().hasDashAction()) {
                     getHolder().setCanDash(true);
                 }
-                if (getHolder().hasHome()) getHolder().setHomePosition();
+                if (!this.loading && getHolder().hasHome()) getHolder().setHomePosition();
             }
             return;
         }
@@ -387,38 +388,44 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
     public void load(Collection<CompoundTag> inventoryTag) {
         if (inventoryTag == null) return;
 
-        EquippableComponent eq = this.getEquippableDefinition();
-        int equipCount = eq != null ? eq.getEquipCount() : 0;
-        int base = getStorageBaseUiSlot();
+        this.loading = true;
 
-        int i = 0;
-        for (CompoundTag entry : inventoryTag) {
-            int slot = entry.contains("Slot") ? (entry.getByte("Slot") & 0xff) : i;
+        try {
+            EquippableComponent eq = this.getEquippableDefinition();
+            int equipCount = eq != null ? eq.getEquipCount() : 0;
+            int base = getStorageBaseUiSlot();
 
-            Item it = ItemHelper.read(entry);
-            i++;
-            if (it == null || it.isNull()) continue;
+            int i = 0;
+            for (CompoundTag entry : inventoryTag) {
+                int slot = entry.contains("Slot") ? (entry.getByte("Slot") & 0xff) : i;
 
-            // 1) Equippable by UI slotNumber
-            if (eq != null) {
-                EquippableComponent.Type type = eq.getTypeByUiSlot(slot);
-                if (type != null && this.setEquippedItem(type, it)) continue;
-            }
+                Item it = ItemHelper.read(entry);
+                i++;
+                if (it == null || it.isNull()) continue;
 
-            // 2) Storage by UI slotNumber
-            if (slot >= base) {
-                int storageOffset = slot - base;
-                int idx = equipCount + storageOffset;
-                if (idx >= 0 && idx < this.getSize()) {
-                    this.setItem(idx, it, false);
-                    continue;
+                // 1) Equippable by UI slotNumber
+                if (eq != null) {
+                    EquippableComponent.Type type = eq.getTypeByUiSlot(slot);
+                    if (type != null && this.setEquippedItem(type, it)) continue;
+                }
+
+                // 2) Storage by UI slotNumber
+                if (slot >= base) {
+                    int storageOffset = slot - base;
+                    int idx = equipCount + storageOffset;
+                    if (idx >= 0 && idx < this.getSize()) {
+                        this.setItem(idx, it, false);
+                        continue;
+                    }
+                }
+
+                // 3) Legacy fallback: raw internal index
+                if (slot >= 0 && slot < this.getSize()) {
+                    this.setItem(slot, it, false);
                 }
             }
-
-            // 3) Legacy fallback: raw internal index
-            if (slot >= 0 && slot < this.getSize()) {
-                this.setItem(slot, it, false);
-            }
+        } finally {
+            this.loading = false;
         }
     }
 
@@ -508,6 +515,6 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
             }
         }
 
-        return out.isEmpty() ? Item.EMPTY_ARRAY : out.toArray(new Item[0]);
+        return out.isEmpty() ? Item.EMPTY_ARRAY : out.toArray(Item.EMPTY_ARRAY);
     }
 }

@@ -24,7 +24,9 @@ import org.powernukkitx.utils.Utils;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -128,18 +130,19 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
             int armorPoints = getAdditionalArmor();
+            int toughnessPoints = 0;
             int epf = 0;
-//            int toughness = 0;
 
             var armorInventory = this.getArmorInventory();
             for (Item armor : armorInventory.getContents().values()) {
                 armorPoints += armor.getArmorPoints();
+                toughnessPoints += armor.getToughness();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
-                //toughness += armor.getToughness();
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, EntityDamageEvent.DamageModifier.ARMOR);
+                source.setDamage(-calculateDamageReduction(
+                        source.getFinalDamage(), armorPoints, toughnessPoints), EntityDamageEvent.DamageModifier.ARMOR);
             }
 
             source.setDamage(-source.getFinalDamage() * Math.min(NukkitMath.ceilFloat(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
@@ -260,7 +263,13 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        return getInventory().getContents().values().stream().filter(item -> !item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)).toArray(Item[]::new);
+        List<Item> drops = new ArrayList<>();
+        for (Item item : getInventory().getContents().values()) {
+            if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+                drops.add(item);
+            }
+        }
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

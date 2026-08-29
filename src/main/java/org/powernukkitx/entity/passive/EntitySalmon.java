@@ -37,9 +37,7 @@ public class EntitySalmon extends EntityFish {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.25f;
-        } else if (this.isLarge()) {
+        if (this.isLarge()) {
             return 0.75f;
         }
         return 0.5f;
@@ -47,9 +45,7 @@ public class EntitySalmon extends EntityFish {
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.25f;
-        } else if (this.isLarge()) {
+        if (this.isLarge()) {
             return 0.75f;
         }
         return 0.5f;

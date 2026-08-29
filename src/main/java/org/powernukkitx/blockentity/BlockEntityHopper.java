@@ -85,7 +85,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         }
 
         for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
+            this.inventory.setItemInternal(i, this.getItem(i));
         }
 
         this.pickupArea = generatePickupArea();

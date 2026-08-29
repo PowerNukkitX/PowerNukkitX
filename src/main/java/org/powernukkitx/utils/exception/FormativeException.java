@@ -1,7 +1,7 @@
 package org.powernukkitx.utils.exception;
 
 
-import com.dfsek.terra.lib.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * Custom runtime exceptions that support formatting strings

@@ -1,7 +1,5 @@
 package org.powernukkitx.level.generator.object.structures.jigsaw.village;
 
-import org.powernukkitx.block.BlockSandstone;
-import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePool;
 import org.powernukkitx.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
@@ -15,16 +13,6 @@ public class DesertVillageStructure extends VillageStructure {
             return loot;
         }
         return isGenericVillageHouse(structureName, "desert") ? VillageChestLoot.DESERT_HOUSE : null;
-    }
-
-    @Override
-    protected boolean shouldShiftHousesToTerrain() {
-        return true;
-    }
-
-    @Override
-    protected BlockState getHouseSupportState() {
-        return BlockSandstone.PROPERTIES.getDefaultState();
     }
 
     @Override

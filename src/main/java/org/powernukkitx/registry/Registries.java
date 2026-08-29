@@ -9,6 +9,7 @@ public final class Registries {
     public static final BlockRegistry BLOCK = new BlockRegistry();
     public static final ItemRegistry ITEM = new ItemRegistry();
     public static final CreativeItemRegistry CREATIVE = new CreativeItemRegistry();
+    public static final CameraRegistry CAMERA = new CameraRegistry();
     public static final BiomeRegistry BIOME = new BiomeRegistry();
     public static final FuelRegistry FUEL = new FuelRegistry();
     public static final GeneratorRegistry GENERATOR = new GeneratorRegistry();
@@ -20,4 +21,5 @@ public final class Registries {
     public static final RecipeRegistry RECIPE = new RecipeRegistry();
     public static final VoxelShapeRegistry VOXEL_SHAPE = new VoxelShapeRegistry();
     public static final DisconnectReasonRegistry DISCONNECT_REASON = new DisconnectReasonRegistry();
+    public static final TrimRegistry TRIM = new TrimRegistry();
 }

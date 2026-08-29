@@ -181,18 +181,14 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
             return;
         }
 
+        arrow.setPickupMode(EntityProjectile.PICKUP_CREATIVE);
+
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(entity, bow, arrow, f);
         Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
         if (entityShootBowEvent.isCancelled()) {
             entityShootBowEvent.getProjectile().kill();
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
-            Enchantment infinityEnchant = bow.getEnchantment(Enchantment.ID_BOW_INFINITY);
-            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
-            EntityProjectile projectile;
-            if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
-                ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
-            }
 
             for (var enc : bow.getEnchantments()) {
                 if (enc instanceof EnchantmentBow enchantmentBow) {

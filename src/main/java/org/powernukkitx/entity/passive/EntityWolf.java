@@ -126,17 +126,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.425f;
-        }
         return 0.8f;
     }
 
@@ -298,7 +292,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
+            Long ownerEid = getDataProperty(ActorDataTypes.OWNER);
+            if (owner != null && !Long.valueOf(owner.getId()).equals(ownerEid)) {
                 this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
             }
         }
@@ -455,9 +450,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(
                                 new LoveTimeoutExecutor(20 * 30),
                                 e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
@@ -519,8 +513,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                                 },
                                 entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
                         )
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(
                                 new PlaySoundExecutor(Sound.MOB_WOLF_BARK),
                                 new RandomSoundEvaluator(),
@@ -575,14 +569,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                         ),
                         new Behavior(
                                 new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
-                                all(
-                                        e -> !this.isSitting(),
-                                        new ProbabilityEvaluator(5, 10)
-                                ),
+                                e -> !this.isSitting(),
                                 1, 1, 50
                         )
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 20, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
@@ -591,15 +582,14 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                                     default -> false;
                                 }),
                         new EntityAttackedByOwnerSensor(5, false)
-                ),
-                Set.of(
+                )
+                .controllers(
                         new WalkController(),
                         new LookController(true, true),
                         new FluctuateController()
-                ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
 }

@@ -82,10 +82,8 @@ public class EntityIronGolem extends EntityGolem {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 not(any(
@@ -101,12 +99,11 @@ public class EntityIronGolem extends EntityGolem {
                                 not(entity -> attackingPlayer = false)
                         ), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                ),
-                Set.of(new NearestEntitySensor(EntityMob.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0)),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .sensors(new NearestEntitySensor(EntityMob.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0))
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

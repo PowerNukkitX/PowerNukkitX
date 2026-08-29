@@ -80,7 +80,6 @@ public class InteractHandler implements PacketHandler<InteractPacket> {
                     player.setInventoryOpen(player.getInventory().open(player));
                 } else {
                     player.forceClientCloseInventory();
-                    player.setInventoryOpen(false);
                     log.warn("{} tried to open the inventory while still being open!", player.getName());
                 }
             }
