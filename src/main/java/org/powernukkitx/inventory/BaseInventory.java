@@ -76,7 +76,10 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Item getItem(int index) {
         synchronized (this.slots) {
-            return this.slots.containsKey(index) ? this.slots.get(index).clone() : Item.AIR;
+            // One probe, not two. The clone stays: callers are allowed to mutate what they get back,
+            // and getUnclonedItem() is there for the ones that do not need to.
+            Item item = this.slots.get(index);
+            return item != null ? item.clone() : Item.AIR;
         }
     }
 
