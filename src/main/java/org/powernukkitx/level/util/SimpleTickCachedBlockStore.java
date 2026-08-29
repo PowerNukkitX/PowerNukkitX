@@ -17,7 +17,9 @@ public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
     @Override
     public void clearCachedStore() {
         if (!this.tickCachedBlockStore.isEmpty()) {
-            this.tickCachedBlockStore.clear();
+            // This store is emptied every tick and refilled to roughly the same size, so dropping
+            // the table back to the minimum only to grow it again is wasted work.
+            this.tickCachedBlockStore.clearRetainingCapacity();
         }
     }
 
