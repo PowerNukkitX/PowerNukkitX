@@ -43,7 +43,7 @@ import java.util.function.Predicate;
  *
  * <p><b>Chunk loading:</b></p>
  * <ul>
- *     <li><b>loadChunks</b> – If true, loads chunks in the search area. Default: false. 
+ *     <li><b>loadChunks</b> – If true, loads chunks in the search area. Default: false.
  *     Use with care to avoid lag spikes.</li>
  * </ul>
  *
@@ -229,7 +229,7 @@ public final class EntityQueryOptions {
      * <p>
      * Example: {@code families("monster", "npc")}.
      *
-     * @param families The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @param families The family to match, can be a single string or multiple strings. If multiple, the entity must match all of them.
      * @return This {@link EntityQueryOptions} for chaining.
      */
     public EntityQueryOptions families(Collection<String> families) {
@@ -242,7 +242,7 @@ public final class EntityQueryOptions {
      * <p>
      * Example: {@code families("monster", "npc")}.
      *
-     * @param families The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @param families The family to match, can be a single string or multiple string. If multiple, the entity must match all of them.
      * @return This {@link EntityQueryOptions} for chaining.
      */
     public EntityQueryOptions families(String... families) {
@@ -255,7 +255,7 @@ public final class EntityQueryOptions {
      * <p>
      * Example: {@code excludeFamilies("monster", "npc")}.
      *
-     * @param excludeFamilies The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @param excludeFamilies The family to match, can be a single string or multiple string. If multiple, the entity must match all of them.
      * @return This {@link EntityQueryOptions} for chaining.
      */
     public EntityQueryOptions excludeFamilies(Collection<String> excludeFamilies) {
@@ -268,7 +268,7 @@ public final class EntityQueryOptions {
      * <p>
      * Example: {@code excludeFamilies("monster", "npc")}.
      *
-     * @param excludeFamilies The family to match, can be a single string or multiple string, if multiple the entity must match all of them..
+     * @param excludeFamilies The family to match, can be a single string or multiple string. If multiple, the entity must match all of them.
      * @return This {@link EntityQueryOptions} for chaining.
      */
     public EntityQueryOptions excludeFamilies(String... excludeFamilies) {

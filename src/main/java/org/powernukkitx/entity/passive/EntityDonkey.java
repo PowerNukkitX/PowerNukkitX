@@ -75,17 +75,11 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.7f;
-        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.8f;
-        }
         return 1.6f;
     }
 
@@ -328,7 +322,7 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
         drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

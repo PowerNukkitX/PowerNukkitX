@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector2f;
-import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
@@ -20,6 +19,7 @@ import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
 import org.cloudburstmc.protocol.bedrock.data.payload.editor.ServerEditorConnectionPolicy;
 import org.cloudburstmc.protocol.bedrock.data.payload.experiment.Experiments;
+import org.cloudburstmc.protocol.bedrock.data.payload.list.PlayerListAddEntry;
 import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackIdVersion;
 import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackInfoData;
 import org.cloudburstmc.protocol.bedrock.packet.*;
@@ -27,7 +27,6 @@ import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
 import org.jetbrains.annotations.Nullable;
-import org.powernukkitx.utils.TextFormat;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -44,12 +43,12 @@ import org.powernukkitx.registry.VoxelShapeRegistry;
 import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
 import org.powernukkitx.utils.DefaultCameraPresets;
 import org.powernukkitx.utils.RuntimeBlockDefinitionRegistry;
+import org.powernukkitx.utils.SkinConverter;
 
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -178,55 +177,129 @@ public class PlayerSessionHolder {
 
     public void sendResourcePacksInfo(Server server) {
         final ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
-        infoPacket.getResourcePacks().addAll(Arrays.stream(server.getResourcePackManager().getResourceStack())
-            .map(resourcePack -> {
-                final PackInfoData packInfoData = new PackInfoData();
-                final PackIdVersion packIdVersion = new PackIdVersion();
-                packIdVersion.setPackUUID(resourcePack.getPackId());
-                packIdVersion.setPackVersion(resourcePack.getPackVersion());
 
-                packInfoData.setPackIdVersion(packIdVersion);
-                packInfoData.setPackSize(resourcePack.getPackSize());
-                packInfoData.setContentKey(resourcePack.getEncryptionKey());
-                packInfoData.setSubpackName(resourcePack.getSubPackName());
-                packInfoData.setContentIdentity(!resourcePack.getEncryptionKey().isEmpty() ? resourcePack.getPackId().toString() : "");
-                packInfoData.setHasScripts(resourcePack.usesScript());
-                packInfoData.setRayTracingCapable(resourcePack.isRaytracingCapable());
-                packInfoData.setAddonPack(resourcePack.isAddonPack());
-                packInfoData.setCdnUrl(resourcePack.cdnUrl());
-                return packInfoData;
-            })
-            .toList()
-        );
+        for (final var resourcePack : server.getResourcePackManager().getResourceStack()) {
+            final PackInfoData packInfoData = new PackInfoData();
+            final PackIdVersion packIdVersion = new PackIdVersion();
+
+            packIdVersion.setPackUUID(resourcePack.getPackId());
+            packIdVersion.setPackVersion(resourcePack.getPackVersion());
+
+            packInfoData.setPackIdVersion(packIdVersion);
+            packInfoData.setPackSize(resourcePack.getPackSize());
+
+            final String encryptionKey = resourcePack.getEncryptionKey();
+            packInfoData.setContentKey(encryptionKey);
+            packInfoData.setSubpackName(resourcePack.getSubPackName());
+            packInfoData.setContentIdentity(
+                encryptionKey.isEmpty() ? "" : resourcePack.getPackId().toString()
+            );
+            packInfoData.setHasScripts(resourcePack.usesScript());
+            packInfoData.setRayTracingCapable(resourcePack.isRaytracingCapable());
+            packInfoData.setAddonPack(resourcePack.isAddonPack());
+            packInfoData.setCdnUrl(resourcePack.cdnUrl());
+
+            infoPacket.getResourcePacks().add(packInfoData);
+        }
+
         infoPacket.setResourcePackRequired(server.getForceResources());
+
         final PackIdVersion packIdVersion = new PackIdVersion();
         packIdVersion.setPackUUID(new UUID(0L, 0L));
         packIdVersion.setPackVersion("0.0.0");
+
         infoPacket.setWorldTemplateIdAndVersion(packIdVersion);
         infoPacket.setForceDisableVibrantVisuals(!server.allowVibrantVisuals());
+
         this.session.sendPacketImmediately(infoPacket);
     }
 
     public void sendBeforeSpawn(Server server) {
         this.doPlayerCreation();
         this.setState(SessionState.BEFORE_SPAWN);
+
+        server.sendSleepingPlayersStatusImmediately(Set.of(this.player));
+
+        final PlayerListPacket playerListPacket = new PlayerListPacket();
+        final PlayerListAddEntry playerListEntry = new PlayerListAddEntry();
+
+        playerListEntry.setUuid(this.player.getUniqueId());
+        playerListEntry.setActorUniqueID(this.player.getId());
+        playerListEntry.setPlayerName(this.player.getName());
+        playerListEntry.setXblXUID(this.player.getXUID());
+        playerListEntry.setPlatformOnlineID("");
+        playerListEntry.setBuildPlatform(BuildPlatform.UNKNOWN);
+        playerListEntry.setSerializedSkin(
+            SkinConverter.toSerializedSkin(
+                this.player.getSkin().getSkin(),
+                this.player.getSkin().isTrusted()
+            )
+        );
+        playerListEntry.setPlayerColor(this.player.getLocatorBarColor().getRGB());
+
+        playerListPacket.getEntries().add(playerListEntry);
+        this.player.sendPacketImmediately(playerListPacket);
+
+        this.player.getLevel().sendTime(this.player);
+
         this.player.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
         this.sendStartGame(server);
-        this.sendItemRegistry();
-
-        this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
-
-        final AvailableActorIdentifiersPacket availableActorIdentifiersPacket = new AvailableActorIdentifiersPacket();
-        availableActorIdentifiersPacket.setActorInfoList(Registries.ENTITY.getTag());
-        this.session.sendPacketImmediately(availableActorIdentifiersPacket);
 
         for (SyncActorPropertyPacket syncActorPropertyPacket : EntityProperty.getEntityPropertyCache()) {
             this.session.sendPacketImmediately(syncActorPropertyPacket);
         }
 
+        this.sendItemRegistry();
+        this.player.sendInitialSpawnPosition();
+
+        final SetDifficultyPacket difficultyPacket = new SetDifficultyPacket();
+        difficultyPacket.setDifficulty(server.getDifficulty());
+        this.player.sendPacketImmediately(difficultyPacket);
+
+        final SetCommandsEnabledPacket commandsEnabledPacket = new SetCommandsEnabledPacket();
+        commandsEnabledPacket.setCommandsEnabled(this.player.isEnableClientCommand());
+        this.player.sendPacketImmediately(commandsEnabledPacket);
+
+        this.player.getAdventureSettings().updateAdventureSettingsImmediately();
+
+        final GameRulesChangedPacket gameRulesChangedPacket = new GameRulesChangedPacket();
+        gameRulesChangedPacket.getRulesData().getRulesList().addAll(
+            this.player.getLevel().getGameRules().toNetwork()
+        );
+        this.player.sendPacketImmediately(gameRulesChangedPacket);
+
+        server.addOnlinePlayer(this.player);
+        server.onPlayerCompleteLoginSequence(this.player);
+
+        this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
+        this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
+
         this.session.sendPacketImmediately(Registries.BIOME.getBiomeDefinitionListPacket());
-        this.player.syncAttributes();
-        this.player.syncAvailableCommands();
+
+        final AvailableActorIdentifiersPacket availableActorIdentifiersPacket = new AvailableActorIdentifiersPacket();
+        availableActorIdentifiersPacket.setActorInfoList(Registries.ENTITY.getTag());
+        this.session.sendPacketImmediately(availableActorIdentifiersPacket);
+
+        final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
+        playerFogPacket.getFogStack().addAll(this.player.getFogStack());
+        this.session.sendPacketImmediately(playerFogPacket);
+
+        // FeatureRegistryPacket not used by PNX.
+
+        final CameraPresetsPacket cameraPresetsPacket = new CameraPresetsPacket();
+        cameraPresetsPacket.getCameraPresets().addAll(DefaultCameraPresets.getAll());
+        this.session.sendPacketImmediately(cameraPresetsPacket);
+
+        final CameraAimAssistPresetsPacket cameraAimAssistPresetsPacket = new CameraAimAssistPresetsPacket();
+        cameraAimAssistPresetsPacket.getCategoryDefinitions().addAll(DefaultCameraAimAssistPresets.getAllCategories());
+        cameraAimAssistPresetsPacket.getPresets().addAll(DefaultCameraAimAssistPresets.getAllPresets());
+        cameraAimAssistPresetsPacket.setOperation(CameraAimAssistPresetPacketOperation.ADD_TO_EXISTING);
+        this.session.sendPacketImmediately(cameraAimAssistPresetsPacket);
+
+        final CameraSplinePacket cameraSplinePacket = new CameraSplinePacket();
+        this.session.sendPacketImmediately(cameraSplinePacket);
+
+        this.player.sendInitialLoginAttributes();
 
         final Collection<Player> collection = Set.of(this.player);
         for (Player value : server.getOnlinePlayers().values()) {
@@ -238,32 +311,15 @@ public class PlayerSessionHolder {
 
         this.player.sendPotionEffects(this.player);
         this.player.sendData(this.player);
-        this.player.syncInventory();
         this.player.syncCreativeContent();
-        this.player.sendAttributes();
 
         this.session.sendPacketImmediately(Registries.TRIM.buildPacket());
 
+        this.player.syncInventory();
+        this.player.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
+
         this.player.setCanClimb(true);
         this.player.setMovementSpeed(this.player.getMovementSpeed());
-
-        server.addOnlinePlayer(this.player);
-        server.onPlayerCompleteLoginSequence(this.player);
-        this.player.setImmobile(false);
-
-        final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
-        playerFogPacket.getFogStack().addAll(this.player.getFogStack());
-        this.session.sendPacketImmediately(playerFogPacket);
-
-        final CameraPresetsPacket cameraPresetsPacket = new CameraPresetsPacket();
-        cameraPresetsPacket.getCameraPresets().addAll(DefaultCameraPresets.getAll());
-        this.session.sendPacketImmediately(cameraPresetsPacket);
-
-        final CameraAimAssistPresetsPacket cameraAimAssistPresetsPacket = new CameraAimAssistPresetsPacket();
-        cameraAimAssistPresetsPacket.getCategoryDefinitions().addAll(DefaultCameraAimAssistPresets.getAllCategories());
-        cameraAimAssistPresetsPacket.getPresets().addAll(DefaultCameraAimAssistPresets.getAllPresets());
-        cameraAimAssistPresetsPacket.setOperation(CameraAimAssistPresetPacketOperation.SET);
-        this.session.sendPacketImmediately(cameraAimAssistPresetsPacket);
     }
 
     private void sendStartGame(Server server) {
@@ -271,17 +327,13 @@ public class PlayerSessionHolder {
         packet.setEntityID(this.player.getId());
         packet.setRuntimeID(this.player.getId());
         packet.setGameType(GameType.from(Player.toNetworkGamemode(this.player.getGamemode())));
-        packet.setPosition(Vector3f.from(
-            this.player.x,
-            (this.player.isOnGround() ? this.player.y + this.player.getEyeHeight() : this.player.y),
-            this.player.z
-        ));
+        packet.setPosition(this.player.getInitialSpawnPosition());
         packet.setRotation(Vector2f.from(this.player.getYaw(), this.player.getPitch()));
 
         packet.getSettings().setSeed(-1L);
         packet.getSettings().getSpawnSettings().setDimension(DimensionType.from(this.player.level.getDimension()));
         packet.getSettings().getSpawnSettings().setType(SpawnBiomeType.DEFAULT);
-        packet.getSettings().getSpawnSettings().setUserDefinedBiomeName("plains");
+        packet.getSettings().getSpawnSettings().setUserDefinedBiomeName("minecraft:plains");
         packet.getSettings().setGeneratorType(GeneratorType.OVERWORLD);
         packet.getSettings().setGameType(GameType.from(Player.toNetworkGamemode(server.getDefaultGamemode())));
         packet.getSettings().setHardcore(false);
@@ -291,7 +343,7 @@ public class PlayerSessionHolder {
         packet.getSettings().setEditorWorldType(EditorWorldType.NON_EDITOR);
         packet.getSettings().setCreatedInEditor(false);
         packet.getSettings().setExportedFromEditor(false);
-        packet.getSettings().setDayCycleStopTime(-1);
+        packet.getSettings().setDayCycleStopTime((int) this.player.getLevel().getTime());
         packet.getSettings().setEducationEditionOffer(EducationEditionOffer.NONE);
         packet.getSettings().setEducationFeaturesEnabled(false);
         packet.getSettings().setEducationProductID("");
@@ -342,12 +394,12 @@ public class PlayerSessionHolder {
                 true
             )
         );
-        packet.getBlockProperties().addAll(
-            Registries.BLOCK.getCustomBlockDefinitionList()
-                .stream()
-                .map(CustomBlockDefinition::toNetwork)
-                .toList()
-        );
+        packet.setLevelCurrentTime(this.player.getLevel().getCurrentTick());
+        packet.setEnchantmentSeed(this.player.getEnchantmentSeed());
+
+        for (final CustomBlockDefinition definition : Registries.BLOCK.getCustomBlockDefinitionList()) {
+            packet.getBlockProperties().add(definition.toNetwork());
+        }
         packet.setMultiplayerCorrelationId("");
         packet.setEnableItemStackNetManager(true);
         packet.setServerVersion("");
@@ -376,7 +428,7 @@ public class PlayerSessionHolder {
                     data.identifier(),
                     data.runtimeId(),
                     ItemVersion.from(data.version()),
-                    !components.isEmpty(),
+                    data.componentBased(),
                     components
                 )
             );
@@ -406,9 +458,6 @@ public class PlayerSessionHolder {
         }
         Server.getInstance().onPlayerLogin((InetSocketAddress) this.session.getSocketAddress(), player);
         this.playerHandle.processLogin();
-        // The reason why teleport player to their position is for gracefully client-side spawn,
-        // although we need some hacks, It is definitely a fairly worthy trade.
-        this.player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn
     }
 
     private @Nullable Player createPlayer(Player.PlayerInfo playerInfo) {

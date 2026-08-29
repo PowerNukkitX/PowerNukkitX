@@ -197,6 +197,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(ZOMBIE_NAUTILUS, "", 150, true, true), EntityZombieNautilus.class);
         registerInternal(new EntityDefinition(PARCHED, "", 151, true, true), EntityParched.class);
         registerInternal(new EntityDefinition(CAMEL_HUSK, "", 152, true, true), EntityCamelHusk.class);
+        registerInternal(new EntityDefinition(SULFUR_CUBE, "", 153, true, true), EntitySulfurCube.class);
 
         registerSpawner(new SpawnRuleArmadillo());
         registerSpawner(new SpawnRuleAxolotl());
@@ -239,6 +240,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerSpawner(new SpawnRuleSquid());
         registerSpawner(new SpawnRuleStray());
         registerSpawner(new SpawnRuleStrider());
+        registerSpawner(new SpawnRuleSulfurCube());
         registerSpawner(new SpawnRuleTropicalFish());
         registerSpawner(new SpawnRuleTurtle());
         registerSpawner(new SpawnRuleWitch());
@@ -403,7 +405,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
      *
      * @param plugin   the plugin
      * @param entityId the entity id {@link EntityID}
-     * @param value    the entity class,must extends internal entity
+     * @param value    the entity class must extend internal entity
      * @throws RegisterException the register exception
      */
     public void registerOverrideEntity(Plugin plugin, String entityId, Class<? extends Entity> value) throws RegisterException {

@@ -406,8 +406,8 @@ public class Chunk implements IChunk {
 
     @Override
     public int recalculateHeightMapColumn(int x, int z) {
-        long stamp1 = heightAndBiomeLock.writeLock();
-        long stamp2 = blockLock.writeLock();
+        long stamp1 = blockLock.writeLock();
+        long stamp2 = heightAndBiomeLock.writeLock();
         try {
             UnsafeChunk unsafeChunk = new UnsafeChunk(this);
             int max = unsafeChunk.getHighestBlockAt(x, z);
@@ -422,8 +422,8 @@ public class Chunk implements IChunk {
             unsafeChunk.setHeightMap(x, z, y);
             return y;
         } finally {
-            heightAndBiomeLock.unlockWrite(stamp1);
-            blockLock.unlockWrite(stamp2);
+            heightAndBiomeLock.unlockWrite(stamp2);
+            blockLock.unlockWrite(stamp1);
         }
     }
 

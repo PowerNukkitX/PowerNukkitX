@@ -90,12 +90,12 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     // Cat body sizes from Wiki https://minecraft.wiki/w/Cat
     @Override
     public float getWidth() {
-        return this.isBaby() ? 0.24f : 0.48f;
+        return 0.48f;
     }
 
     @Override
     public float getHeight() {
-        return this.isBaby() ? 0.28f : 0.56f;
+        return 0.56f;
     }
 
     @Override
@@ -134,7 +134,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
+            Long ownerEid = getDataProperty(ActorDataTypes.OWNER);
+            if (owner != null && !Long.valueOf(owner.getId()).equals(ownerEid)) {
                 this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
             }
         }

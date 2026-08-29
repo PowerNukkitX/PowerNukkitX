@@ -77,17 +77,11 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.45f;
-        }
         return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 

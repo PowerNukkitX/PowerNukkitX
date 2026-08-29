@@ -89,7 +89,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
             for (int i = 0; i < items.size(); i++) {
                 CompoundTag compoundTag = items.get(i);
                 String name = compoundTag.getString("Name");
-                if (name.equals("")) {
+                if (name.isEmpty()) {
                     this.items[i] = null;
                     continue;
                 }

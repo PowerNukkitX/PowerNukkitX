@@ -1087,7 +1087,7 @@
   "nukkit.command.whitelist.description": "Beyaz listedeki oyuncuları yönetir",
   "nukkit.command.xp.description": "Belirtilen oyuncuya belirlenen miktarda XP verir",
   "nukkit.command.xp.usage": "/xp \u003cmiktar\u003e [oyuncu] VEYA /xp \u003cseviye\u003eL [oyuncu]",
-  "nukkit.crash.archive": "\"Çökme bilgisi Çökme Arşivine otomatik olarak gönderildi. {%0}\u0027da görüntüleyebilirsin veya ID #{%1}\u0027i kullanabilirsin.",
+  "nukkit.crash.archive": "Çökme bilgisi Çökme Arşivine otomatik olarak gönderildi. {%0}\u0027da görüntüleyebilirsin veya ID #{%1}\u0027i kullanabilirsin.",
   "nukkit.crash.create": "Bilinmeyen bir hata oluştu ve sunucu çöktü. Çökme ayrıntıları kaydediliyor",
   "nukkit.crash.error": "Çökme ayrıntıları kaydedilemedi: {%0}",
   "nukkit.crash.submit": "Lütfen \"{%0}\" adlı dosyayı çökme arşivine yükleyin ve sorun bildirme sayfasına gönderin.",

@@ -83,7 +83,7 @@ public class BlockSweetBerryBush extends BlockFlowable implements Supportable {
             this.getLevel().setBlock(this, ev.getNewState(), false, true);
             this.level.addParticle(new BoneMealParticle(this));
 
-            if (player != null && (player.gamemode & 0x01) == 0) {
+            if (player != null && !player.isCreative()) {
                 item.count--;
             }
 

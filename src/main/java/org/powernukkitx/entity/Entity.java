@@ -1950,7 +1950,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         moveData.setOnGround(this.onGround);
         moveData.setTeleported(tp);
         moveData.setPos(this.getPosition().toNetwork().add(0f, this.getBaseOffset(), 0f));
-        moveData.setRotation(org.cloudburstmc.math.vector.Vector3f.from(this.pitch, this.yaw, this.yaw));
+        moveData.setRotation(org.cloudburstmc.math.vector.Vector3f.from(this.pitch, this.yaw, this.headYaw));
 
         final MoveActorAbsolutePacket packet = new MoveActorAbsolutePacket();
         packet.setMoveData(moveData);
@@ -2550,6 +2550,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
+     * Broadcasts the mounted movement of all player passengers.
+     */
+    public void broadcastMountedPassengerMovements() {
+        if (this.passengers.isEmpty()) return;
+
+        for (Entity passenger : List.copyOf(this.passengers)) {
+            if (passenger instanceof Player player && player.getRiding() == this) {
+                player.broadcastMountedMovement();
+            }
+        }
+    }
+
+    /**
      * Resolves the seat offset to apply to a passenger for a specific seat index.
      */
     public @Nullable RideableComponent.Seat getRideSeatFor(int seatIndex) {
@@ -2604,9 +2617,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 }
 
                 Float lock = sm.lockRiderRotationDegrees();
+                boolean bodyFollowsHead = this.getDataFlag(ActorFlags.BODY_ROTATION_ALWAYS_FOLLOWS_HEAD);
+
                 if (lock != null) {
+                    p.setSeatLockPassengerRotation(!bodyFollowsHead, false);
                     p.setSeatLockRiderRotationDegrees(lock, false);
                 } else {
+                    p.setSeatLockPassengerRotation(false, false);
                     p.setSeatLockRiderRotationDegrees(0.0f, false);
                 }
 
@@ -2756,6 +2773,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void clearSeatData(Player passenger) {
         passenger.setSeatCameraRelaxDistanceSmoothing(0.0f, false);
+        passenger.setSeatLockPassengerRotation(false, false);
         passenger.setSeatLockRiderRotationDegrees(0.0f, false);
         passenger.setSeatThirdPersonCameraRadius(0.0f, false);
         passenger.setSeatRotationOffset(false, false);
@@ -2863,6 +2881,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING)) {
             data.put(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, this.actorDataMap.get(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING));
+        }
+
+        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION)) {
+            data.put(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, this.actorDataMap.get(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION));
         }
 
         if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES)) {
@@ -3875,18 +3897,32 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
+     * The scale applied to this entity while it is a baby.
+     * <p>
+     * Baby size is driven entirely by this factor, so {@link #getWidth()} and {@link #getHeight()}
+     * must always report the adult dimensions. Override this for entities whose baby form is not
+     * half the size of the adult.
+     * </p>
+     *
+     * @return the baby scale factor, {@code 0.5} by default.
+     */
+    public float getBabyScale() {
+        return 0.5f;
+    }
+
+    /**
      * Sets whether this entity is a baby.
      * <p>
      * Updates the {@link ActorFlags#BABY} data flag and applies the corresponding scale.
      * For ageable entities, this also initializes or clears growth-related NBT
-     * (birth date, remaining growth ticks, and pause state) and marks growth data as dirty.
+     * (birthdate, remaining growth ticks, and pause state) and marks growth data as dirty.
      * </p>
      *
      * @param value {@code true} to set as baby, {@code false} to set as adult.
      */
     public void setBaby(boolean value) {
         this.setDataFlag(ActorFlags.BABY, value);
-        this.setScale(value ? 0.5f : 1f);
+        this.setScale(value ? getBabyScale() : 1f);
 
         if (this.isAgeable()) {
             if (!value) {
@@ -4043,7 +4079,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         boolean baby = left > 0;
 
         setDataFlag(ActorFlags.BABY, baby, false);
-        setScale(baby ? 0.5f : 1f);
+        setScale(baby ? getBabyScale() : 1f);
 
         ticksGrowLeft = left;
 
@@ -4332,7 +4368,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * Movement multipliers should be implemented in behavior executors.
      * This method is kept for backward compatibility only.
      * Bedrock entity definitions do not store generic movement multipliers;
-     * speed scaling is controlled by runtime behaviors such as
+     * speed scaling is controlled by runtime behaviors such as:
      * follow, tempt, boost, sprint, or rider input.
      * </p>
      *
@@ -5622,7 +5658,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return boolean
      */
     public boolean setMotion(Vector3 motion) {
-        if (!this.justCreated) {
+        if (!this.justCreated && !EntityMotionEvent.getHandlers().isEmpty()) {
             EntityMotionEvent ev = new EntityMotionEvent(this, motion);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
@@ -5682,9 +5718,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return the boolean
      */
     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause cause) {
-        double yaw = location.yaw;
-        double pitch = location.pitch;
-
         Location from = this.getLocation();
         Location to = location;
         if (cause != null) {
@@ -5696,6 +5729,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             to = ev.getTo();
         }
 
+        double yaw = to.yaw;
+        double pitch = to.pitch;
+        double headYaw = to.headYaw;
+
         final Entity currentRide = getRiding();
         if (currentRide != null && !currentRide.dismountEntity(this, true, false)) {
             return false;
@@ -5706,10 +5743,24 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
 
-        if (this.setPositionAndRotation(to, yaw, pitch)) {
+        if (this.setPositionAndRotation(to, yaw, pitch, headYaw)) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
+
+            if (!enableHeadYaw()) {
+                this.headYaw = this.yaw;
+            }
+            this.broadcastMovement(true);
+
+            this.lastX = this.x;
+            this.lastY = this.y;
+            this.lastZ = this.z;
+            this.lastYaw = this.yaw;
+            this.lastPitch = this.pitch;
+            this.lastHeadYaw = this.headYaw;
+
             this.updateMovement();
+            this.positionChanged = true;
             return true;
         }
 
@@ -6172,7 +6223,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (change) {
             IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
             if (prop != null && prop.isClientSync()) {
-                this.sendData(this.getViewers().values().toArray(new Player[0]));
+                this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
             }
         }
         return change;
@@ -6184,7 +6235,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (change) {
             BooleanEntityProperty property = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
             if (property != null && property.isClientSync()) {
-                this.sendData(this.getViewers().values().toArray(new Player[0]));
+                this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
             }
         }
         return change;
@@ -6196,7 +6247,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (change) {
             FloatEntityProperty property = getTypedEntityProperty(identifier, FloatEntityProperty.class);
             if (property != null && property.isClientSync()) {
-                this.sendData(this.getViewers().values().toArray(new Player[0]));
+                this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
             }
         }
 
@@ -6213,7 +6264,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 intProperties.put(identifier, index);
                 this.clientSyncPropertiesCache = null;
                 if (property.isClientSync()) {
-                    this.sendData(this.getViewers().values().toArray(new Player[0]));
+                    this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
                 }
                 return true;
             }

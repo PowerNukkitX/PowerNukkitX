@@ -272,4 +272,6 @@ public interface EntityID {
   String PARCHED = "minecraft:parched";
 
   String CAMEL_HUSK = "minecraft:camel_husk";
+
+  String SULFUR_CUBE = "minecraft:sulfur_cube";
 }

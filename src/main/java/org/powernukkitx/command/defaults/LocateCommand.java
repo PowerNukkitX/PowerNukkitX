@@ -7,7 +7,6 @@ import org.powernukkitx.command.tree.ParamList;
 import org.powernukkitx.command.utils.CommandLogger;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Position;
-import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.level.generator.biome.result.BiomeResult;
 import org.powernukkitx.level.generator.biome.result.OverworldBiomeResult;
 import org.powernukkitx.level.generator.populator.generic.PopulatorRuinedPortal;
@@ -129,17 +128,15 @@ public class LocateCommand extends VanillaCommand {
                     found = findBiomePosition(pos, maxRadius, biomeId);
                 }
 
-                if(found != null) {
+                if (found != null) {
                     found.setY(pos.getLevel().getHeightMap(pos.getFloorX(), pos.getFloorZ()) + 16);
                     String _x = String.valueOf(found.getFloorX());
                     String _y = String.valueOf(found.getFloorY());
                     String _z = String.valueOf(found.getFloorZ());
                     String _d = String.valueOf((int) (found.distance(pos)));
                     log.addSuccess("commands.locate.biome.success", name, _x, _y, _z, _d);
-                    if(list.hasResult(2)) {
-                        if(list.getResult(2)) {
-                            sender.asPlayer().teleport(found);
-                        }
+                    if (list.hasResult(2) && (boolean) list.getResult(2) && sender.isPlayer()) {
+                        sender.asPlayer().teleport(found);
                     }
                 } else log.addError("commands.locate.biome.fail", name);
             }
@@ -192,7 +189,7 @@ public class LocateCommand extends VanillaCommand {
             if(result instanceof OverworldBiomeResult biomeResult) {
                 int height = SEA_LEVEL;
                 while (height > pos.level.getMinHeight()) {
-                    biomeResult.correct(height - SEA_LEVEL); //We dont know the actual height before generating.
+                    biomeResult.correct(height - SEA_LEVEL); //We don't know the actual height before generating.
                     if (pos.getLevel().pickBiome(check.getFloorX(), height, check.getFloorZ()) == biomeId) {
                         return check;
                     }

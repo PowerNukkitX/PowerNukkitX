@@ -44,7 +44,7 @@ import java.util.Set;
 /**
  * @author PikyCZ, Buddelbubi
  */
-public class EntityZombiePigman extends EntityMob implements EntityWalkable, EntitySmite { //Mojang seems to kept the old name?
+public class EntityZombiePigman extends EntityMob implements EntityWalkable, EntitySmite { //Mojang seems to have kept the old name?
     @Override
     @NotNull
     public String getIdentifier() {

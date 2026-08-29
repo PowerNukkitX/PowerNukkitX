@@ -1,9 +1,7 @@
 package org.powernukkitx.level;
 
 import org.cloudburstmc.protocol.bedrock.data.payload.move.MoveActorDeltaData;
-import org.cloudburstmc.protocol.bedrock.data.payload.move.MovePlayerTeleportData;
 import org.cloudburstmc.protocol.bedrock.data.payload.move.PositionMode;
-import org.cloudburstmc.protocol.bedrock.data.payload.move.TeleportationCause;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
@@ -17,6 +15,7 @@ import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.config.category.GameplaySettings;
+import org.powernukkitx.event.level.ChunkTickEvent;
 import org.powernukkitx.level.tickingarea.TickingArea;
 import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
 import org.powernukkitx.entity.Entity;
@@ -54,6 +53,9 @@ import org.powernukkitx.level.format.ChunkState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.format.LevelProviderFactory;
+import org.powernukkitx.level.format.LevelProviderManager;
+import org.powernukkitx.level.format.ReflectiveLevelProviderFactory;
 import org.powernukkitx.level.format.UnsafeChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.generator.BiomedGenerator;
@@ -62,7 +64,6 @@ import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
 import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.level.particle.Particle;
-import org.powernukkitx.level.tickingarea.TickingArea;
 import org.powernukkitx.level.util.EntityQueryUtils;
 import org.powernukkitx.level.util.SimpleTickCachedBlockStore;
 import org.powernukkitx.level.util.TickCachedBlockStore;
@@ -90,11 +91,13 @@ import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -106,6 +109,11 @@ import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.InitializeRegistryData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.SyncStateData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.SyncWorldClockStateData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.TimeMarkerData;
+import org.cloudburstmc.protocol.bedrock.data.payload.clock.WorldClockData;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUsePredictedResult;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUseTriggerType;
@@ -162,6 +170,18 @@ public class Level implements Metadatable {
     public static final int TIME_MIDNIGHT = 18000;
     public static final int TIME_SUNRISE = 23000;
     public static final int TIME_FULL = 24000;
+
+    private static final long OVERWORLD_CLOCK_ID = 7194480507151251734L;
+
+    private static final List<TimeMarkerData> OVERWORLD_TIME_MARKERS = List.of(
+            createTimeMarker(2625810911898139949L, "minecraft:sunrise", 23000, 24000),
+            createTimeMarker(4918950784056990566L, "minecraft:night", 13000, 24000),
+            createTimeMarker(6827470627776846754L, "minecraft:noon", 6000, 24000),
+            createTimeMarker(-7184653752370368672L, "minecraft:midnight", 18000, 24000),
+            createTimeMarker(-4807795260250801598L, "minecraft:day", 1000, 24000),
+            createTimeMarker(-1781951082890426794L, "minecraft:sunset", 12000, 24000)
+    );
+
     public static final int DIMENSION_OVERWORLD = 0;
     public static final int DIMENSION_NETHER = 1;
     public static final int DIMENSION_THE_END = 2;
@@ -401,19 +421,37 @@ public class Level implements Metadatable {
     /// antiXray system
     private AntiXraySystem antiXraySystem;
     private GameplaySettings gameplaySettings;
-    /** Cached {@code chunk-settings.lightUpdates}: gates all block/sky light work (boot-time only). */
+    /** Cached {@code chunk-settings.lightUpdates}: gates all block/skylight work (boot-time only). */
     private boolean lightUpdatesEnabled;
     /** Chunk hashes covered by ticking areas of this level; rebuilt when the ticking-area version changes. */
     private LongOpenHashSet tickingAreaChunkHashes;
     /** Resolved chunk set for tick-all mode ({@code chunksPerTicks < 0}); see tickAllChunksCached. */
     private IChunk[] cachedTickChunks;
-    private long cachedTickChunksLoaderKey;
+    /**
+     * Chunk hash to the number of chunk loaders whose tick radius covers it, maintained
+     * incrementally as loaders move rather than rebuilt from scratch. Purely geometric: it says
+     * nothing about whether a chunk is loaded, which is applied later by
+     * {@link #resolveTickChunks}. That separation is what lets a chunk loading or unloading
+     * invalidate only the resolved array instead of forcing a full re-expansion.
+     */
+    private final Long2IntOpenHashMap loaderCoverage = new Long2IntOpenHashMap();
+    /** {@link #loaderCoveragePosition} value meaning "this loader contributes no coverage yet". */
+    private static final long COVERAGE_ABSENT = Long.MIN_VALUE;
+    /**
+     * Loader id to the chunk position its {@link #loaderCoverage} contribution was applied for.
+     * Absent loaders report {@link #COVERAGE_ABSENT} rather than fastutil's default of zero,
+     * which is indistinguishable from a real position - {@code chunkHash(0, 0)} is also zero.
+     */
+    private final Int2LongOpenHashMap loaderCoveragePosition = newCoveragePositionMap();
+    /** Scratch for {@link #refreshLoaderCoverage}, so the radius work happens off the loaders monitor. */
+    private final LongArrayList coverageRemovals = new LongArrayList();
+    private final LongArrayList coverageAdditions = new LongArrayList();
     /** Set on chunk load/unload (any thread) so the tick-all cache rebuilds next tick. */
     private volatile boolean tickChunkCacheDirty = true;
     /**
      * {@link TickingAreaManager#getVersion()} the {@link #tickingAreaChunkHashes} were built
-     * from. Owned by appendTickingAreaChunks; the tick-all cache check reads it too, which is
-     * safe because appendTickingAreaChunks runs inside the cache rebuild.
+     * from. Owned by {@link #refreshTickingAreaHashes}; the tick-all cache check reads it too,
+     * which is safe because that refresh runs inside the resolve it triggers.
      */
     private long tickingAreaHashesVersion = -1;
     /**
@@ -432,11 +470,16 @@ public class Level implements Metadatable {
     private int rainTime = 0;
     private boolean thundering = false;
     private int thunderTime = 0;
-    private Object2IntOpenHashMap<String> playerWeatherShowMap = new Object2IntOpenHashMap<String>();
 
     ///
 
     public Level(Server server, String name, String path, int dimSum, Class<? extends LevelProvider> provider, LevelConfig.GeneratorConfig generatorConfig) {
+        this(server, name, path, dimSum,
+                new ReflectiveLevelProviderFactory(LevelProviderManager.getProviderName(provider), provider),
+                generatorConfig);
+    }
+
+    public Level(Server server, String name, String path, int dimSum, LevelProviderFactory providerFactory, LevelConfig.GeneratorConfig generatorConfig) {
         this.levelId = levelIdCounter++;
         this.dimensionCount = dimSum;
         this.blockMetadata = new BlockMetadataStore(this);
@@ -459,9 +502,9 @@ public class Level implements Metadatable {
         }
 
         try {
-            this.provider = new AtomicReference<>(provider.getConstructor(Level.class, String.class).newInstance(this, path));
-        } catch (ReflectiveOperationException e) {
-            throw new LevelException("Constructor of " + provider + " failed", e);
+            this.provider = new AtomicReference<>(providerFactory.create(this, path));
+        } catch (Exception e) {
+            throw new LevelException("Level provider " + providerFactory.getName() + " failed to open " + path, e);
         }
         LevelProvider levelProvider = requireProvider();
         //to be changed later as the Dim0 will be deleted to be put in a config.json file of the world
@@ -787,6 +830,104 @@ public class Level implements Metadatable {
 
         if (players == null || players.length == 0) {
             addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
+        } else {
+            Server.broadcastPacket(players, packet);
+        }
+    }
+
+    public void playMusic(String trackName) {
+        this.playMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE, (Player[]) null);
+    }
+
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.playMusic(trackName, volume, fadeSeconds, repeatMode, (Player[]) null);
+    }
+
+    /**
+     * Immediately starts a music track, replacing the currently playing one.
+     *
+     * @param trackName  the name of the music track, for example {@code record.pigstep}
+     * @param volume     the volume of the track, between 0 and 1
+     * @param fadeSeconds the duration of the fade between the previous track and this one, between 0 and 10
+     * @param repeatMode how the track should be repeated
+     * @param players    the players who should hear the music, all players of this level when null or empty
+     */
+    public void playMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode, Player... players) {
+        this.sendMusicEvent(LevelEvent.PLAY_CUSTOM_MUSIC, musicTag(trackName, volume, fadeSeconds, repeatMode), players);
+    }
+
+    public void queueMusic(String trackName) {
+        this.queueMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE, (Player[]) null);
+    }
+
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        this.queueMusic(trackName, volume, fadeSeconds, repeatMode, (Player[]) null);
+    }
+
+    /**
+     * Queues a music track, it starts once the currently playing track has finished.
+     *
+     * @see #playMusic(String, float, float, MusicRepeatMode, Player...)
+     */
+    public void queueMusic(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode, Player... players) {
+        this.sendMusicEvent(LevelEvent.QUEUE_CUSTOM_MUSIC, musicTag(trackName, volume, fadeSeconds, repeatMode), players);
+    }
+
+    public void stopMusic() {
+        this.stopMusic(0, (Player[]) null);
+    }
+
+    public void stopMusic(float fadeSeconds) {
+        this.stopMusic(fadeSeconds, (Player[]) null);
+    }
+
+    /**
+     * Stops the currently playing music track and clears the queue.
+     *
+     * @param fadeSeconds the duration of the fade out, between 0 and 10
+     * @param players     the players the music should be stopped for, all players of this level when null or empty
+     */
+    public void stopMusic(float fadeSeconds, Player... players) {
+        Preconditions.checkArgument(fadeSeconds >= 0 && fadeSeconds <= 10, "Music fade seconds must be between 0 and 10");
+
+        this.sendMusicEvent(LevelEvent.STOP_CUSTOM_MUSIC, new CompoundTag().putFloat("fadeSeconds", fadeSeconds), players);
+    }
+
+    public void setMusicVolume(float volume) {
+        this.setMusicVolume(volume, (Player[]) null);
+    }
+
+    /**
+     * Changes the volume of the currently playing music track.
+     *
+     * @param volume  the volume of the track, between 0 and 1
+     * @param players the players the volume should be changed for, all players of this level when null or empty
+     */
+    public void setMusicVolume(float volume, Player... players) {
+        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Music volume must be between 0 and 1");
+
+        this.sendMusicEvent(LevelEvent.SET_MUSIC_VOLUME, new CompoundTag().putFloat("volume", volume), players);
+    }
+
+    private static CompoundTag musicTag(String trackName, float volume, float fadeSeconds, MusicRepeatMode repeatMode) {
+        Preconditions.checkNotNull(trackName, "trackName");
+        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Music volume must be between 0 and 1");
+        Preconditions.checkArgument(fadeSeconds >= 0 && fadeSeconds <= 10, "Music fade seconds must be between 0 and 10");
+
+        return new CompoundTag()
+                .putString("trackName", trackName)
+                .putFloat("volume", volume)
+                .putFloat("fadeSeconds", fadeSeconds)
+                .putBoolean("repeatMode", repeatMode.isLooping());
+    }
+
+    private void sendMusicEvent(LevelEventType type, CompoundTag data, Player... players) {
+        final LevelEventGenericPacket packet = new LevelEventGenericPacket();
+        packet.setType(type);
+        packet.setTag(data.toNetwork());
+
+        if (players == null || players.length == 0) {
+            Server.broadcastPacket(this.players.values(), packet);
         } else {
             Server.broadcastPacket(players, packet);
         }
@@ -1147,14 +1288,41 @@ public class Level implements Metadatable {
     }
 
     public void sendTime(Player... players) {
-        final SetTimePacket pk = new SetTimePacket();
-        pk.setTime((int) this.time);
+        final SyncWorldClockStateData clockState = new SyncWorldClockStateData();
+        clockState.setClockId(OVERWORLD_CLOCK_ID);
+        clockState.setTime((int) this.time);
+        clockState.setPaused(this.isWorldClockPaused());
 
-        Server.broadcastPacket(players, pk);
+        final SyncStateData syncState = new SyncStateData();
+        syncState.getClockData().add(clockState);
+
+        final SyncWorldClocksPacket packet = new SyncWorldClocksPacket();
+        packet.setData(syncState);
+
+        for (Player player : players) {
+            player.sendPacketImmediately(packet);
+        }
     }
 
     public void sendTime() {
         this.sendTime(this.players.values().toArray(Player.EMPTY_ARRAY));
+    }
+
+    public void sendWorldClock(Player player) {
+        final WorldClockData worldClock = new WorldClockData();
+        worldClock.setId(OVERWORLD_CLOCK_ID);
+        worldClock.setName("minecraft:overworld");
+        worldClock.setTime((int) this.time);
+        worldClock.setPaused(this.isWorldClockPaused());
+        worldClock.getTimeMarkers().addAll(OVERWORLD_TIME_MARKERS);
+
+        final InitializeRegistryData registryData = new InitializeRegistryData();
+        registryData.getClockData().add(worldClock);
+
+        final SyncWorldClocksPacket packet = new SyncWorldClocksPacket();
+        packet.setData(registryData);
+
+        player.sendPacketImmediately(packet);
     }
 
     public GameRules getGameRules() {
@@ -1286,9 +1454,9 @@ public class Level implements Metadatable {
             updateBlockLight();
             if (prof) phase[1] = -phaseStart + (phaseStart = System.nanoTime());
             this.checkTime();
-            if (this.tickTime >= nextTimeSendMillis) { // Send time to client every 30 seconds to make sure it
+            if (this.tickTime >= nextTimeSendMillis) {
                 this.sendTime();
-                nextTimeSendMillis = this.tickTime + 30_000L;
+                nextTimeSendMillis = this.tickTime + 12_800L;
             }
 
             // check highlighted chunks (the 3x3 chunks around players)
@@ -1332,10 +1500,14 @@ public class Level implements Metadatable {
 
                 // Only tick if the chunk is in use, helps to keep block ticks in sync when reload chunk
                 if (isChunkInUse(hash)) {
-                    BlockUpdateEvent event = new BlockUpdateEvent(block);
-                    this.server.getPluginManager().callEvent(event);
+                    boolean cancelled = false;
+                    if (!BlockUpdateEvent.getHandlers().isEmpty()) {
+                        BlockUpdateEvent event = new BlockUpdateEvent(block);
+                        this.server.getPluginManager().callEvent(event);
+                        cancelled = event.isCancelled();
+                    }
 
-                    if (!event.isCancelled()) {
+                    if (!cancelled) {
                         block.onUpdate(BLOCK_UPDATE_NORMAL);
                         if (queuedUpdate.neighbor != null) {
                             block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
@@ -1348,15 +1520,15 @@ public class Level implements Metadatable {
                 // skip unless previous tick's serial loop saw entity implementing EntityAsyncPrepare
                 if (this.hasAsyncPrepareEntities) {
                     CompletableFuture.runAsync(() -> updateEntities.keySet()
-                            .longParallelStream().forEach(id -> {
-                                Entity entity = this.updateEntities.get(id);
-                                if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                                    try {
-                                        entityAsyncPrepare.asyncPrepare(getTick());
-                                    } catch (Exception e) {
-                                    }
+                        .longParallelStream().forEach(id -> {
+                            Entity entity = this.updateEntities.get(id);
+                            if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                try {
+                                    entityAsyncPrepare.asyncPrepare(getTick());
+                                } catch (Exception e) {
                                 }
-                            }), Server.getInstance().getComputeThreadPool()).join();
+                            }
+                        }), this.scheduler.getAsyncTaskThreadPool()).join();
                 }
                 boolean seenAsyncPrepare = false;
                 for (long id : this.updateEntities.keySetLong()) {
@@ -1525,27 +1697,26 @@ public class Level implements Metadatable {
             return;
         }
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
-            for (String key : playerWeatherShowMap.keySet()) {
-                int intValue = playerWeatherShowMap.getInt(key);
-                if (intValue == 0) {
-                    Player player = server.getPlayer(key);
-                    if (player != null) {
-                        if (isRaining()) {
-                            final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
-                            levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
-                            levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                            levelEventPacketStartRain.setData(this.rainTime);
-                            player.sendPacket(levelEventPacketStartRain);
-                            this.playerWeatherShowMap.put(key, 1);
-                            if (isThundering()) {
-                                final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
-                                levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
-                                levelEventPacketStartThunder.setData(this.thunderTime);
-                                levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                                player.sendPacket(levelEventPacketStartThunder);
-                                this.playerWeatherShowMap.put(key, 2);
-                            }
-                        }
+            if (isRaining()) {
+                final boolean thundering = this.thundering;
+                for (Player player : this.players.values()) {
+                    if (player.getShownWeather() != WeatherDisplay.NONE) {
+                        continue;
+                    }
+                    final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
+                    levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
+                    levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
+                    levelEventPacketStartRain.setData(this.rainTime);
+                    player.sendPacket(levelEventPacketStartRain);
+                    if (thundering) {
+                        final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
+                        levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
+                        levelEventPacketStartThunder.setData(this.thunderTime);
+                        levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
+                        player.sendPacket(levelEventPacketStartThunder);
+                        player.setShownWeather(WeatherDisplay.THUNDER);
+                    } else {
+                        player.setShownWeather(WeatherDisplay.RAIN);
                     }
                 }
             }
@@ -1686,14 +1857,14 @@ public class Level implements Metadatable {
             }
         }
 
-        if (playerCount > 0 && sleepingPlayerCount / playerCount * 100 >= this.gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
+        if (playerCount > 0 && sleepingPlayerCount * 100 / playerCount >= this.gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
             int time = (int) (this.getTime() % Level.TIME_FULL);
 
             if (isNight() || isThundering()) {
                 this.setTime(this.getTime() + Level.TIME_FULL - time);
 
                 for (Player p : this.getPlayers().values()) {
-                    p.stopSleep();
+                    p.stopSleep(false);
                 }
                 this.noSleepNights = 0;
             }
@@ -1771,7 +1942,7 @@ public class Level implements Metadatable {
             int runtimeId;
             if (b instanceof Block block) {
                 runtimeId = block.getRuntimeId();
-                if (block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntitySpawnable spawnable) {
+                if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntitySpawnable spawnable) {
                     packets.add(spawnable.getSpawnPacket());
                 }
             } else if (b instanceof Vector3WithRuntimeId vRid) {
@@ -1802,6 +1973,8 @@ public class Level implements Metadatable {
         if (this.chunksPerTicks == 0 || (this.loaders.isEmpty() && !hasTickingAreas)) {
             this.chunkTickList.clear();
             this.cachedTickChunks = null;
+            this.loaderCoverage.clear();
+            this.loaderCoveragePosition.clear();
             return;
         }
 
@@ -1890,18 +2063,12 @@ public class Level implements Metadatable {
      * border, a chunk loaded or unloaded, or ticking areas changed.
      */
     private void tickAllChunksCached(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion, int tickSpeed) {
-        long loaderKey = 1;
-        synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                loaderKey = loaderKey * 31 + Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
-            }
-        }
+        boolean coverageChanged = refreshLoaderCoverage();
         if (this.cachedTickChunks == null || this.tickChunkCacheDirty
-                || loaderKey != this.cachedTickChunksLoaderKey
-                || areaVersion != this.tickingAreaHashesVersion) {
+                || areaVersion != this.tickingAreaHashesVersion
+                || coverageChanged) {
             this.tickChunkCacheDirty = false;
-            this.cachedTickChunksLoaderKey = loaderKey;
-            rebuildTickAllChunkCache(areaManager, hasTickingAreas, areaVersion);
+            resolveTickChunks(areaManager, hasTickingAreas, areaVersion);
         }
         for (IChunk chunk : this.cachedTickChunks) {
             if (!chunk.isLoaded()) {
@@ -1911,42 +2078,124 @@ public class Level implements Metadatable {
         }
     }
 
-    private void rebuildTickAllChunkCache(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
-        this.chunkTickList.clear();
-        LevelProvider provider = requireProvider();
+    private static Int2LongOpenHashMap newCoveragePositionMap() {
+        Int2LongOpenHashMap map = new Int2LongOpenHashMap();
+        map.defaultReturnValue(COVERAGE_ABSENT);
+        return map;
+    }
+
+    private boolean refreshLoaderCoverage() {
+        this.coverageRemovals.clear();
+        this.coverageAdditions.clear();
         synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                int chunkX = (int) loader.getX() >> 4;
-                int chunkZ = (int) loader.getZ() >> 4;
-                for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
-                    for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
-                        long hash = Level.chunkHash(chunkX + dx, chunkZ + dz);
-                        if (provider.isChunkLoaded(hash)) {
-                            this.chunkTickList.put(hash, -1);
-                        }
+            for (Int2ObjectMap.Entry<ChunkLoader> entry : this.loaders.int2ObjectEntrySet()) {
+                ChunkLoader loader = entry.getValue();
+                long position = Level.chunkHash((int) loader.getX() >> 4, (int) loader.getZ() >> 4);
+                long previous = this.loaderCoveragePosition.put(entry.getIntKey(), position);
+                if (previous == position) {
+                    continue;
+                }
+                if (previous != COVERAGE_ABSENT) {
+                    this.coverageRemovals.add(previous);
+                }
+                this.coverageAdditions.add(position);
+            }
+            if (this.loaderCoveragePosition.size() != this.loaders.size()) {
+                ObjectIterator<Int2LongMap.Entry> iterator = this.loaderCoveragePosition.int2LongEntrySet().iterator();
+                while (iterator.hasNext()) {
+                    Int2LongMap.Entry entry = iterator.next();
+                    if (!this.loaders.containsKey(entry.getIntKey())) {
+                        this.coverageRemovals.add(entry.getLongValue());
+                        iterator.remove();
                     }
                 }
             }
         }
-        appendTickingAreaChunks(areaManager, hasTickingAreas, areaVersion);
-
-        List<IChunk> resolved = new ArrayList<>(this.chunkTickList.size());
-        for (Long2IntMap.Entry entry : this.chunkTickList.long2IntEntrySet()) {
-            long index = entry.getLongKey();
-            if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
-                    && !areNeighboringChunksLoaded(index)) {
-                continue;
-            }
-            IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
-            if (chunk != null) {
-                resolved.add(chunk);
-            }
+        if (this.coverageRemovals.isEmpty() && this.coverageAdditions.isEmpty()) {
+            return false;
         }
-        this.chunkTickList.clear();
-        this.cachedTickChunks = resolved.toArray(new IChunk[0]);
+        for (int i = 0; i < this.coverageRemovals.size(); i++) {
+            applyCoverage(this.coverageRemovals.getLong(i), -1);
+        }
+        for (int i = 0; i < this.coverageAdditions.size(); i++) {
+            applyCoverage(this.coverageAdditions.getLong(i), 1);
+        }
+        return true;
     }
 
-    private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+    /**
+     * Adds or withdraws one loader's tick-radius square from {@link #loaderCoverage}. A chunk
+     * drops out only once no loader covers it, so overlapping loaders cannot uncover each other.
+     *
+     * @param centre the loader's chunk position
+     * @param delta  {@code 1} to add coverage, {@code -1} to withdraw it
+     */
+    private void applyCoverage(long centre, int delta) {
+        int chunkX = getHashX(centre);
+        int chunkZ = getHashZ(centre);
+        for (int dx = -this.chunkTickRadius; dx <= this.chunkTickRadius; dx++) {
+            long xPart = ((long) (chunkX + dx)) << 32;
+            for (int dz = -this.chunkTickRadius; dz <= this.chunkTickRadius; dz++) {
+                long hash = xPart | ((chunkZ + dz) & 0xffffffffL);
+                if (this.loaderCoverage.addTo(hash, delta) + delta <= 0) {
+                    this.loaderCoverage.remove(hash);
+                }
+            }
+        }
+    }
+
+    /** Turns the covered chunk hashes, plus any ticking areas, into the array the tick iterates. */
+    private void resolveTickChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+        refreshTickingAreaHashes(areaManager, hasTickingAreas, areaVersion);
+
+        List<IChunk> resolved = new ArrayList<>(this.loaderCoverage.size());
+        LongIterator covered = this.loaderCoverage.keySet().iterator();
+        while (covered.hasNext()) {
+            addResolvedTickChunk(covered.nextLong(), resolved);
+        }
+        if (this.tickingAreaChunkHashes != null) {
+            LongIterator areaChunks = this.tickingAreaChunkHashes.iterator();
+            while (areaChunks.hasNext()) {
+                long index = areaChunks.nextLong();
+                if (!this.loaderCoverage.containsKey(index)) {
+                    addResolvedTickChunk(index, resolved);
+                }
+            }
+        }
+
+        IChunk[] target = this.cachedTickChunks;
+        if (target == null || target.length != resolved.size()) {
+            target = new IChunk[resolved.size()];
+        }
+        this.cachedTickChunks = resolved.toArray(target);
+    }
+
+    /**
+     * Adds a covered chunk to the tick set if it is loaded, and either sits in a ticking area or
+     * has its neighbours loaded.
+     * <p>
+     * Coverage is geometric, so unloaded chunks reach here; the single {@code getChunk} lookup
+     * runs first to reject them before the four-lookup neighbour check.
+     */
+    private void addResolvedTickChunk(long index, List<IChunk> resolved) {
+        if (!ChunkTickEvent.getHandlers().isEmpty()) {
+            ChunkTickEvent event = new ChunkTickEvent(this, index);
+            getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) return;
+        }
+        IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
+        if (chunk == null) {
+            return;
+        }
+        if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
+                && !areNeighboringChunksLoaded(index)) {
+            return;
+        }
+        resolved.add(chunk);
+    }
+
+    /** Rebuilds {@link #tickingAreaChunkHashes} when the ticking-area version moved. */
+    private void refreshTickingAreaHashes(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
         if (!hasTickingAreas) {
             this.tickingAreaChunkHashes = null;
             this.tickingAreaHashesVersion = areaVersion;
@@ -1964,6 +2213,13 @@ public class Level implements Metadatable {
                 }
             }
             this.tickingAreaChunkHashes = hashes;
+        }
+    }
+
+    private void appendTickingAreaChunks(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion) {
+        refreshTickingAreaHashes(areaManager, hasTickingAreas, areaVersion);
+        if (this.tickingAreaChunkHashes == null) {
+            return;
         }
         LevelProvider provider = requireProvider();
         for (long hash : this.tickingAreaChunkHashes) {
@@ -2981,8 +3237,9 @@ public class Level implements Metadatable {
         blockPrevious.level = this;
         blockPrevious.layer = layer;
 
-        BlockChangeEvent blockChangeEvent = new BlockChangeEvent(block, blockPrevious);
-        this.server.getPluginManager().callEvent(blockChangeEvent);
+        if (!BlockChangeEvent.getHandlers().isEmpty()) {
+            this.server.getPluginManager().callEvent(new BlockChangeEvent(block, blockPrevious));
+        }
 
         if (layer == 0) {
             this.villageManager.onBlockChange(blockPrevious, block);
@@ -3010,16 +3267,21 @@ public class Level implements Metadatable {
                 updateAllLight(block);
             }
 
-            BlockUpdateEvent ev = new BlockUpdateEvent(block);
-            this.server.getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
+            BlockUpdateEvent ev = null;
+            if (!BlockUpdateEvent.getHandlers().isEmpty()) {
+                ev = new BlockUpdateEvent(block);
+                this.server.getPluginManager().callEvent(ev);
+            }
+            if (ev == null || !ev.isCancelled()) {
                 if (!this.entities.isEmpty()) {
                     for (Entity entity : this.fastNearbyEntities(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
                         entity.scheduleUpdate();
                     }
                 }
 
-                block = ev.getBlock();
+                if (ev != null) {
+                    block = ev.getBlock();
+                }
                 block.onUpdate(BLOCK_UPDATE_NORMAL);
                 block.getLevelBlockAtLayer(layer == 0 ? 1 : 0).onUpdate(BLOCK_UPDATE_NORMAL);
                 this.updateAround(x, y, z);
@@ -3031,6 +3293,11 @@ public class Level implements Metadatable {
         }
 
         blockPrevious.afterRemoval(block, update);
+
+        if (layer == 0 && !(block instanceof BlockLiquid) && !(blockPrevious instanceof BlockLiquid)
+                && chunk.getBlockState(x & 0xF, y, z & 0xF, 1) != BlockAir.STATE) {
+            BlockLiquid.normalizeWaterloggedLayer(this, x, y, z);
+        }
 
         if (block instanceof CustomBlock customBlock) {
             CustomBlockDefinition def = customBlock.getDefinition();
@@ -3094,83 +3361,106 @@ public class Level implements Metadatable {
         if (!gameplaySettings.enableItemDrops()) {
             return;
         }
-        if (motion == null) {
-            if (dropAround) {
-                float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
-                float f1 = ThreadLocalRandom.current().nextFloat() * ((float) Math.PI * 2);
-
-                motion = new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
-            } else {
-                motion = new Vector3(ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1, 0.2,
-                        ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1);
-            }
-        }
-
         if (item.isNull()) {
             return;
         }
-        EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
-                this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
-                        .putShort("Health", (short) 5)
-                        .putCompound("Item", ItemHelper.write(item))
-                        .putShort("PickupDelay", (short) delay)
-                        .putBoolean("ShouldDespawn", item.shouldDespawn())
-        );
 
-        if (itemEntity != null) {
-            itemEntity.spawnToAll();
+        for (Item stack : splitOversizedStack(item)) {
+            Vector3 stackMotion = motion == null ? randomDropMotion(dropAround) : motion;
+            EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
+                    this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
+                    Entity.getDefaultNBT(source, stackMotion, new Random().nextFloat() * 360, 0)
+                            .putShort("Health", (short) 5)
+                            .putCompound("Item", ItemHelper.write(stack))
+                            .putShort("PickupDelay", (short) delay)
+                            .putBoolean("ShouldDespawn", stack.shouldDespawn())
+            );
+
+            if (itemEntity != null) {
+                itemEntity.spawnToAll();
+            }
         }
     }
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item) {
-        return this.dropAndGetItem(source, item, null);
+    private static Vector3 randomDropMotion(boolean dropAround) {
+        if (dropAround) {
+            float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
+            float f1 = ThreadLocalRandom.current().nextFloat() * ((float) Math.PI * 2);
+
+            return new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
+        }
+        return new Vector3(ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1, 0.2,
+                ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1);
     }
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
-        return this.dropAndGetItem(source, item, motion, 10);
+    /**
+     * Splits a stack that holds more items than it is allowed to into several valid stacks, because the client
+     * cannot handle item entities holding more than the maximum stack size and disconnects when it receives one.
+     *
+     * @return the resulting stacks, without any item loss
+     */
+    private static List<Item> splitOversizedStack(Item item) {
+        int maxStackSize = item.getMaxStackSize();
+        if (maxStackSize <= 0 || item.getCount() <= maxStackSize) {
+            return Collections.singletonList(item);
+        }
+
+        int remaining = item.getCount();
+        List<Item> stacks = new ArrayList<>((remaining + maxStackSize - 1) / maxStackSize);
+        while (remaining > 0) {
+            int count = Math.min(maxStackSize, remaining);
+            Item stack = item.clone();
+            stack.setCount(count);
+            stacks.add(stack);
+            remaining -= count;
+        }
+        return stacks;
     }
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
-        return this.dropAndGetItem(source, item, motion, false, delay);
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item) {
+        return this.dropItemAndGetEntities(source, item, null);
     }
 
-    public @Nullable EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
+        return this.dropItemAndGetEntities(source, item, motion, 10);
+    }
+
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
+        return this.dropItemAndGetEntities(source, item, motion, false, delay);
+    }
+
+    /**
+     * @return the dropped item entity, or the first one if the stack had to be split into several entities
+     */
+    public @Nullable EntityItem[] dropItemAndGetEntities(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
         if (!gameplaySettings.enableItemDrops()) {
             return null;
         }
         if (item.isNull()) {
             return null;
         }
-        if (motion == null) {
-            if (dropAround) {
-                float f = ThreadLocalRandom.current().nextFloat() * 0.5f;
-                float f1 = ThreadLocalRandom.current().nextFloat() * ((float) Math.PI * 2);
+        List<EntityItem> itemEntities = new ArrayList<>();
+        for (Item stack : splitOversizedStack(item)) {
+            Vector3 stackMotion = motion == null ? randomDropMotion(dropAround) : motion;
+            CompoundTag itemTag = ItemHelper.write(stack);
+            EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
+                    this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
+                    new CompoundTag().putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(source.getX()))
+                                    .add(new DoubleTag(source.getY())).add(new DoubleTag(source.getZ())))
+                            .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(stackMotion.x))
+                                    .add(new DoubleTag(stackMotion.y)).add(new DoubleTag(stackMotion.z)))
+                            .putList("Rotation", new ListTag<FloatTag>()
+                                    .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
+                                    .add(new FloatTag(0)))
+                            .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
 
-                motion = new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
-            } else {
-                motion = new Vector3(new Random().nextDouble() * 0.2 - 0.1, 0.2,
-                        new Random().nextDouble() * 0.2 - 0.1);
+            if (itemEntity != null) {
+                itemEntity.spawnToAll();
+                itemEntities.add(itemEntity);
             }
         }
 
-        CompoundTag itemTag = ItemHelper.write(item);
-        EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
-                this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                new CompoundTag().putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(source.getX()))
-                                .add(new DoubleTag(source.getY())).add(new DoubleTag(source.getZ())))
-                        .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(motion.x))
-                                .add(new DoubleTag(motion.y)).add(new DoubleTag(motion.z)))
-                        .putList("Rotation", new ListTag<FloatTag>()
-                                .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
-                                .add(new FloatTag(0)))
-                        .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
-
-        if (itemEntity != null) {
-            itemEntity.spawnToAll();
-        }
-
-        return itemEntity;
+        return itemEntities.toArray(EntityItem[]::new);
     }
 
     public Item useBreakOn(@NotNull Vector3 vector) {
@@ -4457,17 +4747,23 @@ public class Level implements Metadatable {
     }
 
     public Position getFuzzySpawnLocation() {
+        return this.getFuzzySpawnLocation(Math.max(0, gameRules.getInteger(GameRule.SPAWN_RADIUS)));
+    }
+
+    public Position getFuzzySpawnLocation(int radius) {
         Position spawn = getSpawnLocation();
-        int radius = gameRules.getInteger(GameRule.SPAWN_RADIUS);
+
         if (radius > 0) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             int negativeFlags = random.nextInt(4);
+
             spawn = spawn.add(
                     radius * random.nextDouble() * ((negativeFlags & 1) > 0 ? -1 : 1),
                     0,
                     radius * random.nextDouble() * ((negativeFlags & 2) > 0 ? -1 : 1)
             );
         }
+
         return spawn;
     }
 
@@ -4580,7 +4876,6 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.remove(entity.getId());
-            this.playerWeatherShowMap.removeInt(p.getName());
             this.checkSleep();
         } else {
             entity.close();
@@ -4597,7 +4892,7 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.put(entity.getId(), p);
-            this.playerWeatherShowMap.put(p.getName(), 0);
+            p.setShownWeather(WeatherDisplay.NONE);
         }
         this.entities.put(entity.getId(), entity);
     }
@@ -4785,7 +5080,7 @@ public class Level implements Metadatable {
     }
 
     /**
-     * submit a unload chunk request.
+     * submit an unload chunk request.
      *
      * @param x    the x
      * @param z    the z
@@ -4897,10 +5192,31 @@ public class Level implements Metadatable {
     }
 
     public Position getSafeSpawn() {
-        return getSafeSpawn(null);
+        int spawnRadius = Math.max(0, gameRules.getInteger(GameRule.SPAWN_RADIUS));
+        Position worldSpawn = this.getSpawnLocation().add(0.5, 0, 0.5);
+
+        if (spawnRadius == 0) {
+            Position safeSpawn = this.getSafeSpawnAtColumn(worldSpawn, true);
+            return safeSpawn != null ? safeSpawn : worldSpawn;
+        }
+
+        for (int attempt = 0; attempt < 16; attempt++) {
+            Position randomizedSpawn = this.getFuzzySpawnLocation(spawnRadius);
+            Position safeSpawn = this.getSafeSpawnAtColumn(randomizedSpawn, true);
+
+            if (safeSpawn != null) {
+                return safeSpawn;
+            }
+        }
+
+        return getSafeSpawn(worldSpawn, spawnRadius, true);
     }
 
     public Position getSafeSpawn(Vector3 spawn) {
+        if (spawn == null) {
+            return getSafeSpawn();
+        }
+
         return getSafeSpawn(spawn, getServer().getSettings().playerSettings().spawnRadius());
     }
 
@@ -4913,11 +5229,10 @@ public class Level implements Metadatable {
     }
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder, boolean checkHighest) {
-        if (spawn == null)
-            spawn = (horizontalMaxOffset == 0) ? this.getSpawnLocation().add(0.5, 0, 0.5) : this.getFuzzySpawnLocation();
-        if (spawn == null)
-            return null;
-        if (standable(spawn, allowWaterUnder) || horizontalMaxOffset == 0)
+        if (spawn == null) {
+            return getSafeSpawn();
+        }
+        if (standable(spawn, allowWaterUnder))
             return Position.fromObject(spawn, this);
 
         int maxY = getDimensionData().getMaxHeight();
@@ -4952,6 +5267,54 @@ public class Level implements Metadatable {
         return Position.fromObject(spawn, this);
     }
 
+    private Position getSafeSpawnAtColumn(Vector3 spawn, boolean allowWaterUnder) {
+        if (spawn == null) {
+            return null;
+        }
+
+        Position spawnPosition = Position.fromObject(spawn, this);
+
+        if (standable(spawnPosition, allowWaterUnder)) {
+            return spawnPosition;
+        }
+
+        int highestY = getHighestBlockAt(spawn.getFloorX(), spawn.getFloorZ());
+        Position highestPosition = Position.fromObject(spawn.setY(highestY), this);
+
+        if (standable(highestPosition, allowWaterUnder)) {
+            return highestPosition;
+        }
+
+        int maxY = getDimensionData().getMaxHeight();
+        int minY = getDimensionData().getMinHeight();
+
+        for (int offset = 1; offset <= maxY - minY; offset++) {
+            int upY = highestY + offset;
+            if (upY <= maxY) {
+                Position checkUp = Position.fromObject(new Vector3(spawn.x, upY, spawn.z), this);
+
+                if (standable(checkUp, allowWaterUnder)) {
+                    return checkUp;
+                }
+            }
+
+            int downY = highestY - offset;
+            if (downY >= minY) {
+                Position checkDown = Position.fromObject(new Vector3(spawn.x, downY, spawn.z), this);
+
+                if (standable(checkDown, allowWaterUnder)) {
+                    return checkDown;
+                }
+            }
+
+            if (upY > maxY && downY < minY) {
+                break;
+            }
+        }
+
+        return null;
+    }
+
     public boolean standable(Vector3 vec) {
         return standable(vec, false);
     }
@@ -4968,11 +5331,11 @@ public class Level implements Metadatable {
         if (!allowWaterUnder)
             return !blockUnder.canPassThrough()
                     && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || block.canPassThrough());
+                    && (blockUpper.isAir() || blockUpper.canPassThrough());
         else
             return (!blockUnder.canPassThrough() || blockUnder instanceof BlockFlowingWater)
                     && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || block.canPassThrough());
+                    && (blockUpper.isAir() || blockUpper.canPassThrough());
     }
 
     public boolean isTicked() {
@@ -5029,6 +5392,19 @@ public class Level implements Metadatable {
 
     public boolean isNight() {
         return (getDayTime() > 13184 && getDayTime() < 22800);
+    }
+
+    private static TimeMarkerData createTimeMarker(long id, String name, int time, int period) {
+        final TimeMarkerData marker = new TimeMarkerData();
+        marker.setId(id);
+        marker.setName(name);
+        marker.setTime(time);
+        marker.setPeriod(period);
+        return marker;
+    }
+
+    public boolean isWorldClockPaused() {
+        return false;
     }
 
     /**
@@ -5304,6 +5680,9 @@ public class Level implements Metadatable {
 
                 if (!chunksToSave.isEmpty() && getAutoSave()) {
                     for (IChunk c : chunksToSave) {
+                        if (!c.hasChanged()) {
+                            continue;
+                        }
                         for (BlockEntity be : c.getBlockEntities().values()) {
                             if (!be.closed) {
                                 be.saveNBT();
@@ -5377,10 +5756,6 @@ public class Level implements Metadatable {
         } else {
             packet.setPositionMode(PositionMode.NORMAL);
         }
-        final MovePlayerTeleportData teleportData = new MovePlayerTeleportData();
-        teleportData.setTeleportationCause(TeleportationCause.UNKNOWN);
-
-        packet.setTeleportData(teleportData);
 
         Server.broadcastPacket(entity.getViewers().values(), packet);
     }
@@ -5414,9 +5789,7 @@ public class Level implements Metadatable {
             data.setRotationYHead((float) headYaw);
             packet.getFlags().add(MoveActorDeltaPacket.Flag.HAS_HEAD_YAW);
         }
-        if (entity.onGround) {
-            packet.getFlags().add(MoveActorDeltaPacket.Flag.ON_GROUND);
-        }
+        data.setOnGround(entity.onGround);
 
         packet.setMoveData(data);
 
@@ -5450,7 +5823,7 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
+            p.setShownWeather(raining ? WeatherDisplay.RAIN : WeatherDisplay.NONE);
             p.sendPacket(pk);
         }
 
@@ -5498,7 +5871,7 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 2 : 0);
+            p.setShownWeather(raining ? WeatherDisplay.THUNDER : WeatherDisplay.NONE);
             p.sendPacket(pk);
         }
 
@@ -5538,6 +5911,18 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         Server.broadcastPacket(players, pk);
+
+        final WeatherDisplay shown;
+        if (this.isThundering()) {
+            shown = WeatherDisplay.THUNDER;
+        } else if (this.isRaining()) {
+            shown = WeatherDisplay.RAIN;
+        } else {
+            shown = WeatherDisplay.NONE;
+        }
+        for (Player player : players) {
+            player.setShownWeather(shown);
+        }
     }
 
     public void sendWeather(Player player) {
@@ -5695,6 +6080,29 @@ public class Level implements Metadatable {
     public boolean createPortal(Block target) {
         if (this.getDimension() == DIMENSION_THE_END) return false;
         int maxPortalSize = 23;
+        if (this.createPortalAtBase(target, maxPortalSize)) {
+            return true;
+        }
+
+        return this.createPortalBelow(target.asBlockVector3(), maxPortalSize);
+    }
+
+    private boolean createPortalBelow(BlockVector3 vector, int maxPortalSize) {
+        for (int offset = 0; offset < maxPortalSize; offset++) {
+            Block block = this.getBlock(vector.subtract(0, offset, 0).asVector3());
+            if (block.getId().equals(BlockID.OBSIDIAN)) {
+                return this.createPortalAtBase(block, maxPortalSize);
+            } else if (!block.isAir()) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean createPortalAtBase(Block target, int maxPortalSize) {
+        if (!target.getId().equals(BlockID.OBSIDIAN)) {
+            return false;
+        }
         final int targX = target.getFloorX();
         final int targY = target.getFloorY();
         final int targZ = target.getFloorZ();
@@ -5816,6 +6224,12 @@ public class Level implements Metadatable {
                 }
             }
 
+            for (int width = 0; width < innerWidth; width++) {
+                if (!this.getBlock(scanX - width, scanY - 1, scanZ).getId().equals(BlockID.OBSIDIAN)) {
+                    return false;
+                }
+            }
+
             for (int height = 0; height < innerHeight; height++) {
                 for (int width = 0; width < innerWidth; width++) {
                     this.setBlock(new Vector3(scanX - width, scanY + height, scanZ), Block.get(BlockID.PORTAL));
@@ -5901,6 +6315,12 @@ public class Level implements Metadatable {
                 }
             }
 
+            for (int width = 0; width < innerWidth; width++) {
+                if (!this.getBlock(scanX, scanY - 1, scanZ - width).getId().equals(BlockID.OBSIDIAN)) {
+                    return false;
+                }
+            }
+
             for (int height = 0; height < innerHeight; height++) {
                 for (int width = 0; width < innerWidth; width++) {
                     this.setBlock(new Vector3(scanX, scanY + height, scanZ - width), Block.get(BlockID.PORTAL));
@@ -5924,14 +6344,17 @@ public class Level implements Metadatable {
         Vector3 normalizedDirection = direction.divide(length);
 
         for (double t = 0.0; t < length; t += stepSize) {
-            int x = (int) Math.round(srcX + normalizedDirection.x * t);
-            int y = (int) Math.round(srcY + normalizedDirection.y * t);
-            int z = (int) Math.round(srcZ + normalizedDirection.z * t);
+            double rayX = srcX + normalizedDirection.x * t;
+            double rayY = srcY + normalizedDirection.y * t;
+            double rayZ = srcZ + normalizedDirection.z * t;
+            int x = NukkitMath.floorDouble(rayX);
+            int y = NukkitMath.floorDouble(rayY);
+            int z = NukkitMath.floorDouble(rayZ);
 
             Block block = getBlock(x, y, z);
-            if (block != null && block.getCollisionBoundingBox() != null) {
+            if (block != null && !block.canPassThrough() && block.getCollisionBoundingBox() != null) {
                 AxisAlignedBB bb = block.getCollisionBoundingBox();
-                if (bb.isVectorInside(x, y, z)) {
+                if (bb.isVectorInside(rayX, rayY, rayZ)) {
                     return true;
                 }
             }
@@ -5941,6 +6364,10 @@ public class Level implements Metadatable {
     }
 
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
+        if (boundingBox.isVectorInside(source)) {
+            return 1.0f;
+        }
+
         double diffX = boundingBox.getMaxX() - boundingBox.getMinX();
         double diffY = boundingBox.getMaxY() - boundingBox.getMinY();
         double diffZ = boundingBox.getMaxZ() - boundingBox.getMinZ();
@@ -5952,9 +6379,9 @@ public class Level implements Metadatable {
             return 0.0f;
         }
 
-        double xOffset = (1 - Math.floor(1 / xInterval) * xInterval) / 2;
+        double xOffset = boundingBox.getMinX() + (1 - Math.floor(1 / xInterval) * xInterval) / 2;
         double yOffset = boundingBox.getMinY();
-        double zOffset = (1 - Math.floor(1 / zInterval) * zInterval) / 2;
+        double zOffset = boundingBox.getMinZ() + (1 - Math.floor(1 / zInterval) * zInterval) / 2;
 
         int visibleBlocks = 0;
         int totalBlocks = 0;
@@ -5967,13 +6394,12 @@ public class Level implements Metadatable {
                     totalBlocks++;
                     final double fromZ = Math.fma(z, diffZ, zOffset);
 
-                    if (this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
+                    if (!this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
                         visibleBlocks++;
                     }
                 }
             }
         }
-
         return (float) visibleBlocks / (float) totalBlocks;
     }
 
@@ -6001,7 +6427,7 @@ public class Level implements Metadatable {
     }
 
     /**
-     * Actual level ticks executed per wall-clock second, sampled over a ~1 second window.
+     * Actual level ticks executed per wall-clock second, sampled over a ~1-second window.
      * Unlike {@link GameLoop#getTps()} (a per-tick capacity estimate clamped to the target),
      * this reflects what the loop really achieved. 0 until the first window completes.
      */
@@ -6040,6 +6466,13 @@ public class Level implements Metadatable {
         @NotNull
         private Block block;
         private BlockFace neighbor;
+    }
+
+    @ApiStatus.Internal
+    public enum WeatherDisplay {
+        NONE,
+        RAIN,
+        THUNDER
     }
 
     /**

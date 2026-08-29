@@ -1,4 +1,4 @@
-package org.powernukkitx.positiontracking;
+package org.powernukkitx.network.positiontracking;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
@@ -547,7 +547,7 @@ public class PositionTrackingService implements Closeable {
      * Close all active
      *
      * @throws IOException If any resource failed to close properly.
-     *                     The detailed exceptions will be in getCause() and and getSuppressed()
+     *                     The detailed exceptions will be in getCause() and getSuppressed()
      */
     @Override
     public synchronized void close() throws IOException {

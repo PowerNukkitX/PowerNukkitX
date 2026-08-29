@@ -251,18 +251,17 @@ public class EntityArmadillo extends EntityAnimal {
     }
 
     @Override
+    public float getBabyScale() {
+        return 0.6f;
+    }
+
+    @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.42F;
-        }
         return 0.7f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.39f;
-        }
         return 0.65F;
     }
 

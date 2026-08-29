@@ -41,7 +41,7 @@ public class BlockObsidian extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 35; //TODO Should be 50 but the break time calculation is broken
+        return 35;
     }
 
     @Override

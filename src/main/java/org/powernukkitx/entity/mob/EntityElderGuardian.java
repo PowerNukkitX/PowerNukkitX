@@ -166,7 +166,7 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     public boolean onUpdate(int currentTick) {
         if (!this.closed && this.isAlive()) {
             for (Player p : this.getViewers().values()) {
-                if (p.locallyInitialized && p.getGamemode() % 2 == 0 && p.distance(this) < 50 && !p.hasEffect(EffectType.MINING_FATIGUE)) {
+                if (p.locallyInitialized && (p.isSurvival() || p.isAdventure()) && p.distance(this) < 50 && !p.hasEffect(EffectType.MINING_FATIGUE)) {
                     p.addEffect(Effect.get(EffectType.MINING_FATIGUE).setAmplifier(2).setDuration(6000));
                     final LevelEventPacket pk = new LevelEventPacket();
                     pk.setType(LevelEvent.PARTICLE_SOUND_GUARDIAN_GHOST);

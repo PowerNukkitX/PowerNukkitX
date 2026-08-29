@@ -1,4 +1,4 @@
-package org.powernukkitx.positiontracking;
+package org.powernukkitx.network.positiontracking;
 
 import org.powernukkitx.math.NukkitMath;
 import com.google.common.base.Preconditions;
@@ -50,7 +50,7 @@ public class PositionTrackingStorage implements Closeable {
 
     /**
      * Opens or create the file and all directories in the path automatically. The given start index will be used
-     * in new files and will be checked when opening files. If the file being opened don't matches this value
+     * in new files and will be checked when opening files. If the file being opened doesn't match this value
      * internally than an <code>IllegalArgumentException</code> will be thrown.
      *
      * @param startIndex      The number of the first handler. Must be higher than 0 and must match the number of the existing file.
@@ -64,7 +64,7 @@ public class PositionTrackingStorage implements Closeable {
 
     /**
      * Opens or create the file and all directories in the path automatically. The given start index will be used
-     * in new files and will be checked when opening files. If the file being opened don't matches this value
+     * in new files and will be checked when opening files. If the file being opened doesn't match this value
      * internally than an <code>IllegalArgumentException</code> will be thrown.
      *
      * @param startIndex      The number of the first handler. Must be higher than 0 and must match the number of the existing file.
@@ -154,7 +154,7 @@ public class PositionTrackingStorage implements Closeable {
     }
 
     private long getAxisPos(int trackingHandler) {
-        //                    max str cur  on  nam len  x   y   z 
+        //                    max str cur  on  nam len  x   y   z
         return HEADER.length + 4 + 4 + 4 + (1 + 8 + 4 + 8 + 8 + 8) * (long) (trackingHandler - startIndex);
     }
 
