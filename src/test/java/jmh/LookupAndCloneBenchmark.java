@@ -227,14 +227,25 @@ public class LookupAndCloneBenchmark {
     public int entitiesPerColumn;
 
     private double[][] columnEntityY;
+    /** The same entities, bucketed into 24 sections of 16 blocks. */
+    private double[][][] sectionBuckets;
 
     @Setup(Level.Trial)
     public void setupColumns() {
         Random random = new Random(9001L);
         columnEntityY = new double[16][entitiesPerColumn];
-        for (double[] column : columnEntityY) {
-            for (int i = 0; i < column.length; i++) {
-                column[i] = random.nextDouble() * 384 - 64;
+        sectionBuckets = new double[16][24][];
+        for (int c = 0; c < columnEntityY.length; c++) {
+            List<List<Double>> buckets = new ArrayList<>();
+            for (int i = 0; i < 24; i++) buckets.add(new ArrayList<>());
+            for (int i = 0; i < entitiesPerColumn; i++) {
+                double y = random.nextDouble() * 384 - 64;
+                columnEntityY[c][i] = y;
+                int section = Math.min(23, Math.max(0, ((int) Math.floor(y) >> 4) + 4));
+                buckets.get(section).add(y);
+            }
+            for (int i = 0; i < 24; i++) {
+                sectionBuckets[c][i] = buckets.get(i).stream().mapToDouble(Double::doubleValue).toArray();
             }
         }
     }
@@ -257,6 +268,33 @@ public class LookupAndCloneBenchmark {
     public int nearbyEntityScanCeilBound() {
         return scan((int) Math.floor((MIN_X - 2) / 16), (int) Math.ceil((MAX_X + 2) / 16),
                 (int) Math.floor((MIN_Z - 2) / 16), (int) Math.ceil((MAX_Z + 2) / 16));
+    }
+
+    /**
+     * With the Y-section index: only the buckets overlapping the query height are visited. The
+     * query pads one section low because entities are bucketed by the position of their feet.
+     */
+    @Benchmark
+    public int nearbyEntityScanSectionIndexed() {
+        int minX = (int) Math.floor((MIN_X - 2) / 16);
+        int maxX = (int) Math.floor((MAX_X + 2) / 16);
+        int minZ = (int) Math.floor((MIN_Z - 2) / 16);
+        int maxZ = (int) Math.floor((MAX_Z + 2) / 16);
+        int hits = 0;
+        int column = 0;
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                double[][] buckets = sectionBuckets[column & 15];
+                // 24 sections in the overworld; a 3-block tall query spans one, plus one below.
+                for (int section = 3; section <= 4; section++) {
+                    for (double y : buckets[section]) {
+                        if (y >= MIN_X && y <= MAX_X) hits++;
+                    }
+                }
+                column++;
+            }
+        }
+        return hits;
     }
 
     @Benchmark
