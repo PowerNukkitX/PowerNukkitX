@@ -2995,10 +2995,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param packet packet to send
      */
     public void sendPacket(BedrockPacket packet) {
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return;
+        // Guarded the same way the receive side already guards PacketReceiveEvent. Without it every
+        // packet to every player allocated an event and walked the dispatch even with no listener,
+        // and outbound packets are the higher-volume direction by a wide margin.
+        if (!PacketSendEvent.getHandlers().isEmpty()) {
+            final PacketSendEvent event = new PacketSendEvent(this, packet);
+            this.server.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
         }
         this.getSession().sendPacket(packet);
     }
@@ -6511,10 +6516,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isConnected()) {
             return false;
         }
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return false;
+        if (!PacketSendEvent.getHandlers().isEmpty()) {
+            final PacketSendEvent event = new PacketSendEvent(this, packet);
+            this.server.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return false;
+            }
         }
         this.getSession().sendPacketImmediately(packet);
         return true;
