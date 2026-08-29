@@ -303,6 +303,50 @@ public class LookupAndCloneBenchmark {
                 (int) Math.floor((MIN_Z - 2) / 16), (int) Math.floor((MAX_Z + 2) / 16));
     }
 
+    // -----------------------------------------------------------------
+    // Event dispatch with no listener registered: allocate and dispatch vs an emptiness check
+    // -----------------------------------------------------------------
+
+    /** Stand-in for an event object; the real ones carry a few more fields. */
+    static final class ModelEvent {
+        final Object source;
+        final Object payload;
+        boolean cancelled;
+
+        ModelEvent(Object source, Object payload) {
+            this.source = source;
+            this.payload = payload;
+        }
+    }
+
+    private final Object[] emptyHandlers = new Object[0];
+    private final Object eventSource = new Object();
+    private final Object eventPayload = new Object();
+
+    @CompilerControl(CompilerControl.Mode.DONT_INLINE)
+    private void dispatch(ModelEvent event, Object[] handlers) {
+        for (Object ignored : handlers) {
+            event.cancelled = true;
+        }
+    }
+
+    @Benchmark
+    public boolean eventAlwaysAllocated() {
+        ModelEvent event = new ModelEvent(eventSource, eventPayload);
+        dispatch(event, emptyHandlers);
+        return event.cancelled;
+    }
+
+    @Benchmark
+    public boolean eventGuardedByEmptyCheck() {
+        if (emptyHandlers.length != 0) {
+            ModelEvent event = new ModelEvent(eventSource, eventPayload);
+            dispatch(event, emptyHandlers);
+            return event.cancelled;
+        }
+        return false;
+    }
+
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(LookupAndCloneBenchmark.class.getSimpleName())
