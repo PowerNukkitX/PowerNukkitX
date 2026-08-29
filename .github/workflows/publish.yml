@@ -26,7 +26,8 @@ jobs:
       is_draft: ${{ steps.meta.outputs.is_draft }}
       is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
       title: ${{ steps.meta.outputs.title }}
-      minecraft_version: ${{ steps.mc_version.outputs.minecraft_version }}
+      minecraft_version: ${{ steps.codec_version.outputs.minecraft_version }}
+      protocol_version: ${{ steps.codec_version.outputs.protocol_version }}
       sha: ${{ steps.api_version.outputs.sha }}
     permissions:
       contents: write
@@ -158,24 +159,32 @@ jobs:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
 
-      - name: Extract Minecraft version from the built jar
-        id: mc_version
+      - name: Extract codec versions from the built jar
+        id: codec_version
         run: |
           # Asking the codec itself keeps this working across protocol bumps, since nothing here
           # names a version. Stderr is left alone so any startup noise stays visible in the log.
-          cat > /tmp/McVersion.java << 'JAVA'
-          public class McVersion {
+          cat > /tmp/CodecVersion.java << 'JAVA'
+          public class CodecVersion {
               public static void main(String[] args) {
                   System.out.println(org.powernukkitx.network.NetworkConstants.CODEC.getMinecraftVersion());
+                  System.out.println(org.powernukkitx.network.NetworkConstants.CODEC.getProtocolVersion());
               }
           }
           JAVA
-          MINECRAFT_VERSION=$(java -cp build/powernukkitx.jar /tmp/McVersion.java)
+          VERSIONS=$(java -cp build/powernukkitx.jar /tmp/CodecVersion.java)
+          MINECRAFT_VERSION=$(echo "$VERSIONS" | sed -n '1p')
+          PROTOCOL_VERSION=$(echo "$VERSIONS" | sed -n '2p')
           if ! echo "$MINECRAFT_VERSION" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
             echo "Unexpected Minecraft version from NetworkConstants.CODEC: '$MINECRAFT_VERSION'" >&2
             exit 1
           fi
+          if ! echo "$PROTOCOL_VERSION" | grep -Eq '^[0-9]+$'; then
+            echo "Unexpected protocol version from NetworkConstants.CODEC: '$PROTOCOL_VERSION'" >&2
+            exit 1
+          fi
           echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
+          echo "protocol_version=$PROTOCOL_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v7
         with:
@@ -219,6 +228,14 @@ jobs:
           git config user.name "$APP_SLUG[bot]"
           git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
 
+      - name: Sync with the branch tip
+        run: |
+          # The publish job pushes the API version bump after this job has already checked out, so
+          # the local branch is behind and every commit made here would be rejected on push.
+          git fetch origin "$GITHUB_REF_NAME"
+          git switch "$GITHUB_REF_NAME"
+          git reset --hard "origin/$GITHUB_REF_NAME"
+
       - name: Create release branch
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -235,11 +252,11 @@ jobs:
       - name: Extract release metadata from source
         id: versions
         run: |
-          PROTOCOL_VERSION=$(sed -En 's/.*CODEC = Bedrock_v([0-9]+)(_[a-zA-Z0-9]+)*\.CODEC.*/\1/p' src/main/java/org/powernukkitx/network/NetworkConstants.java | head -n 1)
+          PROTOCOL_VERSION="${{ needs.publish.outputs.protocol_version }}"
           API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/org/powernukkitx/PowerNukkitX.java)
           MINECRAFT_VERSION="${{ needs.publish.outputs.minecraft_version }}"
           if [ -z "$PROTOCOL_VERSION" ]; then
-            echo "Unable to extract protocol version from NetworkConstants.java" >&2
+            echo "Protocol version missing from the publish job outputs" >&2
             exit 1
           fi
           if [ -z "$API_VERSION" ]; then
