@@ -4235,9 +4235,9 @@ public class Level implements Metadatable {
 
         if (entity == null || entity.canCollide()) {
             int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
-            int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+            int maxX = NukkitMath.floorDouble((bb.getMaxX() + 2) / 16);
             int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
-            int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+            int maxZ = NukkitMath.floorDouble((bb.getMaxZ() + 2) / 16);
 
             for (int x = minX; x <= maxX; ++x) {
                 for (int z = minZ; z <= maxZ; ++z) {
@@ -4266,9 +4266,9 @@ public class Level implements Metadatable {
      */
     public List<EntityItem> getCollidingItemEntities(AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
-        int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+        int maxX = NukkitMath.floorDouble((bb.getMaxX() + 2) / 16);
         int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
-        int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+        int maxZ = NukkitMath.floorDouble((bb.getMaxZ() + 2) / 16);
 
         List<EntityItem> result = null;
 
@@ -4302,9 +4302,9 @@ public class Level implements Metadatable {
 
         if (entity == null || entity.canCollide()) {
             int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
-            int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+            int maxX = NukkitMath.floorDouble((bb.getMaxX() + 2) / 16);
             int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
-            int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+            int maxZ = NukkitMath.floorDouble((bb.getMaxZ() + 2) / 16);
 
             for (int x = minX; x <= maxX; ++x) {
                 for (int z = minZ; z <= maxZ; ++z) {
@@ -4324,9 +4324,9 @@ public class Level implements Metadatable {
     public Stream<Entity> streamCollidingEntities(AxisAlignedBB bb, Entity entity) {
         if (entity == null || entity.canCollide()) {
             int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
-            int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+            int maxX = NukkitMath.floorDouble((bb.getMaxX() + 2) / 16);
             int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
-            int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+            int maxZ = NukkitMath.floorDouble((bb.getMaxZ() + 2) / 16);
 
             var allEntities = new ArrayList<Entity>();
 
@@ -4384,9 +4384,9 @@ public class Level implements Metadatable {
         int index = 0;
 
         int minX = NukkitMath.floorDouble((bb.getMinX() - 2) * 0.0625);
-        int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) * 0.0625);
+        int maxX = NukkitMath.floorDouble((bb.getMaxX() + 2) * 0.0625);
         int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) * 0.0625);
-        int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) * 0.0625);
+        int maxZ = NukkitMath.floorDouble((bb.getMaxZ() + 2) * 0.0625);
 
         ArrayList<Entity> overflow = null;
 
@@ -4414,9 +4414,9 @@ public class Level implements Metadatable {
 
     public List<Entity> fastNearbyEntities(AxisAlignedBB bb, Entity entity, boolean loadChunks) {
         int minX = NukkitMath.floorDouble((bb.getMinX() - 2) * 0.0625);
-        int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) * 0.0625);
+        int maxX = NukkitMath.floorDouble((bb.getMaxX() + 2) * 0.0625);
         int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) * 0.0625);
-        int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) * 0.0625);
+        int maxZ = NukkitMath.floorDouble((bb.getMaxZ() + 2) * 0.0625);
 
         var result = new ArrayList<Entity>();
 
