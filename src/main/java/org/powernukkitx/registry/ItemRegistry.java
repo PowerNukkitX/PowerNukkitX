@@ -42,7 +42,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class<? extends Item>> {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Map<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
+    private static final Map<String, String> ALIASES = new HashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
+    static {
+        ALIASES.put("minecraft:totem", TOTEM_OF_UNDYING);
+        ALIASES.put("minecraft:appleenchanted", ENCHANTED_GOLDEN_APPLE);
+        ALIASES.put("minecraft:cooked_fish", COOKED_COD);
+        ALIASES.put("minecraft:clownfish", TROPICAL_FISH);
+        ALIASES.put("minecraft:fish", COD);
+        ALIASES.put("minecraft:speckled_melon", GLISTERING_MELON_SLICE);
+        ALIASES.put("minecraft:chorus_fruit_popped", POPPED_CHORUS_FRUIT);
+    }
+
+    private static String resolveAlias(String id) {
+        return ALIASES.getOrDefault(id, id);
+    }
 
     @Getter
     private static NbtMap itemComponents = NbtMap.EMPTY;
@@ -661,6 +676,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     @Override
     public Item get(String key) {
         try {
+            key = resolveAlias(key);
             FastConstructor<? extends Item> fastConstructor = CACHE_CONSTRUCTORS.get(key);
             if (fastConstructor == null) return null;
             Item item = (Item) fastConstructor.invoke();
@@ -677,6 +693,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta) {
         try {
+            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
@@ -694,6 +711,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count) {
         try {
+            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
@@ -712,6 +730,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count, NbtMap tags) {
         try {
+            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
@@ -732,6 +751,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count, byte[] tags) {
         try {
+            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
