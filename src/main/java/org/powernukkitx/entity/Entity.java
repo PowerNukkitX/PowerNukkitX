@@ -136,6 +136,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected Vector3f seatRawOffset;
 
     /**
+     * Lead system
+     */
+    protected Entity leashedTo = null;
+    protected UUID leashHolderUuid = null;
+    protected Vector3 leashKnotPos = null;
+    private Vector3 leashFollowTarget = null;
+
+    /**
      * The entity is this targeting to
      */
     public Entity targetEntity = null;
@@ -609,6 +617,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     .setVisible(e.getBoolean("ShowParticles"));
 
                 this.addEffect(effect);
+            }
+        }
+
+        // =========================================================
+        // Load Leash from NBT
+        // =========================================================
+        if (this.nbt.contains("Leash")) {
+            final CompoundTag leash = nbtMap.getCompound("Leash");
+            if (leash.contains("UUID")) {
+                try {
+                    this.leashHolderUuid = UUID.fromString(leash.getString("UUID"));
+                } catch (IllegalArgumentException ignored) {
+                }
+            } else if (leash.contains("X") && leash.contains("Y") && leash.contains("Z")) {
+                this.leashKnotPos = new Vector3(leash.getInt("X"), leash.getInt("Y"), leash.getInt("Z"));
             }
         }
 
@@ -1166,6 +1189,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.nbt.putBoolean("Despawnable", this.despawnable);
         this.nbt.putFloat("Scale", this.scale);
 
+        if (this.leashHolderUuid != null) {
+            this.nbt.putCompound("Leash", new CompoundTag()
+                    .putString("UUID", this.leashHolderUuid.toString()));
+        } else if (this.leashKnotPos != null) {
+            this.nbt.putCompound("Leash", new CompoundTag()
+                    .putInt("X", this.leashKnotPos.getFloorX())
+                    .putInt("Y", this.leashKnotPos.getFloorY())
+                    .putInt("Z", this.leashKnotPos.getFloorZ()));
+        } else {
+            this.nbt.remove("Leash");
+        }
+
         if (!this.effects.isEmpty()) {
             ListTag<CompoundTag> list = new ListTag<>();
             for (Effect effect : this.effects.values()) {
@@ -1713,6 +1748,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             riding.dismountEntity(this, true, false);
         }
         updatePassengers();
+
+        this.updateLeash(tickDiff);
 
         // Boostable timer tickdown
         if (this.boostableTicks > -1 && this.isBoostable()) {
@@ -4950,6 +4987,177 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public boolean onInteract(Player player, Item item) {
         this.setPersistent(true);
         return false;
+    }
+
+    public boolean canBeLeashed() {
+        return false;
+    }
+
+    public boolean isLeashed() {
+        return this.leashHolderUuid != null
+                || this.leashKnotPos != null
+                || (this.leashedTo != null && !this.leashedTo.closed && this.leashedTo.isAlive());
+    }
+
+    @Nullable
+    public Entity getLeashedTo() {
+        return this.leashedTo;
+    }
+
+    @Nullable
+    public Vector3 getLeashKnotPos() {
+        return this.leashKnotPos;
+    }
+
+    public void setLeashedTo(@Nullable Entity holder) {
+        final Entity previous = this.leashedTo;
+        this.leashedTo = holder;
+        this.leashHolderUuid = holder instanceof Player ? holder.getUniqueId() : null;
+        if (holder instanceof EntityLeashKnot knot) {
+            final Block fence = knot.getAttachedBlock();
+            this.leashKnotPos = new Vector3(fence.getFloorX(), fence.getFloorY(), fence.getFloorZ());
+        } else {
+            this.leashKnotPos = null;
+        }
+        this.setDataProperty(ActorDataTypes.LEASH_HOLDER, holder == null ? -1L : holder.getId());
+        if (previous instanceof EntityLeashKnot oldKnot && previous != holder) {
+            oldKnot.removeIfEmpty();
+        }
+    }
+
+    public void unleash(boolean dropItem) {
+        if (this.leashedTo == null && this.leashHolderUuid == null && this.leashKnotPos == null) {
+            return;
+        }
+        final Entity previous = this.leashedTo;
+        this.leashedTo = null;
+        this.leashHolderUuid = null;
+        this.leashKnotPos = null;
+        if (this.leashFollowTarget != null) {
+            if (this instanceof EntityIntelligent intelligent) {
+                intelligent.setMoveTarget(null);
+            }
+            this.leashFollowTarget = null;
+        }
+        this.setDataProperty(ActorDataTypes.LEASH_HOLDER, -1L);
+        this.respawnToAll();
+        if (this.level != null) {
+            this.level.addSound(this, Sound.LEASHKNOT_BREAK);
+            if (dropItem) {
+                this.level.dropItem(this, Item.get(Item.LEAD));
+            }
+        }
+        if (previous instanceof EntityLeashKnot oldKnot) {
+            oldKnot.removeIfEmpty();
+        }
+    }
+
+    public boolean useLeadOn(Player player) {
+        if (player == null || !this.canBeLeashed()) {
+            return false;
+        }
+        if (this.isLeashed()) {
+            if (this.leashedTo == player) {
+                this.unleash(true);
+                return false;
+            }
+            if (this.leashedTo instanceof EntityLeashKnot) {
+                this.setLeashedTo(player);
+                this.setPersistent(true);
+                if (this.level != null) {
+                    this.level.addSound(this, Sound.LEASHKNOT_PLACE);
+                }
+                return true;
+            }
+            return false;
+        }
+        this.setLeashedTo(player);
+        this.setPersistent(true);
+        if (this.level != null) {
+            this.level.addSound(this, Sound.LEASHKNOT_PLACE);
+        }
+        return true;
+    }
+
+    protected void updateLeash(int tickDiff) {
+        if (this.leashedTo == null && this.leashHolderUuid == null && this.leashKnotPos == null) {
+            return;
+        }
+        if (this.leashedTo == null || this.leashedTo.closed) {
+            this.leashedTo = null;
+            if (this.leashHolderUuid != null) {
+                final Player holder = this.getServer().getPlayer(this.leashHolderUuid).orElse(null);
+                if (holder == null || !holder.isAlive() || holder.getLevel() != this.level) {
+                    return;
+                }
+                this.leashedTo = holder;
+                this.setDataProperty(ActorDataTypes.LEASH_HOLDER, holder.getId());
+            } else if (this.leashKnotPos != null) {
+                if (this.level == null) {
+                    return;
+                }
+                final int bx = this.leashKnotPos.getFloorX();
+                final int by = this.leashKnotPos.getFloorY();
+                final int bz = this.leashKnotPos.getFloorZ();
+                final EntityLeashKnot knot = EntityLeashKnot.getKnotAt(this.level, bx, by, bz);
+                if (knot == null) {
+                    if (this.level.isChunkLoaded(bx >> 4, bz >> 4)
+                            && !(this.level.getBlock(this.leashKnotPos) instanceof BlockFence)) {
+                        this.unleash(true);
+                    }
+                    return;
+                }
+                this.leashedTo = knot;
+                this.setDataProperty(ActorDataTypes.LEASH_HOLDER, knot.getId());
+            } else {
+                return;
+            }
+        }
+        if (!this.leashedTo.isAlive() || this.leashedTo.level != this.level) {
+            this.unleash(true);
+            return;
+        }
+        final double distance = this.distance(this.leashedTo);
+        if (distance > 10.0) {
+            this.unleash(true);
+            return;
+        }
+
+        final boolean staticHolder = this.leashedTo instanceof EntityLeashKnot;
+        if (staticHolder) {
+            if (this.leashFollowTarget != null && this instanceof EntityIntelligent intelligent) {
+                intelligent.setMoveTarget(null);
+                this.leashFollowTarget = null;
+            }
+        } else if (this instanceof EntityIntelligent intelligent) {
+            if (distance > 2.5) {
+                final Location holderLoc = this.leashedTo.getLocation();
+                intelligent.setLookTarget(holderLoc);
+                final Vector3 floor = holderLoc.floor();
+                if (this.leashFollowTarget == null || !this.leashFollowTarget.equals(floor)) {
+                    intelligent.setMoveTarget(holderLoc);
+                    var behaviorGroup = intelligent.getBehaviorGroup();
+                    if (behaviorGroup != null) {
+                        behaviorGroup.setForceUpdateRoute(true);
+                    }
+                    this.leashFollowTarget = floor;
+                }
+            } else if (this.leashFollowTarget != null) {
+                intelligent.setMoveTarget(null);
+                this.leashFollowTarget = null;
+            }
+        }
+
+        if (distance > 6.0) {
+            final double dx = (this.leashedTo.x - this.x) / distance;
+            final double dy = (this.leashedTo.y - this.y) / distance;
+            final double dz = (this.leashedTo.z - this.z) / distance;
+            this.setMotion(new Vector3(
+                    this.motionX + Math.copySign(dx * dx * 0.4, dx),
+                    this.motionY + Math.max(dy, 0.0) * dy * 0.4,
+                    this.motionZ + Math.copySign(dz * dz * 0.4, dz)
+            ));
+        }
     }
 
     protected boolean switchLevel(Level targetLevel) {
