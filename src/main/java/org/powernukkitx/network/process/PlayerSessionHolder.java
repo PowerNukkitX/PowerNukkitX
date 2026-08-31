@@ -39,6 +39,7 @@ import org.powernukkitx.network.process.pack.InternalPackManager;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.ItemRuntimeIdRegistry;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.resourcepacks.PackType;
 import org.powernukkitx.registry.VoxelShapeRegistry;
 import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
 import org.powernukkitx.utils.DefaultCameraPresets;
@@ -175,10 +176,13 @@ public class PlayerSessionHolder {
         }
     }
 
+    /**
+     * Offers the client the packs it has to download.
+     */
     public void sendResourcePacksInfo(Server server) {
         final ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
 
-        for (final var resourcePack : server.getResourcePackManager().getResourceStack()) {
+        for (final var resourcePack : server.getResourcePackManager().getPacks(PackType.RESOURCES)) {
             final PackInfoData packInfoData = new PackInfoData();
             final PackIdVersion packIdVersion = new PackIdVersion();
 
