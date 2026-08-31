@@ -47,8 +47,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> {
+    /**
+     * Creates a fresh {@link Entity} instance for a registered identifier.
+     * <p>
+     * Registrations made from a class wrap that class' {@code (IChunk, CompoundTag)}
+     * constructor. Registrations that have no class of their own supply a closure
+     * instead, which is what
+     * {@link #registerCustomEntityDefinition(CustomEntityDefinition, Class, EntityFactory)}
+     * exists for.
+     *
+     * @see #provideEntity(String, IChunk, CompoundTag, Object...)
+     */
+    @FunctionalInterface
+    public interface EntityFactory {
+        /**
+         * @param nbt the entity's saved data; never null, callers pass an empty tag for a
+         *            freshly created entity
+         * @throws Throwable whatever the underlying constructor throws; the registry logs
+         *                   it and yields no entity rather than propagating
+         */
+        Entity create(IChunk chunk, CompoundTag nbt) throws Throwable;
+    }
+
     private static final Object2ObjectOpenHashMap<String, Class<? extends Entity>> CLASS = new Object2ObjectOpenHashMap<>();
-    private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Entity>> FAST_NEW = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectOpenHashMap<String, EntityFactory> FAST_NEW = new Object2ObjectOpenHashMap<>();
     private static final Object2IntOpenHashMap<String> ID2RID = new Object2IntOpenHashMap<>();
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
@@ -309,38 +331,47 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 
         Entity entity = null;
         List<Exception> exceptions = null;
-        for (var constructor : clazz.getConstructors()) {
-            if (entity != null) {
-                break;
+        if (args == null || args.length == 0) {
+            EntityFactory factory = FAST_NEW.get(id);
+            if (factory != null) {
+                try {
+                    entity = factory.create(chunk, nbt);
+                } catch (Exception e) {
+                    exceptions = new ArrayList<>();
+                    exceptions.add(e);
+                } catch (Throwable e) {
+                    exceptions = new ArrayList<>();
+                    exceptions.add(new RuntimeException(e));
+                }
             }
+        } else {
+            for (var constructor : clazz.getConstructors()) {
+                if (entity != null) {
+                    break;
+                }
 
-            if (constructor.getParameterCount() != (args == null ? 2 : args.length + 2)) {
-                continue;
-            }
+                if (constructor.getParameterCount() != args.length + 2) {
+                    continue;
+                }
 
-            try {
-                if (args == null || args.length == 0) {
-                    FastConstructor<? extends Entity> fastConstructor = FAST_NEW.get(id);
-                    entity = (Entity) fastConstructor.invoke(chunk, nbt);
-                } else {
+                try {
                     Object[] objects = new Object[args.length + 2];
 
                     objects[0] = chunk;
                     objects[1] = nbt;
                     System.arraycopy(args, 0, objects, 2, args.length);
                     entity = (Entity) constructor.newInstance(objects);
-
+                } catch (Exception e) {
+                    if (exceptions == null) {
+                        exceptions = new ArrayList<>();
+                    }
+                    exceptions.add(e);
+                } catch (Throwable e) {
+                    if (exceptions == null) {
+                        exceptions = new ArrayList<>();
+                    }
+                    exceptions.add(new RuntimeException(e));
                 }
-            } catch (Exception e) {
-                if (exceptions == null) {
-                    exceptions = new ArrayList<>();
-                }
-                exceptions.add(e);
-            } catch (Throwable e) {
-                if (exceptions == null) {
-                    exceptions = new ArrayList<>();
-                }
-                exceptions.add(new RuntimeException(e));
             }
         }
 
@@ -388,7 +419,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     public void register(EntityDefinition key, Class<? extends Entity> value) throws RegisterException {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
             try {
-                FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class)));
+                FastConstructor<? extends Entity> c = FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class));
+                FAST_NEW.put(key.id, (chunk, nbt) -> (Entity) c.invoke(chunk, nbt));
             } catch (NoSuchMethodException e) {
                 throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
             }
@@ -419,7 +451,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
         try {
             FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
-            FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
+            FastConstructor<? extends Entity> c = FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false);
+            FAST_NEW.put(key.id, (chunk, nbt) -> (Entity) c.invoke(chunk, nbt));
         } catch (NoSuchMethodException e) {
             throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
         }
@@ -439,41 +472,59 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 
             FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
             CustomEntityDefinition def = resolveDefinitionFromClass(value);
-            String id = def.id();
-
-            if (CLASS.putIfAbsent(id, value) != null) {
-                throw new RegisterException("This entity has already been registered with the identifier: " + id);
-            }
 
             FastConstructor<? extends Entity> runtimeCtor = FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false);
-            FAST_NEW.put(id, runtimeCtor);
-
-            int rid = RUNTIME_ID.getAndIncrement();
-            ID2RID.put(id, rid);
-            RID2ID.put(rid, id);
-            EntityDefinition entityDefinition = new EntityDefinition(id, def.eid(), rid, def.hasSpawnEgg(), def.isSummonable());
-            DEFINITIONS.put(id, entityDefinition);
-            CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
-            CUSTOM_ENTITY_DEFINITION_MAP.put(id, def);
+            registerCustomEntityDefinition(def, value, (chunk, nbt) -> (Entity) runtimeCtor.invoke(chunk, nbt));
 
             try {
                 EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
                 for (EntityProperty prop : props) {
-                    EntityProperty.register(id, prop);
+                    EntityProperty.register(def.id(), prop);
                 }
             } catch (NoSuchFieldException ignored) {
             } catch (IllegalAccessException e) {
-                log.error("Failed to access PROPERTIES for custom entity: {}", id, e);
-            }
-
-            if (def.hasSpawnEgg()) {
-                String eggId = id + "_spawn_egg";
-                Registries.ITEM.registerSpawnEgg(eggId);
+                log.error("Failed to access PROPERTIES for custom entity: {}", def.id(), e);
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
         } catch (Throwable e) {
             throw new RegisterException(e);
+        }
+    }
+
+    /**
+     * Registers a custom entity from its definition and a factory, for callers that have
+     * no dedicated entity class to register - a single generic class can back many
+     * identifiers this way, each with its own definition.
+     * <p>
+     * A runtime id is allocated here, and a spawn egg item is registered when the
+     * definition asks for one. Entity properties are not read from the class; register
+     * them through {@link EntityProperty} if the entity needs any.
+     *
+     * @param def     the definition to register, carrying the identifier and spawn rules
+     * @param clazz   the class instances will have, which one generic class may share
+     *                across many definitions
+     * @param factory creates entity instances for this identifier
+     * @throws RegisterException when the definition's identifier is already registered
+     */
+    public void registerCustomEntityDefinition(@NotNull CustomEntityDefinition def, @NotNull Class<? extends Entity> clazz,
+                                               @NotNull EntityFactory factory) throws RegisterException {
+        String id = def.id();
+        if (CLASS.putIfAbsent(id, clazz) != null) {
+            throw new RegisterException("This entity has already been registered with the identifier: " + id);
+        }
+        FAST_NEW.put(id, factory);
+
+        int rid = RUNTIME_ID.getAndIncrement();
+        ID2RID.put(id, rid);
+        RID2ID.put(rid, id);
+        EntityDefinition entityDefinition = new EntityDefinition(id, def.eid(), rid, def.hasSpawnEgg(), def.isSummonable());
+        DEFINITIONS.put(id, entityDefinition);
+        CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
+        CUSTOM_ENTITY_DEFINITION_MAP.put(id, def);
+
+        if (def.hasSpawnEgg()) {
+            Registries.ITEM.registerSpawnEgg(id + "_spawn_egg");
         }
     }
 
