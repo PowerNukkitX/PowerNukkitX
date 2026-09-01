@@ -23,12 +23,11 @@ public final class CustomBlockComponentBehavior {
     }
 
     /**
-     * Checks whether the specified custom block can be activated based on its
-     * registered block components.
+     * Gets the movable behavior of the specified block based on its registered
+     * block components.
      *
-     * @param block the custom block to check
-     * @return {@code true} if one of the block's components provides activation behavior;
-     *         {@code false} otherwise
+     * @param block the block to check
+     * @return the movable behavior of the block
      */
     public static Movable getMovable(@NotNull Block block) {
         CustomBlockDefinition definition = block.getCustomDefinition();
