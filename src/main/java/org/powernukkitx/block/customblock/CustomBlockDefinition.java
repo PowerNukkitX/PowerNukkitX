@@ -10,6 +10,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.customblock.data.CraftingTable;
 import org.powernukkitx.block.customblock.data.Geometry;
 import org.powernukkitx.block.customblock.data.Materials;
+import org.powernukkitx.block.customblock.data.Movable;
 import org.powernukkitx.block.customblock.data.Permutation;
 import org.powernukkitx.block.customblock.data.Transformation;
 import org.powernukkitx.block.property.type.BlockPropertyType;
@@ -554,6 +555,33 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         public Builder isStepSensor(boolean value) {
             this.isStepSensor = value;
             return this;
+        }
+
+        /**
+         * Defines how this block reacts to piston movement.
+         *
+         * Defaults to PUSH_PULL with no sticky behavior.
+         * The minecraft:movable component is omitted when those
+         * default values are selected.
+         */
+        public Builder movable(@NotNull Movable movable) {
+            CompoundTag components = this.nbt.getCompound("components");
+
+            if (movable.isDefault()) {
+                components.remove("minecraft:movable");
+                return this;
+            }
+
+            components.putCompound("minecraft:movable", movable.toCompoundTag());
+            return this;
+        }
+
+        public Builder movable(@NotNull Movable.MovementType movementType) {
+            return this.movable(new Movable( movementType));
+        }
+
+        public Builder movable(@NotNull Movable.MovementType movementType, @NotNull Movable.StickyType sticky) {
+            return this.movable(new Movable(movementType, sticky));
         }
 
         /**
