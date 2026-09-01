@@ -14,4 +14,9 @@ public class ItemTropicalFish extends ItemFish {
     public float getSaturation() {
         return 0.2F;
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:clownfish"};
+    }
 }

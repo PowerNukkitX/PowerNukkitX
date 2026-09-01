@@ -40,4 +40,9 @@ public class ItemEnchantedGoldenApple extends ItemFood {
 
         return super.onEaten(player);
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:appleenchanted"};
+    }
 }

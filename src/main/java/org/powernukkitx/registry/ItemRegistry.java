@@ -45,18 +45,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     private static final Map<String, String> ALIASES = new HashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
-    static {
-        ALIASES.put("minecraft:totem", TOTEM_OF_UNDYING);
-        ALIASES.put("minecraft:appleenchanted", ENCHANTED_GOLDEN_APPLE);
-        ALIASES.put("minecraft:cooked_fish", COOKED_COD);
-        ALIASES.put("minecraft:clownfish", TROPICAL_FISH);
-        ALIASES.put("minecraft:fish", COD);
-        ALIASES.put("minecraft:speckled_melon", GLISTERING_MELON_SLICE);
-        ALIASES.put("minecraft:chorus_fruit_popped", POPPED_CHORUS_FRUIT);
-    }
-
     private static String resolveAlias(String id) {
         return ALIASES.getOrDefault(id, id);
+    }
+
+    private static void registerAliases(String key, Item item) {
+        for (String alias : item.getAliases()) {
+            ALIASES.putIfAbsent(alias, key);
+        }
     }
 
     @Getter
@@ -797,6 +793,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
                 throw new RegisterException("This item has already been registered with the identifier: " + key);
             }
+            registerAliases(key, (Item) c.invoke());
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
@@ -832,6 +829,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             }
 
             CUSTOM_ITEM_DEFINITIONS.put(key, def);
+            registerAliases(key, (Item) customItem);
             Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
 
             CompoundTag nbt = def.nbt();
