@@ -65,11 +65,6 @@ public class BlockFrogSpawn extends BlockFlowable {
     }
 
     @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
     public boolean canBePulled() {
         return false;
     }

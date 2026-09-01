@@ -127,7 +127,6 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Ringing", this.ringing)
                 .putInt("Direction", this.direction)
                 .putInt("Ticks", this.ticks);

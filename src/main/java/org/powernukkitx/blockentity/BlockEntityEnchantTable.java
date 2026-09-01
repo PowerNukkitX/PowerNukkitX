@@ -40,8 +40,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound()
-                .putBoolean("isMovable", false);
+        CompoundTag c = super.getSpawnCompound();
 
         if (this.hasName()) {
             c.putString("CustomName", this.getNbt().getString("CustomName"));

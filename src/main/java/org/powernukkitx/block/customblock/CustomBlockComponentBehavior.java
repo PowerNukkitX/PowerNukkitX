@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.customblock.data.Movable;
 import org.powernukkitx.inventory.CustomCraftingTableInventory;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
@@ -19,6 +20,82 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 public final class CustomBlockComponentBehavior {
 
     private CustomBlockComponentBehavior() {
+    }
+
+    /**
+     * Checks whether the specified custom block can be activated based on its
+     * registered block components.
+     *
+     * @param block the custom block to check
+     * @return {@code true} if one of the block's components provides activation behavior;
+     *         {@code false} otherwise
+     */
+    public static Movable getMovable(@NotNull Block block) {
+        CustomBlockDefinition definition = block.getCustomDefinition();
+        if (definition == null) return Movable.DEFAULT;
+
+        CompoundTag components = definition.getComponents();
+        if (!components.containsCompound("minecraft:movable")) {
+            return Movable.DEFAULT;
+        }
+
+        return Movable.fromCompoundTag(components.getCompound("minecraft:movable"));
+    }
+
+    /**
+     * Checks whether the specified block can be pushed by a piston.
+     *
+     * @param block the block to check
+     * @return {@code true} if the block can be pushed or is broken when pushed; {@code false} otherwise
+     */
+    public static boolean canBePushed(@NotNull Block block) {
+
+        return switch (getMovable(block).movementType()) {
+            case PUSH_PULL, PUSH, POPPED -> true;
+            case IMMOVABLE -> false;
+        };
+    }
+
+    /**
+     * Checks whether the specified block can be pulled by a piston.
+     *
+     * @param block the block to check
+     * @return {@code true} if the block can be pulled; {@code false} otherwise
+     */
+    public static boolean canBePulled(@NotNull Block block) {
+        return getMovable(block).movementType() == Movable.MovementType.PUSH_PULL;
+    }
+
+    /**
+     * Checks whether the specified block breaks when moved by a piston.
+     *
+     * @param block the block to check
+     * @return {@code true} if the block breaks when moved; {@code false} otherwise
+     */
+    public static boolean breaksWhenMoved(@NotNull Block block) {
+        return getMovable(block).movementType() == Movable.MovementType.POPPED;
+    }
+
+    /**
+     * Checks whether the specified block sticks to a piston.
+     *
+     * @param block the block to check
+     * @return {@code true} if the block can stick to a piston; {@code false} otherwise
+     */
+    public static boolean sticksToPiston(@NotNull Block block) {
+        return getMovable(block).movementType() == Movable.MovementType.PUSH_PULL;
+    }
+
+    /**
+     * Checks whether the specified block can stick to other blocks of the same type
+     * when moved by a piston.
+     *
+     * @param block the block to check
+     * @return {@code true} if the block can stick to blocks of the same type; {@code false} otherwise
+     */
+    public static boolean canSticksBlock(@NotNull Block block) {
+        Movable movable = getMovable(block);
+        return movable.movementType() == Movable.MovementType.PUSH_PULL && movable.sticky() == Movable.StickyType.SAME;
     }
 
     /**

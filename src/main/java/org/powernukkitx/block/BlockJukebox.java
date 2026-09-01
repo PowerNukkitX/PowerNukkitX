@@ -86,4 +86,13 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }

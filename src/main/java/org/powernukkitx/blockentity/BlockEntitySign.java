@@ -37,7 +37,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     public BlockEntitySign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
 
     @Override
@@ -275,7 +274,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putBoolean("isMovable", isMovable())
                 .putCompound(TAG_FRONT_TEXT, new CompoundTag()
                         .putString(TAG_TEXT_BLOB, this.nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(true).getARGB())
