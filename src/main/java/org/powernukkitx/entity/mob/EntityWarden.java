@@ -231,7 +231,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         this.waitForVibration = false;
         this.lastDetectTime = getLevel().getTick();
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setType(ActorEvent.VIBRATION_DETECTED);
         Server.broadcastPacket(this.getViewers().values(), pk);
 

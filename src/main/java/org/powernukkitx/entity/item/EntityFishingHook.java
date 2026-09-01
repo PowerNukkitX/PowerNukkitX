@@ -195,15 +195,15 @@ public class EntityFishingHook extends SlenderProjectile {
         Collection<Player> viewers = this.getViewers().values();
 
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setType(ActorEvent.FISHHOOK_HOOKTIME);
 
         final ActorEventPacket bubblePk = new ActorEventPacket();
-        bubblePk.setTargetRuntimeID(this.getId());
+        bubblePk.setTargetRuntimeID(this.runtimeId());
         bubblePk.setType(ActorEvent.FISHHOOK_BUBBLE);
 
         final ActorEventPacket teasePk = new ActorEventPacket();
-        teasePk.setTargetRuntimeID(this.getId());
+        teasePk.setTargetRuntimeID(this.runtimeId());
         teasePk.setType(ActorEvent.FISHHOOK_TEASE);
 
         Server.broadcastPacket(viewers, pk);
@@ -285,7 +285,7 @@ public class EntityFishingHook extends SlenderProjectile {
     protected BedrockPacket createAddEntityPacket() {
         final AddActorPacket pk = new AddActorPacket();
         pk.setTargetActorID(this.getId());
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setActorType("minecraft:fishing_hook");
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         pk.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));

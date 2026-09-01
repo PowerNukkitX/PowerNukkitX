@@ -4858,14 +4858,14 @@ public class Level implements Metadatable {
         }
 
         if (entity instanceof Player p) {
-            this.players.remove(entity.getId());
+            this.players.remove(entity.runtimeId());
             this.checkSleep();
         } else {
             entity.close();
         }
 
-        this.entities.remove(entity.getId());
-        this.updateEntities.remove(entity.getId());
+        this.entities.remove(entity.runtimeId());
+        this.updateEntities.remove(entity.runtimeId());
     }
 
     public void addEntity(Entity entity) {
@@ -4874,10 +4874,10 @@ public class Level implements Metadatable {
         }
 
         if (entity instanceof Player p) {
-            this.players.put(entity.getId(), p);
+            this.players.put(entity.runtimeId(), p);
             p.setShownWeather(WeatherDisplay.NONE);
         }
-        this.entities.put(entity.getId(), entity);
+        this.entities.put(entity.runtimeId(), entity);
     }
 
     public void addBlockEntity(BlockEntity blockEntity) {
@@ -5730,11 +5730,11 @@ public class Level implements Metadatable {
 
     public void addPlayerMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
         final MovePlayerPacket packet = new MovePlayerPacket();
-        packet.setPlayerRuntimeID(entity.getId());
+        packet.setPlayerRuntimeID(entity.runtimeId());
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(x, y, z));
         packet.setRotation(org.cloudburstmc.math.vector.Vector3f.from(pitch, yaw, headYaw));
         if (entity.riding != null) {
-            packet.setRidingRuntimeID(entity.riding.getId());
+            packet.setRidingRuntimeID(entity.riding.runtimeId());
             packet.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         } else {
             packet.setPositionMode(PositionMode.NORMAL);
@@ -5746,7 +5746,7 @@ public class Level implements Metadatable {
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
         final MoveActorDeltaPacket packet = new MoveActorDeltaPacket();
         final MoveActorDeltaData data = new MoveActorDeltaData();
-        data.setActorRuntimeID(entity.getId());
+        data.setActorRuntimeID(entity.runtimeId());
 
         if (entity.lastX != x) {
             data.setNewPositionX((float) x);

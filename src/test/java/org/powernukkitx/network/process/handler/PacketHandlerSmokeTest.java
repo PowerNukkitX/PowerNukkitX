@@ -92,7 +92,7 @@ class PacketHandlerSmokeTest {
 
         safe(() -> {
             EmotePacket p = new EmotePacket();
-            p.setActorRuntimeId(player.getId());
+            p.setActorRuntimeId(player.runtimeId());
             p.setEmoteId(UUID.randomUUID().toString());
             dispatch(p);
         });
@@ -123,7 +123,7 @@ class PacketHandlerSmokeTest {
         safe(() -> {
             RespawnPacket p = new RespawnPacket();
             p.setState(PlayerRespawnState.CLIENT_READY_TO_SPAWN);
-            p.setPlayerRuntimeId(player.getId());
+            p.setPlayerRuntimeId(player.runtimeId());
             dispatch(p);
         });
 
@@ -145,7 +145,7 @@ class PacketHandlerSmokeTest {
         safe(() -> {
             ShowCreditsPacket p = new ShowCreditsPacket();
             p.setCreditsState(ShowCreditsPacket.CreditsState.END_CREDITS);
-            p.setPlayerRuntimeID(player.getId());
+            p.setPlayerRuntimeID(player.runtimeId());
             dispatch(p);
         });
 

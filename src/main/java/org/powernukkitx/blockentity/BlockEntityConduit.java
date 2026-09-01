@@ -64,7 +64,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         Entity targetEntity = this.targetEntity;
-        nbt.putLong("Target", targetEntity != null ? targetEntity.getId() : -1)
+        nbt.putLong("Target", targetEntity != null ? targetEntity.runtimeId() : -1)
                 .putBoolean("Active", active);
     }
 
@@ -361,7 +361,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Active", this.active);
         Entity targetEntity = this.targetEntity;
-        tag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
+        tag.putLong("Target", targetEntity != null ? targetEntity.runtimeId() : -1);
         return tag;
     }
 }

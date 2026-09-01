@@ -1123,7 +1123,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         ));
         pk.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         pk.setOnGround(this.onGround);
-        pk.setRidingRuntimeID(riding.getId());
+        pk.setRidingRuntimeID(riding.runtimeId());
         pk.setTick(this.getServer().getTick());
 
         Set<Player> viewers = new HashSet<>();
@@ -1755,7 +1755,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         experience.setValue(Math.max(0f, Math.min(1f, experienceProgress)));
 
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
-        packet.setRuntimeID(this.getId());
+        packet.setRuntimeID(this.runtimeId());
         packet.getAttributeList().add(health.toNetwork());
         packet.getAttributeList().add(hunger.toNetwork());
         packet.getAttributeList().add(exhaustion.toNetwork());
@@ -2078,7 +2078,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setActorData(this.getActorDataMap());
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setSyncedProperties(data);
 
         Player[] targets = (viewers == null || viewers.length == 0)
@@ -2384,7 +2384,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getXUID(), this.getLocatorBarColor());
+            this.server.updatePlayerListData(this.getUniqueId(), this.runtimeId(), this.getDisplayName(), this.getSkin(), this.getXUID(), this.getLocatorBarColor());
         }
     }
 
@@ -2771,7 +2771,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     private void sendInitialAttributes(boolean includeLoginOnlyAttributes) {
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
-        packet.setRuntimeID(this.getId());
+        packet.setRuntimeID(this.runtimeId());
 
         final float health = Math.max(
             0.0f,
@@ -2954,7 +2954,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.needDimensionChangeACK) {
             this.needDimensionChangeACK = false;
             final PlayerActionPacket playerActionPacket = new PlayerActionPacket();
-            playerActionPacket.setPlayerRuntimeID(this.getId());
+            playerActionPacket.setPlayerRuntimeID(this.runtimeId());
             playerActionPacket.setAction(PlayerActionType.CHANGE_DIMENSION_ACK);
             playerActionPacket.setBlockPosition(this.toNetwork().toInt());
             playerActionPacket.setResultPos(this.toNetwork().toInt());
@@ -3103,7 +3103,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         final AnimatePacket pk = new AnimatePacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setAction(AnimatePacket.Action.WAKE_UP);
         this.sendPacket(pk);
     }
@@ -3355,7 +3355,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (this.chunk != null) {
                 this.addMotion(this.motionX, this.motionY, this.motionZ);  // Send it to others
                 final SetActorMotionPacket packet = new SetActorMotionPacket();
-                packet.setTargetRuntimeID(this.getId());
+                packet.setTargetRuntimeID(this.runtimeId());
                 packet.setMotion(Vector3f.from(this.motionX, this.motionY, this.motionZ));
                 this.sendPacket(packet);  // Send it to self
             }
@@ -3375,7 +3375,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void sendAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.setRuntimeID(this.getId());
+        pk.setRuntimeID(this.runtimeId());
         pk.getAttributeList().addAll(
             Arrays.asList(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0).toNetwork(),
@@ -4834,7 +4834,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.spawned && this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.setRuntimeID(this.getId());
+            pk.setRuntimeID(this.runtimeId());
             pk.getAttributeList().add(attribute.toNetwork());
             this.sendPacket(pk);
         }
@@ -5017,7 +5017,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void syncAttribute(Attribute attribute) {
         final UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.setRuntimeID(this.getId());
+        pk.setRuntimeID(this.runtimeId());
         pk.getAttributeList().add(attribute.toNetwork());
         this.sendPacket(pk);
     }
@@ -5040,7 +5040,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void syncAttributes(boolean immediately) {
         final UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.setRuntimeID(this.getId());
+        pk.setRuntimeID(this.runtimeId());
 
         for (final Attribute attribute : this.attributes.values()) {
             if (attribute != null && attribute.isSyncable()) {
@@ -5160,7 +5160,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
                 final ActorEventPacket pk = new ActorEventPacket();
-                pk.setTargetRuntimeID(this.getId());
+                pk.setTargetRuntimeID(this.runtimeId());
                 pk.setType(ActorEvent.HURT);
                 this.sendPacket(pk);
             }
@@ -5257,13 +5257,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void sendPosition(Vector3 pos, double yaw, double pitch, PositionMode mode, Player[] targets) {
         final MovePlayerPacket pk = new MovePlayerPacket();
-        pk.setPlayerRuntimeID(this.getId());
+        pk.setPlayerRuntimeID(this.runtimeId());
         pk.setPosition(Vector3f.from(pos.x, pos.y + this.getEyeHeight(), pos.z));
         pk.setRotation(Vector3f.from(pitch, yaw, yaw));
         pk.setPositionMode(mode);
         pk.setOnGround(this.onGround);
         if (this.riding != null) {
-            pk.setRidingRuntimeID(this.riding.getId());
+            pk.setRidingRuntimeID(this.riding.runtimeId());
             pk.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         }
 
@@ -5979,7 +5979,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         final PlayerActionPacket dimensionAckPacket = new PlayerActionPacket();
-        dimensionAckPacket.setPlayerRuntimeID(this.getId());
+        dimensionAckPacket.setPlayerRuntimeID(this.runtimeId());
         dimensionAckPacket.setAction(PlayerActionType.CHANGE_DIMENSION_ACK);
         dimensionAckPacket.setBlockPosition(Vector3i.ZERO);
         dimensionAckPacket.setResultPos(Vector3i.ZERO);
@@ -6136,8 +6136,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
 
                 final TakeItemActorPacket pk = new TakeItemActorPacket();
-                pk.setActorRuntimeID(this.getId());
-                pk.setItemRuntimeID(entity.getId());
+                pk.setActorRuntimeID(this.runtimeId());
+                pk.setItemRuntimeID(entity.runtimeId());
                 Server.broadcastPacket(entity.getViewers().values(), pk);
                 this.sendPacket(pk);
 
@@ -6180,8 +6180,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
 
                 final TakeItemActorPacket pk = new TakeItemActorPacket();
-                pk.setActorRuntimeID(this.getId());
-                pk.setItemRuntimeID(entity.getId());
+                pk.setActorRuntimeID(this.runtimeId());
+                pk.setItemRuntimeID(entity.runtimeId());
                 Server.broadcastPacket(entity.getViewers().values(), pk);
                 this.sendPacket(pk);
 
@@ -6214,8 +6214,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         }
 
                         final TakeItemActorPacket pk = new TakeItemActorPacket();
-                        pk.setActorRuntimeID(this.getId());
-                        pk.setItemRuntimeID(entity.getId());
+                        pk.setActorRuntimeID(this.runtimeId());
+                        pk.setItemRuntimeID(entity.runtimeId());
                         Server.broadcastPacket(entity.getViewers().values(), pk);
                         this.sendPacket(pk);
 
@@ -6284,7 +6284,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!(obj instanceof Player other)) {
             return false;
         }
-        return Objects.equals(this.getUniqueId(), other.getUniqueId()) && this.getId() == other.getId();
+        return Objects.equals(this.getUniqueId(), other.getUniqueId()) && this.runtimeId() == other.runtimeId();
     }
 
     /**
@@ -6481,7 +6481,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.showingCredits = showingCredits;
         if (showingCredits) {
             final ShowCreditsPacket pk = new ShowCreditsPacket();
-            pk.setPlayerRuntimeID(this.getId());
+            pk.setPlayerRuntimeID(this.runtimeId());
             pk.setCreditsState(
                 showingCredits ? ShowCreditsPacket.CreditsState.START_CREDITS : ShowCreditsPacket.CreditsState.END_CREDITS
             );
@@ -6672,7 +6672,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
             if (blockEntity instanceof BlockEntitySign blockEntitySign) {
                 if (blockEntitySign.getEditorEntityRuntimeId() == -1) {
-                    blockEntitySign.setEditorEntityRuntimeId(this.getId());
+                    blockEntitySign.setEditorEntityRuntimeId(this.runtimeId());
                     final OpenSignPacket openSignPacket = new OpenSignPacket();
                     openSignPacket.setPos(position.asBlockVector3().toNetwork());
                     openSignPacket.setFrontSide(frontSide);
@@ -6721,7 +6721,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setLocatorBarColor(Color color) {
         this.locatorBarColor = color;
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getXUID(), this.getLocatorBarColor());
+            this.server.updatePlayerListData(this.getUniqueId(), this.runtimeId(), this.getDisplayName(), this.getSkin(), this.getXUID(), this.getLocatorBarColor());
         }
     }
 

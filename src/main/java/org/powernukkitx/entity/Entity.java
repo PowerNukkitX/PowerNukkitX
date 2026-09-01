@@ -223,8 +223,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     protected UUID entityUniqueId;
     /**
-     * runtime id (changed after you restart the server)
+     * Runtime entity ID used by the current server process.
      */
+    protected volatile long runtimeId;
+
+    /**
+     * Legacy alias for {@link #runtimeId}.
+     *
+     * @deprecated Use {@link #runtimeId} internally or {@link #runtimeId()} through the API.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     protected volatile long id;
     protected EntityDamageEvent lastDamageCause = null;
     protected int age = 0;
@@ -289,6 +297,39 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (!(this instanceof Player)) {
             this.init(chunk, nbt);
         }
+    }
+
+    /**
+     * Returns the runtime entity ID.
+     * <p>
+     * This ID is valid only for the current server runtime and may
+     * change after a server restart.
+     *
+     * @return runtime entity ID
+     */
+    public long runtimeId() {
+        return this.runtimeId;
+    }
+
+    /**
+     * Gets unique id(UUID)
+     */
+    public UUID getUniqueId() {
+        return this.entityUniqueId;
+    }
+
+    /**
+     * Returns the runtime entity ID.
+     * <p>
+     * This ID is valid only for the current server runtime and may
+     * change after a server restart.
+     *
+     * @return runtime entity ID
+     * @deprecated Use {@link #runtimeId()} instead.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    public long getId() {
+        return this.runtimeId;
     }
 
     /**
@@ -421,7 +462,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public static void playAnimationOnEntities(EntityAnimation animation, Collection<Entity> entities, Collection<Player> players) {
         var pk = animation.toNetwork();
-        entities.forEach(entity -> pk.getRuntimeIds().add(entity.getId()));
+        entities.forEach(entity -> pk.getRuntimeIds().add(entity.runtimeId()));
         Server.broadcastPacket(players, pk);
     }
 
@@ -665,7 +706,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if ((chunk == null || chunk.getProvider() == null)) {
             throw new ChunkException("Invalid garbage Chunk given to Entity");
         }
-        this.id = Entity.entityCount.getAndIncrement();
+        this.runtimeId = Entity.entityCount.getAndIncrement();
+        this.id = this.runtimeId;
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
         this.justCreated = true;
@@ -954,7 +996,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
             if (this instanceof Player player && effect.getId() != null) {
                 final MobEffectPacket packet = new MobEffectPacket();
-                packet.setTargetRuntimeID(player.getId());
+                packet.setTargetRuntimeID(player.runtimeId());
                 packet.setEffectID(effect.getId());
                 packet.setEvent(MobEffectPacket.Event.REMOVE);
                 player.sendPacket(packet);
@@ -1001,7 +1043,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (this instanceof Player player && effect.getId() != null) {
             final MobEffectPacket packet = new MobEffectPacket();
-            packet.setTargetRuntimeID(player.getId());
+            packet.setTargetRuntimeID(player.runtimeId());
             packet.setEffectID(effect.getId());
             packet.setEffectAmplifier(effect.getAmplifier());
             packet.setShowParticles(effect.isVisible());
@@ -1312,7 +1354,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             addActorPacket.getActorLinks().add(actorLink);
         }
         addActorPacket.setTargetActorID(this.getId());
-        addActorPacket.setTargetRuntimeID(this.getId());
+        addActorPacket.setTargetRuntimeID(this.runtimeId());
         addActorPacket.setActorType(this.getIdentifier());
         addActorPacket.setPosition(this.getPosition().toNetwork());
         addActorPacket.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
@@ -1333,7 +1375,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         for (Effect effect : effects.values()) {
             if (effect.getId() != null) {
                 final MobEffectPacket packet = new MobEffectPacket();
-                packet.setTargetRuntimeID(this.getId());
+                packet.setTargetRuntimeID(this.runtimeId());
                 packet.setEffectID(effect.getId());
                 packet.setEffectAmplifier(effect.getAmplifier());
                 packet.setShowParticles(effect.isVisible());
@@ -1351,7 +1393,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void sendData(Player player, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setActorData(data == null ? this.actorDataMap : data);
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         PropertySyncData syncData = this.propertySyncData();
         packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
         packet.getSyncedProperties().getIntProperties().addAll(syncData.getIntProperties());
@@ -1366,7 +1408,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void sendData(Player[] players, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setActorData(data == null ? this.actorDataMap : data);
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         PropertySyncData syncData = this.propertySyncData();
         packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
         packet.getSyncedProperties().getIntProperties().addAll(syncData.getIntProperties());
@@ -1475,7 +1517,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     this.addEffect(Effect.get(EffectType.ABSORPTION).setDuration(100).setAmplifier(1));
 
                     final ActorEventPacket actorEventPacket = new ActorEventPacket();
-                    actorEventPacket.setTargetRuntimeID(this.getId());
+                    actorEventPacket.setTargetRuntimeID(this.runtimeId());
                     actorEventPacket.setType(ActorEvent.TALISMAN_ACTIVATE);
                     player.sendPacket(actorEventPacket);
 
@@ -1937,7 +1979,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public void addMotion(double motionX, double motionY, double motionZ) {
         final SetActorMotionPacket packet = new SetActorMotionPacket();
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setMotion(org.cloudburstmc.math.vector.Vector3f.from(motionX, motionY, motionZ));
 
         Server.broadcastPacket(this.hasSpawned.values(), packet);
@@ -1946,7 +1988,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     protected void broadcastMovement(boolean tp) {
         final MoveActorAbsoluteData moveData = new MoveActorAbsoluteData();
-        moveData.setActorRuntimeID(this.getId());
+        moveData.setActorRuntimeID(this.runtimeId());
         moveData.setOnGround(this.onGround);
         moveData.setTeleported(tp);
         moveData.setPos(this.getPosition().toNetwork().add(0f, this.getBaseOffset(), 0f));
@@ -4525,7 +4567,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.setTamed(true);
 
         final ActorEventPacket packet = new ActorEventPacket();
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setType(ActorEvent.TAMING_SUCCEEDED);
 
         player.sendPacket(packet);
@@ -4535,7 +4577,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void onTameFail(Player player) {
         final ActorEventPacket packet = new ActorEventPacket();
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setType(ActorEvent.TAMING_FAILED);
 
         player.sendPacket(packet);
@@ -4580,7 +4622,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public final void scheduleUpdate() {
-        this.level.updateEntities.put(this.getId(), this);
+        this.level.updateEntities.put(this.runtimeId(), this);
     }
 
     public boolean isOnFire() {
@@ -4631,7 +4673,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void syncAttribute(Attribute attribute) {
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
-        packet.setRuntimeID(this.getId());
+        packet.setRuntimeID(this.runtimeId());
         packet.getAttributeList().add(attribute.toNetwork());
 
         Server.broadcastPacket(this.getViewers().values(), packet);
@@ -4639,7 +4681,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void syncAttributes() {
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
-        packet.setRuntimeID(this.getId());
+        packet.setRuntimeID(this.runtimeId());
         var attributeList = packet.getAttributeList();
         for (Attribute attribute : this.attributes.values()) {
             if (attribute.isSyncable()) {
@@ -5767,21 +5809,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return false;
     }
 
-    /**
-     * return runtime id (changed after restart the server),the id is incremental number
-     */
-    public long getId() {
-        return this.id;
-    }
-
-
-    /**
-     * Gets unique id(UUID)
-     */
-    public UUID getUniqueId() {
-        return this.entityUniqueId;
-    }
-
     public void respawnToAll() {
         Player[] players = this.hasSpawned.values().toArray(Player.EMPTY_ARRAY);
         this.hasSpawned.clear();
@@ -6001,13 +6028,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return false;
         }
         Entity other = (Entity) obj;
-        return this.getId() == other.getId();
+        return this.runtimeId() == other.runtimeId();
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = (int) (29 * hash + this.getId());
+        hash = (int) (29 * hash + this.runtimeId());
         return hash;
     }
 
@@ -6135,7 +6162,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public void playAnimation(EntityAnimation animation, Collection<Player> players) {
         var pk = animation.toNetwork();
-        pk.getRuntimeIds().add(this.getId());
+        pk.getRuntimeIds().add(this.runtimeId());
         Server.broadcastPacket(players, pk);
     }
 
@@ -6155,7 +6182,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void playActionAnimation(AnimatePacket.Action action, ActorSwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();
         pk.setAction(action);
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setSwingSource(swingSource);
         Server.broadcastPacket(players, pk);
     }
