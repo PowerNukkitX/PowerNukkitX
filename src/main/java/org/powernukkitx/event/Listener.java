@@ -8,7 +8,7 @@ package org.powernukkitx.event;
  * One listener class could contain many different handlers.
  * After implemented the listener class, plugin should register it in plugin level.</p>
  *
- * <p>After registered, Nukkit will call the handler in the listener classes by reflection when a event happens.</p>
+ * <p>After registered, Nukkit will call the handler in the listener classes by reflection when an event happens.</p>
  *
  * <p>Here is an example for writing a listener class and a handler method.
  * Note that for the handler, tag {@code @EventHandler} and the parameter is required:</p>

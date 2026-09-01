@@ -99,7 +99,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             EnchantItemEvent event = new EnchantItemEvent((EnchantInventory) inventory, first.clone().autoAssignStackNetworkId(), item, enchantOptionData.getCost(), player);
             Server.getInstance().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                if ((player.getGamemode() & 0x01) == 0) {
+                if (!player.isCreative()) {
                     int lapisCost = enchantOptionWithEntry.getEntry() + 1;
                     if (inventory.getItem(1).getCount() < lapisCost) {
                         return context.error();

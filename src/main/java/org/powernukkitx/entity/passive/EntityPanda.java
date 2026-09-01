@@ -259,8 +259,8 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
         } else return false;
     }
 
-    private class PandaAttackEecutor extends MeleeAttackExecutor {
-        public PandaAttackEecutor() {
+    private class PandaAttackExecutor extends MeleeAttackExecutor {
+        public PandaAttackExecutor() {
             super(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 16, true, 20);
         }
 
@@ -410,7 +410,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                 )
                 .behaviors(
                         new Behavior(
-                                new PandaAttackEecutor(),
+                                new PandaAttackExecutor(),
                                 all(
                                         new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                         new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 16)

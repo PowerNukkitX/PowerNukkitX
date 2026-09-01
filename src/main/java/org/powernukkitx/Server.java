@@ -538,7 +538,7 @@ public class Server {
                 computeThreadPool);
             CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
             CompletableFuture<Void> creativeF = creativeInventoryEnabled
-                    ? CompletableFuture.allOf(itemF, blockStateF)
+                    ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
                             .thenRunAsync(
                                     registryCache != null
                                             ? () -> registryCache.restoreCreative(Registries.CREATIVE)
@@ -2580,7 +2580,7 @@ public class Server {
      * Get world from world id, 0 OVERWORLD 1 NETHER 2 THE_END
      *
      * @param levelId world id
-     * @return level level instance
+     * @return level The Level instance
      */
     public Level getLevel(int levelId) {
         if (this.levels.containsKey(levelId)) {

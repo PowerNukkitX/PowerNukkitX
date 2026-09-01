@@ -218,12 +218,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             }
             if (!player.canInteract(target, player.isCreative() ? 8 : 5)) {
                 return;
-            } else if (target instanceof Player) {
-                if ((((Player) target).getGamemode() & 0x01) > 0) {
-                    return;
-                } else if (!player.getServer().getSettings().gameplaySettings().pvp()) {
-                    return;
-                }
+            } else if (target instanceof Player targetPlayer
+                    && (targetPlayer.isCreative() || !player.getServer().getSettings().gameplaySettings().pvp())) {
+                return;
             }
 
             player.interruptShieldBlockingForAttack();

@@ -174,9 +174,9 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * Returns the item currently held in the player's off hand.
+     * Returns the item currently held in the player's offhand.
      *
-     * @return the item in the off hand
+     * @return the item in the offhand
      */
     public Item getItemInOffhand() {
         return this.getHolder().getOffhandInventory().getItem(0);
@@ -218,7 +218,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * Sets the item in the player's off hand.
+     * Sets the item in the player's offhand.
      * <p>
      * Convenience wrapper for {@code getOffhandInventory().setItem(0, item)}.
      * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
@@ -231,7 +231,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * Sets the item in the player's off hand.
+     * Sets the item in the player's offhand.
      * <p>
      * Convenience wrapper for {@code getOffhandInventory().setItem(0, item, bool)}.
      * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.

@@ -48,7 +48,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         }
 
         Vector3f pos = Vector3f.fromNetwork(packet.getPosition());
-        Vector3f rot = Vector3f.fromNetwork(packet.getPosition());
+        Vector3f rot = Vector3f.fromNetwork(packet.getPlayerRotation());
         if (!Float.isFinite(pos.getX()) || !Float.isFinite(pos.getY()) || !Float.isFinite(pos.getZ()) || !Float.isFinite(rot.getX()) || !Float.isFinite(rot.getY()) || !Float.isFinite(rot.getZ())) {
             log.debug("Player {} sent invalid movement values (NaN or Infinite)", player.getName());
             return;

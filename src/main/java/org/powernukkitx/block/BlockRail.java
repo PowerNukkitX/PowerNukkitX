@@ -57,7 +57,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     // 0x8: Set the block active
     // 0x7: Reset the block to normal
-    // If the rail can be powered. So its a complex rail!
+    // If the rail can be powered. So it's a complex rail!
     protected boolean canBePowered = false;
 
     public BlockRail() {
@@ -353,7 +353,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     /**
-     * @throws NoSuchElementException If attempt to set the rail to active but it don't have the {@link CommonBlockProperties#ACTIVE} property.
+     * @throws NoSuchElementException If attempt to set the rail to active, but it doesn't have the {@link CommonBlockProperties#ACTIVE} property.
      */
     public void setRailActive(boolean active){
         if (!active && !getProperties().containProperty(CommonBlockProperties.ACTIVE)) {

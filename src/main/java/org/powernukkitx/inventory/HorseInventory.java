@@ -515,6 +515,6 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
             }
         }
 
-        return out.isEmpty() ? Item.EMPTY_ARRAY : out.toArray(new Item[0]);
+        return out.isEmpty() ? Item.EMPTY_ARRAY : out.toArray(Item.EMPTY_ARRAY);
     }
 }

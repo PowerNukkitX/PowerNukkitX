@@ -126,7 +126,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.nbt.remove("CustomName");
             return;
         }
