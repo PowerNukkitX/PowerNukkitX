@@ -577,7 +577,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         public Builder movable(@NotNull Movable.MovementType movementType) {
-            return this.movable(new Movable( movementType));
+            return this.movable(new Movable(movementType));
         }
 
         public Builder movable(@NotNull Movable.MovementType movementType, @NotNull Movable.StickyType sticky) {
