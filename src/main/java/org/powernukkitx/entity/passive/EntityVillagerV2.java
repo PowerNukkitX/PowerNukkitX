@@ -1060,7 +1060,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                             }
                             final TakeItemActorPacket pk = new TakeItemActorPacket();
                             pk.setActorRuntimeID(this.runtimeId());
-                            pk.setItemRuntimeID(i.getRuntimeId());
+                            pk.setItemRuntimeID(i.runtimeId());
                             Server.broadcastPacket(getViewers().values(), pk);
                             slice.addItem(item);
                             i.close();
