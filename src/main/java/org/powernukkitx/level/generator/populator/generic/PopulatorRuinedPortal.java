@@ -109,13 +109,13 @@ public class PopulatorRuinedPortal extends Populator implements PopulatorStructu
                     }
                 }
                 if (block instanceof BlockMagma) {
-                    manager.addHook(() -> {
+                    manager.addHook(block, () -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
                 }
                 if(block instanceof BlockChest chest) {
                     BlockVector3 chestPos = chest.asBlockVector3();
-                    manager.addHook(() -> {
+                    manager.addHook(chestPos, () -> {
                         Block worldBlock = level.getBlock(chestPos.getX(), chestPos.getY(), chestPos.getZ());
                         if (worldBlock instanceof BlockChest worldChest) {
                             CHEST_POPULATOR.create(worldChest.getOrCreateBlockEntity().getInventory(), createChestLootRandom(level, chestPos));

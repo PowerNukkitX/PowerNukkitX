@@ -49,7 +49,7 @@ public class WoodlandMansionPopulator extends Populator implements PopulatorStru
         pieceRandom.setSeed((long) chunkX * pieceRandom.nextInt() ^ (long) chunkZ * pieceRandom.nextInt() ^ level.getSeed());
         WoodlandMansionPieces.PostPlacement postPlacement = WoodlandMansionPieces.place(manager, origin, rotation, pieceRandom);
         if (!postPlacement.chests().isEmpty() || !postPlacement.mobSpawns().isEmpty() || !postPlacement.spiderSpawnerPositions().isEmpty()) {
-            manager.addHook(() -> WoodlandMansionPieces.populatePlacedData(
+            manager.addHook(postPlacement.coveredChunks(), () -> WoodlandMansionPieces.populatePlacedData(
                     level,
                     postPlacement.chests(),
                     postPlacement.mobSpawns(),

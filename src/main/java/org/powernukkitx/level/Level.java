@@ -61,6 +61,7 @@ import org.powernukkitx.level.generator.BiomedGenerator;
 import org.powernukkitx.level.generator.Generator;
 import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
+import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.level.particle.Particle;
 import org.powernukkitx.level.util.EntityQueryUtils;
@@ -774,6 +775,7 @@ public class Level implements Metadatable {
 
     private void remove() {
         this.subTickGameLoop.stop();
+        BlockManager.clearPendingHooks(this.levelId);
         this.scheduler.cancelAllTasks();
         this.scheduler.mainThreadHeartbeat(this.getTick() + 10000);
         this.server.getLevels().remove(this.levelId);

@@ -43,7 +43,7 @@ public final class BeeNestGenerator {
                 CommonBlockProperties.DIRECTION.createValue(BlockFace.SOUTH.getHorizontalIndex()),
                 CommonBlockProperties.HONEY_LEVEL.createValue(0)
         ));
-        level.addHook(() -> populate(level, nestPosition, beeCount));
+        level.addHook(nestPosition, () -> populate(level, nestPosition, beeCount));
     }
 
     public static boolean hasNearbyFlower(BlockManager manager, Vector3 position) {
