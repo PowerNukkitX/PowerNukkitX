@@ -181,13 +181,20 @@ public class Network implements NetworkInterface {
                             new PlayerSessionHolder(
                                 session,
                                 Network.this.server.getSettings().networkSettings().rateLimitSettings()
-                            )
+                            ),
+                            Network.this.botnetDetector
                         ));
+                        if (Network.this.botnetDetector != null) {
+                            Network.this.botnetDetector.registerSession(address);
+                        }
                         final Channel sessionChannel = session.getPeer().getChannel();
                         Network.this.sessionMap.put(address, session);
                         sessionChannel.closeFuture().addListener(future -> {
                             if (!Network.this.sessionMap.remove(address, session)) {
                                 Network.this.sessionMap.values().remove(session);
+                            }
+                            if (Network.this.botnetDetector != null) {
+                                Network.this.botnetDetector.unregisterSession(address);
                             }
                         });
                     }

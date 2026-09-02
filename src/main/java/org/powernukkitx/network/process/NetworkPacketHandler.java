@@ -10,6 +10,9 @@ import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
 import org.cloudburstmc.protocol.common.PacketSignal;
 import org.jetbrains.annotations.Nullable;
+import org.powernukkitx.network.security.BotnetDetector;
+
+import java.net.InetSocketAddress;
 
 /**
  * @author Kaooot
@@ -20,9 +23,15 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
 
     private final Server server;
     private final PlayerSessionHolder session;
+    private final @Nullable BotnetDetector botnetDetector;
 
     @Override
     public PacketSignal handlePacket(BedrockPacket packet) {
+        if (this.botnetDetector != null
+            && this.session.getSession().getSocketAddress() instanceof InetSocketAddress address) {
+            this.botnetDetector.recordPacket(address, packet.getPacketType().ordinal());
+        }
+
         if (!this.session.checkRateLimits()) {
             return PacketSignal.HANDLED;
         }

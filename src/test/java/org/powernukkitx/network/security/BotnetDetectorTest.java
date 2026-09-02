@@ -1,13 +1,20 @@
 package org.powernukkitx.network.security;
 
+import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.packet.TextPacket;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.powernukkitx.Server;
+import org.powernukkitx.network.process.NetworkPacketHandler;
+import org.powernukkitx.network.process.PlayerSessionHolder;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link BotnetDetector}.
@@ -228,6 +235,18 @@ class BotnetDetectorTest {
     }
 
     @Test
+    void networkPacketHandlerFeedsDetector() {
+        InetSocketAddress a = addr("10.0.0.1", 1000);
+        InetSocketAddress b = addr("10.0.0.2", 1001);
+        InetSocketAddress c = addr("10.0.0.3", 1002);
+
+        floodViaHandler(a, b, c);
+
+        BotnetReport report = detector.tick().orElseThrow();
+        assertEquals(3, report.getFloodingSessions().size());
+    }
+
+    @Test
     void scoreReflectsNumberOfSignalsFired() {
         long base = fakeTime.get();
         floodAtTime(addr("192.168.1.1", 1000), 0x10, base);
@@ -274,6 +293,37 @@ class BotnetDetectorTest {
 
     private InetSocketAddress addr(String ip, int port) {
         return new InetSocketAddress(ip, port);
+    }
+
+    private void floodViaHandler(InetSocketAddress... addrs) {
+        long start = fakeTime.get();
+        NetworkPacketHandler[] handlers = new NetworkPacketHandler[addrs.length];
+        for (int i = 0; i < addrs.length; i++) {
+            detector.registerSession(addrs[i]);
+            handlers[i] = handlerFor(addrs[i]);
+        }
+
+        for (int i = 0; i < THRESHOLD + 1; i++) {
+            for (var handler : handlers) handler.handlePacket(new TextPacket());
+            fakeTime.addAndGet(1L);
+        }
+
+        fakeTime.set(start + 1_100L);
+        for (var handler : handlers) {
+            handler.handlePacket(new TextPacket());
+            fakeTime.addAndGet(1L);
+        }
+    }
+
+    private NetworkPacketHandler handlerFor(InetSocketAddress address) {
+        BedrockServerSession session = mock(BedrockServerSession.class);
+        when(session.getSocketAddress()).thenReturn(address);
+
+        PlayerSessionHolder holder = mock(PlayerSessionHolder.class);
+        when(holder.getSession()).thenReturn(session);
+        when(holder.checkRateLimits()).thenReturn(false);
+
+        return new NetworkPacketHandler(mock(Server.class), holder, detector);
     }
 
     /**
