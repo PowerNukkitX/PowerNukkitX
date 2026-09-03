@@ -206,7 +206,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             if (target instanceof Player && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_PLAYERS)
                     || !(target instanceof Player) && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_MOBS))
                 return;
-            if (target.getId() == player.getId()) {
+            if (target.runtimeId() == player.runtimeId()) {
                 PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.INVALID_PVP);
                 player.getServer().getPluginManager().callEvent(event);
 

@@ -55,7 +55,7 @@ public class EatGrassExecutor implements IBehaviorExecutor {
 
     protected void playEatGrassAnimation(EntityIntelligent entity) {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(entity.getId());
+        pk.setTargetRuntimeID(entity.runtimeId());
         pk.setType(ActorEvent.EAT_GRASS);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

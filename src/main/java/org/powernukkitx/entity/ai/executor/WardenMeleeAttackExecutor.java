@@ -105,7 +105,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
 
     protected void playAttackAnimation(EntityIntelligent entity) {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(entity.getId());
+        pk.setTargetRuntimeID(entity.runtimeId());
         pk.setType(ActorEvent.START_ATTACKING);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

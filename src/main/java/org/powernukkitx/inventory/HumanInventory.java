@@ -267,9 +267,9 @@ public class HumanInventory extends BaseInventory {
         pk.setSelectedSlot(this.getHeldItemIndex());
 
         for (Player player : players) {
-            pk.setTargetRuntimeID(this.getHolder().getEntity().getId());
+            pk.setTargetRuntimeID(this.getHolder().getEntity().runtimeId());
             if (player.equals(this.getHolder())) {
-                pk.setTargetRuntimeID(player.getId());
+                pk.setTargetRuntimeID(player.runtimeId());
                 this.sendSlot(this.getHeldItemIndex(), player);
             }
 
@@ -600,7 +600,7 @@ public class HumanInventory extends BaseInventory {
         Item[] armor = this.getArmorContents();
 
         final MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-        pk.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        pk.setTargetRuntimeID(this.getHolder().getEntity().runtimeId());
         pk.setHead(this.getArmorContents()[0].toNetwork());
         pk.setTorso(this.getArmorContents()[1].toNetwork());
         pk.setLegs(this.getArmorContents()[2].toNetwork());
@@ -690,7 +690,7 @@ public class HumanInventory extends BaseInventory {
         Item[] armor = this.getArmorContents();
 
         final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-        mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getEntity().runtimeId());
         mobArmorEquipmentPacket.setHead(armor[0].toNetwork());
         mobArmorEquipmentPacket.setTorso(armor[1].toNetwork());
         mobArmorEquipmentPacket.setLegs(armor[2].toNetwork());

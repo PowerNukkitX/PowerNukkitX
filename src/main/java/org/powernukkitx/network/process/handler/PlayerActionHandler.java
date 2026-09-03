@@ -35,7 +35,7 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
             return;
         }
 
-        packet.setPlayerRuntimeID(player.getId());
+        packet.setPlayerRuntimeID(player.runtimeId());
         Vector3 pos = Vector3.fromNetwork(packet.getBlockPosition().toFloat());
         BlockFace face = BlockFace.fromIndex(packet.getFace());
 

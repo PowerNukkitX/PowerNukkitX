@@ -325,7 +325,7 @@ public class PlayerSessionHolder {
     private void sendStartGame(Server server) {
         final StartGamePacket packet = new StartGamePacket();
         packet.setEntityID(this.player.getId());
-        packet.setRuntimeID(this.player.getId());
+        packet.setRuntimeID(this.player.runtimeId());
         packet.setGameType(GameType.from(Player.toNetworkGamemode(this.player.getGamemode())));
         packet.setPosition(this.player.getInitialSpawnPosition());
         packet.setRotation(Vector2f.from(this.player.getYaw(), this.player.getPitch()));
