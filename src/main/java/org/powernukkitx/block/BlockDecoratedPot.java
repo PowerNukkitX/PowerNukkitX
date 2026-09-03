@@ -108,7 +108,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
 
     @Override
     public Item[] getDrops(Item item) {
-        if (item != null && item.hasEnchantment(Enchantment.ID_SILK_TOUCH) && isShatteringTool(item)) {
+        if (item == null || !isShatteringTool(item) || item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
             return new Item[]{super.toItem()};
         }
 
