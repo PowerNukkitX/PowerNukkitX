@@ -57,6 +57,8 @@ public class CreativeGroupsRegistry {
      * Injects all registered custom groups into the group index map and runtime list.
      */
     public static void register() {
+        if (INJECTED_GROUPS.isEmpty()) return;
+
         List<CreativeGroupInfoPayload> allOriginalGroups = new ArrayList<>(Registries.CREATIVE.getGroupList());
         Map<CreativeGroupInfoPayload, Integer> originalGroupIndices = extractOriginalGroupIndices(allOriginalGroups);
 
@@ -70,6 +72,7 @@ public class CreativeGroupsRegistry {
         Registries.CREATIVE.getGroupList().addAll(rebuilt);
 
         remapCreativeItemGroups(groupIndexMap);
+        INJECTED_GROUPS.clear();
     }
 
     private static Map<CreativeGroupInfoPayload, Integer> extractOriginalGroupIndices(List<CreativeGroupInfoPayload> allGroups) {
@@ -151,17 +154,13 @@ public class CreativeGroupsRegistry {
         for (CreativeItemEntryPayload data : current) {
             Item item = Item.fromNetwork(data.getItemInstance());
             int originalGroupId = data.getGroupIndex();
-            int newGroupId = CreativeItemRegistry.LAST_ITEMS_INDEX;
+            int newGroupId;
 
             String originalId = data.getItemInstance().getDefinition().getIdentifier();
-            String rebuiltId = item.getItemDefinition().getIdentifier();
 
-            // Vanilla item: remap based on old group index
-            if (!isCategoryFallbackIndex(originalGroupId)) {
+            if (!CreativeItemRegistry.CUSTOM_ITEM_IDENTIFIERS.contains(originalId)){
                 Integer mapped = groupIndexMap.get(originalGroupId);
-                if (mapped != null) {
-                    newGroupId = mapped;
-                }
+                newGroupId = (mapped != null) ? mapped : originalGroupId;
             } else {
                 // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
                 String key = originalId;
@@ -221,13 +220,6 @@ public class CreativeGroupsRegistry {
         current.clear();
         current.addAll(rebuilt);
         CreativeItemRegistry.ITEM_GROUP_MAP.clear();
-    }
-
-    private static boolean isCategoryFallbackIndex(int groupId) {
-        return groupId == CreativeItemRegistry.LAST_CONSTRUCTION_INDEX
-            || groupId == CreativeItemRegistry.LAST_EQUIPMENTS_INDEX
-            || groupId == CreativeItemRegistry.LAST_ITEMS_INDEX
-            || groupId == CreativeItemRegistry.LAST_NATURE_INDEX;
     }
 
     public static CreativeCategory getCategoryFromFallbackIndex(int groupId) {
