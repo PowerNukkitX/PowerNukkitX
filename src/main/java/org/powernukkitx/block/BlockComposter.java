@@ -84,7 +84,7 @@ public class BlockComposter extends BlockSolid {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockComposter(), 0);
     }
 
     @Override

@@ -67,7 +67,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockDaylightDetector(), 0);
     }
 
     @Override

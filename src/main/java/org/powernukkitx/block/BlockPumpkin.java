@@ -53,7 +53,7 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockPumpkin(), 0);
     }
 
     @Override

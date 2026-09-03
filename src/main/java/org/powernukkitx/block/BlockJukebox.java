@@ -53,7 +53,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockJukebox(), 0);
     }
 
     @Override
