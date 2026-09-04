@@ -378,7 +378,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag nbt = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable())
                 .putShort("FuelTotal", (short) this.fuelTotal)
                 .putShort("FuelAmount", (short) this.fuelAmount);
 

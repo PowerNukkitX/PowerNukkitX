@@ -22,7 +22,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
 
     @Override
@@ -191,10 +190,15 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         return true;
     }
 
+    public void prepareForPistonMove() {
+        if (this.isPaired()) {
+            this.unpair();
+        }
+    }
+
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag spawnCompound = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable());
+        CompoundTag spawnCompound = super.getSpawnCompound();
         if (this.isPaired()) {
             spawnCompound.putBoolean("pairlead", this.getNbt().getBoolean("pairlead"))
                     .putInt("pairx", this.getNbt().getInt("pairx"))

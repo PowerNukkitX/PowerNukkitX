@@ -59,6 +59,11 @@ public class BlockBarrier extends BlockSolid {
     }
 
     @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public int getLightFilter() {
         return 1;
     }

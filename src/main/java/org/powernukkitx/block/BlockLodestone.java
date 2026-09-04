@@ -143,4 +143,9 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     public boolean canBePushed() {
         return false;
     }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }

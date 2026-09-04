@@ -377,7 +377,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable())
                 .putShort("BurnDuration", (short) burnDuration)
                 .putShort("BurnTime", (short) burnTime)
                 .putShort("CookTime", (short) cookTime)

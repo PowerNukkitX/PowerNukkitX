@@ -45,6 +45,11 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     }
 
     @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public boolean canHarvestWithHand() {
         return false;
     }
