@@ -208,8 +208,8 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                         }
                         if (holder.equip(item)) {
                             final TakeItemActorPacket pk = new TakeItemActorPacket();
-                            pk.setActorRuntimeID(entity.getId());
-                            pk.setItemRuntimeID(i.getId());
+                            pk.setActorRuntimeID(entity.runtimeId());
+                            pk.setItemRuntimeID(i.runtimeId());
                             Server.broadcastPacket(entity.getViewers().values(), pk);
                             i.close();
                         }

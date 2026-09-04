@@ -251,7 +251,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                     this.nbt.remove("bed");
                                     getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                                 } else {
-                                    getLevel().getVillageManager().ensureTicket(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3(), getId());
+                                    getLevel().getVillageManager().ensureTicket(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3(), runtimeId());
                                 }
                             }
                         },
@@ -293,7 +293,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                         setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
                                     }
                                 } else if (siteBlock != null) {
-                                    getLevel().getVillageManager().ensureTicket(siteBlock.asBlockVector3(), getId());
+                                    getLevel().getVillageManager().ensureTicket(siteBlock.asBlockVector3(), runtimeId());
                                 }
 
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.SITE_BLOCK)) {
@@ -377,11 +377,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public void setBed(BlockBed bed) {
-        if (bed.isBedValid() && getLevel().getVillageManager().takeAt(bed.getFootPart().asBlockVector3(), getId())) {
+        if (bed.isBedValid() && getLevel().getVillageManager().takeAt(bed.getFootPart().asBlockVector3(), runtimeId())) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, bed);
             getLevel().getVillageManager().getVillageAt(bed.asBlockVector3()).ifPresent(village -> {
                 setVillageUuid(village.uuid());
-                getLevel().getVillageManager().addDweller(village.uuid(), new VillageDwellers.Actor(getId(), asBlockVector3(), getLevel().getCurrentTick(), null));
+                getLevel().getVillageManager().addDweller(village.uuid(), new VillageDwellers.Actor(runtimeId(), asBlockVector3(), getLevel().getCurrentTick(), null));
             });
             for (int i = 0; i < 5; i++) {
                 float randX = Utils.rand(0f, 0.5f);
@@ -430,7 +430,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     private void restoreBed(BlockBed bed) {
         BlockBed foot = bed.getFootPart();
         if (foot != null && foot.isBedValid()
-                && getLevel().getVillageManager().ensureTicket(foot.asBlockVector3(), getId())) {
+                && getLevel().getVillageManager().ensureTicket(foot.asBlockVector3(), runtimeId())) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, foot);
         }
     }
@@ -562,7 +562,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             setProfession(nbtMap.getInt("profession"), false);
         }
         if (!nbtMap.containsString("villageUuid")) {
-            getLevel().getVillageManager().getVillageForDweller(getId())
+            getLevel().getVillageManager().getVillageForDweller(runtimeId())
                     .ifPresent(village -> setVillageUuid(village.uuid()));
         }
         if (nbtMap.contains("clothing")) {
@@ -634,7 +634,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 && event.getDamager() instanceof Player player) {
             addGossip(player.getXUID(), Gossip.MINOR_NEGATIVE, 25);
             final ActorEventPacket pk = new ActorEventPacket();
-            pk.setTargetRuntimeID(this.getId());
+            pk.setTargetRuntimeID(this.runtimeId());
             pk.setType(ActorEvent.VILLAGER_ANGRY);
             Server.broadcastPacket(getViewers().values(), pk);
             for (Entity e : getLevel().getCollidingEntities(getBoundingBox().grow(48, 8, 48))) {
@@ -802,7 +802,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         for (Profession profession : Profession.getProfessions().values()) {
             if (getTradeExp() != 0 && profession.getIndex() != getProfession()) continue;
             if (block.getId().equals(profession.getBlockID())) {
-                if (!getLevel().getVillageManager().takeAt(block.asBlockVector3(), getId())) return false;
+                if (!getLevel().getVillageManager().takeAt(block.asBlockVector3(), runtimeId())) return false;
                 getMemoryStorage().put(CoreMemoryTypes.SITE_BLOCK, block);
                 getLevel().getVillageManager().getVillageAt(block.asBlockVector3())
                         .ifPresent(village -> setVillageUuid(village.uuid()));
@@ -841,7 +841,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     private void restoreProfessionBlock(Block block) {
         Profession profession = Profession.getProfession(getProfession());
         if (profession != null && block.getId().equals(profession.getBlockID())
-                && getLevel().getVillageManager().ensureTicket(block.asBlockVector3(), getId())) {
+                && getLevel().getVillageManager().ensureTicket(block.asBlockVector3(), runtimeId())) {
             getMemoryStorage().put(CoreMemoryTypes.SITE_BLOCK, block);
         }
     }
@@ -1059,8 +1059,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 continue;
                             }
                             final TakeItemActorPacket pk = new TakeItemActorPacket();
-                            pk.setActorRuntimeID(this.getId());
-                            pk.setItemRuntimeID(i.getId());
+                            pk.setActorRuntimeID(this.runtimeId());
+                            pk.setItemRuntimeID(i.runtimeId());
                             Server.broadcastPacket(getViewers().values(), pk);
                             slice.addItem(item);
                             i.close();

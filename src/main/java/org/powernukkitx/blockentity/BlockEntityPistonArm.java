@@ -92,7 +92,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         // Player clients automatically handle movement
         if (diff == 0 || !entity.canBePushedByPiston() || entity instanceof Player)
             return false;
-        if (!this.markEntityAffected(entity) || this.movedEntitiesThisTick.contains(entity.getId()))
+        if (!this.markEntityAffected(entity) || this.movedEntitiesThisTick.contains(entity.runtimeId()))
             return false;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
         this.level.getServer().getPluginManager().callEvent(event);
@@ -101,7 +101,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         entity.onPushByPiston(this);
         if (entity.closed)
             return false;
-        this.movedEntitiesThisTick.add(entity.getId());
+        this.movedEntitiesThisTick.add(entity.runtimeId());
         // Need to counteract gravity
         entity.move(
                 diff * moveDirection.getXOffset(),
@@ -116,7 +116,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         if (diff == 0 || !entity.canBePushedByPiston()) {
             return false;
         }
-        return this.affectedEntitiesThisTick.add(entity.getId());
+        return this.affectedEntitiesThisTick.add(entity.runtimeId());
     }
 
     /**

@@ -257,7 +257,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockChest(), 0);
     }
 
     @Override

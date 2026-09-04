@@ -222,8 +222,8 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                         }
                         getInventory().addItem(item);
                         final TakeItemActorPacket pk = new TakeItemActorPacket();
-                        pk.setActorRuntimeID(this.getId());
-                        pk.setItemRuntimeID(entity.getId());
+                        pk.setActorRuntimeID(this.runtimeId());
+                        pk.setItemRuntimeID(entity.runtimeId());
                         Server.broadcastPacket(getViewers().values(), pk);
                         entityItem.close();
                     }

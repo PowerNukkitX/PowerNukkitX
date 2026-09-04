@@ -117,7 +117,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         );
         pk.setActorData(this.getActorDataMap());
         pk.setTargetActorID(this.getId());
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setActorType("minecraft:ender_dragon");
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         pk.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
@@ -173,7 +173,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
             deathTicks = 190;
             getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, getIdentifier(), false, false);
             final ActorEventPacket packet = new ActorEventPacket();
-            packet.setTargetRuntimeID(this.getId());
+            packet.setTargetRuntimeID(this.runtimeId());
             packet.setType(ActorEvent.DRAGON_START_DEATH_ANIM);
             Server.broadcastPacket(getViewers().values(), packet);
             setImmobile(true);

@@ -364,7 +364,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockRail(), 0);
     }
 
     @Override
