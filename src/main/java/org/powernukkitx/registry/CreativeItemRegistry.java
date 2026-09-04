@@ -311,7 +311,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
         final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
         entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
-        entryPayload.setItemInstance(value.toNetwork());
+        entryPayload.setItemInstance(value.toCreativeNetwork());
         entryPayload.setGroupIndex(groupIndex);
         ITEM_DATA.add(entryPayload);
     }
@@ -325,7 +325,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } else {
             final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
             entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
-            entryPayload.setItemInstance(value.toNetwork());
+            entryPayload.setItemInstance(value.toCreativeNetwork());
             entryPayload.setGroupIndex(CreativeItemRegistry.LAST_ITEMS_INDEX);
             ITEM_DATA.add(entryPayload);
         }
