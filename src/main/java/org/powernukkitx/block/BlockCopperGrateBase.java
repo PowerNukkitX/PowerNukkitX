@@ -1,22 +1,22 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 
 import javax.annotation.Nullable;
 
 public abstract class BlockCopperGrateBase extends BlockCopperBase implements Oxidizable, Waxable {
+    public static final BlockDefinition DEFINITION = BlockCopperBase.DEFINITION.toBuilder()
+            .isTransparent(true)
+            .waterloggingLevel(1)
+            .build();
     public BlockCopperGrateBase(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
+    public BlockCopperGrateBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override

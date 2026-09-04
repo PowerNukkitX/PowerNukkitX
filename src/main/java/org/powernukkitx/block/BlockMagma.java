@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
@@ -16,13 +18,20 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockMagma extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MAGMA);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.5)
+            .resistance(30)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .lightEmission(3)
+            .canHarvestWithHand(false)
+            .build();
 
     public BlockMagma() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockMagma(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -34,26 +43,6 @@ public class BlockMagma extends BlockSolid {
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 30;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 3;
     }
 
     @Override
@@ -100,9 +89,5 @@ public class BlockMagma extends BlockSolid {
         return 0;
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
 }

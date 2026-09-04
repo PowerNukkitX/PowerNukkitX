@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.CompassRoseDirection;
@@ -25,6 +27,10 @@ public class BlockWallSign extends BlockStandingSign {
 
     public BlockWallSign(BlockState blockState) {
         super(blockState);
+    }
+
+    public BlockWallSign(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override

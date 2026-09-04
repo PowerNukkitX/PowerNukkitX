@@ -20,6 +20,7 @@ import org.powernukkitx.math.BlockFace.AxisDirection;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.utils.Faceable;
 import org.powernukkitx.utils.RedstoneComponent;
+import org.powernukkitx.block.definition.BlockDefinition;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +33,14 @@ import java.util.List;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockDoor extends BlockTransparent implements RedstoneComponent, Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .isSolid(false)
+            .canBeActivated(false)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .waterloggingLevel(1)
+            .build();
+
     private static final double THICKNESS = 3.0 / 16;
 
     // Contains a list of positions of doors, which have been opened by hand (by a player).
@@ -53,24 +62,8 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         super(blockState);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
-    public boolean isSolid(BlockFace side) {
-        return false;
+    public BlockDoor(BlockState meta, BlockDefinition definition) {
+        super(meta, definition);
     }
 
     @Override
@@ -395,15 +388,5 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.values()[DOOR_DIRECTION.get(face)]);
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 }

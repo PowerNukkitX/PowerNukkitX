@@ -1,14 +1,21 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPetrifiedOakSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(PETRIFIED_OAK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TYPE_NONE)
+            .canHarvestWithHand(false)
+            .build();
 
     public BlockPetrifiedOakSlab(BlockState blockState) {
-        super(blockState, PETRIFIED_OAK_DOUBLE_SLAB);
+        super(blockState, PETRIFIED_OAK_DOUBLE_SLAB, DEFINITION);
     }
 
     @Override
@@ -27,18 +34,4 @@ public class BlockPetrifiedOakSlab extends BlockSlab {
         return slab.getId().equals(this.getId());
     }
 
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TYPE_NONE;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-}

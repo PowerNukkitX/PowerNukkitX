@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 
 import org.jetbrains.annotations.NotNull;
 
@@ -7,6 +9,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HANGING;
 
 public class BlockSoulLantern extends BlockLantern {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_LANTERN, HANGING);
+    public static final BlockDefinition DEFINITION = BlockLantern.DEFINITION.toBuilder()
+            .lightEmission(10)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -18,7 +23,7 @@ public class BlockSoulLantern extends BlockLantern {
     }
 
     public BlockSoulLantern(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -26,9 +31,5 @@ public class BlockSoulLantern extends BlockLantern {
         return "Soul Lantern";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 10;
-    }
-
+    
 }

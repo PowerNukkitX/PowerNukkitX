@@ -1,5 +1,7 @@
 package org.powernukkitx.block.dispenser;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockEntityHolder;
@@ -44,6 +46,15 @@ import static org.powernukkitx.block.property.CommonBlockProperties.FACING_DIREC
 public class BlockDispenser extends BlockSolid implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3.5)
+            .resistance(3.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .hasComparatorInputOverride(true)
+            .build();
 
     @Override
     @NotNull
@@ -56,14 +67,14 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     }
 
     public BlockDispenser(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
+    public BlockDispenser(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
+    
     @Override
     public String getName() {
         return "Dispenser";
@@ -73,16 +84,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
     @NotNull
     public String getBlockEntityType() {
         return BlockEntity.DISPENSER;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3.5;
     }
 
     @Override
@@ -115,11 +116,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
         setPropertyValue(CommonBlockProperties.TRIGGERED_BIT, value);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
@@ -265,21 +262,6 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
     protected DispenseBehavior getDispenseBehavior(Item item) {
         return DispenseBehaviorRegister.getBehavior(item.getId());
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     public Vector3 getDispensePosition() {

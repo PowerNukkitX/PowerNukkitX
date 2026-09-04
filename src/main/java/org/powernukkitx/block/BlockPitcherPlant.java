@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.DoublePlantType;
 import org.powernukkitx.Player;
@@ -9,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockPitcherPlant extends BlockDoublePlant implements Pollinable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PITCHER_PLANT, CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockDefinition DEFINITION = BlockDoublePlant.DEFINITION.toBuilder()
+            .canBeActivated(false)
+            .isFertilizable(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,7 +26,7 @@ public class BlockPitcherPlant extends BlockDoublePlant implements Pollinable {
     }
 
     public BlockPitcherPlant(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -32,18 +38,10 @@ public class BlockPitcherPlant extends BlockDoublePlant implements Pollinable {
         return "Pitcher Plant";
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return false;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return false;
     }
-}

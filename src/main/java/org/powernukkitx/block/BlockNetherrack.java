@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -17,28 +19,22 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockNetherrack extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHERRACK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.4)
+            .resistance(0.4)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .canHarvestWithHand(false)
+            .build();
 
     public BlockNetherrack() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockNetherrack(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.4;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.4;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -51,11 +47,7 @@ public class BlockNetherrack extends BlockSolid {
         return PROPERTIES;
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isNull() || !item.isFertilizer() || up().getId() != AIR) {
@@ -90,18 +82,4 @@ public class BlockNetherrack extends BlockSolid {
         return false;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-}

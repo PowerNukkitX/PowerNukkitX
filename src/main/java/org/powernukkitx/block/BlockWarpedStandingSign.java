@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemWarpedSign;
@@ -7,6 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockWarpedStandingSign extends BlockStandingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockSignBase.DEFINITION.toBuilder()
+            .burnChance(0)
+            .burnAbility(0)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -18,7 +24,7 @@ public class BlockWarpedStandingSign extends BlockStandingSign {
     }
 
     public BlockWarpedStandingSign(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -31,13 +37,5 @@ public class BlockWarpedStandingSign extends BlockStandingSign {
         return new ItemWarpedSign();
     }
 
-    @Override
-    public int getBurnChance() {
-        return 0;
+    
     }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-}

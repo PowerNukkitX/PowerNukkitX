@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityTarget;
 import org.powernukkitx.entity.Entity;
@@ -27,6 +29,14 @@ import java.util.List;
 public class BlockTarget extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityTarget> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TARGET);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.5)
+            .resistance(0.5)
+            .toolType(ItemTool.TYPE_HOE)
+            .burnChance(0)
+            .burnAbility(15)
+            .isPowerSource(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -38,7 +48,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     }
 
     public BlockTarget(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -56,11 +66,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return BlockEntity.TARGET;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getWeakPower(BlockFace face) {
         BlockEntityTarget target = getBlockEntity();
@@ -155,28 +161,4 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         return true;
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
     }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 15;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-}

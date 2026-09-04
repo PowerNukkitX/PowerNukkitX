@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +12,9 @@ import org.jetbrains.annotations.NotNull;
 public class BlockFurnace extends BlockLitFurnace {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockLitFurnace.DEFINITION.toBuilder()
+            .lightEmission(0)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,7 +26,7 @@ public class BlockFurnace extends BlockLitFurnace {
     }
 
     public BlockFurnace(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -29,13 +34,5 @@ public class BlockFurnace extends BlockLitFurnace {
         return "Furnace";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 0;
+    
     }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

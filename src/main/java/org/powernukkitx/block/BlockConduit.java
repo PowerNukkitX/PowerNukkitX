@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityConduit;
@@ -15,13 +17,20 @@ import java.util.Objects;
 
 public class BlockConduit extends BlockTransparent implements BlockEntityHolder<BlockEntityConduit> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CONDUIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3)
+            .resistance(15)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .lightEmission(15)
+            .waterloggingLevel(2)
+            .build();
 
     public BlockConduit() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockConduit(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -47,21 +56,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         return BlockEntity.CONDUIT;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (item.isBlock() && Objects.equals(item.getBlockId(), CONDUIT) && target.getId().equals(CONDUIT)) {
@@ -76,16 +71,6 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         }
 
         return false;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override

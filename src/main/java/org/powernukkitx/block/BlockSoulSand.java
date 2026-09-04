@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.block.BlockFormEvent;
 import org.powernukkitx.item.ItemTool;
@@ -12,6 +14,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockSoulSand extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SAND);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.5)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .hasEntityCollision(true)
+            .isSoulSpeedCompatible(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -23,7 +32,7 @@ public class BlockSoulSand extends BlockSolid {
     }
 
     public BlockSoulSand(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -32,33 +41,8 @@ public class BlockSoulSand extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
-    }
-
-    @Override
     public double getMaxY() {
         return this.y + 1;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean isSoulSpeedCompatible() {
-        return true;
     }
 
     @Override

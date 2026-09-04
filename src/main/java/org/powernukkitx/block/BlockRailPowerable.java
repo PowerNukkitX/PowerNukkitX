@@ -6,14 +6,24 @@ import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.OptionalBoolean;
 import org.powernukkitx.utils.Rail;
 import org.powernukkitx.utils.RedstoneComponent;
+import org.powernukkitx.block.definition.BlockDefinition;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 import static org.powernukkitx.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockRailPowerable extends BlockRail {
+    public static final BlockDefinition DEFINITION = BlockRail.DEFINITION.toBuilder()
+            .isPowerSource(true)
+            .build();
 
     public BlockRailPowerable(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+
+        this.canBePowered = true;
+    }
+
+    public BlockRailPowerable(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
 
         this.canBePowered = true;
     }

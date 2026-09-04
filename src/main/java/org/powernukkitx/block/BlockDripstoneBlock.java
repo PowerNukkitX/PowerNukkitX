@@ -1,10 +1,19 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDripstoneBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DRIPSTONE_BLOCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(1)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +25,7 @@ public class BlockDripstoneBlock extends BlockSolid {
     }
 
     public BlockDripstoneBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,31 +33,7 @@ public class BlockDripstoneBlock extends BlockSolid {
         return "Dripstone Block";
     }
 
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isLavaResistant() {
         return true;

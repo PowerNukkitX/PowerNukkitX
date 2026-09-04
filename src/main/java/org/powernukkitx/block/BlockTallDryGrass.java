@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
@@ -11,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockTallDryGrass extends BlockFlowable implements Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(TALL_DRY_GRASS);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull
@@ -23,14 +28,10 @@ public class BlockTallDryGrass extends BlockFlowable implements Supportable {
     }
 
     public BlockTallDryGrass(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySculkSensor;
 import org.powernukkitx.level.Level;
@@ -16,6 +18,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.SCULK_SENSOR
  */
 public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR, SCULK_SENSOR_PHASE);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .breaksWhenMoved(false)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -27,7 +36,7 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     }
 
     public BlockSculkSensor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -45,11 +54,7 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
         return BlockEntity.SCULK_SENSOR;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     public int getStrongPower(BlockFace side) {
         return super.getStrongPower(side);
@@ -91,27 +96,9 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
         return false;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
+    
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

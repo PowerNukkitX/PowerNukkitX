@@ -1,10 +1,15 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockRawGoldBlock extends BlockRaw {
     public static final BlockProperties PROPERTIES = new BlockProperties(RAW_GOLD_BLOCK);
+    public static final BlockDefinition DEFINITION = BlockRaw.DEFINITION.toBuilder()
+            .toolTier(ItemTool.TIER_IRON)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +21,7 @@ public class BlockRawGoldBlock extends BlockRaw {
     }
 
     public BlockRawGoldBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,8 +29,4 @@ public class BlockRawGoldBlock extends BlockRaw {
         return "Block of Raw Gold";
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_IRON;
     }
-}

@@ -1,11 +1,16 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.DoublePlantType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLargeFern extends BlockDoublePlant {
     public static final BlockProperties PROPERTIES = new BlockProperties(LARGE_FERN, CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockDefinition DEFINITION = BlockDoublePlant.DEFINITION.toBuilder()
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull
@@ -18,14 +23,10 @@ public class BlockLargeFern extends BlockDoublePlant {
     }
 
     public BlockLargeFern(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public @NotNull DoublePlantType getDoublePlantType() {
         return DoublePlantType.FERN;

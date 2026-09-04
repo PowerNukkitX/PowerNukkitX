@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.block.BlockGrowEvent;
@@ -17,6 +19,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.AGE_16;
 
 public class BlockReeds extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(REEDS, AGE_16);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -28,7 +34,7 @@ public class BlockReeds extends BlockFlowable {
     }
 
     public BlockReeds(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -41,11 +47,7 @@ public class BlockReeds extends BlockFlowable {
         return new ItemSugarCane();
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     public int getAge() {
         return getPropertyValue(AGE_16);
     }
@@ -187,8 +189,4 @@ public class BlockReeds extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

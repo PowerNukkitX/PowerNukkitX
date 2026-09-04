@@ -1,11 +1,17 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonTrapdoor extends BlockTrapdoor {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockDefinition DEFINITION = BlockTrapdoor.DEFINITION.toBuilder()
+            .burnChance(-1)
+            .burnAbility(0)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,22 +23,12 @@ public class BlockCrimsonTrapdoor extends BlockTrapdoor {
     }
 
     public BlockCrimsonTrapdoor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Crimson Trapdoor";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return -1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 
     @Override

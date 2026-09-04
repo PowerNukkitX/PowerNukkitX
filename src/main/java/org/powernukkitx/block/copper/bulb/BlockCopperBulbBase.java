@@ -2,6 +2,7 @@ package org.powernukkitx.block.copper.bulb;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
@@ -16,39 +17,27 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public abstract class BlockCopperBulbBase extends BlockSolid implements RedstoneComponent, Oxidizable, Waxable {
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_STONE)
+            .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .build();
+
     public BlockCopperBulbBase(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
+    public BlockCopperBulbBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
                 || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override
@@ -78,11 +67,6 @@ public abstract class BlockCopperBulbBase extends BlockSolid implements Redstone
             }
         }
         return 0;
-    }
-
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
     }
 
     @Override

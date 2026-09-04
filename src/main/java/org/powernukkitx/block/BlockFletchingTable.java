@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,6 +9,13 @@ import org.jetbrains.annotations.NotNull;
 public class BlockFletchingTable extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(FLETCHING_TABLE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2.5)
+            .resistance(12.5)
+            .toolType(ItemTool.TYPE_AXE)
+            .burnChance(5)
+            .canHarvestWithHand(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -18,7 +27,7 @@ public class BlockFletchingTable extends BlockSolid {
     }
 
     public BlockFletchingTable(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -26,28 +35,4 @@ public class BlockFletchingTable extends BlockSolid {
         return "Fletching Table";
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
-
-    @Override
-    public double getResistance() {
-        return 12.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2.5;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-}

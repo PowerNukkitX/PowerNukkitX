@@ -47,11 +47,6 @@ public interface CustomBlock {
     Item toItem();
 
     /**
-     * This method sets the definition of custom block
-     */
-    CustomBlockDefinition getDefinition();
-
-    /**
      * Plugins do not need {@code @Override}
      *
      * @return the block
@@ -68,10 +63,14 @@ public interface CustomBlock {
      * @return the break time
      */
     default double breakTime(@NotNull Item item, @Nullable Player player) {
-        var block = this.toBlock();
+        Block block = this.toBlock();
         double breakTime = block.calculateBreakTime(item, player);
-        CompoundTag comp = this.getDefinition().nbt().getCompound("components");
-        if (comp.contains("minecraft:destructible_by_mining")) {
+        CustomBlockDefinition definition = block.getCustomDefinition();
+        if (definition == null) {
+            return breakTime;
+        }
+        CompoundTag comp = definition.nbt().getCompound("components");
+        if (comp.containsCompound("minecraft:destructible_by_mining")) {
             var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
             if (player != null) {
                 if (player.getLevel().getTick() - player.getLastInAirTick() < 5) {

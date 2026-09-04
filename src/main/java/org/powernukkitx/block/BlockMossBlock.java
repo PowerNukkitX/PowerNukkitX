@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -14,6 +16,13 @@ import java.util.Random;
 
 public class BlockMossBlock extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSS_BLOCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.1)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_HOE)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     @Override
     @NotNull
@@ -26,27 +35,16 @@ public class BlockMossBlock extends BlockSolid implements Natural {
     }
 
     public BlockMossBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockMossBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
     public String getName() {
         return "Moss";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override
@@ -146,18 +144,10 @@ public class BlockMossBlock extends BlockSolid implements Natural {
         };
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{new ItemBlock(Block.get(BlockID.MOSS_BLOCK))};
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

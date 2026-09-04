@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
@@ -14,8 +16,19 @@ import javax.annotation.Nullable;
  * @since 2021-06-15
  */
 public abstract class BlockStairsCopperBase extends BlockStairs implements Waxable, Oxidizable {
+    public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
+            .hardness(3)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_STONE)
+            .canBeActivated(true)
+            .build();
     public BlockStairsCopperBase(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockStairsCopperBase(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -27,36 +40,6 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
     @Override
     public int onUpdate(int type) {
         return Oxidizable.super.onUpdate(type);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

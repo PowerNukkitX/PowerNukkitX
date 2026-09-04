@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityFallingBlock;
@@ -11,6 +13,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockFrogSpawn extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FROG_SPAWN);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,7 +28,7 @@ public class BlockFrogSpawn extends BlockFlowable {
     }
 
     public BlockFrogSpawn(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -64,13 +70,5 @@ public class BlockFrogSpawn extends BlockFlowable {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
+    
     }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-}

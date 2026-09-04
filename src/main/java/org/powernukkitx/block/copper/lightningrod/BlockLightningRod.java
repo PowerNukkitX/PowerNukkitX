@@ -1,5 +1,7 @@
 package org.powernukkitx.block.copper.lightningrod;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -15,13 +17,26 @@ import javax.annotation.Nullable;
 
 public class BlockLightningRod extends BlockTransparent implements Faceable, Waxable, Oxidizable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIGHTNING_ROD, CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.POWERED_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .canBeActivated(true)
+            .isSolid(false)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockLightningRod() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockLightningRod(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockLightningRod(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -29,34 +44,10 @@ public class BlockLightningRod extends BlockTransparent implements Faceable, Wax
         return "Lightning Rod";
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
     }
 
     @Override
@@ -79,16 +70,6 @@ public class BlockLightningRod extends BlockTransparent implements Faceable, Wax
     @Override
     public void setBlockFace(BlockFace face) {
         this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

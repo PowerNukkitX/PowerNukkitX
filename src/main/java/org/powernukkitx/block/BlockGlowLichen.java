@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -20,6 +22,11 @@ import java.util.Set;
 
 public class BlockGlowLichen extends BlockLichen {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOW_LICHEN, CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
+    public static final BlockDefinition DEFINITION = BlockLichen.DEFINITION.toBuilder()
+            .lightEmission(7)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -31,7 +38,7 @@ public class BlockGlowLichen extends BlockLichen {
     }
 
     public BlockGlowLichen(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -105,16 +112,6 @@ public class BlockGlowLichen extends BlockLichen {
         return candidates;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 7;
-    }
-
     private boolean isSupportNeighborAdded(@NotNull Map<Block, BlockFace> candidates, @NotNull BlockFace side, @NotNull Block supportNeighbor) {
         // Air is a valid candidate!
         if (supportNeighbor.getId().equals(BlockID.AIR)) {
@@ -134,8 +131,4 @@ public class BlockGlowLichen extends BlockLichen {
         return false;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

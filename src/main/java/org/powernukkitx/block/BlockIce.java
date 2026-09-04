@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -12,13 +14,25 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockIce extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(ICE);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.5)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .burnChance(-1)
+            .friction(0.98)
+            .canSilkTouch(true)
+            .build();
 
     public BlockIce() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockIce(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockIce(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -29,26 +43,6 @@ public class BlockIce extends BlockTransparent {
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getFrictionFactor() {
-        return 0.98;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -80,16 +74,6 @@ public class BlockIce extends BlockTransparent {
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return -1;
     }
 
     @Override

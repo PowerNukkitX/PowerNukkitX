@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.math.BlockFace;
@@ -8,6 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockMangroveRoots extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_ROOTS);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.7)
+            .resistance(0.7)
+            .burnChance(5)
+            .waterloggingLevel(1)
+            .build();
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
@@ -18,7 +26,7 @@ public class BlockMangroveRoots extends BlockTransparent {
     }
 
     public BlockMangroveRoots(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -26,26 +34,7 @@ public class BlockMangroveRoots extends BlockTransparent {
         return "Mangrove Roots";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.7;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.7;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         return level.setBlock(this, this);

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -15,6 +17,10 @@ public class BlockCobblestoneWall extends BlockWallBase {
             CommonBlockProperties.WALL_CONNECTION_TYPE_WEST,
             CommonBlockProperties.WALL_POST_BIT
     );
+    public static final BlockDefinition DEFINITION = BlockWallBase.DEFINITION.toBuilder()
+            .resistance(6)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull
@@ -27,22 +33,12 @@ public class BlockCobblestoneWall extends BlockWallBase {
     }
 
     public BlockCobblestoneWall(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Cobblestone Wall";
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     @Override

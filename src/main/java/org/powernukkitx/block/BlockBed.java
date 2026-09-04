@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityBed;
@@ -36,6 +38,14 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OCCUPIED_BIT
 @Slf4j
 public class BlockBed extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBed> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .resistance(1)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -48,7 +58,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     public BlockBed(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -64,21 +74,6 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
     public String getName() {
         return this.getDyeColor().getName() + " Bed Block";
     }
@@ -87,12 +82,6 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     public double getMaxY() {
         return this.y + 0.5625;
     }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
@@ -298,16 +287,6 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
     public void setOccupied(boolean occupied) {
         setPropertyValue(OCCUPIED_BIT, occupied);
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     public boolean isBedValid() {

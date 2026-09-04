@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemTool;
@@ -9,6 +11,12 @@ import static org.powernukkitx.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockPurpurBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PURPUR_BLOCK, PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(30)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,32 +28,12 @@ public class BlockPurpurBlock extends BlockSolid {
     }
 
     public BlockPurpurBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Purpur";
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 30;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     @Override

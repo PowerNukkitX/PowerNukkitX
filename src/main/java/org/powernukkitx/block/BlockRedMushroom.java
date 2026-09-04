@@ -1,10 +1,15 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.level.generator.object.ObjectBigMushroom;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockRedMushroom extends BlockMushroom {
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_MUSHROOM);
+    public static final BlockDefinition DEFINITION = BlockMushroom.DEFINITION.toBuilder()
+            .lightEmission(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +21,7 @@ public class BlockRedMushroom extends BlockMushroom {
     }
 
     public BlockRedMushroom(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,11 +29,7 @@ public class BlockRedMushroom extends BlockMushroom {
         return "Red Mushroom";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 1;
-    }
-
+    
     @Override
     protected ObjectBigMushroom.MushroomType getType() {
         return ObjectBigMushroom.MushroomType.RED;

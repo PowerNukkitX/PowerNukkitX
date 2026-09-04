@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityLiving;
@@ -9,6 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockStonePressurePlate extends BlockPressurePlateBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockDefinition DEFINITION = BlockPressurePlateBase.DEFINITION.toBuilder()
+            .hardness(0.5D)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,7 +28,7 @@ public class BlockStonePressurePlate extends BlockPressurePlateBase {
     }
 
     public BlockStonePressurePlate(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
         this.onPitch = 0.6f;
         this.offPitch = 0.5f;
     }
@@ -28,26 +36,6 @@ public class BlockStonePressurePlate extends BlockPressurePlateBase {
     @Override
     public String getName() {
         return "Stone Pressure Plate";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5D;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     @Override

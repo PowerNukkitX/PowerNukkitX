@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.DoublePlantType;
 import org.powernukkitx.item.Item;
@@ -17,6 +19,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockTallGrass extends BlockDoublePlant {
     public static final BlockProperties PROPERTIES = new BlockProperties(TALL_GRASS, CommonBlockProperties.UPPER_BLOCK_BIT);
+    public static final BlockDefinition DEFINITION = BlockDoublePlant.DEFINITION.toBuilder()
+            .toolType(ItemTool.TYPE_SHEARS)
+            .burnChance(60)
+            .burnAbility(100)
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull
@@ -29,7 +37,7 @@ public class BlockTallGrass extends BlockDoublePlant {
     }
 
     public BlockTallGrass(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -40,16 +48,6 @@ public class BlockTallGrass extends BlockDoublePlant {
     @Override
     public String getName() {
         return "Tallgrass";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 60;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 100;
     }
 
     @Override
@@ -71,13 +69,5 @@ public class BlockTallGrass extends BlockDoublePlant {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
+    
     }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
-    }
-}

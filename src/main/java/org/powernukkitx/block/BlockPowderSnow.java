@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntitySmallFireball;
 import org.powernukkitx.item.Item;
@@ -11,13 +13,20 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockPowderSnow extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(POWDER_SNOW);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.25)
+            .resistance(0.1)
+            .canPassThrough(true)
+            .isTransparent(true)
+            .isSolid(false)
+            .build();
 
     public BlockPowderSnow() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockPowderSnow(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -25,34 +34,10 @@ public class BlockPowderSnow extends BlockTransparent {
         return "Powder Snow";
     }
 
-    @Override
-    public double getHardness() {
-        return 0.25;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.1;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
     }
 
     @Override

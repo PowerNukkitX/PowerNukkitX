@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
@@ -14,14 +16,16 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  */
 
 public abstract class BlockThin extends BlockTransparent implements BlockConnectable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .isSolid(false)
+            .build();
 
     public BlockThin(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
+    public BlockThin(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override

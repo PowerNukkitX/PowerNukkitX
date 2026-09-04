@@ -1,11 +1,20 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockQuartzBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(QUARTZ_BLOCK, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.8)
+            .resistance(4)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull
@@ -18,31 +27,11 @@ public class BlockQuartzBlock extends BlockSolid {
     }
 
     public BlockQuartzBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 0.8;
+    public BlockQuartzBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
-    @Override
-    public double getResistance() {
-        return 4;
     }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

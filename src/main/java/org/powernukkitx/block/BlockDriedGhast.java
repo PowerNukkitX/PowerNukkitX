@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -19,9 +21,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockDriedGhast extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(DRIED_GHAST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.REHYDRATION_LEVEL);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .waterloggingLevel(2)
+            .build();
 
     public BlockDriedGhast(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -39,11 +44,7 @@ public class BlockDriedGhast extends BlockTransparent {
         return "Dried Ghast";
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -10,13 +12,19 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockMuddyMangroveRoots extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MUDDY_MANGROVE_ROOTS, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.7)
+            .resistance(0.7)
+            .toolTier(ItemTool.TYPE_SHOVEL)
+            .isTransparent(true)
+            .build();
 
     public BlockMuddyMangroveRoots() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockMuddyMangroveRoots(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -29,26 +37,7 @@ public class BlockMuddyMangroveRoots extends BlockSolid implements Natural {
         return PROPERTIES;
     }
 
-    @Override
-    public double getHardness() {
-        return 0.7;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.7;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TYPE_SHOVEL;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
+    
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(CommonBlockProperties.PILLAR_AXIS);
     }

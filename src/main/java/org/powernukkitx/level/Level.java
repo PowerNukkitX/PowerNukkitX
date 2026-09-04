@@ -3298,19 +3298,17 @@ public class Level implements Metadatable {
             BlockLiquid.normalizeWaterloggedLayer(this, x, y, z);
         }
 
-        if (block instanceof CustomBlock customBlock) {
-            CustomBlockDefinition def = customBlock.getDefinition();
-            if (def != null && def.tickSettings() != null) {
-                BlockTickSettings tick = def.tickSettings();
-                int min = tick.minTicks();
-                int max = tick.maxTicks();
+        CustomBlockDefinition def = block.getCustomDefinition();
+        if (def != null && def.tickSettings() != null) {
+            BlockTickSettings tick = def.tickSettings();
+            int min = tick.minTicks();
+            int max = tick.maxTicks();
 
-                if (min <= max) {
-                    int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
-                    block.getLevel().scheduleUpdate(block, delay);
-                } else {
-                    log.error("Invalid tick range for block '{}': min {} > max {}", block.getId(), min, max);
-                }
+            if (min <= max) {
+                int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
+                block.getLevel().scheduleUpdate(block, delay);
+            } else {
+                log.error("Invalid tick range for block '{}': min {} > max {}", block.getId(), min, max);
             }
         }
         return true;

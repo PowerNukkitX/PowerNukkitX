@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -11,6 +13,10 @@ import org.jetbrains.annotations.Nullable;
 public class BlockSuspiciousGravel extends BlockBrushable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_GRAVEL, CommonBlockProperties.HANGING, CommonBlockProperties.BRUSHED_PROGRESS);
+    public static final BlockDefinition DEFINITION = BlockBrushable.DEFINITION.toBuilder()
+            .hardness(0.25)
+            .resistance(1.25)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,7 +27,7 @@ public class BlockSuspiciousGravel extends BlockBrushable {
         this(PROPERTIES.getDefaultState());
     }
     public BlockSuspiciousGravel(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -31,16 +37,6 @@ public class BlockSuspiciousGravel extends BlockBrushable {
 
     public String getName() {
         return "Suspicious Gravel";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.25;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.25;
     }
 
     @Override

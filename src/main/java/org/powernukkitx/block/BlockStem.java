@@ -1,28 +1,21 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 public abstract class BlockStem extends BlockLog {
+    public static final BlockDefinition DEFINITION = BlockLog.DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(2)
+            .burnChance(0)
+            .burnAbility(0)
+            .build();
 
     public BlockStem(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
+    public BlockStem(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
-    @Override
-    public double getResistance() {
-        return 2;
     }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-}

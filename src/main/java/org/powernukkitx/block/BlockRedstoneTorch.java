@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
 import org.powernukkitx.item.Item;
@@ -16,6 +18,11 @@ import static org.powernukkitx.block.property.CommonBlockProperties.TORCH_FACING
 
 public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_TORCH, TORCH_FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockTorch.DEFINITION.toBuilder()
+            .lightEmission(7)
+            .tickRate(2)
+            .isPowerSource(true)
+            .build();
 
     @Override
     @NotNull
@@ -28,7 +35,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
     }
 
     public BlockRedstoneTorch(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -36,11 +43,7 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         return "Redstone Torch";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 7;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
@@ -126,16 +129,6 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         }
 
         return this.level.isSidePowered(side, face);
-    }
-
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
-    @Override
-    public int tickRate() {
-        return 2;
     }
 
 }

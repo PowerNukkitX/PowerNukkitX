@@ -1,38 +1,25 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.item.ItemTool;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockPlanks extends BlockSolid {
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2)
+            .resistance(15)
+            .toolType(ItemTool.TYPE_AXE)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
 
     public BlockPlanks(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
+    public BlockPlanks(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 }

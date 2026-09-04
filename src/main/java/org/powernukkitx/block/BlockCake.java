@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
@@ -18,9 +20,18 @@ import static org.powernukkitx.block.property.CommonBlockProperties.BITE_COUNTER
  */
 public class BlockCake extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAKE, BITE_COUNTER);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.5)
+            .resistance(0.5)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockCake(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     public BlockCake() {
@@ -38,26 +49,7 @@ public class BlockCake extends BlockTransparent {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMinX() {
         return this.x + (1 + getBiteCount() * 2) / 16;
@@ -141,21 +133,7 @@ public class BlockCake extends BlockTransparent {
         return (7 - this.getBiteCount()) * 2;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
+    
     public int getBiteCount() {
         return getPropertyValue(BITE_COUNTER);
     }

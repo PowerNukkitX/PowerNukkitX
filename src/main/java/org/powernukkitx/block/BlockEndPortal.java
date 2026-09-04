@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityEndPortal;
@@ -17,6 +19,17 @@ import javax.annotation.Nullable;
 public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<BlockEntityEndPortal> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(END_PORTAL);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .lightEmission(15)
+            .canPassThrough(false)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canHarvestWithHand(false)
+            .hasEntityCollision(true)
+            .canBeFlowedInto(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -28,7 +41,7 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     }
 
     public BlockEndPortal(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -51,64 +64,21 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
 
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
         return this;
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
     }
 
     @Override

@@ -66,11 +66,6 @@ public class CustomBlockSmokeTest {
         public Item toItem() {
             return null;
         }
-
-        @Override
-        public CustomBlockDefinition getDefinition() {
-            return CustomBlockDefinition.builder(this).build();
-        }
     }
 
     @Test
@@ -86,12 +81,12 @@ public class CustomBlockSmokeTest {
                 .isPlayerInteractable(true)
                 .isHiddenInCommands(false)
                 .blockTick(20, 40, true)
-                .isStepSensor(true)
+                .hasEntityStepSensor(true)
                 .build();
 
         Assertions.assertEquals("test:tiny_block", def.identifier());
         Assertions.assertNotNull(def.nbt());
-        Assertions.assertTrue(def.isStepSensor());
+        Assertions.assertTrue(def.isHasEntityStepSensor());
         Assertions.assertNotNull(def.tickSettings());
         Assertions.assertTrue(def.nbt().getCompound("components").contains("minecraft:display_name"));
 

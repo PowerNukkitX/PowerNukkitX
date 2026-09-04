@@ -1,10 +1,15 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPoweredRepeater extends BlockRedstoneRepeater {
     public static final BlockProperties PROPERTIES = new BlockProperties(POWERED_REPEATER, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.REPEATER_DELAY);
+    public static final BlockDefinition DEFINITION = BlockRedstoneDiode.DEFINITION.toBuilder()
+            .lightEmission(7)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +21,7 @@ public class BlockPoweredRepeater extends BlockRedstoneRepeater {
     }
 
     public BlockPoweredRepeater(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
         isPowered = true;
     }
 
@@ -36,8 +41,4 @@ public class BlockPoweredRepeater extends BlockRedstoneRepeater {
         return blockUnpoweredRepeater.setPropertyValues(blockstate.getBlockPropertyValues());
     }
 
-    @Override
-    public int getLightLevel() {
-        return 7;
     }
-}

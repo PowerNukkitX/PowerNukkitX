@@ -14,6 +14,7 @@ import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.utils.Faceable;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -27,6 +28,16 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CA
  */
 public class BlockAnvil extends BlockFallable implements Faceable, BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANVIL, MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
+            .canBeActivated(true)
+            .isTransparent(true)
+            .hardness(5)
+            .resistance(6000)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -39,7 +50,11 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     }
 
     public BlockAnvil(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockAnvil(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public Damage getAnvilDamage() {
@@ -57,36 +72,6 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
             case VERY_DAMAGED -> BlockDamagedAnvil.PROPERTIES.getDefaultState();
             case BROKEN -> BlockAir.STATE;
         };
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6000;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -125,16 +110,6 @@ public class BlockAnvil extends BlockFallable implements Faceable, BlockInventor
     @Override
     public Supplier<Inventory> blockInventorySupplier() {
         return () -> new AnvilInventory(this);
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

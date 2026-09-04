@@ -6,6 +6,7 @@ import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.utils.Faceable;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -14,8 +15,20 @@ import java.util.Arrays;
 import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_BLOCK_FACE;
 
 public abstract class BlockAmethystBud extends BlockTransparent implements Faceable {
+    public static final BlockDefinition DEFINITION = BlockTransparent.TRANSPARENT.toBuilder()
+            .hardness(1.5)
+            .resistance(1.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_IRON)
+            .waterloggingLevel(1)
+            .build();
+
     public BlockAmethystBud(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockAmethystBud(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -26,41 +39,8 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     protected abstract String getNamePrefix();
 
     @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public abstract int getLightLevel();
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_IRON;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

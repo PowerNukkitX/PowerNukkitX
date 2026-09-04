@@ -1,6 +1,7 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
@@ -13,28 +14,19 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public abstract class BlockCopperDoorBase extends BlockDoor implements Oxidizable, Waxable {
+    public static final BlockDefinition DEFINITION = BlockDoor.DEFINITION.toBuilder()
+            .hardness(3)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_STONE)
+            .build();
+
     public BlockCopperDoorBase(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
+    public BlockCopperDoorBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -47,7 +39,7 @@ public abstract class BlockCopperDoorBase extends BlockDoor implements Oxidizabl
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(player.isSneaking()) {
+        if (player != null && player.isSneaking()) {
             return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
                     || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
         }

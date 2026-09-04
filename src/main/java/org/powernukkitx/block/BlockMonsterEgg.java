@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.enums.MonsterEggStoneType;
 import org.powernukkitx.item.Item;
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +10,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MONSTER_EGG_
 
 public class BlockMonsterEgg extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MONSTER_EGG, MONSTER_EGG_STONE_TYPE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0)
+            .resistance(0.75)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -19,7 +25,7 @@ public class BlockMonsterEgg extends BlockSolid {
     }
 
     public BlockMonsterEgg(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @NotNull public MonsterEggStoneType getMonsterEggStoneType() {
@@ -33,16 +39,6 @@ public class BlockMonsterEgg extends BlockSolid {
     @Override
     public String getName() {
         return getMonsterEggStoneType().name() + " Monster Egg";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.75;
     }
 
     @Override

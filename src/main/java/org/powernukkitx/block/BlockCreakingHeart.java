@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.CreakingHeartState;
@@ -18,6 +20,14 @@ import org.jetbrains.annotations.Nullable;
 public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityCreakingHeart> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CREAKING_HEART, CommonBlockProperties.NATURAL, CommonBlockProperties.CREAKING_HEART_STATE, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(10)
+            .resistance(10)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBePushed(false)
+            .canBePulled(false)
+            .hasComparatorInputOverride(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -29,22 +39,7 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
     }
 
     public BlockCreakingHeart(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public double getHardness() {
-        return 10;
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -103,16 +98,6 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
     }
 
     @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
     public @NotNull Class<? extends BlockEntityCreakingHeart> getBlockEntityClass() {
         return BlockEntityCreakingHeart.class;
     }
@@ -122,11 +107,7 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
         return BlockEntityID.CREAKING_HEART;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityCreakingHeart entityCreakingHeart = getOrCreateBlockEntity();

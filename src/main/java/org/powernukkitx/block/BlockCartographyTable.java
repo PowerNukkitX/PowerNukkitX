@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.BlockInventoryHolder;
 import org.powernukkitx.inventory.CartographyTableInventory;
@@ -15,6 +17,14 @@ import java.util.function.Supplier;
 
 public class BlockCartographyTable extends BlockSolid implements BlockInventoryHolder {
     public static final BlockProperties PROPERTIES = new BlockProperties(CARTOGRAPHY_TABLE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2.5)
+            .resistance(12.5)
+            .toolType(ItemTool.TYPE_AXE)
+            .burnChance(5)
+            .canBeActivated(true)
+            .canHarvestWithHand(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -26,42 +36,12 @@ public class BlockCartographyTable extends BlockSolid implements BlockInventoryH
     }
 
     public BlockCartographyTable(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Cartography Table";
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public double getResistance() {
-        return 12.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2.5;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-    
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

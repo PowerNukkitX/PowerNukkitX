@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
@@ -13,6 +15,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChorusPlant extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_PLANT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.4)
+            .resistance(0.4)
+            .toolType(ItemTool.TYPE_AXE)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -24,27 +33,12 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     public BlockChorusPlant(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Chorus Plant";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.4;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.4;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     private boolean isPositionValid() {
@@ -103,16 +97,6 @@ public class BlockChorusPlant extends BlockTransparent {
     @Override
     public Item[] getDrops(Item item) {
         return ThreadLocalRandom.current().nextBoolean() ? new Item[]{ Item.get(ItemID.CHORUS_FRUIT, 0, 1) } : Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public  boolean sticksToPiston() {
-        return false;
     }
 
 }

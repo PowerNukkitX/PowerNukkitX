@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -17,6 +19,9 @@ import javax.annotation.Nullable;
 public class BlockTrappedChest extends BlockChest {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TRAPPED_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockChest.DEFINITION.toBuilder()
+            .isPowerSource(true)
+            .build();
 
     @Override
     @NotNull
@@ -29,7 +34,7 @@ public class BlockTrappedChest extends BlockChest {
     }
 
     public BlockTrappedChest(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -107,8 +112,4 @@ public class BlockTrappedChest extends BlockChest {
         return side == BlockFace.UP ? this.getWeakPower(side) : 0;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
     }
-}

@@ -1,10 +1,15 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitDeepslateRedstoneOre extends BlockDeepslateRedstoneOre implements IBlockOreRedstoneGlowing {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_DEEPSLATE_REDSTONE_ORE);
+    public static final BlockDefinition DEFINITION = BlockDeepslateRedstoneOre.DEFINITION.toBuilder()
+            .lightEmission(9)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +21,7 @@ public class BlockLitDeepslateRedstoneOre extends BlockDeepslateRedstoneOre impl
     }
 
     public BlockLitDeepslateRedstoneOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,11 +29,7 @@ public class BlockLitDeepslateRedstoneOre extends BlockDeepslateRedstoneOre impl
         return "Glowing Deepslate Redstone Ore";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 9;
-    }
-
+    
     @Override
     public Item toItem() {
         return IBlockOreRedstoneGlowing.super.toItem();

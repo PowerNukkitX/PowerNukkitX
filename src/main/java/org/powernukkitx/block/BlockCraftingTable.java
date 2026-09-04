@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.inventory.BlockInventoryHolder;
 import org.powernukkitx.inventory.CraftingTableInventory;
@@ -19,6 +21,12 @@ import java.util.function.Supplier;
 public class BlockCraftingTable extends BlockSolid implements BlockInventoryHolder {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTING_TABLE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(2.5)
+            .resistance(15)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -31,32 +39,12 @@ public class BlockCraftingTable extends BlockSolid implements BlockInventoryHold
     }
 
     public BlockCraftingTable(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Crafting Table";
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     @Override

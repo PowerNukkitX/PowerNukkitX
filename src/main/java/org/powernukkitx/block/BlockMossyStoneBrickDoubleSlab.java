@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockMossyStoneBrickDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSSY_STONE_BRICK_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
+            .hardness(1.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -18,7 +24,7 @@ public class BlockMossyStoneBrickDoubleSlab extends BlockDoubleSlabBase {
     }
 
     public BlockMossyStoneBrickDoubleSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -31,13 +37,5 @@ public class BlockMossyStoneBrickDoubleSlab extends BlockDoubleSlabBase {
         return BlockMossyStoneBrickSlab.PROPERTIES.getDefaultState();
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+    
     }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-}

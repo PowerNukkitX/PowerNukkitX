@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
@@ -10,13 +12,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockAmethystCluster extends BlockAmethystBud {
     public static final BlockProperties PROPERTIES = new BlockProperties(AMETHYST_CLUSTER, CommonBlockProperties.MINECRAFT_BLOCK_FACE);
+    public static final BlockDefinition DEFINITION = BlockAmethystBud.DEFINITION.toBuilder()
+            .toolTier(ItemTool.TIER_WOODEN)
+            .lightEmission(5)
+            .build();
 
     public BlockAmethystCluster() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockAmethystCluster(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -29,16 +35,6 @@ public class BlockAmethystCluster extends BlockAmethystBud {
     @Override
     protected String getNamePrefix() {
         return "Cluster";
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 5;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
     }
 
     private static final int[][] FORTUNE_DROPS = {
