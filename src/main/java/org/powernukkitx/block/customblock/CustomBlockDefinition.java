@@ -47,9 +47,21 @@ import java.util.function.Consumer;
  * For further customization of runtime behavior, you can still override methods in {@link Block Block}.
  */
 @Slf4j
-public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor) {
+public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor, Movable movable) {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
+
+    public CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor) {
+        this(identifier, nbt, tickSettings, isStepSensor, resolveMovable(nbt));
+    }
+
+    private static Movable resolveMovable(CompoundTag nbt) {
+        CompoundTag components = nbt.getCompound("components");
+        if (components == null || !components.containsCompound("minecraft:movable")) {
+            return Movable.DEFAULT;
+        }
+        return Movable.fromCompoundTag(components.getCompound("minecraft:movable"));
+    }
 
     public int getRuntimeId() {
         return CustomBlockDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
@@ -625,9 +637,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Custom processing of the block to be sent to the client ComponentNBT, which contains all definitions for custom block. You can modify them as much as you want, under the right conditions.
          */
         public CustomBlockDefinition customBuild(@NotNull Consumer<CompoundTag> nbt) {
-            var def = this.build();
-            nbt.accept(def.nbt);
-            return def;
+            nbt.accept(this.nbt);
+            return this.build();
         }
 
         public CustomBlockDefinition build() {
@@ -716,6 +727,15 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
 
     public CompoundTag getComponents() {
         return this.nbt.getCompound("components");
+    }
+
+    /**
+     * Gets the cached movable behavior of this block definition.
+     *
+     * @return the movable behavior
+     */
+    public Movable getMovable() {
+        return this.movable;
     }
 
     public boolean isSolidForBlock(@NotNull Block block) {

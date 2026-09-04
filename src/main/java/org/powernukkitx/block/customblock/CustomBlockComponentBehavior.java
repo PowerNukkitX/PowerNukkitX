@@ -31,14 +31,7 @@ public final class CustomBlockComponentBehavior {
      */
     public static Movable getMovable(@NotNull Block block) {
         CustomBlockDefinition definition = block.getCustomDefinition();
-        if (definition == null) return Movable.DEFAULT;
-
-        CompoundTag components = definition.getComponents();
-        if (!components.containsCompound("minecraft:movable")) {
-            return Movable.DEFAULT;
-        }
-
-        return Movable.fromCompoundTag(components.getCompound("minecraft:movable"));
+        return definition != null ? definition.getMovable() : Movable.DEFAULT;
     }
 
     /**
@@ -48,7 +41,6 @@ public final class CustomBlockComponentBehavior {
      * @return {@code true} if the block can be pushed or is broken when pushed; {@code false} otherwise
      */
     public static boolean canBePushed(@NotNull Block block) {
-
         return switch (getMovable(block).movementType()) {
             case PUSH_PULL, PUSH, POPPED -> true;
             case IMMOVABLE -> false;

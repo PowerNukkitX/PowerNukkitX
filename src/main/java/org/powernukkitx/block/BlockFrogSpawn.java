@@ -68,4 +68,9 @@ public class BlockFrogSpawn extends BlockFlowable {
     public boolean canBePulled() {
         return false;
     }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
 }

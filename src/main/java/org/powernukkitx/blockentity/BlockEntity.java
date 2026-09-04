@@ -260,12 +260,21 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         return name;
     }
 
+    /**
+     * Returns whether this block entity can be moved by a piston.
+     * <p>
+     * Block implementations which consult their own block entity from
+     * {@link Block#canBePushed()} or {@link Block#breaksWhenMoved()} must not
+     * call this implementation again unless that block entity overrides
+     * {@code isMovable()} without consulting its owning block.
+     *
+     * @return whether this block entity can be moved
+     */
     public boolean isMovable() {
-        Block block =
-                this.getBlock();
+        if (this.closed || this.level == null) return true;
 
-        return block.canBePushed() &&
-                !block.breaksWhenMoved();
+        Block block = this.getBlock();
+        return block.canBePushed() && !block.breaksWhenMoved();
     }
 
     public static CompoundTag getDefaultCompound(Vector3 pos, String id) {
