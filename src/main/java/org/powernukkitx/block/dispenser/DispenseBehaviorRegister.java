@@ -87,7 +87,7 @@ public final class DispenseBehaviorRegister {
         });
 
         registerBehavior(BlockID.TNT, new TNTDispenseBehavior());
-        registerBehavior(ItemID.ARROW, new ArrowDispenserBehavior());
+        registerBehavior(ItemID.ARROW, new ArrowDispenseBehavior());
         //TODO: spectral arrow
         registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityID.EGG));
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntityID.SNOWBALL));

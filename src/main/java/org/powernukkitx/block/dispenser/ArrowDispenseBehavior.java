@@ -6,9 +6,9 @@ import org.powernukkitx.entity.projectile.EntityArrow;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemArrow;
 
-public class ArrowDispenserBehavior extends ProjectileDispenseBehavior {
+public class ArrowDispenseBehavior extends ProjectileDispenseBehavior {
 
-    public ArrowDispenserBehavior() {
+    public ArrowDispenseBehavior() {
         super(EntityID.ARROW);
     }
 
