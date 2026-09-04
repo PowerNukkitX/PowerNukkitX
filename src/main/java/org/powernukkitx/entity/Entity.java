@@ -1551,7 +1551,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected boolean canCriticalHit(Player player) {
         return player.fallDistance < 0
                 && !player.isOnGround()
-                && !player.isSprinting()
                 && !player.isSwimming()
                 && !player.isGliding()
                 && !player.isTouchingWater()
