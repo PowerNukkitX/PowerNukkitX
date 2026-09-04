@@ -2,6 +2,7 @@ package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
+import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.event.block.BlockSpreadEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -12,6 +13,8 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Pub4Game
@@ -63,23 +66,30 @@ public class BlockMycelium extends BlockDirt {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
+            if (up().getLightFilter() > 1) {
+                BlockFadeEvent ev = new BlockFadeEvent(this, Block.get(BlockID.DIRT));
+                Server.getInstance().getPluginManager().callEvent(ev);
+                if (!ev.isCancelled()) {
+                    this.getLevel().setBlock(this, ev.getNewState());
+                    return type;
+                }
+            }
+
             if (getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
-                //TODO: light levels
-                NukkitRandom random = new NukkitRandom();
-                x = random.nextInt((int) x - 1, (int) x + 1);
-                y = random.nextInt((int) y - 1, (int) y + 1);
-                z = random.nextInt((int) z - 1, (int) z + 1);
+                ThreadLocalRandom random = ThreadLocalRandom.current();
+                int x = random.nextInt((int) this.x - 1, (int) this.x + 1 + 1);
+                int y = random.nextInt((int) this.y - 3, (int) this.y + 1 + 1);
+                int z = random.nextInt((int) this.z - 1, (int) this.z + 1 + 1);
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
-                if (block.getId().equals(Block.DIRT)) {
-                    if (block.up().isTransparent()) {
-                        BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
-                        Server.getInstance().getPluginManager().callEvent(ev);
-                        if (!ev.isCancelled()) {
-                            this.getLevel().setBlock(block, ev.getNewState());
-                        }
+                if (block.getId().equals(Block.DIRT) && getLevel().getFullLight(block.up()) >= 4 && block.up().getLightFilter() < 2) {
+                    BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
+                    Server.getInstance().getPluginManager().callEvent(ev);
+                    if (!ev.isCancelled()) {
+                        this.getLevel().setBlock(block, ev.getNewState());
                     }
                 }
             }
+            return type;
         }
         return 0;
     }
