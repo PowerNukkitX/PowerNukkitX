@@ -34,6 +34,8 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
             return super.dispense(source, face, item);
         }
 
+        configureProjectile(projectile, item);
+
         Vector3 motion = initMotion(face);
 
         projectile.setMotion(motion);
@@ -68,6 +70,9 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
     protected String getEntityType() {
         return this.entityType;
+    }
+
+    protected void configureProjectile(Entity projectile, Item item) {
     }
 
     /**

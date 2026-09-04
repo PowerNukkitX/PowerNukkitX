@@ -87,13 +87,7 @@ public final class DispenseBehaviorRegister {
         });
 
         registerBehavior(BlockID.TNT, new TNTDispenseBehavior());
-        registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior(EntityID.ARROW) {
-            @Override
-            protected double getMotion() {
-                return super.getMotion() * 1.5;
-            }
-        });
-        //TODO: tipped arrow
+        registerBehavior(ItemID.ARROW, new ArrowDispenserBehavior());
         //TODO: spectral arrow
         registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityID.EGG));
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntityID.SNOWBALL));
