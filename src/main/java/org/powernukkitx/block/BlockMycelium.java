@@ -23,6 +23,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockMycelium extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
 
+    public static final int MINIMUM_SPREAD_LIGHT_LEVEL = 4;
+    public static final int MAXIMUM_SPREAD_LIGHT_FILTER = 2;
+
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
@@ -81,7 +84,7 @@ public class BlockMycelium extends BlockDirt {
                 int y = random.nextInt((int) this.y - 3, (int) this.y + 1 + 1);
                 int z = random.nextInt((int) this.z - 1, (int) this.z + 1 + 1);
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
-                if (block.getId().equals(Block.DIRT) && getLevel().getFullLight(block.up()) >= 4 && block.up().getLightFilter() < 2) {
+                if (block.getId().equals(BlockID.DIRT) && getLevel().getFullLight(block.up()) >= MINIMUM_SPREAD_LIGHT_LEVEL && block.up().getLightFilter() < MAXIMUM_SPREAD_LIGHT_FILTER) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
