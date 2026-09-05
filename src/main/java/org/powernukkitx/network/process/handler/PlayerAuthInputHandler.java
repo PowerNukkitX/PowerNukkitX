@@ -17,6 +17,8 @@ import org.powernukkitx.event.player.PlayerToggleSneakEvent;
 import org.powernukkitx.event.player.PlayerToggleSprintEvent;
 import org.powernukkitx.event.player.PlayerToggleSwimEvent;
 import org.powernukkitx.level.Location;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector2f;
@@ -238,6 +240,13 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             for (PlayerBlockActionData action : packet.getPlayerBlockActions()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
+                    // fire only sends START_DESTROY_BLOCK, so extinguish it before filtering the action out
+                    Vector3 firePos = Vector3.fromNetwork(action.getBlockPosition().toFloat());
+                    BlockFace fireFace = BlockFace.fromIndex(action.getFacing());
+                    Block sideBlock = player.getLevel().getBlock(firePos).getSide(fireFace);
+                    if (sideBlock.getId().equals(Block.FIRE) || sideBlock.getId().equals(BlockID.SOUL_FIRE)) {
+                        player.onBlockBreakStart(firePos, fireFace);
+                    }
                     continue;
                 }
                 Vector3i blockPos = action.getBlockPosition();
