@@ -37,6 +37,16 @@ public final class Fishing {
     public static final Selector JUNK_BONE = putSelector(new ConstantItemSelector(ItemID.BONE, JUNKS), 0.12F);
     public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.get(BlockID.TRIPWIRE_HOOK), JUNKS), 0.12F);
 
+    /**
+     * Selects a fish the way the {@code fishing/fish} loot table does, without the
+     * treasure and junk categories that {@link #getFishingResult(Item)} can also return.
+     *
+     * @return a cod, a salmon, a pufferfish or a tropical fish
+     */
+    public static Item getRandomFish() {
+        return (Item) selectFrom(FISHES);
+    }
+
     public static Item getFishingResult(Item rod) {
         int fortuneLevel = 0;
         int lureLevel = 0;
