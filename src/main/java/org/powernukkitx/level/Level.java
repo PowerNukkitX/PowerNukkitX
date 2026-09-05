@@ -834,6 +834,28 @@ public class Level implements Metadatable {
         }
     }
 
+    public void stopSound(Vector3 pos, String soundName) {
+        this.stopSound(pos, soundName, (Player[]) null);
+    }
+
+    public void stopSound(Vector3 pos, String soundName, Collection<Player> players) {
+        this.stopSound(pos, soundName, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
+    }
+
+    public void stopSound(Vector3 pos, String soundName, Player... players) {
+        final StopSoundPacket packet = new StopSoundPacket();
+        packet.setSoundName(soundName);
+        if (soundName == null || soundName.isEmpty()) {
+            packet.setStopAllSounds(true);
+        }
+
+        if (players == null || players.length == 0) {
+            addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
+        } else {
+            Server.broadcastPacket(players, packet);
+        }
+    }
+
     public void playMusic(String trackName) {
         this.playMusic(trackName, 1, 0, MusicRepeatMode.PLAY_ONCE, (Player[]) null);
     }
