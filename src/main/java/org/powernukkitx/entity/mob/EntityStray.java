@@ -20,6 +20,7 @@ import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -91,23 +92,29 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
 
-        float boneChance = 0.66f + (0.12f * looting);
-        boneChance = Math.min(boneChance, 1.0f);
-
-        if (Utils.rand(0f, 1f) < boneChance) {
-            int amount = Utils.rand(1, 2 + looting);
-            drops.add(Item.get(Item.BONE, 0, amount));
+        int bones = Utils.rand(0, 2 + looting);
+        if (bones > 0) {
+            drops.add(Item.get(Item.BONE, 0, bones));
         }
 
-        float arrowChance = 0.55f + (0.10f * looting);
-        arrowChance = Math.min(arrowChance, 1.0f);
+        int arrows = Utils.rand(0, 2 + looting);
+        if (arrows > 0) {
+            drops.add(Item.get(Item.ARROW, 0, arrows));
+        }
 
-        if (Utils.rand(0f, 1f) < arrowChance) {
-            int amount = Utils.rand(1, 2 + looting);
-            drops.add(Item.get(Item.ARROW, 0, amount));
+        if (killedByPlayer()) {
+            int slownessArrows = Utils.rand(0, 1 + looting);
+            if (slownessArrows > 0) {
+                drops.add(Item.get(Item.ARROW, 18, slownessArrows));
+            }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override
