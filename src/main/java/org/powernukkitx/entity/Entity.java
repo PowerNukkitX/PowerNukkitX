@@ -4821,7 +4821,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.boundingBox;
     }
 
-    public void fall(float fallDistance) { //todo: check why @param fallDistance always less than the real distance
+    public void fall(float fallDistance) {
         if (this.hasEffect(EffectType.SLOW_FALLING)) {
             return;
         }
@@ -4841,7 +4841,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             boolean rideable = this.isRideable();
             boolean isRideJumping = rideable && (this instanceof EntityPhysical ef) && ef.isRideJumping();
             float jumpReduction = this.canPowerJump() ? this.getRideJumpStrength() : 0f;
-            float damage = fallDistance - 3.255f - jumpBoost - jumpReduction;
+            float damage = (float) Math.ceil(fallDistance - 3f - jumpBoost - jumpReduction);
 
             if (damage > 0) {
                 if (!this.isSneaking()) {
