@@ -15,6 +15,7 @@ import org.powernukkitx.block.property.enums.MinecraftCardinalDirection;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -76,7 +77,7 @@ import java.util.Set;
  * @author Buddelbubi
  * @since 2025/11/18
  */
-public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
+public class EntityCopperGolem extends EntityGolem implements InventoryHolder, EntityInteractable {
 
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
             new EnumEntityProperty("minecraft:chest_interaction", new String[]{
@@ -318,6 +319,31 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     public boolean hasFlower() {
         return this.getBooleanEntityProperty(PROPERTIES[1].getIdentifier());
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        Item held = player.getInventory().getItemInMainHand();
+        if (held instanceof ItemShears) {
+            return hasFlower() ? "action.interact.shear" : "";
+        }
+        if (held instanceof ItemHoneycomb) {
+            return isWaxed() ? "" : "action.interact.wax_on";
+        }
+        if (held.isAxe()) {
+            if (isWaxed()) {
+                return "action.interact.wax_off";
+            }
+            if (getOxidation() != Oxidation.UNOXIDIZED) {
+                return "action.interact.scrape";
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
     }
 
     @Override
