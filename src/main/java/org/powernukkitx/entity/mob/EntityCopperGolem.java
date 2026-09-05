@@ -44,6 +44,7 @@ import org.powernukkitx.inventory.EntityEquipmentInventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemHoneycomb;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemShears;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.GameRule;
@@ -324,10 +325,10 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder, E
     @Override
     public String getInteractButtonText(Player player) {
         Item held = player.getInventory().getItemInMainHand();
-        if (held instanceof ItemShears) {
+        if (held.isShears()) {
             return hasFlower() ? "action.interact.shear" : "";
         }
-        if (held instanceof ItemHoneycomb) {
+        if (held.getId().equals(ItemID.HONEYCOMB)) {
             return isWaxed() ? "" : "action.interact.wax_on";
         }
         if (held.isAxe()) {

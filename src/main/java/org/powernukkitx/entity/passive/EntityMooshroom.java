@@ -32,6 +32,7 @@ import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.ParticleEffect;
 import org.powernukkitx.level.Sound;
@@ -248,10 +249,10 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         if (held.isShears()) {
             return "action.interact.mooshear";
         }
-        if (held.getId().equals(Item.BUCKET) && held.getDamage() == 0) {
+        if (held.getId().equals(ItemID.BUCKET) && held.getDamage() == 0) {
             return "action.interact.milk";
         }
-        if (held.getId().equals(Item.BOWL) && held.getDamage() == 0) {
+        if (held.getId().equals(ItemID.BOWL) && held.getDamage() == 0) {
             return "action.interact.moostew";
         }
         return "";
