@@ -2821,7 +2821,7 @@ public class Level implements Metadatable {
      * @deprecated use {@link #getRainLevel()}, which matches the name used by the save
      * format and by {@link org.powernukkitx.level.format.LevelProvider}
      */
-    @Deprecated(forRemoval = true, since = "3.0.4")
+    @Deprecated(forRemoval = true, since = "3.1.0")
     public float getRainStrength(float tickDiff) {
         return getRainLevel();
     }
@@ -2834,7 +2834,7 @@ public class Level implements Metadatable {
      * @deprecated use {@link #getLightningLevel()}, which matches the name used by the save
      * format and by {@link org.powernukkitx.level.format.LevelProvider}
      */
-    @Deprecated(forRemoval = true, since = "3.0.4")
+    @Deprecated(forRemoval = true, since = "3.1.0")
     public float getThunderStrength(float tickDiff) {
         return getLightningLevel();
     }
