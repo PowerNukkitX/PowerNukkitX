@@ -618,8 +618,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
                 this.lastSentBreakTick = breakTime;
 
-                if (this.getLevel().isAntiXrayEnabled() && this.getLevel().getAntiXraySystem().isPreDeObfuscate()) {
-                    this.getLevel().getAntiXraySystem().deObfuscateBlock(this, face, target);
+                if (this.getLevel().isObfuscationEnabled() && this.getLevel().getObfuscator().isPreDeObfuscate()) {
+                    this.getLevel().getObfuscator().deObfuscateBlock(this.getLevel(), this, face, target);
                 }
             }
         }
