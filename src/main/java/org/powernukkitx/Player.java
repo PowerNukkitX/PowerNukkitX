@@ -973,9 +973,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.firstMove) this.firstMove = false;
         boolean invalidMotion = false;
         var revertPos = this.getLocation().clone();
-        double distance = clientPos.distanceSquared(this);
+        double distanceSquared = clientPos.distanceSquared(this);
         //before check
-        if (isCheckingMovement() && distance > 128) {
+        if (isCheckingMovement() && distanceSquared > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !chunk.getChunkState().canSend()) {
             IChunk chunk = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
@@ -1077,7 +1077,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.speed.setComponents(last.x - now.x, last.y - now.y, last.z - now.z);
         }
 
-        handleLogicInMove(invalidMotion, distance);
+        handleLogicInMove(invalidMotion, now.x - last.x, now.y - last.y, now.z - last.z);
 
         //if plugin cancels move
         if (invalidMotion) {
@@ -1085,7 +1085,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.revertClientMotion(revertPos);
             this.resetClientMovement();
         } else {
-            if (distance != 0 && this.nextChunkOrderRun > 20) {
+            if (distanceSquared != 0 && this.nextChunkOrderRun > 20) {
                 this.nextChunkOrderRun = 20;
             }
         }
@@ -1228,30 +1228,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
 
-    protected void handleLogicInMove(boolean invalidMotion, double distance) {
+    /**
+     * @deprecated Use the overload that receives each movement component so liquid movement can use its proper axis.
+     */
+    @Deprecated
+    protected void handleLogicInMove(boolean invalidMotion, double squaredDistance) {
+        handleLogicInMove(invalidMotion, Math.sqrt(Math.max(0.0, squaredDistance)), 0.0, 0.0);
+    }
+
+    protected void handleLogicInMove(boolean invalidMotion, double deltaX, double deltaY, double deltaZ) {
         if (!invalidMotion) {
             boolean recentlyTeleported = lastTeleportMessage != null
                     && System.currentTimeMillis() - lastTeleportMessage.right() < POST_TELEPORT_GRACE_MS;
             //Handling saturation updates
             if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0 && !recentlyTeleported) {
-                //UpdateFoodExpLevel
-                if (distance >= 0.05) {
-                    double jump = 0;
-                    double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
-                    double distance2 = distance;
-                    if (swimming != 0) distance2 = 0;
-                    if (this.isSprinting()) {  //Running
-                        if (this.inAirTicks == 3 && swimming == 0) {
-                            jump = 0.2;
-                        }
-                        this.getFoodData().exhaust(0.1 * distance2 + jump + swimming);
-                    } else {
-                        if (this.inAirTicks == 3 && swimming == 0) {
-                            jump = 0.05;
-                        }
-                        this.getFoodData().exhaust(jump + swimming);
-                    }
+                boolean underWater = this.isInsideOfWater();
+                boolean inWater = this.isTouchingWater();
+                double movement = calculateMovementExhaustion(
+                        deltaX, deltaY, deltaZ,
+                        underWater, inWater, this.isOnGround(), this.isSprinting(), this.riding != null
+                );
+                double jump = 0.0;
+                if (this.inAirTicks == 3 && !underWater) {
+                    jump = this.isSprinting() ? 0.2 : 0.05;
                 }
+                this.getFoodData().exhaust(movement + jump);
             }
 
             if (this.isOnGround()) {
@@ -1294,6 +1295,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
         }
+    }
+
+    static double calculateMovementExhaustion(double deltaX, double deltaY, double deltaZ,
+                                              boolean underWater, boolean inWater, boolean onGround,
+                                              boolean sprinting, boolean riding) {
+        if (riding) {
+            return 0.0;
+        }
+
+        float x = (float) deltaX;
+        float y = (float) deltaY;
+        float z = (float) deltaZ;
+        int distance3Dcm = Math.round((float) Math.sqrt(x * x + y * y + z * z) * 100.0f);
+        int distanceXZcm = Math.round((float) Math.sqrt(x * x + z * z) * 100.0f);
+
+        if (underWater) {
+            return distance3Dcm > 0 ? distance3Dcm * 0.00015f : 0.0;
+        }
+        if (inWater) {
+            return distanceXZcm > 0 ? distanceXZcm * 0.00015f : 0.0;
+        }
+        if (onGround && distanceXZcm > 0) {
+            return distanceXZcm * (sprinting ? 0.001f : 0.0001f);
+        }
+        return 0.0;
     }
 
     protected void resetClientMovement() {
