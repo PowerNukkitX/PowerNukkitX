@@ -755,13 +755,13 @@ public class Server {
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
                 long seed = LevelConfig.GeneratorConfig.randomSeed();
                 generatorConfig.put(0,
-                    new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    new LevelConfig.GeneratorConfig("normal", seed,
                         DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
                 generatorConfig.put(1,
-                    new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    new LevelConfig.GeneratorConfig("nether", seed,
                         DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
                 generatorConfig.put(2,
-                    new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    new LevelConfig.GeneratorConfig("the_end", seed,
                         DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
@@ -2660,11 +2660,11 @@ public class Server {
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             long seed = System.currentTimeMillis();
 
-            map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+            map.put(0, new LevelConfig.GeneratorConfig("normal", seed,
                 DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
-            map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+            map.put(1, new LevelConfig.GeneratorConfig("nether", seed,
                 DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
-            map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+            map.put(2, new LevelConfig.GeneratorConfig("the_end", seed,
                 DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(provider.getName(), true, map);
             try {

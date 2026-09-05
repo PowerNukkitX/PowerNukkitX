@@ -61,8 +61,7 @@ public class GeneratorSmokeTest {
 
         Level level = new Level(ServerMockFixture.server, name, path, dimId,
                 LevelDBProvider.class,
-                new LevelConfig.GeneratorConfig(genName, 12345L, false,
-                        LevelConfig.AntiXrayMode.LOW, true,
+                new LevelConfig.GeneratorConfig(genName, 12345L,
                         dim.getDimensionData(), new HashMap<>()));
         level.initLevel();
         this.current = level;

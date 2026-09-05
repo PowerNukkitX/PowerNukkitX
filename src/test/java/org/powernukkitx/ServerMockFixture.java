@@ -191,8 +191,8 @@ public final class ServerMockFixture {
 
         level = new Level(server, levelName, levelDir.getPath(),
                 1, LevelDBProvider.class,
-                new LevelConfig.GeneratorConfig("flat", 114514L, false, LevelConfig.AntiXrayMode.LOW,
-                        true, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
+                new LevelConfig.GeneratorConfig("flat", 114514L,
+                        DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
 
         HashMap<Integer, Level> levels = new HashMap<>();
         levels.put(1, level);

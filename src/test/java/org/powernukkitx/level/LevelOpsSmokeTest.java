@@ -54,7 +54,7 @@ public class LevelOpsSmokeTest {
         safe(level::getMinHeight);
         safe(level::getMaxHeight);
         safe(level::getUpdateLCG);
-        safe(level::isAntiXrayEnabled);
+        safe(level::isObfuscationEnabled);
         safe(level::getTick);
         safe(level::getNetherScale);
         Assertions.assertNotNull(level.getName());

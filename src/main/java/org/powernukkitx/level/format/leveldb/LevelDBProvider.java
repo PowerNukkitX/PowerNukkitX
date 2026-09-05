@@ -343,7 +343,7 @@ public class LevelDBProvider implements LevelProvider {
                 int total = subChunkCount + 1;
                 final int minSectionY = unsafeChunk.getDimensionData().getMinSectionY();
                 //write block
-                if (level != null && level.isAntiXrayEnabled()) {
+                if (level != null && level.isObfuscationEnabled()) {
                     for (int i = 0; i < total; i++) {
                         if (sections[i] == null) {
                             sections[i] = new ChunkSection((byte) (i + minSectionY));

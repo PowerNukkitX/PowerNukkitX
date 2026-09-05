@@ -417,8 +417,7 @@ public class Level implements Metadatable {
     //Scheduler
     @Getter
     ServerScheduler scheduler;
-    /// antiXray system
-    private AntiXraySystem antiXraySystem;
+    private ChunkObfuscator obfuscator;
     private GameplaySettings gameplaySettings;
     /** Cached {@code chunk-settings.lightUpdates}: gates all block/skylight work (boot-time only). */
     private boolean lightUpdatesEnabled;
@@ -513,17 +512,6 @@ public class Level implements Metadatable {
             this.biomePicker = biomedGenerator.createBiomePicker(this);
         }
         this.generatorObjectHolder = this.generator.createObjectHolder(this);
-        if (generatorConfig.enableAntiXray()) {
-            this.setAntiXrayEnabled(true);
-            antiXraySystem.reinitAntiXray(false);
-
-            antiXraySystem.setFakeOreDenominator(switch (generatorConfig.antiXrayMode()) {
-                case HIGH -> 4;
-                case MEDIUM -> 8;
-                default -> 16;
-            });
-            antiXraySystem.setPreDeObfuscate(generatorConfig.preDeobfuscate());
-        }
 
         this.name = name;
         this.folderPath = path;
@@ -1584,8 +1572,8 @@ public class Level implements Metadatable {
                             } else {
                                 Player[] playerArray = this.getChunkPlayerArray(chunkX, chunkZ);
                                 var size = blocks.size();
-                                if (isAntiXrayEnabled()) {
-                                    antiXraySystem.obfuscateSendBlocks(index, playerArray, blocks);
+                                if (isObfuscationEnabled()) {
+                                    obfuscator.obfuscateSendBlocks(this, index, playerArray, blocks);
                                 } else {
                                     var blocksArray = new Vector3[size];
                                     int i = 0;
@@ -3250,7 +3238,7 @@ public class Level implements Metadatable {
 
         if (direct) {
             Player[] chunkPlayers = this.getChunkPlayerArray(cx, cz);
-            if (isAntiXrayEnabled() && block.isTransparent()) {
+            if (isObfuscationEnabled() && block.isTransparent()) {
                 this.sendBlocks(chunkPlayers, new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
             }
             this.sendBlocks(chunkPlayers, new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
@@ -6399,10 +6387,10 @@ public class Level implements Metadatable {
     }
 
     /**
-     * Is anti-xray enabled.
+     * Whether a block obfuscator is registered on this level
      */
-    public boolean isAntiXrayEnabled() {
-        return this.antiXraySystem != null;
+    public boolean isObfuscationEnabled() {
+        return this.obfuscator != null;
     }
 
     public int getTick() {
@@ -6419,20 +6407,16 @@ public class Level implements Metadatable {
     }
 
     /**
-     * enable the anti-xray system.
+     * Register the block obfuscator consulted when block data is
+     * sent to players. Setting it does not retroactively rewrite chunks already cached for the
+     * network those are refreshed as they are next serialized
      */
-    public void setAntiXrayEnabled(boolean antiXrayEnabled) {
-        if (antiXrayEnabled) {
-            if (antiXraySystem == null) {
-                this.antiXraySystem = new AntiXraySystem(this);
-            }
-        } else {
-            this.antiXraySystem = null;
-        }
+    public void setObfuscator(ChunkObfuscator obfuscator) {
+        this.obfuscator = obfuscator;
     }
 
-    public AntiXraySystem getAntiXraySystem() {
-        return antiXraySystem;
+    public ChunkObfuscator getObfuscator() {
+        return obfuscator;
     }
 
     @Override

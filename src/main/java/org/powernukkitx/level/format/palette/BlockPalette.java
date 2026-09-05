@@ -2,7 +2,6 @@ package org.powernukkitx.level.format.palette;
 
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockState;
-import org.powernukkitx.level.AntiXraySystem;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.bitarray.BitArrayVersion;
@@ -77,10 +76,11 @@ public class BlockPalette extends Palette<BlockState> {
     }
 
     public void writeObfuscatedToNetwork(Level level, AtomicLong blockChanges, ByteBuf byteBuf, RuntimeDataSerializer<BlockState> serializer) {
-        var realOreToFakeMap = level.getAntiXraySystem().getRawRealOreToReplacedRuntimeIdMap();
-        var fakeBlockMap = level.getAntiXraySystem().getRawFakeOreToPutRuntimeIdMap();
-        var transparentBlockSet = AntiXraySystem.getRawTransparentBlockRuntimeIds();
-        var XAndDenominator = level.getAntiXraySystem().getFakeOreDenominator() - 1;
+        var obfuscator = level.getObfuscator();
+        var realOreToFakeMap = obfuscator.getRawRealOreToReplacedRuntimeIdMap();
+        var fakeBlockMap = obfuscator.getRawFakeOreToPutRuntimeIdMap();
+        var transparentBlockSet = obfuscator.getTransparentBlockRuntimeIds();
+        var XAndDenominator = obfuscator.getFakeOreDenominator() - 1;
         var nukkitRandom = new NukkitRandom(level.getSeed());
 
         BlockPalette write = obfuscatePalette == null ? this : obfuscatePalette;
