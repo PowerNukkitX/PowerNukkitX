@@ -39,6 +39,8 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -46,6 +48,12 @@ import java.util.Set;
  * @author Box.
  */
 public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
+    private static final String[] MUSIC_DISCS = {
+            Item.MUSIC_DISC_13, Item.MUSIC_DISC_CAT, Item.MUSIC_DISC_BLOCKS, Item.MUSIC_DISC_CHIRP,
+            Item.MUSIC_DISC_FAR, Item.MUSIC_DISC_MALL, Item.MUSIC_DISC_MELLOHI, Item.MUSIC_DISC_STAL,
+            Item.MUSIC_DISC_STRAD, Item.MUSIC_DISC_WARD, Item.MUSIC_DISC_11, Item.MUSIC_DISC_WAIT
+    };
+
     @Override
     @NotNull
     public String getIdentifier() {
@@ -196,20 +204,22 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        if (!(this.lastDamageCause instanceof EntityDamageByEntityEvent)) {
-            return Item.EMPTY_ARRAY;
-        }
+        List<Item> drops = new ArrayList<>();
 
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-
         int gunpowder = Utils.rand(0, 2 + looting);
-        if (gunpowder <= 0) {
-            return Item.EMPTY_ARRAY;
+        if (gunpowder > 0) {
+            drops.add(Item.get(Item.GUNPOWDER, 0, gunpowder));
         }
 
-        return new Item[]{
-                Item.get(Item.GUNPOWDER, 0, gunpowder)
-        };
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent event) {
+            Entity damager = event.getDamager();
+            if (damager instanceof EntitySkeleton || damager instanceof EntityStray || damager instanceof EntityBogged) {
+                drops.add(Item.get(MUSIC_DISCS[Utils.rand(0, MUSIC_DISCS.length - 1)]));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
 
