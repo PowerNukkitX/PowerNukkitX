@@ -16,6 +16,8 @@ import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
@@ -94,5 +96,18 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     @Override
     public Integer getExperienceDrops() {
         return 20;
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (!killedByPlayer()) {
+            return Item.EMPTY_ARRAY;
+        }
+        return new Item[]{Item.get(Item.SADDLE)};
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 }
