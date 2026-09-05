@@ -107,27 +107,28 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         }
 
         for (Item equipped : this.getEquipmentInventory().getContents().values()) {
-            if (!equipped.isNull() && !equipped.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
-                if (equipped.isBow()) {
-                    int chance = 85 + looting * 10;
-                    if (Utils.rand(0, 999) < chance) {
-                        Item drop = equipped.clone();
-                        drop.setDamage(Utils.rand(193, 384));
-                        drops.add(drop);
-                    }
-                } else {
-                    drops.add(equipped.clone());
-                }
-            }
+            addEquipmentDrop(drops, equipped, looting);
         }
 
         for (Item armor : this.getArmorInventory().getContents().values()) {
-            if (!armor.isNull() && !armor.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
-                drops.add(armor.clone());
-            }
+            addEquipmentDrop(drops, armor, looting);
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private void addEquipmentDrop(List<Item> drops, Item item, int looting) {
+        if (item.isNull() || item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+            return;
+        }
+        if (Utils.rand(0, 99) >= (25 + looting * 5)) {
+            return;
+        }
+        Item drop = item.clone();
+        if (drop.isBow()) {
+            drop.setDamage(Utils.rand(193, 384));
+        }
+        drops.add(drop);
     }
 
     @Override

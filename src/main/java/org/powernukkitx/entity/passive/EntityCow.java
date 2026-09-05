@@ -168,11 +168,9 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
                 beefAmount
         ));
 
-        if (Utils.rand(0f, 1f) < (2f / 3f)) {
-            int leatherAmount = Utils.rand(0, 2 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 2 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);

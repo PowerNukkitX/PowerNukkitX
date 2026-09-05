@@ -162,30 +162,30 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable, Entity
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
 
-        if (Utils.rand(0, 1) == 0) {
-            int amount = Utils.rand(0, 1 + looting);
-            if (amount > 0) {
-                drops.add(Item.get(Item.RABBIT_HIDE, 0, amount));
-            }
+        int hide = Utils.rand(0, 1 + looting);
+        if (hide > 0) {
+            drops.add(Item.get(Item.RABBIT_HIDE, 0, hide));
         }
 
-        if (Utils.rand(0, 1) == 0) {
-            int amount = Utils.rand(0, 1 + looting);
-            if (amount > 0) {
-                drops.add(Item.get(
-                        this.isOnFire() ? Item.COOKED_RABBIT : Item.RABBIT,
-                        0,
-                        amount
-                ));
-            }
+        int meat = Utils.rand(0, 1 + looting);
+        if (meat > 0) {
+            drops.add(Item.get(
+                    this.isOnFire() ? Item.COOKED_RABBIT : Item.RABBIT,
+                    0,
+                    meat
+            ));
         }
 
-        float footChance = 0.10f + (0.03f * looting);
-        if (Utils.rand(0f, 1f) < footChance) {
+        if (killedByPlayer() && Utils.rand(0, 999) < (100 + looting * 30)) {
             drops.add(Item.get(Item.RABBIT_FOOT));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

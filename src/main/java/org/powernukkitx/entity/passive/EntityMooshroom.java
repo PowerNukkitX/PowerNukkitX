@@ -210,11 +210,9 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
                 meatAmount
         ));
 
-        if (Utils.rand(0, 2) != 0) {
-            int leatherAmount = Utils.rand(0, 2 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 2 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);

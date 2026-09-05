@@ -19,6 +19,7 @@ import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -97,17 +98,19 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
             drops.add(Item.get(Item.ARROW, 0, arrowAmount));
         }
 
-        float poisonChance = 0.5f - (looting * (1f / 12f));
-        if (poisonChance < 0f) {
-            poisonChance = 0f;
-        }
-
-        if (Utils.rand(0f, 1f) < poisonChance) {
-            int poisonAmount = Utils.rand(1, Math.min(1 + looting, 4));
-            drops.add(Item.get(Item.ARROW, 27, poisonAmount));
+        if (killedByPlayer()) {
+            int poisonAmount = Utils.rand(0, 1 + looting);
+            if (poisonAmount > 0) {
+                drops.add(Item.get(Item.ARROW, 26, poisonAmount));
+            }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

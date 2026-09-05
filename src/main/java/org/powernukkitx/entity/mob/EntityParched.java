@@ -1,6 +1,8 @@
 package org.powernukkitx.entity.mob;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.entity.components.HealthComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -66,14 +68,14 @@ public class EntityParched extends EntitySkeleton {
             drops.add(Item.get(Item.ARROW, 0, arrows));
         }
 
-        float weaknessChance = 0.10f + (0.05f * looting);
-        if (Utils.rand(0f, 1f) < weaknessChance) {
-            Item weaknessArrow = Item.get(Item.ARROW, 35, 1);
-            drops.add(weaknessArrow);
+        if (killedByPlayer()) {
+            int weaknessArrows = Utils.rand(0, 2 + looting);
+            if (weaknessArrows > 0) {
+                drops.add(Item.get(Item.ARROW, 35, weaknessArrows));
+            }
         }
 
-        float bowChance = 0.08f + (0.02f * looting);
-        if (Utils.rand(0f, 1f) < bowChance) {
+        if (Utils.rand(0, 99) < (25 + looting * 5)) {
             Item bow = Item.get(Item.BOW);
 
             int maxDurability = bow.getMaxDurability();
@@ -89,4 +91,8 @@ public class EntityParched extends EntitySkeleton {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
+    }
 }

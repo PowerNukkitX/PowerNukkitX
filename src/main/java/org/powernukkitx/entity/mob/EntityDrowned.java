@@ -32,6 +32,7 @@ import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.passive.EntityAxolotl;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTrident;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -42,6 +43,7 @@ import org.powernukkitx.utils.Utils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -161,18 +163,28 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        Item trident = Item.AIR;
-        if (getItemInHand() instanceof ItemTrident) {
-            int lootingLevel = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
 
-            if (Utils.rand(0, 100) < Math.min(37, 25 + lootingLevel)) {
-                trident = Item.get(Item.TRIDENT);
-            }
+        int flesh = Utils.rand(0, 2 + looting);
+        if (flesh > 0) {
+            drops.add(Item.get(Item.ROTTEN_FLESH, 0, flesh));
         }
-        return new Item[]{
-                Item.get(Item.ROTTEN_FLESH),
-                trident
-        };
+
+        if (killedByPlayer() && Utils.rand(0, 999) < (110 + looting * 20)) {
+            drops.add(Item.get(Item.COPPER_INGOT));
+        }
+
+        if (getItemInHand() instanceof ItemTrident && Utils.rand(0, 999) < (85 + looting * 10)) {
+            drops.add(Item.get(Item.TRIDENT));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override
