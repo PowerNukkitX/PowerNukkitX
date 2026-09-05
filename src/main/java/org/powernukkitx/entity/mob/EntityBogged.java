@@ -1,6 +1,8 @@
 package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.entity.EntityShearable;
 import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
@@ -24,8 +26,12 @@ import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.vibration.VibrationEvent;
+import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.Utils;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite {
+public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite, EntityShearable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -42,6 +48,38 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
 
     public EntityBogged(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (super.onInteract(player, item, clickedPos)) {
+            return true;
+        }
+
+        if (item.isShears() && shear()) {
+            item.useOn(this);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean shear() {
+        if (!EntityShearable.super.shear()) {
+            return false;
+        }
+
+        for (int i = 0; i < 2; i++) {
+            this.level.dropItem(this, Item.get(Utils.rand(0, 1) == 0
+                    ? BlockID.BROWN_MUSHROOM
+                    : BlockID.RED_MUSHROOM));
+        }
+
+        this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
+        this.level.getVibrationManager().callVibrationEvent(
+                new VibrationEvent(this, this.getVector3(), VibrationType.SHEAR));
+        return true;
     }
 
     @Override
