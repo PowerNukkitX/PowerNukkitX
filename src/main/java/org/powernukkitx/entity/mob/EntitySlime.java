@@ -185,7 +185,10 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
         }
 
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-        int amount = Utils.rand(1, 2) + looting;
+        int amount = Utils.rand(0, 2 + looting);
+        if (amount == 0) {
+            return Item.EMPTY_ARRAY;
+        }
 
         return new Item[]{
                 Item.get(Item.SLIME_BALL, 0, amount)
