@@ -5,10 +5,11 @@ import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -63,19 +64,12 @@ public class EntitySalmon extends EntityFish {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        int rand = Utils.rand(0, 3);
-        if (this.isLarge()) {
-            //only a 25% chance to drop a bone - from wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
-            if (rand == 1) {
-                return new Item[]{Item.get(Item.BONE, 0, Utils.rand(1, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
-            }
-        } else if (!this.isLarge()) {
-            //only a 25% chance to drop a bone - from wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC
-            if (rand == 1) {
-                return new Item[]{Item.get(Item.BONE), Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
-            }
-        }
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_SALMON : Item.SALMON))};
+        List<Item> drops = new ArrayList<>();
+        drops.add(Item.get(this.isOnFire() ? Item.COOKED_SALMON : Item.SALMON));
+
+        addBoneDrop(drops, weapon);
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     //large variant
