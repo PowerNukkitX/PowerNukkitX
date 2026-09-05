@@ -70,6 +70,9 @@ import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.LevelProviderFactory;
 import org.powernukkitx.level.format.LevelProviderManager;
+import org.powernukkitx.level.format.anvil.AnvilWorldConverter;
+import org.powernukkitx.level.format.anvil.JsonBlockMapper;
+import org.powernukkitx.level.format.anvil.JsonItemMapper;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.tickingarea.manager.SimpleTickingAreaManager;
 import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
@@ -2677,6 +2680,26 @@ public class Server {
         return levelConfig;
     }
 
+    private void maybeImportJavaWorld(String levelFolderName) {
+        if (levelFolderName.contains("/") || levelFolderName.contains("\\")) {
+            return;
+        }
+        File worldDir = new File(this.getDataPath(), "worlds/" + levelFolderName);
+        File regionDir = new File(worldDir, "region");
+        if (!regionDir.isDirectory() || new File(worldDir, "db").isDirectory()) {
+            return;
+        }
+
+        try {
+            log.info("Detected a Java Edition world '{}', converting it to Bedrock format", levelFolderName);
+            AnvilWorldConverter converter = new AnvilWorldConverter(this, JsonBlockMapper.loadDefault(), JsonItemMapper.loadDefault());
+            AnvilWorldConverter.Result result = converter.convert(worldDir, levelFolderName);
+            log.info("Converted Java world '{}': {} chunks ({} failed). The 'region' folder was kept as a backup.", levelFolderName, result.chunks(), result.failed());
+        } catch (Exception e) {
+            log.error("Failed to convert Java Edition world '{}'", levelFolderName, e);
+        }
+    }
+
     /**
      * Loads the selected level by its folder name
      *
@@ -2684,6 +2707,8 @@ public class Server {
      * @return whether load success
      */
     public boolean loadLevel(String levelFolderName) {
+        maybeImportJavaWorld(levelFolderName);
+
         LevelConfig levelConfig = getLevelConfig(levelFolderName);
         if (levelConfig == null)
             return false;
@@ -2711,8 +2736,7 @@ public class Server {
             Level level;
             try {
                 if (provider == null) {
-                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName,
-                        "the level does not exist"));
+                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "the level does not exist"));
                     return false;
                 }
                 level = new Level(this, levelName, pathS, generators.size(), provider, entry.getValue());
