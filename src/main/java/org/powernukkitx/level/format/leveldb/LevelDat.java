@@ -198,6 +198,10 @@ public class LevelDat {
         this.lightningTime = lightningTime;
     }
 
+    public void setLightningLevel(float lightningLevel) {
+        this.lightningLevel = lightningLevel;
+    }
+
     public void setThundering(boolean thundering) {
         this.thundering = thundering;
     }
@@ -208,6 +212,10 @@ public class LevelDat {
 
     public void setRainTime(int rainTime) {
         this.rainTime = rainTime;
+    }
+
+    public void setRainLevel(float rainLevel) {
+        this.rainLevel = rainLevel;
     }
 
     public void setRaining(boolean raining) {
