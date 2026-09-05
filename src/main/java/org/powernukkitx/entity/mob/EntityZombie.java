@@ -170,7 +170,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
 
-        int flesh = Utils.rand(0, 3 + looting);
+        int flesh = Utils.rand(0, 2 + looting);
         if (flesh > 0) {
             drops.add(Item.get(Item.ROTTEN_FLESH, 0, flesh));
         }
