@@ -22,6 +22,7 @@ import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
@@ -35,6 +36,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -130,12 +132,28 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-        Item axe = Item.get(Item.IRON_AXE);
-        axe.setDamage(ThreadLocalRandom.current().nextInt(1, axe.getMaxDurability()));
-        return new Item[]{
-                axe,
-                Item.get(Item.EMERALD, 0, Utils.rand(0, 2 + looting))
-        };
+        List<Item> drops = new ArrayList<>();
+
+        Item hand = getItemInHand();
+        if (!hand.isNull() && Utils.rand(0, 99) < (25 + looting * 5)) {
+            Item axe = hand.clone();
+            axe.setDamage(ThreadLocalRandom.current().nextInt(1, axe.getMaxDurability()));
+            drops.add(axe);
+        }
+
+        if (killedByPlayer()) {
+            int emeralds = Utils.rand(0, 1 + looting);
+            if (emeralds > 0) {
+                drops.add(Item.get(Item.EMERALD, 0, emeralds));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override
