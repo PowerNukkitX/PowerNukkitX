@@ -1111,6 +1111,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (item != null && Item.LEAD.equals(item.getId()) && this.canBeLeashed()) {
+            return this.useLeadOn(player);
+        }
+
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
