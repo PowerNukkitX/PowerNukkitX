@@ -104,6 +104,7 @@ import org.powernukkitx.plugin.service.NKServiceManager;
 import org.powernukkitx.plugin.service.ServiceManager;
 import org.powernukkitx.network.positiontracking.PositionTrackingService;
 import org.powernukkitx.recipe.Recipe;
+import org.powernukkitx.registry.CreativeGroupsRegistry;
 import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.RegistryCache;
@@ -672,6 +673,8 @@ public class Server {
 
         if (settings.gameplaySettings().enableEducation()) Education.registerCreative();
 
+        CreativeGroupsRegistry.register();
+
         if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
         }
@@ -857,6 +860,7 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+        CreativeGroupsRegistry.register();
         this.network.setState(NetworkState.STARTED);
     }
 
