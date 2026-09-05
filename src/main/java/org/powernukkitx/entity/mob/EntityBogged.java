@@ -2,6 +2,7 @@ package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityShearable;
 import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite, EntityShearable {
+public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite, EntityShearable, EntityInteractable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -79,6 +80,19 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
         this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
         this.level.getVibrationManager().callVibrationEvent(
                 new VibrationEvent(this, this.getVector3(), VibrationType.SHEAR));
+        return true;
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        if (player.getInventory().getItemInMainHand().isShears() && !this.isSheared()) {
+            return "action.interact.shear";
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
         return true;
     }
 
