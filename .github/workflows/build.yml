@@ -51,7 +51,7 @@ jobs:
         if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
 
       - uses: actions/cache@v6
         if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
@@ -90,7 +90,7 @@ jobs:
         if: needs.changes.outputs.relevant == 'true'
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
 
       - uses: actions/cache@v6
         if: needs.changes.outputs.relevant == 'true'
