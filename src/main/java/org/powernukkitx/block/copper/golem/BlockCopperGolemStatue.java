@@ -41,7 +41,7 @@ public class BlockCopperGolemStatue extends AbstractBlockCopperGolemStatue {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockCopperGolemStatue(), 0);
     }
 
     public @NotNull OxidizationLevel getOxidizationLevel() {

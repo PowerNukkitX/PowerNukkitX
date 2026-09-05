@@ -96,34 +96,10 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
 
                 BOTTOM.preparePlace(new Position(vec.x, vec.y, vec.z, level), object);
                 object.addHook(() -> {
-                    CompoundTag nbt = new CompoundTag()
-                            .putList("Pos", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag( vec.x + 2.5))
-                                    .add(new DoubleTag(vec.y + 1))
-                                    .add(new DoubleTag(vec.z + 1.5)))
-                            .putList("Motion", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<FloatTag>()
-                                    .add(new FloatTag(new Random().nextFloat() * 360))
-                                    .add(new FloatTag(0)));
-                    EntityVillagerV2 entity = (EntityVillagerV2) Entity.createEntity(Entity.VILLAGER_V2, chunk, nbt);
-                    entity.setProfession(random.nextInt(Profession.getProfessions().size()), true);
-                    CompoundTag nbt2 = new CompoundTag()
-                            .putList("Pos", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag( vec.x + 4.5))
-                                    .add(new DoubleTag(vec.y + 1))
-                                    .add(new DoubleTag(vec.z + 1.5)))
-                            .putList("Motion", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<FloatTag>()
-                                    .add(new FloatTag(new Random().nextFloat() * 360))
-                                    .add(new FloatTag(0)));
-                    EntityZombieVillagerV2 entity2 = (EntityZombieVillagerV2) Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, nbt2);
-                    entity2.spawnToAll();
+                    var villager = Entity.createEntity(Entity.VILLAGER_V2, chunk, Entity.getDefaultNBT(vec.asVector3().add(2.5, 1, 1.5)));
+                    var zombie = Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, Entity.getDefaultNBT(vec.asVector3().add(4.5, 1, 1.5)));
+                    villager.spawnToAll();
+                    zombie.spawnToAll();
                 });
             } else
                 object.setBlockStateAt(new BlockVector3(vec.x + 3, vec.y, vec.z + 5), BlockSnow.PROPERTIES.getDefaultState());

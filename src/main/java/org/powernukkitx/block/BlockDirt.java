@@ -41,8 +41,7 @@ public class BlockDirt extends BlockSolid implements Natural {
 
     @Override
     public double getHardness() {
-        //Although the hardness on the wiki is 0.5, after testing, a hardness of 0.6 is more suitable for the vanilla
-        return 0.6;
+        return 0.5;
     }
 
     @Override
@@ -65,26 +64,25 @@ public class BlockDirt extends BlockSolid implements Natural {
             return true;
         }
 
-        if (!this.up().canBeReplaced()) {
-            return false;
-        }
-
         if (item.isHoe()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, get(FARMLAND), true);
-            if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+            if (up().isAir()) {
+                item.useOn(this);
+                this.getLevel().setBlock(this, get(FARMLAND), true);
+                if (player != null) {
+                    player.getLevel().addSound(player, Sound.USE_GRASS);
+                }
+                return true;
             }
-            return true;
         } else if (item.isShovel()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, get(GRASS_PATH));
-            if (player != null) {
-                player.getLevel().addSound(player, Sound.USE_GRASS);
+            if (up().isAir()) {
+                item.useOn(this);
+                this.getLevel().setBlock(this, get(GRASS_PATH));
+                if (player != null) {
+                    player.getLevel().addSound(player, Sound.USE_GRASS);
+                }
+                return true;
             }
-            return true;
         }
-
         return false;
     }
 

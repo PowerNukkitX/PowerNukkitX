@@ -43,8 +43,12 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     @Override
     public void handle(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
+        if (player == null) {
+            return;
+        }
+
         Vector3f pos = Vector3f.fromNetwork(packet.getPosition());
-        Vector3f rot = Vector3f.fromNetwork(packet.getPosition());
+        Vector3f rot = Vector3f.fromNetwork(packet.getPlayerRotation());
         if (!Float.isFinite(pos.getX()) || !Float.isFinite(pos.getY()) || !Float.isFinite(pos.getZ()) || !Float.isFinite(rot.getX()) || !Float.isFinite(rot.getY()) || !Float.isFinite(rot.getZ())) {
             log.debug("Player {} sent invalid movement values (NaN or Infinite)", player.getName());
             return;
@@ -204,8 +208,25 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
         Entity vehicle = null;
         if ((vehicle = player.getRiding()) != null && vehicle.hasWASDControls()) {
+            boolean controllingRider = vehicle.getRider() == player;
+
+            if (!controllingRider) {
+                syncMountedPlayerRotationFromInput(player, packet);
+            }
+
             syncVehiclePositionFromRiderInput(player, vehicle, packet);
-            if (vehicle.onRiderInput(player, packet)) return;
+
+            boolean handled = vehicle.onRiderInput(player, packet);
+
+            vehicle.updatePassengers(false, false);
+
+            if (controllingRider) {
+                vehicle.broadcastMountedPassengerMovements();
+            } else {
+                player.broadcastMountedMovement();
+            }
+
+            if (handled) return;
         }
 
         player.offerMovementTask(clientLoc);
@@ -259,10 +280,24 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         }
     }
 
+    private static void syncMountedPlayerRotationFromInput(Player player, PlayerAuthInputPacket pk) {
+        Vector3f rot = Vector3f.fromNetwork(pk.getPlayerRotation());
+
+        if (!Float.isFinite(rot.x) || !Float.isFinite(rot.y) || !Float.isFinite(rot.z)) {
+            log.debug("Player {} sent invalid rotation values (NaN or Infinite)", player.getName());
+            return;
+        }
+
+        player.setRotation(rot.getY(), rot.getX());
+        player.setHeadYaw(rot.getZ());
+    }
+
     private static void syncVehiclePositionFromRiderInput(Player player, Entity vehicle, PlayerAuthInputPacket pk) {
         if (vehicle == null || !vehicle.isAlive()) return;
-        if (pk.getClientPredictedVehicle() == 0) return;
-        if (pk.getClientPredictedVehicle() != vehicle.getId()) return;
+
+        Long clientPredictedVehicle = pk.getClientPredictedVehicle();
+        if (clientPredictedVehicle == null || clientPredictedVehicle == 0L) return;
+        if (clientPredictedVehicle.longValue() != vehicle.runtimeId()) return;
 
         Vector3f pos = Vector3f.fromNetwork(pk.getPosition());
 
@@ -271,13 +306,18 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             return;
         }
 
-        Vector2f vehicleRotation = Vector2f.fromNetwork(pk.getVehicleRotation());
+        Vector2f vehicleRotation = null;
 
-        if (!Float.isFinite(vehicleRotation.x) || !Float.isFinite(vehicleRotation.y)) {
-            log.debug("Player {} sent invalid vehicle rotation values (NaN or Infinite)", player.getName());
-            return;
+        if (pk.getVehicleRotation() != null) {
+            vehicleRotation = Vector2f.fromNetwork(pk.getVehicleRotation());
+
+            if (!Float.isFinite(vehicleRotation.x) || !Float.isFinite(vehicleRotation.y)) {
+                log.debug("Player {} sent invalid vehicle rotation values (NaN or Infinite)", player.getName());
+                return;
+            }
         }
-        Vector3 packetPosition = Vector3f.fromNetwork(pk.getPosition()).asVector3();
+
+        Vector3 packetPosition = pos.asVector3();
         Vector3 vehiclePosition = packetPosition;
         EntityBoat boat = vehicle instanceof EntityBoat entityBoat ? entityBoat : null;
 
@@ -286,12 +326,12 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             vehiclePosition = new Vector3(packetPosition.x, boatY, packetPosition.z);
         }
 
-        double vehiclePitch = vehicle.getPitch();
-        double vehicleYaw = vehicle.getYaw();
+        double vehiclePitch;
+        double vehicleYaw;
 
-        if (pk.getVehicleRotation() != null) {
-            vehiclePitch = pk.getVehicleRotation().getX() % 360;
-            vehicleYaw = pk.getVehicleRotation().getY() % 360;
+        if (vehicleRotation != null) {
+            vehiclePitch = vehicleRotation.getX() % 360;
+            vehicleYaw = vehicleRotation.getY() % 360;
         } else {
             vehiclePitch = pk.getPlayerRotation().getX() % 360;
             vehicleYaw = pk.getPlayerRotation().getY() % 360;
@@ -300,9 +340,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         if (vehicleYaw < 0) vehicleYaw += 360;
         if (vehiclePitch < 0) vehiclePitch += 360;
 
-        double distanceSquared = vehiclePosition.distanceSquared(vehicle);
-
-        if (distanceSquared > 0.0001d) {
+        if (vehiclePosition.distanceSquared(vehicle) > 0.0001d) {
             vehicle.setPosition(vehiclePosition);
         }
 
@@ -310,9 +348,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         vehicle.setHeadYaw(vehicleYaw);
         vehicle.updateMovement();
 
-        if (boat != null) {
-            boat.updatePassengers(false, false);
-        } else {
+        if (boat == null) {
             player.setPosition(packetPosition);
         }
 

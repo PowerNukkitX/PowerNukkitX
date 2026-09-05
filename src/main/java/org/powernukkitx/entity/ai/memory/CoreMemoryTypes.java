@@ -187,7 +187,7 @@ public interface CoreMemoryTypes {
     /**
      * Currently only used in Warden
      */
-    MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE = new MemoryType<>("minecraft:warden_anger_value", new HashMap<>());
+    MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE = new MemoryType<>("minecraft:warden_anger_value", HashMap::new);
     /**
      * Track nearest skeleton entity
      */
@@ -240,9 +240,9 @@ public interface CoreMemoryTypes {
 
     MemoryType<Integer> PIG_BOOST = new MemoryType<>("minecraft:pig_boost", 0);
 
-    MemoryType<ObjectList<InventoryHolder>> CHESTS = new MemoryType<>("minecraft:chests", new ObjectArrayList<>());
+    MemoryType<ObjectList<InventoryHolder>> CHESTS = new MemoryType<>("minecraft:chests", ObjectArrayList::new);
 
-    MemoryType<ObjectList<InventoryHolder>> COPPER_CHESTS = new MemoryType<>("minecraft:copper_chests", new ObjectArrayList<>());
+    MemoryType<ObjectList<InventoryHolder>> COPPER_CHESTS = new MemoryType<>("minecraft:copper_chests", ObjectArrayList::new);
 
     MemoryType<Integer> FORCE_WANDERING = new MemoryType<>("minecraft:force_wandering", 0);
 
@@ -292,7 +292,7 @@ public interface CoreMemoryTypes {
                             entity.setDataFlag(ActorFlags.TAMED, true);
                             var owner = entity.getServer().getPlayerExact(data);
                             if (owner != null && owner.isOnline()) {
-                                entity.setDataProperty(ActorDataTypes.OWNER, owner.getId());
+                                entity.setDataProperty(ActorDataTypes.OWNER, owner.runtimeId());
                             }
                         }
                     })

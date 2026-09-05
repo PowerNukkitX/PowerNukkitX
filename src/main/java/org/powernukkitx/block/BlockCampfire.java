@@ -179,6 +179,10 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         return true;
     }
 
+    protected CampfireRecipe findRecipe(Item item) {
+        return this.level.getServer().getRecipeRegistry().findCampfireRecipe(item);
+    }
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -224,7 +228,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
         cloned.setCount(1);
         CampfireInventory inventory = campfire.getInventory();
         if (inventory.canAddItem(cloned)) {
-            CampfireRecipe recipe = this.level.getServer().getRecipeRegistry().findCampfireRecipe(cloned);
+            CampfireRecipe recipe = findRecipe(cloned);
             if (recipe != null) {
                 inventory.addItem(cloned);
                 item.setCount(item.getCount() - 1);

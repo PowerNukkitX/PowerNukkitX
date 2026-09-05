@@ -7,6 +7,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.generator.object.BlockManager;
+import org.powernukkitx.level.generator.object.BeeNestGenerator;
 import org.powernukkitx.level.generator.object.ObjectCherryTree;
 import org.powernukkitx.level.particle.BoneMealParticle;
 import org.powernukkitx.math.BlockFace;
@@ -73,8 +74,13 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
         BlockManager blockManager = new BlockManager(this.level);
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
         var objectCherryTree = new ObjectCherryTree();
-        boolean generate = objectCherryTree.generate(blockManager, RandomSourceProvider.create(), this);
+        RandomSourceProvider random = RandomSourceProvider.create();
+        boolean beeNest = BeeNestGenerator.hasNearbyFlower(blockManager, this) && random.nextFloat() < 0.05F;
+        boolean generate = objectCherryTree.generate(blockManager, random, this);
         if (generate) {
+            if (beeNest) {
+                BeeNestGenerator.place(blockManager, random, this);
+            }
             StructureGrowEvent ev = new StructureGrowEvent(this, blockManager.getBlocks());
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {

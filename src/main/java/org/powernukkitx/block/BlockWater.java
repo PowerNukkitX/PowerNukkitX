@@ -52,6 +52,7 @@ public class BlockWater extends BlockFlowingWater {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             IChunk chunk = getChunk();
+            if(chunk == null) return 0;
             int x = this.getFloorX();
             int y = this.getFloorY();
             int z = this.getFloorZ();

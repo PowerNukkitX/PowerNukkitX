@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockChest;
 import org.powernukkitx.block.copper.chest.BlockCopperChest;
 import org.powernukkitx.inventory.BaseInventory;
@@ -10,6 +11,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -20,7 +22,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
 
     @Override
@@ -33,10 +34,15 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         if (!closed) {
             DoubleChestInventory dblInv = this.doubleInventory;
             if (dblInv != null) {
-                dblInv.getViewers().forEach(p -> p.removeWindow(dblInv));
+                for (Player player : new HashSet<>(dblInv.getViewers())) {
+                    player.removeWindow(dblInv);
+                }
                 this.doubleInventory = null;
             }
-            this.getRealInventory().getViewers().forEach(p -> p.removeWindow(this.getRealInventory()));
+            ChestInventory realInv = this.getRealInventory();
+            for (Player player : new HashSet<>(realInv.getViewers())) {
+                player.removeWindow(realInv);
+            }
 
             this.closed = true;
             if (this.chunk != null) {
@@ -184,10 +190,15 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         return true;
     }
 
+    public void prepareForPistonMove() {
+        if (this.isPaired()) {
+            this.unpair();
+        }
+    }
+
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag spawnCompound = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable());
+        CompoundTag spawnCompound = super.getSpawnCompound();
         if (this.isPaired()) {
             spawnCompound.putBoolean("pairlead", this.getNbt().getBoolean("pairlead"))
                     .putInt("pairx", this.getNbt().getInt("pairx"))

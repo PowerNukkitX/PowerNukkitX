@@ -125,7 +125,7 @@ public class CreatureSpawnEvent extends Event implements Cancellable {
          */
         INFECTION,
         /**
-         * When a villager is cured from infection
+         * When a villager is cured of infection
          */
         CURED,
         /**
@@ -159,7 +159,7 @@ public class CreatureSpawnEvent extends Event implements Cancellable {
          */
         DROWNED,
         /**
-         * When an cow is spawned by shearing a mushroom cow
+         * When a cow is spawned by shearing a mushroom cow
          */
         SHEARED,
         /**

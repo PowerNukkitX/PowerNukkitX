@@ -43,6 +43,10 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                         holder.disconnect(DisconnectFailReason.RESOURCE_PACK_LOADING_FAILED);
                         return;
                     }
+                    // CDN packs are downloaded by the client itself, there is nothing to upload
+                    if (!resourcePack.cdnUrl().isEmpty()) {
+                        continue;
+                    }
                     final int maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
                     final int chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) maxChunkSize);
 

@@ -2,7 +2,7 @@ package org.powernukkitx.inventory.request;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.inventory.CraftingTableInventory;
+import org.powernukkitx.inventory.CraftTypeInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.inventory.fake.FakeInventory;
@@ -67,13 +67,21 @@ public class NetworkMapping {
                 }
             }
             case CRAFTING_INPUT_CONTAINER -> {
-                if (player.getFakeInventoryOpen() && player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof FakeInventory) {
-                    yield player.getTopWindow().get();
-                } else if (player.getTopWindow().isPresent() && player.getTopWindow().get() instanceof CraftingTableInventory) {
-                    yield player.getTopWindow().get();
-                } else {
-                    yield player.getCraftingGrid();
+                var topWindow = player.getTopWindow();
+
+                if (topWindow.isPresent()) {
+                    Inventory inventory = topWindow.get();
+
+                    if (player.getFakeInventoryOpen() && inventory instanceof FakeInventory) {
+                        yield inventory;
+                    }
+
+                    if (inventory instanceof CraftTypeInventory && inventory.getType() == ContainerType.WORKBENCH) {
+                        yield inventory;
+                    }
                 }
+
+                yield player.getCraftingGrid();
             }
             case DYNAMIC_CONTAINER -> {
                 //If player is looking in container. If not, check the players inventory.

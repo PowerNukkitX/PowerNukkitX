@@ -15,6 +15,7 @@ import org.powernukkitx.entity.ai.evaluator.DistanceEvaluator;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
+import org.powernukkitx.entity.ai.evaluator.SightEvaluator;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.JumpExecutor;
 import org.powernukkitx.entity.ai.executor.MeleeAttackExecutor;
@@ -25,6 +26,7 @@ import org.powernukkitx.entity.ai.executor.TridentThrowExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.AttackSensor;
 import org.powernukkitx.entity.ai.sensor.BlockSensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
@@ -62,12 +64,11 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new NearestBlockIncementExecutor(), entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK) && getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK) instanceof BlockTurtleEgg, 1, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_DROWNED_SAY_WATER), all(new RandomSoundEvaluator(), entity -> isInsideOfWater()), 11, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_DROWNED_SAY), all(new RandomSoundEvaluator(), entity -> !isInsideOfWater()), 10, 1),
                         new Behavior(new JumpExecutor(), all(entity -> !getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK), entity -> entity.getCollisionBlocks().stream().anyMatch(block -> block instanceof BlockTurtleEgg)), 9, 1, 10),
@@ -75,7 +76,8 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
                         new Behavior(new TridentThrowExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 32, 3),
-                                entity -> getItemInHand().getId().equals(Item.TRIDENT)
+                            entity -> getItemInHand().getId().equals(Item.TRIDENT),
+                                new SightEvaluator(CoreMemoryTypes.ATTACK_TARGET)
                         ), 7, 1),
                         new Behavior(new TridentThrowExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, false, 30, 20), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
@@ -84,12 +86,14 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
                                 any(
                                         entity -> getLevel().isNight(),
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) != null && getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER).isInsideOfWater()
-                                )
+                                ),
+                                new SightEvaluator(CoreMemoryTypes.NEAREST_PLAYER)
                         ), 6, 1),
                         new Behavior(new TridentThrowExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, false, 30, 20), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 32, 3)
-                                , entity -> getItemInHand().getId().equals(Item.TRIDENT)
+                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 32, 3),
+                                entity -> getItemInHand().getId().equals(Item.TRIDENT),
+                                new SightEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET)
                         ), 5, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30), all(
@@ -101,17 +105,17 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
                         ), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, false, 10), none(), 1, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
+                        new AttackSensor(CoreMemoryTypes.ATTACK_TARGET),
                         new NearestPlayerSensor(64, 0, 0),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
                         new BlockSensor(BlockTurtleEgg.class, CoreMemoryTypes.NEAREST_BLOCK, 11, 15, 10)
-                ),
-                Set.of(new WalkController(), new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new WalkController(), new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     @Override

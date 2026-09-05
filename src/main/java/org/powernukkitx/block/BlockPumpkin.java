@@ -53,7 +53,7 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockPumpkin(), 0);
     }
 
     @Override
@@ -65,15 +65,13 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShears()) {
             BlockCarvedPumpkin carvedPumpkin = new BlockCarvedPumpkin();
-            // TODO: Use the activated block face not the player direction
-            if (player == null) {
-                carvedPumpkin.setBlockFace(BlockFace.SOUTH);
-            } else {
-                carvedPumpkin.setBlockFace(player.getDirection().getOpposite());
+            if (blockFace == null || blockFace == BlockFace.UP || blockFace == BlockFace.DOWN) {
+                blockFace = BlockFace.SOUTH;
             }
+            carvedPumpkin.setBlockFace(blockFace);
             item.useOn(this);
             this.level.setBlock(this, carvedPumpkin, true, true);
-            this.getLevel().dropItem(add(0.5, 0.5, 0.5), Item.get(ItemID.PUMPKIN_SEEDS)); // TODO: Get correct drop item position
+            this.getLevel().dropItem(add(fx, fy, fz), Item.get(ItemID.PUMPKIN_SEEDS));
             return true;
         }
         return false;

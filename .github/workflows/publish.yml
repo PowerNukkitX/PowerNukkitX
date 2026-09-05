@@ -3,8 +3,8 @@ name: PowerNukkitX Publish
 on:
   push:
     branches:
-      - master
-      - r/**
+      - stable
+      - beta
       - b/**
   workflow_dispatch:
     inputs:
@@ -26,13 +26,26 @@ jobs:
       is_draft: ${{ steps.meta.outputs.is_draft }}
       is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
       title: ${{ steps.meta.outputs.title }}
+      minecraft_version: ${{ steps.codec_version.outputs.minecraft_version }}
+      protocol_version: ${{ steps.codec_version.outputs.protocol_version }}
+      sha: ${{ steps.api_version.outputs.sha }}
+    permissions:
+      contents: write
     steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.PNX_BOT_APP_ID }}
+          private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: true
+          token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6.0.0
         with:
           distribution: temurin
           java-version: 25
@@ -52,26 +65,28 @@ jobs:
         id: meta
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ github.ref_name }}" != "stable" ]; then
+              echo "Releases can only be cut from 'stable', got '${{ github.ref_name }}'" >&2
+              exit 1
+            fi
             echo "tag=${{ inputs.version }}"                 >> $GITHUB_OUTPUT
             echo "title=PowerNukkitX ${{ inputs.version }}"  >> $GITHUB_OUTPUT
             echo "skip_release=false"                        >> $GITHUB_OUTPUT
             echo "is_draft=${{ inputs.draft }}"              >> $GITHUB_OUTPUT
             echo "is_prerelease=false"                       >> $GITHUB_OUTPUT
 
-          elif [ "${{ github.ref_name }}" = "master" ]; then
+          elif [ "${{ github.ref_name }}" = "beta" ]; then
             echo "tag=nightly"                               >> $GITHUB_OUTPUT
             echo "title=Dev Build (nightly)"                 >> $GITHUB_OUTPUT
             echo "skip_release=false"                        >> $GITHUB_OUTPUT
             echo "is_draft=false"                            >> $GITHUB_OUTPUT
             echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
 
-          elif [[ "${{ github.ref_name }}" == r/* ]]; then
-            VERSION="${{ github.ref_name }}"
-            VERSION="${VERSION#r/}"
-            echo "tag=$VERSION"                              >> $GITHUB_OUTPUT
-            echo "title=PowerNukkitX $VERSION"               >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" = "stable" ]; then
+            echo "tag=snapshot"                              >> $GITHUB_OUTPUT
+            echo "title=Snapshot Build (snapshot)"           >> $GITHUB_OUTPUT
             echo "skip_release=false"                        >> $GITHUB_OUTPUT
-            echo "is_draft=true"                             >> $GITHUB_OUTPUT
+            echo "is_draft=false"                            >> $GITHUB_OUTPUT
             echo "is_prerelease=true"                        >> $GITHUB_OUTPUT
 
           else
@@ -85,21 +100,91 @@ jobs:
             echo "is_prerelease=false"                       >> $GITHUB_OUTPUT
           fi
 
+      - name: Sync API version with the release version
+        id: api_version
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          # Only a dispatched release names a version - every other trigger builds the source as-is.
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "sha=$GITHUB_SHA" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+(\.[0-9]+)+(-[a-zA-Z0-9.]+)?$'; then
+            echo "Release version '$VERSION' is not a valid API version" >&2
+            exit 1
+          fi
+
+          FILE=src/main/java/org/powernukkitx/PowerNukkitX.java
+          sed -i -E "s|(API_VERSION = dynamic\(\")[^\"]*(\"\))|\1${VERSION}\2|" "$FILE"
+
+          CURRENT=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' "$FILE")
+          if [ "$CURRENT" != "$VERSION" ]; then
+            echo "Failed to set API_VERSION to '$VERSION' in $FILE" >&2
+            exit 1
+          fi
+
+          git config user.name "$APP_SLUG[bot]"
+          git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
+
+          git add "$FILE"
+          if git diff --staged --quiet; then
+            echo "API_VERSION already at $VERSION"
+            echo "sha=$GITHUB_SHA" >> $GITHUB_OUTPUT
+          else
+            git commit -m "chore: bump API version to ${VERSION} [skip ci]"
+            git push origin "HEAD:${{ github.ref_name }}"
+            echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build & Publish to Maven
         run: |
-          if [ "${{ github.ref_name }}" = "master" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ steps.meta.outputs.tag }}-SNAPSHOT"
+          elif [ "${{ github.ref_name }}" = "beta" ]; then
             VERSION="nightly-SNAPSHOT"
-          elif [[ "${{ github.ref_name }}" == b/* ]]; then
+          elif [ "${{ github.ref_name }}" = "stable" ]; then
+            VERSION="stable-SNAPSHOT"
+          else
+            # b/* branches keep their own coordinate so they never collide with a release line
             BRANCH="${{ github.ref_name }}"
             SAFE_BRANCH=$(echo "$BRANCH" | sed 's|[^a-zA-Z0-9._-]|-|g')
             VERSION="${SAFE_BRANCH}-SNAPSHOT"
-          else
-            VERSION="${{ steps.meta.outputs.tag }}-SNAPSHOT"
           fi
           ./gradlew publish --no-configuration-cache -PbuildVersion="$VERSION"
         env:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
+
+      - name: Extract codec versions from the built jar
+        id: codec_version
+        run: |
+          # Asking the codec itself keeps this working across protocol bumps, since nothing here
+          # names a version. Stderr is left alone so any startup noise stays visible in the log.
+          cat > /tmp/CodecVersion.java << 'JAVA'
+          public class CodecVersion {
+              public static void main(String[] args) {
+                  System.out.println(org.powernukkitx.network.NetworkConstants.CODEC.getMinecraftVersion());
+                  System.out.println(org.powernukkitx.network.NetworkConstants.CODEC.getProtocolVersion());
+              }
+          }
+          JAVA
+          VERSIONS=$(java -cp build/powernukkitx.jar /tmp/CodecVersion.java)
+          MINECRAFT_VERSION=$(echo "$VERSIONS" | sed -n '1p')
+          PROTOCOL_VERSION=$(echo "$VERSIONS" | sed -n '2p')
+          if ! echo "$MINECRAFT_VERSION" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
+            echo "Unexpected Minecraft version from NetworkConstants.CODEC: '$MINECRAFT_VERSION'" >&2
+            exit 1
+          fi
+          if ! echo "$PROTOCOL_VERSION" | grep -Eq '^[0-9]+$'; then
+            echo "Unexpected protocol version from NetworkConstants.CODEC: '$PROTOCOL_VERSION'" >&2
+            exit 1
+          fi
+          echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
+          echo "protocol_version=$PROTOCOL_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v7
         with:
@@ -118,26 +203,94 @@ jobs:
     needs: publish
     permissions:
       contents: write
+    env:
+      # The API version bump lands as its own commit, so the release must point at that commit
+      # rather than the one the workflow was triggered from.
+      RELEASE_SHA: ${{ needs.publish.outputs.sha }}
     steps:
+      - name: Generate bot token
+        uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.PNX_BOT_APP_ID }}
+          private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Set Git config
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          git config user.name "$APP_SLUG[bot]"
+          git config user.email "$(gh api "/users/$APP_SLUG%5Bbot%5D" --jq .id)+$APP_SLUG[bot]@users.noreply.github.com"
+
+      - name: Sync with the branch tip
+        run: |
+          # The publish job pushes the API version bump after this job has already checked out, so
+          # the local branch is behind and every commit made here would be rejected on push.
+          git fetch origin "$GITHUB_REF_NAME"
+          git switch "$GITHUB_REF_NAME"
+          git reset --hard "origin/$GITHUB_REF_NAME"
+
+      - name: Create release branch
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          TAG: ${{ needs.publish.outputs.tag }}
+        run: |
+          BRANCH="r/${TAG}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "Branch $BRANCH already exists, leaving it untouched"
+          else
+            git branch "$BRANCH" "$RELEASE_SHA"
+            git push origin "refs/heads/$BRANCH"
+          fi
 
       - name: Extract release metadata from source
         id: versions
         run: |
-          PROTOCOL_VERSION=$(sed -En 's/.*CODEC = Bedrock_v([0-9]+)\.CODEC.*/\1/p' src/main/java/org/powernukkitx/network/NetworkConstants.java | head -n 1)
+          PROTOCOL_VERSION="${{ needs.publish.outputs.protocol_version }}"
           API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/org/powernukkitx/PowerNukkitX.java)
+          MINECRAFT_VERSION="${{ needs.publish.outputs.minecraft_version }}"
           if [ -z "$PROTOCOL_VERSION" ]; then
-            echo "Unable to extract protocol version from NetworkConstants.java" >&2
+            echo "Protocol version missing from the publish job outputs" >&2
             exit 1
           fi
           if [ -z "$API_VERSION" ]; then
             echo "Unable to extract API version from Nukkit.java" >&2
             exit 1
           fi
+          if [ -z "$MINECRAFT_VERSION" ]; then
+            echo "Minecraft version missing from the publish job outputs" >&2
+            exit 1
+          fi
           echo "protocol_version=$PROTOCOL_VERSION" >> $GITHUB_OUTPUT
           echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
+          echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Sync README version badges
+        env:
+          PROTOCOL_VERSION: ${{ steps.versions.outputs.protocol_version }}
+          MINECRAFT_VERSION: ${{ steps.versions.outputs.minecraft_version }}
+        run: |
+          # Badges drop the leading "1." the codec reports, matching how Bedrock releases are named.
+          BADGE_MC="${MINECRAFT_VERSION#1.}"
+
+          sed -i -E \
+            -e "s|(badge/minecraft-)[^-]*(-56383E)|\1v${BADGE_MC}%20(Bedrock)\2|" \
+            -e "s|(badge/protocol-)[0-9]+(-blue)|\1${PROTOCOL_VERSION}\2|" \
+            README.md
+
+          git add README.md
+          if git diff --staged --quiet; then
+            echo "README badges already up to date"
+          else
+            git commit -m "docs: update README badges to Minecraft ${MINECRAFT_VERSION} (protocol ${PROTOCOL_VERSION}) [skip ci]"
+            git push
+          fi
 
       - uses: actions/download-artifact@v8
         with:
@@ -145,11 +298,12 @@ jobs:
           path: build
 
       - name: Create changelog file
-        if: needs.publish.outputs.tag != 'nightly'
+        if: needs.publish.outputs.tag != 'nightly' && needs.publish.outputs.tag != 'snapshot'
         run: |
           TAG="${{ needs.publish.outputs.tag }}"
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
+          MINECRAFT_VERSION="${{ steps.versions.outputs.minecraft_version }}"
 
           mkdir -p changelogs
           FILE="changelogs/${TAG}.md"
@@ -165,13 +319,14 @@ jobs:
           |----------|-------|
           | PowerNukkitX Version | $TAG |
           | API Version | $API_VERSION |
+          | Minecraft Version | $MINECRAFT_VERSION |
           | Protocol Version | $PROTOCOL_VERSION |
 
           EOF
 
           LAST=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
           if [ -n "$LAST" ] && [ "$LAST" != "$TAG" ]; then
-            COMPARE=$(gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}")
+            COMPARE=$(gh api "repos/${{ github.repository }}/compare/$LAST...${RELEASE_SHA}")
 
             TOTAL_COMMITS=$(echo "$COMPARE" | jq '.total_commits')
             FILES_CHANGED=$(echo "$COMPARE" | jq '.files | length')
@@ -232,17 +387,16 @@ jobs:
 
           echo "created=${FILE}" >> $GITHUB_OUTPUT
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Commit and push changelog
-        if: needs.publish.outputs.tag != 'nightly'
+        if: needs.publish.outputs.tag != 'nightly' && needs.publish.outputs.tag != 'snapshot'
         run: |
           TAG="${{ needs.publish.outputs.tag }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
+          MINECRAFT_VERSION="${{ steps.versions.outputs.minecraft_version }}"
 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
           git add "changelogs/${TAG}.md"
           if git diff --staged --quiet; then
             echo "Changelog already exists, skipping commit"
@@ -250,6 +404,7 @@ jobs:
             git commit -m "docs: add changelog for PowerNukkitX ${TAG} [skip ci]
 
           Release ${TAG}
+          - Minecraft: ${MINECRAFT_VERSION}
           - Protocol: ${PROTOCOL_VERSION}
           - API: ${API_VERSION}
           - See the full changelog at changelogs/${TAG}.md"
@@ -264,6 +419,7 @@ jobs:
           IS_PRERELEASE="${{ needs.publish.outputs.is_prerelease }}"
           PROTOCOL_VERSION="${{ steps.versions.outputs.protocol_version }}"
           API_VERSION="${{ steps.versions.outputs.api_version }}"
+          MINECRAFT_VERSION="${{ steps.versions.outputs.minecraft_version }}"
 
           cat > release-notes.md << EOF
 
@@ -273,6 +429,7 @@ jobs:
           |---|---|
           | **PowerNukkitX Version** | $TAG |
           | **API Version** | $API_VERSION |
+          | **Minecraft Version** | $MINECRAFT_VERSION |
           | **Protocol Version** | $PROTOCOL_VERSION |
 
           ---
@@ -284,7 +441,7 @@ jobs:
           > [!IMPORTANT]
           > This release is a **draft** — pending review. Publish it manually from the Releases page once verified.
 
-          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          **Commit:** [${RELEASE_SHA}](https://github.com/${{ github.repository }}/commit/${RELEASE_SHA})
 
           EOF
           elif [ "$IS_PRERELEASE" = "true" ]; then
@@ -294,12 +451,12 @@ jobs:
           >
           > Report issues on [Discord](https://discord.gg/apwd7uauZg) or [GitHub Issues](https://github.com/${{ github.repository }}/issues).
 
-          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          **Commit:** [${RELEASE_SHA}](https://github.com/${{ github.repository }}/commit/${RELEASE_SHA})
 
           EOF
           else
             cat >> release-notes.md << EOF
-          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          **Commit:** [${RELEASE_SHA}](https://github.com/${{ github.repository }}/commit/${RELEASE_SHA})
 
           EOF
           fi
@@ -309,7 +466,7 @@ jobs:
             echo "" >> release-notes.md
             echo "### ✨ Changes since $LAST" >> release-notes.md
             echo "" >> release-notes.md
-            gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}" \
+            gh api "repos/${{ github.repository }}/compare/$LAST...${RELEASE_SHA}" \
               --jq '.commits | map(.commit.message | split("\n")[0]) | sort | .[] | "- \(.)"' \
               >> release-notes.md 2>/dev/null || true
           fi
@@ -328,11 +485,11 @@ jobs:
           echo "is_draft=$IS_DRAFT" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Create or update release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           TAG="${{ steps.notes.outputs.tag }}"
           TITLE="${{ needs.publish.outputs.title }}"
@@ -341,6 +498,10 @@ jobs:
 
           if gh release view "$TAG" --json id &>/dev/null 2>&1; then
             echo "Updating existing release $TAG"
+            # Rolling tags like "nightly" are reused, so the tag has to follow the new commit -
+            # gh release edit leaves it pointing at whatever it was created from.
+            git tag -f "$TAG" "$RELEASE_SHA"
+            git push -f origin "refs/tags/$TAG"
             gh release upload "$TAG" build/powernukkitx.jar --clobber
             gh release edit "$TAG" \
               --notes-file release-notes.md \
@@ -351,6 +512,7 @@ jobs:
             gh release create "$TAG" \
               --title "$TITLE" \
               --notes-file release-notes.md \
+              --target "$RELEASE_SHA" \
               --draft="$IS_DRAFT" \
               --prerelease="$IS_PRERELEASE" \
               --latest=false \

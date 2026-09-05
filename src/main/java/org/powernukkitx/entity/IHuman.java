@@ -167,7 +167,7 @@ public interface IHuman extends InventoryHolder {
             if (this.getSkin() == null) {
                 this.setSkin(new Skin(org.cloudburstmc.protocol.bedrock.data.skin.Skin.builder().skinData(ImageData.EMPTY).build()));
             }
-            this.setUniqueId(Utils.dataToUUID(String.valueOf(human.getId()).getBytes(StandardCharsets.UTF_8),
+            this.setUniqueId(Utils.dataToUUID(String.valueOf(human.runtimeId()).getBytes(StandardCharsets.UTF_8),
                 this.getSkin().getSkin().getSkinData().getImage(), human.getNameTag().getBytes(StandardCharsets.UTF_8)));
         }
 
@@ -180,7 +180,10 @@ public interface IHuman extends InventoryHolder {
         final CompoundTag nbtMap = human.getNbt();
 
         if (human.nbt.contains("SelectedInventorySlot")) {
-            this.getInventory().setHeldItemSlot(NukkitMath.clamp(nbtMap.getInt("SelectedInventorySlot"), 0, 8));
+            this.getInventory().setHeldItemIndex(
+                NukkitMath.clamp(nbtMap.getInt("SelectedInventorySlot"), 0, 8),
+                false
+            );
         }
 
         if (nbtMap.containsList("Inventory")) {

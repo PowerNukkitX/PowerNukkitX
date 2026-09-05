@@ -80,12 +80,11 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERDRAGON_GROWL), new RandomSoundEvaluator(), 2, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new PerchingExecutor(), entity -> getMemoryStorage().get(CoreMemoryTypes.FORCE_PERCHING), 5, 1),
                         new Behavior(new StrafeExecutor(), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
@@ -100,15 +99,14 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY)
                         ), 2, 1)
-                ),
-                Set.of(
+                )
+                .sensors(
                         new NearestPlayerSensor(512, 0, 20),
                         new NearestEntitySensor(EntityEnderCrystal.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 192, 0, 10)
-                ),
-                Set.of(new SpaceMoveController(), new LookController(), new LiftController()),
-                new EnderDragonRouteFinder(new EnderDragonPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(), new LiftController())
+                .routeFinder(new EnderDragonRouteFinder(new EnderDragonPosEvaluator(), this))
+                .build();
     }
 
     @Override
@@ -119,7 +117,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         );
         pk.setActorData(this.getActorDataMap());
         pk.setTargetActorID(this.getId());
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setActorType("minecraft:ender_dragon");
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         pk.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
@@ -175,7 +173,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
             deathTicks = 190;
             getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, getIdentifier(), false, false);
             final ActorEventPacket packet = new ActorEventPacket();
-            packet.setTargetRuntimeID(this.getId());
+            packet.setTargetRuntimeID(this.runtimeId());
             packet.setType(ActorEvent.DRAGON_START_DEATH_ANIM);
             Server.broadcastPacket(getViewers().values(), packet);
             setImmobile(true);

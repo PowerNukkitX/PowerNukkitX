@@ -44,7 +44,7 @@ public class AnimateHandler implements PacketHandler<AnimatePacket> {
 
         final AnimatePacket pk = new AnimatePacket();
         pk.setAction(animationEvent.getAnimationType());
-        pk.setTargetRuntimeID(player.getId());
+        pk.setTargetRuntimeID(player.runtimeId());
         pk.setData(animationEvent.getData());
         pk.setSwingSource(animationEvent.getSwingSource());
         Server.broadcastPacket(player.getViewers().values(), pk);

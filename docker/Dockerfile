@@ -8,7 +8,7 @@ FROM eclipse-temurin:25-jdk AS build
 # Build from source and create artifact
 WORKDIR /src
 
-COPY gradlew gradlew.bat *.gradle.kts gradle.properties .gitmodules /src/
+COPY gradlew gradlew.bat *.gradle.kts gradle.properties /src/
 COPY src /src/src
 # generateGitProperties and git submodule setup need git metadata during image builds.
 COPY .git /src/.git

@@ -47,6 +47,7 @@ dependencies {
     api(libs.fastutil)
     api(libs.snakeyaml)
     api(libs.stateless4j)
+    api(libs.bedrock.connection)
 
     implementation(libs.bundles.leveldb)
     implementation(libs.rng.simple)
@@ -57,16 +58,16 @@ dependencies {
     implementation(libs.disruptor)
     implementation(libs.oshi)
     implementation(libs.fastreflection)
-    implementation(libs.terra)
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
-    implementation(libs.bedrock.connection)
+    implementation(libs.pnxgamedata)
+    implementation(libs.commonslang3)
+    implementation(libs.caffeine)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
-    testImplementation(libs.commonslang3)
-    
+
     testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)
@@ -153,7 +154,7 @@ tasks.build {
 tasks.clean {
     group = ALPHA_BUILD
     description = "Deletes the build directory and generated files"
-    delete("pnx.yml", "terra", "services")
+    delete("pnx.yml", "services")
 }
 
 tasks.compileJava {
@@ -184,7 +185,7 @@ tasks.test {
     jvmArgs(
         "--add-opens", "java.base/java.lang=ALL-UNNAMED",
         "--add-opens", "java.base/java.io=ALL-UNNAMED",
-        "-Xmx1g", // Limit test JVM memory
+        "-Xmx2g", // Limit test JVM memory - smoke tests boot real levels and run terrain generation
         "-XX:+UseG1GC", // Use G1GC for tests
         "-XX:MaxGCPauseMillis=200" // Lower GC pause time
     )

@@ -11,6 +11,7 @@ import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.DoubleTag;
@@ -89,9 +90,12 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
             return false;
         }
 
-        double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
-        double spawnX = target.getX() + fx;
-        double spawnZ = target.getZ() + fz;
+        AxisAlignedBB boundingBox = target.getBoundingBox();
+        double spawnY = (face == BlockFace.UP && boundingBox != null)
+            ? boundingBox.getMaxY() + 0.0001d
+            : block.getY() + 0.0001d;
+        double spawnX = block.getX() + 0.5d;
+        double spawnZ = block.getZ() + 0.5d;
         Location loc = new Location(spawnX, spawnY, spawnZ, 0f, 0f, level);
 
         if (player != null) {

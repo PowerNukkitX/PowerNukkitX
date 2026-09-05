@@ -17,12 +17,12 @@ import org.powernukkitx.event.player.PlayerDropItemEvent;
 import org.powernukkitx.event.player.PlayerHackDetectedEvent;
 import org.powernukkitx.event.player.PlayerInteractEntityEvent;
 import org.powernukkitx.event.player.PlayerInteractEvent;
-import org.powernukkitx.event.player.PlayerItemConsumeEvent;
 import org.powernukkitx.event.player.PlayerKickEvent;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
+import org.powernukkitx.item.ItemFireworkRocket;
 import org.powernukkitx.item.ItemMace;
 import org.powernukkitx.item.ItemSpear;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -206,7 +206,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             if (target instanceof Player && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_PLAYERS)
                     || !(target instanceof Player) && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_MOBS))
                 return;
-            if (target.getId() == player.getId()) {
+            if (target.runtimeId() == player.runtimeId()) {
                 PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.INVALID_PVP);
                 player.getServer().getPluginManager().callEvent(event);
 
@@ -218,12 +218,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             }
             if (!player.canInteract(target, player.isCreative() ? 8 : 5)) {
                 return;
-            } else if (target instanceof Player) {
-                if ((((Player) target).getGamemode() & 0x01) > 0) {
-                    return;
-                } else if (!player.getServer().getSettings().gameplaySettings().pvp()) {
-                    return;
-                }
+            } else if (target instanceof Player targetPlayer
+                    && (targetPlayer.isCreative() || !player.getServer().getSettings().gameplaySettings().pvp())) {
+                return;
             }
 
             player.interruptShieldBlockingForAttack();
@@ -238,11 +235,8 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
             float knockBack = 0.3f;
-            if (item.applyEnchantments()) {
-                Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                if (knockBackEnchantment != null) {
-                    knockBack += knockBackEnchantment.getLevel() * 0.1f;
-                }
+            if (player.isSprinting()) {
+                knockBack += 0.5f;
             }
             EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
             entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
@@ -269,6 +263,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 if (target instanceof EntityLiving living) {
                     living.postAttack(player);
                 }
+            }
+            if (target instanceof EntityLiving && (player.isSurvival() || player.isAdventure())) {
+                player.getFoodData().exhaust(0.1);
             }
             if (item instanceof ItemMace mace) {
                 mace.onPostAttack(target, itemDamage);
@@ -353,21 +350,16 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 } else {
                     item = serverItemInHand;
                 }
-                PlayerItemConsumeEvent consumeEvent = null;
-                if (item.isEdible()) {
-                    consumeEvent = new PlayerItemConsumeEvent(player, item.clone());
-                    player.getServer().getPluginManager().callEvent(consumeEvent);
-                }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
                 player.getServer().getPluginManager().callEvent(interactEvent);
                 playerHandle.setInteract();
-                if (consumeEvent != null && consumeEvent.isCancelled()) {
-                    player.getInventory().sendSlot(transaction.getSlot(), player);
-                    return;
-                }
-                if (interactEvent.isCancelled() && (consumeEvent == null || !consumeEvent.isBypassInteract())) {
-                    if (interactEvent.getItem() != null && interactEvent.getItem().isArmor()) {
+                if (interactEvent.isCancelled()) {
+                    if (interactEvent.getItem() != null && interactEvent.getItem().isWearable()) {
                         player.getInventory().sendArmorContents(player);
+                    }
+                    // Client predicts the elytra boost locally, so we resync its motion to undo it
+                    if (interactEvent.getItem() instanceof ItemFireworkRocket && player.isGliding()) {
+                        player.setMotion(player.getMotion());
                     }
                     player.getInventory().sendSlot(transaction.getSlot(), player);
                     return;

@@ -13,6 +13,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ import java.util.*;
  */
 @Slf4j
 public abstract class BaseInventory implements Inventory {
-    protected final HashMap<Integer, Item> slots = new HashMap<>();
+    protected final Int2ObjectOpenHashMap<Item> slots = new Int2ObjectOpenHashMap<>();
     protected final ContainerType type;
     protected final Set<Player> viewers = new HashSet<>();
     protected final int size;

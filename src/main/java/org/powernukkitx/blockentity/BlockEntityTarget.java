@@ -19,7 +19,7 @@ public class BlockEntityTarget extends BlockEntity {
 
     @Override
     public boolean isBlockEntityValid() {
-        return getLevelBlock().getId() == BlockID.TARGET;
+        return BlockID.TARGET.equals(getLevelBlock().getId());
     }
 
     public void setActivePower(int power) {

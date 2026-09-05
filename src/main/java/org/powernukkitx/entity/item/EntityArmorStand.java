@@ -182,7 +182,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (hasItemInHand && item.isArmor()) {
             isArmor = true;
             slot = getArmorSlot(item);
-        } else if (hasItemInHand && (Objects.equals(item.getId(), BlockID.SKULL)) || Objects.equals(item.getBlockId(), BlockID.CARVED_PUMPKIN)) {
+        } else if (hasItemInHand && (Objects.equals(item.getId(), BlockID.SKULL) || Objects.equals(item.getBlockId(), BlockID.CARVED_PUMPKIN))) {
             isArmor = true;
             slot = EntityArmorInventory.SLOT_HEAD;
         } else if (hasItemInHand) {
@@ -300,7 +300,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 }
 
                 Item itemClone = item.clone();
-                itemClone.count -= notAdded[0].count;
+                itemClone.count = notAdded[0].count;
                 inventory.setItem(slot, itemClone);
             } else {
                 inventory.setItem(slot, itemtoAddToArmorStand);
@@ -323,7 +323,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     private void setPose(int pose) {
         this.actorDataMap.put(ActorDataTypes.POSE_INDEX, pose);
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorData(this.getActorDataMap());
         Server.getInstance().getOnlinePlayers().values().forEach(all -> all.sendPacket(packet));
     }

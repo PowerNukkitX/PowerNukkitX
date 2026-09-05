@@ -1,15 +1,26 @@
 package org.powernukkitx.recipe.descriptor;
 
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.NameDescriptor;
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.RecipeIngredient;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.registry.Registries;
 
 
 public class DefaultDescriptor implements ItemDescriptor {
     private final Item item;
+    private final String networkIdentifier;
+    private final int networkAuxValue;
 
     public DefaultDescriptor(Item item) {
+        this(item, item.getId(), item.hasMeta() ? item.getDamage() : -1);
+    }
+
+    public DefaultDescriptor(Item item, String networkIdentifier, int networkAuxValue) {
         this.item = item;
+        this.networkIdentifier = networkIdentifier;
+        this.networkAuxValue = networkAuxValue;
     }
 
     @Override
@@ -39,7 +50,27 @@ public class DefaultDescriptor implements ItemDescriptor {
 
     @Override
     public RecipeIngredient toNetwork() {
-        final NameDescriptor descriptor = new NameDescriptor(this.item.getItemDefinition(), this.item.getDamage());
+        var itemDefinition = this.item.getItemDefinition();
+
+        if (!this.networkIdentifier.equals(this.item.getId())) {
+            int runtimeId = Registries.ITEM_RUNTIMEID.getInt(this.networkIdentifier);
+
+            if (runtimeId != Integer.MAX_VALUE) {
+                itemDefinition = new SimpleItemDefinition(
+                        this.networkIdentifier,
+                        runtimeId,
+                        ItemVersion.NONE,
+                        false,
+                        null
+                );
+            }
+        }
+
+        final NameDescriptor descriptor = new NameDescriptor(
+                itemDefinition,
+                this.networkAuxValue
+        );
+
         return new RecipeIngredient(descriptor, this.getCount());
     }
 

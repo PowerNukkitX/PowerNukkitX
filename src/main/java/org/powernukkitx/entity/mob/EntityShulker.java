@@ -52,25 +52,23 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     }
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .coreBehaviors(
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 2, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_SHULKER_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), new RandomSoundEvaluator(20, 20), 1, 1)
-                ),
-                Set.of(
+                )
+                .behaviors(
                         new Behavior(new ShulkerIdleExecutor(), new RandomSoundEvaluator(20, 10), 2, 1),
                         new Behavior(new ShulkerAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 16),
                                 not(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 60))
                         ), 1, 1)
-                ),
-                Set.of(new NearestPlayerSensor(40, 0, 20)),
-                Set.of(new LookController(true, true)),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                )
+                .sensors(new NearestPlayerSensor(40, 0, 20))
+                .controllers(new LookController(true, true))
+                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+                .build();
     }
 
     public EntityShulker(IChunk chunk, CompoundTag nbt) {

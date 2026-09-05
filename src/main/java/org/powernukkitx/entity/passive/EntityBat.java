@@ -34,17 +34,13 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
+        return BehaviorGroup.builder(this)
+                .behaviors(
                         new Behavior(new SpaceRandomRoamExecutor(0.3f, 12, 100, 20, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
-                Set.of(),
-                Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
-                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
-                this
-        );
+                )
+                .controllers(new SpaceMoveController(), new LookController(true, true), new LiftController())
+                .routeFinder(new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this))
+                .build();
     }
 
     @Override

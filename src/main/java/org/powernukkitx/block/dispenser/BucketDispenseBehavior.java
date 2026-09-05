@@ -42,10 +42,18 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
                     target.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
                 }
 
+                if (replace instanceof BlockAir && fishEntityId != null) {
+                    // buckets that carry a mob but no fluid, e.g. the sulfur cube bucket
+                    if (bucket.spawnBucketEntity(target.add(0.5, 0, 0.5))) {
+                        target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.ENTITY_PLACE));
+                        return Item.get(ItemID.BUCKET, 0, 1);
+                    }
+                }
+
                 if (replace instanceof BlockLiquid || replace.getId() == BlockID.POWDER_SNOW) {
                     block.level.setBlock(target, replace);
                     if (fishEntityId != null)
-                        bucket.spawnFishEntity(target.add(0.5, 0.5, 0.5));
+                        bucket.spawnBucketEntity(target.add(0.5, 0.5, 0.5));
                     if (replace instanceof BlockLiquid)
                         target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
                     else

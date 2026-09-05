@@ -10,6 +10,7 @@ import org.powernukkitx.level.generator.populator.PopulatorStructure;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.utils.random.Xoroshiro128;
 
 public class TrialChambersPopulator extends Populator implements PopulatorStructure {
 
@@ -36,7 +37,7 @@ public class TrialChambersPopulator extends Populator implements PopulatorStruct
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        RandomSourceProvider placementRandom = RandomSourceProvider.create(level.getSeed());
+        RandomSourceProvider placementRandom = new Xoroshiro128(level.getSeed());
         if (!PLACEMENT.canGenerate(level.getSeed(), placementRandom, chunkX, chunkZ, biome)) {
             return;
         }

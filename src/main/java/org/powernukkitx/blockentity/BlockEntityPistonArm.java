@@ -41,14 +41,16 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public byte state;
 
-    public byte newState = 1;
+    public byte newState;
 
     public List<BlockVector3> attachedBlocks;
+    public List<BlockVector3> breakBlocks;
     public boolean powered;
     public boolean hasPendingPower;
     public boolean pendingPowered;
     public float progress;
-    public float lastProgress = 1;
+    public float lastProgress;
+    private boolean pistonMovable = true;
 
     private final Set<Long> movedEntitiesThisTick = new HashSet<>();
     private final Set<Long> affectedEntitiesThisTick = new HashSet<>();
@@ -90,7 +92,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         // Player clients automatically handle movement
         if (diff == 0 || !entity.canBePushedByPiston() || entity instanceof Player)
             return false;
-        if (!this.markEntityAffected(entity) || this.movedEntitiesThisTick.contains(entity.getId()))
+        if (!this.markEntityAffected(entity) || this.movedEntitiesThisTick.contains(entity.runtimeId()))
             return false;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
         this.level.getServer().getPluginManager().callEvent(event);
@@ -99,7 +101,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         entity.onPushByPiston(this);
         if (entity.closed)
             return false;
-        this.movedEntitiesThisTick.add(entity.getId());
+        this.movedEntitiesThisTick.add(entity.runtimeId());
         // Need to counteract gravity
         entity.move(
                 diff * moveDirection.getXOffset(),
@@ -114,7 +116,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         if (diff == 0 || !entity.canBePushedByPiston()) {
             return false;
         }
-        return this.affectedEntitiesThisTick.add(entity.getId());
+        return this.affectedEntitiesThisTick.add(entity.runtimeId());
     }
 
     /**
@@ -125,13 +127,14 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
      * @param extending      A boolean indicating whether is extending
      * @param attachedBlocks A list of BlockVector3 representing the blocks attached to the moving block.
      */
-    public void preMove(boolean extending, List<BlockVector3> attachedBlocks) {
-        this.finished = false; // Initialize movement as unfinished
-        this.extending = extending; // Set the extending status
-        this.lastProgress = this.progress = extending ? 0 : 1; // Set progress: 0 for extending, 1 for contracting
-        this.state = this.newState = (byte) (extending ? 1 : 3); // Set current and new states: 1 for extending, 3 for contracting
-        this.attachedBlocks = attachedBlocks; // Set the attached blocks list
-        this.movable = false; // Set the structure as immovable
+    public void preMove(boolean extending, List<BlockVector3> attachedBlocks, List<BlockVector3> breakBlocks) {
+        this.finished = false;
+        this.extending = extending;
+        this.lastProgress = this.progress = extending ? 0 : 1;
+        this.state = this.newState = (byte) (extending ? 1 : 3);
+        this.attachedBlocks = attachedBlocks;
+        this.breakBlocks = breakBlocks;
+        this.pistonMovable = false;
         // Update moving data immediately to ensure timeliness
         updateMovingData(true);
     }
@@ -207,7 +210,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         var pos = getSide(facing);
         if (!extending) {
             // The unextended piston can be pushed
-            this.movable = true;
+            this.pistonMovable = true;
             if (this.level.getBlock(pos) instanceof BlockPistonArmCollision) {
                 this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
                 // Block Updates
@@ -219,66 +222,56 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         // Check again at the next moment to prevent mistakes
         this.level.scheduleUpdate(this.getLevelBlock(), 1);
         this.attachedBlocks.clear();
+        this.breakBlocks.clear();
         this.finished = true;
         updateMovingData(false);
     }
 
     @Override
+    public boolean isMovable() {
+        return this.pistonMovable;
+    }
+
+    @Override
     public void loadNBT() {
         super.loadNBT();
-        this.state = this.nbt.getByte("State");
-        this.newState = this.nbt.getByte("NewState");
-        if (nbt.contains("Progress"))
-            this.progress = nbt.getFloat("Progress");
-        if (nbt.contains("LastProgress"))
-            this.lastProgress = nbt.getFloat("LastProgress");
-        this.sticky = nbt.getBoolean("Sticky");
-        this.extending = nbt.getBoolean("Extending");
-        this.powered = nbt.getBoolean("powered");
-        this.hasPendingPower = nbt.getBoolean("hasPendingPower");
-        this.pendingPowered = nbt.getBoolean("pendingPowered");
-        if (nbt.contains("facing")) {
-            this.facing = BlockFace.fromIndex(nbt.getInt("facing"));
-        } else {
-            var block = this.getLevelBlock();
-            if (block instanceof Faceable faceable)
-                this.facing = faceable.getBlockFace();
-            else
-                this.facing = BlockFace.NORTH;
-        }
-        attachedBlocks = new ObjectArrayList<>();
-        if (nbt.contains("AttachedBlocks")) {
-            var blocks = nbt.getList("AttachedBlocks", IntTag.class);
-            if (blocks != null && blocks.size() > 0) {
-                for (int i = 0; i < blocks.size(); i += 3) {
-                    this.attachedBlocks.add(new BlockVector3(
-                            blocks.get(i).data,
-                            blocks.get(i + 1).data,
-                            blocks.get(i + 2).data
-                    ));
-                }
-            }
-        } else nbt.putList("AttachedBlocks", new ListTag<>());
 
-        // If the chunk was unloaded mid-move, resume ticking so the movement can complete.
-        if (this.state == 1 || this.state == 3 || (this.progress > 0f && this.progress < 1f)) {
+        this.state = this.nbt.getByte("State");
+        this.newState = this.nbt.containsNumber("NewState") ? this.nbt.getByte("NewState") : this.state;
+        this.progress = this.nbt.containsNumber("Progress") ? this.nbt.getFloat("Progress") : this.state == 2 ? 1.0f : 0.0f;
+        this.lastProgress = this.nbt.containsNumber("LastProgress") ? this.nbt.getFloat("LastProgress") : this.state == 2 || this.state == 3 ? 1.0f : 0.0f;
+        this.sticky = this.nbt.getBoolean("Sticky");
+        this.pistonMovable = this.nbt.containsNumber("isMovable") ? this.nbt.getBoolean("isMovable") : this.state == 0;
+
+        this.extending = this.state == 1;
+        this.powered = this.state == 1 || this.state == 2;
+        this.hasPendingPower = false;
+        this.pendingPowered = false;
+
+        Block block = this.getLevelBlock();
+        this.facing = block instanceof Faceable faceable ? faceable.getBlockFace() : BlockFace.NORTH;
+
+        this.attachedBlocks = readBlocks("AttachedBlocks");
+        this.breakBlocks = readBlocks("BreakBlocks");
+
+        this.finished = this.state != 1 && this.state != 3;
+        if (!this.finished) {
             this.scheduleUpdate();
         }
     }
 
+    @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putByte("State", this.state);
-        this.nbt.putByte("NewState", this.newState);
-        this.nbt.putFloat("Progress", this.progress);
-        this.nbt.putFloat("LastProgress", this.lastProgress);
-        this.nbt.putBoolean("powered", this.powered);
-        this.nbt.putBoolean("hasPendingPower", this.hasPendingPower);
-        this.nbt.putBoolean("pendingPowered", this.pendingPowered);
-        this.nbt.putList("AttachedBlocks", getAttachedBlocks());
-        this.nbt.putInt("facing", this.facing.getIndex());
-        this.nbt.putBoolean("Sticky", this.sticky);
-        this.nbt.putBoolean("Extending", this.extending);
+
+        this.nbt.putList("AttachedBlocks", getAttachedBlocks())
+                .putList("BreakBlocks", getBreakBlocks())
+                .putFloat("LastProgress", this.lastProgress)
+                .putByte("NewState", this.newState)
+                .putFloat("Progress", this.progress)
+                .putByte("State", this.state)
+                .putBoolean("Sticky", this.sticky)
+                .putBoolean("isMovable", this.pistonMovable);
     }
 
     @Override
@@ -289,24 +282,55 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putBoolean("isMovable", this.movable)
+                .putBoolean("isMovable", this.pistonMovable)
                 .putFloat("Progress", this.progress)
                 .putFloat("LastProgress", this.lastProgress)
                 .putList("AttachedBlocks", getAttachedBlocks())
-                .putList("BreakBlocks", new ListTag<>())
+                .putList("BreakBlocks", getBreakBlocks())
                 .putBoolean("Sticky", this.sticky)
                 .putByte("State", this.state)
                 .putByte("NewState", this.newState);
     }
 
     protected ListTag<IntTag> getAttachedBlocks() {
-        var attachedBlocks = new ListTag<IntTag>();
-        for (var block : this.attachedBlocks) {
-            attachedBlocks.add(new IntTag(block.x));
-            attachedBlocks.add(new IntTag(block.y));
-            attachedBlocks.add(new IntTag(block.z));
+        return writeBlocks(this.attachedBlocks);
+    }
+
+    protected ListTag<IntTag> getBreakBlocks() {
+        return writeBlocks(this.breakBlocks);
+    }
+
+    private ListTag<IntTag> writeBlocks(List<BlockVector3> blocks) {
+        var list = new ListTag<IntTag>();
+
+        if (blocks != null) {
+            for (var block : blocks) {
+                list.add(new IntTag(block.x));
+                list.add(new IntTag(block.y));
+                list.add(new IntTag(block.z));
+            }
         }
-        return attachedBlocks;
+
+        return list;
+    }
+
+    private List<BlockVector3> readBlocks(String name) {
+        var result = new ObjectArrayList<BlockVector3>();
+
+        if (!this.nbt.containsList(name)) {
+            return result;
+        }
+
+        var blocks = this.nbt.getList(name, IntTag.class);
+        for (int i = 0; i + 2 < blocks.size(); i += 3) {
+            result.add(new BlockVector3(
+                    blocks.get(i).data,
+                    blocks.get(i + 1).data,
+                    blocks.get(i + 2).data
+            ));
+        }
+
+        return result;
     }
 
     public void updateMovingData(boolean immediately) {

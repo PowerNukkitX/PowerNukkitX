@@ -85,7 +85,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         }
 
         for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
+            this.inventory.setItemInternal(i, this.getItem(i));
         }
 
         this.pickupArea = generatePickupArea();
@@ -581,7 +581,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
+        CompoundTag c = super.getSpawnCompound();
 
         if (this.hasName()) {
             c.put("CustomName", this.nbt.get("CustomName").copy());

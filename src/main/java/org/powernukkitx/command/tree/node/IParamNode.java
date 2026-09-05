@@ -1,5 +1,6 @@
 package org.powernukkitx.command.tree.node;
 
+import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.data.CommandEnum;
 import org.powernukkitx.command.tree.ParamList;
 import org.powernukkitx.lang.CommandOutputContainer;
@@ -44,16 +45,64 @@ public interface IParamNode<T> {
     /**
      * Responsible for filling this parameter node. Overriding this method must implement validation of the accepted argument arg and parsing it into a result of the corresponding type T
      * <br>
+     * Only used by ParamTree
+     * <br>
      * When validation or parsing fails, call the {@link #error(String)} method to flag the error, for example {@code this.error()}
      *
      * @param arg the arg
      */
     void fill(String arg);
+    
+    /**
+     * Variation of {@link #fill(String)} that takes as parameter {@code sender} the command sender<br>
+     * Only used by CommandTree<br>
+     * By default, it executes {@link #fill(String)}
+     * 
+     * @param arg the arg
+     * @param sender the command sender
+     */
+    default void fill(String arg, CommandSender sender) {
+        fill(arg);
+    }
+
+    /**
+     * Variation of {@link #fill(String, CommandSender)} that takes as parameter {@code isLastArg} a boolean indicating whether the accepted token is the last one<br>
+     * Only used by CommandTree, for nodes which have {@link #getUsedArgs()} returning -1<br>
+     * By default, it executes {@link #fill(String, CommandSender)}
+     * 
+     * @param arg the arg
+     * @param sender the command sender
+     * @param isLastArg {@code true} if the accepted token {@code arg} is the last one
+     */
+    default void fill(String arg, CommandSender sender, boolean isLastArg) {
+        fill(arg, sender);
+    }
+
+    /**
+     * The number of tokens consumed by the node (e.g., {@link PositionNode} consumes 3 tokens associated to the x,y,z coordinates of a position)<br>
+     * If the node consumes all the remaining tokens (e.g., {@link MessageStringNode}), then this method returns -1
+     * 
+     * @return the number of tokens consumed by the node
+     */
+    default int getUsedArgs() {
+        return 1;
+    }
 
     /**
      * Gets the node value after it has been filled by {@link #fill(String)}. It is automatically cast to the accepting type E without checking whether the cast can succeed<br>and may throw {@link ClassCastException}
+     * <br>
+     * Only used by ParamTree
      */
     <E> E get();
+
+    /**
+     * Variation of {@link #get()} that takes as parameter {@code sender} the command sender<br>
+     * Only used by CommandTree
+     * By default, it executes {@link #get()}
+     */
+    default <E> E get(CommandSender sender) {
+        return get();
+    }
 
     /**
      * Resets the node back to its initial state, ready for the next fill {@link #fill(String)}
@@ -82,7 +131,10 @@ public interface IParamNode<T> {
      * Flags an error in this node's {@link #fill(String)} and outputs the default error message
      */
     default void error() {
-        this.getParamList().error();
+        var list = this.getParamList();
+        if (list != null) {
+            list.error();
+        }
     }
 
     /**
@@ -102,8 +154,10 @@ public interface IParamNode<T> {
      */
     default void error(String key, String... params) {
         var list = this.getParamList();
-        list.error();
-        list.addMessage(key, params);
+        if (list != null) {
+            list.error();
+            list.addMessage(key, params);
+        }
     }
 
     /**
@@ -113,8 +167,10 @@ public interface IParamNode<T> {
      */
     default void error(CommandOutputMessage... messages) {
         var list = this.getParamList();
-        list.error();
-        list.addMessage(messages);
+        if (list != null) {
+            list.error();
+            list.addMessage(messages);
+        }
     }
 
     /**

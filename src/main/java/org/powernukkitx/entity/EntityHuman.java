@@ -168,7 +168,7 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if(skin.getGeometryData() == null || skin.getGeometryData().isEmpty()) {
-                builder.skinResourcePatch(GEOMETRY_HUMANOID);
+                builder.geometryData(GEOMETRY_HUMANOID);
                 changed = true;
             }
 
@@ -252,7 +252,7 @@ public class EntityHuman extends EntityHumanType {
             addPlayerPacket.setUuid(this.getUniqueId());
             addPlayerPacket.setPlayerName(this.getName());
             addPlayerPacket.setTargetActorID(this.getId());
-            addPlayerPacket.setTargetRuntimeID(this.getId());
+            addPlayerPacket.setTargetRuntimeID(this.runtimeId());
             addPlayerPacket.setPosition(this.getPosition().toNetwork());
             addPlayerPacket.setVelocity(this.getMotionVector());
             addPlayerPacket.setRotation(this.getRotationVector());

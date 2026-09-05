@@ -76,7 +76,7 @@ public class SimpleVibrationManager implements VibrationManager {
         LevelEventGenericPacket packet = new LevelEventGenericPacket();
         packet.setType(LevelEvent.PARTICLE_VIBRATION_SIGNAL);
         packet.setTag(tag);
-        //todo: Packets are only sent to players within the player's field of view.
+        // TODO: Packets are only sent to players within the player's field of view.
         Server.broadcastPacket(level.getPlayers().values(), packet);
     }
 
@@ -92,14 +92,17 @@ public class SimpleVibrationManager implements VibrationManager {
     protected NbtMap createEntityTargetTag(Entity entity) {
         return NbtMap.builder()
                 .putString("type", "actor")
-                .putLong("uniqueID", entity.getId())
-                .putInt("attachPos", 3) //todo: check the use of this value :)
+                .putLong("uniqueID", entity.runtimeId())
+                .putInt("attachPos", 3) // TODO: check the use of this value.
                 .build();
     }
 
     protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
-        return VectorMath.getPassByVector3(from, to)
-                .stream()
-                .noneMatch(vec -> level.getTickCachedBlock(vec).hasTag(BlockTags.PNX_WOOL));
+        for (Vector3 vec : VectorMath.getPassByVector3(from, to)) {
+            if (level.getTickCachedBlock(vec).hasTag(BlockTags.PNX_WOOL)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
