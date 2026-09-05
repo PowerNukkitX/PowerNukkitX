@@ -2,13 +2,12 @@ package org.powernukkitx.item.randomitem;
 
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
-import org.powernukkitx.utils.Utils;
+import org.powernukkitx.item.enchantment.EnchantmentHelper;
+import org.powernukkitx.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author LT_Name
@@ -16,6 +15,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EnchantmentItemSelector extends ConstantItemSelector {
+    /**
+     * Highest enchanting cost a loot roll can draw. {@link NukkitRandom#nextInt(int)} is inclusive, so this
+     * yields the vanilla range of 0 to 29.
+     */
+    private static final int MAX_ENCHANT_COST = 29;
+
     public EnchantmentItemSelector(String id, Selector parent) {
         this(id, 0, parent);
     }
@@ -30,14 +35,11 @@ public class EnchantmentItemSelector extends ConstantItemSelector {
 
     public EnchantmentItemSelector(Item item, Selector parent) {
         super(item, parent);
-        //TODO align with vanilla enchantment probabilities
-        List<Enchantment> enchantments = getSupportEnchantments(item);
-        if (!enchantments.isEmpty()) {
-            Random random = ThreadLocalRandom.current();
-            Enchantment enchantment = enchantments.get(random.nextInt(enchantments.size()));
-            if (random.nextDouble() < 0.3) { //reduce the probability of high-level enchantments
-                enchantment.setLevel(Utils.rand(1, enchantment.getMaxLevel()));
-            }
+        // Vanilla rolls a random enchanting cost and runs the enchanting table algorithm on it,
+        // instead of picking one enchantment and one level uniformly.
+        NukkitRandom random = new NukkitRandom();
+        List<Enchantment> enchantments = EnchantmentHelper.selectEnchantments(random, item, random.nextInt(MAX_ENCHANT_COST));
+        for (Enchantment enchantment : enchantments) {
             item.addEnchantment(enchantment);
         }
     }

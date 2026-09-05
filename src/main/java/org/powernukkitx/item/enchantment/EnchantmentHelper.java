@@ -83,9 +83,18 @@ public final class EnchantmentHelper {
         return bookshelfCount;
     }
 
-    private static ItemEnchantOption createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel, int entry) {
-        int enchantingPower = requiredXpLevel;
-        int enchantability = inputItem.getEnchantAbility();
+    /**
+     * Rolls the enchantments an item receives for a given enchanting cost, using the same algorithm as the
+     * enchanting table.
+     *
+     * @param random the random source to roll with
+     * @param item the item being enchanted
+     * @param cost the enchanting cost, in experience levels
+     * @return the rolled enchantments, cloned and already carrying their level, empty if the item takes none
+     */
+    public static List<Enchantment> selectEnchantments(NukkitRandom random, Item item, int cost) {
+        int enchantingPower = cost;
+        int enchantability = item.getEnchantAbility();
         enchantingPower += random.nextInt(enchantability >> 2) + random.nextInt(enchantability >> 2) + 1;
 
         // Random bonus for enchanting power between 0.85 and 1.15
@@ -94,7 +103,7 @@ public final class EnchantmentHelper {
         if (enchantingPower < 1) enchantingPower = 1;
 
         List<Enchantment> resultEnchantments = new ArrayList<>();
-        List<Enchantment> availableEnchantments = getAvailableEnchantments(enchantingPower, inputItem);
+        List<Enchantment> availableEnchantments = getAvailableEnchantments(enchantingPower, item);
         if (!availableEnchantments.isEmpty()) {
             final AtomicReference<Enchantment> lastEnchantment = new AtomicReference<>(getRandomWeightedEnchantment(random, availableEnchantments));
             if (lastEnchantment.get() != null) {
@@ -118,11 +127,16 @@ public final class EnchantmentHelper {
                 enchantingPower /= 2;
             }
         }
-        if (inputItem.getId().equals(Item.BOOK)) {
+        if (item.getId().equals(Item.BOOK)) {
             if (resultEnchantments.size() > 1) {
                 resultEnchantments.remove(random.nextInt(resultEnchantments.size() - 1));
             }
         }
+        return resultEnchantments;
+    }
+
+    private static ItemEnchantOption createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel, int entry) {
+        final List<Enchantment> resultEnchantments = selectEnchantments(random, inputItem, requiredXpLevel);
         final List<EnchantmentInstance> instances = new ObjectArrayList<>();
         for (Enchantment enchantment : resultEnchantments) {
             instances.add(new EnchantmentInstance(enchantment.getId(), enchantment.getLevel()));
