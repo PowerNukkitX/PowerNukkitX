@@ -235,6 +235,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
             float knockBack = 0.3f;
+            if (player.isSprinting()) {
+                knockBack += 0.5f;
+            }
             EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
             entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
             if (player.isSpectator()) entityDamageByEntityEvent.setCancelled();
@@ -260,6 +263,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 if (target instanceof EntityLiving living) {
                     living.postAttack(player);
                 }
+            }
+            if (target instanceof EntityLiving && (player.isSurvival() || player.isAdventure())) {
+                player.getFoodData().exhaust(0.1);
             }
             if (item instanceof ItemMace mace) {
                 mace.onPostAttack(target, itemDamage);

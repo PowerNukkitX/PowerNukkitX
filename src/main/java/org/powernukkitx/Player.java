@@ -5152,10 +5152,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (super.attack(source)) {
             if (this.getLastDamageCause() == source && this.spawned) {
                 if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-                    Entity damager = entityDamageByEntityEvent.getDamager();
-                    if (damager instanceof Player) {
-                        ((Player) damager).getFoodData().exhaust(0.1);
-                    }
                     // Save the entity that last attacked the player in lastBeAttackEntity
                     this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
