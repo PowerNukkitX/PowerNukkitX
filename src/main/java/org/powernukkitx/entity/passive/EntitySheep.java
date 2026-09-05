@@ -187,7 +187,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         this.setDataFlag(ActorFlags.SHEARED, true);
 
         Item woolItem = this.getWoolItem();
-        woolItem.setCount(ThreadLocalRandom.current().nextInt(2) + 1);
+        woolItem.setCount(Utils.rand(1, 3));
         this.level.dropItem(this, woolItem);
 
         level.addSound(this, Sound.MOB_SHEEP_SHEAR);
