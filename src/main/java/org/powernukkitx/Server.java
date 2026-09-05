@@ -108,8 +108,10 @@ import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.RegistryCache;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
+import org.powernukkitx.resourcepacks.loader.AddonPackLoader;
 import org.powernukkitx.resourcepacks.loader.CdnResourcePackLoader;
 import org.powernukkitx.resourcepacks.loader.JarPluginResourcePackLoader;
+import org.powernukkitx.resourcepacks.loader.ResourcePackLoader;
 import org.powernukkitx.resourcepacks.loader.ZippedResourcePackLoader;
 import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.scheduler.Task;
@@ -596,10 +598,15 @@ public class Server {
             log.error("", e);
             System.exit(1);
         }
-        this.resourcePackManager = new ResourcePackManager(
+        Set<ResourcePackLoader> packLoaders = new LinkedHashSet<>(List.of(
             new ZippedResourcePackLoader(new File(PowerNukkitX.DATA_PATH, "resource_packs")),
             new JarPluginResourcePackLoader(new File(this.pluginPath)),
-            new CdnResourcePackLoader(this.settings.gameplaySettings()));
+            new CdnResourcePackLoader(this.settings.gameplaySettings())));
+        if (this.settings.addonSettings().enabled()) {
+            packLoaders.add(new AddonPackLoader(new File(PowerNukkitX.DATA_PATH, "addons")));
+            packLoaders.add(new AddonPackLoader(new File(PowerNukkitX.DATA_PATH, "behavior_packs")));
+        }
+        this.resourcePackManager = new ResourcePackManager(packLoaders);
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
