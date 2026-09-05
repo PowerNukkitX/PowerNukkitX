@@ -44,7 +44,6 @@ import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemHoneycomb;
 import org.powernukkitx.item.ItemShears;
-import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.entity.condition.Condition;
@@ -70,6 +69,8 @@ import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -342,13 +343,19 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-        int amount = Utils.rand(1, 3 + looting);
+        List<Item> drops = new ArrayList<>();
+        drops.add(Item.get(Item.COPPER_INGOT, 0, Utils.rand(1, 3)));
 
-        return new Item[]{
-                Item.get(Item.COPPER_INGOT, 0, amount),
-                getInventory().getItemInHand()
-        };
+        if (hasFlower()) {
+            drops.add(Item.get(Block.POPPY));
+        }
+
+        Item held = getInventory().getItemInHand();
+        if (!held.isNull()) {
+            drops.add(held.clone());
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     public static void checkAndSpawnGolem(Block block) {
