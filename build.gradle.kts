@@ -27,8 +27,8 @@ plugins {
 group = "org.powernukkitx"
 version = providers.gradleProperty("buildVersion").orElse("nightly-SNAPSHOT").get()
 description = "powernukkitx"
-java.sourceCompatibility = JavaVersion.VERSION_21
-java.targetCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_25
+java.targetCompatibility = JavaVersion.VERSION_25
 
 // Constants
 val SHADOW_JAR = "shadowJar"
@@ -94,7 +94,7 @@ java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
@@ -166,10 +166,10 @@ tasks.compileJava {
     options.isIncremental = true
     options.isFork = true
     options.forkOptions.jvmArgs = listOf("-Xmx2g")
-    options.release.set(21)
+    options.release.set(25)
 
-    java.sourceCompatibility = JavaVersion.VERSION_21
-    java.targetCompatibility = JavaVersion.VERSION_21
+    java.sourceCompatibility = JavaVersion.VERSION_25
+    java.targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.compileTestJava {
