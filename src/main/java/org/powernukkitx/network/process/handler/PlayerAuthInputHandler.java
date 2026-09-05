@@ -242,7 +242,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
                     // fire only sends START_DESTROY_BLOCK, so extinguish it before filtering the action out
                     Block fireBlock = player.getLevel().getBlock(Vector3.fromNetwork(action.getBlockPosition().toFloat())).getSide(BlockFace.fromIndex(action.getFacing()));
-                    if (fireBlock.getId().equals(Block.FIRE) || fireBlock.getId().equals(BlockID.SOUL_FIRE)) {
+                    if (fireBlock.getId().equals(BlockID.FIRE) || fireBlock.getId().equals(BlockID.SOUL_FIRE)) {
                         player.getLevel().setBlock(fireBlock, Block.get(BlockID.AIR), true);
                         player.getLevel().addLevelSoundEvent(fireBlock, SoundEvent.EXTINGUISH_FIRE);
                     }
