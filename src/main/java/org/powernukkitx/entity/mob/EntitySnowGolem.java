@@ -7,6 +7,7 @@ import org.powernukkitx.block.BlockPumpkin;
 import org.powernukkitx.block.BlockSnow;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -47,7 +48,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class EntitySnowGolem extends EntityGolem {
+public class EntitySnowGolem extends EntityGolem implements EntityInteractable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -133,6 +134,19 @@ public class EntitySnowGolem extends EntityGolem {
     protected void initEntity() {
         setSheared(false);
         super.initEntity();
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        if (!isSheared() && player.getInventory().getItemInMainHand().isShears()) {
+            return "action.interact.shear";
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
     }
 
     public void setSheared(boolean sheared) {
