@@ -204,10 +204,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        if (!(this.lastDamageCause instanceof EntityDamageByEntityEvent event)) {
-            return Item.EMPTY_ARRAY;
-        }
-
         List<Item> drops = new ArrayList<>();
 
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
@@ -216,9 +212,11 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
             drops.add(Item.get(Item.GUNPOWDER, 0, gunpowder));
         }
 
-        Entity damager = event.getDamager();
-        if (damager instanceof EntitySkeleton || damager instanceof EntityStray || damager instanceof EntityBogged) {
-            drops.add(Item.get(MUSIC_DISCS[Utils.rand(0, MUSIC_DISCS.length - 1)]));
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent event) {
+            Entity damager = event.getDamager();
+            if (damager instanceof EntitySkeleton || damager instanceof EntityStray || damager instanceof EntityBogged) {
+                drops.add(Item.get(MUSIC_DISCS[Utils.rand(0, MUSIC_DISCS.length - 1)]));
+            }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
