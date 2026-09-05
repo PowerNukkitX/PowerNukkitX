@@ -360,7 +360,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         if (loyaltyLevel > 0) {
             this.trident.addEnchantment(Enchantment.getEnchantment(Enchantment.ID_TRIDENT_LOYALTY).setLevel(loyaltyLevel));
         } else {
-            // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_LOYALTY);
+            this.trident.removeEnchantment(Enchantment.ID_TRIDENT_LOYALTY);
         }
     }
 
@@ -373,7 +373,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         if (hasChanneling) {
             this.trident.addEnchantment(Enchantment.getEnchantment(Enchantment.ID_TRIDENT_CHANNELING));
         } else {
-            // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_CHANNELING);
+            this.trident.removeEnchantment(Enchantment.ID_TRIDENT_CHANNELING);
         }
     }
 
@@ -386,7 +386,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         if (riptideLevel > 0) {
             this.trident.addEnchantment(Enchantment.getEnchantment(Enchantment.ID_TRIDENT_RIPTIDE).setLevel(riptideLevel));
         } else {
-            // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_RIPTIDE);
+            this.trident.removeEnchantment(Enchantment.ID_TRIDENT_RIPTIDE);
         }
     }
 
@@ -399,7 +399,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         if (impalingLevel > 0) {
             this.trident.addEnchantment(Enchantment.getEnchantment(Enchantment.ID_TRIDENT_IMPALING).setLevel(impalingLevel));
         } else {
-            // TODO: this.trident.removeEnchantment(Enchantment.ID_TRIDENT_IMPALING);
+            this.trident.removeEnchantment(Enchantment.ID_TRIDENT_IMPALING);
         }
     }
 
