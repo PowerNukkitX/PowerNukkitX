@@ -25,7 +25,9 @@ import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -151,22 +153,34 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         return true;
     }
 
-    // The probability of dropping a sword is 8.5%, and the probability of dropping a head is 2.5%.
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
-        drops.add(Item.get(Item.BONE, 0, Utils.rand(0, 2)));
-        if (Utils.rand(0, 2) == 0) {
-            drops.add(Item.get(Item.COAL, 0, 1));
+
+        int bones = Utils.rand(0, 2 + looting);
+        if (bones > 0) {
+            drops.add(Item.get(Item.BONE, 0, bones));
         }
-        // The probability of obtaining a stone sword is 8.5%.
-        if (Utils.rand(0, 200) <= 17) {
+
+        int coal = Utils.rand(0, 1 + looting);
+        if (coal > 0) {
+            drops.add(Item.get(Item.COAL, 0, coal));
+        }
+
+        if (Utils.rand(0, 99) < (25 + looting * 5)) {
             drops.add(Item.get(Item.STONE_SWORD, Utils.rand(0, 131), 1));
         }
-        // The probability of losing your head is 2.5%.
-        if (Utils.rand(0, 40) == 1) {
+
+        if (killedByPlayer() && Utils.rand(0, 999) < (25 + looting * 20)) {
             drops.add(Item.get(BlockID.SKULL, 1, 1));
         }
+
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 }
