@@ -133,6 +133,13 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
         return 0;
     }
 
+    /**
+     * A drowned carries its own gear, set below, and never the iron tools and armour of a zombie.
+     */
+    @Override
+    protected void equipOnSpawn() {
+    }
+
     @Override
     protected void initEntity() {
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};

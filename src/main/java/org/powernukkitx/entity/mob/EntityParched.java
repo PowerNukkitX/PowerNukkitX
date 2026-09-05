@@ -37,7 +37,7 @@ public class EntityParched extends EntitySkeleton {
     protected void initEntity() {
         super.initEntity();
         if (getItemInHand().isNull()) {
-            setItemInHand(Item.get(ItemID.BOW));
+            setItemInHand(enchantGear(Item.get(ItemID.BOW), 0.1f));
         }
     }
 

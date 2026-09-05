@@ -28,6 +28,7 @@ import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -92,6 +93,12 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.LOOKING_BLOCK, BlockTurtleEgg.class);
+    }
+
+    @Override
+    protected void equipOnSpawn() {
+        Item weapon = Item.get(Utils.rand(0, 19) == 0 ? ItemID.GOLDEN_SPEAR : ItemID.GOLDEN_SWORD);
+        getEquipmentInventory().setItemInHand(enchantGear(weapon, 0.25f));
     }
 
     @Override

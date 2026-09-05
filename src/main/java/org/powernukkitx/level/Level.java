@@ -194,6 +194,7 @@ public class Level implements Metadatable {
     private static final double INV_CHUNK_SIZE = 1.0d / CHUNK_SIZE;
     // endregion finals - number finals
 
+    private static final float[] MOON_BRIGHTNESS_PER_PHASE = {1f, 0.75f, 0.5f, 0.25f, 0f, 0.25f, 0.5f, 0.75f};
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
     private static final ThreadLocal<Entity[]> ENTITY_BUFFER = ThreadLocal.withInitial(() -> new Entity[512]);
 
@@ -2888,6 +2889,34 @@ public class Level implements Metadatable {
 
     public int getMoonPhase(long worldTime) {
         return (int) (worldTime / 24000 % 8 + 8) % 8;
+    }
+
+    /**
+     * Returns how much harder this level currently is than the bare minimum, from 0 to 1. Loot
+     * tables scale their chances with it, so a mob spawning with a weapon or a piece of armour is
+     * more likely on a hard difficulty and impossible on peaceful and easy.
+     *
+     * @return the regional difficulty of this level, between 0 and 1
+     */
+    public float getSpecialMultiplier() {
+        int difficulty = this.server.getDifficulty();
+        if (difficulty == 0) {
+            return 0f;
+        }
+
+        float timeFactor = Math.min(Math.max(getTime() - 0.5f, 0f) * 0.25f, 0.25f);
+        float moonFactor = Math.min(MOON_BRIGHTNESS_PER_PHASE[getMoonPhase(getTime())] * 0.25f, timeFactor);
+
+        float bonus = moonFactor + (difficulty == 3 ? 0.5f : 0.375f);
+        if (difficulty == 1) {
+            bonus *= 0.5f;
+        }
+
+        float total = (timeFactor + 0.75f + bonus) * difficulty;
+        if (total < 2f) {
+            return 0f;
+        }
+        return total <= 4f ? (total - 2f) * 0.5f : 1f;
     }
 
     public int getBlockRuntimeId(int x, int y, int z) {

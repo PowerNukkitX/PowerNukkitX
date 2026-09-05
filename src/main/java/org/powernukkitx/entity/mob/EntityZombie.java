@@ -35,6 +35,7 @@ import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.entity.EntityTransformEvent;
 import org.powernukkitx.inventory.EntityInventoryHolder;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -48,6 +49,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
@@ -117,6 +119,20 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(20);
+    }
+
+    @Override
+    protected void equipOnSpawn() {
+        if (rollGearChance(0.05f)) {
+            String weapon = switch (ThreadLocalRandom.current().nextInt(6)) {
+                case 0 -> ItemID.IRON_SPEAR;
+                case 1, 2 -> ItemID.IRON_SWORD;
+                default -> ItemID.IRON_SHOVEL;
+            };
+            getEquipmentInventory().setItemInHand(enchantGear(Item.get(weapon), 0.25f));
+        }
+
+        equipArmorSet(3, 3, 0.1087f);
     }
 
     @Override

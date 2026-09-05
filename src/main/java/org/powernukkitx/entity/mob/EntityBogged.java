@@ -48,8 +48,13 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
     protected void initEntity() {
         super.initEntity();
         if (getItemInHand().isNull()) {
-            setItemInHand(Item.get(ItemID.BOW));
+            setItemInHand(enchantGear(Item.get(ItemID.BOW), 0.1f));
         }
+    }
+
+    @Override
+    protected void equipOnSpawn() {
+        equipArmorSet(3, 3, 0.1087f);
     }
 
     @Override

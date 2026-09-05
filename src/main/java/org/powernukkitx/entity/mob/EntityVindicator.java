@@ -89,7 +89,7 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     protected void initEntity() {
         this.diffHandDamage = new float[]{3.5f, 5f, 7.5f};
         super.initEntity();
-        setItemInHand(Item.get(Item.IRON_AXE));
+        setItemInHand(enchantGear(Item.get(Item.IRON_AXE), 0.25f));
     }
 
     @Override

@@ -65,7 +65,7 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     protected void initEntity() {
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
-        setItemInHand(Item.get(Item.CROSSBOW));
+        setItemInHand(enchantGear(Item.get(Item.CROSSBOW), 0.1f));
     }
 
     @Override

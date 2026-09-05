@@ -13,7 +13,9 @@ import org.powernukkitx.inventory.EntityEquipmentInventory;
 import org.powernukkitx.inventory.EntityInventoryHolder;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
+import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.NukkitMath;
@@ -21,6 +23,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
+import org.powernukkitx.utils.random.NukkitRandom;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +37,15 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder, EntityCanAttack {
+    private static final String[][] ARMOR_SETS = {
+            {ItemID.LEATHER_HELMET, ItemID.LEATHER_CHESTPLATE, ItemID.LEATHER_LEGGINGS, ItemID.LEATHER_BOOTS},
+            {ItemID.COPPER_HELMET, ItemID.COPPER_CHESTPLATE, ItemID.COPPER_LEGGINGS, ItemID.COPPER_BOOTS},
+            {ItemID.GOLDEN_HELMET, ItemID.GOLDEN_CHESTPLATE, ItemID.GOLDEN_LEGGINGS, ItemID.GOLDEN_BOOTS},
+            {ItemID.CHAINMAIL_HELMET, ItemID.CHAINMAIL_CHESTPLATE, ItemID.CHAINMAIL_LEGGINGS, ItemID.CHAINMAIL_BOOTS},
+            {ItemID.IRON_HELMET, ItemID.IRON_CHESTPLATE, ItemID.IRON_LEGGINGS, ItemID.IRON_BOOTS},
+            {ItemID.DIAMOND_HELMET, ItemID.DIAMOND_CHESTPLATE, ItemID.DIAMOND_LEGGINGS, ItemID.DIAMOND_BOOTS}
+    };
+
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
@@ -71,6 +83,82 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             for (CompoundTag armorTag : armorList.getAll()) {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
+        } else if (!this.nbt.contains(TAG_MAINHAND)) {
+            equipOnSpawn();
+        }
+    }
+
+    /**
+     * Gives this mob the gear it spawns with. Only called on a mob that is spawning, never on one
+     * being loaded back, since a saved mob always carries its own equipment tags.
+     */
+    protected void equipOnSpawn() {
+    }
+
+    /**
+     * Rolls one of the chances the equipment tables scale with the regional difficulty, so a mob
+     * spawns better geared on a hard difficulty and bare on peaceful and easy.
+     *
+     * @param maxChance the chance reached at the highest regional difficulty
+     */
+    protected boolean rollGearChance(float maxChance) {
+        return ThreadLocalRandom.current().nextFloat() < this.level.getSpecialMultiplier() * maxChance;
+    }
+
+    /**
+     * Enchants a piece of gear the way the equipment tables do, with a strength that follows the
+     * regional difficulty.
+     *
+     * @param chance the probability the piece is enchanted at the highest regional difficulty
+     */
+    protected Item enchantGear(Item item, float chance) {
+        float multiplier = this.level.getSpecialMultiplier();
+        if (chance * multiplier <= ThreadLocalRandom.current().nextFloat()) {
+            return item;
+        }
+
+        int cost = (int) (multiplier * ThreadLocalRandom.current().nextInt(18) + 5);
+        for (Enchantment enchantment : EnchantmentHelper.selectEnchantments(new NukkitRandom(), item, cost)) {
+            item.addEnchantment(enchantment);
+        }
+        return item;
+    }
+
+    /**
+     * Gives this mob a full armour set, picked between leather and diamond and thinning out from
+     * the helmet down, the way the armour set tables do.
+     *
+     * @param initialRange the number of materials reachable without a bonus roll, starting at leather
+     * @param bonusRolls   how many times the material can be upgraded
+     * @param bonusChance  the probability of each upgrade
+     */
+    protected void equipArmorSet(int initialRange, int bonusRolls, float bonusChance) {
+        if (!rollGearChance(0.15f)) {
+            return;
+        }
+
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        int tier = random.nextInt(initialRange);
+        for (int i = 0; i < bonusRolls; i++) {
+            if (random.nextFloat() < bonusChance) {
+                tier++;
+            }
+        }
+        equipArmorSet(Math.min(tier, ARMOR_SETS.length - 1));
+    }
+
+    /**
+     * @param tier the index in {@link #ARMOR_SETS} of the material to wear
+     */
+    protected void equipArmorSet(int tier) {
+        String[] set = ARMOR_SETS[tier];
+        float pieceChance = this.getServer().getDifficulty() == 3 ? 0.6f : 0.5f;
+
+        for (int slot = 0; slot < set.length; slot++) {
+            if (slot > 0 && ThreadLocalRandom.current().nextFloat() >= pieceChance) {
+                return;
+            }
+            this.armorInventory.setItem(slot, enchantGear(Item.get(set[slot]), 0.25f));
         }
     }
 
