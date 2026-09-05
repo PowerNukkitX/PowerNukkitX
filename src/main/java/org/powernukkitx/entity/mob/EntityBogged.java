@@ -101,7 +101,7 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
         if (killedByPlayer()) {
             int poisonAmount = Utils.rand(0, 1 + looting);
             if (poisonAmount > 0) {
-                drops.add(Item.get(Item.ARROW, 27, poisonAmount));
+                drops.add(Item.get(Item.ARROW, 26, poisonAmount));
             }
         }
 
