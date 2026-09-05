@@ -206,9 +206,14 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         int lootingLevel = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int emeralds = Utils.rand(0, 1 + lootingLevel);
+        if (emeralds == 0) {
+            return new Item[] {Item.get(Item.TOTEM_OF_UNDYING)};
+        }
+
         return new Item[] {
                 Item.get(Item.TOTEM_OF_UNDYING),
-                Item.get(Item.EMERALD, 0, Utils.rand(0, 2 + lootingLevel))
+                Item.get(Item.EMERALD, 0, emeralds)
         };
     }
 
