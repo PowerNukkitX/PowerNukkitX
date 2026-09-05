@@ -411,7 +411,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         if (tridentRope) {
             this.setDataProperty(ActorDataTypes.OWNER, this.shootingEntity.getId());
         } else {
-            this.setDataProperty(ActorDataTypes.OWNER, -1);
+            this.setDataProperty(ActorDataTypes.OWNER, -1L);
         }
         this.setDataFlag(ActorFlags.RETURN_TRIDENT, tridentRope);
     }
