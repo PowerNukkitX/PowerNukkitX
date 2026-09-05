@@ -30,7 +30,9 @@ import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.item.EntityItem;
+import org.powernukkitx.entity.passive.EntityChicken;
 import org.powernukkitx.entity.passive.EntityTurtle;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.entity.EntityTransformEvent;
 import org.powernukkitx.inventory.EntityInventoryHolder;
@@ -173,17 +175,26 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
             drops.add(Item.get(Item.ROTTEN_FLESH, 0, flesh));
         }
 
-        float rareChance = (1f / 120f) + ((1f / 300f) * looting);
-        if (Utils.rand(0f, 1f) < rareChance) {
-            int roll = Utils.rand(0, 3);
-            switch (roll) {
-                case 0 -> drops.add(Item.get(Item.IRON_INGOT));
-                case 1 -> drops.add(Item.get(Item.CARROT));
-                case 2 -> drops.add(Item.get(Item.POTATO));
+        if (killedByPlayer()) {
+            if (Utils.rand(0, 999) < (25 + looting * 10)) {
+                switch (Utils.rand(0, 2)) {
+                    case 0 -> drops.add(Item.get(Item.IRON_INGOT));
+                    case 1 -> drops.add(Item.get(Item.CARROT));
+                    default -> drops.add(Item.get(Item.POTATO));
+                }
+            }
+
+            if (isBaby() && getRiding() instanceof EntityChicken) {
+                drops.add(Item.get(Item.MUSIC_DISC_LAVA_CHICKEN));
             }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override
