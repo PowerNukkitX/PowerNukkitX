@@ -38,6 +38,10 @@ public class DifficultyCommand extends VanillaCommand {
         switch (result.getKey()) {
             case "default" -> {
                 difficulty = list.getResult(0);
+                if (difficulty < 0 || difficulty > 3) {
+                    log.addError("commands.generic.parameter.invalid", String.valueOf(difficulty)).output();
+                    return 0;
+                }
             }
             case "byString" -> {
                 String str = list.getResult(0);
