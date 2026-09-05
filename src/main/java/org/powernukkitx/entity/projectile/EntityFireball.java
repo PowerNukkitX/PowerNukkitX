@@ -14,6 +14,7 @@ import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -70,6 +71,8 @@ public class EntityFireball extends EntitySmallFireball implements EntityExplosi
     public boolean attack(EntityDamageEvent source) {
         if (this.directionChanged == null && source instanceof EntityDamageByEntityEvent event) {
             this.directionChanged = event.getDamager();
+            this.shootingEntity = event.getDamager();
+            this.setDataProperty(ActorDataTypes.OWNER, event.getDamager().getId());
             this.setMotion(event.getDamager().getDirectionVector());
         }
         return true;
