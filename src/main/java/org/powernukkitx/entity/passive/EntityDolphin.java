@@ -82,10 +82,6 @@ public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        if (Utils.rand(0f, 1f) >= 0.5f) {
-            return Item.EMPTY_ARRAY;
-        }
-
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
         int amount = Utils.rand(0, 1 + looting);
