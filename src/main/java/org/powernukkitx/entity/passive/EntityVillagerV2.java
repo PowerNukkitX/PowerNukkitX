@@ -1079,7 +1079,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
             Profession profession = Profession.getProfession(this.profession);
             setDisplayName(profession.getName());
-            for (CompoundTag trade : profession.buildTrades(getTradeSeed()).getAll()) {
+            for (CompoundTag trade : profession.buildTrades(getTradeSeed(), getClothing()).getAll()) {
                 this.getTradeNetIds().add(trade.getInt("netId"));
             }
             this.setCanTrade(true);
@@ -1108,6 +1108,17 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             this.level.addSound(this, Sound.MOB_VILLAGER_DEATH);
             return true;
         }
+    }
+
+    /**
+     * @return the biome outfit this villager spawned with, which also decides some of its trades
+     */
+    public Clothing getClothing() {
+        Integer variant = getDataProperty(ActorDataTypes.MARK_VARIANT);
+        if (variant == null || variant < 0 || variant >= Clothing.values().length) {
+            return Clothing.PLAINS;
+        }
+        return Clothing.values()[variant];
     }
 
     public enum Clothing {
