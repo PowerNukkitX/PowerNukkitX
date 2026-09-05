@@ -21,12 +21,16 @@ import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -106,5 +110,18 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     @Override
     public boolean attackTarget(Entity entity) {
         return super.attackTarget(entity) || entity instanceof EntityGolem;
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>(Arrays.asList(super.getDrops(weapon)));
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int arrows = Utils.rand(0, 2 + looting);
+        if (arrows > 0) {
+            drops.add(Item.get(Item.ARROW, 0, arrows));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 }
