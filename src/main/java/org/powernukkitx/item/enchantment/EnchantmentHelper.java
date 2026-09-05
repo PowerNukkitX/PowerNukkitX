@@ -2,6 +2,7 @@ package org.powernukkitx.item.enchantment;
 
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.utils.random.NukkitRandom;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -85,7 +87,7 @@ public final class EnchantmentHelper {
 
     /**
      * Rolls the enchantments an item receives for a given enchanting cost, using the same algorithm as the
-     * enchanting table.
+     * enchanting table. Only enchantments an enchanting table can give out are drawn.
      *
      * @param random the random source to roll with
      * @param item the item being enchanted
@@ -93,6 +95,21 @@ public final class EnchantmentHelper {
      * @return the rolled enchantments, cloned and already carrying their level, empty if the item takes none
      */
     public static List<Enchantment> selectEnchantments(NukkitRandom random, Item item, int cost) {
+        return selectEnchantments(random, item, cost, Enchantment::isObtainableFromEnchantingTable);
+    }
+
+    /**
+     * Rolls the enchantments an item receives for a given enchanting cost, using the same algorithm as the
+     * enchanting table.
+     *
+     * @param random the random source to roll with
+     * @param item the item being enchanted
+     * @param cost the enchanting cost, in experience levels
+     * @param pool decides which enchantments the roll may draw from, so that loot sources such as fishing can
+     *             offer treasure enchantments the enchanting table never gives out
+     * @return the rolled enchantments, cloned and already carrying their level, empty if the item takes none
+     */
+    public static List<Enchantment> selectEnchantments(NukkitRandom random, Item item, int cost, Predicate<Enchantment> pool) {
         int enchantingPower = cost;
         int enchantability = item.getEnchantAbility();
         enchantingPower += random.nextInt(enchantability >> 2) + random.nextInt(enchantability >> 2) + 1;
@@ -103,7 +120,7 @@ public final class EnchantmentHelper {
         if (enchantingPower < 1) enchantingPower = 1;
 
         List<Enchantment> resultEnchantments = new ArrayList<>();
-        List<Enchantment> availableEnchantments = getAvailableEnchantments(enchantingPower, item);
+        List<Enchantment> availableEnchantments = getAvailableEnchantments(enchantingPower, item, pool);
         if (!availableEnchantments.isEmpty()) {
             final AtomicReference<Enchantment> lastEnchantment = new AtomicReference<>(getRandomWeightedEnchantment(random, availableEnchantments));
             if (lastEnchantment.get() != null) {
@@ -127,7 +144,7 @@ public final class EnchantmentHelper {
                 enchantingPower /= 2;
             }
         }
-        if (item.getId().equals(Item.BOOK)) {
+        if (item.getId().equals(ItemID.BOOK) || item.getId().equals(ItemID.ENCHANTED_BOOK)) {
             if (resultEnchantments.size() > 1) {
                 resultEnchantments.remove(random.nextInt(resultEnchantments.size() - 1));
             }
@@ -158,10 +175,10 @@ public final class EnchantmentHelper {
         return option;
     }
 
-    private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item) {
+    private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item, Predicate<Enchantment> pool) {
         List<Enchantment> list = new ArrayList<>();
         for (Enchantment enchantment : getPrimaryEnchantmentsForItem(item)) {
-            if (!enchantment.isObtainableFromEnchantingTable()) {
+            if (!pool.test(enchantment)) {
                 continue;
             }
 
