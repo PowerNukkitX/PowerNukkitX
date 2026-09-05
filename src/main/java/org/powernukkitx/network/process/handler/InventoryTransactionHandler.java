@@ -267,6 +267,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                     living.postAttack(player);
                 }
             }
+            if (target instanceof EntityLiving && (player.isSurvival() || player.isAdventure())) {
+                player.getFoodData().exhaust(0.1);
+            }
             if (item instanceof ItemMace mace) {
                 mace.onPostAttack(target, itemDamage);
             }
