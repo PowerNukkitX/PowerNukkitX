@@ -44,6 +44,12 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Vector3> MOVE_TARGET = new MemoryType<>("minecraft:move_target");
 
+    /**
+     * The village a raider was spawned to attack, which it walks to for as long as it has nothing
+     * closer to fight
+     */
+    MemoryType<Vector3> RAID_TARGET = new MemoryType<>("minecraft:raid_target");
+
     MemoryType<Boolean> FORCE_PERCHING = new MemoryType<>("minecraft:force_perching", false);
 
     MemoryType<Vector3> STAY_NEARBY = new MemoryType<>("minecraft:stay_nearby");

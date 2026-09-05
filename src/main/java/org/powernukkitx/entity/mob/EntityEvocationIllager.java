@@ -12,12 +12,14 @@ import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.DistanceEvaluator;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.PassByTimeEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.DoNothingExecutor;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.FleeFromTargetExecutor;
 import org.powernukkitx.entity.ai.executor.LookAtTargetExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
 import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.ColorConversionExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.FangCircleExecutor;
@@ -145,6 +147,9 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                                 entity -> !entity.getDataFlag(ActorFlags.CASTING)
                         ), 3, 1),
                         new Behavior(new DoNothingExecutor(), entity -> entity.getDataFlag(ActorFlags.CASTING), 2, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true),
+                                all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                        new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 )
                 .sensors(
