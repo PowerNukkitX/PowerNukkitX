@@ -169,11 +169,9 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                 porkAmount
         ));
 
-        if (Utils.rand(0, 1) == 1) {
-            int leatherAmount = Utils.rand(0, 1 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 1 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
