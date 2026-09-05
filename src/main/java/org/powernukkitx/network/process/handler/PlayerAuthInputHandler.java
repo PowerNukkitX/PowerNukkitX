@@ -241,11 +241,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
                     // fire only sends START_DESTROY_BLOCK, so extinguish it before filtering the action out
-                    Vector3 firePos = Vector3.fromNetwork(action.getBlockPosition().toFloat());
-                    BlockFace fireFace = BlockFace.fromIndex(action.getFacing());
-                    Block sideBlock = player.getLevel().getBlock(firePos).getSide(fireFace);
-                    if (sideBlock.getId().equals(Block.FIRE) || sideBlock.getId().equals(BlockID.SOUL_FIRE)) {
-                        player.onBlockBreakStart(firePos, fireFace);
+                    Block fireBlock = player.getLevel().getBlock(Vector3.fromNetwork(action.getBlockPosition().toFloat())).getSide(BlockFace.fromIndex(action.getFacing()));
+                    if (fireBlock.getId().equals(Block.FIRE) || fireBlock.getId().equals(BlockID.SOUL_FIRE)) {
+                        player.getLevel().setBlock(fireBlock, Block.get(BlockID.AIR), true);
+                        player.getLevel().addLevelSoundEvent(fireBlock, SoundEvent.EXTINGUISH_FIRE);
                     }
                     continue;
                 }
