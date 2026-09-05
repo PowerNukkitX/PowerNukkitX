@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
@@ -7,15 +8,8 @@ import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityPhysical;
 import org.powernukkitx.entity.item.EntityBoat;
-import org.powernukkitx.event.player.PlayerHackDetectedEvent;
-import org.powernukkitx.event.player.PlayerJumpEvent;
-import org.powernukkitx.event.player.PlayerKickEvent;
-import org.powernukkitx.event.player.PlayerToggleCrawlEvent;
-import org.powernukkitx.event.player.PlayerToggleFlightEvent;
-import org.powernukkitx.event.player.PlayerToggleGlideEvent;
-import org.powernukkitx.event.player.PlayerToggleSneakEvent;
-import org.powernukkitx.event.player.PlayerToggleSprintEvent;
-import org.powernukkitx.event.player.PlayerToggleSwimEvent;
+import org.powernukkitx.event.player.*;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
@@ -241,10 +235,23 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
                     // fire only sends START_DESTROY_BLOCK, so extinguish it before filtering the action out
-                    Block fireBlock = player.getLevel().getBlock(Vector3.fromNetwork(action.getBlockPosition().toFloat())).getSide(BlockFace.fromIndex(action.getFacing()));
-                    if (fireBlock.getId().equals(BlockID.FIRE) || fireBlock.getId().equals(BlockID.SOUL_FIRE)) {
-                        player.getLevel().setBlock(fireBlock, Block.get(BlockID.AIR), true);
-                        player.getLevel().addLevelSoundEvent(fireBlock, SoundEvent.EXTINGUISH_FIRE);
+                    Vector3 hitPos = Vector3.fromNetwork(action.getBlockPosition().toFloat());
+                    BlockFace hitFace = BlockFace.fromIndex(action.getFacing());
+                    Block target = player.getLevel().getBlock(hitPos);
+                    Block fire = Player.getFireAt(target, hitFace);
+
+                    if (fire != null) {
+                        Item hand = player.getInventory().getItemInMainHand();
+                        PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, hand, fire, hitFace,
+                            PlayerInteractEvent.Action.LEFT_CLICK_BLOCK);
+                        server.getPluginManager().callEvent(interactEvent);
+                        new PlayerHandle(player).setInteract();
+
+                        if (interactEvent.isCancelled()) {
+                            player.getLevel().sendBlocks(new Player[]{player}, new Block[]{fire}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                        } else {
+                            player.extinguishFire(fire);
+                        }
                     }
                     continue;
                 }

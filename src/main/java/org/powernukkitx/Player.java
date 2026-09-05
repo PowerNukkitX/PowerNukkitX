@@ -66,6 +66,7 @@ import org.powernukkitx.AdventureSettings.Type;
 import org.powernukkitx.api.UnintendedClientBehaviour;
 import org.powernukkitx.api.UsedByReflection;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockBed;
 import org.powernukkitx.block.BlockEndPortal;
 import org.powernukkitx.block.BlockID;
@@ -578,9 +579,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         target.onTouch(pos, this.getInventory().getItemInMainHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
 
         Block block = target.getSide(face);
-        if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
-            this.level.setBlock(block, Block.get(BlockID.AIR), true);
-            this.level.addLevelSoundEvent(block, SoundEvent.EXTINGUISH_FIRE);
+        Block fire = getFireAt(target, face);
+        if (fire != null) {
+            extinguishFire(fire);
             return;
         }
 
@@ -1316,6 +1317,42 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         } else {
             this.speed.setComponents(0, 0, 0);
         }
+    }
+
+    /**
+     * @param block the block to test
+     * @return true if the block is a fire block
+     */
+    public static boolean isFire(Block block) {
+        return block.getId().equals(BlockID.FIRE) || block.getId().equals(BlockID.SOUL_FIRE);
+    }
+
+    /**
+     * Resolves the fire block a hit refers to: either the hit block itself, or the one on the
+     * given face of it.
+     *
+     * @param target the block that was hit
+     * @param face   the face that was hit
+     * @return the fire block, or null if neither is fire
+     */
+    @Nullable
+    public static Block getFireAt(Block target, BlockFace face) {
+        if (isFire(target)) {
+            return target;
+        }
+        Block side = target.getSide(face);
+        return isFire(side) ? side : null;
+    }
+
+    /**
+     * Replaces the given fire block with air and plays the extinguish sound.
+     *
+     * @param fire the fire block to extinguish
+     */
+    public void extinguishFire(Block fire) {
+        Level fireLevel = fire.getLevel();
+        fireLevel.setBlock(fire, Block.get(BlockID.AIR), true);
+        fireLevel.addLevelSoundEvent(fire, SoundEvent.EXTINGUISH_FIRE);
     }
 
     /**
