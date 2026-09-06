@@ -1,5 +1,7 @@
 package org.powernukkitx.level.village;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.powernukkitx.math.BlockVector3;
 
 import javax.annotation.Nullable;
@@ -12,6 +14,8 @@ public final class Village {
     private final VillagePlayers players;
     private final VillagePois pois;
     private @Nullable VillageRaid raid;
+    private long bellRingTick;
+    private final Long2ObjectMap<BlockVector3> raiderPositions = new Long2ObjectOpenHashMap<>();
 
     public Village(UUID uuid, VillageDwellers dwellers, VillageInfo info, VillagePlayers players,
                    VillagePois pois, @Nullable VillageRaid raid) {
@@ -32,6 +36,20 @@ public final class Village {
 
     public void setInfo(VillageInfo info) { this.info = info; }
     public void setRaid(@Nullable VillageRaid raid) { this.raid = raid; }
+
+    /**
+     * @return the tick the bells of this village are due to ring again while a raid is being prepared
+     */
+    public long bellRingTick() { return bellRingTick; }
+
+    public void setBellRingTick(long bellRingTick) { this.bellRingTick = bellRingTick; }
+
+    /**
+     * @return the last position each raider of the running raid was seen at, used to tell a raider
+     * that died from one that only left the loaded chunks
+     */
+    public Long2ObjectMap<BlockVector3> raiderPositions() { return raiderPositions; }
+
     public long population() {
         return dwellers.dwellers().stream().mapToLong(dweller -> dweller.actors().size()).sum();
     }

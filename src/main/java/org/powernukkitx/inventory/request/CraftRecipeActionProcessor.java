@@ -1,6 +1,8 @@
 package org.powernukkitx.inventory.request;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.entity.effect.Effect;
+import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.event.inventory.CraftItemEvent;
@@ -51,6 +53,23 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
     public static final String GRID_CONSUMED_KEY = "grid_consumed";
+
+    /**
+     * How many items the hero of the village effect takes off the first item of a trade. The first
+     * level is worth 30 percent of the price and every level past it another sixteenth, and the
+     * discount is never smaller than a single item.
+     *
+     * @param player the player trading
+     * @param price  the price the trade asks for
+     * @return the number of items to take off, zero when the player is not a hero
+     */
+    public static int heroDiscount(Player player, int price) {
+        Effect hero = player.getEffect(EffectType.VILLAGE_HERO);
+        if (hero == null || price <= 0) {
+            return 0;
+        }
+        return Math.max(1, (int) Math.floor(price * (0.0625 * (hero.getLevel() - 1) + 0.3)));
+    }
 
     public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
         String id = input.getId();
@@ -140,6 +159,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             boolean cb = tradeRecipe.contains("buyB");
 
             int reductionA = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierA") ? tradeRecipe.getFloat("priceMultiplierA") : 0));
+            if (ca) {
+                reductionA += heroDiscount(player, tradeRecipe.getCompound("buyA").getByte("Count"));
+            }
             int reductionB = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierB") ? tradeRecipe.getFloat("priceMultiplierB") : 0));
 
             if (ca && cb) {

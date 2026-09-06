@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockBed;
 import org.powernukkitx.block.BlockBell;
+import org.powernukkitx.event.block.BellRingEvent;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
@@ -11,12 +12,9 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
-import org.powernukkitx.entity.item.EntityFireworksRocket;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.level.Level;
-import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemID;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
@@ -25,8 +23,9 @@ import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.command.utils.RawText;
 import org.powernukkitx.registry.Registries;
-import org.powernukkitx.utils.ItemHelper;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,20 +54,19 @@ public final class VillageManager {
     public static final int HORIZONTAL_EXPANSION_RANGE = 32;
     public static final int VERTICAL_EXPANSION_RANGE = 52;
 
-    public static final int RAID_PREPARATION_TIME = 600;
-    public static final int GROUP_COMPLETE_DELAY = 100;
-    public static final int ALLOWED_SPAWN_FAILURES = 3;
-    public static final int RAID_TRIGGER_HORIZONTAL_RADIUS = 32;
-    public static final int RAID_TRIGGER_VERTICAL_RADIUS = 11;
-    public static final int RAID_BOSS_BAR_HORIZONTAL_RADIUS = 64;
-    public static final int RAID_BOSS_BAR_VERTICAL_RADIUS = 44;
-    public static final int RAID_SPAWN_MIN_RADIUS = 24;
-    public static final int RAID_SPAWN_MAX_RADIUS = 64;
-    public static final int VILLAGE_HERO_DURATION = 260;
-    public static final int VILLAGE_HERO_TIME = 3 * Level.TIME_FULL;
-    public static final int VILLAGE_HERO_REFRESH_INTERVAL = 20;
+    public static final int RAID_OMEN_DURATION = 600;
+    public static final int BELL_RING_MIN_INTERVAL = 60;
+    public static final int BELL_RING_INTERVAL_SPREAD = 40;
+    public static final int RAID_PREPARATION_TIME = 300;
+    public static final int GROUP_COMPLETE_DELAY = 40;
+    public static final int ALLOWED_SPAWN_FAILURES = 5;
+    public static final int RAID_BOUNDS_PADDING = 32;
+    public static final int RAID_TIMEOUT = 48000;
+    public static final int RAID_SPAWN_MIN_RADIUS = 32;
+    public static final int RAID_SPAWN_MAX_RADIUS = 48;
+    public static final int RAID_SPAWN_ATTEMPTS = 10;
+    public static final int VILLAGE_HERO_DURATION = 40 * 60 * 20;
     public static final int CELEBRATION_DURATION = 30 * 20;
-    public static final int CELEBRATION_FIREWORK_INTERVAL = 90;
 
     private static final String[] RAIDER_TYPES = {
             EntityID.PILLAGER, EntityID.VINDICATOR, EntityID.RAVAGER, EntityID.WITCH, EntityID.EVOCATION_ILLAGER
@@ -176,7 +174,7 @@ public final class VillageManager {
         BlockVector3 max = center.add(INITIAL_HORIZONTAL_RADIUS, INITIAL_VERTICAL_RADIUS,
                 INITIAL_HORIZONTAL_RADIUS);
         long tick = level.getCurrentTick();
-        VillageInfo info = new VillageInfo(0, 0, true, tick, tick, min, max, tick, (byte) 1, min, max, 0);
+        VillageInfo info = new VillageInfo(0, 0, true, tick, tick, min, max, tick, (byte) 1, min, max);
         Village village = new Village(UUID.randomUUID(), discoverDwellers(min, max, tick), info,
                 new VillagePlayers(new ListTag<Tag>()), discoverPois(min, max), null);
         villages.put(village.uuid(), village);
@@ -287,13 +285,10 @@ public final class VillageManager {
             return;
         }
         for (Village village : villages.values()) {
-            if (currentTick % VILLAGE_HERO_REFRESH_INTERVAL == 0) {
-                rewardVillageHeroes(village);
-            }
             VillageRaid raid = village.raid();
             if (raid == null) {
                 if (currentTick % 20 == 0) {
-                    tryStartRaid(village, currentTick);
+                    gainRaidOmen(village);
                 }
                 continue;
             }
@@ -303,20 +298,43 @@ public final class VillageManager {
         }
     }
 
-    private void tryStartRaid(Village village, long currentTick) {
-        if (level.getServer().getDifficulty() == 0 || !village.isValid()) {
-            return;
-        }
+    private void gainRaidOmen(Village village) {
         BlockVector3 center = village.center();
         for (Player player : level.getPlayers().values()) {
-            if (player.getEffect(EffectType.BAD_OMEN) == null || !isInsideRaidTrigger(center, player)) {
+            if (player.getEffect(EffectType.BAD_OMEN) == null
+                    || player.getEffect(EffectType.RAID_OMEN) != null
+                    || !isInside(village.info(), player.asBlockVector3())) {
                 continue;
             }
             player.removeEffect(EffectType.BAD_OMEN);
-            village.setRaid(VillageRaid.starting(currentTick, groupCount(),
-                    new Vector3(center.x + 0.5, center.y, center.z + 0.5)));
+            player.addEffect(Effect.get(EffectType.RAID_OMEN)
+                    .setDuration(RAID_OMEN_DURATION)
+                    .setVisible(true));
+
+            player.sendEffectAnimation(EffectType.RAID_OMEN);
+        }
+    }
+
+    /**
+     * Raids the village the player stands in, if it can be raided at all. Called when the omen that
+     * precedes a raid runs out.
+     */
+    public void triggerRaid(Player player) {
+        if (level.getServer().getDifficulty() == 0) {
             return;
         }
+        Village village = getVillageAt(player.asBlockVector3()).orElse(null);
+        if (village == null || !village.isValid() || village.raid() != null) {
+            return;
+        }
+        VillageInfo info = village.info();
+        village.setInfo(info.withRaidBounds(
+                info.boundsMin().add(-RAID_BOUNDS_PADDING, -RAID_BOUNDS_PADDING, -RAID_BOUNDS_PADDING),
+                info.boundsMax().add(RAID_BOUNDS_PADDING, RAID_BOUNDS_PADDING, RAID_BOUNDS_PADDING)));
+
+        BlockVector3 center = village.center();
+        village.setRaid(VillageRaid.starting(level.getCurrentTick(), groupCount(),
+                new Vector3(center.x + 0.5, center.y, center.z + 0.5)));
     }
 
     private int groupCount() {
@@ -330,23 +348,60 @@ public final class VillageManager {
     private @Nullable VillageRaid tickRaid(Village village, VillageRaid raid) {
         if (raid.isFinished()) {
             removeBossBars(village);
+            village.raiderPositions().clear();
             return null;
         }
         if (!village.isValid()) {
             return raid.withStatus(VillageRaid.STATUS_LOSS);
         }
+        if (!hasPlayerInRaidBounds(village)) {
+            return raid;
+        }
         return switch (raid.state()) {
-            case VillageRaid.STATE_PREPARATION -> tickPreparation(raid);
+            case VillageRaid.STATE_PREPARATION -> tickPreparation(village, raid);
             case VillageRaid.STATE_PICKING_SPAWN_POINT -> tickPickingSpawnPoint(village, raid);
             case VillageRaid.STATE_SPAWNING_GROUP -> tickSpawningGroup(village, raid);
-            case VillageRaid.STATE_GROUP_IN_PLAY -> tickGroupInPlay(raid);
+            case VillageRaid.STATE_GROUP_IN_PLAY -> tickGroupInPlay(village, raid);
             case VillageRaid.STATE_AWARDING_REWARDS -> awardRewards(village, raid);
             default -> raid.withStatus(VillageRaid.STATUS_STOPPED);
         };
     }
 
-    private VillageRaid tickPreparation(VillageRaid raid) {
+    private void playRaidHorn(Village village) {
+        BlockVector3 center = village.center();
+        level.addLevelSoundEvent(new Vector3(center.x + 0.5, center.y, center.z + 0.5),
+                SoundEvent.RAID_HORN);
+    }
+
+    private void ringBells(Village village) {
+        for (VillagePoiGroup group : village.pois().poi()) {
+            for (VillagePoi poi : group.instances()) {
+                if (poi.type() != PoiType.MEETING) {
+                    continue;
+                }
+                BlockVector3 position = poi.position();
+                if (level.getChunkIfLoaded(position.x >> 4, position.z >> 4) == null) {
+                    continue;
+                }
+                if (level.getBlock(position.x, position.y, position.z, false) instanceof BlockBell bell) {
+                    bell.ring(null, BellRingEvent.RingCause.UNKNOWN,
+                            BlockFace.fromIndex(ThreadLocalRandom.current().nextInt(2, 6)));
+                }
+            }
+        }
+    }
+
+    private VillageRaid tickPreparation(Village village, VillageRaid raid) {
         long ticks = raid.ticks() + 1;
+        if (ticks == 1) {
+            playRaidHorn(village);
+        }
+        long currentTick = level.getCurrentTick();
+        if (currentTick > village.bellRingTick()) {
+            village.setBellRingTick(currentTick + BELL_RING_MIN_INTERVAL
+                    + ThreadLocalRandom.current().nextInt(BELL_RING_INTERVAL_SPREAD));
+            ringBells(village);
+        }
         return ticks >= RAID_PREPARATION_TIME
                 ? raid.withState(VillageRaid.STATE_PICKING_SPAWN_POINT)
                 : raid.withTicks(ticks);
@@ -375,34 +430,65 @@ public final class VillageManager {
                         .withState(VillageRaid.STATE_PICKING_SPAWN_POINT);
     }
 
-    private VillageRaid tickGroupInPlay(VillageRaid raid) {
+    private VillageRaid tickGroupInPlay(Village village, VillageRaid raid) {
         List<Long> alive = new ArrayList<>();
         for (long raiderId : raid.raiders()) {
             Entity raider = level.getEntity(raiderId);
-            if (raider != null && !raider.isClosed() && raider.isAlive()) {
+            if (raider != null) {
+                if (raider.isClosed() || !raider.isAlive()) {
+                    village.raiderPositions().remove(raiderId);
+                    continue;
+                }
+                village.raiderPositions().put(raiderId, raider.asBlockVector3());
                 alive.add(raiderId);
+                continue;
             }
+            BlockVector3 last = village.raiderPositions().get(raiderId);
+            if (last == null || level.getChunkIfLoaded(last.x >> 4, last.z >> 4) == null) {
+                alive.add(raiderId);
+                continue;
+            }
+            village.raiderPositions().remove(raiderId);
         }
         if (!alive.isEmpty()) {
-            return raid.withRaiders(alive);
+            long inPlay = raid.ticks() + 1;
+            if (inPlay < RAID_TIMEOUT) {
+                return raid.withRaiders(alive).withTicks(inPlay);
+            }
+            for (Player player : level.getPlayers().values()) {
+                if (isInsideRaidBounds(village, player)) {
+                    player.sendRawTextMessage(RawText.fromRawText(
+                            "{\"rawtext\":[{\"translate\":\"raid.expiry\"}]}"));
+                }
+            }
+            return raid.withStatus(VillageRaid.STATUS_STOPPED);
+        }
+        if (!raid.raiders().isEmpty()) {
+            return raid.withRaiders(alive).withTicks(0);
         }
         long ticks = raid.ticks() + 1;
         if (ticks < GROUP_COMPLETE_DELAY) {
             return raid.withRaiders(alive).withTicks(ticks);
         }
         return raid.withRaiders(alive).withState(raid.groupNumber() < raid.numberOfGroups()
-                ? VillageRaid.STATE_PICKING_SPAWN_POINT
+                ? VillageRaid.STATE_PREPARATION
                 : VillageRaid.STATE_AWARDING_REWARDS);
     }
 
     private VillageRaid awardRewards(Village village, VillageRaid raid) {
         if (raid.ticks() == 0) {
-            long time = level.getTime();
-            village.setInfo(village.info().withVillageHeroTime(
-                    time - time % Level.TIME_FULL + Level.TIME_FULL + VILLAGE_HERO_TIME));
+            playRaidHorn(village);
+            for (Player player : level.getPlayers().values()) {
+                if (isInsideRaidBounds(village, player)) {
+                    player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
+                            .setDuration(VILLAGE_HERO_DURATION)
+                            .setVisible(true));
+                    player.sendEffectAnimation(EffectType.VILLAGE_HERO);
+                }
+            }
+            celebrate(village);
         }
 
-        celebrate(village, raid.ticks());
         long ticks = raid.ticks() + 1;
         return ticks < CELEBRATION_DURATION
                 ? raid.withTicks(ticks)
@@ -413,50 +499,66 @@ public final class VillageManager {
      * Hands the reward of the last won raid to whoever stands in the village, until the three days it
      * lasts are over. The effect is short lived and kept alive from here, so walking away drops it.
      */
-    private void rewardVillageHeroes(Village village) {
-        long villageHeroTime = village.info().villageHeroTime();
-        if (villageHeroTime == 0) {
-            return;
-        }
-        if (level.getTime() >= villageHeroTime) {
-            village.setInfo(village.info().withVillageHeroTime(0));
-            return;
-        }
-        BlockVector3 min = village.info().raidBoundsMin();
-        BlockVector3 max = village.info().raidBoundsMax();
+
+    private boolean hasPlayerInRaidBounds(Village village) {
         for (Player player : level.getPlayers().values()) {
-            if (player.getX() > min.x && player.getX() < max.x
-                    && player.getY() > min.y && player.getY() < max.y
-                    && player.getZ() > min.z && player.getZ() < max.z) {
-                player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
-                        .setDuration(VILLAGE_HERO_DURATION)
-                        .setVisible(true));
+            if (isInsideRaidBounds(village, player)) {
+                return true;
             }
         }
+        return false;
     }
 
-    private void celebrate(Village village, long ticks) {
+    private static boolean isInsideRaidBounds(Village village, Player player) {
+        BlockVector3 min = village.info().raidBoundsMin();
+        BlockVector3 max = village.info().raidBoundsMax();
+        return player.getX() > min.x && player.getX() < max.x
+                && player.getY() > min.y && player.getY() < max.y
+                && player.getZ() > min.z && player.getZ() < max.z;
+    }
+
+    private void celebrate(Village village) {
         for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
             for (VillageDwellers.Actor actor : dweller.actors()) {
-                if (!(level.getEntity(actor.id()) instanceof EntityVillagerV2 villager)
-                        || (ticks + villager.runtimeId()) % CELEBRATION_FIREWORK_INTERVAL != 0) {
-                    continue;
+                if (level.getEntity(actor.id()) instanceof EntityVillagerV2 villager) {
+                    villager.getMemoryStorage().put(CoreMemoryTypes.CELEBRATING, true);
                 }
-                CompoundTag nbt = Entity.getDefaultNBT(villager.add(0, villager.getEyeHeight(), 0));
-                nbt.putCompound("FireworkItem", ItemHelper.write(Item.get(ItemID.FIREWORK_ROCKET)));
-                new EntityFireworksRocket(villager.getChunk(), nbt).spawnToAll();
             }
         }
     }
 
     private @Nullable Vector3 findSpawnPoint(Village village) {
+        Player anchor = findSpawnAnchor(village);
+        if (anchor == null) {
+            return null;
+        }
         BlockVector3 center = village.center();
+        double awayX = anchor.getX() - (center.x + 0.5);
+        double awayZ = anchor.getZ() - (center.z + 0.5);
+        double length = Math.sqrt(awayX * awayX + awayZ * awayZ);
+        if (length < 1.0E-4) {
+            awayX = 0;
+            awayZ = 0;
+        } else {
+            awayX /= length;
+            awayZ /= length;
+        }
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int attempt = 0; attempt < 16; attempt++) {
+        for (int attempt = 0; attempt < RAID_SPAWN_ATTEMPTS; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            int distance = random.nextInt(RAID_SPAWN_MIN_RADIUS, RAID_SPAWN_MAX_RADIUS + 1);
-            int x = center.x + (int) (Math.cos(angle) * distance);
-            int z = center.z + (int) (Math.sin(angle) * distance);
+            double distance = RAID_SPAWN_MIN_RADIUS
+                    + random.nextDouble() * (RAID_SPAWN_MAX_RADIUS - RAID_SPAWN_MIN_RADIUS);
+            double offsetX = Math.cos(angle) * distance;
+            double offsetZ = Math.sin(angle) * distance;
+            double dot = offsetX * awayX + offsetZ * awayZ;
+            if (dot < 0) {
+                offsetX -= awayX * dot * 2;
+                offsetZ -= awayZ * dot * 2;
+            }
+
+            int x = (int) Math.floor(anchor.getX() + offsetX);
+            int z = (int) Math.floor(anchor.getZ() + offsetZ);
             if (level.getChunkIfLoaded(x >> 4, z >> 4) == null) {
                 continue;
             }
@@ -466,6 +568,23 @@ public final class VillageManager {
             }
         }
         return null;
+    }
+
+    private @Nullable Player findSpawnAnchor(Village village) {
+        BlockVector3 center = village.center();
+        Player closest = null;
+        double closestDistance = Double.MAX_VALUE;
+        for (Player player : level.getPlayers().values()) {
+            if (!isInsideRaidBounds(village, player)) {
+                continue;
+            }
+            double distance = player.distanceSquared(new Vector3(center.x + 0.5, center.y, center.z + 0.5));
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = player;
+            }
+        }
+        return closest;
     }
 
     private List<Long> spawnGroup(Village village, VillageRaid raid) {
@@ -523,7 +642,7 @@ public final class VillageManager {
         int length = (int) (raid.bossBarProgress() * 100);
         for (Player player : level.getPlayers().values()) {
             UUID playerUuid = player.getUniqueId();
-            if (!isInsideBossBarRange(center, player)) {
+            if (!isInsideRaidBounds(village, player)) {
                 Long removed = bars.remove(playerUuid);
                 if (removed != null) {
                     player.removeBossBar(removed);
@@ -550,9 +669,12 @@ public final class VillageManager {
     }
 
     private static String bossBarTitle(VillageRaid raid) {
+        if (raid.status() == VillageRaid.STATUS_LOSS) {
+            return "%raid.name - %raid.defeat";
+        }
         return switch (raid.state()) {
-            case VillageRaid.STATE_GROUP_IN_PLAY -> "%raid.progress " + raid.raiders().size();
-            case VillageRaid.STATE_AWARDING_REWARDS -> "%raid.victory";
+            case VillageRaid.STATE_GROUP_IN_PLAY -> "%raid.name - %raid.progress " + raid.raiders().size();
+            case VillageRaid.STATE_AWARDING_REWARDS -> "%raid.name - %raid.victory";
             default -> "%raid.name";
         };
     }
@@ -568,20 +690,6 @@ public final class VillageManager {
                 player.removeBossBar(bossBarId);
             }
         }
-    }
-
-    private static boolean isInsideRaidTrigger(BlockVector3 center, Player player) {
-        return isInsideRange(center, player, RAID_TRIGGER_HORIZONTAL_RADIUS, RAID_TRIGGER_VERTICAL_RADIUS);
-    }
-
-    private static boolean isInsideBossBarRange(BlockVector3 center, Player player) {
-        return isInsideRange(center, player, RAID_BOSS_BAR_HORIZONTAL_RADIUS, RAID_BOSS_BAR_VERTICAL_RADIUS);
-    }
-
-    private static boolean isInsideRange(BlockVector3 center, Player player, int horizontal, int vertical) {
-        return Math.abs(player.getX() - center.x) <= horizontal
-                && Math.abs(player.getY() - center.y) <= vertical
-                && Math.abs(player.getZ() - center.z) <= horizontal;
     }
 
     public synchronized void onBlockChange(Block previous, Block current) {
@@ -917,8 +1025,7 @@ public final class VillageManager {
 
     private static VillageInfo withBounds(VillageInfo info, BlockVector3 min, BlockVector3 max) {
         return new VillageInfo(info.breedingCooldownTime(), info.golemSpawnCooldownTime(), info.initialized(),
-                info.mergeTick(), info.playerDetectionTick(), min, max, info.tick(), info.version(), min, max,
-                info.villageHeroTime());
+                info.mergeTick(), info.playerDetectionTick(), min, max, info.tick(), info.version(), min, max);
     }
 
     private static boolean isInsideExpansionRange(VillageInfo info, BlockVector3 position) {

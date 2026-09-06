@@ -21,6 +21,7 @@ import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.PassByTimeEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.AnimalGrowExecutor;
+import org.powernukkitx.entity.ai.executor.CelebrateSurviveExecutor;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.FleeFromTargetExecutor;
 import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
@@ -48,6 +49,7 @@ import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.entity.EntityTransformEvent;
 import org.powernukkitx.inventory.EntityEquipmentInventory;
+import org.powernukkitx.inventory.request.CraftRecipeActionProcessor;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.inventory.InventorySlice;
 import org.powernukkitx.inventory.TradeInventory;
@@ -189,6 +191,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         new Behavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 1, 1)
                 )
                 .behaviors(
+                        new Behavior(new CelebrateSurviveExecutor(30 * 20, 40, 100),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING), 11, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.24f, true), all(
                                 entity -> getMemoryStorage().get(CoreMemoryTypes.HIDING_FROM_RAID),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED)
@@ -927,7 +931,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 CompoundTag buyA = tag.getCompound("buyA").copy();
                 float multiplier = 0;
                 if (tag.contains("priceMultiplierA")) multiplier = tag.getFloat("priceMultiplierA");
-                buyA.putByte("Count", Math.max(buyA.getByte("Count") - (int) (reputation * multiplier), 1));
+                int base = buyA.getByte("Count");
+                int reduction = (int) (reputation * multiplier)
+                        + CraftRecipeActionProcessor.heroDiscount(player, base);
+                buyA.putByte("Count", Math.max(base - reduction, 1));
                 tag.putCompound("buyA", buyA);
             }
             if (tag.contains("buyB")) {
