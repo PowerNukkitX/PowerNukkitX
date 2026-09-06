@@ -81,7 +81,7 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
     @Override
     public void onStop(EntityIntelligent entity) {
         if (entity instanceof EntityShulker shulker) {
-            shulker.setDataProperty(ActorDataTypes.TARGET, 0);
+            shulker.setDataProperty(ActorDataTypes.TARGET, 0L);
             shulker.setPeeking(0);
         }
     }
