@@ -1056,24 +1056,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @SuppressWarnings("removal")
     public void recalcMovementSpeedFromEffects() {
         float base = this.getMovementSpeedDefault() * this.getSprintMultiplier();
-        float mul = 1.0f;
-
-        Effect speed = this.getEffect(EffectType.SPEED);
-        int speedLvl = (speed != null) ? (Math.max(0, speed.getAmplifier()) + 1) : 0;
-
-        Effect slow = this.getEffect(EffectType.SLOWNESS);
-        int slowLvl = (slow != null) ? (Math.max(0, slow.getAmplifier()) + 1) : 0;
-
-        if (slowLvl >= 7) {
-            mul = 0.0f;
-        } else {
-            if (speedLvl > 0) {
-                mul *= (1.0f + 0.20f * speedLvl);
-            }
-            if (slowLvl > 0) {
-                mul *= Math.max(0.0f, 1.0f - 0.15f * slowLvl);
-            }
-        }
+        float mul = this.getMovementSpeedFactor();
 
         if (this instanceof Player p && p.isSprinting()) mul *= 1.3f;
         float newSpeed = base * mul;
