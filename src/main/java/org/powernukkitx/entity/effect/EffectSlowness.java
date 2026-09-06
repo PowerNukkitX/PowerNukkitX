@@ -20,7 +20,7 @@ public class EffectSlowness extends Effect {
                 restoreSpeed(living, oldEffect.getLevel());
             }
 
-            living.setMovementSpeed(living.getMovementSpeed() * factor(this.getLevel()));
+            living.setMovementSpeed(living.getMovementSpeed() * getSpeedFactor(this.getLevel()));
         }
     }
 
@@ -32,13 +32,20 @@ public class EffectSlowness extends Effect {
     }
 
     private static void restoreSpeed(EntityLiving living, int level) {
-        float factor = factor(level);
+        float factor = getSpeedFactor(level);
         living.setMovementSpeed(factor > 0
                 ? living.getMovementSpeed() / factor
                 : living.getMovementSpeedDefault());
     }
 
-    private static float factor(int level) {
+    /**
+     * How much this effect scales the movement speed of whoever carries it. A high enough level
+     * brings them to a standstill instead of turning their speed negative.
+     *
+     * @param level the level of the effect
+     * @return the factor to apply to the movement speed, never below 0
+     */
+    public static float getSpeedFactor(int level) {
         return Math.max(1 - 0.15f * level, 0f);
     }
 }

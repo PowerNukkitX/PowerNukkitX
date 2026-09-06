@@ -14,6 +14,8 @@ import org.powernukkitx.entity.components.TameableComponent;
 import org.powernukkitx.entity.custom.CustomEntityComponents;
 import org.powernukkitx.entity.custom.CustomEntityDefinition.Meta;
 import org.powernukkitx.entity.effect.Effect;
+import org.powernukkitx.entity.effect.EffectSlowness;
+import org.powernukkitx.entity.effect.EffectSpeed;
 import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.entity.passive.EntityWanderingTrader;
@@ -104,8 +106,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     /**
      * How much the speed and slowness effects currently on this entity scale the speed its AI
-     * asked for. Slowness of a high enough level brings it to a standstill instead of turning it
-     * negative.
+     * asked for.
      *
      * @return the factor to apply to the movement speed, never below 0
      */
@@ -114,15 +115,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         Effect slowness = this.getEffect(EffectType.SLOWNESS);
         if (slowness != null) {
-            factor -= 0.15f * slowness.getLevel();
+            factor *= EffectSlowness.getSpeedFactor(slowness.getLevel());
         }
 
         Effect speed = this.getEffect(EffectType.SPEED);
         if (speed != null) {
-            factor += 0.2f * speed.getLevel();
+            factor *= EffectSpeed.getSpeedFactor(speed.getLevel());
         }
 
-        return Math.max(factor, 0f);
+        return factor;
     }
 
     @Override
