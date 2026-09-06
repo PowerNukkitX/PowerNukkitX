@@ -11,15 +11,22 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.entity.item.EntityFireworksRocket;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
+import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.ItemHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,13 +55,7 @@ public final class VillageManager {
     public static final int HORIZONTAL_EXPANSION_RANGE = 32;
     public static final int VERTICAL_EXPANSION_RANGE = 52;
 
-    /**
-     * How long a raid waits before its first group, once a player carrying bad omen has walked in.
-     */
     public static final int RAID_PREPARATION_TIME = 600;
-    /**
-     * The lull between a group being wiped out and the next one being placed.
-     */
     public static final int GROUP_COMPLETE_DELAY = 100;
     public static final int ALLOWED_SPAWN_FAILURES = 3;
     public static final int RAID_TRIGGER_HORIZONTAL_RADIUS = 32;
@@ -64,6 +65,8 @@ public final class VillageManager {
     public static final int RAID_SPAWN_MIN_RADIUS = 24;
     public static final int RAID_SPAWN_MAX_RADIUS = 64;
     public static final int VILLAGE_HERO_DURATION = 40 * 60 * 20;
+    public static final int CELEBRATION_DURATION = 30 * 20;
+    public static final int CELEBRATION_FIREWORK_INTERVAL = 90;
 
     private static final String[] RAIDER_TYPES = {
             EntityID.PILLAGER, EntityID.VINDICATOR, EntityID.RAVAGER, EntityID.WITCH, EntityID.EVOCATION_ILLAGER
@@ -289,6 +292,7 @@ public final class VillageManager {
                 continue;
             }
             village.setRaid(tickRaid(village, raid));
+            setDwellersHiding(village, village.raid() != null);
             updateBossBars(village);
         }
     }
@@ -386,15 +390,36 @@ public final class VillageManager {
     }
 
     private VillageRaid awardRewards(Village village, VillageRaid raid) {
-        BlockVector3 center = village.center();
-        for (Player player : level.getPlayers().values()) {
-            if (isInsideBossBarRange(center, player)) {
-                player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
-                        .setDuration(VILLAGE_HERO_DURATION)
-                        .setVisible(true));
+        if (raid.ticks() == 0) {
+            BlockVector3 center = village.center();
+            for (Player player : level.getPlayers().values()) {
+                if (isInsideBossBarRange(center, player)) {
+                    player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
+                            .setDuration(VILLAGE_HERO_DURATION)
+                            .setVisible(true));
+                }
             }
         }
-        return raid.withStatus(VillageRaid.STATUS_VICTORY);
+
+        celebrate(village, raid.ticks());
+        long ticks = raid.ticks() + 1;
+        return ticks < CELEBRATION_DURATION
+                ? raid.withTicks(ticks)
+                : raid.withStatus(VillageRaid.STATUS_VICTORY);
+    }
+
+    private void celebrate(Village village, long ticks) {
+        for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
+            for (VillageDwellers.Actor actor : dweller.actors()) {
+                if (!(level.getEntity(actor.id()) instanceof EntityVillagerV2 villager)
+                        || (ticks + villager.runtimeId()) % CELEBRATION_FIREWORK_INTERVAL != 0) {
+                    continue;
+                }
+                CompoundTag nbt = Entity.getDefaultNBT(villager.add(0, villager.getEyeHeight(), 0));
+                nbt.putCompound("FireworkItem", ItemHelper.write(Item.get(ItemID.FIREWORK_ROCKET)));
+                new EntityFireworksRocket(villager.getChunk(), nbt).spawnToAll();
+            }
+        }
     }
 
     private @Nullable Vector3 findSpawnPoint(Village village) {
@@ -428,11 +453,22 @@ public final class VillageManager {
                 if (raider == null) {
                     continue;
                 }
+
+                CreatureSpawnEvent event = new CreatureSpawnEvent(
+                        Registries.ENTITY.getEntityNetworkId(RAIDER_TYPES[type]), spawnPosition,
+                        new CompoundTag(), CreatureSpawnEvent.SpawnReason.VILLAGE_INVASION);
+                level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    raider.close();
+                    continue;
+                }
+
                 if (raider instanceof EntityIntelligent intelligent) {
                     intelligent.getMemoryStorage().put(CoreMemoryTypes.RAID_TARGET, target);
                 }
+                raider.setPersistent(true);
                 raider.spawnToAll();
-                raiders.add(raider.getId());
+                raiders.add(raider.runtimeId());
             }
         }
         return raiders;
@@ -456,6 +492,7 @@ public final class VillageManager {
         }
         Map<UUID, Long> bars = raidBossBars.computeIfAbsent(village.uuid(), uuid -> new HashMap<>());
         BlockVector3 center = village.center();
+        String title = bossBarTitle(raid);
         int length = (int) (raid.bossBarProgress() * 100);
         for (Player player : level.getPlayers().values()) {
             UUID playerUuid = player.getUniqueId();
@@ -468,11 +505,29 @@ public final class VillageManager {
             }
             Long bossBarId = bars.get(playerUuid);
             if (bossBarId == null) {
-                bars.put(playerUuid, player.createBossBar("%event.raid", length));
+                bars.put(playerUuid, player.createBossBar(title, length));
             } else {
-                player.updateBossBar("%event.raid", length, bossBarId);
+                player.updateBossBar(title, length, bossBarId);
             }
         }
+    }
+
+    private void setDwellersHiding(Village village, boolean hiding) {
+        for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
+            for (VillageDwellers.Actor actor : dweller.actors()) {
+                if (level.getEntity(actor.id()) instanceof EntityVillagerV2 villager) {
+                    villager.getMemoryStorage().put(CoreMemoryTypes.HIDING_FROM_RAID, hiding);
+                }
+            }
+        }
+    }
+
+    private static String bossBarTitle(VillageRaid raid) {
+        return switch (raid.state()) {
+            case VillageRaid.STATE_GROUP_IN_PLAY -> "%raid.progress " + raid.raiders().size();
+            case VillageRaid.STATE_AWARDING_REWARDS -> "%raid.victory";
+            default -> "%raid.name";
+        };
     }
 
     private void removeBossBars(Village village) {

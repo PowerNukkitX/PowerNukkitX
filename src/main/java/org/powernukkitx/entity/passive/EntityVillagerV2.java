@@ -189,6 +189,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         new Behavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 1, 1)
                 )
                 .behaviors(
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.24f, true), all(
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.HIDING_FROM_RAID),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED)
+                        ), 10, 1),
                         new Behavior(entity -> {
                             setMoveTarget(null);
                             setLookTarget(getTradeInventory().getViewers().stream().findFirst().get());

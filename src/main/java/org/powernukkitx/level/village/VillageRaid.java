@@ -10,18 +10,9 @@ import java.util.List;
 public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, byte numberOfRaiders,
                           List<Long> raiders, byte spawnFails, Vector3 spawnPosition, int state, int status,
                           long ticks, float totalMaxHealth) {
-    /**
-     * The raid waits for the players to gather before its first group shows up.
-     */
     public static final int STATE_PREPARATION = 0;
-    /**
-     * A spawn point is being looked for, outside the village and away from the players.
-     */
     public static final int STATE_PICKING_SPAWN_POINT = 1;
     public static final int STATE_SPAWNING_GROUP = 2;
-    /**
-     * The group is alive and the raid waits for it to be wiped out.
-     */
     public static final int STATE_GROUP_IN_PLAY = 3;
     public static final int STATE_AWARDING_REWARDS = 4;
     public static final int STATE_FINISHED = 5;
