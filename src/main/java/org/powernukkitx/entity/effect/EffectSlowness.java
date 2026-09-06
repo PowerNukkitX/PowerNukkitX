@@ -17,17 +17,28 @@ public class EffectSlowness extends Effect {
 
             Effect oldEffect = living.getEffect(this.getType());
             if (oldEffect != null) {
-                living.setMovementSpeed(living.getMovementSpeed() / (1 - 0.15f * oldEffect.getLevel()));
+                restoreSpeed(living, oldEffect.getLevel());
             }
 
-            living.setMovementSpeed(living.getMovementSpeed() * (1 - 0.15f * this.getLevel()));
+            living.setMovementSpeed(living.getMovementSpeed() * factor(this.getLevel()));
         }
     }
 
     @Override
     public void remove(Entity entity) {
         if (entity instanceof EntityLiving living) {
-            living.setMovementSpeed(living.getMovementSpeed() / (1 - 0.15f * this.getLevel()));
+            restoreSpeed(living, this.getLevel());
         }
+    }
+
+    private static void restoreSpeed(EntityLiving living, int level) {
+        float factor = factor(level);
+        living.setMovementSpeed(factor > 0
+                ? living.getMovementSpeed() / factor
+                : living.getMovementSpeedDefault());
+    }
+
+    private static float factor(int level) {
+        return Math.max(1 - 0.15f * level, 0f);
     }
 }

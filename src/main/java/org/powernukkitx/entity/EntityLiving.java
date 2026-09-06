@@ -102,6 +102,29 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return (float) (damage * effectiveArmorPoints / ARMOR_REDUCTION_DIVISOR);
     }
 
+    /**
+     * How much the speed and slowness effects currently on this entity scale the speed its AI
+     * asked for. Slowness of a high enough level brings it to a standstill instead of turning it
+     * negative.
+     *
+     * @return the factor to apply to the movement speed, never below 0
+     */
+    public float getMovementSpeedFactor() {
+        float factor = 1f;
+
+        Effect slowness = this.getEffect(EffectType.SLOWNESS);
+        if (slowness != null) {
+            factor -= 0.15f * slowness.getLevel();
+        }
+
+        Effect speed = this.getEffect(EffectType.SPEED);
+        if (speed != null) {
+            factor += 0.2f * speed.getLevel();
+        }
+
+        return Math.max(factor, 0f);
+    }
+
     @Override
     protected float getDefaultGravity() {
         return 0.08f;
