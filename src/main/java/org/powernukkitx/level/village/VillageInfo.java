@@ -6,7 +6,17 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 public record VillageInfo(long breedingCooldownTime, long golemSpawnCooldownTime, boolean initialized,
                           long mergeTick, long playerDetectionTick, BlockVector3 raidBoundsMin,
                           BlockVector3 raidBoundsMax, long tick, byte version, BlockVector3 boundsMin,
-                          BlockVector3 boundsMax) {
+                          BlockVector3 boundsMax, long villageHeroTime) {
+
+    /**
+     * @param villageHeroTime the level time the last won raid keeps rewarding those who stand in
+     *                        the village until
+     */
+    public VillageInfo withVillageHeroTime(long villageHeroTime) {
+        return new VillageInfo(breedingCooldownTime, golemSpawnCooldownTime, initialized, mergeTick,
+                playerDetectionTick, raidBoundsMin, raidBoundsMax, tick, version, boundsMin, boundsMax,
+                villageHeroTime);
+    }
 
     public static VillageInfo fromCompound(CompoundTag tag) {
         return new VillageInfo(tag.getLong("BDTime"), tag.getLong("GDTime"), tag.getBoolean("Initialized"),
@@ -15,7 +25,8 @@ public record VillageInfo(long breedingCooldownTime, long golemSpawnCooldownTime
                 new BlockVector3(tag.getInt("RX1"), tag.getInt("RY1"), tag.getInt("RZ1")),
                 tag.getLong("Tick"), tag.getByte("Version"),
                 new BlockVector3(tag.getInt("X0"), tag.getInt("Y0"), tag.getInt("Z0")),
-                new BlockVector3(tag.getInt("X1"), tag.getInt("Y1"), tag.getInt("Z1")));
+                new BlockVector3(tag.getInt("X1"), tag.getInt("Y1"), tag.getInt("Z1")),
+                tag.getLong("VHTime"));
     }
 
     public CompoundTag toCompound() {
@@ -27,6 +38,7 @@ public record VillageInfo(long breedingCooldownTime, long golemSpawnCooldownTime
                 .putInt("RX1", raidBoundsMax.x).putInt("RY1", raidBoundsMax.y).putInt("RZ1", raidBoundsMax.z)
                 .putLong("Tick", tick).putByte("Version", version)
                 .putInt("X0", boundsMin.x).putInt("Y0", boundsMin.y).putInt("Z0", boundsMin.z)
-                .putInt("X1", boundsMax.x).putInt("Y1", boundsMax.y).putInt("Z1", boundsMax.z);
+                .putInt("X1", boundsMax.x).putInt("Y1", boundsMax.y).putInt("Z1", boundsMax.z)
+                .putLong("VHTime", villageHeroTime);
     }
 }

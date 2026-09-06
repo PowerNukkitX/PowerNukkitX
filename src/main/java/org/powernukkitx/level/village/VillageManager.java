@@ -64,7 +64,9 @@ public final class VillageManager {
     public static final int RAID_BOSS_BAR_VERTICAL_RADIUS = 44;
     public static final int RAID_SPAWN_MIN_RADIUS = 24;
     public static final int RAID_SPAWN_MAX_RADIUS = 64;
-    public static final int VILLAGE_HERO_DURATION = 40 * 60 * 20;
+    public static final int VILLAGE_HERO_DURATION = 260;
+    public static final int VILLAGE_HERO_TIME = 3 * Level.TIME_FULL;
+    public static final int VILLAGE_HERO_REFRESH_INTERVAL = 20;
     public static final int CELEBRATION_DURATION = 30 * 20;
     public static final int CELEBRATION_FIREWORK_INTERVAL = 90;
 
@@ -174,7 +176,7 @@ public final class VillageManager {
         BlockVector3 max = center.add(INITIAL_HORIZONTAL_RADIUS, INITIAL_VERTICAL_RADIUS,
                 INITIAL_HORIZONTAL_RADIUS);
         long tick = level.getCurrentTick();
-        VillageInfo info = new VillageInfo(0, 0, true, tick, tick, min, max, tick, (byte) 1, min, max);
+        VillageInfo info = new VillageInfo(0, 0, true, tick, tick, min, max, tick, (byte) 1, min, max, 0);
         Village village = new Village(UUID.randomUUID(), discoverDwellers(min, max, tick), info,
                 new VillagePlayers(new ListTag<Tag>()), discoverPois(min, max), null);
         villages.put(village.uuid(), village);
@@ -285,6 +287,9 @@ public final class VillageManager {
             return;
         }
         for (Village village : villages.values()) {
+            if (currentTick % VILLAGE_HERO_REFRESH_INTERVAL == 0) {
+                rewardVillageHeroes(village);
+            }
             VillageRaid raid = village.raid();
             if (raid == null) {
                 if (currentTick % 20 == 0) {
@@ -392,14 +397,9 @@ public final class VillageManager {
 
     private VillageRaid awardRewards(Village village, VillageRaid raid) {
         if (raid.ticks() == 0) {
-            BlockVector3 center = village.center();
-            for (Player player : level.getPlayers().values()) {
-                if (isInsideBossBarRange(center, player)) {
-                    player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
-                            .setDuration(VILLAGE_HERO_DURATION)
-                            .setVisible(true));
-                }
-            }
+            long time = level.getTime();
+            village.setInfo(village.info().withVillageHeroTime(
+                    time - time % Level.TIME_FULL + Level.TIME_FULL + VILLAGE_HERO_TIME));
         }
 
         celebrate(village, raid.ticks());
@@ -407,6 +407,32 @@ public final class VillageManager {
         return ticks < CELEBRATION_DURATION
                 ? raid.withTicks(ticks)
                 : raid.withStatus(VillageRaid.STATUS_VICTORY);
+    }
+
+    /**
+     * Hands the reward of the last won raid to whoever stands in the village, until the three days it
+     * lasts are over. The effect is short lived and kept alive from here, so walking away drops it.
+     */
+    private void rewardVillageHeroes(Village village) {
+        long villageHeroTime = village.info().villageHeroTime();
+        if (villageHeroTime == 0) {
+            return;
+        }
+        if (level.getTime() >= villageHeroTime) {
+            village.setInfo(village.info().withVillageHeroTime(0));
+            return;
+        }
+        BlockVector3 min = village.info().raidBoundsMin();
+        BlockVector3 max = village.info().raidBoundsMax();
+        for (Player player : level.getPlayers().values()) {
+            if (player.getX() > min.x && player.getX() < max.x
+                    && player.getY() > min.y && player.getY() < max.y
+                    && player.getZ() > min.z && player.getZ() < max.z) {
+                player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
+                        .setDuration(VILLAGE_HERO_DURATION)
+                        .setVisible(true));
+            }
+        }
     }
 
     private void celebrate(Village village, long ticks) {
@@ -891,7 +917,8 @@ public final class VillageManager {
 
     private static VillageInfo withBounds(VillageInfo info, BlockVector3 min, BlockVector3 max) {
         return new VillageInfo(info.breedingCooldownTime(), info.golemSpawnCooldownTime(), info.initialized(),
-                info.mergeTick(), info.playerDetectionTick(), min, max, info.tick(), info.version(), min, max);
+                info.mergeTick(), info.playerDetectionTick(), min, max, info.tick(), info.version(), min, max,
+                info.villageHeroTime());
     }
 
     private static boolean isInsideExpansionRange(VillageInfo info, BlockVector3 position) {
