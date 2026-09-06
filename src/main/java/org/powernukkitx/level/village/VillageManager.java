@@ -13,6 +13,7 @@ import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.mob.EntityIllager;
+import org.powernukkitx.entity.mob.EntityRavager;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.level.Level;
@@ -87,6 +88,8 @@ public final class VillageManager {
             {5, 2, 0, 0, 1},
             {0, 6, 1, 1, 3}
     };
+
+    private static final int[] RAID_GROUP_RIDERS = {-1, -1, -1, -1, 0, -1, 4};
 
     private final Level level;
     private final ConcurrentHashMap<UUID, Village> villages = new ConcurrentHashMap<>();
@@ -610,6 +613,8 @@ public final class VillageManager {
         BlockVector3 center = village.center();
         Vector3 target = new Vector3(center.x + 0.5, center.y, center.z + 0.5);
         List<Long> raiders = new ArrayList<>();
+        List<EntityRavager> mounts = new ArrayList<>();
+        List<Entity> riders = new ArrayList<>();
         for (int type = 0; type < RAIDER_TYPES.length; type++) {
             for (int spawned = 0; spawned < group[type]; spawned++) {
                 Entity raider = Entity.createEntity(RAIDER_TYPES[type], spawnPosition);
@@ -635,7 +640,16 @@ public final class VillageManager {
                 raider.setPersistent(true);
                 raider.spawnToAll();
                 raiders.add(raider.runtimeId());
+                if (raider instanceof EntityRavager ravager) {
+                    mounts.add(ravager);
+                } else if (type == RAID_GROUP_RIDERS[Math.min(raid.groupNumber(), RAID_GROUP_RIDERS.length - 1)]) {
+                    riders.add(raider);
+                }
             }
+        }
+
+        for (int i = 0; i < Math.min(mounts.size(), riders.size()); i++) {
+            mounts.get(i).mountEntity(riders.get(i));
         }
         return raiders;
     }

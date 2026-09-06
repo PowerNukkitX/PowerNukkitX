@@ -20,15 +20,18 @@ import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.entity.components.RideableComponent;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 
 public class EntityRavager extends EntityMob implements EntityWalkable {
@@ -86,6 +89,30 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     protected @Nullable MovementComponent getComponentMovement() {
         // TODO: hostile movement logic
         return MovementComponent.value(0.4f);
+    }
+
+    @Override
+    public @Nullable RideableComponent getComponentRideable() {
+        return new RideableComponent(
+                0,
+                true,
+                RideableComponent.DismountMode.DEFAULT,
+                Set.of("pillager", "vindicator", "evocation_illager"),
+                null,
+                0.0f,
+                false,
+                false,
+                1,
+                List.of(new RideableComponent.Seat(
+                        0,
+                        1,
+                        new Vector3f(0.0f, 2.025f, -0.3f),
+                        null,
+                        null,
+                        null,
+                        null
+                ))
+        );
     }
 
     @Override
