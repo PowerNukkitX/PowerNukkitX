@@ -68,7 +68,7 @@ public abstract class EntityIllager extends EntityMob implements EntityWalkable 
 
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
-        int emeralds = Utils.rand(0, 1) + Utils.rand(0, looting);
+        int emeralds = Utils.rand(0, 1) + lootingBonus(looting);
         if (emeralds > 0) {
             drops.add(Item.get(ItemID.EMERALD, 0, emeralds));
         }
@@ -78,6 +78,14 @@ public abstract class EntityIllager extends EntityMob implements EntityWalkable 
             drops.add(bonus);
         }
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private static int lootingBonus(int looting) {
+        int bonus = 0;
+        for (int level = 0; level < looting; level++) {
+            bonus += Utils.rand(0, 1);
+        }
+        return bonus;
     }
 
     private @Nullable Item rollRaidBonus(int looting) {
@@ -93,16 +101,16 @@ public abstract class EntityIllager extends EntityMob implements EntityWalkable 
 
         int roll = random.nextInt(156);
         if (roll < 40) {
-            return Item.get(ItemID.EMERALD, 0, Utils.rand(0, 1) + Utils.rand(0, looting));
+            return Item.get(ItemID.EMERALD, 0, Utils.rand(0, 1) + lootingBonus(looting));
         }
         if (roll < 60) {
-            return Item.get(ItemID.EMERALD, 0, Utils.rand(2, 3) + Utils.rand(0, looting));
+            return Item.get(ItemID.EMERALD, 0, Utils.rand(2, 3) + lootingBonus(looting));
         }
         if (roll < 68) {
-            return Item.get(ItemID.EMERALD, 0, Utils.rand(4, 5) + Utils.rand(0, looting));
+            return Item.get(ItemID.EMERALD, 0, Utils.rand(4, 5) + lootingBonus(looting));
         }
         if (roll < 76) {
-            Item book = Item.get(ItemID.BOOK);
+            Item book = Item.get(ItemID.ENCHANTED_BOOK);
             for (Enchantment enchantment : EnchantmentHelper.selectEnchantments(new NukkitRandom(), book, 30)) {
                 book.addEnchantment(enchantment);
             }
