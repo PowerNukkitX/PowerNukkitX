@@ -25,6 +25,7 @@ import org.powernukkitx.entity.ai.executor.evocation.ColorConversionExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.FangCircleExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.FangLineExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.VexSummonExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -66,6 +67,8 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
     protected IBehaviorGroup requireBehaviorGroup() {
         return BehaviorGroup.builder(this)
                 .behaviors(
+                        new Behavior(new RaiderCelebrationExecutor(Sound.MOB_EVOCATION_ILLAGER_CELEBRATE, 30 * 20, 20, 50, 40, 100),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING), 11, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_EVOCATION_ILLAGER_AMBIENT), new RandomSoundEvaluator(), 10, 1),
                         new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.5f, true, 9), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),

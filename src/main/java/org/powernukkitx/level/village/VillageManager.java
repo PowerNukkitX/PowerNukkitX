@@ -12,6 +12,7 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.entity.mob.EntityIllager;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.level.Level;
@@ -348,6 +349,7 @@ public final class VillageManager {
     private @Nullable VillageRaid tickRaid(Village village, VillageRaid raid) {
         if (raid.isFinished()) {
             removeBossBars(village);
+            expireRaiders(raid, raid.status() == VillageRaid.STATUS_LOSS);
             village.raiderPositions().clear();
             return null;
         }
@@ -517,6 +519,21 @@ public final class VillageManager {
                 && player.getZ() > min.z && player.getZ() < max.z;
     }
 
+    private void expireRaiders(VillageRaid raid, boolean celebrating) {
+        for (long raiderId : raid.raiders()) {
+            Entity raider = level.getEntity(raiderId);
+            if (raider == null) {
+                continue;
+            }
+            if (!raider.hasCustomName()) {
+                raider.setPersistent(false);
+            }
+            if (celebrating && raider instanceof EntityIntelligent intelligent) {
+                intelligent.getMemoryStorage().put(CoreMemoryTypes.CELEBRATING, true);
+            }
+        }
+    }
+
     private void celebrate(Village village) {
         for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
             for (VillageDwellers.Actor actor : dweller.actors()) {
@@ -611,6 +628,9 @@ public final class VillageManager {
 
                 if (raider instanceof EntityIntelligent intelligent) {
                     intelligent.getMemoryStorage().put(CoreMemoryTypes.RAID_TARGET, target);
+                }
+                if (raider instanceof EntityIllager illager) {
+                    illager.setRaiding(true);
                 }
                 raider.setPersistent(true);
                 raider.spawnToAll();
