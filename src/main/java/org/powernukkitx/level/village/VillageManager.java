@@ -74,16 +74,17 @@ public final class VillageManager {
 
     /**
      * How many of each {@link #RAIDER_TYPES} every group is made of, the first row being the first
-     * group. Easy stops after three groups, normal after five, hard runs the seven.
+     * group. Easy stops after three groups, normal after five, hard runs the seven. The two
+     * ravagers that carry a rider in the last groups count as a ravager plus the rider on foot.
      */
     private static final int[][] RAID_GROUPS = {
             {4, 0, 0, 0, 0},
             {3, 2, 0, 0, 0},
-            {3, 4, 1, 0, 0},
-            {3, 2, 0, 3, 1},
-            {5, 6, 1, 0, 1},
-            {0, 0, 2, 1, 0},
-            {0, 0, 1, 1, 2}
+            {3, 0, 1, 0, 0},
+            {3, 0, 0, 3, 0},
+            {1, 4, 2, 0, 1},
+            {5, 2, 0, 0, 1},
+            {0, 6, 1, 1, 3}
     };
 
     private final Level level;
