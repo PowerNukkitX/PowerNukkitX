@@ -933,7 +933,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 if (tag.contains("priceMultiplierA")) multiplier = tag.getFloat("priceMultiplierA");
                 int base = buyA.getByte("Count");
                 int reduction = (int) (reputation * multiplier)
-                        + CraftRecipeActionProcessor.heroDiscount(player, base);
+                        + CraftRecipeActionProcessor.heroDiscount(player, buyA);
                 buyA.putByte("Count", Math.max(base - reduction, 1));
                 tag.putCompound("buyA", buyA);
             }

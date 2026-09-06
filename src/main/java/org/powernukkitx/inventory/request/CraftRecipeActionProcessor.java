@@ -12,6 +12,7 @@ import org.powernukkitx.inventory.InputInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.SmithingInventory;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -55,16 +56,21 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String GRID_CONSUMED_KEY = "grid_consumed";
 
     /**
-     * How many items the hero of the village effect takes off the first item of a trade. The first
-     * level is worth 30 percent of the price and every level past it another sixteenth, and the
-     * discount is never smaller than a single item.
+     * How many emeralds the hero of the village effect takes off the first item of a trade. The
+     * first level is worth 30 percent of the price and every level past it another sixteenth, and
+     * the discount is never smaller than a single emerald. A trade the villager pays for is left
+     * alone, only the price the player hands over is discounted.
      *
      * @param player the player trading
-     * @param price  the price the trade asks for
-     * @return the number of items to take off, zero when the player is not a hero
+     * @param buy    the first item of the trade, the one the player hands over
+     * @return the number of emeralds to take off, zero when the player is not a hero
      */
-    public static int heroDiscount(Player player, int price) {
+    public static int heroDiscount(Player player, CompoundTag buy) {
+        if (!ItemID.EMERALD.equals(buy.getString("Name"))) {
+            return 0;
+        }
         Effect hero = player.getEffect(EffectType.VILLAGE_HERO);
+        int price = buy.getByte("Count");
         if (hero == null || price <= 0) {
             return 0;
         }
@@ -160,7 +166,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
 
             int reductionA = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierA") ? tradeRecipe.getFloat("priceMultiplierA") : 0));
             if (ca) {
-                reductionA += heroDiscount(player, tradeRecipe.getCompound("buyA").getByte("Count"));
+                reductionA += heroDiscount(player, tradeRecipe.getCompound("buyA"));
             }
             int reductionB = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierB") ? tradeRecipe.getFloat("priceMultiplierB") : 0));
 
