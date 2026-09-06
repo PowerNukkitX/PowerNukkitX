@@ -36,13 +36,13 @@ public abstract class EntityIllager extends EntityMob implements EntityWalkable 
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.raiding = this.namedTag.getBoolean("Raiding");
+        this.raiding = this.nbt.getBoolean("Raiding");
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putBoolean("Raiding", this.raiding);
+        this.nbt.putBoolean("Raiding", this.raiding);
     }
 
     /**
