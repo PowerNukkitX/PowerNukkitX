@@ -1515,7 +1515,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
           mode update packet.
          */
         this.setGamemode(this.gamemode, false, null, true);
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), null);
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
         this.sendAttributes();
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));

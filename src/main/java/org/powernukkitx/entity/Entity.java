@@ -688,7 +688,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Send initial data + default flags
         // =========================================================
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), null);
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
         if (this.isFireImmune()) {
             this.setFireImmune(true);
         }
@@ -1400,6 +1400,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.sendData(player, null);
     }
 
+    /**
+     * Returns a copy of this entity's actor data, taken under the map lock so a packet can serialize it
+     * on another thread without risking a {@link java.util.ConcurrentModificationException}.
+     */
     protected ActorDataMap snapshotActorData() {
         final ActorDataMap copy = new ActorDataMap();
         synchronized (this.actorDataMap) {
@@ -1408,6 +1412,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return copy;
     }
 
+    /**
+     * @param data the data to send or {@code null} to send a snapshot of the whole actor data map
+     */
     public void sendData(Player player, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setActorData(data == null ? this.snapshotActorData() : data);
@@ -1423,6 +1430,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.sendData(players, null);
     }
 
+    /**
+     * @param data the data to send or {@code null} to send a snapshot of the whole actor data map
+     */
     public void sendData(Player[] players, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setActorData(data == null ? this.snapshotActorData() : data);
@@ -5974,7 +5984,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
         }
         if (changed && send) {
-            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), null);
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
         }
     }
 
@@ -5991,7 +6001,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         synchronized (this.actorDataMap) {
             this.actorDataMap.putFlags(entityFlags);
         }
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), null);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
     }
 
     /**
@@ -6003,7 +6013,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         synchronized (this.actorDataMap) {
             this.actorDataMap.getOrCreateFlags().addAll(entityFlags);
         }
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), null);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
     }
 
     public boolean getDataFlag(ActorFlags id) {
