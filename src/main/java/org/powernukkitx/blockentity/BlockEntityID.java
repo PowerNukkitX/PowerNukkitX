@@ -107,8 +107,6 @@ public interface BlockEntityID {
 
     String END_GATEWAY = "EndGateway";
 
-    String TARGET = "Target";//???? todo check this
-
     String TRIAL_SPAWNER = "TrialSpawner";
 
     String VAULT = "Vault";
