@@ -63,6 +63,7 @@ import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
 import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.level.particle.Particle;
+import org.powernukkitx.level.redstone.circuit.CircuitSystem;
 import org.powernukkitx.level.util.EntityQueryUtils;
 import org.powernukkitx.level.util.SimpleTickCachedBlockStore;
 import org.powernukkitx.level.util.TickCachedBlockStore;
@@ -368,6 +369,7 @@ public class Level implements Metadatable {
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<Player>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
+    private final CircuitSystem circuitSystem = new CircuitSystem();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     private final VillageManager villageManager = new VillageManager(this);
     public boolean stopTime;
@@ -5242,6 +5244,7 @@ public class Level implements Metadatable {
                 }
             }
             levelProvider.unloadChunk(x, z, safe);
+            this.circuitSystem.removeChunk( x, z);
             this.tickChunkCacheDirty = true;
         } catch (Exception e) {
             log.error(this.server.getLanguage().tr("nukkit.level.chunkUnloadError", e.toString()), e);
@@ -6498,6 +6501,10 @@ public class Level implements Metadatable {
             }
         }
         return (float) visibleBlocks / (float) totalBlocks;
+    }
+
+    public CircuitSystem getCircuitSystem() {
+        return this.circuitSystem;
     }
 
     public VibrationManager getVibrationManager() {

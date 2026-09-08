@@ -51,7 +51,6 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(MOVING_BLOCK, BlockEntityMovingBlock.class);
         register0(NETHER_REACTOR, BlockEntityNetherReactor.class);
         register0(LODESTONE, BlockEntityLodestone.class);
-        register0(TARGET, BlockEntityTarget.class);
         register0(END_PORTAL, BlockEntityEndPortal.class);
         register0(END_GATEWAY, BlockEntityEndGateway.class);
         register0(COMMAND_BLOCK, BlockEntityCommandBlock.class);
