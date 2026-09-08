@@ -1,7 +1,7 @@
 package org.powernukkitx.inventory;
 
 import org.powernukkitx.Player;
-import org.powernukkitx.blockentity.BlockEntityStructBlock;
+import org.powernukkitx.blockentity.BlockEntityStructureBlock;
 import org.powernukkitx.event.inventory.InventoryCloseEvent;
 import org.powernukkitx.event.inventory.InventoryOpenEvent;
 import org.powernukkitx.item.Item;
@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class StructBlockInventory implements Inventory {
-    protected final BlockEntityStructBlock holder;
+    protected final BlockEntityStructureBlock holder;
     protected final Set<Player> viewers;
     private List<InventoryListener> listeners;
 
-    public StructBlockInventory(BlockEntityStructBlock holder) {
+    public StructBlockInventory(BlockEntityStructureBlock holder) {
         this.holder = holder;
         this.viewers = new HashSet<>();
     }
@@ -176,7 +176,7 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public BlockEntityStructBlock getHolder() {
+    public BlockEntityStructureBlock getHolder() {
         return this.holder;
     }
 

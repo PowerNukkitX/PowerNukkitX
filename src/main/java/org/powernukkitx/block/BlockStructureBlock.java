@@ -3,7 +3,7 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.StructureBlockType;
 import org.powernukkitx.blockentity.BlockEntity;
-import org.powernukkitx.blockentity.BlockEntityStructBlock;
+import org.powernukkitx.blockentity.BlockEntityStructureBlock;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.STRUCTURE_BLOCK_TYPE;
 
-public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder<BlockEntityStructBlock>, RedstoneComponent {
+public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder<BlockEntityStructureBlock>, RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_BLOCK, STRUCTURE_BLOCK_TYPE);
 
     @Override
@@ -49,7 +49,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             if (player.isCreative() && player.isOp()) {
-                BlockEntityStructBlock tile = this.getOrCreateBlockEntity();
+                BlockEntityStructureBlock tile = this.getOrCreateBlockEntity();
                 tile.spawnTo(player);
                 player.addWindow(tile.getInventory());
             }
@@ -71,7 +71,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
             }
         }
 
-        BlockEntityStructBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
+        BlockEntityStructureBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
         return blockEntity != null;
     }
 
@@ -112,8 +112,8 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
 
     @Override
     @NotNull
-    public Class<? extends BlockEntityStructBlock> getBlockEntityClass() {
-        return BlockEntityStructBlock.class;
+    public Class<? extends BlockEntityStructureBlock> getBlockEntityClass() {
+        return BlockEntityStructureBlock.class;
     }
 
     @Override
