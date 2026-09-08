@@ -99,6 +99,8 @@ public interface BlockEntityID {
 
     String SMOKER = "Smoker";
 
+    String SPORE_BLOSSOM = "SporeBlossom";
+
     String STRUCTURE_BLOCK = "StructureBlock";
 
     String MOVING_BLOCK = "MovingBlock";
