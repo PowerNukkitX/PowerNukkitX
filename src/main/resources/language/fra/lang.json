@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "Données de l\u0027ancien monde trouvées pour \"{%0}\", conversion du format",
   "nukkit.player.invalidEntity": "{%0} a essayé d\u0027attaquer une entité non valide",
   "nukkit.player.invalidMove": "{%0} s\u0027est mal déplacé !",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] connecté avec l\u0027identifiant {%3} à ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] connecté avec l\u0027uniqueId {%3} à ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] déconnecté à cause de {%3}",
   "nukkit.plugin.aliasError": "Impossible de charger l\u0027alias {%0} pour le plugin {%1}",
   "nukkit.plugin.circularDependency": "Détection d\u0027une dépendance circulaire",
