@@ -11,6 +11,7 @@ import org.powernukkitx.level.village.VillageDwellers;
 import org.powernukkitx.level.village.VillageInfo;
 import org.powernukkitx.level.village.VillagePlayers;
 import org.powernukkitx.level.village.VillagePois;
+import org.powernukkitx.level.village.VillageRaid;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
@@ -159,7 +160,8 @@ public final class LevelDBStorage {
                         VillageDwellers.fromCompound(data.get("DWELLERS")),
                         VillageInfo.fromCompound(data.get("INFO")),
                         VillagePlayers.fromCompound(data.get("PLAYERS")),
-                        VillagePois.fromCompound(data.get("POI")), null));
+                        VillagePois.fromCompound(data.get("POI")),
+                        data.containsKey("RAID") ? VillageRaid.fromCompound(data.get("RAID")) : null));
             }
         });
         return villages;
@@ -186,6 +188,9 @@ public final class LevelDBStorage {
                 batch.put(getVillageKey(villagePrefix, "INFO"), writeLittleEndianCompound(village.info().toCompound()));
                 batch.put(getVillageKey(villagePrefix, "POI"), writeLittleEndianCompound(village.pois().toCompound()));
                 batch.put(getVillageKey(villagePrefix, "PLAYERS"), writeLittleEndianCompound(village.players().toCompound()));
+                if (village.raid() != null) {
+                    batch.put(getVillageKey(villagePrefix, "RAID"), writeLittleEndianCompound(village.raid().toCompound()));
+                }
             }
             this.db.write(batch, new WriteOptions().sync(false));
         } catch (IOException e) {

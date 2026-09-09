@@ -8,6 +8,15 @@ public record VillageInfo(long breedingCooldownTime, long golemSpawnCooldownTime
                           BlockVector3 raidBoundsMax, long tick, byte version, BlockVector3 boundsMin,
                           BlockVector3 boundsMax) {
 
+    /**
+     * @param raidBoundsMin the corner the raid taking place in this village reaches to
+     * @param raidBoundsMax the opposite corner
+     */
+    public VillageInfo withRaidBounds(BlockVector3 raidBoundsMin, BlockVector3 raidBoundsMax) {
+        return new VillageInfo(breedingCooldownTime, golemSpawnCooldownTime, initialized, mergeTick,
+                playerDetectionTick, raidBoundsMin, raidBoundsMax, tick, version, boundsMin, boundsMax);
+    }
+
     public static VillageInfo fromCompound(CompoundTag tag) {
         return new VillageInfo(tag.getLong("BDTime"), tag.getLong("GDTime"), tag.getBoolean("Initialized"),
                 tag.getLong("MTick"), tag.getLong("PDTick"),

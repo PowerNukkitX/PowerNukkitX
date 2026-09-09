@@ -92,6 +92,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityHuman;
 import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityLiving;
+import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.components.NameableComponent;
 import org.powernukkitx.entity.data.human.Skin;
 import org.powernukkitx.entity.data.warden.WardenWarningData;
@@ -3978,6 +3979,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.setMessageType(TextPacketType.TEXT_OBJECT);
         pk.setSendersXUID("");
         pk.setBody(messageOnly);
+        this.sendPacket(pk);
+    }
+
+    /**
+     * Plays the screen animation of an effect.
+     *
+     * @param effect the effect whose animation is played
+     */
+    public void sendEffectAnimation(EffectType effect) {
+        final OnScreenTextureAnimationPacket pk = new OnScreenTextureAnimationPacket();
+        pk.setEffectId(effect.id());
         this.sendPacket(pk);
     }
 

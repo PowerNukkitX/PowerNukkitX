@@ -8,22 +8,30 @@ import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.MeleeAttackExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.entity.components.RideableComponent;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 
 public class EntityRavager extends EntityMob implements EntityWalkable {
@@ -41,8 +49,13 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     public IBehaviorGroup requireBehaviorGroup() {
         return BehaviorGroup.builder(this)
                 .behaviors(
+                        new Behavior(new RaiderCelebrationExecutor(Sound.MOB_RAVAGER_CELEBRATE, 30 * 20, 20, 50, 40, 100),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING), 6, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.2f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true),
+                                all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                        new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 )
                 .sensors(new NearestPlayerSensor(40, 0, 20))
@@ -76,6 +89,30 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     protected @Nullable MovementComponent getComponentMovement() {
         // TODO: hostile movement logic
         return MovementComponent.value(0.4f);
+    }
+
+    @Override
+    public @Nullable RideableComponent getComponentRideable() {
+        return new RideableComponent(
+                0,
+                true,
+                RideableComponent.DismountMode.DEFAULT,
+                Set.of("pillager", "vindicator", "evocation_illager"),
+                null,
+                0.0f,
+                false,
+                false,
+                1,
+                List.of(new RideableComponent.Seat(
+                        0,
+                        1,
+                        new Vector3f(0.0f, 2.025f, -0.3f),
+                        null,
+                        null,
+                        null,
+                        null
+                ))
+        );
     }
 
     @Override
