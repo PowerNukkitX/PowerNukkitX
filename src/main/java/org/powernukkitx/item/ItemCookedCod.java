@@ -14,4 +14,9 @@ public class ItemCookedCod extends ItemCod {
     public float getSaturation() {
         return 6F;
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:cooked_fish"};
+    }
 }
