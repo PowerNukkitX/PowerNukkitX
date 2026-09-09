@@ -1,6 +1,8 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.blockentity.BlockEntity;
+import org.powernukkitx.blockentity.BlockEntitySporeBlossom;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 
-public class BlockSporeBlossom extends BlockTransparent {
+public class BlockSporeBlossom extends BlockTransparent implements BlockEntityHolder<BlockEntitySporeBlossom> {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPORE_BLOSSOM);
 
     @Override
@@ -30,9 +32,19 @@ public class BlockSporeBlossom extends BlockTransparent {
     }
 
     @Override
+    @NotNull public Class<? extends BlockEntitySporeBlossom> getBlockEntityClass() {
+        return BlockEntitySporeBlossom.class;
+    }
+
+    @Override
+    @NotNull public String getBlockEntityType() {
+        return BlockEntity.SPORE_BLOSSOM;
+    }
+
+    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (target.isSolid() && face == BlockFace.DOWN) {
-            return super.place(item, block, target, face, fx, fy, fz, player);
+            return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
         }
         return false;
     }
