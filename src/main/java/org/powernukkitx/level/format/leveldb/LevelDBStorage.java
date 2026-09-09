@@ -1,5 +1,9 @@
 package org.powernukkitx.level.format.leveldb;
 
+import org.iq80.leveldb.env.Env;
+import org.iq80.leveldb.fileenv.EnvImpl;
+import org.iq80.leveldb.fileenv.MmapLimiter;
+import org.iq80.leveldb.impl.DbImpl;
 import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelProvider;
@@ -65,7 +69,16 @@ public final class LevelDBStorage {
 
         File dbFolder = path.resolve("db").toFile();
         if (!dbFolder.exists()) dbFolder.mkdirs();
-        db = new Iq80DBFactory().open(dbFolder, options);
+        db = openDb(dbFolder, options);
+    }
+
+    private static DB openDb(File dbFolder, Options options) throws IOException {
+        boolean windows = System.getProperty("os.name", "").toLowerCase().contains("win");
+        if (!windows) {
+            return new Iq80DBFactory().open(dbFolder, options);
+        }
+        Env env = EnvImpl.createEnv(MmapLimiter.newLimiter(0));
+        return new DbImpl(options, dbFolder.getAbsolutePath(), env);
     }
 
     public synchronized void incrementRefCount() {
