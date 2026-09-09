@@ -404,7 +404,7 @@ public class EntityItem extends Entity {
     @Override
     public BedrockPacket createAddEntityPacket() {
         final AddItemActorPacket addItemActorPacket = new AddItemActorPacket();
-        addItemActorPacket.setEntityData(this.actorDataMap);
+        addItemActorPacket.setEntityData(this.snapshotActorData());
         addItemActorPacket.setTargetActorID(this.getId());
         addItemActorPacket.setTargetRuntimeID(this.runtimeId());
         addItemActorPacket.setItem(this.getItem().toNetwork());

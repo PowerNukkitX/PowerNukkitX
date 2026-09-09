@@ -189,7 +189,9 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         if (nbtMap.getBoolean("powered") || nbtMap.getBoolean("IsPowered")) {
             this.setDataFlag(ActorFlags.POWERED, true, false);
         }
-        this.actorDataMap.put(ActorDataTypes.SWELL, (byte) 0);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.SWELL, (byte) 0);
+        }
     }
 
     @Override

@@ -89,21 +89,23 @@ public class EntityBoat extends EntityVehicle {
 
         this.setDataFlag(ActorFlags.HAS_GRAVITY);
         this.setDataFlag(ActorFlags.STACKABLE);
-        this.actorDataMap.put(ActorDataTypes.VARIANT, woodID);
-        this.actorDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, 40);
-        this.actorDataMap.put(ActorDataTypes.IS_BUOYANT, true);
-        this.actorDataMap.put(ActorDataTypes.BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"can_auto_step_from_liquid\":false,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"movement_type\":\"waves\"}");
-        this.actorDataMap.put(ActorDataTypes.AIR_SUPPLY, (short) 300);
-        this.actorDataMap.put(ActorDataTypes.OWNER, -1L);
-        this.actorDataMap.put(ActorDataTypes.ROW_TIME_LEFT, 0f);
-        this.actorDataMap.put(ActorDataTypes.ROW_TIME_RIGHT, 0f);
-        this.actorDataMap.put(ActorDataTypes.CONTROLLING_RIDER_SEAT_INDEX, (byte) 0);
-        this.actorDataMap.put(ActorDataTypes.DATA_LIFETIME_TICKS, -1);
-        this.actorDataMap.put(ActorDataTypes.NAMETAG_ALWAYS_SHOW, (byte) -1);
-        this.actorDataMap.put(ActorDataTypes.AMBIENT_SOUND_INTERVAL, 8F);
-        this.actorDataMap.put(ActorDataTypes.AMBIENT_SOUND_INTERVAL_RANGE, 16F);
-        this.actorDataMap.put(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
-        this.actorDataMap.put(ActorDataTypes.FALL_DAMAGE_MULTIPLIER, 1F);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.VARIANT, woodID);
+            this.actorDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, 40);
+            this.actorDataMap.put(ActorDataTypes.IS_BUOYANT, true);
+            this.actorDataMap.put(ActorDataTypes.BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"can_auto_step_from_liquid\":false,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"movement_type\":\"waves\"}");
+            this.actorDataMap.put(ActorDataTypes.AIR_SUPPLY, (short) 300);
+            this.actorDataMap.put(ActorDataTypes.OWNER, -1L);
+            this.actorDataMap.put(ActorDataTypes.ROW_TIME_LEFT, 0f);
+            this.actorDataMap.put(ActorDataTypes.ROW_TIME_RIGHT, 0f);
+            this.actorDataMap.put(ActorDataTypes.CONTROLLING_RIDER_SEAT_INDEX, (byte) 0);
+            this.actorDataMap.put(ActorDataTypes.DATA_LIFETIME_TICKS, -1);
+            this.actorDataMap.put(ActorDataTypes.NAMETAG_ALWAYS_SHOW, (byte) -1);
+            this.actorDataMap.put(ActorDataTypes.AMBIENT_SOUND_INTERVAL, 8F);
+            this.actorDataMap.put(ActorDataTypes.AMBIENT_SOUND_INTERVAL_RANGE, 16F);
+            this.actorDataMap.put(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
+            this.actorDataMap.put(ActorDataTypes.FALL_DAMAGE_MULTIPLIER, 1F);
+        }
         setDataFlag(ActorFlags.COLLIDABLE);
         entityCollisionReduction = -0.5;
         this.lastX = this.x;
@@ -156,7 +158,7 @@ public class EntityBoat extends EntityVehicle {
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         packet.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
         packet.setRotation(Vector2f.from(this.pitch, this.yaw));
-        packet.setActorData(this.actorDataMap);
+        packet.setActorData(this.snapshotActorData());
 
         for (int i = 0; i < this.passengers.size(); i++) {
             packet.getActorLinks().add(
@@ -482,7 +484,9 @@ public class EntityBoat extends EntityVehicle {
 
     public void setVariant(int variant) {
         this.woodID = variant;
-        this.actorDataMap.put(ActorDataTypes.VARIANT, variant);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.VARIANT, variant);
+        }
     }
 
     @Override

@@ -104,9 +104,11 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
             }
         }
 
-        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 10);
-        actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
-        actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 10);
+            this.actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+            this.actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        }
     }
 
     @Override

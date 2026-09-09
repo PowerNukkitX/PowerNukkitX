@@ -151,9 +151,11 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
             }
         }
 
-        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 11);
-        this.actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
-        this.actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 11);
+            this.actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+            this.actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        }
 
         this.updatePickupArea();
 
