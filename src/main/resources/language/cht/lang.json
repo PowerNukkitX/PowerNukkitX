@@ -1113,7 +1113,7 @@
   "nukkit.level.updating": "發現舊的地圖 \"{%0}\"，正在轉換格式",
   "nukkit.player.invalidEntity": "{%0} 嘗試攻擊一個無效的實體",
   "nukkit.player.invalidMove": "{%0} 行動可疑！",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] 登入遊戲，ID 為 {%3} 座標位於 ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] 登入遊戲，uniqueId 為 {%3} 座標位於 ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] 登出遊戲，原因：{%3}",
   "nukkit.plugin.aliasError": "無法讀取 {%1} 插件的 {%0} 別名",
   "nukkit.plugin.circularDependency": "檢測出迴圈依賴",

@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "古いレベルのデータが見つかりました \"{%0}\" フォーマットを変換しています。",
   "nukkit.player.invalidEntity": "{%0} は無効なエンティティに攻撃しました",
   "nukkit.player.invalidMove": "{%0} が正しく移動できませんでした！",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] がエンティティID {%3} として ({%4}, {%5}, {%6}, {%7})にログインしました",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] がエンティティuniqueId {%3} として ({%4}, {%5}, {%6}, {%7})にログインしました",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] は {%3} でログアウト",
   "nukkit.plugin.aliasError": "プラグイン {%1} で、コマンド{%0} に対するエイリアスを登録できませんでした",
   "nukkit.plugin.circularDependency": "循環依存が検出されました",
