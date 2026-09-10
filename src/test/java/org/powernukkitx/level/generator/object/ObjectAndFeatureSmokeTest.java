@@ -72,12 +72,12 @@ class ObjectAndFeatureSmokeTest {
         driveObject(new ObjectDarkOakTree(), nextCol(4), y, 0);
         driveObject(new ObjectEndGateway(), nextCol(4), y, 0);
         driveObject(new ObjectEndIsland(), nextCol(4), y, 0);
-        driveObject(new ObjectExitPortal(), nextCol(4), y, 0);
+        driveObject(new ObjectExitPortal(true), nextCol(4), y, 0);
         driveObject(new ObjectFallenTree(), nextCol(4), y, 0);
         driveObject(new ObjectFancyOakTree(), nextCol(4), y, 0);
         driveObject(new ObjectJungleBush(), nextCol(4), y, 0);
         driveObject(new ObjectMangroveTree(), nextCol(4), y, 0);
-        driveObject(new ObjectObsidianPillar(), nextCol(4), y, 0);
+        driveObject(new ObjectObsidianPillar(2, 8, false), nextCol(4), y, 0);
         driveObject(new ObjectPaleOakTree(), nextCol(4), y, 0);
         driveObject(new ObjectSavannaTree(), nextCol(4), y, 0);
         driveObject(new ObjectSmallSpruceTree(), nextCol(4), y, 0);

@@ -1,6 +1,7 @@
 package org.powernukkitx.level.generator.object;
 
 import org.powernukkitx.block.BlockBedrock;
+import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockFire;
 import org.powernukkitx.block.BlockIronBars;
 import org.powernukkitx.block.BlockObsidian;
@@ -11,57 +12,39 @@ import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.random.RandomSourceProvider;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.INFINIBURN_BIT;
 
-@Getter
-@Setter
 public class ObjectObsidianPillar extends ObjectGenerator {
+    private final int radius;
+    private final int height;
+    private final boolean guarded;
 
-    public int i = 0;
-    private int seed = 0;
-
-
-    public int getPillar() {
-        return Math.abs((i * 73 + seed) % 10);
-    }
-
-    public int getRadius() {
-        return 2 + getPillar() / 3;
-    }
-
-    public int getHeight() {
-        return 76 + getPillar() * 3;
-    }
-
-    public boolean isGuarded() {
-        int pillar = getPillar();
-        return pillar == 1 || pillar == 2;
+    public ObjectObsidianPillar(int radius, int height, boolean guarded) {
+        this.radius = radius;
+        this.height = height;
+        this.guarded = guarded;
     }
 
     @Override
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
-        this.seed = (int) level.getSeed();
         int x = position.getFloorX();
         int z = position.getFloorZ();
-        int height = getHeight();
-        int radius = getRadius();
 
-        for (int i = 0; i < height; i++) {
+        for (int i = level.getLevel().getMinHeight(); i <= height + 10; i++) {
             for (int j = -radius; j <= radius; j++) {
                 for (int k = -radius; k <= radius; k++) {
-                    if (j * j + k * k <= radius * radius + 1) {
+                    if (j * j + k * k <= radius * radius + 1 && i < height) {
                         level.setBlockStateAt(x + j, i, z + k, BlockObsidian.PROPERTIES.getDefaultState());
+                    } else if (i > 65) {
+                        level.setBlockStateAt(x + j, i, z + k, BlockAir.STATE);
                     }
                 }
             }
         }
 
-        if (this.isGuarded()) {
+        if (guarded) {
             for (int i = -2; i <= 2; ++i) {
                 for (int j = -2; j <= 2; ++j) {
                     if (Math.abs(i) == 2 || Math.abs(j) == 2) {
@@ -87,11 +70,14 @@ public class ObjectObsidianPillar extends ObjectGenerator {
                             .add(new DoubleTag(0))
                             .add(new DoubleTag(0)))
                     .putList("Rotation", new ListTag<FloatTag>()
-                            .add(new FloatTag(new Random().nextFloat() * 360))
+                            .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
                             .add(new FloatTag(0)));
 
             Entity entity = Entity.createEntity(Entity.ENDER_CRYSTAL, level.getChunk(position.getChunkX(), position.getChunkZ()), nbt);
-            entity.spawnToAll();
+            if (entity != null) {
+                level.getLevel().addEntity(entity);
+                entity.spawnToAll();
+            }
         });
         return true;
     }

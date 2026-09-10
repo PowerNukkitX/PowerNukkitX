@@ -13,6 +13,7 @@ import org.powernukkitx.level.generator.populator.generic.PopulatorRuinedPortal;
 import org.powernukkitx.level.generator.populator.nether.BastionRemnantPopulator;
 import org.powernukkitx.level.generator.populator.nether.NetherFortressPopulator;
 import org.powernukkitx.level.generator.populator.nether.soulsand_valley.NetherFossilPopulator;
+import org.powernukkitx.level.generator.populator.the_end.EndCityPopulator;
 import org.powernukkitx.level.generator.populator.normal.*;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.ChunkVector2;
@@ -36,7 +37,7 @@ public class LocateCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("structure", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeStructure", "structure")),
-                CommandParameter.newEnum("structures", new String[]{"woodland_mansion", "desert_pyramid", "igloo", "jungle_temple", "ocean_monument", "ocean_ruin", "pillager_outpost", "shipwreck", "stronghold", "swamp_hut", "trail_ruins", "trial_chambers", "village", "ruined_portal", "ancient_city", "bastion_remnant", "nether_fortress", "nether_fossil"}),
+                CommandParameter.newEnum("structures", new String[]{"woodland_mansion", "desert_pyramid", "igloo", "jungle_temple", "ocean_monument", "ocean_ruin", "pillager_outpost", "shipwreck", "stronghold", "swamp_hut", "trail_ruins", "trial_chambers", "village", "ruined_portal", "ancient_city", "end_city", "bastion_remnant", "nether_fortress", "nether_fossil"}),
                 CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN),
                 CommandParameter.newType("radius", true, CommandParamType.INT)
         });
@@ -85,6 +86,7 @@ public class LocateCommand extends VanillaCommand {
                     case "nether_fortress" -> NetherFortressPopulator.PLACEMENT;
                     case "nether_fossil" -> NetherFossilPopulator.PLACEMENT;
                     case "ancient_city" -> AncientCityPopulator.PLACEMENT;
+                    case "end_city" -> EndCityPopulator.PLACEMENT;
                     default -> null;
                 };
                 if (placement == null) {

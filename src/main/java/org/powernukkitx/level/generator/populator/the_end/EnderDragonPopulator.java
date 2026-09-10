@@ -36,7 +36,10 @@ public class EnderDragonPopulator extends Populator {
                             .add(new FloatTag(new Random().nextFloat() * 360))
                             .add(new FloatTag(0)));
             Entity entity = Entity.createEntity(Entity.ENDER_DRAGON, chunk, nbt);
-            entity.spawnToAll();
+            if (entity != null) {
+                chunk.getLevel().addEntity(entity);
+                entity.spawnToAll();
+            }
         }
     }
 

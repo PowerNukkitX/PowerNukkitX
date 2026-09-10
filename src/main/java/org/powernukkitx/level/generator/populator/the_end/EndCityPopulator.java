@@ -8,7 +8,9 @@ import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.EndCityPieces;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.powernukkitx.utils.random.Xoroshiro128;
 
 public class EndCityPopulator extends Populator implements PopulatorStructure {
@@ -16,6 +18,21 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
     public static final String NAME = "the_end_end_city";
     private static final int SPACING = 20;
     private static final int SEPARATION = 11;
+
+    /**
+     * End City placement shared by generation and {@code /locate structure end_city}.
+     */
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(10387313L)
+            .minDistance(SEPARATION)
+            .maxDistance(SPACING)
+            .build()) {
+        @Override
+        public boolean canGenerate(long levelSeed, RandomSourceProvider random, int chunkX, int chunkZ, int biome) {
+            return (long) chunkX * chunkX + (long) chunkZ * chunkZ > 4096L
+                    && super.canGenerate(levelSeed, random, chunkX, chunkZ, biome);
+        }
+    };
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -26,13 +43,7 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
 
-        if ((long) chunkX * (long) chunkX + (long) chunkZ * (long) chunkZ <= 4096L) {
-            return;
-        }
-
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if (chunkX != (((chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
-                || chunkZ != (((chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
+        if (!chunk.isTheEnd() || !PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, 0)) {
             return;
         }
 
