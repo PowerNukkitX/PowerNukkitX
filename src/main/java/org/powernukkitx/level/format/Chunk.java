@@ -57,6 +57,7 @@ public class Chunk implements IChunk {
     protected final ChunkSection[] sections;
     protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
     protected final AtomicLong changes;
+    private final AtomicLong contentVersion = new AtomicLong();
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
     /**
@@ -840,6 +841,12 @@ public class Chunk implements IChunk {
     @Override
     public void setChanged() {
         this.changes.incrementAndGet();
+        this.contentVersion.incrementAndGet();
+    }
+
+    @Override
+    public long getContentVersion() {
+        return this.contentVersion.get();
     }
 
     @Override
