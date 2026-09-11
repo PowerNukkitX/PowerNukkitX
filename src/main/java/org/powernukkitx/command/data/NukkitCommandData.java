@@ -195,6 +195,10 @@ public class NukkitCommandData implements Cloneable {
     }
 
     public CommandData toNetwork() {
+        return toNetwork(this.name);
+    }
+
+    public CommandData toNetwork(String name) {
         final Set<CommandData.Flag> flags = new ObjectOpenHashSet<>();
         for (Flag flag : this.flags) {
             flags.add(CommandData.Flag.valueOf(flag.name()));
@@ -220,7 +224,7 @@ public class NukkitCommandData implements Cloneable {
             }
         }
         return new CommandData(
-                this.name,
+                name,
                 this.description,
                 flags,
                 this.permission,
