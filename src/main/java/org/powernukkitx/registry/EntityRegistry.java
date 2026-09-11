@@ -4,6 +4,7 @@ import org.powernukkitx.PowerNukkitX;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFakeInventory;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityLeashKnot;
 import org.powernukkitx.entity.custom.CustomEntity;
 import org.powernukkitx.entity.custom.CustomEntityDefinition;
 import org.powernukkitx.entity.data.property.EntityProperty;
@@ -138,7 +139,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(FIREBALL, "", 85, false, false), EntityFireball.class);
         registerInternal(new EntityDefinition(SPLASH_POTION, "", 86, false, true), EntitySplashPotion.class);
         registerInternal(new EntityDefinition(ENDER_PEARL, "", 87, false, false), EntityEnderPearl.class);
-//        registerInternal(new EntityDefinition(LEASH_KNOT, "", 88, false, true), EntityLeashKnot.class);
+        registerInternal(new EntityDefinition(LEASH_KNOT, "", 88, false, true), EntityLeashKnot.class);
         registerInternal(new EntityDefinition(WITHER_SKULL, "", 89, false, false), EntityWitherSkull.class);
         registerInternal(new EntityDefinition(BOAT, "", 90, false, true), EntityBoat.class);
         registerInternal(new EntityDefinition(WITHER_SKULL_DANGEROUS, "", 91, false, false), EntityWitherSkullDangerous.class);
