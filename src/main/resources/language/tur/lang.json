@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "\"{%0}\" için eski dünya verisi bulundu, format dönüştürülüyor",
   "nukkit.player.invalidEntity": "{%0} bilinmeyen bir varlığa saldırmayı denedi",
   "nukkit.player.invalidMove": "{%0} geçersiz hareket etti!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}], {%3} Entity ID\u0027si ile ({%4}, {%5}, {%6}, {%7})\u0027da giriş yaptı",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}], {%3} Entity uniqueId\u0027si ile ({%4}, {%5}, {%6}, {%7})\u0027da giriş yaptı",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}], {%3} sebebiyle çıkış yaptı",
   "nukkit.plugin.aliasError": "{%1} {%0} yüklenemedi",
   "nukkit.plugin.circularDependency": "Döngüsel bağımlılık algılandı",

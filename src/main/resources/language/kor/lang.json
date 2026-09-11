@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "\"{%0}\"의 레벨 데이터가 오래되었습니다, 포맷을 변환합니다",
   "nukkit.player.invalidEntity": "{%0}이(가) 잘못된 개체를 공격하려고 시도했습니다",
   "nukkit.player.invalidMove": "{%0}이(가) 잘못된 움직임을 보였습니다!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}]이(가) 개체 ID {%3}(으)로 ({%4}, {%5}, {%6}, {%7})에 로그인했습니다",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}]이(가) 개체 uniqueId {%3}(으)로 ({%4}, {%5}, {%6}, {%7})에 로그인했습니다",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}]이(가) {%3}(으)로 인해 로그아웃되었습니다",
   "nukkit.plugin.aliasError": "{%0} 별칭을 {%1} 플러그인에서 불러올 수 없습니다",
   "nukkit.plugin.circularDependency": "순환적 의존이 감지되었습니다",

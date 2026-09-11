@@ -81,7 +81,7 @@ public interface BlockEntityID {
 
     String PISTON_ARM = "PistonArm";
 
-    String POTENT_SULFUR = "PotentSulfur";
+    String POTENT_SULFUR_BLOCK = "PotentSulfurBlock";
 
     String SCULK_CATALYST = "SculkCatalyst";
 
@@ -98,6 +98,8 @@ public interface BlockEntityID {
     String SKULL = "Skull";
 
     String SMOKER = "Smoker";
+
+    String SPORE_BLOSSOM = "SporeBlossom";
 
     String STRUCTURE_BLOCK = "StructureBlock";
 

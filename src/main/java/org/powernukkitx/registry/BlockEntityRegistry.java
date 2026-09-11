@@ -27,7 +27,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(ENDER_CHEST, BlockEntityEnderChest.class);
         register0(BEACON, BlockEntityBeacon.class);
         register0(PISTON_ARM, BlockEntityPistonArm.class);
-        register0(POTENT_SULFUR, BlockEntityPotentSulfur.class);
+        register0(POTENT_SULFUR_BLOCK, BlockEntityPotentSulfurBlock.class);
         register0(COMPARATOR, BlockEntityComparator.class);
         register0(HOPPER, BlockEntityHopper.class);
         register0(BED, BlockEntityBed.class);
@@ -49,7 +49,6 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(DISPENSER, BlockEntityDispenser.class);
         register0(DROPPER, BlockEntityDropper.class);
         register0(MOVING_BLOCK, BlockEntityMovingBlock.class);
-        register0(NETHER_REACTOR, BlockEntityNetherReactor.class);
         register0(LODESTONE, BlockEntityLodestone.class);
         register0(END_PORTAL, BlockEntityEndPortal.class);
         register0(END_GATEWAY, BlockEntityEndGateway.class);
@@ -58,7 +57,8 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(CALIBRATED_SCULK_SENSOR, BlockEntityCalibratedSculkSensor.class);
         register0(SCULK_CATALYST, BlockEntitySculkCatalyst.class);
         register0(SCULK_SHRIEKER, BlockEntitySculkShrieker.class);
-        register0(STRUCTURE_BLOCK, BlockEntityStructBlock.class);
+        register0(SPORE_BLOSSOM, BlockEntitySporeBlossom.class);
+        register0(STRUCTURE_BLOCK, BlockEntityStructureBlock.class);
         register0(GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class);
         register0(HANGING_SIGN, BlockEntityHangingSign.class);
         register0(CHISELED_BOOKSHELF, BlockEntityChiseledBookshelf.class);
