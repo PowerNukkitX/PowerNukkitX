@@ -23,7 +23,8 @@ dependencyResolutionManagement {
         mavenLocal()
         mavenCentral()
         maven("https://repo.maven.apache.org/maven2/")
-        maven("https://repo.powernukkitx.org/releases")
+        maven("https://repopnx.go2mydc.com/releases") // TEMPORARY: to test the PR
+        //maven("https://repo.powernukkitx.org/releases")
         maven("https://jitpack.io")
         maven("https://repo.opencollab.dev/maven-releases/")
         maven("https://repo.opencollab.dev/maven-snapshots/") {
