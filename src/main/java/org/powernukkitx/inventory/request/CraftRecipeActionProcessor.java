@@ -10,6 +10,8 @@ import org.powernukkitx.inventory.InputInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.SmithingInventory;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemBanner;
+import org.powernukkitx.item.ItemShield;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -51,6 +53,33 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
     public static final String GRID_CONSUMED_KEY = "grid_consumed";
+    public static final String MULTI_RESULT_KEY = "multi_result";
+
+    private Item computeMultiRecipeResult(Item[][] data) {
+        ItemShield shield = null;
+        ItemBanner banner = null;
+        for (Item[] row : data) {
+            for (Item ingredient : row) {
+                if (ingredient == null || ingredient.isNull()) continue;
+                if (ingredient instanceof ItemShield s) {
+                    if (shield != null) return null;
+                    shield = s;
+                } else if (ingredient instanceof ItemBanner b) {
+                    if (banner != null) return null;
+                    banner = b;
+                } else {
+                    return null;
+                }
+            }
+        }
+        if (shield != null && banner != null && !shield.hasBannerPattern()) {
+            ItemShield result = (ItemShield) shield.clone();
+            result.setCount(1);
+            result.setBannerPattern(banner);
+            return result;
+        }
+        return null;
+    }
 
     public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
         String id = input.getId();
@@ -229,6 +258,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             return context.error();
         } else {
             Inventory craftInventory = (Inventory) craft;
+            Item multiResult = null;
+            if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
+                multiResult = computeMultiRecipeResult(data);
+            }
             if (recipe instanceof ShapelessRecipe shapelessRecipe) {
                 if (!consumeShapelessRecipe(shapelessRecipe, craftInventory, numberOfRequestedCrafts)) {
                     return context.error();
@@ -246,6 +279,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             player.getRecipeBook().unlock(recipe);
             if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
                 context.put(RECIPE_DATA_KEY, recipe);
+                if (multiResult != null && !multiResult.isNull()) {
+                    context.put(MULTI_RESULT_KEY, multiResult);
+                }
             } else if (recipe.getResults().size() == 1) {
                 // If the recipe has a single output item, the client will not send a CreateAction; in this case, we will output the item directly to CREATED_OUTPUT in CraftRecipeAction
                 // If the recipe has multiple output items, the client will send a CreateAction; in this case, we will output the items to CREATED_OUTPUT within the CreateActionProcessor

@@ -12,6 +12,7 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.recipe.RecipeType;
 
+import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.MULTI_RESULT_KEY;
 import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
 
 /**
@@ -31,9 +32,16 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
     @Override
     public ActionResponse handle(CraftResultsDeprecatedAction action, Player player, ItemStackRequestContext context) {
         if (context.has(RECIPE_DATA_KEY) && ((Recipe) context.get(RECIPE_DATA_KEY)).getType() == RecipeType.MULTI) {
-            if (action.getResultItemsDeprecated().length == 0) {
-                log.warn("Multi recipe result is missing!");
-                return context.error();
+            if (action.getResultItemsDeprecated() == null || action.getResultItemsDeprecated().length == 0) {
+                Item computed = context.has(MULTI_RESULT_KEY) ? ((Item) context.get(MULTI_RESULT_KEY)) : null;
+                if (computed == null || computed.isNull()) {
+                    log.warn("Multi recipe result is missing!");
+                    return context.error();
+                }
+                var createdOutput = player.getCreativeOutputInventory();
+                computed.autoAssignStackNetworkId();
+                createdOutput.setItem(0, computed, false);
+                return null;
             }
             Item resultItem = Item.fromNetwork(action.getResultItemsDeprecated()[0]);
             if (resultItem.isNull() || resultItem.getCount() <= 0 || resultItem.getCount() > resultItem.getMaxStackSize()) {
