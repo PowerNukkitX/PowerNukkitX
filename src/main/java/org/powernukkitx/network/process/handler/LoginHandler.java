@@ -63,10 +63,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final int clientNetworkVersion = packet.getClientNetworkVersion();
-        final BedrockCodec codec = NetworkConstants.codecForProtocolVersion(clientNetworkVersion);
 
-        if (codec == null) {
-            final boolean serverOutdated = NetworkConstants.isServerOutdated(clientNetworkVersion);
+        if (clientNetworkVersion != NetworkConstants.CODEC.getProtocolVersion()) {
+            final boolean serverOutdated = clientNetworkVersion > NetworkConstants.CODEC.getProtocolVersion();
             holder.sendPlayStatus(
                 serverOutdated ?
                     PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
@@ -74,8 +73,6 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT, null);
             return;
         }
-
-        holder.getSession().setCodec(codec);
 
         final PlayerAuthenticationType type = packet.getAuthenticationType();
         if (type.equals(PlayerAuthenticationType.UNKNOWN)) {
@@ -206,11 +203,6 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA, null);
             return;
         }
-
-        holder.getSession().setCodec(NetworkConstants.codecForGameVersion(
-            holder.getSession().getCodec().getProtocolVersion(),
-            clientChainData.getGameVersion()
-        ));
 
         holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
 

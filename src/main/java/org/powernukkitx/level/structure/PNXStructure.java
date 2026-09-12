@@ -8,6 +8,7 @@ import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.generator.object.BlockManager;
+import org.powernukkitx.level.updater.block.LegacyBlockStateHashes;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.IntTag;
@@ -60,6 +61,11 @@ public class PNXStructure extends AbstractStructure {
         for (int i = 0; i < paletteNbt.size(); i++) {
             int hash = paletteNbt.get(i).getData();
             BlockState state = Registries.BLOCKSTATE.get(hash);
+
+            if (state == null) {
+                state = LegacyBlockStateHashes.get(hash);
+            }
+
             if (state == null) {
                 log.warn("Unknown block state hash in structure palette: {}", hash);
                 state = STATE_UNKNOWN;

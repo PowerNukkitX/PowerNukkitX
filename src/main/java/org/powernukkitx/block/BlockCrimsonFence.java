@@ -1,9 +1,10 @@
 package org.powernukkitx.block;
 
 import org.jetbrains.annotations.NotNull;
+import org.powernukkitx.block.property.CommonBlockProperties;
 
 public class BlockCrimsonFence extends BlockFence {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FENCE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FENCE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
     @Override
     @NotNull public BlockProperties getProperties() {
