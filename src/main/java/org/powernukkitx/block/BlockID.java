@@ -122,6 +122,8 @@ public interface BlockID {
 
     String BED = "minecraft:bed";
 
+    String STRAW_BED = "minecraft:straw_bed";
+
     String BEDROCK = "minecraft:bedrock";
 
     String BEE_NEST = "minecraft:bee_nest";

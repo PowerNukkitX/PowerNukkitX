@@ -3076,7 +3076,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.from((int) pos.x, (int) pos.y, (int) pos.z));
         this.setPlayerSleepFlag(true);
 
-        this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
+        Block sleepingBlock = this.level.getBlock(pos);
+        if (!(sleepingBlock instanceof BlockBed bed) || bed.setsRespawnPoint()) {
+            this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
+        }
         this.level.sleepTicks = 75;
         this.timeSinceRest = 0;
 
@@ -3095,11 +3098,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
+        Block sleepingBlock = this.level.getBlock(this.sleeping);
+        this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, sleepingBlock));
 
         this.sleeping = null;
         this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
         this.setPlayerSleepFlag(false);
+
+        if (sleepingBlock instanceof BlockBed bed) {
+            bed.onSleepEnd(this);
+        }
 
         this.level.sleepTicks = 0;
 
