@@ -109,6 +109,8 @@ public interface ItemID {
 
     String BREAD = "minecraft:bread";
 
+    String STRAW_BED = "minecraft:straw_bed";
+
     String BREEZE_ROD = "minecraft:breeze_rod";
 
     String BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";

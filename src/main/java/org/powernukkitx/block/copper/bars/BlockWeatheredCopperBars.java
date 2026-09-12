@@ -2,6 +2,7 @@ package org.powernukkitx.block.copper.bars;
 
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.21.110
  */
 public class BlockWeatheredCopperBars extends BlockCopperBars {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_COPPER_BARS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WEATHERED_COPPER_BARS, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
     @Override
     @NotNull public BlockProperties getProperties() {

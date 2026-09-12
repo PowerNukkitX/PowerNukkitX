@@ -644,6 +644,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     private void registerBlockItem() throws RegisterException {
         register(BlockID.BED, ItemBed.class);
+        register(STRAW_BED, ItemStrawBed.class);
         register(BlockID.BIRCH_HANGING_SIGN, ItemBirchHangingSign.class);
         register(BlockID.ACACIA_HANGING_SIGN, ItemAcaciaHangingSign.class);
         register(BlockID.BAMBOO_HANGING_SIGN, ItemBambooHangingSign.class);

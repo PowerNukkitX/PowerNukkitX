@@ -5,7 +5,7 @@ import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockExposedCutCopperStairs extends BlockCutCopperStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties(EXPOSED_CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(EXPOSED_CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
 
     @Override
     @NotNull public BlockProperties getProperties() {

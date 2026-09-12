@@ -26,6 +26,7 @@ public abstract class EntityBoss extends EntityMob {
         bossEventPacket.setTargetActorID(this.getId());
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
         bossEventPacket.setName(this.getName());
+        bossEventPacket.setFilteredName(this.getName());
         bossEventPacket.setHealthPercent(health / getHealthMax());
         bossEventPacket.setColor(getBossBarColor());
         bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
