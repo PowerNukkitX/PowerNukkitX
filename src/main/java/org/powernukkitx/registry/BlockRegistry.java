@@ -1397,6 +1397,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CRIMSON_SHELF, BlockCrimsonShelf.class);
         register0(WARPED_SHELF, BlockWarpedShelf.class);
         register0(BAMBOO_SHELF, BlockBambooShelf.class);
+        register0(SHELF_MUSHROOM, BlockMushroomShelf.class);
+
+        register0(RED_SHRUB, BlockRedShrub.class);
 
         register0(SULFUR, BlockSulfur.class);
         register0(SULFUR_BRICKS, BlockSulfurBricks.class);
