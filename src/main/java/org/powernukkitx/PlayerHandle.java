@@ -323,6 +323,10 @@ public final class PlayerHandle {
         player.handleLogicInMove(invalidMotion, distance);
     }
 
+    public void handleLogicInMove(boolean invalidMotion, double deltaX, double deltaY, double deltaZ) {
+        player.handleLogicInMove(invalidMotion, deltaX, deltaY, deltaZ);
+    }
+
     public void resetClientMovement() {
         player.resetClientMovement();
     }
