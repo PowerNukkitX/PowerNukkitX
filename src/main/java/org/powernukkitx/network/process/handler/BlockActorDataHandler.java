@@ -5,7 +5,7 @@ import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
-import org.powernukkitx.math.Vector3;
+import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.cloudburstmc.nbt.NbtMap;
@@ -24,17 +24,19 @@ public class BlockActorDataHandler implements PacketHandler<BlockActorDataPacket
             return;
         }
 
-        Vector3 pos = new Vector3(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ());
-        if (pos.distanceSquared(player) > 10000) {
+        BlockVector3 position = BlockVector3.fromNetwork(packet.getBlockPosition());
+        player.temporalVector.setComponents(position.x, position.y, position.z);
+        if (!player.canInteract(player.temporalVector.add(0.5, 0.5, 0.5))) {
             return;
         }
+
         player.resetInventory();
 
-        BlockEntity t = player.level.getBlockEntity(pos);
-        if (t instanceof BlockEntitySpawnable) {
+        BlockEntity t = player.level.getBlockEntity(position);
+        if (t instanceof BlockEntitySpawnable spawnable) {
             NbtMap nbt = packet.getActorDataTags();
-            if (!((BlockEntitySpawnable) t).updateCompoundTag(nbt, player)) {
-                ((BlockEntitySpawnable) t).spawnTo(player);
+            if (!spawnable.updateCompoundTag(nbt, player)) {
+                spawnable.spawnTo(player);
             }
         }
     }

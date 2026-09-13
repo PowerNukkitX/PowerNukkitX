@@ -20,10 +20,23 @@ import org.cloudburstmc.protocol.bedrock.packet.BookEditPacket;
 @Slf4j
 public class BookEditHandler implements PacketHandler<BookEditPacket> {
 
+    private static final int MAX_PAGES = 50;
+    private static final int MAX_PAGE_LENGTH = 256;
+
     @Override
     public void handle(BookEditPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
+
+        if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to edit a book while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
+
+        if (packet.getBookSlot() < 0 || packet.getBookSlot() >= player.getInventory().getHotbarSize()) {
+            log.debug("{}: BookEditPacket with an out of range book slot {}", playerHandle.getUsername(), packet.getBookSlot());
+            return;
+        }
 
         Item oldBook = player.getInventory().getItem(packet.getBookSlot());
         if (!oldBook.getId().equals(Item.WRITABLE_BOOK)) {
@@ -43,18 +56,34 @@ public class BookEditHandler implements PacketHandler<BookEditPacket> {
         switch (packet.getOperation().getType()) {
             case REPLACE_PAGE:
                 final BookEditAction.ReplacePage replacePage = (BookEditAction.ReplacePage) action;
+                if (!isValidPage(replacePage.getPageIndex()) || !isValidPageText(replacePage.getPageText())) {
+                    log.debug("{}: Invalid BookEditPacket action REPLACE_PAGE", playerHandle.getUsername());
+                    return;
+                }
                 success = ((ItemWritableBook) newBook).setPageText(replacePage.getPageIndex(), replacePage.getPageText());
                 break;
             case ADD_PAGE:
                 final BookEditAction.AddPage addPage = (BookEditAction.AddPage) action;
+                if (!isValidPage(addPage.getPageIndex()) || !isValidPageText(addPage.getPageText())) {
+                    log.debug("{}: Invalid BookEditPacket action ADD_PAGE", playerHandle.getUsername());
+                    return;
+                }
                 success = ((ItemWritableBook) newBook).insertPage(addPage.getPageIndex(), addPage.getPageText());
                 break;
             case DELETE_PAGE:
                 final BookEditAction.DeletePage deletePage = (BookEditAction.DeletePage) action;
+                if (!isValidPage(deletePage.getPageIndex())) {
+                    log.debug("{}: Invalid BookEditPacket action DELETE_PAGE", playerHandle.getUsername());
+                    return;
+                }
                 success = ((ItemWritableBook) newBook).deletePage(deletePage.getPageIndex());
                 break;
             case SWAP_PAGES:
                 final BookEditAction.SwapPages swapPages = (BookEditAction.SwapPages) action;
+                if (!isValidPage(swapPages.getPageIndex()) || !isValidPage(swapPages.getSwapWithIndex())) {
+                    log.debug("{}: Invalid BookEditPacket action SWAP_PAGES", playerHandle.getUsername());
+                    return;
+                }
                 success = ((ItemWritableBook) newBook).swapPages(swapPages.getPageIndex(), swapPages.getSwapWithIndex());
                 break;
             case FINALIZE:
@@ -77,5 +106,13 @@ public class BookEditHandler implements PacketHandler<BookEditPacket> {
                 player.getInventory().setItem(packet.getBookSlot(), editBookEvent.getNewBook());
             }
         }
+    }
+
+    private boolean isValidPage(int pageIndex) {
+        return pageIndex >= 0 && pageIndex < MAX_PAGES;
+    }
+
+    private boolean isValidPageText(String pageText) {
+        return pageText != null && pageText.length() <= MAX_PAGE_LENGTH;
     }
 }
