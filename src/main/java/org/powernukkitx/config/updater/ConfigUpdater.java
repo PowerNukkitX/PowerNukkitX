@@ -9,7 +9,8 @@ import java.util.List;
 public class ConfigUpdater {
     public static List<Updater> updaters = List.of(
             new ConfigUpdaterLegacy(),
-            new ConfigUpdater_3_0_0()
+            new ConfigUpdater_3_0_0(),
+            new ConfigUpdater_3_0_1()
     );
 
     public static boolean canUpdate(String version) {

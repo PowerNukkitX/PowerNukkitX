@@ -17,12 +17,10 @@ public class ConfigUpdater_3_0_0 implements ConfigUpdater.Updater {
     public void update(Server server) {
         RawConfigView view = new RawConfigView(server.getSettings());
 
-        // The transport is selectable now, so its options moved under the section that owns them.
-        renameKey(view, "network-settings.pacingEnabled", "network-settings.raknet.autoFlush");
-        renameKey(view, "network-settings.pacingFlushIntervalMillis", "network-settings.raknet.flushInterval");
-        for (String key : new String[]{"autoFlush", "flushInterval", "maxQueuedBytes", "cookieMode", "packetLimit"}) {
-            renameKey(view, "network-settings." + key, "network-settings.raknet." + key);
-        }
+        // The network pacing fields were renamed to match the underlying RakNet option names.
+        // These carry the same meaning, so preserve any value the user had set.
+        renameKey(view, "network-settings.pacingEnabled", "network-settings.autoFlush");
+        renameKey(view, "network-settings.pacingFlushIntervalMillis", "network-settings.flushInterval");
         // pacingMaxBytesPerSecond (bytes/second) became maxQueuedBytes (queued-byte cap); the meaning
         // changed, so drop the old value and let the new default apply instead of carrying it over.
         if (view.exists("network-settings.pacingMaxBytesPerSecond")) {
