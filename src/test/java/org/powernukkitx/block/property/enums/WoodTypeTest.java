@@ -7,7 +7,7 @@ public class WoodTypeTest {
 
     @Test
     void roundTrip() {
-        Assertions.assertEquals(9, WoodType.values().length);
+        Assertions.assertEquals(10, WoodType.values().length);
         for (WoodType t : WoodType.values()) {
             Assertions.assertSame(t, WoodType.valueOf(t.name()));
             Assertions.assertNotNull(t.getName());

@@ -1780,6 +1780,50 @@ public interface BlockID {
 
     String POLISHED_ANDESITE_STAIRS = "minecraft:polished_andesite_stairs";
 
+    String POPLAR_BUTTON = "minecraft:poplar_button";
+
+    String POPLAR_DOOR = "minecraft:poplar_door";
+
+    String POPLAR_DOUBLE_SLAB = "minecraft:poplar_double_slab";
+
+    String POPLAR_FENCE = "minecraft:poplar_fence";
+
+    String POPLAR_FENCE_GATE = "minecraft:poplar_fence_gate";
+
+    String POPLAR_HANGING_SIGN = "minecraft:poplar_hanging_sign";
+
+    String POPLAR_LOG = "minecraft:poplar_log";
+
+    String POPLAR_PLANKS = "minecraft:poplar_planks";
+
+    String POPLAR_PRESSURE_PLATE = "minecraft:poplar_pressure_plate";
+
+    String POPLAR_SAPLING = "minecraft:poplar_sapling";
+
+    String POPLAR_SLAB = "minecraft:poplar_slab";
+
+    String POPLAR_STAIRS = "minecraft:poplar_stairs";
+
+    String POPLAR_STANDING_SIGN = "minecraft:poplar_standing_sign";
+
+    String POPLAR_TRAPDOOR = "minecraft:poplar_trapdoor";
+
+    String POPLAR_WALL_SIGN = "minecraft:poplar_wall_sign";
+
+    String POPLAR_WOOD = "minecraft:poplar_wood";
+
+    String RED_POPLAR_LEAVES = "minecraft:red_poplar_leaves";
+
+    String ORANGE_POPLAR_LEAVES = "minecraft:orange_poplar_leaves";
+
+    String YELLOW_POPLAR_LEAVES = "minecraft:yellow_poplar_leaves";
+
+    String STRIPPED_POPLAR_LOG = "minecraft:stripped_poplar_log";
+
+    String STRIPPED_POPLAR_WOOD = "minecraft:stripped_poplar_wood";
+
+    String POPLAR_SHELF = "minecraft:poplar_shelf";
+
     String POLISHED_BASALT = "minecraft:polished_basalt";
 
     String POLISHED_BLACKSTONE = "minecraft:polished_blackstone";

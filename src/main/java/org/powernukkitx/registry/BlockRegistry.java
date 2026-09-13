@@ -103,29 +103,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
             "minecraft:deprecated_purpur_block_2",
-            // 1.26.40 additions that have no implementation yet
-            "minecraft:orange_poplar_leaves",
-            "minecraft:poplar_button",
-            "minecraft:poplar_door",
-            "minecraft:poplar_double_slab",
-            "minecraft:poplar_fence",
-            "minecraft:poplar_fence_gate",
-            "minecraft:poplar_hanging_sign",
-            "minecraft:poplar_log",
-            "minecraft:poplar_planks",
-            "minecraft:poplar_pressure_plate",
-            "minecraft:poplar_sapling",
-            "minecraft:poplar_shelf",
-            "minecraft:poplar_slab",
-            "minecraft:poplar_stairs",
-            "minecraft:poplar_standing_sign",
-            "minecraft:poplar_trapdoor",
-            "minecraft:poplar_wall_sign",
-            "minecraft:poplar_wood",
-            "minecraft:red_poplar_leaves",
-            "minecraft:stripped_poplar_log",
-            "minecraft:stripped_poplar_wood",
-            "minecraft:yellow_poplar_leaves",
         "minecraft:black_concrete_double_slab",
         "minecraft:black_concrete_slab",
         "minecraft:black_concrete_stairs",
@@ -918,6 +895,25 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(PALE_OAK_TRAPDOOR, BlockPaleOakTrapdoor.class);
         register0(PALE_OAK_WALL_SIGN, BlockPaleOakWallSign.class);
         register0(PALE_OAK_WOOD, BlockPaleOakWood.class);
+        register0(POPLAR_BUTTON, BlockPoplarButton.class);
+        register0(POPLAR_DOOR, BlockPoplarDoor.class);
+        register0(POPLAR_DOUBLE_SLAB, BlockPoplarDoubleSlab.class);
+        register0(POPLAR_FENCE, BlockPoplarFence.class);
+        register0(POPLAR_FENCE_GATE, BlockPoplarFenceGate.class);
+        register0(POPLAR_HANGING_SIGN, BlockPoplarHangingSign.class);
+        register0(POPLAR_LOG, BlockPoplarLog.class);
+        register0(POPLAR_PLANKS, BlockPoplarPlanks.class);
+        register0(POPLAR_PRESSURE_PLATE, BlockPoplarPressurePlate.class);
+        register0(POPLAR_SAPLING, BlockPoplarSapling.class);
+        register0(POPLAR_SLAB, BlockPoplarSlab.class);
+        register0(POPLAR_STAIRS, BlockPoplarStairs.class);
+        register0(POPLAR_STANDING_SIGN, BlockPoplarStandingSign.class);
+        register0(POPLAR_TRAPDOOR, BlockPoplarTrapdoor.class);
+        register0(POPLAR_WALL_SIGN, BlockPoplarWallSign.class);
+        register0(POPLAR_WOOD, BlockPoplarWood.class);
+        register0(RED_POPLAR_LEAVES, BlockRedPoplarLeaves.class);
+        register0(ORANGE_POPLAR_LEAVES, BlockOrangePoplarLeaves.class);
+        register0(YELLOW_POPLAR_LEAVES, BlockYellowPoplarLeaves.class);
         register0(PEARLESCENT_FROGLIGHT, BlockPearlescentFroglight.class);
         register0(PEONY, BlockPeony.class);
         register0(PETRIFIED_OAK_DOUBLE_SLAB, BlockPetrifiedOakDoubleSlab.class);
@@ -1168,6 +1164,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(STRIPPED_OAK_WOOD, BlockStrippedOakWood.class);
         register0(STRIPPED_PALE_OAK_LOG, BlockStrippedPaleOakLog.class);
         register0(STRIPPED_PALE_OAK_WOOD, BlockStrippedPaleOakWood.class);
+        register0(STRIPPED_POPLAR_LOG, BlockStrippedPoplarLog.class);
+        register0(STRIPPED_POPLAR_WOOD, BlockStrippedPoplarWood.class);
         register0(STRIPPED_SPRUCE_LOG, BlockStrippedSpruceLog.class);
         register0(STRIPPED_SPRUCE_WOOD, BlockStrippedSpruceWood.class);
         register0(STRIPPED_WARPED_HYPHAE, BlockStrippedWarpedHyphae.class);
@@ -1394,6 +1392,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(MANGROVE_SHELF, BlockMangroveShelf.class);
         register0(CHERRY_SHELF, BlockCherryShelf.class);
         register0(PALE_OAK_SHELF, BlockPaleOakShelf.class);
+        register0(POPLAR_SHELF, BlockPoplarShelf.class);
         register0(CRIMSON_SHELF, BlockCrimsonShelf.class);
         register0(WARPED_SHELF, BlockWarpedShelf.class);
         register0(BAMBOO_SHELF, BlockBambooShelf.class);
