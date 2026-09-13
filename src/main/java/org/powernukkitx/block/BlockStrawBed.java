@@ -1,19 +1,21 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.property.CommonPropertyMap;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemStrawBed;
+import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static org.powernukkitx.block.property.CommonBlockProperties.DIRECTION;
 import static org.powernukkitx.block.property.CommonBlockProperties.HEAD_PIECE_BIT;
+import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static org.powernukkitx.block.property.CommonBlockProperties.OCCUPIED_BIT;
 
 /**
  * A single-use bed that is destroyed after a player wakes up.
  */
 public class BlockStrawBed extends BlockBed {
-    public static final BlockProperties PROPERTIES = new BlockProperties(STRAW_BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(STRAW_BED, MINECRAFT_CARDINAL_DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
 
     @Override
     @NotNull
@@ -27,6 +29,16 @@ public class BlockStrawBed extends BlockBed {
 
     public BlockStrawBed(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
     }
 
     @Override
