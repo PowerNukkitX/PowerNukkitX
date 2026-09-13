@@ -2,6 +2,7 @@ package org.powernukkitx.config.category;
 
 import org.powernukkitx.config.category.network.BotnetSettings;
 import org.powernukkitx.config.category.network.NetherNetSettings;
+import org.powernukkitx.config.category.network.RakNetSettings;
 import org.powernukkitx.config.category.network.RateLimitSettings;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
@@ -14,6 +15,24 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 public class NetworkSettings extends OkaeriConfig {
+    /**
+     * Which transport carries Bedrock sessions. Exactly one is bound.
+     */
+    public enum TransportType {
+        /**
+         * @deprecated
+         * The classic UDP transport every client.
+         */
+        @Deprecated RAKNET,
+        /**
+         * WebRTC data channels reached through a signalling endpoint.
+         */
+        NETHERNET
+    }
+
+    @Comment("pnx.settings.network.transport")
+    String transport = "raknet";
+
     @Comment("pnx.settings.network.queryplugins")
     boolean queryPlugins = true;
     @Comment("pnx.settings.network.compressionlevel")
@@ -33,6 +52,10 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.logintime")
     boolean checkLoginTime = false;
 
+    @Comment("pnx.settings.network.raknet")
+    @CustomKey("raknet")
+    private RakNetSettings rakNetSettings = new RakNetSettings();
+
     @Comment("pnx.settings.network.nethernet")
     @CustomKey("nethernet")
     private NetherNetSettings netherNetSettings = new NetherNetSettings();
@@ -44,4 +67,12 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.ratelimit")
     @CustomKey("botnet")
     private BotnetSettings botnetSettings = new BotnetSettings();
+
+    public TransportType resolvedTransport() {
+        try {
+            return TransportType.valueOf(this.transport.trim().toUpperCase(java.util.Locale.ROOT));
+        } catch (RuntimeException invalid) {
+            return TransportType.RAKNET;
+        }
+    }
 }

@@ -121,6 +121,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .compressionBufferSize(netOld.compressionBufferSize())
                 .maxDecompressSize(netOld.maxDecompressSize())
                 .queryPlugins(baseOld.queryPlugins());
+        net.rakNetSettings().packetLimit(netOld.packetLimit());
 
         PerformanceSettings perf = settings.performanceSettings();
         LegacyServerSettings.FreezeArraySettings perfOld = legacyNukkit.freezeArraySettings();
