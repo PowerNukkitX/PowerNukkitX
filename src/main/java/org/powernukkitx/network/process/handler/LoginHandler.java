@@ -1,8 +1,10 @@
 package org.powernukkitx.network.process.handler;
 
+import io.netty.channel.Channel;
 import io.netty.channel.EventLoop;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.netty.util.nethernet.TransportIdentityBinding;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
@@ -30,6 +32,7 @@ import org.powernukkitx.network.process.auth.ClientSkinData;
 import org.powernukkitx.utils.SkinUtils;
 
 import javax.crypto.SecretKey;
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.List;
 import java.util.Locale;
@@ -39,10 +42,9 @@ import java.util.function.Consumer;
 /**
  * Handles the client's {@code LoginPacket}.
  * <p>
- * Validating a login costs several milliseconds of cryptography: the identity chain, the client
- * JWT, and the encryption key exchange. RakNet pins a session to one Netty event loop that also
- * serves every other session on that loop, so doing this inline stalls unrelated players whenever
- * a batch of logins arrives.
+ * Validating a login costs several milliseconds of cryptography: the identity chain and the client
+ * JWT. A session is pinned to one Netty event loop that also serves every other session on that
+ * loop, so doing this inline stalls unrelated players whenever a batch of logins arrives.
  * <p>
  * The work therefore runs on the compute pool in two steps, with the checks that read server
  * state - the pre-login event, player count, whitelist and bans - on the event loop between them.
@@ -129,6 +131,13 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         final ChainValidationResult.IdentityClaims identityClaims = Objects.requireNonNull(
             chain.identityClaims(), "a chain outcome without a failure always carries identity claims");
 
+        final String refusal = transportIdentityRefusal(identityClaims, holder, server);
+        if (refusal != null) {
+            log.debug("Refusing a login from {}: {}", holder.getSession().getSocketAddress(), refusal);
+            failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
+            return;
+        }
+
         final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -157,6 +166,40 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         offLoop(holder, server,
             () -> validateClient(credentials, server, identityClaims),
             client -> completeLogin(client, identityClaims, chain.signed(), holder, server));
+    }
+
+    /**
+     * Ties the login chain to the identity that opened the transport.
+     * <p>
+     * On RakNet the encryption handshake did this by itself: the session key came out of an ECDH
+     * against the chain's identity key, so only its holder could read what followed. NetherNet runs
+     * inside DTLS and skips that handshake, which leaves the chain unbound, and an unbound chain is
+     * replayable: anyone who captured one elsewhere could present it over a transport of their own.
+     * The signalling assertion is what binds it, because the peer proved it holds the key the
+     * assertion names before the transport was accepted.
+     * <p>
+     * The binding is spent either way, so an admission never outlives the session it admitted.
+     *
+     * @return why the login must be refused, or null when the two agree
+     */
+    private @Nullable String transportIdentityRefusal(ChainValidationResult.IdentityClaims identityClaims,
+                                                      PlayerSessionHolder holder, Server server) {
+        final Channel channel = holder.getSession().getPeer().getChannel();
+        final var authProvider = server.getProxyAuthProvider();
+        final boolean strict = server.getSettings().baseSettings().xboxAuth()
+            && (authProvider == null || !authProvider.isUnsignedLoginAllowed());
+
+        if (!strict) {
+            // Offline mode has already given up on proving who this is, so there is no key worth
+            // comparing against.
+            return TransportIdentityBinding.acceptForwardedIdentity(channel);
+        }
+
+        try {
+            return TransportIdentityBinding.mismatch(channel, identityClaims.parsedIdentityPublicKey());
+        } catch (GeneralSecurityException e) {
+            return "the login chain carries no usable identity key";
+        }
     }
 
     /**
