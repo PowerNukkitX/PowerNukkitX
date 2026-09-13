@@ -1307,17 +1307,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         float x = (float) deltaX;
         float y = (float) deltaY;
         float z = (float) deltaZ;
-        int distance3Dcm = Math.round((float) Math.sqrt(x * x + y * y + z * z) * 100.0f);
-        int distanceXZcm = Math.round((float) Math.sqrt(x * x + z * z) * 100.0f);
+        float distance3D = (float) Math.sqrt(x * x + y * y + z * z);
+        float distanceXZ = (float) Math.sqrt(x * x + z * z);
 
         if (underWater) {
-            return distance3Dcm > 0 ? distance3Dcm * 0.00015f : 0.0;
+            return distance3D * 0.01f;
         }
         if (inWater) {
-            return distanceXZcm > 0 ? distanceXZcm * 0.00015f : 0.0;
+            return distanceXZ * 0.01f;
         }
-        if (onGround && distanceXZcm > 0) {
-            return distanceXZcm * (sprinting ? 0.001f : 0.0001f);
+        if (onGround && sprinting) {
+            return distanceXZ * 0.1f;
         }
         return 0.0;
     }

@@ -12,20 +12,20 @@ class PlayerMovementExhaustionTest {
     void usesLinearHorizontalDistanceOnGround() {
         assertEquals(0.2, exhaustion(2.0, 0.0, 0.0, false, false, true, true, false), EPSILON);
         assertEquals(0.05, exhaustion(0.5, 0.0, 0.0, false, false, true, true, false), EPSILON);
-        assertEquals(0.02, exhaustion(2.0, 0.0, 0.0, false, false, true, false, false), EPSILON);
+        assertEquals(0.0, exhaustion(2.0, 0.0, 0.0, false, false, true, false, false), EPSILON);
     }
 
     @Test
     void usesThreeDimensionalDistanceOnlyWhenSubmerged() {
-        assertEquals(0.03, exhaustion(0.0, 2.0, 0.0, true, true, false, false, false), EPSILON);
+        assertEquals(0.02, exhaustion(0.0, 2.0, 0.0, true, true, false, false, false), EPSILON);
         assertEquals(0.0, exhaustion(0.0, 2.0, 0.0, false, true, false, false, false), EPSILON);
-        assertEquals(0.03, exhaustion(2.0, 0.0, 0.0, false, true, false, false, false), EPSILON);
+        assertEquals(0.02, exhaustion(2.0, 0.0, 0.0, false, true, false, false, false), EPSILON);
     }
 
     @Test
-    void roundsDistanceToCentimetresBeforeApplyingExhaustion() {
+    void usesRawDistanceWithoutRounding() {
         assertEquals(0.005, exhaustion(0.03, 0.0, 0.04, false, false, true, true, false), EPSILON);
-        assertEquals(0.0, exhaustion(0.004, 0.0, 0.0, false, false, true, true, false), EPSILON);
+        assertEquals(0.0004, exhaustion(0.004, 0.0, 0.0, false, false, true, true, false), EPSILON);
     }
 
     @Test
