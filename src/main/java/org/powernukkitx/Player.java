@@ -22,8 +22,7 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
-import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
+import org.cloudburstmc.netty.channel.nethernet.NetherNetChannel;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -3043,13 +3042,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the latency in milliseconds, or -1 if the connection can no longer be measured
      */
     public long getPing() {
-        var rakServerChannel = (RakServerChannel) this.session.getPeer().getChannel().parent();
-        var childChannel = rakServerChannel.getChildChannel(getSocketAddress());
-        if (childChannel == null) {
-            return -1;
+        if (this.session.getPeer().getChannel() instanceof NetherNetChannel channel) {
+            return channel.getPing();
         }
-        var rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
-        return rakSessionCodec == null ? -1 : rakSessionCodec.getPing();
+        return -1;
     }
 
     public boolean sleepOn(Vector3 pos) {

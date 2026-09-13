@@ -120,7 +120,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .snappy(netOld.snappy())
                 .compressionBufferSize(netOld.compressionBufferSize())
                 .maxDecompressSize(netOld.maxDecompressSize())
-                .packetLimit(netOld.packetLimit())
                 .queryPlugins(baseOld.queryPlugins());
 
         PerformanceSettings perf = settings.performanceSettings();

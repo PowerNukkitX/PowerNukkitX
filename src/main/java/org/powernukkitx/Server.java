@@ -432,7 +432,12 @@ public class Server {
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
 
-        this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
+        // NetherNet carries the session inside DTLS and a real client answers ServerToClientHandshake
+        // in plaintext, so Bedrock packet encryption has no place on top of it.
+        if (this.settings.networkSettings().networkEncryption()) {
+            log.warn("network-settings.networkEncryption is ignored: the NetherNet transport is already encrypted");
+        }
+        this.enabledNetworkEncryption = false;
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())

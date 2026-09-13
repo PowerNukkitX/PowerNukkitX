@@ -39,10 +39,9 @@ import java.util.function.Consumer;
 /**
  * Handles the client's {@code LoginPacket}.
  * <p>
- * Validating a login costs several milliseconds of cryptography: the identity chain, the client
- * JWT, and the encryption key exchange. RakNet pins a session to one Netty event loop that also
- * serves every other session on that loop, so doing this inline stalls unrelated players whenever
- * a batch of logins arrives.
+ * Validating a login costs several milliseconds of cryptography: the identity chain and the client
+ * JWT. A session is pinned to one Netty event loop that also serves every other session on that
+ * loop, so doing this inline stalls unrelated players whenever a batch of logins arrives.
  * <p>
  * The work therefore runs on the compute pool in two steps, with the checks that read server
  * state - the pre-login event, player count, whitelist and bans - on the event loop between them.

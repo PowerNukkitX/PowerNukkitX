@@ -1,6 +1,7 @@
 package org.powernukkitx.config.category;
 
 import org.powernukkitx.config.category.network.BotnetSettings;
+import org.powernukkitx.config.category.network.NetherNetSettings;
 import org.powernukkitx.config.category.network.RateLimitSettings;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
@@ -25,22 +26,16 @@ public class NetworkSettings extends OkaeriConfig {
     int compressionBufferSize = 1048576;
     @Comment("pnx.settings.network.maxdecompresssize")
     int maxDecompressSize = 268435456;
-    @Comment("pnx.settings.network.packetlimit")
-    int packetLimit = 8000;
     @Comment("pnx.settings.network.query")
     boolean enableQuery = true;
     @Comment("pnx.settings.network.encryption")
     boolean networkEncryption = true;
     @Comment("pnx.settings.network.logintime")
     boolean checkLoginTime = false;
-    @Comment("pnx.settings.network.autoflush")
-    boolean autoFlush = true;
-    @Comment("pnx.settings.network.flushinterval")
-    int flushInterval = 10;
-    @Comment("pnx.settings.network.maxqueuedbytes")
-    int maxQueuedBytes = 67108864;
-    @Comment("pnx.settings.network.cookiemode")
-    String cookieMode = "ACTIVE";
+
+    @Comment("pnx.settings.network.nethernet")
+    @CustomKey("nethernet")
+    private NetherNetSettings netherNetSettings = new NetherNetSettings();
 
     @Comment("pnx.settings.network.ratelimit")
     @CustomKey("rate-limit")
