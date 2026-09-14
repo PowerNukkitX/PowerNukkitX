@@ -2714,17 +2714,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toRecipeNetwork() {
-        final CompoundTag nbt = this.getNbt();
-        final ItemData itemData;
-
-        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
-            itemData = this.toNetwork();
-        } else {
-            final Item stripped = this.clone();
-            final CompoundTag strippedNbt = nbt.copy().remove("Damage");
-            stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
-            itemData = stripped.toNetwork();
-        }
+        final ItemData itemData = this.stripZeroDamageTag().toNetwork();
 
         return itemData.toBuilder()
                 .blockDefinition(
@@ -2742,20 +2732,32 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toCreativeNetwork() {
-        final boolean hasNbt = this.getNbt() != null;
-        final boolean clearCreativeTag = this.isCreativeTagEmpty();
+        final Item item = this.stripZeroDamageTag();
+        final boolean hasNbt = item.getNbt() != null;
+        final boolean clearCreativeTag = item.isCreativeTagEmpty();
 
         return ItemData.builder()
-                .definition(this.getItemDefinition())
-                .damage(this.getDamage())
-                .count(this.getCount())
-                .tag(clearCreativeTag || this.getNbt() == null ? null : this.getNbt().toNetwork())
-                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
-                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : this.getNetworkBlockRuntimeId()))
+                .definition(item.getItemDefinition())
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .tag(clearCreativeTag || item.getNbt() == null ? null : item.getNbt().toNetwork())
+                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanPlaceOn()))
+                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanDestroy()))
+                .blockDefinition(new RuntimeBlockDefinition(item.isCreativeBlockDefinitionEmpty() ? 0 : item.getNetworkBlockRuntimeId()))
                 .usingNetId(false)
                 .netId(0)
                 .build();
+    }
+
+    private Item stripZeroDamageTag() {
+        final CompoundTag nbt = this.getNbt();
+        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
+            return this;
+        }
+        final Item stripped = this.clone();
+        final CompoundTag strippedNbt = nbt.copy().remove("Damage");
+        stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
+        return stripped;
     }
 
     private int getNetworkBlockRuntimeId() {
