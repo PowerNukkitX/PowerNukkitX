@@ -62,8 +62,11 @@ public class ItemShield extends ItemTool {
         } else {
             tag = this.getNbt();
         }
-        for (var e : banner.getNbt().getEntrySet()) {
-            tag.put(e.getKey(), e.getValue());
+        CompoundTag bannerNbt = banner.getNbt();
+        if (bannerNbt != null) {
+            for (var e : bannerNbt.getEntrySet()) {
+                tag.put(e.getKey(), e.getValue());
+            }
         }
         tag.putInt("Base", banner.getBaseColor());
         this.setNbt(tag);
