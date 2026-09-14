@@ -86,8 +86,8 @@ public class VillagerBreedingExecutor extends BreedingExecutor {
     @Override
     protected void breed(EntityIntelligent parent1, EntityIntelligent parent2) {
         var villageManager = parent1.getLevel().getVillageManager();
-        Village village = villageManager.getVillageForDweller(parent1.getId()).orElse(null);
-        if (village == null || villageManager.getVillageForDweller(parent2.getId())
+        Village village = villageManager.getVillageForDweller(parent1.runtimeId()).orElse(null);
+        if (village == null || villageManager.getVillageForDweller(parent2.runtimeId())
                 .filter(other -> other.uuid().equals(village.uuid())).isEmpty()) {
             sendAngryParticles(parent1);
             sendAngryParticles(parent2);
@@ -139,14 +139,14 @@ public class VillagerBreedingExecutor extends BreedingExecutor {
 
     protected void sendInLoveParticles(EntityIntelligent entity) {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(entity.getId());
+        pk.setTargetRuntimeID(entity.runtimeId());
         pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
     protected void sendAngryParticles(EntityIntelligent entity) {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(entity.getId());
+        pk.setTargetRuntimeID(entity.runtimeId());
         pk.setType(ActorEvent.VILLAGER_ANGRY);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

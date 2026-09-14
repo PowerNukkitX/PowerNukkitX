@@ -294,11 +294,9 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
         ArrayList<Item> drops = new ArrayList<>();
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 2) != 0) {
-            int amount = Utils.rand(0, 2 + looting);
-            if (amount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, amount));
-            }
+        int amount = Utils.rand(0, 2 + looting);
+        if (amount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, amount));
         }
 
         // Drop Ride Inventory
@@ -306,7 +304,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
         drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

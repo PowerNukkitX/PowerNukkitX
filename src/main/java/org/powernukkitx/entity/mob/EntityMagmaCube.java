@@ -195,8 +195,8 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             return new Item[]{Item.get(froglight)};
         }
 
-        if (getVariant() != SIZE_SMALL && Utils.rand(0, 2) != 0) {
-            int amount = Utils.rand(0, 2 + looting);
+        if (getVariant() != SIZE_SMALL) {
+            int amount = Utils.rand(0, 1 + looting);
             if (amount > 0) {
                 drops.add(Item.get(Item.MAGMA_CREAM, 0, amount));
             }

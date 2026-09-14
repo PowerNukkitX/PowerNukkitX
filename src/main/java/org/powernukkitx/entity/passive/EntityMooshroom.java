@@ -5,6 +5,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityShearable;
 import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.entity.EntityWalkable;
@@ -31,6 +32,7 @@ import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.ParticleEffect;
 import org.powernukkitx.level.Sound;
@@ -51,7 +53,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityVariant {
+public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityVariant, EntityInteractable {
 
     /**
      * The mooshroom variants. Adding a new one only means adding a constant here - the id, the
@@ -210,11 +212,9 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
                 meatAmount
         ));
 
-        if (Utils.rand(0, 2) != 0) {
-            int leatherAmount = Utils.rand(0, 2 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 2 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
@@ -239,6 +239,26 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         }
 
         return false;
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        Item held = player.getInventory().getItemInMainHand();
+        if (held.isShears()) {
+            return "action.interact.mooshear";
+        }
+        if (held.getId().equals(ItemID.BUCKET) && held.getDamage() == 0) {
+            return "action.interact.milk";
+        }
+        if (held.getId().equals(ItemID.BOWL) && held.getDamage() == 0) {
+            return "action.interact.moostew";
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
     }
 
     @Override

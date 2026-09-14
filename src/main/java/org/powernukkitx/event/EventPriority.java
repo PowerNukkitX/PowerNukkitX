@@ -6,8 +6,8 @@ package org.powernukkitx.event;
 public enum EventPriority {
 
     /**
-     * Event call is of very low importance and should be ran first, to allow
-     * other plugins to further customise the outcome
+     * Event call is of very low importance and should be run first, to allow
+     * other plugins to further customize the outcome
      */
     LOWEST(0),
     /**
@@ -15,7 +15,7 @@ public enum EventPriority {
      */
     LOW(1),
     /**
-     * Event call is neither important nor unimportant, and may be ran
+     * Event call is neither important nor unimportant, and may be run
      * normally
      */
     NORMAL(2),

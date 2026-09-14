@@ -6,7 +6,7 @@ import org.powernukkitx.event.HandlerList;
 
 
 /**
- * Is called when an vehicle gets destroyed
+ * Is called when a vehicle gets destroyed
  */
 public class VehicleDestroyEvent extends VehicleEvent implements Cancellable {
 

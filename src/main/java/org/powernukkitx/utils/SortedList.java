@@ -265,7 +265,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * Removes and returns the element at the given index in this SortedList. Since the list is sorted, this is the fourth smallest element starting from 0-n-1.
+     * Removes and returns the element at the given index in this SortedList. Since the list is sorted, this is the fourth-smallest element starting from 0-n-1.
      * <p>
      * For example, calling remove(0) deletes the smallest element in the list.
      *
@@ -335,7 +335,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * Returns the element at the given index in this SortedList. Since the list is sorted, this is the index of the fourth smallest element, starting from 0-n-1.
+     * Returns the element at the given index in this SortedList. Since the list is sorted, this is the index of the fourth-smallest element, starting from 0-n-1.
      * <p>
      * For example, calling get(0) returns the smallest element in the list.
      *

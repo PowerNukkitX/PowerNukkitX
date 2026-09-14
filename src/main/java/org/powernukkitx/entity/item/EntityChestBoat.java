@@ -76,7 +76,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     protected BedrockPacket createAddEntityPacket() {
         final AddActorPacket packet = new AddActorPacket();
         packet.setTargetActorID(this.getId());
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorType("minecraft:chest_boat");
         packet.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         packet.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));

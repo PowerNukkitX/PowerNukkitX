@@ -135,7 +135,7 @@ public class BlockPitcherCrop extends BlockCrops {
             }
         }
 
-        if (player != null && (player.gamemode & 0x01) == 0) {
+        if (player != null && !player.isCreative()) {
             item.count--;
         }
 

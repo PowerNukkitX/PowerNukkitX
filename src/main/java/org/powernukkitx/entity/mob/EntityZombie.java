@@ -30,11 +30,14 @@ import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.item.EntityItem;
+import org.powernukkitx.entity.passive.EntityChicken;
 import org.powernukkitx.entity.passive.EntityTurtle;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.entity.EntityTransformEvent;
 import org.powernukkitx.inventory.EntityInventoryHolder;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -48,6 +51,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
@@ -120,6 +124,20 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     }
 
     @Override
+    protected void equipOnSpawn() {
+        if (rollGearChance(0.05f)) {
+            String weapon = switch (ThreadLocalRandom.current().nextInt(6)) {
+                case 0 -> ItemID.IRON_SPEAR;
+                case 1, 2 -> ItemID.IRON_SWORD;
+                default -> ItemID.IRON_SHOVEL;
+            };
+            getEquipmentInventory().setItemInHand(enchantGear(Item.get(weapon), 0.25f));
+        }
+
+        equipArmorSet(3, 3, 0.1087f);
+    }
+
+    @Override
     protected @Nullable MovementComponent getComponentMovement() {
         float ageMovement = this.isBaby() ? 0.35f : 0.23f;
         return MovementComponent.value(ageMovement);
@@ -168,22 +186,31 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
 
-        int flesh = Utils.rand(0, 3 + looting);
+        int flesh = Utils.rand(0, 2 + looting);
         if (flesh > 0) {
             drops.add(Item.get(Item.ROTTEN_FLESH, 0, flesh));
         }
 
-        float rareChance = (1f / 120f) + ((1f / 300f) * looting);
-        if (Utils.rand(0f, 1f) < rareChance) {
-            int roll = Utils.rand(0, 3);
-            switch (roll) {
-                case 0 -> drops.add(Item.get(Item.IRON_INGOT));
-                case 1 -> drops.add(Item.get(Item.CARROT));
-                case 2 -> drops.add(Item.get(Item.POTATO));
+        if (killedByPlayer()) {
+            if (Utils.rand(0, 999) < (25 + looting * 10)) {
+                switch (Utils.rand(0, 2)) {
+                    case 0 -> drops.add(Item.get(Item.IRON_INGOT));
+                    case 1 -> drops.add(Item.get(Item.CARROT));
+                    default -> drops.add(Item.get(Item.POTATO));
+                }
+            }
+
+            if (isBaby() && getRiding() instanceof EntityChicken) {
+                drops.add(Item.get(Item.MUSIC_DISC_LAVA_CHICKEN));
             }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override
@@ -208,8 +235,8 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                         }
                         if (holder.equip(item)) {
                             final TakeItemActorPacket pk = new TakeItemActorPacket();
-                            pk.setActorRuntimeID(entity.getId());
-                            pk.setItemRuntimeID(i.getId());
+                            pk.setActorRuntimeID(entity.runtimeId());
+                            pk.setItemRuntimeID(i.runtimeId());
                             Server.broadcastPacket(entity.getViewers().values(), pk);
                             i.close();
                         }

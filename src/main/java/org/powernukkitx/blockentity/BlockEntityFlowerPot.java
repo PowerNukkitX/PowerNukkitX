@@ -11,7 +11,6 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     public BlockEntityFlowerPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
 
     @Override
@@ -22,8 +21,7 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag tag = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable());
+        CompoundTag tag = super.getSpawnCompound();
         if (nbt.containsCompound("PlantBlock"))
             tag.putCompound("PlantBlock", nbt.getCompound("PlantBlock"));
         return tag;

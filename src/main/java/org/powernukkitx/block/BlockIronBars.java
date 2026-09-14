@@ -53,7 +53,7 @@ public class BlockIronBars extends BlockThin {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockIronBars(), 0);
     }
 
     @Override

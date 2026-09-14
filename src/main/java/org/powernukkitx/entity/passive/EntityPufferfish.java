@@ -2,11 +2,14 @@ package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,5 +54,15 @@ public class EntityPufferfish extends EntityFish {
     @Override
     protected @Nullable MovementComponent getComponentMovement() {
         return MovementComponent.value(0.13f);
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+        drops.add(Item.get(Item.PUFFERFISH));
+
+        addBoneDrop(drops, weapon);
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 }

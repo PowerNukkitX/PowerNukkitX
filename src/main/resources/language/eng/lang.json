@@ -1217,7 +1217,7 @@
   "nukkit.level.updating": "Old level data found for \"{%0}\", converting format",
   "nukkit.player.invalidEntity": "{%0} tried to attack an invalid entity",
   "nukkit.player.invalidMove": "{%0} moved wrongly!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] logged in with entity id {%3} at ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] logged in with entity uniqueId {%3} at ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] logged out due to {%3}",
   "nukkit.plugin.aliasError": "Could not load alias {%0} for plugin {%1}",
   "nukkit.plugin.circularDependency": "Circular dependency detected",

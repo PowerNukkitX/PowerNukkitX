@@ -105,7 +105,8 @@ public class EntityEnderPearl extends EntityProjectile {
 
         this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
         if(this.shootingEntity.teleport(destination, TeleportCause.ENDER_PEARL)) {
-            if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
+            Player owner = (Player) this.shootingEntity;
+            if (!owner.isCreative()) {
                 this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
             }
             this.level.addLevelEvent(this, LevelEvent.PARTICLE_TELEPORT);

@@ -27,7 +27,15 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public IChunk chunk;
     public String name;
     public long id;
-    public boolean movable;
+    /**
+     * Legacy compatibility field.
+     *
+     * Normal block entities derive piston movability from their owning
+     * physical block. PistonArm is the only vanilla block entity which
+     * retains its own dynamic movable state.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    public boolean movable = true;
     public boolean closed = false;
     protected CompoundTag nbt;
     public volatile CompoundTag serializationSnapshot;
@@ -113,13 +121,6 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.y = nbt.getInt("y");
         this.z = nbt.getInt("z");
 
-        if (this.nbt.contains("isMovable")) {
-            this.movable = nbt.getBoolean("isMovable");
-        } else {
-            this.movable = true;
-            this.nbt.putBoolean("isMovable", true);
-        }
-
         this.initBlockEntity();
 
         if (closed) {
@@ -142,7 +143,16 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
                 .putInt("x", (int) this.getX())
                 .putInt("y", (int) this.getY())
                 .putInt("z", (int) this.getZ())
-                .putBoolean("isMovable", this.movable);
+                .putInt("BlockEntityVersion", 0);
+    }
+
+    public CompoundTag getStorageNBT() {
+        this.saveNBT();
+        return this.nbt;
+    }
+
+    public CompoundTag getStorageNBT(CompoundTag source) {
+        return source;
     }
 
     public final String getSaveId() {
@@ -250,8 +260,21 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         return name;
     }
 
+    /**
+     * Returns whether this block entity can be moved by a piston.
+     * <p>
+     * Block implementations which consult their own block entity from
+     * {@link Block#canBePushed()} or {@link Block#breaksWhenMoved()} must not
+     * call this implementation again unless that block entity overrides
+     * {@code isMovable()} without consulting its owning block.
+     *
+     * @return whether this block entity can be moved
+     */
     public boolean isMovable() {
-        return movable;
+        if (this.closed || this.level == null) return true;
+
+        Block block = this.getBlock();
+        return block.canBePushed() && !block.breaksWhenMoved();
     }
 
     public static CompoundTag getDefaultCompound(Vector3 pos, String id) {

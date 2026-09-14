@@ -87,7 +87,6 @@ public class SingleFakeBlock implements FakeBlock {
 
     protected CompoundTag getBlockEntityDataAt(Vector3 position, String title) {
         return BlockEntity.getDefaultCompound(position, title)
-                .putBoolean("isMovable", true)
                 .putString("CustomName", title);
     }
 

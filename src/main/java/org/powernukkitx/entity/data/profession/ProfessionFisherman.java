@@ -1,6 +1,7 @@
 package org.powernukkitx.entity.data.profession;
 
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -17,13 +18,31 @@ public class ProfessionFisherman extends Profession {
         super(2, BlockID.BARREL, "entity.villager.fisherman", Sound.BLOCK_BARREL_OPEN);
     }
 
+    /**
+     * The boat a fisherman buys, one per biome outfit.
+     */
+    private static String boatOf(EntityVillagerV2.Clothing clothing) {
+        return switch (clothing) {
+            case DESERT, JUNGLE -> ItemID.JUNGLE_BOAT;
+            case SAVANNA -> ItemID.ACACIA_BOAT;
+            case SNOW, TAIGA -> ItemID.SPRUCE_BOAT;
+            case SWAMP -> ItemID.DARK_OAK_BOAT;
+            default -> ItemID.BOAT;
+        };
+    }
+
     @Override
     public ListTag<CompoundTag> buildTrades(int seed) {
+        return buildTrades(seed, EntityVillagerV2.Clothing.PLAINS);
+    }
+
+    @Override
+    public ListTag<CompoundTag> buildTrades(int seed, EntityVillagerV2.Clothing clothing) {
         ListTag<CompoundTag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         Item rod = Item.get(ItemID.FISHING_ROD);
-        Enchantment rodEnchantment = Enchantment.getEnchantment(new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_LURE, Enchantment.ID_FORTUNE_FISHING}[random.nextInt(2)]);
+        Enchantment rodEnchantment = Enchantment.getEnchantment(new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_LURE, Enchantment.ID_FORTUNE_FISHING}[random.nextInt(3)]);
         rodEnchantment.setLevel(random.nextInt(3) + 1);
         rod.addEnchantment(rodEnchantment);
 
@@ -78,7 +97,7 @@ public class ProfessionFisherman extends Profession {
                     .setPriceMultiplierA(0.05f)
                     .build());
         } else {
-            recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(Item.SALMON, 0, 5), Item.get(Item.COOKED_SALMON, 0, 6))
+            recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD), Item.get(Item.SALMON, 0, 6), Item.get(Item.COOKED_SALMON, 0, 6))
                     .setMaxUses(16)
                     .setRewardExp((byte) 1)
                     .setTier(2)
@@ -114,7 +133,7 @@ public class ProfessionFisherman extends Profession {
                         .setTraderExp(30)
                         .setPriceMultiplierA(0.05f)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.BOAT, 0, 1), Item.get(Item.EMERALD))
+                .add(TradeRecipeBuildUtils.of(Item.get(boatOf(clothing), 0, 1), Item.get(Item.EMERALD))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(5)

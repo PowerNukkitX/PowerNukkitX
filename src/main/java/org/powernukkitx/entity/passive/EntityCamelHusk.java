@@ -169,11 +169,9 @@ public class EntityCamelHusk extends EntityCamel {
         ArrayList<Item> drops = new ArrayList<>();
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 2) != 0) {
-            int rottenFlesh = Utils.rand(2, 3 + looting);
-            if (rottenFlesh > 0) {
-                drops.add(Item.get(Item.ROTTEN_FLESH, 0, rottenFlesh));
-            }
+        int rottenFlesh = Utils.rand(2, 3 + looting);
+        if (rottenFlesh > 0) {
+            drops.add(Item.get(Item.ROTTEN_FLESH, 0, rottenFlesh));
         }
 
         // Drop Ride Inventory
@@ -181,7 +179,7 @@ public class EntityCamelHusk extends EntityCamel {
         drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

@@ -54,6 +54,16 @@ public abstract class BlockBrushable extends BlockFallable implements BlockEntit
         return new Item[]{Item.AIR};
     }
 
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
     public abstract Block getFinalState();
 
     protected abstract Sound getHitSound();

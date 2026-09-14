@@ -235,10 +235,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
             return false;
         }
 
+        if (!this.isValid()) return true;
+
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
-
-        if (this.getLocation().getLevel() == null) return true;
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
@@ -581,7 +581,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
+        CompoundTag c = super.getSpawnCompound();
 
         if (this.hasName()) {
             c.put("CustomName", this.nbt.get("CustomName").copy());

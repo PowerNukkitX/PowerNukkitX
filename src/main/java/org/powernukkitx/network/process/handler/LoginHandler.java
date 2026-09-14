@@ -3,6 +3,7 @@ package org.powernukkitx.network.process.handler;
 import io.netty.channel.EventLoop;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
@@ -62,10 +63,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final int clientNetworkVersion = packet.getClientNetworkVersion();
-        final int serverNetworkVersion = NetworkConstants.CODEC.getProtocolVersion();
+        final BedrockCodec codec = NetworkConstants.codecForProtocolVersion(clientNetworkVersion);
 
-        if (clientNetworkVersion != serverNetworkVersion) {
-            final boolean serverOutdated = clientNetworkVersion > serverNetworkVersion;
+        if (codec == null) {
+            final boolean serverOutdated = NetworkConstants.isServerOutdated(clientNetworkVersion);
             holder.sendPlayStatus(
                 serverOutdated ?
                     PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
@@ -73,6 +74,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, serverOutdated ? DisconnectFailReason.OUTDATED_SERVER : DisconnectFailReason.OUTDATED_CLIENT, null);
             return;
         }
+
+        holder.getSession().setCodec(codec);
 
         final PlayerAuthenticationType type = packet.getAuthenticationType();
         if (type.equals(PlayerAuthenticationType.UNKNOWN)) {
@@ -204,7 +207,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             return;
         }
 
-        holder.getSession().setCodec(NetworkConstants.codecForGameVersion(clientChainData.getGameVersion()));
+        holder.getSession().setCodec(NetworkConstants.codecForGameVersion(
+            holder.getSession().getCodec().getProtocolVersion(),
+            clientChainData.getGameVersion()
+        ));
 
         holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
 

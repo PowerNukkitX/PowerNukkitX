@@ -27,7 +27,7 @@ public final class Beardifier {
      * Calculates the beard density contribution for a position relative to a
      * structure bounding box.
      *
-     * @param dx horizontal distance from the bounding box on the x axis
+     * @param dx horizontal distance from the bounding box on the x-axis
      * @param dy vertical distance from the bounding box
      * @param dz horizontal distance from the bounding box on the z axis
      * @param yToGround vertical offset from the bottom of the bounding box

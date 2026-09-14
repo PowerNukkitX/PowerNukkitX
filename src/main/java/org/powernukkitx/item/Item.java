@@ -748,7 +748,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return
      */
     public Item setCustomName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.clearCustomName();
         }
 
@@ -896,7 +896,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -906,7 +906,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -1038,7 +1038,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @return the int value or defaultValue if not available.
@@ -1050,7 +1050,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
@@ -1503,7 +1503,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Called before {@link #onUse},The player is right clicking use on an item
+     * Called before {@link #onUse},The player is right-clicking use on an item
      *
      * @param player          player
      * @param directionVector The direction vector of the click
@@ -2230,7 +2230,7 @@ public abstract class Item implements Cloneable, ItemID {
     /////////////////////////////
 
     /**
-     * Define if the item is a Armor
+     * Defines if the item is an Armor
      */
     public boolean isWearable() {
         return getWearableType() != ItemArmorType.NONE;
@@ -2435,7 +2435,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Define if the item is a Axe
+     * Defines if the item is an Axe
      */
     public boolean isAxe() {
         CustomItemDefinition def = getCustomDefinition();
@@ -2537,7 +2537,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Returns the digger speed based on the block Id or tags it contains, also adds efficience bonus if enabled
+     * Returns the digger speed based on the block id or tags it contains, also adds efficience bonus if enabled
      */
     @Nullable
     public Integer getDiggerSpeed(@Nullable Block block) {
