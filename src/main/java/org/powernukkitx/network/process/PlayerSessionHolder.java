@@ -38,7 +38,6 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.network.process.pack.InternalPackManager;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.ItemRuntimeIdRegistry;
-import org.powernukkitx.registry.JigsawStructureRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.VoxelShapeRegistry;
 import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
@@ -244,7 +243,7 @@ public class PlayerSessionHolder {
         this.player.getLevel().sendTime(this.player);
 
         this.player.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
-        this.player.sendPacketImmediately(JigsawStructureRegistry.getPACKET());
+        this.player.sendPacketImmediately(Registries.STRUCTURE.getJigsawStructureData());
         this.sendStartGame(server);
 
         for (SyncActorPropertyPacket syncActorPropertyPacket : EntityProperty.getEntityPropertyCache()) {
@@ -399,7 +398,7 @@ public class PlayerSessionHolder {
         packet.setLevelCurrentTime(this.player.getLevel().getCurrentTick());
         packet.setEnchantmentSeed(this.player.getEnchantmentSeed());
 
-        packet.getBlockProperties().addAll(Registries.DATA_DRIVEN_BLOCK.getProperties());
+        packet.getBlockProperties().addAll(Registries.BLOCK.getDataDrivenProperties());
         for (final CustomBlockDefinition definition : Registries.BLOCK.getCustomBlockDefinitionList()) {
             packet.getBlockProperties().add(definition.toNetwork());
         }

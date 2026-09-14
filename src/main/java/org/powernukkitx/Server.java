@@ -546,8 +546,6 @@ public class Server {
                     : Registries.BLOCKSTATE::init,
                 computeThreadPool);
             CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
-            CompletableFuture<Void> jigsawStructureF = CompletableFuture.runAsync(Registries.JIGSAW_STRUCTURE::init, computeThreadPool);
-            CompletableFuture<Void> dataDrivenBlockF = CompletableFuture.runAsync(Registries.DATA_DRIVEN_BLOCK::init, computeThreadPool);
             CompletableFuture<Void> creativeF = creativeInventoryEnabled
                     ? CompletableFuture.allOf(itemF, blockStateF)
                             .thenRunAsync(
@@ -566,7 +564,7 @@ public class Server {
 
             CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
                 fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
-                creativeF, recipeF, voxelF, jigsawStructureF, dataDrivenBlockF, disconnectF, trimF).join();
+                creativeF, recipeF, voxelF, disconnectF, trimF).join();
 
             if (useRegistryCache && registryCache == null) {
                 RegistryCache.save(registryCachePath);

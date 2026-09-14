@@ -67,12 +67,19 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.ServerBlockProperty;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -98,6 +105,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
     private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
+    private static final List<ServerBlockProperty> DATA_DRIVEN_PROPERTIES = new ObjectArrayList<>();
 
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
@@ -1433,6 +1441,29 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CINNABAR_STAIRS, BlockCinnabarStairs.class);
         register0(CINNABAR_BRICK_STAIRS, BlockCinnabarBrickStairs.class);
         register0(POLISHED_CINNABAR_STAIRS, BlockPolishedCinnabarStairs.class);
+
+        loadDataDrivenProperties();
+    }
+
+    /**
+     * Data driven blocks have no class of their own: the client builds them from the properties we
+     * hand it on join, so all we do here is keep the dump around.
+     */
+    private void loadDataDrivenProperties() {
+        try (var stream = BlockRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/block_definitions.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            final NbtMap root = (NbtMap) nbtInputStream.readTag();
+            for (NbtMap property : root.getList("properties", NbtType.COMPOUND)) {
+                DATA_DRIVEN_PROPERTIES.add(new ServerBlockProperty(property.getString("name"), property.getCompound("properties")));
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @UnmodifiableView
+    public List<ServerBlockProperty> getDataDrivenProperties() {
+        return Collections.unmodifiableList(DATA_DRIVEN_PROPERTIES);
     }
 
     public void trim() {
@@ -1588,6 +1619,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         CACHE_CONSTRUCTORS_BY_HASH.clear();
         PROPERTIES.clear();
         CUSTOM_BLOCK_DEFINITIONS.clear();
+        DATA_DRIVEN_PROPERTIES.clear();
         init();
     }
 
