@@ -1,21 +1,22 @@
 package org.powernukkitx.network.nethernet;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.netty.signalling.ProviderClient;
-import org.cloudburstmc.netty.signalling.ProviderStateStore;
-import org.cloudburstmc.netty.signalling.ProviderTransport;
-import org.cloudburstmc.netty.signalling.ServerStatus;
-import org.cloudburstmc.netty.signalling.provider.NativeProviderHostFactory;
-import org.cloudburstmc.netty.signalling.provider.ProviderHostFactory;
-import org.cloudburstmc.netty.signalling.provider.ProviderRuntimeConfiguration;
-import org.cloudburstmc.netty.signalling.provider.ProviderRuntimeObservations;
-import org.cloudburstmc.netty.signalling.provider.ProviderShutdown;
+import org.cloudburstmc.netty.signaling.ProviderClient;
+import org.cloudburstmc.netty.signaling.ProviderStateStore;
+import org.cloudburstmc.netty.signaling.ProviderTransport;
+import org.cloudburstmc.netty.signaling.ServerStatus;
+import org.cloudburstmc.netty.signaling.provider.NativeProviderHostFactory;
+import org.cloudburstmc.netty.signaling.provider.ProviderHostFactory;
+import org.cloudburstmc.netty.signaling.provider.ProviderRuntimeConfiguration;
+import org.cloudburstmc.netty.signaling.provider.ProviderShutdown;
 import org.powernukkitx.Server;
 import org.powernukkitx.config.category.network.NetherNetSettings;
 import org.powernukkitx.config.category.network.NxsSettings;
@@ -95,9 +96,7 @@ public class NetherNetProvider implements AutoCloseable {
             host.warnings().forEach(log::warn);
 
             this.client = new ProviderClient(runtime.clientConfiguration(), store, transport, this::status,
-                () -> ProviderRuntimeObservations.health(this.players(), runtime.capacity(),
-                    System.currentTimeMillis(), this.server.getNukkitVersion(), this.accepting()),
-                log::warn);
+                () -> this.health(runtime.capacity()), log::warn);
             // The client owns the store and the transport from here
             store = null;
             transport = null;
@@ -117,8 +116,9 @@ public class NetherNetProvider implements AutoCloseable {
                 this.close();
                 return;
             }
-            log.info(ProviderRuntimeObservations.registrationMessage(registration));
-            log.info(ProviderRuntimeObservations.delegatedIdentityMessage(runtime.origin()));
+            log.info(registrationMessage(registration));
+            log.info("NetherNet client identities are authenticated by external signalling provider {}; "
+                + "direct login keys are checked against its admission tickets", runtime.origin().getHost());
         });
     }
 
@@ -153,6 +153,28 @@ public class NetherNetProvider implements AutoCloseable {
         return new ServerStatus(this.server.getMotd(), NetworkConstants.CODEC.getProtocolVersion(),
             NetworkConstants.CODEC.getMinecraftVersion(), this.server.getSubMotd(), this.players(),
             this.server.getMaxPlayers(), 0);
+    }
+
+    /**
+     * What the provider checks in on between status updates, so it knows whether to keep sending
+     * players here.
+     */
+    private ProviderClient.Health health(int capacity) {
+        int players = this.players();
+        double load = Math.min(1.0D, players / (double) Math.max(1, capacity));
+        return new ProviderClient.Health(true, this.accepting(), capacity, load, "nethernet",
+            this.server.getNukkitVersion(),
+            new ProviderClient.PlayerCount(players, System.currentTimeMillis()));
+    }
+
+    private static String registrationMessage(JsonObject registration) {
+        String instanceId = registration.get("instanceId").getAsString();
+        JsonElement address = registration.get("publicAddress");
+        if (address != null && !address.isJsonNull()) {
+            return "Provider address: " + address.getAsString() + " (instance " + instanceId + ")";
+        }
+        return "Provider instance registered: " + instanceId
+            + "; public addresses are managed on its attached Signal Servers";
     }
 
     private int players() {
