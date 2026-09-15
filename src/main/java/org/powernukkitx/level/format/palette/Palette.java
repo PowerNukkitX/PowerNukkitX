@@ -268,6 +268,7 @@ public class Palette<V> {
      * settles nearly all of them without touching equals; the equals call is kept as a fallback for
      * anything built outside the registry.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private int indexOf(V value) {
         final List<V> entries = this.palette;
         final int size = entries.size();

@@ -1837,6 +1837,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     private static volatile List<String> tickingDisabledSource;
     private static volatile String[] tickingDisabledNormalized = EMPTY_STRING_ARRAY;
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public static boolean isTickingDisabled(Level level, String id) {
         if (level == null) return false;
 
@@ -1844,6 +1845,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (disabledList == null || disabledList.isEmpty()) return false;
 
         String[] normalized = tickingDisabledNormalized;
+        // identity check on purpose: we only want to renormalize when the settings list instance itself changes
         if (disabledList != tickingDisabledSource) {
             normalized = new String[disabledList.size()];
             for (int i = 0; i < normalized.length; i++) {
