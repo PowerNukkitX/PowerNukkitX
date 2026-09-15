@@ -43,6 +43,11 @@ public class BlockGrassBlock extends BlockDirt {
     }
 
     @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:grass"};
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             if(up().isAir()) {
