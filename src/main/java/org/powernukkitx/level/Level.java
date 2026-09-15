@@ -88,6 +88,7 @@ import org.powernukkitx.utils.*;
 import org.powernukkitx.utils.collection.nb.Int2ObjectNonBlockingMap;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.Hash.Strategy;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
@@ -98,6 +99,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -194,7 +196,27 @@ public class Level implements Metadatable {
     private static final double INV_CHUNK_SIZE = 1.0d / CHUNK_SIZE;
     // endregion finals - number finals
 
-    private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
+    private static final Strategy<String> IDENTITY_STRATEGY = new Strategy<>() {
+        @Override
+        public int hashCode(String o) {
+            return System.identityHashCode(o);
+        }
+
+        @Override
+        public boolean equals(String a, String b) {
+            return a == b;
+        }
+    };
+
+    /**
+     * The blocks that can randomly tick, keyed by identifier reference rather than by content.
+     * <p>
+     * Block state identifiers are interned at registration, so the chunk ticker always hands us the
+     * canonical instance and a reference hash is enough. A plain {@code HashSet<String>} probe here
+     * was the single largest tick cost in profiles: it runs a few million times a second and paid a
+     * String equals on every hit. Anything entering through the public API is interned first.
+     */
+    private static final Set<String> randomTickBlocks = new ObjectOpenCustomHashSet<>(128, IDENTITY_STRATEGY);
     private static final ThreadLocal<Entity[]> ENTITY_BUFFER = ThreadLocal.withInitial(() -> new Entity[512]);
 
     static {
@@ -583,14 +605,15 @@ public class Level implements Metadatable {
     }
 
     public static boolean canRandomTick(String blockId) {
-        return randomTickBlocks.contains(blockId);
+        return randomTickBlocks.contains(blockId.intern());
     }
 
     public static void setCanRandomTick(String blockId, boolean newValue) {
+        String interned = blockId.intern();
         if (newValue) {
-            randomTickBlocks.add(blockId);
+            randomTickBlocks.add(interned);
         } else {
-            randomTickBlocks.remove(blockId);
+            randomTickBlocks.remove(interned);
         }
     }
 

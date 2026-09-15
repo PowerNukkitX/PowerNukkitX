@@ -262,8 +262,24 @@ public class Palette<V> {
         for (int i = 0; i < paletteSize; i++) this.addToPalette(deserializer.deserialize(byteBuf.readIntLE()));
     }
 
+    /**
+     * Palette entries below {@link #INDEX_MAP_THRESHOLD} are searched linearly. Every value that
+     * reaches a palette comes from the registry as a canonical instance, so a reference compare
+     * settles nearly all of them without touching equals; the equals call is kept as a fallback for
+     * anything built outside the registry.
+     */
+    private int indexOf(V value) {
+        final List<V> entries = this.palette;
+        final int size = entries.size();
+        for (int i = 0; i < size; i++) {
+            final V entry = entries.get(i);
+            if (entry == value || value.equals(entry)) return i;
+        }
+        return -1;
+    }
+
     public int paletteIndexFor(V value) {
-        int index = this.paletteIndex != null ? this.paletteIndex.getInt(value) : this.palette.indexOf(value);
+        int index = this.paletteIndex != null ? this.paletteIndex.getInt(value) : indexOf(value);
         if (index != -1) return index;
 
         index = this.palette.size();
