@@ -1,60 +1,113 @@
 package org.powernukkitx.resourcepacks;
 
-import com.google.gson.JsonArray;
+import org.powernukkitx.resourcepacks.manifest.PackManifest;
+
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 @Slf4j
 public abstract class AbstractResourcePack implements ResourcePack {
     protected JsonObject manifest;
+    protected PackManifest packManifest;
     protected UUID id = null;
+
+    /**
+     * Whether this pack came out of an addon container rather than the resource pack
+     * directory. Clients treat addon packs differently, so it is reported to them.
+     */
+    protected boolean addonSource = false;
 
     @Override
     public String getPackName() {
-        return this.manifest.getAsJsonObject("header")
-                .get("name").getAsString();
+        return getOrParseManifest().header().name();
     }
 
     @Override
     public UUID getPackId() {
         if (id == null) {
-            id = UUID.fromString(this.manifest.getAsJsonObject("header").get("uuid").getAsString());
+            id = getOrParseManifest().header().uuid();
         }
         return id;
     }
 
     @Override
     public String getPackVersion() {
-        JsonArray version = this.manifest.getAsJsonObject("header")
-                .get("version").getAsJsonArray();
+        return getOrParseManifest().header().version().toString();
+    }
 
-        return String.join(".", version.get(0).getAsString(),
-                version.get(1).getAsString(),
-                version.get(2).getAsString());
+    /**
+     * @return {@link PackType#BEHAVIOR} when the manifest declares a data or script
+     * module, {@link PackType#RESOURCES} otherwise
+     */
+    @Override
+    public PackType getType() {
+        return getOrParseManifest().isBehaviorPack() ? PackType.BEHAVIOR : PackType.RESOURCES;
+    }
+
+    @Override
+    public @Nullable PackManifest getPackManifest() {
+        return getOrParseManifest();
+    }
+
+    @Override
+    public boolean usesScript() {
+        return getOrParseManifest().hasScripts();
+    }
+
+    @Override
+    public boolean isRaytracingCapable() {
+        return getOrParseManifest().hasCapability("raytraced");
+    }
+
+    @Override
+    public boolean isAddonPack() {
+        return this.addonSource;
+    }
+
+    /**
+     * Marks this pack as having been loaded out of an addon container. Set by the loader
+     * before the pack is handed to the pack manager.
+     */
+    public void setAddonSource(boolean addonSource) {
+        this.addonSource = addonSource;
+    }
+
+    /**
+     * @return the parsed manifest, parsing it on first use
+     * @throws IllegalArgumentException when the manifest is malformed; call
+     *                                  {@link #verifyManifest()} first to check instead
+     */
+    protected PackManifest getOrParseManifest() {
+        if (this.packManifest == null) {
+            this.packManifest = PackManifest.fromJson(this.manifest);
+        }
+        return this.packManifest;
     }
 
     protected boolean verifyManifest() {
-        if (this.manifest.has("format_version") && this.manifest.has("header") && this.manifest.has("modules")) {
-            JsonObject header = this.manifest.getAsJsonObject("header");
-            return header.has("description") &&
-                    header.has("name") &&
-                    header.has("uuid") &&
-                    header.has("version") &&
-                    header.getAsJsonArray("version").size() == 3;
-        } else {
+        if (this.manifest == null || !this.manifest.has("format_version")
+                || !this.manifest.has("header") || !this.manifest.has("modules")) {
+            return false;
+        }
+        try {
+            getOrParseManifest();
+            return true;
+        } catch (RuntimeException e) {
+            log.warn("Invalid pack manifest", e);
             return false;
         }
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return getPackId().hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ResourcePack anotherPack && this.id.equals(anotherPack.getPackId());
+        return obj instanceof ResourcePack anotherPack && this.getPackId().equals(anotherPack.getPackId());
     }
 }
