@@ -68,6 +68,71 @@ public class NetworkSettings extends OkaeriConfig {
     @CustomKey("botnet")
     private BotnetSettings botnetSettings = new BotnetSettings();
 
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#packetLimit()} */
+    @Deprecated
+    public int packetLimit() {
+        return this.rakNetSettings.packetLimit();
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#packetLimit(int)} */
+    @Deprecated
+    public NetworkSettings packetLimit(int packetLimit) {
+        this.rakNetSettings.packetLimit(packetLimit);
+        return this;
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#autoFlush()} */
+    @Deprecated
+    public boolean autoFlush() {
+        return this.rakNetSettings.autoFlush();
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#autoFlush(boolean)} */
+    @Deprecated
+    public NetworkSettings autoFlush(boolean autoFlush) {
+        this.rakNetSettings.autoFlush(autoFlush);
+        return this;
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#flushInterval()} */
+    @Deprecated
+    public int flushInterval() {
+        return this.rakNetSettings.flushInterval();
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#flushInterval(int)} */
+    @Deprecated
+    public NetworkSettings flushInterval(int flushInterval) {
+        this.rakNetSettings.flushInterval(flushInterval);
+        return this;
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#maxQueuedBytes()} */
+    @Deprecated
+    public int maxQueuedBytes() {
+        return this.rakNetSettings.maxQueuedBytes();
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#maxQueuedBytes(int)} */
+    @Deprecated
+    public NetworkSettings maxQueuedBytes(int maxQueuedBytes) {
+        this.rakNetSettings.maxQueuedBytes(maxQueuedBytes);
+        return this;
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#cookieMode()} */
+    @Deprecated
+    public String cookieMode() {
+        return this.rakNetSettings.cookieMode();
+    }
+
+    /** @deprecated use {@link #rakNetSettings()} and {@link RakNetSettings#cookieMode(String)} */
+    @Deprecated
+    public NetworkSettings cookieMode(String cookieMode) {
+        this.rakNetSettings.cookieMode(cookieMode);
+        return this;
+    }
+
     public TransportType resolvedTransport() {
         try {
             return TransportType.valueOf(this.transport.trim().toUpperCase(java.util.Locale.ROOT));

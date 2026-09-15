@@ -23,6 +23,13 @@ public abstract class ItemCushion extends Item {
         this.color = color;
     }
 
+    /**
+     * Creates a cushion item with the requested dye color.
+     *
+     * @param color the cushion color
+     * @return a new item for the corresponding cushion identifier
+     * @throws NullPointerException when {@code color} is {@code null}
+     */
     public static Item of(DyeColor color) {
         return Item.get(switch (color) {
             case WHITE -> WHITE_CUSHION;
