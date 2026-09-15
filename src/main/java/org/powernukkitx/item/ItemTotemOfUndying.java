@@ -9,4 +9,9 @@ public class ItemTotemOfUndying extends Item {
     public int getMaxStackSize() {
         return 1;
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:totem"};
+    }
 }

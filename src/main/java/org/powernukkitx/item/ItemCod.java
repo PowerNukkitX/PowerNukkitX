@@ -21,4 +21,9 @@ public class ItemCod extends ItemFish {
     public float getSaturation() {
         return 0.4F;
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:fish"};
+    }
 }
