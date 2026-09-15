@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 @UtilityClass
 public class NetworkConstants {
 
-    public final BedrockCodec CODEC = Bedrock_v2192.CODEC;
+    public final BedrockCodec CODEC = Bedrock_v2192.CODEC.toBuilder().protocolVersion(2193).build();
 
     public final String DATA_FORMAT_VERSION = CODEC.getMinecraftVersion();
 
