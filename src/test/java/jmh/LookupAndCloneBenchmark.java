@@ -319,13 +319,20 @@ public class LookupAndCloneBenchmark {
         }
     }
 
-    private final Object[] emptyHandlers = new Object[0];
+    private Object[] handlers;
+    @Param({"0"})
+    public int registeredHandlers;
     private final Object eventSource = new Object();
     private final Object eventPayload = new Object();
 
+    @Setup(Level.Trial)
+    public void setupHandlers() {
+        handlers = new Object[registeredHandlers];
+    }
+
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
     private void dispatch(ModelEvent event, Object[] handlers) {
-        for (Object ignored : handlers) {
+        for (int i = 0; i < handlers.length; i++) {
             event.cancelled = true;
         }
     }
@@ -333,15 +340,15 @@ public class LookupAndCloneBenchmark {
     @Benchmark
     public boolean eventAlwaysAllocated() {
         ModelEvent event = new ModelEvent(eventSource, eventPayload);
-        dispatch(event, emptyHandlers);
+        dispatch(event, handlers);
         return event.cancelled;
     }
 
     @Benchmark
     public boolean eventGuardedByEmptyCheck() {
-        if (emptyHandlers.length != 0) {
+        if (handlers.length != 0) {
             ModelEvent event = new ModelEvent(eventSource, eventPayload);
-            dispatch(event, emptyHandlers);
+            dispatch(event, handlers);
             return event.cancelled;
         }
         return false;

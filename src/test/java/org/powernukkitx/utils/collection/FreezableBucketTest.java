@@ -34,7 +34,7 @@ class FreezableBucketTest {
 
         var out = new ArrayList<AutoFreezable>();
         assertEquals(4, bucket.scan(4, ALL, out));
-        assertEquals(4, out.size());
+        assertEquals(strong.subList(0, 4), out);
         assertEquals(10, bucket.size());
     }
 
@@ -100,4 +100,3 @@ class FreezableBucketTest {
         assertTrue(out.contains(kept), "a live entry must survive the sweep");
     }
 }
-
