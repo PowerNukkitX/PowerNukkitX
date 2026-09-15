@@ -78,6 +78,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -228,7 +229,7 @@ public class Network implements NetworkInterface, SignalingService {
             };
 
         if (mode.binds()) {
-            this.signaling = this.buildSignaling(settings, icePort, iceOnListenerPort, mode.builtin());
+            this.signaling = this.buildSignaling(settings, bindAddress, icePort, iceOnListenerPort, mode.builtin());
 
             final InetSocketAddress signalingAddress = settings.signalingPort() > 0
                 ? new InetSocketAddress(bindAddress.getAddress(), settings.signalingPort())
@@ -388,7 +389,7 @@ public class Network implements NetworkInterface, SignalingService {
         }
     }
 
-    private NetherNetHTTPSignaling buildSignaling(NetherNetSettings settings, int icePort,
+    private NetherNetHTTPSignaling buildSignaling(NetherNetSettings settings, InetSocketAddress address, int icePort,
                                                   boolean iceOnListenerPort, boolean serveHttp) {
         try {
             ServerIdentity identity = ServerIdentityProvider.identity(this.server);
@@ -399,7 +400,7 @@ public class Network implements NetworkInterface, SignalingService {
                 .setServeHttp(serveHttp)
                 .setTrustedProxies(TrustedProxies.parse(settings.trustedProxies()))
                 .setProxyProtocol(settings.proxyProtocol())
-                .setAdvertisedAddresses(settings.advertiseAddresses())
+                .setAdvertisedAddresses(advertisedAddresses(address, settings))
                 .setIceServers(iceServers(settings))
                 // A dedicated media port is pinned by the channel initialiser instead
                 .setIceOnLocalPort(icePort <= 0 && iceOnListenerPort)
@@ -485,6 +486,21 @@ public class Network implements NetworkInterface, SignalingService {
      * A dedicated media port multiplexes every peer over one socket. Without one, ICE gathers on
      * the listener port when query is not holding its UDP side, and on ephemeral ports otherwise.
      */
+    /**
+     * The addresses clients are told to connect to. Falling back to the bind address keeps a server
+     * bound to one public address from offering the internal addresses of its machine.
+     */
+    private static Set<String> advertisedAddresses(InetSocketAddress address, NetherNetSettings settings) {
+        if (!settings.advertiseAddresses().isEmpty()) {
+            return Set.copyOf(settings.advertiseAddresses());
+        }
+        InetAddress bound = address.getAddress();
+        if (bound == null || bound.isAnyLocalAddress()) {
+            return Set.of();
+        }
+        return Set.of(bound.getHostAddress());
+    }
+
     private int icePort(InetSocketAddress listener, NetherNetSettings settings) {
         int port = settings.udpPort();
         if (port == listener.getPort()) {
