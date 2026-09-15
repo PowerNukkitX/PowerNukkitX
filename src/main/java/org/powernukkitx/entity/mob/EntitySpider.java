@@ -20,6 +20,7 @@ import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
@@ -425,7 +426,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
                 )
                 .sensors(
                         new NearestTargetEntitySensor<>(0, 16, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
-                        new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0)
+                        new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0, ISensor.DEFAULT_TARGETING_PERIOD)
                 )
                 .controllers(
                         new WalkController(),

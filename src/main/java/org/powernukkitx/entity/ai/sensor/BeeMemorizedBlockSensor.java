@@ -20,7 +20,7 @@ public class BeeMemorizedBlockSensor implements ISensor {
     protected int period;
 
     public BeeMemorizedBlockSensor(int range, int lookY) {
-        this(range, lookY, DEFAULT_PERIOD);
+        this(range, lookY, 1);
     }
 
     public BeeMemorizedBlockSensor(int range, int lookY, int period) {

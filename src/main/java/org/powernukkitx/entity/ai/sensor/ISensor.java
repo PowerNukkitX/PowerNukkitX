@@ -12,15 +12,16 @@ import org.powernukkitx.entity.ai.memory.IMemoryStorage;
 public interface ISensor {
 
     /**
-     * Default refresh period for sensors whose result only drives non-combat reactions
+     * Suggested refresh period for sensors whose result only drives non-combat reactions
      * (item pickup, feeding, remembered blocks). A few hundred ms of extra latency there is not
-     * noticeable, while running them every gt is a large share of the AI tick cost.
+     * noticeable, while running them every gt is a large share of the AI tick cost. Existing
+     * constructors keep their original period of 1, so pass this explicitly to opt in.
      */
     int DEFAULT_PERIOD = 4;
 
     /**
-     * Default refresh period for sensors that feed targeting. Kept short so reaction latency stays
-     * close to vanilla.
+     * Suggested refresh period for sensors that feed targeting. Kept short so reaction latency
+     * stays close to vanilla.
      */
     int DEFAULT_TARGETING_PERIOD = 2;
 

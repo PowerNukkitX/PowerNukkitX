@@ -26,7 +26,7 @@ public class NearestFeedingPlayerSensor implements ISensor {
     protected int period;
 
     public NearestFeedingPlayerSensor(double range, double minRange) {
-        this(range, minRange, DEFAULT_PERIOD);
+        this(range, minRange, 1);
     }
 
     public NearestFeedingPlayerSensor(double range, double minRange, int period) {

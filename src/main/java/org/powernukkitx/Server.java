@@ -399,9 +399,9 @@ public class Server {
 
         int levelWorkerThreads = this.settings.levelSettings().levelWorkerThreads();
         if (levelWorkerThreads <= 0) {
-            levelWorkerThreads = Runtime.getRuntime().availableProcessors();
+            // Auto-detected: two workers is the floor, one thread cannot overlap level ticks at all
+            levelWorkerThreads = Math.max(2, Runtime.getRuntime().availableProcessors());
         }
-        levelWorkerThreads = Math.max(2, levelWorkerThreads);
         ScheduledThreadPoolExecutor levelTickPool = new ScheduledThreadPoolExecutor(
                 levelWorkerThreads, r -> new Thread(r, "Level Worker"));
         levelTickPool.setRemoveOnCancelPolicy(true);

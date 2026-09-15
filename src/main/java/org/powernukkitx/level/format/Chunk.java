@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
@@ -59,15 +60,21 @@ public class Chunk implements IChunk {
     protected final ChunkSection[] sections;
     protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
     protected final AtomicLong changes;
-    private final AtomicLong contentVersion = new AtomicLong();
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
     /**
      * The same entities bucketed by 16-block Y section, so height-bounded queries do not have to
      * walk the whole column. Fixed length - one bucket per section of this dimension - so the array
-     * itself is never reallocated and can be read without synchronisation.
+     * itself is never reallocated, and buckets are created on first use because most chunks never
+     * hold an entity in most of their sections.
      */
-    protected final Long2ObjectNonBlockingMap<Entity>[] entitySections;
+    protected final AtomicReferenceArray<Long2ObjectNonBlockingMap<Entity>> entitySections;
+    /**
+     * Tallest entity currently indexed here. A query starts this far below its own range because
+     * entities are bucketed by their feet, so a tall entity standing lower still has to be visited.
+     * It only ever grows, which costs a few extra empty buckets but never misses an entity.
+     */
+    private volatile double maxIndexedEntityHeight;
     /**
      * How many entities are currently placed in {@link #entitySections}. If this ever drifts from
      * {@link #entityCount} the index is incomplete, and queries fall back to the full entity map
@@ -594,14 +601,15 @@ public class Chunk implements IChunk {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static Long2ObjectNonBlockingMap<Entity>[] newEntitySections(LevelProvider levelProvider) {
-        int count = levelProvider.getDimensionData().getChunkSectionCount();
-        Long2ObjectNonBlockingMap<Entity>[] sections = new Long2ObjectNonBlockingMap[count];
-        for (int i = 0; i < count; i++) {
-            sections[i] = new Long2ObjectNonBlockingMap<>();
-        }
-        return sections;
+    private static AtomicReferenceArray<Long2ObjectNonBlockingMap<Entity>> newEntitySections(LevelProvider levelProvider) {
+        return new AtomicReferenceArray<>(levelProvider.getDimensionData().getChunkSectionCount());
+    }
+
+    private Long2ObjectNonBlockingMap<Entity> entitySection(int section) {
+        Long2ObjectNonBlockingMap<Entity> bucket = this.entitySections.get(section);
+        if (bucket != null) return bucket;
+        Long2ObjectNonBlockingMap<Entity> created = new Long2ObjectNonBlockingMap<>();
+        return this.entitySections.compareAndSet(section, null, created) ? created : this.entitySections.get(section);
     }
 
     /**
@@ -610,21 +618,30 @@ public class Chunk implements IChunk {
     private int sectionIndexOf(double worldY) {
         int section = (NukkitMath.floorDouble(worldY) >> 4) - getDimensionData().getMinSectionY();
         if (section < 0) return 0;
-        int last = this.entitySections.length - 1;
+        int last = this.entitySections.length() - 1;
         return section > last ? last : section;
     }
 
     private void indexEntitySection(Entity entity, int section) {
-        if (this.entitySections[section].put(entity.getId(), entity) == null) {
+        if (entitySection(section).put(entity.getId(), entity) == null) {
             this.indexedEntityCount.incrementAndGet();
+        }
+        double height = entity.getHeight();
+        if (height > this.maxIndexedEntityHeight) {
+            this.maxIndexedEntityHeight = height;
         }
         entity.chunkSectionIndex = section;
     }
 
+    private boolean removeFromEntitySection(int section, Entity entity) {
+        Long2ObjectNonBlockingMap<Entity> bucket = this.entitySections.get(section);
+        return bucket != null && bucket.remove(entity.getId()) != null;
+    }
+
     private void unindexEntitySection(Entity entity) {
         int previous = entity.chunkSectionIndex;
-        if (previous >= 0 && previous < this.entitySections.length
-                && this.entitySections[previous].remove(entity.getId()) != null) {
+        if (previous >= 0 && previous < this.entitySections.length()
+                && removeFromEntitySection(previous, entity)) {
             this.indexedEntityCount.decrementAndGet();
         }
         entity.chunkSectionIndex = -1;
@@ -643,8 +660,8 @@ public class Chunk implements IChunk {
     private void reindexEntitySection(Entity entity) {
         int section = sectionIndexOf(entity.y);
         int previous = entity.chunkSectionIndex;
-        if (previous >= 0 && previous < this.entitySections.length && previous != section
-                && this.entitySections[previous].remove(entity.getId()) != null) {
+        if (previous >= 0 && previous < this.entitySections.length() && previous != section
+                && removeFromEntitySection(previous, entity)) {
             this.indexedEntityCount.decrementAndGet();
         }
         indexEntitySection(entity, section);
@@ -656,15 +673,16 @@ public class Chunk implements IChunk {
         if (section == previous) {
             return;
         }
-        if (previous >= 0 && previous < this.entitySections.length
-                && this.entitySections[previous].remove(entity.getId()) != null) {
+        if (previous >= 0 && previous < this.entitySections.length()
+                && removeFromEntitySection(previous, entity)) {
             this.indexedEntityCount.decrementAndGet();
         }
         indexEntitySection(entity, section);
     }
 
     /**
-     * Visits the entities whose section overlaps the given world Y range.
+     * Visits the entities whose section overlaps the given world Y range, plus the buckets below it
+     * that a tall entity could reach into.
      * <p>
      * The flat {@link #getEntities()} map stays authoritative; this is an accelerator for queries
      * that only care about a few blocks of height, which would otherwise walk every entity in a
@@ -680,10 +698,11 @@ public class Chunk implements IChunk {
             }
             return;
         }
-        int from = sectionIndexOf(minY);
+        int from = sectionIndexOf(minY - this.maxIndexedEntityHeight);
         int to = sectionIndexOf(maxY);
         for (int i = from; i <= to; i++) {
-            Long2ObjectNonBlockingMap<Entity> section = this.entitySections[i];
+            Long2ObjectNonBlockingMap<Entity> section = this.entitySections.get(i);
+            if (section == null) continue;
             // An empty section still hands out a values() view plus a snapshot iterator, and that
             // iterator's constructor walks the key table looking for a first entry it will never
             // find. Most sections a collision query touches are empty, so the size check pays for
@@ -990,13 +1009,8 @@ public class Chunk implements IChunk {
     @Override
     public void setChanged() {
         this.changes.incrementAndGet();
-        this.contentVersion.incrementAndGet();
     }
 
-    @Override
-    public long getContentVersion() {
-        return this.contentVersion.get();
-    }
 
     @Override
     public void setChanged(boolean changed) {

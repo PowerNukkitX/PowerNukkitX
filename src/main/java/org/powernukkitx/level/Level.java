@@ -4347,13 +4347,6 @@ public class Level implements Metadatable {
         return this.getCollidingEntities(bb, null);
     }
 
-    /**
-     * Largest entity height the Y-section index is expected to cover. Entities are bucketed by the
-     * position of their feet, so a query has to start one bucket low enough that a tall entity
-     * standing below the range is still visited. Nothing in vanilla comes close to 32 blocks.
-     */
-    private static final double MAX_INDEXED_ENTITY_HEIGHT = 32;
-
     /** Mutable cursor so the per-column visitor can append into the shared result buffer. */
     private static final class EntityBuffer {
         private int index;
@@ -4376,7 +4369,7 @@ public class Level implements Metadatable {
             return;
         }
         if (chunk instanceof org.powernukkitx.level.format.Chunk concreteChunk) {
-            concreteChunk.forEachEntityInYRange(bb.getMinY() - MAX_INDEXED_ENTITY_HEIGHT, bb.getMaxY(), action);
+            concreteChunk.forEachEntityInYRange(bb.getMinY(), bb.getMaxY(), action);
             return;
         }
         for (Entity ent : chunk.getEntities().values()) {
@@ -5227,13 +5220,13 @@ public class Level implements Metadatable {
                 return CompletableFuture.completedFuture(loaded);
             }
         }
-        return CompletableFuture.supplyAsync(() -> {
+        return this.getScheduler().supplyAsync(() -> {
             IChunk chunk = this.requireProvider().getLoadedChunk(index);
             if (chunk == null) {
                 chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
             }
             return chunk;
-        }, this.getScheduler().getAsyncTaskThreadPool());
+        });
     }
 
 

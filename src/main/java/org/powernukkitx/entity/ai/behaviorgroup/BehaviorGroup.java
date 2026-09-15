@@ -439,14 +439,14 @@ public class BehaviorGroup implements IBehaviorGroup {
 
         //An active entity used to repath on every cycle unconditionally. A moving target drifts by
         //fractions of a block per tick, and rerunning A* for that produces the same path, so only
-        //repath once the target has actually moved somewhere else.
+        //repath once the target has actually moved somewhere else. The section check below still
+        //applies, otherwise a wall built across the cached route would never be noticed.
         if (entity.isActive()) {
-            return current.distanceSquared(lastTarget) >= ROUTE_TARGET_EPSILON_SQUARED;
-        }
-
-        //the endpoint changed, so recalculation is needed
-        if (hasNewUnCalMoveTarget(entity))
+            if (current.distanceSquared(lastTarget) >= ROUTE_TARGET_EPSILON_SQUARED) return true;
+        } else if (hasNewUnCalMoveTarget(entity)) {
+            //the endpoint changed, so recalculation is needed
             return true;
+        }
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
         long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
         //a Section changed, so recalculation is needed

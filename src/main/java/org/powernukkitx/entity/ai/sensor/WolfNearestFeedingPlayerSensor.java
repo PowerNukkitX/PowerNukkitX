@@ -19,7 +19,7 @@ import org.powernukkitx.item.Item;
 public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange) {
-        this(range, minRange, DEFAULT_PERIOD);
+        this(range, minRange, 1);
     }
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange, int period) {
