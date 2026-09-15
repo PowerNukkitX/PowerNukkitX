@@ -68,6 +68,11 @@ public abstract class EntityAnimal extends EntityIntelligent {
     }
 
     @Override
+    public boolean canBeLeashed() {
+        return true;
+    }
+
+    @Override
     protected double getStepHeight() {
         return 0.5;
     }

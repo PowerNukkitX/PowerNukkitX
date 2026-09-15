@@ -1,8 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.Player;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntityLeashKnot;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.AxisAlignedBB;
+import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.powernukkitx.math.VectorMath.calculateFace;
 
@@ -63,6 +73,37 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
     @Override
     public int getBurnAbility() {
         return 20;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (player != null && this.level != null) {
+            final AxisAlignedBB search = new SimpleAxisAlignedBB(
+                    this.x - 7, this.y - 7, this.z - 7,
+                    this.x + 8, this.y + 8, this.z + 8);
+            final List<Entity> toTie = new ArrayList<>();
+            for (Entity e : this.level.getNearbyEntities(search)) {
+                if (e.getLeashedTo() == player) {
+                    toTie.add(e);
+                }
+            }
+            if (!toTie.isEmpty()) {
+                final EntityLeashKnot knot = EntityLeashKnot.getOrCreate(this);
+                if (knot != null) {
+                    for (Entity e : toTie) {
+                        e.setLeashedTo(knot);
+                        e.setPersistent(true);
+                    }
+                    return true;
+                }
+            }
+        }
+        return super.onActivate(item, player, blockFace, fx, fy, fz);
     }
 
     @Override
