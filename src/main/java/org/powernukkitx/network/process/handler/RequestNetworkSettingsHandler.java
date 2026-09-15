@@ -24,11 +24,11 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
     @Override
     public void handle(RequestNetworkSettingsPacket packet, PlayerSessionHolder holder, Server server) {
         final int clientNetworkVersion = packet.getClientNetworkVersion();
-        final BedrockCodec codec = NetworkConstants.codecForProtocolVersion(clientNetworkVersion);
+        final int serverNetworkVersion = NetworkConstants.CODEC.getProtocolVersion();
         final BedrockServerSession session = holder.getSession();
 
-        if (codec == null) {
-            final boolean serverOutdated = NetworkConstants.isServerOutdated(clientNetworkVersion);
+        if (clientNetworkVersion != serverNetworkVersion) {
+            final boolean serverOutdated = clientNetworkVersion > serverNetworkVersion;
             holder.sendPlayStatus(
                     serverOutdated ?
                             PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
@@ -38,8 +38,6 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
             );
             return;
         }
-
-        session.setCodec(codec);
 
         if (!holder.getState().equals(SessionState.INITIAL)) {
             holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);

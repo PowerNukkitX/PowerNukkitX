@@ -1,5 +1,11 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.Player;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
@@ -52,12 +58,12 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
             //null sucks
         }
         return new SimpleAxisAlignedBB(
-                this.x + w,
-                this.y,
-                this.z + n,
-                this.x + e,
-                this.y + 1,
-                this.z + s
+            this.x + w,
+            this.y,
+            this.z + n,
+            this.x + e,
+            this.y + 1,
+            this.z + s
         );
     }
 
@@ -65,11 +71,11 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
     public boolean canConnect(Block block) {
         return switch (block.getId()) {
             case GLASS_PANE, BLACK_STAINED_GLASS_PANE, BLUE_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE,
-                    CYAN_STAINED_GLASS_PANE, GRAY_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE,
-                    LIGHT_BLUE_STAINED_GLASS_PANE, LIGHT_GRAY_STAINED_GLASS_PANE, LIME_STAINED_GLASS_PANE,
-                    MAGENTA_STAINED_GLASS_PANE, ORANGE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE,
-                    RED_STAINED_GLASS_PANE, WHITE_STAINED_GLASS_PANE, YELLOW_STAINED_GLASS_PANE, IRON_BARS, COBBLESTONE_WALL, COBBLED_DEEPSLATE_WALL ->
-                    true;
+                 CYAN_STAINED_GLASS_PANE, GRAY_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE,
+                 LIGHT_BLUE_STAINED_GLASS_PANE, LIGHT_GRAY_STAINED_GLASS_PANE, LIME_STAINED_GLASS_PANE,
+                 MAGENTA_STAINED_GLASS_PANE, ORANGE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE,
+                 RED_STAINED_GLASS_PANE, WHITE_STAINED_GLASS_PANE, YELLOW_STAINED_GLASS_PANE, IRON_BARS, COBBLESTONE_WALL, COBBLED_DEEPSLATE_WALL ->
+                true;
             default -> {
                 if (block instanceof BlockTrapdoor trapdoor) {
                     yield trapdoor.isOpen() && trapdoor.getBlockFace() == calculateFace(this, trapdoor);
@@ -77,5 +83,27 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
                 yield block.isSolid();
             }
         };
+    }
+
+    public boolean autoConfigureState() {
+        return HorizontalConnections.configure(this);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (autoConfigureState()) {
+                level.setBlock(this, this, true);
+            }
+            return type;
+        }
+
+        return super.onUpdate(type);
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        autoConfigureState();
+        return super.place(item, block, target, face, fx, fy, fz, player);
     }
 }

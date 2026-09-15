@@ -68,6 +68,23 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         return true;
     }
 
+    /**
+     * Determines whether sleeping in this bed updates the player's respawn point.
+     *
+     * @return {@code true} for beds that can be used as respawn points
+     */
+    public boolean setsRespawnPoint() {
+        return true;
+    }
+
+    /**
+     * Called after a player leaves this bed.
+     *
+     * @param player the player that left the bed
+     */
+    public void onSleepEnd(@NotNull Player player) {
+    }
+
     @Override
     public double getResistance() {
         return 1;
@@ -157,10 +174,12 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         }
 
         Location spawn = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
-        if (!player.getSpawn().first().equals(spawn)) {
+        if (setsRespawnPoint() && !player.getSpawn().first().equals(spawn)) {
             player.setSpawn(this, Player.SpawnPointType.BLOCK);
         }
-        player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
+        if (setsRespawnPoint()) {
+            player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
+        }
 
         if (!(level.isNight() || level.isThundering())) {
             player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.noSleep"));
