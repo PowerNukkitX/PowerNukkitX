@@ -21,6 +21,10 @@ final class FreezableBucket {
         this.entries = new WeakReference[INITIAL_CAPACITY];
     }
 
+    synchronized int size() {
+        return this.size;
+    }
+
     public synchronized void add(@NotNull AutoFreezable value) {
         if (this.size == this.entries.length) {
             this.entries = Arrays.copyOf(this.entries, this.size << 1);
