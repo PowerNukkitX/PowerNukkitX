@@ -3,7 +3,9 @@ package org.powernukkitx.utils.collection;
 import org.powernukkitx.Server;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This includes computing temperatures, freezing and thawing.
  */
 public class FreezableArrayManager {
-    protected ConcurrentHashMap<Integer, WeakConcurrentSet<AutoFreezable>> tickArrayMap;
+    protected ConcurrentHashMap<Integer, FreezableBucket> tickArrayMap;
     public final boolean enable;
     public final int cycleTick;
     /**
@@ -28,13 +30,17 @@ public class FreezableArrayManager {
      * next pass over the same bucket.
      */
     private int maxCompressionsPerCycle = 2048;
+    /** Maximum number of entries inspected by one asynchronous cycle. */
+    private int maxScansPerCycle = 16384;
     private final AtomicInteger currentArrayId = new AtomicInteger(0);
     /**
      * Guards against stacking up cycle tasks on the compute thread pool when a cycle takes longer than
      * {@link #cycleTick} ticks to finish.
      */
     private final AtomicBoolean cycleRunning = new AtomicBoolean(false);
-    private int currentTick;
+    private volatile long currentTick;
+    /** Number of completed cooling sweeps used by freezable arrays for lazy temperature decay. */
+    private volatile int coolingCycle;
 
     /**
      * Default temperature; a newly created array's temperature equals this value.
@@ -146,11 +152,44 @@ public class FreezableArrayManager {
         return this;
     }
 
+    /**
+     * @return the maximum number of tracked arrays inspected during one asynchronous cycle
+     */
+    public int getMaxScansPerCycle() {
+        return maxScansPerCycle;
+    }
+
+    /**
+     * Sets the scan limit used by future cycles.
+     *
+     * @param maxScansPerCycle maximum number of entries to inspect
+     * @return this manager
+     */
+    public FreezableArrayManager setMaxScansPerCycle(int maxScansPerCycle) {
+        this.maxScansPerCycle = maxScansPerCycle;
+        return this;
+    }
+
+    /**
+     * @return the number of completed cooling cycles
+     */
+    public int getCoolingCycle() {
+        return coolingCycle;
+    }
+
+    private boolean isFreezeCandidate(AutoFreezable e) {
+        return switch (e.getFreezeStatus()) {
+            case NONE -> e.getTemperature() <= freezingPoint;
+            case FREEZE -> e.getTemperature() <= absoluteZero;
+            default -> false;
+        };
+    }
+
     public ByteArrayWrapper createByteArray(int length) {
         if (enable) {
             var tmp = new FreezableByteArray(length, this);
-            var set = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
-            set.add(tmp);
+            var bucket = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new FreezableBucket());
+            bucket.add(tmp);
             return tmp;
         } else {
             return new PureByteArray(length);
@@ -160,8 +199,8 @@ public class FreezableArrayManager {
     public ByteArrayWrapper wrapByteArray(@NotNull byte[] array) {
         if (enable) {
             var tmp = new FreezableByteArray(array, this);
-            var set = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
-            set.add(tmp);
+            var bucket = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new FreezableBucket());
+            bucket.add(tmp);
             return tmp;
         } else {
             return new PureByteArray(array);
@@ -171,8 +210,8 @@ public class FreezableArrayManager {
     public ByteArrayWrapper cloneByteArray(@NotNull byte[] array) {
         if (enable) {
             var tmp = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
-            var set = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new WeakConcurrentSet<>(WeakConcurrentSet.Cleaner.MANUAL));
-            set.add(tmp);
+            var bucket = tickArrayMap.computeIfAbsent(Math.floorMod(currentArrayId.getAndIncrement(), cycleTick), (ignore) -> new FreezableBucket());
+            bucket.add(tmp);
             return tmp;
         } else {
             return new PureByteArray(Arrays.copyOf(array, array.length));
@@ -182,50 +221,30 @@ public class FreezableArrayManager {
     public void tick() {
         currentTick++;
         if (!enable) return;
-        var dt = Math.floorMod(currentTick, cycleTick);
-        var set = tickArrayMap.get(dt);
-        if (set == null) return;
+        var dt = (int) Math.floorMod(currentTick, (long) cycleTick);
+        if (dt == 0) coolingCycle++;
+        var bucket = tickArrayMap.get(dt);
+        if (bucket == null) return;
         if (!cycleRunning.compareAndSet(false, true)) return;
-        // freeze arrays
-        //
-        // The deadline is taken here, on the tick thread, and not where the cycle starts running on
-        // the compute pool. The caller sets maxCompressionTime to whatever is left of the current
-        // tick, so the window belongs to this tick: a cycle that cannot get a compute thread before
-        // the tick is over is meant to give up rather than run into the next one.
-        final long deadline = System.currentTimeMillis() + maxCompressionTime;
-        final int budgetStart = maxCompressionsPerCycle;
-        // clean up dead references
+
+        final int scanBudget = maxScansPerCycle;
+        final int compressionBudget = maxCompressionsPerCycle;
+        final int timeBudget = maxCompressionTime;
         CompletableFuture.runAsync(() -> {
-            int budget = budgetStart;
-            boolean budgetSpent = false;
-            for (AutoFreezable e : set) {
-                if (e == null) continue;
-                int temp = e.getTemperature();
-                // Cooling continues for the whole bucket even once the compression budget is gone.
-                // Stopping the loop outright would starve its tail: the same arrays are visited in
-                // the same order every cycle, so the ones past the cut-off would never cool down.
-                e.colder(1);
-                if (budgetSpent) continue;
-                if (temp > getFreezingPoint() + 1) continue;
-                var status = e.getFreezeStatus();
-                if (status != AutoFreezable.FreezeStatus.NONE && status != AutoFreezable.FreezeStatus.FREEZE) continue;
-                if (budget-- <= 0 || System.currentTimeMillis() > deadline) {
-                    budgetSpent = true;
-                    continue;
-                }
-                if (e.getTemperature() == absoluteZero) {
+            final long deadline = System.currentTimeMillis() + timeBudget;
+            final List<AutoFreezable> candidates = new ArrayList<>();
+            bucket.scan(scanBudget, this::isFreezeCandidate, candidates);
+
+            int budget = compressionBudget;
+            for (AutoFreezable e : candidates) {
+                if (budget-- <= 0 || System.currentTimeMillis() > deadline) break;
+                if (e.getTemperature() <= absoluteZero) {
                     e.deepFreeze();
                 } else {
                     e.freeze();
                 }
             }
         }, Server.getInstance().getComputeThreadPool())
-                .whenComplete((ignored, throwable) -> {
-                    try {
-                        set.clearDeadReferences();
-                    } finally {
-                        cycleRunning.set(false);
-                    }
-                });
+                .whenComplete((ignored, throwable) -> cycleRunning.set(false));
     }
 }

@@ -59,6 +59,7 @@ public class Chunk implements IChunk {
     protected final ChunkSection[] sections;
     protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
     protected final AtomicLong changes;
+    private final AtomicLong contentVersion = new AtomicLong();
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
     /**
@@ -682,7 +683,13 @@ public class Chunk implements IChunk {
         int from = sectionIndexOf(minY);
         int to = sectionIndexOf(maxY);
         for (int i = from; i <= to; i++) {
-            for (Entity entity : this.entitySections[i].values()) {
+            Long2ObjectNonBlockingMap<Entity> section = this.entitySections[i];
+            // An empty section still hands out a values() view plus a snapshot iterator, and that
+            // iterator's constructor walks the key table looking for a first entry it will never
+            // find. Most sections a collision query touches are empty, so the size check pays for
+            // itself many times over.
+            if (section.isEmpty()) continue;
+            for (Entity entity : section.values()) {
                 action.accept(entity);
             }
         }
@@ -983,6 +990,12 @@ public class Chunk implements IChunk {
     @Override
     public void setChanged() {
         this.changes.incrementAndGet();
+        this.contentVersion.incrementAndGet();
+    }
+
+    @Override
+    public long getContentVersion() {
+        return this.contentVersion.get();
     }
 
     @Override

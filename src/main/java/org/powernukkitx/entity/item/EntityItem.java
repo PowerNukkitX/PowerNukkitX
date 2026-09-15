@@ -269,9 +269,12 @@ public class EntityItem extends Entity {
 
         updateWorldScanBudget();
 
-        if (this.mergeItems && this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
+        var gameplaySettings = this.server.getSettings().gameplaySettings();
+        int mergeInterval = Math.max(1, gameplaySettings.itemMergeInterval());
+        if (this.mergeItems && this.age % mergeInterval == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
             if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
-                for (EntityItem entity : this.getLevel().getCollidingItemEntities(getBoundingBox().grow(1, 1, 1))) {
+                double mergeRadius = gameplaySettings.itemMergeRadius();
+                for (EntityItem entity : this.getLevel().getCollidingItemEntities(getBoundingBox().grow(mergeRadius, mergeRadius, mergeRadius))) {
                     if (entity != this) {
                         if (!entity.isAlive()) {
                             continue;
@@ -328,47 +331,38 @@ public class EntityItem extends Entity {
                 this.fluidMode = resolveFluidMode(lavaResistant);
             }
 
-            if (this.inBubbleColumn) {
-                hasUpdate = true;
-            } else if (this.fluidMode == FLUID_SUBMERGED) {
-                //item is fully in water or lava, or in a still one of either
-                this.motionY -= this.getGravity() * -0.015;
-            } else if (this.fluidMode == FLUID_RISING) {
-                this.motionY = this.getGravity() - 0.06; //item is going up in water, don't let it go back down too fast
-            } else {
-                this.motionY -= this.getGravity(); //item is not in water
+            if (this.scanWorldThisTick) {
+                if (this.inBubbleColumn) {
+                    hasUpdate = true;
+                } else if (this.fluidMode == FLUID_SUBMERGED) {
+                    this.motionY -= this.getGravity() * -0.015;
+                } else if (this.fluidMode == FLUID_RISING) {
+                    this.motionY = this.getGravity() - 0.06;
+                } else {
+                    this.motionY -= this.getGravity();
+                }
+
+                if (this.checkObstruction(this.x, this.y, this.z)) hasUpdate = true;
+                this.move(this.motionX, this.motionY, this.motionZ);
+
+                double friction = 1 - this.getDrag();
+                if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
+                    friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+                }
+                this.motionX *= friction;
+                if (!this.inBubbleColumn) this.motionY *= 1 - this.getDrag();
+                this.motionZ *= friction;
+                if (this.onGround && !this.inBubbleColumn) this.motionY *= -0.5;
+                this.updateMovement();
             }
 
-            if (this.scanWorldThisTick && this.checkObstruction(this.x, this.y, this.z)) {
-                hasUpdate = true;
-            }
-
-            this.move(this.motionX, this.motionY, this.motionZ);
-
-            double friction = 1 - this.getDrag();
-
-            if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
-            }
-
-            this.motionX *= friction;
-            if (!this.inBubbleColumn) {
-                this.motionY *= 1 - this.getDrag();
-            }
-            this.motionZ *= friction;
-
-            if (this.onGround && !this.inBubbleColumn) {
-                this.motionY *= -0.5;
-            }
-
-            this.updateMovement();
-
+            int despawnAge = Math.max(1, gameplaySettings.itemDespawnTicks());
             if (!this.shouldDespawn) {
                 if (this.age > 0) this.age--;
-            } else if (this.isDisplayOnly && this.age > 5980) {
+            } else if (this.isDisplayOnly && this.age > despawnAge - 20) {
                 this.age = 0;
                 respawnToAll();
-            } else if (this.age > 6000) {
+            } else if (this.age > despawnAge) {
                 ItemDespawnEvent ev = new ItemDespawnEvent(this);
                 this.server.getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {

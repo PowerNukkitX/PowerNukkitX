@@ -5,9 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable {
+    private static final long TEMPERATURE_MASK = 0xFFFFFFFFL;
+
     private final FreezableArrayManager manager;
     private final AtomicReference<FreezeStatus> freezeStatus = new AtomicReference<>(FreezeStatus.NONE);
-    private volatile int temperature;
+    private volatile long thermalState;
     private final int rawLength;
     private byte[] data;
 
@@ -15,14 +17,22 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         this.rawLength = length;
         this.data = new byte[length];
         this.manager = manager;
-        this.temperature = manager.getDefaultTemperature();
+        this.thermalState = pack(manager.getCoolingCycle(), manager.getDefaultTemperature());
     }
 
     FreezableByteArray(@NotNull byte[] src, @NotNull FreezableArrayManager manager) {
         this.rawLength = src.length;
         this.data = src;
         this.manager = manager;
-        this.temperature = manager.getDefaultTemperature();
+        this.thermalState = pack(manager.getCoolingCycle(), manager.getDefaultTemperature());
+    }
+
+    private static long pack(int cycle, int temperature) {
+        return ((long) cycle << 32) | (temperature & TEMPERATURE_MASK);
+    }
+
+    private void setTemperature(int temperature) {
+        this.thermalState = pack(manager.getCoolingCycle(), temperature);
     }
 
     public FreezableArrayManager getManager() {
@@ -36,15 +46,19 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public int getTemperature() {
-        return temperature;
+        long state = this.thermalState;
+        int base = (int) state;
+        long elapsed = (long) manager.getCoolingCycle() - (int) (state >>> 32);
+        if (elapsed <= 0) return base;
+        return (int) Math.max(manager.getAbsoluteZero(), base - elapsed);
     }
 
     @Override
     public void warmer(int temperature) {
-        int current = this.temperature;
+        int current = getTemperature();
         int boilingPoint = manager.getBoilingPoint();
         if (current >= boilingPoint) return;
-        this.temperature = Math.min(boilingPoint, current + temperature);
+        setTemperature(Math.min(boilingPoint, current + temperature));
     }
 
     @Override
@@ -53,15 +67,15 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         // cycle cools every tracked array on every pass, and on a server with many worlds most of
         // them are permanently at the floor - writing the same value back dirtied a cache line for
         // each one, on every pass, across every compute thread.
-        int current = this.temperature;
+        int current = getTemperature();
         int absoluteZero = manager.getAbsoluteZero();
         if (current <= absoluteZero) return;
-        this.temperature = Math.max(absoluteZero, current - temperature);
+        setTemperature(Math.max(absoluteZero, current - temperature));
     }
 
     @Override
     public void freeze() {
-        if (temperature > manager.getFreezingPoint()) return;
+        if (getTemperature() > manager.getFreezingPoint()) return;
         if (!freezeStatus.compareAndSet(FreezeStatus.NONE, FreezeStatus.FREEZING)) return;
         data = LZ4Freezer.compressor.compress(data);
         freezeStatus.set(FreezeStatus.FREEZE);
@@ -69,7 +83,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public void deepFreeze() {
-        if (temperature > manager.getAbsoluteZero()) return;
+        if (getTemperature() > manager.getAbsoluteZero()) return;
         // An already frozen array carries the same LZ4 block a deep freeze would produce, now that
         // both stages share a compressor, so promote it instead of paying a decompress plus a
         // recompress for an identical result.
@@ -93,7 +107,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
             data = LZ4Freezer.decompressor.decompress(data, rawLength);
             freezeStatus.set(FreezeStatus.NONE);
         }
-        if (temperature < manager.getMeltingHeat()) temperature = manager.getMeltingHeat();
+        if (getTemperature() < manager.getMeltingHeat()) setTemperature(manager.getMeltingHeat());
     }
 
     @Override

@@ -17,6 +17,8 @@ public class NetworkSettings extends OkaeriConfig {
     boolean queryPlugins = true;
     @Comment("pnx.settings.network.compressionlevel")
     int compressionLevel = 4;
+    @Comment("pnx.settings.network.compressionthreshold")
+    int compressionThreshold = 256;
     @Comment("pnx.settings.network.zlibprovider")
     int zlibProvider = 3;
     @Comment("pnx.settings.network.snappy")

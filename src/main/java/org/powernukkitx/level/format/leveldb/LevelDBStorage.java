@@ -38,6 +38,19 @@ import java.util.regex.Pattern;
 
 public final class LevelDBStorage {
     private static final List<String> VILLAGE_COMPONENTS = List.of("DWELLERS", "INFO", "POI", "PLAYERS");
+
+    /**
+     * Size of an SST data block. Chunk values are a few KB each and are read by key rather than
+     * scanned, so a block is almost always fetched to serve a single chunk: every read decompresses
+     * and allocates a whole block regardless of how much of it is wanted. At 64K that allocation
+     * showed up as a fifth of compaction time and a noticeable slice of chunk loading. Smaller
+     * blocks also mean the block cache holds four times as many of them for the same budget.
+     * <p>
+     * Block boundaries are recorded in each file's index, so existing databases stay readable and
+     * simply migrate as their files are rewritten by compaction.
+     */
+    private static final int BLOCK_SIZE = 16 * 1024;
+
     private final DB db;
     private final String path;
     private int refCount;
@@ -46,11 +59,19 @@ public final class LevelDBStorage {
         return this.db;
     }
 
-    public LevelDBStorage(int refCount, String path) throws IOException {
-        this(refCount, path, new Options()
+    /**
+     * Default options for a world database. Both constructors and {@link LevelDBProvider} open
+     * databases with the same settings, so the tuning lives here rather than at each call site.
+     */
+    public static Options defaultOptions() {
+        return new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
-                .blockSize(64 * 1024));
+                .blockSize(BLOCK_SIZE);
+    }
+
+    public LevelDBStorage(int refCount, String path) throws IOException {
+        this(refCount, path, defaultOptions());
     }
 
     public LevelDBStorage(int refCount, String pathFolder, Options options) throws IOException {

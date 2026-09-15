@@ -11,19 +11,20 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.RuntimeBlockDefinition;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class SingleFakeBlock implements FakeBlock {
     protected final Block block;
     protected final String tileId;
-    protected Object2ObjectArrayMap<Player, HashSet<Vector3>> lastPositions = new Object2ObjectArrayMap<>();
+    protected final Map<Player, HashSet<Vector3>> lastPositions = new ConcurrentHashMap<>();
 
     public SingleFakeBlock(String blockId) {
         this.block = Block.get(blockId);
@@ -47,8 +48,8 @@ public class SingleFakeBlock implements FakeBlock {
 
     @Override
     public void create(Player player, String titleName) {
-        createAndGetLastPositions(player).addAll(this.getPlacePositions(player));
-        HashSet<Vector3> lastPositions = this.lastPositions.get(player);
+        HashSet<Vector3> lastPositions = createAndGetLastPositions(player);
+        lastPositions.addAll(this.getPlacePositions(player));
         HashSet<Vector3> additional = new HashSet<>();
         lastPositions.forEach(position -> {
 
@@ -92,8 +93,7 @@ public class SingleFakeBlock implements FakeBlock {
     }
 
     public HashSet<Vector3> createAndGetLastPositions(Player player) {
-        if (!lastPositions.containsKey(player)) lastPositions.put(player, new HashSet<>());
-        return lastPositions.get(player);
+        return lastPositions.computeIfAbsent(player, p -> new HashSet<>());
     }
 
     public HashSet<Vector3> getLastPositions(Player player) {

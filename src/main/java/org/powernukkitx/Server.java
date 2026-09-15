@@ -400,7 +400,11 @@ public class Server {
         if (levelWorkerThreads <= 0) {
             levelWorkerThreads = Runtime.getRuntime().availableProcessors();
         }
-        this.levelTickExecutor = new ScheduledThreadPoolExecutor(levelWorkerThreads, r -> new Thread(r, "Level Worker"));
+        levelWorkerThreads = Math.max(2, levelWorkerThreads);
+        ScheduledThreadPoolExecutor levelTickPool = new ScheduledThreadPoolExecutor(
+                levelWorkerThreads, r -> new Thread(r, "Level Worker"));
+        levelTickPool.setRemoveOnCancelPolicy(true);
+        this.levelTickExecutor = levelTickPool;
         this.levelThreadMode = this.settings.levelSettings().levelThread();
 
         levelArray = Level.EMPTY_ARRAY;
@@ -1182,7 +1186,6 @@ public class Server {
             this.titleTick();
             this.maxTick = getBaseTps();
             this.maxUse = 0;
-
             if (tickTime - this.lastQueryRegenMillis >= 25_600) {
                 this.lastQueryRegenMillis = tickTime;
                 try {

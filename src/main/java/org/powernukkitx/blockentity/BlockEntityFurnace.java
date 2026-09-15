@@ -13,6 +13,7 @@ import org.powernukkitx.inventory.SmeltingInventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBucket;
 import org.powernukkitx.item.ItemLavaBucket;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -239,12 +240,18 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     protected void setBurning(boolean burning) {
+        Level level = this.level;
+        if (level == null) {
+            return;
+        }
+
+        Block block = this.getBlock();
         if (burning) {
-            if (this.getBlock().getId().equals(getIdleBlockId())) {
-                this.getLevel().setBlock(this, Block.getWithState(getBurningBlockId(), this.getBlock().getBlockState()), true);
+            if (block.getId().equals(getIdleBlockId())) {
+                level.setBlock(this, Block.getWithState(getBurningBlockId(), block.getBlockState()), true);
             }
-        } else if (this.getBlock().getId().equals(getBurningBlockId())) {
-            this.getLevel().setBlock(this, Block.getWithState(getIdleBlockId(), this.getBlock().getBlockState()), true);
+        } else if (block.getId().equals(getBurningBlockId())) {
+            level.setBlock(this, Block.getWithState(getIdleBlockId(), block.getBlockState()), true);
         }
     }
 

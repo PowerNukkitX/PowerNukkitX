@@ -1536,7 +1536,9 @@ public class Level implements Metadatable {
                         }), this.scheduler.getAsyncTaskThreadPool()).join();
                 }
                 boolean seenAsyncPrepare = false;
-                for (long id : this.updateEntities.keySetLong()) {
+                var entityIterator = this.updateEntities.fastKeyIterator();
+                while (entityIterator.hasNext()) {
+                    long id = entityIterator.nextLong();
                     Entity entity = this.updateEntities.get(id);
                     if (entity instanceof EntityIntelligent intelligent) {
                         if (intelligent.getBehaviorGroup() == null) {

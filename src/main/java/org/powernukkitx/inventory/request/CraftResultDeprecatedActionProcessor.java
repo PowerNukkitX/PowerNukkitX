@@ -48,7 +48,12 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
             createdOutput.setItem(0, resultItem, false);
             return null;
         }
-        context.put(NO_RESPONSE_DESTROY_KEY, true);
+        // The destroy actions that follow a craft only clear leftovers of slots the server already
+        // emptied. Without such a craft in this request there is nothing to swallow, so the key stays
+        // unset and DestroyActionProcessor validates the destroy for real.
+        if (context.hasServerConsumed()) {
+            context.put(NO_RESPONSE_DESTROY_KEY, true);
+        }
         return null;
     }
 
