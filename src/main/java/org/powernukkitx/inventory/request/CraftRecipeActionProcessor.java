@@ -1,6 +1,8 @@
 package org.powernukkitx.inventory.request;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.entity.effect.Effect;
+import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.event.inventory.CraftItemEvent;
@@ -10,6 +12,7 @@ import org.powernukkitx.inventory.InputInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.SmithingInventory;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -51,6 +54,28 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
     public static final String GRID_CONSUMED_KEY = "grid_consumed";
+
+    /**
+     * How many emeralds the hero of the village effect takes off the first item of a trade. The
+     * first level is worth 30 percent of the price and every level past it another sixteenth, and
+     * the discount is never smaller than a single emerald. A trade the villager pays for is left
+     * alone, only the price the player hands over is discounted.
+     *
+     * @param player the player trading
+     * @param buy    the first item of the trade, the one the player hands over
+     * @return the number of emeralds to take off, zero when the player is not a hero
+     */
+    public static int heroDiscount(Player player, CompoundTag buy) {
+        if (!ItemID.EMERALD.equals(buy.getString("Name"))) {
+            return 0;
+        }
+        Effect hero = player.getEffect(EffectType.VILLAGE_HERO);
+        int price = buy.getByte("Count");
+        if (hero == null || price <= 0) {
+            return 0;
+        }
+        return Math.max(1, (int) Math.floor(price * (0.0625 * (hero.getLevel() - 1) + 0.3)));
+    }
 
     public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
         String id = input.getId();
@@ -140,6 +165,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             boolean cb = tradeRecipe.contains("buyB");
 
             int reductionA = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierA") ? tradeRecipe.getFloat("priceMultiplierA") : 0));
+            if (ca) {
+                reductionA += heroDiscount(player, tradeRecipe.getCompound("buyA"));
+            }
             int reductionB = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierB") ? tradeRecipe.getFloat("priceMultiplierB") : 0));
 
             if (ca && cb) {
