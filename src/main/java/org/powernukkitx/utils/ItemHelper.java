@@ -69,7 +69,10 @@ public class ItemHelper {
         }
         Tag tagTag = tag.get("tag");
         if (tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty()) {
-            item.setNbt(compoundTag);
+            stripLeakedItemComponents(item, compoundTag);
+            if (!compoundTag.isEmpty()) {
+                item.setNbt(compoundTag);
+            }
         }
 
         if (tag.contains("Block")) {
@@ -115,6 +118,18 @@ public class ItemHelper {
             }
         }
         return item;
+    }
+
+    private void stripLeakedItemComponents(Item item, CompoundTag tag) {
+        if (item instanceof CustomItem) {
+            return;
+        }
+        String[] leaked = tag.getTags().keySet().stream()
+            .filter(key -> key.startsWith("minecraft:"))
+            .toArray(String[]::new);
+        if (leaked.length > 0) {
+            tag.remove(leaked);
+        }
     }
 
     public BlockState getBlockStateHelper(CompoundTag tag) {
