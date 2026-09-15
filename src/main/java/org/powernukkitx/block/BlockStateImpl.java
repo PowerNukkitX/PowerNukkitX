@@ -24,10 +24,12 @@ public record BlockStateImpl(String identifier,
                              BlockPropertyType.BlockPropertyValue<?, ?, ?>[] blockPropertyValues,
                              NbtMap blockStateTag
 ) implements BlockState {
+    private static final int UNKNOWN_BLOCK_HASH = -2;
+
     static Int2ObjectOpenHashMap<BlockStateImpl> UNKNOWN_BLOCK_STATE_CACHE = new Int2ObjectOpenHashMap<>();
 
     static BlockStateImpl makeUnknownBlockState(int hash, NbtMap blockTag) {
-        return UNKNOWN_BLOCK_STATE_CACHE.computeIfAbsent(hash, h -> new BlockStateImpl(BlockID.UNKNOWN, -2, (short) 0, new BlockPropertyType.BlockPropertyValue[0], NbtMap.builder()
+        return UNKNOWN_BLOCK_STATE_CACHE.computeIfAbsent(hash, h -> new BlockStateImpl(BlockID.UNKNOWN, UNKNOWN_BLOCK_HASH, (short) 0, new BlockPropertyType.BlockPropertyValue[0], NbtMap.builder()
                         .putString("name", BlockID.UNKNOWN)
                         .putCompound("states", NbtMap.EMPTY)
                         .putCompound("Block", blockTag)
@@ -171,6 +173,25 @@ public record BlockStateImpl(String identifier,
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    /**
+     * The record defaults compared every component, which meant walking the property array and the
+     * whole state NbtMap. States are keyed by their hash everywhere else in the registry, so that
+     * is all we need: it is unique per identifier plus property combination. Unknown states all
+     * carry the placeholder hash {@code -2} and are told apart by their preserved tag instead.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BlockStateImpl other)) return false;
+        if (this.blockhash != other.blockhash) return false;
+        return this.blockhash != UNKNOWN_BLOCK_HASH || this.blockStateTag.equals(other.blockStateTag);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.blockhash != UNKNOWN_BLOCK_HASH ? this.blockhash : this.blockStateTag.hashCode();
     }
 
     @Override

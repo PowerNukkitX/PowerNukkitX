@@ -2,6 +2,7 @@ package org.powernukkitx.blockentity;
 
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
@@ -187,7 +188,13 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public Block getBlock() {
-        return this.getLevelBlock();
+        // The level reference can be cleared by close() while another thread is still
+        // ticking this block entity, so report air instead of throwing LevelException.
+        Level level = this.level;
+        if (level == null) {
+            return Block.get(BlockID.AIR);
+        }
+        return level.getBlock(this);
     }
 
     public abstract boolean isBlockEntityValid();

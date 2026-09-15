@@ -1,6 +1,5 @@
 package org.powernukkitx.inventory.request;
 
-import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntityBeacon;
 import org.powernukkitx.entity.effect.EffectType;
@@ -8,13 +7,10 @@ import org.powernukkitx.inventory.BeaconInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.BeaconPaymentAction;
-import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DestroyAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,27 +52,10 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
             log.warn("invalid beacon secondary effect {}!", secondary);
             return context.error();
         }
-        boolean paymentConsumed = false;
-        for (DestroyAction destroy : findAllDestroyActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1)) {
-            if (destroy.getAmount() < 1) {
-                continue;
-            }
-            FullContainerName srcName = destroy.getSource().getFullContainerName();
-            Inventory destroyed;
-            try {
-                destroyed = NetworkMapping.getInventory(player, srcName.getContainerName(), srcName.getDynamicID());
-            } catch (IllegalArgumentException e) {
-                continue;
-            }
-            if (destroyed == beaconInventory) {
-                paymentConsumed = true;
-                break;
-            }
-        }
-        if (!paymentConsumed) {
-            log.warn("{}: beacon activated without consuming payment!", player.getName());
-            return context.error();
-        }
+        // The payment is taken here instead of relying on a DestroyAction later in the request: the
+        // client decides which actions it sends, so anything it is trusted to do can also be left out.
+        beaconInventory.decreaseCount(0, 1);
+        context.markServerConsumed(ContainerEnumName.BEACON_PAYMENT_CONTAINER);
         holder.setPrimaryPower(primary);
         holder.setSecondaryPower(secondary);
         return null;
@@ -85,16 +64,5 @@ public class BeaconPaymentActionProcessor implements ItemStackRequestActionProce
     @Override
     public ItemStackRequestActionType getType() {
         return ItemStackRequestActionType.SCREEN_BEACON_PAYMENT;
-    }
-
-    private static List<DestroyAction> findAllDestroyActions(ItemStackRequestAction[] actions, int startIndex) {
-        var found = new ArrayList<DestroyAction>();
-        for (int i = startIndex; i < actions.length; i++) {
-            var action = actions[i];
-            if (action instanceof DestroyAction destroyAction) {
-                found.add(destroyAction);
-            }
-        }
-        return found;
     }
 }

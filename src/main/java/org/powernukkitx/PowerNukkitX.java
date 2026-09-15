@@ -108,8 +108,12 @@ public class PowerNukkitX {
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
 
-        // Disable memory pooling unless specified
-        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled");
+        // Pool netty buffers unless the operator asks otherwise. An unpooled direct buffer costs a
+        // native malloc on allocation and a native free on release, and the chunk send path plus the
+        // batch encoder allocate one per chunk per player. Pooling reuses the arenas instead;
+        // buffers are still reference counted exactly as before, so this only changes where the
+        // memory comes from.
+        System.getProperties().putIfAbsent("io.netty.allocator.type", "pooled");
 
         // Force Mapped ByteBuffers for LevelDB till fixed.
         System.setProperty("leveldb.mmap", "true");
