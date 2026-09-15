@@ -46,7 +46,7 @@ public class BlockGrassBlock extends BlockDirt {
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
             if(up().isAir()) {
-                if (player != null && (player.gamemode & 0x01) == 0) {
+                if (player != null && !player.isCreative()) {
                     item.count--;
                 }
                 this.level.addParticle(new BoneMealParticle(this));

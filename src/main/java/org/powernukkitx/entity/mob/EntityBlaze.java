@@ -21,6 +21,7 @@ import org.powernukkitx.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -126,17 +127,22 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-
-        float chance = 0.5f + (0.25f * looting);
-        chance = Math.min(chance, 1.0f);
-
-        if (Utils.rand(0f, 1f) < chance) {
-            int amount = Utils.rand(1, 1 + looting);
-            return new Item[]{Item.get(Item.BLAZE_ROD, 0, amount)};
+        if (!killedByPlayer()) {
+            return Item.EMPTY_ARRAY;
         }
 
-        return Item.EMPTY_ARRAY;
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int rods = Utils.rand(0, 1 + looting);
+        if (rods == 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        return new Item[]{Item.get(Item.BLAZE_ROD, 0, rods)};
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

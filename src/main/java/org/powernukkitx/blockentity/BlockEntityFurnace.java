@@ -127,7 +127,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.nbt.remove("CustomName");
             return;
         }
@@ -384,7 +384,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable())
                 .putShort("BurnDuration", (short) burnDuration)
                 .putShort("BurnTime", (short) burnTime)
                 .putShort("CookTime", (short) cookTime)

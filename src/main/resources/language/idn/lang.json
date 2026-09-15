@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "Data level lama ditemukan untuk \"{%0}\", converting format",
   "nukkit.player.invalidEntity": "{%0} mencoba menyerang entity yang tidak valid",
   "nukkit.player.invalidMove": "{%0} salah bergerak!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] masuk dengan id entity {%3} di ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] masuk dengan uniqueId entity {%3} di ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] keluar karena {%3}",
   "nukkit.plugin.aliasError": "Tidak dapat memuat perintah alias {%0} dari plugin {%1}",
   "nukkit.plugin.circularDependency": "Dependensi melingkar terdeteksi",

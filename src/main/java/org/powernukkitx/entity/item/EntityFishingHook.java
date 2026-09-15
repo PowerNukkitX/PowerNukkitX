@@ -102,12 +102,16 @@ public class EntityFishingHook extends SlenderProjectile {
         if (target != 0L) {
             Entity entity = getLevel().getEntity(target);
             if (entity == null || !entity.isAlive()) {
-                setDataProperty(ActorDataTypes.TARGET, 0L);
+                setTarget(0L);
             } else {
                 Vector3f offset = entity.getAttachmentOffset(this);
                 setPosition(new Vector3(entity.x + offset.x, entity.y + offset.y, entity.z + offset.z));
+                this.motionX = 0;
+                this.motionY = 0;
+                this.motionZ = 0;
+                updateMovement();
+                return true;
             }
-            return false;
         }
 
         hasUpdate = super.onUpdate(currentTick);
@@ -191,15 +195,15 @@ public class EntityFishingHook extends SlenderProjectile {
         Collection<Player> viewers = this.getViewers().values();
 
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setType(ActorEvent.FISHHOOK_HOOKTIME);
 
         final ActorEventPacket bubblePk = new ActorEventPacket();
-        bubblePk.setTargetRuntimeID(this.getId());
+        bubblePk.setTargetRuntimeID(this.runtimeId());
         bubblePk.setType(ActorEvent.FISHHOOK_BUBBLE);
 
         final ActorEventPacket teasePk = new ActorEventPacket();
-        teasePk.setTargetRuntimeID(this.getId());
+        teasePk.setTargetRuntimeID(this.runtimeId());
         teasePk.setType(ActorEvent.FISHHOOK_TEASE);
 
         Server.broadcastPacket(viewers, pk);
@@ -268,20 +272,35 @@ public class EntityFishingHook extends SlenderProjectile {
                 }
             }
         } else if (this.shootingEntity != null) {
-            var eid = this.getDataProperty(ActorDataTypes.TARGET, 0L);
-            var targetEntity = this.getLevel().getEntity(eid);
-            if (eid != 0L && targetEntity != null && targetEntity.isAlive()) {
-                targetEntity.setMotion(this.shootingEntity.subtract(targetEntity).divide(8).add(0, 0.3, 0));
+            long eid = this.getDataProperty(ActorDataTypes.TARGET, 0L);
+            if (eid != 0L) {
+                Entity targetEntity = this.getLevel().getEntity(eid);
+                if (targetEntity != null && targetEntity.isAlive()) {
+                    this.pullEntity(targetEntity);
+                }
             }
         }
         this.close();
+    }
+
+    private void pullEntity(Entity target) {
+        double dx = this.shootingEntity.x - target.x;
+        double dy = (this.shootingEntity.y + 1.0) - target.y;
+        double dz = this.shootingEntity.z - target.z;
+        double distSq = dx * dx + dy * dy + dz * dz;
+
+        target.setMotion(new Vector3(
+                dx * 0.1,
+                Math.sqrt(Math.sqrt(distSq * 0.01) * 0.08) + dy * 0.1,
+                dz * 0.1
+        ));
     }
 
     @Override
     protected BedrockPacket createAddEntityPacket() {
         final AddActorPacket pk = new AddActorPacket();
         pk.setTargetActorID(this.getId());
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setActorType("minecraft:fishing_hook");
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         pk.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
@@ -324,7 +343,7 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     public void setTarget(long eid) {
-        this.setDataProperty(ActorDataTypes.OWNER, eid);
+        this.setDataProperty(ActorDataTypes.TARGET, eid);
         this.canCollide = eid == 0;
     }
 

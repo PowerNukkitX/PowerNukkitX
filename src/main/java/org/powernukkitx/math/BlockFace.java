@@ -117,7 +117,7 @@ public enum BlockFace {
     }
 
     /**
-     * Get a BlockFace by it's index (0-5). The order is D-U-N-S-W-E
+     * Get a BlockFace by its index (0-5). The order is D-U-N-S-W-E
      *
      * @param index BlockFace index
      * @return block face
@@ -127,7 +127,7 @@ public enum BlockFace {
     }
 
     /**
-     * Get a BlockFace by it's horizontal index (0-3). The order is S-W-N-E
+     * Get a BlockFace by its horizontal index (0-3). The order is S-W-N-E
      *
      * @param index BlockFace index
      * @return block face

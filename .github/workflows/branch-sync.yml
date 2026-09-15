@@ -14,14 +14,14 @@ jobs:
 
     steps:
       - name: Generate bot token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.PNX_BOT_APP_ID }}
           private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}

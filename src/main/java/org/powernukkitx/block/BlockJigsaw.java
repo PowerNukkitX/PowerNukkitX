@@ -56,6 +56,11 @@ public class BlockJigsaw extends BlockSolid implements Faceable {
     }
 
     @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
     }

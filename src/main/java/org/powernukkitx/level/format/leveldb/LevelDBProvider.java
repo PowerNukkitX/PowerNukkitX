@@ -534,6 +534,16 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    public float getRainLevel() {
+        return this.levelDat.getRainLevel();
+    }
+
+    @Override
+    public void setRainLevel(float rainLevel) {
+        this.levelDat.setRainLevel(rainLevel);
+    }
+
+    @Override
     public int getRainTime() {
         return this.levelDat.getRainTime();
     }
@@ -551,6 +561,16 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void setThundering(boolean thundering) {
         this.levelDat.setThundering(thundering);
+    }
+
+    @Override
+    public float getLightningLevel() {
+        return this.levelDat.getLightningLevel();
+    }
+
+    @Override
+    public void setLightningLevel(float lightningLevel) {
+        this.levelDat.setLightningLevel(lightningLevel);
     }
 
     @Override
@@ -1001,6 +1021,10 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("editorWorldType", worldData.getEditorWorldType());
         levelDat.putInt("eduOffer", worldData.getEduOffer());
         levelDat.putBoolean("educationFeaturesEnabled", worldData.isEducationFeaturesEnabled());
+        levelDat.putFloat("lightningLevel", worldData.getLightningLevel());
+        levelDat.putInt("lightningTime", worldData.getLightningTime());
+        levelDat.putFloat("rainLevel", worldData.getRainLevel());
+        levelDat.putInt("rainTime", worldData.getRainTime());
 
         levelDat.put("commandBlockOutput", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCK_OUTPUT).getTag());
         levelDat.put("commandBlocksEnabled", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCKS_ENABLED).getTag());

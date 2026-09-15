@@ -63,6 +63,7 @@ import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
 import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.level.particle.Particle;
+import org.powernukkitx.level.redstone.circuit.CircuitSystem;
 import org.powernukkitx.level.util.EntityQueryUtils;
 import org.powernukkitx.level.util.SimpleTickCachedBlockStore;
 import org.powernukkitx.level.util.TickCachedBlockStore;
@@ -182,7 +183,7 @@ public class Level implements Metadatable {
             createTimeMarker(-4807795260250801598L, "minecraft:day", 1000, 24000),
             createTimeMarker(-1781951082890426794L, "minecraft:sunset", 12000, 24000)
     );
-    
+
     public static final int DIMENSION_OVERWORLD = 0;
     public static final int DIMENSION_NETHER = 1;
     public static final int DIMENSION_THE_END = 2;
@@ -195,6 +196,8 @@ public class Level implements Metadatable {
     public static final int CHUNK_SIZE = 16;
     private static final double INV_CHUNK_SIZE = 1.0d / CHUNK_SIZE;
     // endregion finals - number finals
+
+    private static final float[] MOON_BRIGHTNESS_PER_PHASE = {1f, 0.75f, 0.5f, 0.25f, 0f, 0.25f, 0.5f, 0.75f};
 
     private static final Strategy<String> IDENTITY_STRATEGY = new Strategy<>() {
         @Override
@@ -396,6 +399,7 @@ public class Level implements Metadatable {
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<Player>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
+    private final CircuitSystem circuitSystem = new CircuitSystem();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     private final VillageManager villageManager = new VillageManager(this);
     public boolean stopTime;
@@ -449,7 +453,7 @@ public class Level implements Metadatable {
     /// antiXray system
     private AntiXraySystem antiXraySystem;
     private GameplaySettings gameplaySettings;
-    /** Cached {@code chunk-settings.lightUpdates}: gates all block/sky light work (boot-time only). */
+    /** Cached {@code chunk-settings.lightUpdates}: gates all block/skylight work (boot-time only). */
     private boolean lightUpdatesEnabled;
     /** Chunk hashes covered by ticking areas of this level; rebuilt when the ticking-area version changes. */
     private LongOpenHashSet tickingAreaChunkHashes;
@@ -495,8 +499,10 @@ public class Level implements Metadatable {
 
     /// weather system
     private boolean raining = false;
+    private float rainLevel = 0.0f;
     private int rainTime = 0;
     private boolean thundering = false;
+    private float lightningLevel = 0.0f;
     private int thunderTime = 0;
 
     ///
@@ -558,13 +564,21 @@ public class Level implements Metadatable {
         this.folderPath = path;
         this.time = levelProvider.getTime();
 
-        this.raining = levelProvider.isRaining();
+        this.rainLevel = MathHelper.clamp(levelProvider.getRainLevel(), 0.0f, 1.0f);
+        this.raining = this.rainLevel > 0.0f || levelProvider.isRaining();
+        if (this.raining && this.rainLevel == 0.0f) {
+            this.rainLevel = 1.0f;
+        }
         this.rainTime = this.requireProvider().getRainTime();
         if (this.rainTime <= 0) {
             setRainTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
 
-        this.thundering = levelProvider.isThundering();
+        this.lightningLevel = MathHelper.clamp(levelProvider.getLightningLevel(), 0.0f, 1.0f);
+        this.thundering = this.lightningLevel > 0.0f || levelProvider.isThundering();
+        if (this.thundering && this.lightningLevel == 0.0f) {
+            this.lightningLevel = 1.0f;
+        }
         this.thunderTime = levelProvider.getThunderTime();
         if (this.thunderTime <= 0) {
             setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
@@ -858,6 +872,28 @@ public class Level implements Metadatable {
         packet.setPosition(pos.toNetwork());
         packet.setVolume(volume);
         packet.setPitch(pitch);
+
+        if (players == null || players.length == 0) {
+            addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
+        } else {
+            Server.broadcastPacket(players, packet);
+        }
+    }
+
+    public void stopSound(Vector3 pos, String soundName) {
+        this.stopSound(pos, soundName, (Player[]) null);
+    }
+
+    public void stopSound(Vector3 pos, String soundName, Collection<Player> players) {
+        this.stopSound(pos, soundName, players != null ? players.toArray(Player.EMPTY_ARRAY) : null);
+    }
+
+    public void stopSound(Vector3 pos, String soundName, Player... players) {
+        final StopSoundPacket packet = new StopSoundPacket();
+        packet.setSoundName(soundName);
+        if (soundName == null || soundName.isEmpty()) {
+            packet.setStopAllSounds(true);
+        }
 
         if (players == null || players.length == 0) {
             addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
@@ -1726,9 +1762,11 @@ public class Level implements Metadatable {
         if (!gameplaySettings.enableWeather()) {
             if (isRaining() && !setRaining(false)) {
                 this.raining = false;
+                this.rainLevel = 0.0f;
             }
             if (isThundering() && !setThundering(false)) {
                 this.thundering = false;
+                this.lightningLevel = 0.0f;
             }
             return;
         }
@@ -1742,12 +1780,12 @@ public class Level implements Metadatable {
                     final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
                     levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
                     levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                    levelEventPacketStartRain.setData(this.rainTime);
+                    levelEventPacketStartRain.setData(weatherLevelData(this.rainLevel));
                     player.sendPacket(levelEventPacketStartRain);
                     if (thundering) {
                         final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
                         levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
-                        levelEventPacketStartThunder.setData(this.thunderTime);
+                        levelEventPacketStartThunder.setData(weatherLevelData(this.lightningLevel));
                         levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                         player.sendPacket(levelEventPacketStartThunder);
                         player.setShownWeather(WeatherDisplay.THUNDER);
@@ -2323,8 +2361,10 @@ public class Level implements Metadatable {
         LevelProvider levelProvider = this.requireProvider();
         levelProvider.setTime(this.time);
         levelProvider.setRaining(this.raining);
+        levelProvider.setRainLevel(this.rainLevel);
         levelProvider.setRainTime(this.rainTime);
         levelProvider.setThundering(this.thundering);
+        levelProvider.setLightningLevel(this.lightningLevel);
         levelProvider.setThunderTime(this.thunderTime);
         levelProvider.setNoSleepNight(this.noSleepNights);
         levelProvider.setCurrentTick(this.levelCurrentTick);
@@ -2857,8 +2897,8 @@ public class Level implements Metadatable {
     }
 
     public int calculateSkylightSubtracted(float tickDiff) {
-        float d = 1.0F - (this.getRainStrength(tickDiff) * 5.0F) / 16.0F;
-        float e = 1.0F - (this.getThunderStrength(tickDiff) * 5.0F) / 16.0F;
+        float d = 1.0F - (this.getRainLevel() * 5.0F) / 16.0F;
+        float e = 1.0F - (this.getLightningLevel() * 5.0F) / 16.0F;
         float f = 0.5F + 2.0F * MathHelper.clamp(MathHelper.cos(this.getCelestialAngle(tickDiff) * 6.2831855F), -0.25F, 0.25F);
         return (int) ((1.0F - f * d * e) * 11.0F);
         /* Old NukkitX Code
@@ -2866,19 +2906,37 @@ public class Level implements Metadatable {
         float light = 1.0F - (MathHelper.cos(angle * ((float) Math.PI * 2F)) * 2.0F + 0.5F);
         light = MathHelper.clamp(light, 0.0F, 1.0F);
         light = 1.0F - light;
-        light = (float) ((double) light * (1.0D - (double) (this.getRainStrength(tickDiff) * 5.0F) / 16.0D));
-        light = (float) ((double) light * (1.0D - (double) (this.getThunderStrength(tickDiff) * 5.0F) / 16.0D));
+        light = (float) ((double) light * (1.0D - (double) (this.getRainLevel() * 5.0F) / 16.0D));
+        light = (float) ((double) light * (1.0D - (double) (this.getLightningLevel() * 5.0F) / 16.0D));
         light = 1.0F - light;
         return (int) (light * 11.0F);
          */
     }
 
+    /**
+     * @deprecated use {@link #getRainLevel()}, which matches the name used by the save
+     * format and by {@link org.powernukkitx.level.format.LevelProvider}
+     */
+    @Deprecated(forRemoval = true, since = "3.1.0")
     public float getRainStrength(float tickDiff) {
-        return isRaining() ? 1 : 0; // TODO: real implementation
+        return getRainLevel();
     }
 
+    public float getRainLevel() {
+        return this.rainLevel;
+    }
+
+    /**
+     * @deprecated use {@link #getLightningLevel()}, which matches the name used by the save
+     * format and by {@link org.powernukkitx.level.format.LevelProvider}
+     */
+    @Deprecated(forRemoval = true, since = "3.1.0")
     public float getThunderStrength(float tickDiff) {
-        return isThundering() ? 1 : 0; // TODO: real implementation
+        return getLightningLevel();
+    }
+
+    public float getLightningLevel() {
+        return this.lightningLevel;
     }
 
     public float getCelestialAngle(float tickDiff) {
@@ -2904,6 +2962,34 @@ public class Level implements Metadatable {
 
     public int getMoonPhase(long worldTime) {
         return (int) (worldTime / 24000 % 8 + 8) % 8;
+    }
+
+    /**
+     * Returns how much harder this level currently is than the bare minimum, from 0 to 1. Loot
+     * tables scale their chances with it, so a mob spawning with a weapon or a piece of armour is
+     * more likely on a hard difficulty and impossible on peaceful and easy.
+     *
+     * @return the regional difficulty of this level, between 0 and 1
+     */
+    public float getSpecialMultiplier() {
+        int difficulty = this.server.getDifficulty();
+        if (difficulty == 0) {
+            return 0f;
+        }
+
+        float timeFactor = Math.min(Math.max(getTime() - 0.5f, 0f) * 0.25f, 0.25f);
+        float moonFactor = Math.min(MOON_BRIGHTNESS_PER_PHASE[getMoonPhase(getTime())] * 0.25f, timeFactor);
+
+        float bonus = moonFactor + (difficulty == 3 ? 0.5f : 0.375f);
+        if (difficulty == 1) {
+            bonus *= 0.5f;
+        }
+
+        float total = (timeFactor + 0.75f + bonus) * difficulty;
+        if (total < 2f) {
+            return 0f;
+        }
+        return total <= 4f ? (total - 2f) * 0.5f : 1f;
     }
 
     public int getBlockRuntimeId(int x, int y, int z) {
@@ -4996,14 +5082,14 @@ public class Level implements Metadatable {
         }
 
         if (entity instanceof Player p) {
-            this.players.remove(entity.getId());
+            this.players.remove(entity.runtimeId());
             this.checkSleep();
         } else {
             entity.close();
         }
 
-        this.entities.remove(entity.getId());
-        this.updateEntities.remove(entity.getId());
+        this.entities.remove(entity.runtimeId());
+        this.updateEntities.remove(entity.runtimeId());
     }
 
     public void addEntity(Entity entity) {
@@ -5012,10 +5098,10 @@ public class Level implements Metadatable {
         }
 
         if (entity instanceof Player p) {
-            this.players.put(entity.getId(), p);
+            this.players.put(entity.runtimeId(), p);
             p.setShownWeather(WeatherDisplay.NONE);
         }
-        this.entities.put(entity.getId(), entity);
+        this.entities.put(entity.runtimeId(), entity);
     }
 
     public void addBlockEntity(BlockEntity blockEntity) {
@@ -5202,7 +5288,7 @@ public class Level implements Metadatable {
     }
 
     /**
-     * submit a unload chunk request.
+     * submit an unload chunk request.
      *
      * @param x    the x
      * @param z    the z
@@ -5301,6 +5387,7 @@ public class Level implements Metadatable {
             // The per-tick block cache is keyed by chunk, so an unloaded chunk would otherwise keep
             // its entry - and the Block objects it holds - alive until something touched it again.
             this.tickCachedBlocks.remove(Level.chunkHash(x, z));
+            this.circuitSystem.removeChunk(x, z);
             this.tickChunkCacheDirty = true;
         } catch (Exception e) {
             log.error(this.server.getLanguage().tr("nukkit.level.chunkUnloadError", e.toString()), e);
@@ -5872,11 +5959,11 @@ public class Level implements Metadatable {
 
     public void addPlayerMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
         final MovePlayerPacket packet = new MovePlayerPacket();
-        packet.setPlayerRuntimeID(entity.getId());
+        packet.setPlayerRuntimeID(entity.runtimeId());
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(x, y, z));
         packet.setRotation(org.cloudburstmc.math.vector.Vector3f.from(pitch, yaw, headYaw));
         if (entity.riding != null) {
-            packet.setRidingRuntimeID(entity.riding.getId());
+            packet.setRidingRuntimeID(entity.riding.runtimeId());
             packet.setPositionMode(PositionMode.ONLY_HEAD_ROT);
         } else {
             packet.setPositionMode(PositionMode.NORMAL);
@@ -5888,7 +5975,7 @@ public class Level implements Metadatable {
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
         final MoveActorDeltaPacket packet = new MoveActorDeltaPacket();
         final MoveActorDeltaData data = new MoveActorDeltaData();
-        data.setActorRuntimeID(entity.getId());
+        data.setActorRuntimeID(entity.runtimeId());
 
         if (entity.lastX != x) {
             data.setNewPositionX((float) x);
@@ -5933,13 +6020,20 @@ public class Level implements Metadatable {
             return false;
         }
 
+        if (!raining && this.thundering && !setThundering(false)) {
+            return false;
+        }
+
         this.raining = raining;
+        this.rainLevel = raining
+                ? ThreadLocalRandom.current().nextFloat() * 0.5f + 0.3f
+                : 0.0f;
 
         final LevelEventPacket pk = new LevelEventPacket();
         if (raining) {
             pk.setType(LevelEvent.START_RAINING);
             int time = ThreadLocalRandom.current().nextInt(12000) + 12000;// These numbers are from Minecraft
-            pk.setData(time);
+            pk.setData(weatherLevelData(this.rainLevel));
             setRainTime(time);
         } else {
             pk.setType(LevelEvent.STOP_RAINING);
@@ -5948,7 +6042,9 @@ public class Level implements Metadatable {
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            p.setShownWeather(raining ? WeatherDisplay.RAIN : WeatherDisplay.NONE);
+            p.setShownWeather(raining
+                    ? (this.thundering ? WeatherDisplay.THUNDER : WeatherDisplay.RAIN)
+                    : WeatherDisplay.NONE);
             p.sendPacket(pk);
         }
 
@@ -5976,27 +6072,45 @@ public class Level implements Metadatable {
             return false;
         }
 
-        if (thundering && !isRaining()) {
-            setRaining(true);
+        if (thundering && !isRaining() && !setRaining(true)) {
+            return false;
         }
 
         this.thundering = thundering;
+        this.lightningLevel = thundering
+                ? ThreadLocalRandom.current().nextFloat() * 0.4f + 0.3f
+                : 0.0f;
+        if (thundering) {
+            this.rainLevel = 1.0f;
+        }
 
         final LevelEventPacket pk = new LevelEventPacket();
+        final LevelEventPacket rainPk;
         // These numbers are from Minecraft
         if (thundering) {
+            rainPk = new LevelEventPacket();
+            rainPk.setType(LevelEvent.START_RAINING);
+            rainPk.setData(weatherLevelData(this.rainLevel));
+            rainPk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
+
             pk.setType(LevelEvent.START_THUNDERSTORM);
             int time = ThreadLocalRandom.current().nextInt(12000) + 3600;
-            pk.setData(time);
+            pk.setData(weatherLevelData(this.lightningLevel));
             setThunderTime(time);
         } else {
+            rainPk = null;
             pk.setType(LevelEvent.STOP_THUNDERSTORM);
             setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
-            p.setShownWeather(raining ? WeatherDisplay.THUNDER : WeatherDisplay.NONE);
+            p.setShownWeather(thundering
+                    ? WeatherDisplay.THUNDER
+                    : (this.raining ? WeatherDisplay.RAIN : WeatherDisplay.NONE));
+            if (rainPk != null) {
+                p.sendPacket(rainPk);
+            }
             p.sendPacket(pk);
         }
 
@@ -6019,7 +6133,7 @@ public class Level implements Metadatable {
         final LevelEventPacket pk = new LevelEventPacket();
         if (this.isRaining()) {
             pk.setType(LevelEvent.START_RAINING);
-            pk.setData(this.rainTime);
+            pk.setData(weatherLevelData(this.rainLevel));
         } else {
             pk.setType(LevelEvent.STOP_RAINING);
         }
@@ -6029,7 +6143,7 @@ public class Level implements Metadatable {
 
         if (this.isThundering()) {
             pk.setType(LevelEvent.START_THUNDERSTORM);
-            pk.setData(this.thunderTime);
+            pk.setData(weatherLevelData(this.lightningLevel));
         } else {
             pk.setType(LevelEvent.STOP_THUNDERSTORM);
         }
@@ -6061,6 +6175,10 @@ public class Level implements Metadatable {
             players = this.getPlayers().values();
         }
         this.sendWeather(players.toArray(Player.EMPTY_ARRAY));
+    }
+
+    private static int weatherLevelData(float level) {
+        return (int) Math.ceil(MathHelper.clamp(level, 0.0f, 1.0f) * 65535.0f);
     }
 
     public final DimensionData getDimensionData() {
@@ -6534,6 +6652,10 @@ public class Level implements Metadatable {
         return (float) visibleBlocks / (float) totalBlocks;
     }
 
+    public CircuitSystem getCircuitSystem() {
+        return this.circuitSystem;
+    }
+
     public VibrationManager getVibrationManager() {
         return this.vibrationManager;
     }
@@ -6558,7 +6680,7 @@ public class Level implements Metadatable {
     }
 
     /**
-     * Actual level ticks executed per wall-clock second, sampled over a ~1 second window.
+     * Actual level ticks executed per wall-clock second, sampled over a ~1-second window.
      * Unlike {@link GameLoop#getTps()} (a per-tick capacity estimate clamped to the target),
      * this reflects what the loop really achieved. 0 until the first window completes.
      */

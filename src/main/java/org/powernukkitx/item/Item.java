@@ -748,7 +748,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return
      */
     public Item setCustomName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.clearCustomName();
         }
 
@@ -896,7 +896,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -906,7 +906,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -1038,7 +1038,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @return the int value or defaultValue if not available.
@@ -1050,7 +1050,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
@@ -1504,7 +1504,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Called before {@link #onUse},The player is right clicking use on an item
+     * Called before {@link #onUse},The player is right-clicking use on an item
      *
      * @param player          player
      * @param directionVector The direction vector of the click
@@ -2229,7 +2229,7 @@ public abstract class Item implements Cloneable, ItemID {
     /////////////////////////////
 
     /**
-     * Define if the item is a Armor
+     * Defines if the item is an Armor
      */
     public boolean isWearable() {
         return getWearableType() != ItemArmorType.NONE;
@@ -2434,7 +2434,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Define if the item is a Axe
+     * Defines if the item is an Axe
      */
     public boolean isAxe() {
         CustomItemDefinition def = getCustomDefinition();
@@ -2536,7 +2536,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Returns the digger speed based on the block Id or tags it contains, also adds efficience bonus if enabled
+     * Returns the digger speed based on the block id or tags it contains, also adds efficience bonus if enabled
      */
     @Nullable
     public Integer getDiggerSpeed(@Nullable Block block) {
@@ -2713,17 +2713,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toRecipeNetwork() {
-        final CompoundTag nbt = this.getNbt();
-        final ItemData itemData;
-
-        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
-            itemData = this.toNetwork();
-        } else {
-            final Item stripped = this.clone();
-            final CompoundTag strippedNbt = nbt.copy().remove("Damage");
-            stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
-            itemData = stripped.toNetwork();
-        }
+        final ItemData itemData = this.stripZeroDamageTag().toNetwork();
 
         return itemData.toBuilder()
                 .blockDefinition(
@@ -2741,20 +2731,32 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toCreativeNetwork() {
-        final boolean hasNbt = this.getNbt() != null;
-        final boolean clearCreativeTag = this.isCreativeTagEmpty();
+        final Item item = this.stripZeroDamageTag();
+        final boolean hasNbt = item.getNbt() != null;
+        final boolean clearCreativeTag = item.isCreativeTagEmpty();
 
         return ItemData.builder()
-                .definition(this.getItemDefinition())
-                .damage(this.getDamage())
-                .count(this.getCount())
-                .tag(clearCreativeTag || this.getNbt() == null ? null : this.getNbt().toNetwork())
-                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
-                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : this.getNetworkBlockRuntimeId()))
+                .definition(item.getItemDefinition())
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .tag(clearCreativeTag || item.getNbt() == null ? null : item.getNbt().toNetwork())
+                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanPlaceOn()))
+                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanDestroy()))
+                .blockDefinition(new RuntimeBlockDefinition(item.isCreativeBlockDefinitionEmpty() ? 0 : item.getNetworkBlockRuntimeId()))
                 .usingNetId(false)
                 .netId(0)
                 .build();
+    }
+
+    private Item stripZeroDamageTag() {
+        final CompoundTag nbt = this.getNbt();
+        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
+            return this;
+        }
+        final Item stripped = this.clone();
+        final CompoundTag strippedNbt = nbt.copy().remove("Damage");
+        stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
+        return stripped;
     }
 
     private int getNetworkBlockRuntimeId() {

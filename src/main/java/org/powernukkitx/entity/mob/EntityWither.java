@@ -162,7 +162,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
             deathTicks = 190;
             getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, Entity.WITHER, false, false);
             final ActorEventPacket packet = new ActorEventPacket();
-            packet.setTargetRuntimeID(this.getId());
+            packet.setTargetRuntimeID(this.runtimeId());
             packet.setType(ActorEvent.DEATH);
             Server.broadcastPacket(getViewers().values(), packet);
             setImmobile(true);
@@ -234,7 +234,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         );
         packet.setActorData(this.getActorDataMap());
         packet.setTargetActorID(this.getId());
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorType("minecraft:wither");
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         packet.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));

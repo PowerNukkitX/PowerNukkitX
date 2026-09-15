@@ -33,7 +33,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
     }
 
     /*
-     * Calculates the height based on this trees base height and its extra random height
+     * Calculates the height based on this tree's base height and additional random height.
      */
     protected int getHeight(RandomSourceProvider rand) {
         int i = rand.nextInt(3) + this.baseHeight;
@@ -46,7 +46,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
     }
 
     /*
-     * returns whether or not there is space for a tree to grow at a certain position
+     * returns whether there is space for a tree to grow at a certain position
      */
     private boolean isSpaceAt(BlockManager worldIn, Vector3 leavesPos, int height) {
         boolean flag = true;

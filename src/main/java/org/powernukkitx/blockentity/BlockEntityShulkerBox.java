@@ -23,7 +23,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
 
     public BlockEntityShulkerBox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
 
     @Override
@@ -147,7 +146,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
-                .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false)
                 .putList("Items", this.getNbt().getList("Items", CompoundTag.class))
                 .putByte("facing", this.getNbt().getByte("facing"));

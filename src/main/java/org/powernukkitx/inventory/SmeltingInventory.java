@@ -26,7 +26,7 @@ public abstract class SmeltingInventory extends ContainerInventory {
     }
 
     public boolean setResult(Item item) {
-        //This wont call onSlotChange. Therefore no EXP will be dropped.
+        //This won't call onSlotChange. Therefore, no EXP will be dropped.
         this.setItemInternal(2, item);
         sendSlot(2, getViewers());
         return true;

@@ -171,7 +171,7 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 
     public double sample(double x, double y, double z, double yAmplification, double minY, boolean useDefaultY) {
         double noise = 0.0D;
-        // contribution of each octaves to the final noise, diminished by a factor of 2 (or increased by factor of 0.5)
+        // contribution of each octave to the final noise, diminished by a factor of 2 (or increased by factor of 0.5)
         double persistence = this.persistence;
         // distance between octaves, increased for each by a factor of 2
         double lacunarity = this.lacunarity;

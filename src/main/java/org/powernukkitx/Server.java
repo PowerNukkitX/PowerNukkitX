@@ -104,6 +104,7 @@ import org.powernukkitx.plugin.service.NKServiceManager;
 import org.powernukkitx.plugin.service.ServiceManager;
 import org.powernukkitx.network.positiontracking.PositionTrackingService;
 import org.powernukkitx.recipe.Recipe;
+import org.powernukkitx.registry.CreativeGroupsRegistry;
 import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.RegistryCache;
@@ -542,7 +543,7 @@ public class Server {
                 computeThreadPool);
             CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
             CompletableFuture<Void> creativeF = creativeInventoryEnabled
-                    ? CompletableFuture.allOf(itemF, blockStateF)
+                    ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
                             .thenRunAsync(
                                     registryCache != null
                                             ? () -> registryCache.restoreCreative(Registries.CREATIVE)
@@ -675,6 +676,8 @@ public class Server {
         EntityProperty.buildPlayerProperty();
 
         if (settings.gameplaySettings().enableEducation()) Education.registerCreative();
+
+        CreativeGroupsRegistry.register();
 
         if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
@@ -861,6 +864,7 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+        CreativeGroupsRegistry.register();
         this.network.setState(NetworkState.STARTED);
     }
 
@@ -2583,7 +2587,7 @@ public class Server {
      * Get world from world id, 0 OVERWORLD 1 NETHER 2 THE_END
      *
      * @param levelId world id
-     * @return level level instance
+     * @return level The Level instance
      */
     public Level getLevel(int levelId) {
         if (this.levels.containsKey(levelId)) {

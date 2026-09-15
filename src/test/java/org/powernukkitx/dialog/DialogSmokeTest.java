@@ -63,7 +63,7 @@ public class DialogSmokeTest {
         Assertions.assertEquals("Title", dialog.getTitle());
         Assertions.assertEquals("Content", dialog.getContent());
         Assertions.assertSame(player, dialog.getBindEntity());
-        Assertions.assertEquals(player.getId(), dialog.getEntityId());
+        Assertions.assertEquals(player.runtimeId(), dialog.getEntityId());
         Assertions.assertNotNull(dialog.getSceneName());
         Assertions.assertNotNull(dialog.getSkinData());
         Assertions.assertTrue(dialog.getButtons().isEmpty());

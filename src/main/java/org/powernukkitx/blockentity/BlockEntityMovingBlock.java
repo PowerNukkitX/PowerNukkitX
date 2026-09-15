@@ -104,7 +104,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
                 .putInt("pistonPosX", this.piston.x)
                 .putInt("pistonPosY", this.piston.y)
                 .putInt("pistonPosZ", this.piston.z)
-                .putBoolean("isMovable", this.movable);
+                .putBoolean("isMovable", true);
 
         if (this.nbt.contains("movingBlock")) {
             tag.putCompound("movingBlock", this.nbt.getCompound("movingBlock").copy());

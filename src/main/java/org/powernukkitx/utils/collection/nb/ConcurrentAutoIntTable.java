@@ -179,10 +179,10 @@ public class ConcurrentAutoIntTable implements Serializable {
             //r += newbytes;
             if (master._cat != this) return old; // Already doubled, don't bother
             //if( (r>>17) != 0 ) {      // Already too much allocation attempts?
-            //  // We could use a wait with timeout, so we'll wakeup as soon as the new
+            //  // We could use a wait with timeout, so we'll wake up as soon as the new
             //  // table is ready, or after the timeout in any case.  Annoyingly, this
             //  // breaks the non-blocking property - so for now we just briefly sleep.
-            //  //synchronized( this ) { wait(8*megs); }         // Timeout - we always wakeup
+            //  //synchronized( this ) { wait(8*megs); }         // Timeout - we always wake up
             //  try { Thread.sleep(r>>17); } catch( InterruptedException e ) { }
             //  if( master._cat != this ) return old;
             //}

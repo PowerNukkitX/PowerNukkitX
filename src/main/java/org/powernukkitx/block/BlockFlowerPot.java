@@ -224,6 +224,11 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return false;
     }

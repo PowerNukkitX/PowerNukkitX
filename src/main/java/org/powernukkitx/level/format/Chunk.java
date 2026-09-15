@@ -569,7 +569,7 @@ public class Chunk implements IChunk {
 
     @Override
     public void addEntity(Entity entity) {
-        if (this.entities.put(entity.getId(), entity) == null) {
+        if (this.entities.put(entity.runtimeId(), entity) == null) {
             this.entityCount.incrementAndGet();
         }
         reindexEntitySection(entity);
@@ -580,10 +580,10 @@ public class Chunk implements IChunk {
 
     @Override
     public void removeEntity(Entity entity) {
-        if (entity.getId() < 0) return;
+        if (entity.runtimeId() < 0) return;
         if (this.entities != null) {
             synchronized (this.entities) {
-                if (this.entities.remove(entity.getId()) != null) {
+                if (this.entities.remove(entity.runtimeId()) != null) {
                     this.entityCount.decrementAndGet();
                 }
                 unindexEntitySection(entity);

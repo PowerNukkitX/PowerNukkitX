@@ -291,7 +291,7 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         String absorbed = getSwallowedBlock();
 
         MobEquipmentPacket packet = new MobEquipmentPacket();
-        packet.setTargetRuntimeID(getId());
+        packet.setTargetRuntimeID(runtimeId());
         packet.setItem((absorbed == null ? Item.AIR : Item.get(absorbed)).toNetwork());
         packet.setSlot(0);
         packet.setSelectedSlot(0);

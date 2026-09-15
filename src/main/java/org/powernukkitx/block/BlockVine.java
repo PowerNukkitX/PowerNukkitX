@@ -179,7 +179,7 @@ public class BlockVine extends BlockTransparent {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockVine(), 0);
     }
 
     @Override

@@ -1,6 +1,6 @@
 /*
  Copyright (C) 2020  powernukkit.org - José Roberto de Araújo Júnior
- 
+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -24,14 +24,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * A comparator that compares two strings as two {@link Version} objects but caching the object
  * to avoid parsing the same string multiple times. The cache size is not limited but the cached objects will
- * referenced weakly and will be collected by the garbage collector when not used.
+ * be referenced weakly and will be collected by the garbage collector when not used.
  * <p><strong>This implementation is thread safe</strong> because the cache is stored in a {@link ConcurrentHashMap}.
  * @author joserobjr
  * @since 0.1.0
  */
 public class ConcurrentCachedVersionStringComparator extends VersionStringComparator {
     /**
-     * The map that holds all cached instances. It may contains values that got removed by the garbage collector.
+     * The map that holds all cached instances. It may contain values that got removed by the garbage collector.
      * @since 0.1.0
      */
     private final ConcurrentHashMap<String, WeakReference<Version>> cache = new ConcurrentHashMap<>();
@@ -48,7 +48,7 @@ public class ConcurrentCachedVersionStringComparator extends VersionStringCompar
      * @since 0.1.0
      */
     private final int gcFrequency;
-    
+
     /**
      * Creates a comparator with an empty cache that will have a population limited by the given size.
      * @param gcFrequency How frequent the comparator will remove the objects that got cleared by the garbage collector
@@ -92,7 +92,7 @@ public class ConcurrentCachedVersionStringComparator extends VersionStringCompar
         }
         return version;
     }
-    
+
     /**
      * Remove all the cached objects.
      * @since 0.1.0

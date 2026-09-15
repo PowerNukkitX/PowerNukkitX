@@ -60,7 +60,7 @@ public class BlockCopperBars extends BlockCopperBarBase implements BlockConnecta
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockCopperBars(), 0);
     }
 
     @Override

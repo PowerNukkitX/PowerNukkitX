@@ -65,7 +65,7 @@ import static org.objectweb.asm.Opcodes.RETURN;
 import static org.objectweb.asm.Opcodes.V17;
 
 /**
- * An enchantment that can be to applied to an item.
+ * An enchantment that can be applied to an item.
  *
  * @author MagicDroidX (Nukkit Project)
  */
@@ -376,7 +376,7 @@ public abstract class Enchantment implements Cloneable {
      *
      * @param id The enchantment id.
      * @return The enchantment, if no enchantment is found with that id, {@link UnknownEnchantment} is returned.
-     * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
+     * The UnknownEnchantment will be always a new instance and changes to it does not affect other calls.
      */
     public static Enchantment get(int id) {
         Enchantment enchantment = null;
@@ -394,7 +394,7 @@ public abstract class Enchantment implements Cloneable {
      *
      * @param id The enchantment id.
      * @return The enchantment, if no enchantment is found with that id, {@link UnknownEnchantment} is returned.
-     * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
+     * The UnknownEnchantment will be always a new instance and changes to it does not affect other calls.
      */
     public static Enchantment getEnchantment(int id) {
         Enchantment enchantment = null;
@@ -562,7 +562,7 @@ public abstract class Enchantment implements Cloneable {
      * returned in {@link #getMinLevel()} and {@link #getMaxLevel()}.
      *
      * @param level The level starting from {@code 1}.
-     * @param safe  If the level should clamped or applied directly
+     * @param safe  If the level should be clamped or applied directly
      * @return This object so you can do chained calls
      */
     @NotNull
@@ -720,13 +720,13 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Returns true if and only if this enchantment is compatible with the other and
-     * the other is also compatible with this enchantment.
+     * the other one is also compatible with this enchantment.
      *
      * @param enchantment The enchantment which is being checked
      * @return If both enchantments are compatible
      * @implNote Cloudburst Nukkit added the final modifier, PowerNukkit removed it to maintain backward compatibility.
      * The right way to implement compatibility now is to override {@link #checkCompatibility(Enchantment)}
-     * and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
+     * and also make sure to keep it protected! Some overrides were incorrectly made public, let's avoid this mistake
      */
 
     public boolean isCompatibleWith(@NotNull Enchantment enchantment) {

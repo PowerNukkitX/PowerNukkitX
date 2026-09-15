@@ -405,7 +405,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
      *
      * @param plugin   the plugin
      * @param entityId the entity id {@link EntityID}
-     * @param value    the entity class,must extends internal entity
+     * @param value    the entity class must extend internal entity
      * @throws RegisterException the register exception
      */
     public void registerOverrideEntity(Plugin plugin, String entityId, Class<? extends Entity> value) throws RegisterException {

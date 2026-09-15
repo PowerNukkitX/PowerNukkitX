@@ -236,7 +236,7 @@ public final class BVector3 {
 
     /**
      * Increase the modulus of this vector<p/>
-     * Of course you can also pass in a negative number, but make sure the final length is greater than 0!
+     * Of course, you can also pass in a negative number, but make sure the final length is greater than 0!
      *
      * @param length the modulus to increase/decrease
      * @return itself

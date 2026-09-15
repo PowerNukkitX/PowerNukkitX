@@ -193,7 +193,7 @@ public class EntityPainting extends EntityHanging {
     public BedrockPacket createAddEntityPacket() {
         final AddPaintingPacket packet = new AddPaintingPacket();
         packet.setTargetActorID(this.getId());
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setPosition(Vector3f.from(this.x, this.y, this.z));
         packet.setDirection(this.getDirection().getHorizontalIndex());
         packet.setMotif(this.getNbt().getString("Motive"));

@@ -28,4 +28,14 @@ public class BlockReinforcedDeepslate extends BlockSolid {
     public double getResistance() {
         return 1200.0;
     }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }

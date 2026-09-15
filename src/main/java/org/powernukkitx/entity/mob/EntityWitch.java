@@ -120,22 +120,21 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
                 Utils.rand(4, 8 + looting)
         ));
 
-        int max = 6 + (looting * 3);
+        int rolls = Utils.rand(1, 3);
+        for (int i = 0; i < rolls; i++) {
+            // the stick is twice as likely as the five other entries
+            String id = switch (Utils.rand(0, 6)) {
+                case 0, 1 -> Item.STICK;
+                case 2 -> Item.SPIDER_EYE;
+                case 3 -> Item.GLOWSTONE_DUST;
+                case 4 -> Item.GUNPOWDER;
+                case 5 -> Item.SUGAR;
+                default -> Item.GLASS_BOTTLE;
+            };
 
-        record ExtraDrop(String id, int chance) {}
-
-        ExtraDrop[] extras = {
-                new ExtraDrop(Item.STICK, 3349),
-                new ExtraDrop(Item.SPIDER_EYE, 1787),
-                new ExtraDrop(Item.GLOWSTONE_DUST, 1787),
-                new ExtraDrop(Item.GUNPOWDER, 1787),
-                new ExtraDrop(Item.SUGAR, 1787),
-                new ExtraDrop(Item.GLASS_BOTTLE, 1787)
-        };
-
-        for (ExtraDrop drop : extras) {
-            if (Utils.rand(0, 9999) < drop.chance()) {
-                drops.add(Item.get(drop.id(), 0, Utils.rand(0, max)));
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(id, 0, amount));
             }
         }
 

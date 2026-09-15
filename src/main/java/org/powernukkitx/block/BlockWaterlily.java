@@ -90,7 +90,7 @@ public class BlockWaterlily extends BlockFlowable {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockWaterlily(), 0);
     }
 
     @Override
