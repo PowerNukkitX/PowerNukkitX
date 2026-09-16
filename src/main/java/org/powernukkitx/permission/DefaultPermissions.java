@@ -113,6 +113,7 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.title", "Allows the user to send titles to players", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.spawnpoint", "Allows the user to change player's spawnpoint", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.setworldspawn", "Allows the user to change the world spawn", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.world.create", "Allows the user to create new worlds with the world command", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.weather", "Allows the user to change the weather", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.xp", "Allows the user to give experience", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.enchant", "Allows the user to enchant items", Permission.DEFAULT_OP), commands);

@@ -28,7 +28,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WorldCommand extends VanillaCommand {
     public static final CommandEnum WORLD_NAME_ENUM = new CommandEnum("world", () -> Server.getInstance().getLevels().values().stream().map(Level::getName).toList());
+    /**
+     * Soft enum of the folders under {@code worlds/} that are not loaded as a level yet.
+     * <p>
+     * Its values are computed each time the enum is sent to clients, and it is refreshed with
+     * {@link CommandEnum#updateSoftEnum()} whenever {@code /world} loads or creates a level.
+     */
     public static final CommandEnum WORLD_FOLDER_ENUM = new CommandEnum("worldFolder", WorldCommand::listUnloadedWorldFolders);
+    /**
+     * Soft enum of the generator names registered in {@link Registries#GENERATOR}.
+     * <p>
+     * Its values are computed each time the enum is sent to clients, so generators registered by
+     * plugins show up without any extra call.
+     */
     public static final CommandEnum GENERATOR_ENUM = new CommandEnum("generator", () -> new ArrayList<>(Registries.GENERATOR.getGeneratorList()));
 
     public WorldCommand(String name) {
@@ -70,6 +82,10 @@ public class WorldCommand extends VanillaCommand {
                 return 1;
             }
             case "create" -> {
+                if (!sender.hasPermission("nukkit.command.world.create")) {
+                    log.addError("nukkit.command.generic.permission").output();
+                    return 0;
+                }
                 String folderName = result.getValue().getResult(1);
                 if (folderName.isBlank() || folderName.contains("/") || folderName.contains("\\")
                         || folderName.contains("..")) {
