@@ -1,6 +1,7 @@
 package org.powernukkitx.block.copper.bars;
 
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -18,7 +19,7 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  * @since 1.21.110
  */
 public class BlockCopperBars extends BlockCopperBarBase implements BlockConnectable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_BARS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_BARS, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
     @Override
     @NotNull public BlockProperties getProperties() {

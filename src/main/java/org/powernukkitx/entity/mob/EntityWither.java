@@ -295,6 +295,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         bossEventPacket.setTargetActorID(this.getId());
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.getName());
+        bossEventPacket.setFilteredName(this.getName());
         bossEventPacket.setHealthPercent(0f);
         bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
         bossEventPacket.setColor(BossBarColor.PURPLE);

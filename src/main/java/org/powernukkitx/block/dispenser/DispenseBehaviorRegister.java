@@ -50,6 +50,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.MANGROVE_BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.CHERRY_BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.PALE_OAK_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.POPLAR_BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.BAMBOO_RAFT, new BoatDispenseBehavior());
 
         registerBehavior(ItemID.OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
@@ -61,6 +62,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.MANGROVE_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.CHERRY_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.PALE_OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.POPLAR_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.BAMBOO_CHEST_RAFT, new ChestBoatDispenseBehavior());
 
         registerBehavior(BlockID.UNDYED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.property.CommonBlockProperties;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.item.Item;
@@ -21,9 +23,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.DISARMED_BIT
 import static org.powernukkitx.block.property.CommonBlockProperties.POWERED_BIT;
 import static org.powernukkitx.block.property.CommonBlockProperties.SUSPENDED_BIT;
 
-public class BlockTripWire extends BlockTransparent {
+public class BlockTripWire extends BlockTransparent implements BlockConnectable {
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
-            POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT);
+        POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -141,13 +143,13 @@ public class BlockTripWire extends BlockTransparent {
 
         this.setPowered(true);
         this.level.setBlock(this, this, true, false);
-        this.updateHook(false);
+        this.updateHook();
 
         this.level.scheduleUpdate(this, 10);
         this.level.updateComparatorOutputLevelSelective(this, true);
     }
 
-    private void updateHook(boolean scheduleUpdate) {
+    private void updateHook() {
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return;
         }
@@ -161,9 +163,6 @@ public class BlockTripWire extends BlockTransparent {
                         hook.updateLine(false, true, i, this);
                     }
 
-                    /*if(scheduleUpdate) {
-                        this.level.scheduleUpdate(hook, 10);
-                    }*/
                     break;
                 }
 
@@ -174,8 +173,22 @@ public class BlockTripWire extends BlockTransparent {
         }
     }
 
+    public boolean autoConfigureState() {
+        return HorizontalConnections.configure(this);
+    }
+
+    @Override
+    public boolean canConnect(Block block) {
+        return block instanceof BlockTripWire || block instanceof BlockTripwireHook;
+    }
+
     @Override
     public int onUpdate(int type) {
+        // the wire shape is not a redstone concern, so it is kept up to date either way i guess
+        if (type == Level.BLOCK_UPDATE_NORMAL && autoConfigureState()) {
+            this.level.setBlock(this, this, true, false);
+        }
+
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
@@ -195,7 +208,7 @@ public class BlockTripWire extends BlockTransparent {
 
             this.setPowered(false);
             this.level.setBlock(this, this, true, false);
-            this.updateHook(false);
+            this.updateHook();
 
             this.level.updateComparatorOutputLevelSelective(this, true);
 
@@ -207,8 +220,9 @@ public class BlockTripWire extends BlockTransparent {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        this.autoConfigureState();
         this.getLevel().setBlock(this, this, true, true);
-        this.updateHook(false);
+        this.updateHook();
 
         return true;
     }
@@ -218,17 +232,17 @@ public class BlockTripWire extends BlockTransparent {
         if (item instanceof ItemShears) {
             this.setDisarmed(true);
             this.level.setBlock(this, this, true, false);
-            this.updateHook(false);
+            this.updateHook();
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
-            //todo: initiator should be a entity
+            //TODO: initiator should be an entity
             level.getVibrationManager().callVibrationEvent(new VibrationEvent(
-                    this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
+                this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
             return true;
         }
 
         this.setPowered(true);
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
-        this.updateHook(true);
+        this.updateHook();
 
         return true;
     }

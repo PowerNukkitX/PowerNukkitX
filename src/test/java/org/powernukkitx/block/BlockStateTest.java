@@ -1,6 +1,5 @@
 package org.powernukkitx.block;
 
-import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.registry.BlockRegistry;
@@ -32,10 +31,13 @@ public class BlockStateTest {
                 if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if (state == null) {
-                    Server.getInstance().getLogger().alert("failed to find block state for " + name + " (" + hash + ")");
+                    // minecraft:unknown is registered under the reserved -2 hash, so the palette hash never resolves
+                    if (!name.equals(BlockID.UNKNOWN)) {
+                        Assertions.fail("failed to find block state for " + name + " (" + hash + ")");
+                    }
                 } else {
                     if (!state.getIdentifier().equals(name)) {
-                        Server.getInstance().getLogger().alert("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());
+                        Assertions.fail("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());
                     }
                 }
                 blocks++;

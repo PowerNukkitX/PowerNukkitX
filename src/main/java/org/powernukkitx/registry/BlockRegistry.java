@@ -67,12 +67,19 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.ServerBlockProperty;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -98,35 +105,12 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
     private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
+    private static final List<ServerBlockProperty> DATA_DRIVEN_PROPERTIES = new ObjectArrayList<>();
 
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2",
-            // 1.26.40 additions that have no implementation yet
-            "minecraft:orange_poplar_leaves",
-            "minecraft:poplar_button",
-            "minecraft:poplar_door",
-            "minecraft:poplar_double_slab",
-            "minecraft:poplar_fence",
-            "minecraft:poplar_fence_gate",
-            "minecraft:poplar_hanging_sign",
-            "minecraft:poplar_log",
-            "minecraft:poplar_planks",
-            "minecraft:poplar_pressure_plate",
-            "minecraft:poplar_sapling",
-            "minecraft:poplar_shelf",
-            "minecraft:poplar_slab",
-            "minecraft:poplar_stairs",
-            "minecraft:poplar_standing_sign",
-            "minecraft:poplar_trapdoor",
-            "minecraft:poplar_wall_sign",
-            "minecraft:poplar_wood",
-            "minecraft:red_poplar_leaves",
-            "minecraft:straw_bed",
-            "minecraft:stripped_poplar_log",
-            "minecraft:stripped_poplar_wood",
-            "minecraft:yellow_poplar_leaves"
+            "minecraft:deprecated_purpur_block_2"
     );
 
     @Override
@@ -192,6 +176,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(BASALT, BlockBasalt.class);
         register0(BEACON, BlockBeacon.class);
         register0(BED, BlockBed.class);
+        register0(STRAW_BED, BlockStrawBed.class);
         register0(BEDROCK, BlockBedrock.class);
         register0(BEE_NEST, BlockBeeNest.class);
         register0(BEEHIVE, BlockBeehive.class);
@@ -820,6 +805,25 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(PALE_OAK_TRAPDOOR, BlockPaleOakTrapdoor.class);
         register0(PALE_OAK_WALL_SIGN, BlockPaleOakWallSign.class);
         register0(PALE_OAK_WOOD, BlockPaleOakWood.class);
+        register0(POPLAR_BUTTON, BlockPoplarButton.class);
+        register0(POPLAR_DOOR, BlockPoplarDoor.class);
+        register0(POPLAR_DOUBLE_SLAB, BlockPoplarDoubleSlab.class);
+        register0(POPLAR_FENCE, BlockPoplarFence.class);
+        register0(POPLAR_FENCE_GATE, BlockPoplarFenceGate.class);
+        register0(POPLAR_HANGING_SIGN, BlockPoplarHangingSign.class);
+        register0(POPLAR_LOG, BlockPoplarLog.class);
+        register0(POPLAR_PLANKS, BlockPoplarPlanks.class);
+        register0(POPLAR_PRESSURE_PLATE, BlockPoplarPressurePlate.class);
+        register0(POPLAR_SAPLING, BlockPoplarSapling.class);
+        register0(POPLAR_SLAB, BlockPoplarSlab.class);
+        register0(POPLAR_STAIRS, BlockPoplarStairs.class);
+        register0(POPLAR_STANDING_SIGN, BlockPoplarStandingSign.class);
+        register0(POPLAR_TRAPDOOR, BlockPoplarTrapdoor.class);
+        register0(POPLAR_WALL_SIGN, BlockPoplarWallSign.class);
+        register0(POPLAR_WOOD, BlockPoplarWood.class);
+        register0(RED_POPLAR_LEAVES, BlockRedPoplarLeaves.class);
+        register0(ORANGE_POPLAR_LEAVES, BlockOrangePoplarLeaves.class);
+        register0(YELLOW_POPLAR_LEAVES, BlockYellowPoplarLeaves.class);
         register0(PEARLESCENT_FROGLIGHT, BlockPearlescentFroglight.class);
         register0(PEONY, BlockPeony.class);
         register0(PETRIFIED_OAK_DOUBLE_SLAB, BlockPetrifiedOakDoubleSlab.class);
@@ -1070,6 +1074,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(STRIPPED_OAK_WOOD, BlockStrippedOakWood.class);
         register0(STRIPPED_PALE_OAK_LOG, BlockStrippedPaleOakLog.class);
         register0(STRIPPED_PALE_OAK_WOOD, BlockStrippedPaleOakWood.class);
+        register0(STRIPPED_POPLAR_LOG, BlockStrippedPoplarLog.class);
+        register0(STRIPPED_POPLAR_WOOD, BlockStrippedPoplarWood.class);
         register0(STRIPPED_SPRUCE_LOG, BlockStrippedSpruceLog.class);
         register0(STRIPPED_SPRUCE_WOOD, BlockStrippedSpruceWood.class);
         register0(STRIPPED_WARPED_HYPHAE, BlockStrippedWarpedHyphae.class);
@@ -1296,9 +1302,110 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(MANGROVE_SHELF, BlockMangroveShelf.class);
         register0(CHERRY_SHELF, BlockCherryShelf.class);
         register0(PALE_OAK_SHELF, BlockPaleOakShelf.class);
+        register0(POPLAR_SHELF, BlockPoplarShelf.class);
         register0(CRIMSON_SHELF, BlockCrimsonShelf.class);
         register0(WARPED_SHELF, BlockWarpedShelf.class);
         register0(BAMBOO_SHELF, BlockBambooShelf.class);
+        register0(SHELF_MUSHROOM, BlockShelfMushroom.class);
+
+        register0(RED_SHRUB, BlockRedShrub.class);
+
+        register0("minecraft:black_concrete_slab", BlockBlackConcreteSlab.class);
+        register0("minecraft:black_concrete_double_slab", BlockBlackConcreteDoubleSlab.class);
+        register0("minecraft:black_concrete_stairs", BlockBlackConcreteStairs.class);
+        register0("minecraft:black_wool_slab", BlockBlackWoolSlab.class);
+        register0("minecraft:black_wool_double_slab", BlockBlackWoolDoubleSlab.class);
+        register0("minecraft:black_wool_stairs", BlockBlackWoolStairs.class);
+        register0("minecraft:blue_concrete_slab", BlockBlueConcreteSlab.class);
+        register0("minecraft:blue_concrete_double_slab", BlockBlueConcreteDoubleSlab.class);
+        register0("minecraft:blue_concrete_stairs", BlockBlueConcreteStairs.class);
+        register0("minecraft:blue_wool_slab", BlockBlueWoolSlab.class);
+        register0("minecraft:blue_wool_double_slab", BlockBlueWoolDoubleSlab.class);
+        register0("minecraft:blue_wool_stairs", BlockBlueWoolStairs.class);
+        register0("minecraft:brown_concrete_slab", BlockBrownConcreteSlab.class);
+        register0("minecraft:brown_concrete_double_slab", BlockBrownConcreteDoubleSlab.class);
+        register0("minecraft:brown_concrete_stairs", BlockBrownConcreteStairs.class);
+        register0("minecraft:brown_wool_slab", BlockBrownWoolSlab.class);
+        register0("minecraft:brown_wool_double_slab", BlockBrownWoolDoubleSlab.class);
+        register0("minecraft:brown_wool_stairs", BlockBrownWoolStairs.class);
+        register0("minecraft:cyan_concrete_slab", BlockCyanConcreteSlab.class);
+        register0("minecraft:cyan_concrete_double_slab", BlockCyanConcreteDoubleSlab.class);
+        register0("minecraft:cyan_concrete_stairs", BlockCyanConcreteStairs.class);
+        register0("minecraft:cyan_wool_slab", BlockCyanWoolSlab.class);
+        register0("minecraft:cyan_wool_double_slab", BlockCyanWoolDoubleSlab.class);
+        register0("minecraft:cyan_wool_stairs", BlockCyanWoolStairs.class);
+        register0("minecraft:gray_concrete_slab", BlockGrayConcreteSlab.class);
+        register0("minecraft:gray_concrete_double_slab", BlockGrayConcreteDoubleSlab.class);
+        register0("minecraft:gray_concrete_stairs", BlockGrayConcreteStairs.class);
+        register0("minecraft:gray_wool_slab", BlockGrayWoolSlab.class);
+        register0("minecraft:gray_wool_double_slab", BlockGrayWoolDoubleSlab.class);
+        register0("minecraft:gray_wool_stairs", BlockGrayWoolStairs.class);
+        register0("minecraft:green_concrete_slab", BlockGreenConcreteSlab.class);
+        register0("minecraft:green_concrete_double_slab", BlockGreenConcreteDoubleSlab.class);
+        register0("minecraft:green_concrete_stairs", BlockGreenConcreteStairs.class);
+        register0("minecraft:green_wool_slab", BlockGreenWoolSlab.class);
+        register0("minecraft:green_wool_double_slab", BlockGreenWoolDoubleSlab.class);
+        register0("minecraft:green_wool_stairs", BlockGreenWoolStairs.class);
+        register0("minecraft:light_blue_concrete_slab", BlockLightBlueConcreteSlab.class);
+        register0("minecraft:light_blue_concrete_double_slab", BlockLightBlueConcreteDoubleSlab.class);
+        register0("minecraft:light_blue_concrete_stairs", BlockLightBlueConcreteStairs.class);
+        register0("minecraft:light_blue_wool_slab", BlockLightBlueWoolSlab.class);
+        register0("minecraft:light_blue_wool_double_slab", BlockLightBlueWoolDoubleSlab.class);
+        register0("minecraft:light_blue_wool_stairs", BlockLightBlueWoolStairs.class);
+        register0("minecraft:light_gray_concrete_slab", BlockLightGrayConcreteSlab.class);
+        register0("minecraft:light_gray_concrete_double_slab", BlockLightGrayConcreteDoubleSlab.class);
+        register0("minecraft:light_gray_concrete_stairs", BlockLightGrayConcreteStairs.class);
+        register0("minecraft:light_gray_wool_slab", BlockLightGrayWoolSlab.class);
+        register0("minecraft:light_gray_wool_double_slab", BlockLightGrayWoolDoubleSlab.class);
+        register0("minecraft:light_gray_wool_stairs", BlockLightGrayWoolStairs.class);
+        register0("minecraft:lime_concrete_slab", BlockLimeConcreteSlab.class);
+        register0("minecraft:lime_concrete_double_slab", BlockLimeConcreteDoubleSlab.class);
+        register0("minecraft:lime_concrete_stairs", BlockLimeConcreteStairs.class);
+        register0("minecraft:lime_wool_slab", BlockLimeWoolSlab.class);
+        register0("minecraft:lime_wool_double_slab", BlockLimeWoolDoubleSlab.class);
+        register0("minecraft:lime_wool_stairs", BlockLimeWoolStairs.class);
+        register0("minecraft:magenta_concrete_slab", BlockMagentaConcreteSlab.class);
+        register0("minecraft:magenta_concrete_double_slab", BlockMagentaConcreteDoubleSlab.class);
+        register0("minecraft:magenta_concrete_stairs", BlockMagentaConcreteStairs.class);
+        register0("minecraft:magenta_wool_slab", BlockMagentaWoolSlab.class);
+        register0("minecraft:magenta_wool_double_slab", BlockMagentaWoolDoubleSlab.class);
+        register0("minecraft:magenta_wool_stairs", BlockMagentaWoolStairs.class);
+        register0("minecraft:orange_concrete_slab", BlockOrangeConcreteSlab.class);
+        register0("minecraft:orange_concrete_double_slab", BlockOrangeConcreteDoubleSlab.class);
+        register0("minecraft:orange_concrete_stairs", BlockOrangeConcreteStairs.class);
+        register0("minecraft:orange_wool_slab", BlockOrangeWoolSlab.class);
+        register0("minecraft:orange_wool_double_slab", BlockOrangeWoolDoubleSlab.class);
+        register0("minecraft:orange_wool_stairs", BlockOrangeWoolStairs.class);
+        register0("minecraft:pink_concrete_slab", BlockPinkConcreteSlab.class);
+        register0("minecraft:pink_concrete_double_slab", BlockPinkConcreteDoubleSlab.class);
+        register0("minecraft:pink_concrete_stairs", BlockPinkConcreteStairs.class);
+        register0("minecraft:pink_wool_slab", BlockPinkWoolSlab.class);
+        register0("minecraft:pink_wool_double_slab", BlockPinkWoolDoubleSlab.class);
+        register0("minecraft:pink_wool_stairs", BlockPinkWoolStairs.class);
+        register0("minecraft:purple_concrete_slab", BlockPurpleConcreteSlab.class);
+        register0("minecraft:purple_concrete_double_slab", BlockPurpleConcreteDoubleSlab.class);
+        register0("minecraft:purple_concrete_stairs", BlockPurpleConcreteStairs.class);
+        register0("minecraft:purple_wool_slab", BlockPurpleWoolSlab.class);
+        register0("minecraft:purple_wool_double_slab", BlockPurpleWoolDoubleSlab.class);
+        register0("minecraft:purple_wool_stairs", BlockPurpleWoolStairs.class);
+        register0("minecraft:red_concrete_slab", BlockRedConcreteSlab.class);
+        register0("minecraft:red_concrete_double_slab", BlockRedConcreteDoubleSlab.class);
+        register0("minecraft:red_concrete_stairs", BlockRedConcreteStairs.class);
+        register0("minecraft:red_wool_slab", BlockRedWoolSlab.class);
+        register0("minecraft:red_wool_double_slab", BlockRedWoolDoubleSlab.class);
+        register0("minecraft:red_wool_stairs", BlockRedWoolStairs.class);
+        register0("minecraft:white_concrete_slab", BlockWhiteConcreteSlab.class);
+        register0("minecraft:white_concrete_double_slab", BlockWhiteConcreteDoubleSlab.class);
+        register0("minecraft:white_concrete_stairs", BlockWhiteConcreteStairs.class);
+        register0("minecraft:white_wool_slab", BlockWhiteWoolSlab.class);
+        register0("minecraft:white_wool_double_slab", BlockWhiteWoolDoubleSlab.class);
+        register0("minecraft:white_wool_stairs", BlockWhiteWoolStairs.class);
+        register0("minecraft:yellow_concrete_slab", BlockYellowConcreteSlab.class);
+        register0("minecraft:yellow_concrete_double_slab", BlockYellowConcreteDoubleSlab.class);
+        register0("minecraft:yellow_concrete_stairs", BlockYellowConcreteStairs.class);
+        register0("minecraft:yellow_wool_slab", BlockYellowWoolSlab.class);
+        register0("minecraft:yellow_wool_double_slab", BlockYellowWoolDoubleSlab.class);
+        register0("minecraft:yellow_wool_stairs", BlockYellowWoolStairs.class);
 
         register0(SULFUR, BlockSulfur.class);
         register0(SULFUR_BRICKS, BlockSulfurBricks.class);
@@ -1334,6 +1441,29 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CINNABAR_STAIRS, BlockCinnabarStairs.class);
         register0(CINNABAR_BRICK_STAIRS, BlockCinnabarBrickStairs.class);
         register0(POLISHED_CINNABAR_STAIRS, BlockPolishedCinnabarStairs.class);
+
+        loadDataDrivenProperties();
+    }
+
+    /**
+     * Data driven blocks have no class of their own: the client builds them from the properties we
+     * hand it on join, so all we do here is keep the dump around.
+     */
+    private void loadDataDrivenProperties() {
+        try (var stream = BlockRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/block_definitions.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            final NbtMap root = (NbtMap) nbtInputStream.readTag();
+            for (NbtMap property : root.getList("properties", NbtType.COMPOUND)) {
+                DATA_DRIVEN_PROPERTIES.add(new ServerBlockProperty(property.getString("name"), property.getCompound("properties")));
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @UnmodifiableView
+    public List<ServerBlockProperty> getDataDrivenProperties() {
+        return Collections.unmodifiableList(DATA_DRIVEN_PROPERTIES);
     }
 
     public void trim() {
@@ -1489,6 +1619,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         CACHE_CONSTRUCTORS_BY_HASH.clear();
         PROPERTIES.clear();
         CUSTOM_BLOCK_DEFINITIONS.clear();
+        DATA_DRIVEN_PROPERTIES.clear();
         init();
     }
 
