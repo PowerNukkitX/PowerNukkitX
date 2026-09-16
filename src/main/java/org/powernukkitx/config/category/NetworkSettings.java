@@ -31,7 +31,7 @@ public class NetworkSettings extends OkaeriConfig {
     }
 
     @Comment("pnx.settings.network.transport")
-    String transport = "raknet";
+    String transport = "nethernet";
 
     @Comment("pnx.settings.network.queryplugins")
     boolean queryPlugins = true;
@@ -137,7 +137,7 @@ public class NetworkSettings extends OkaeriConfig {
         try {
             return TransportType.valueOf(this.transport.trim().toUpperCase(java.util.Locale.ROOT));
         } catch (RuntimeException invalid) {
-            return TransportType.RAKNET;
+            return TransportType.NETHERNET;
         }
     }
 }

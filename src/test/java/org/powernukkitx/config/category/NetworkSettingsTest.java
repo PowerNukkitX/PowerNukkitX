@@ -19,13 +19,13 @@ class NetworkSettingsTest {
     }
 
     @Test
-    void fallsBackToRakNetForGarbage() {
-        // Anything unreadable has to land on the transport ordinary clients can actually reach
-        assertEquals(NetworkSettings.TransportType.RAKNET, transport("both"));
+    void fallsBackToNetherNetForGarbage() {
+        // Anything unreadable has to land on the default transport
+        assertEquals(NetworkSettings.TransportType.NETHERNET, transport("both"));
     }
 
     @Test
-    void defaultsToRakNet() {
-        assertEquals(NetworkSettings.TransportType.RAKNET, new NetworkSettings().resolvedTransport());
+    void defaultsToNetherNet() {
+        assertEquals(NetworkSettings.TransportType.NETHERNET, new NetworkSettings().resolvedTransport());
     }
 }
