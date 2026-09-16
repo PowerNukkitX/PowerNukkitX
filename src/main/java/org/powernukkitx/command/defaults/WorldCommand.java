@@ -45,7 +45,10 @@ public class WorldCommand extends VanillaCommand {
 
     public WorldCommand(String name) {
         super(name, "nukkit.command.world.description");
-        this.setPermission("nukkit.command.world");
+        this.setPermission("nukkit.command.world.list;" +
+                "nukkit.command.world.tp;" +
+                "nukkit.command.world.load;" +
+                "nukkit.command.world.create");
         this.commandParameters.clear();
         this.commandParameters.put("tp",
                 new CommandParameter[]{
@@ -73,6 +76,10 @@ public class WorldCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (!sender.hasPermission("nukkit.command.world." + result.getKey())) {
+            log.addError("nukkit.command.generic.permission").output();
+            return 0;
+        }
         switch (result.getKey()) {
             case "list" -> {
                 String levels = Server.getInstance().getLevels().values().stream()
@@ -82,10 +89,6 @@ public class WorldCommand extends VanillaCommand {
                 return 1;
             }
             case "create" -> {
-                if (!sender.hasPermission("nukkit.command.world.create")) {
-                    log.addError("nukkit.command.generic.permission").output();
-                    return 0;
-                }
                 String folderName = result.getValue().getResult(1);
                 if (folderName.isBlank() || folderName.contains("/") || folderName.contains("\\")
                         || folderName.contains("..")) {
@@ -139,7 +142,7 @@ public class WorldCommand extends VanillaCommand {
                 String levelName = result.getValue().getResult(1);
                 var level = Server.getInstance().getLevelByName(levelName);
                 if (level == null) {
-                    if (loadWorld(levelName)) {
+                    if (sender.hasPermission("nukkit.command.world.load") && loadWorld(levelName)) {
                         level = Server.getInstance().getLevelByName(levelName);
                     }
                     if (level == null) {
