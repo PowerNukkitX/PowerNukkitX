@@ -81,7 +81,7 @@ public class OverworldSurfaceSpringsFeature extends GenerateFeature {
 
             if (canPlaceSpring(manager, x, y, z)) {
                 manager.setBlockStateAt(x, y, z, fluid);
-                manager.addHook(() -> manager.getLevel().scheduleUpdate(manager.getLevel().getBlock(x, y, z), 1));
+                manager.addHook(x >> 4, z >> 4, () -> manager.getLevel().scheduleUpdate(manager.getLevel().getBlock(x, y, z), 1));
             }
         }
     }

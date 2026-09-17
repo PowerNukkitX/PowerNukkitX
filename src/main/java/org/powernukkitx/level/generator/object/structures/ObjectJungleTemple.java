@@ -238,17 +238,17 @@ public class ObjectJungleTemple extends ObjectGenerator {
         builder.setBlockStateAt(new BlockVector3(4, 8, 5), STAIRS_W); // W
         for(Block block : builder.getBlocks()) {
             if(block instanceof BlockChest chest) {
-                builder.addHook(() -> {
+                builder.addHook(block, () -> {
                     CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
                 });
             }
             if(block instanceof BlockDispenser dispenser) {
-                builder.addHook(() -> {
+                builder.addHook(block, () -> {
                     dispenser.getOrCreateBlockEntity().getInventory().addItem(Item.get(Item.ARROW, 0, rand.nextInt(2, 8)));
                 });
             }
             if(block instanceof BlockStickyPiston piston) {
-                builder.addHook(() -> {
+                builder.addHook(block, () -> {
                     var nbt = BlockEntity.getDefaultCompound(piston, BlockEntity.PISTON_ARM)
                             .putInt("facing", piston.getBlockFace().getIndex())
                             .putBoolean("Sticky", piston.sticky)

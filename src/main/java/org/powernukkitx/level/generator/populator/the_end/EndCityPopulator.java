@@ -49,16 +49,20 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
         EndCityPieces.PostPlacement postPlacement = EndCityPieces.place(manager, origin, rotation, pieceRandom);
 
         if (!postPlacement.chests().isEmpty() || !postPlacement.banners().isEmpty() || !postPlacement.itemFrames().isEmpty() || !postPlacement.brewingStands().isEmpty() || !postPlacement.shulkerMarkers().isEmpty()) {
-            manager.addHook(() -> {
-                EndCityPieces.populatePlacedData(
-                        level,
-                        postPlacement.chests(),
-                        postPlacement.banners(),
-                        postPlacement.itemFrames(),
-                        postPlacement.brewingStands(),
-                        postPlacement.shulkerMarkers(),
-                        new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)));
-            });
+            for (var part : postPlacement.byChunk().long2ObjectEntrySet()) {
+                long chunkHash = part.getLongKey();
+                EndCityPieces.PostPlacement placed = part.getValue();
+                manager.addHook(Level.getHashX(chunkHash), Level.getHashZ(chunkHash), () -> {
+                    EndCityPieces.populatePlacedData(
+                            level,
+                            placed.chests(),
+                            placed.banners(),
+                            placed.itemFrames(),
+                            placed.brewingStands(),
+                            placed.shulkerMarkers(),
+                            new Xoroshiro128(level.getSeed() ^ chunkHash));
+                });
+            }
             queueObject(chunk, manager);
 
         }

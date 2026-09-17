@@ -22,6 +22,9 @@ import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.StructureRotationUtil;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +59,12 @@ public final class WoodlandMansionPieces {
             }
         }
         afterPlaceFoundationFill(manager, pieces);
-        if (!wallPositions.isEmpty()) {
-            manager.addHook(() -> refreshWallConnections(manager.getLevel(), wallPositions));
+        Long2ObjectOpenHashMap<List<BlockVector3>> wallsByChunk = new Long2ObjectOpenHashMap<>();
+        for (BlockVector3 pos : wallPositions) {
+            wallsByChunk.computeIfAbsent(chunkHash(pos), k -> new ArrayList<>()).add(pos);
+        }
+        for (List<BlockVector3> walls : wallsByChunk.values()) {
+            manager.addHook(walls.getFirst(), () -> refreshWallConnections(manager.getLevel(), walls));
         }
 
         List<BlockVector3> chests = new ArrayList<>();
@@ -1592,6 +1599,36 @@ public final class WoodlandMansionPieces {
         public List<BlockVector3> spiderSpawnerPositions() {
             return this.spiderSpawnerPositions;
         }
+
+        /**
+         * Splits what is left to populate by the chunk it falls in, so that each chunk can be
+         * populated as soon as it is generated.
+         *
+         * @return the part of this placement that falls in each chunk, keyed by
+         * {@link Level#chunkHash(int, int)}
+         */
+        public Long2ObjectMap<PostPlacement> byChunk() {
+            LongOpenHashSet chunks = new LongOpenHashSet();
+            this.chests.forEach(pos -> chunks.add(chunkHash(pos)));
+            this.spiderSpawnerPositions.forEach(pos -> chunks.add(chunkHash(pos)));
+            this.mobSpawns.forEach(spawn -> chunks.add(chunkHash(spawn.position())));
+            Long2ObjectOpenHashMap<PostPlacement> parts = new Long2ObjectOpenHashMap<>();
+            for (long chunk : chunks) {
+                parts.put(chunk, new PostPlacement(
+                        inChunk(this.chests, chunk),
+                        this.mobSpawns.stream().filter(spawn -> chunkHash(spawn.position()) == chunk).toList(),
+                        inChunk(this.spiderSpawnerPositions, chunk)));
+            }
+            return parts;
+        }
+    }
+
+    private static long chunkHash(BlockVector3 pos) {
+        return Level.chunkHash(pos.getChunkX(), pos.getChunkZ());
+    }
+
+    private static List<BlockVector3> inChunk(List<BlockVector3> positions, long chunkHash) {
+        return positions.stream().filter(pos -> chunkHash(pos) == chunkHash).toList();
     }
 
     private static final class MansionChestLoot extends RandomizableContainer {
