@@ -21,7 +21,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.WEIRDO_DIREC
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class BlockStairs extends BlockTransparent implements Faceable {
+public abstract class BlockStairs extends BlockTransparent implements Faceable, StateDeriving {
     public BlockStairs(BlockState blockState) {
         super(blockState);
     }
@@ -59,6 +59,7 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
      * Automatically configures the corner state.
      * @return whether the shape changed
      */
+    @Override
     public boolean autoConfigureState() {
         final short previous = blockstate.specialValue();
         setPropertyValue(CORNER, computeCorner());
