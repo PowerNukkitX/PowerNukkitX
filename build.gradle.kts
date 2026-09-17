@@ -38,6 +38,7 @@ val ALPHA_BUILD = "alpha build"
 
 dependencies {
     api(libs.bundles.netty)
+    api(libs.bundles.nethernet)
     api(libs.bundles.logging)
     api(libs.annotations)
     api(libs.jsr305)

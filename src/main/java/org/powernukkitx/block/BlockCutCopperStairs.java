@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 public class BlockCutCopperStairs extends BlockStairsCopperBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CUT_COPPER_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
 
     @Override
     @NotNull public BlockProperties getProperties() {

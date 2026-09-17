@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-pnx-gamedata                                    = "r-26_u4-SNAPSHOT"
+pnx-gamedata                                    = "r-26_u5-SNAPSHOT"
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 fastreflection                                  = "1.0.3"
 com-github-oshi-oshi-core                       = "7.6.1"
@@ -10,6 +10,7 @@ com-google-code-findbugs-jsr305                 = "3.0.2"
 com-google-code-gson-gson                       = "2.14.0"
 com-google-guava-guava                          = "33.7.1-jre"
 commons-io-commons-io                           = "2.22.0"
+io-netty                                        = "4.2.18.Final"
 io-netty-netty-transport-classes-epoll          = "4.2.18.Final"
 io-netty-netty-transport-classes-kqueue         = "4.2.18.Final"
 it-unimi-dsi-fastutil                           = "8.5.19"
@@ -18,7 +19,8 @@ net-minecrell-terminalconsoleappender           = "1.3.0"
 net-sf-jopt-simple-jopt-simple                  = "5.0.4"
 log4j                                           = "2.26.1"
 org-bitbucket-b-c-jose4j                        = "0.9.7"
-org-cloudburstmc-netty-netty-transport-raknet   = "1.0.0.CR3-SNAPSHOT"
+org-cloudburstmc-netty                          = "2.0.0.CR3-20260915.150851-9"
+dev-opencollab-libdatachannel                   = "0.24.5.0-SNAPSHOT"
 org-jetbrains-annotations                       = "26.1.0"
 org-jline-jline-reader                          = "4.4.3"
 org-jline-jline-terminal                        = "4.4.3"
@@ -68,6 +70,14 @@ jose4j               = { module = "org.bitbucket.b_c:jose4j",                   
 stateless4j          = { module = "com.github.stateless4j:stateless4j",             version.ref = "com-github-stateless4j"                          }
 netty-epoll          = { module = "io.netty:netty-transport-classes-epoll",         version.ref = "io-netty-netty-transport-classes-epoll"          }
 netty-kqueue         = { module = "io.netty:netty-transport-classes-kqueue",        version.ref = "io-netty-netty-transport-classes-kqueue"         }
+netty-handler        = { module = "io.netty:netty-handler",                         version.ref = "io-netty"                                        }
+netty-codec          = { module = "io.netty:netty-codec",                           version.ref = "io-netty"                                        }
+netty-codec-http     = { module = "io.netty:netty-codec-http",                      version.ref = "io-netty"                                        }
+netty-codec-haproxy  = { module = "io.netty:netty-codec-haproxy",                   version.ref = "io-netty"                                        }
+netty-raknet         = { module = "org.cloudburstmc.netty:netty-transport-raknet",  version.ref = "org-cloudburstmc-netty"                          }
+netty-nethernet      = { module = "org.cloudburstmc.netty:netty-transport-nethernet", version.ref = "org-cloudburstmc-netty"                        }
+netty-signalling     = { module = "org.cloudburstmc.netty:netty-external-signaling", version.ref = "org-cloudburstmc-netty"                        }
+libdatachannel       = { module = "dev.opencollab:libdatachannel-java-arch-detect", version.ref = "dev-opencollab-libdatachannel"                   }
 consoleappender      = { module = "net.minecrell:terminalconsoleappender",          version.ref = "net-minecrell-terminalconsoleappender"           }
 jline-reader         = { module = "org.jline:jline-reader",                         version.ref = "org-jline-jline-reader"                          }
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
@@ -87,7 +97,8 @@ bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection"
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljni",    "consoleappender"   ]
 test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator"              ]
-netty           = ["netty-epoll",      "netty-kqueue"                                                   ]
+netty           = ["netty-epoll",      "netty-kqueue",     "netty-handler"                              ]
+nethernet       = ["netty-nethernet",  "netty-signalling", "netty-raknet",     "netty-codec",  "netty-codec-http", "netty-codec-haproxy", "libdatachannel" ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
 logging         = ["log4j-slf4j2-impl", "log4j-core"                                                    ]
