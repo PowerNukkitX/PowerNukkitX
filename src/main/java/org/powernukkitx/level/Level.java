@@ -367,6 +367,7 @@ public class Level implements Metadatable {
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<Player>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
+    private final LongSet legacyStateChunks = new LongOpenHashSet();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     private final VillageManager villageManager = new VillageManager(this);
     public boolean stopTime;
@@ -1489,6 +1490,8 @@ public class Level implements Metadatable {
                 }
             }
             if (prof) phase[3] = -phaseStart + (phaseStart = System.nanoTime());
+
+            this.deriveLegacyChunkStates();
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
@@ -3325,6 +3328,85 @@ public class Level implements Metadatable {
         }
     }
 
+    /**
+     * Recomputes the states blocks derive from their surroundings in the chunks that were loaded
+     * since the last tick. Worlds written before those states existed hold the default in their
+     * place, which leaves stairs, fences, panes and walls unconnected until something else happens
+     * to update them.
+     */
+    private void deriveLegacyChunkStates() {
+        final long[] pending;
+        synchronized (this.legacyStateChunks) {
+            if (this.legacyStateChunks.isEmpty()) {
+                return;
+            }
+            pending = this.legacyStateChunks.toLongArray();
+            this.legacyStateChunks.clear();
+        }
+
+        for (long hash : pending) {
+            final int chunkX = getHashX(hash);
+            final int chunkZ = getHashZ(hash);
+            // a neighbour that was waiting on this chunk can be finished now, so it is retried too
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    this.deriveChunkStates(chunkX + dx, chunkZ + dz);
+                }
+            }
+        }
+    }
+
+    private void deriveChunkStates(int chunkX, int chunkZ) {
+        final LevelProvider provider = this.getProvider();
+        if (provider == null) {
+            return;
+        }
+        final IChunk chunk = provider.getLoadedChunk(chunkHash(chunkX, chunkZ));
+        if (chunk == null || !chunk.hasLegacyStates()) {
+            return;
+        }
+        // blocks on the chunk edge derive their state from the chunk next to it, so the chunk is
+        // left alone until everything around it is there to read
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (provider.getLoadedChunk(chunkHash(chunkX + dx, chunkZ + dz)) == null) {
+                    return;
+                }
+            }
+        }
+        chunk.markStatesUpgraded();
+
+        final int baseX = chunkX << 4;
+        final int baseZ = chunkZ << 4;
+        for (ChunkSection section : chunk.getSections()) {
+            if (section == null || section.isEmpty()
+                    || !section.blockLayer()[0].anyInPalette(state -> state.toBlock() instanceof StateDeriving)) {
+                continue;
+            }
+            final int baseY = section.y() << 4;
+            for (int x = 0; x < 16; x++) {
+                for (int y = 0; y < 16; y++) {
+                    for (int z = 0; z < 16; z++) {
+                        if (!(section.getBlockState(x, y, z, 0).toBlock() instanceof StateDeriving deriving)) {
+                            continue;
+                        }
+                        final Block block = (Block) deriving;
+                        block.x = baseX + x;
+                        block.y = baseY + y;
+                        block.z = baseZ + z;
+                        block.level = this;
+                        block.layer = 0;
+                        if (deriving.autoConfigureState()) {
+                            // no neighbour update: the state was only ever wrong on disk, but the
+                            // players holding the chunk already got the wrong one and need the fix
+                            this.setBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 0, block, true, false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void addBlockChange(int x, int y, int z) {
         long index = Level.chunkHash(x >> 4, z >> 4);
         addBlockChange(index, x, y, z);
@@ -5036,6 +5118,9 @@ public class Level implements Metadatable {
         if (chunk.getProvider() != null) {
             chunk.initChunk();
             this.tickChunkCacheDirty = true;
+            synchronized (this.legacyStateChunks) {
+                this.legacyStateChunks.add(index);
+            }
             this.server.getPluginManager().callEvent(new ChunkLoadEvent(chunk, !chunk.isGenerated()));
         } else {
             this.unloadChunk(x, z, false);

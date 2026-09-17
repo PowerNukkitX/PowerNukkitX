@@ -28,7 +28,7 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
 
 
 @Slf4j
-public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
+public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable, StateDeriving {
     private static final double MIN_POST_BB = 5.0 / 16;
     private static final double MAX_POST_BB = 11.0 / 16;
 
@@ -113,6 +113,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return false;
     }
 
+    @Override
     public boolean autoConfigureState() {
         final short previousMeta = blockstate.specialValue();
 
