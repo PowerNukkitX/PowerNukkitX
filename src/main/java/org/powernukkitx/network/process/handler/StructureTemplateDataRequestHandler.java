@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.level.structure.Structure;
 import org.powernukkitx.level.structure.StructureAPI;
@@ -16,6 +17,11 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
 
     @Override
     public void handle(StructureTemplateDataRequestPacket packet, PlayerSessionHolder holder, Server server) {
+        final Player player = holder.getPlayer();
+        if (!player.spawned || !player.isOp() || !player.isCreative()){
+            return;
+        }
+
         final String structureName = packet.getStructureName();
         final StructureTemplateDataResponsePacket responsePacket = new StructureTemplateDataResponsePacket();
         responsePacket.setStructureName(structureName);
@@ -24,7 +30,7 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
 
         if (structure == null) {
             responsePacket.setResponseType(StructureTemplateResponseType.NONE);
-            holder.getPlayer().sendPacket(responsePacket);
+            player.sendPacket(responsePacket);
             return;
         }
 
@@ -36,6 +42,6 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
             default -> StructureTemplateResponseType.NONE;
         });
 
-        holder.getPlayer().sendPacket(responsePacket);
+        player.sendPacket(responsePacket);
     }
 }
