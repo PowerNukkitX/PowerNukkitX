@@ -3046,15 +3046,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         positionTrackingService.forceRecheck(this);
     }
 
+    private boolean callPacketSendEvent(BedrockPacket packet){
+        if (PacketSendEvent.getHandlers().isEmpty()){
+            return true;
+        }
+        final PacketSendEvent event = new PacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(event);
+        return !event.isCancelled();
+    }
+
     /**
      * Sends a packet to network session
      *
      * @param packet packet to send
      */
     public void sendPacket(BedrockPacket packet) {
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
+        if (!this.callPacketSendEvent(packet)) {
             return;
         }
         this.getSession().sendPacket(packet);
@@ -6583,9 +6590,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isConnected()) {
             return false;
         }
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
+        if (!this.callPacketSendEvent(packet)) {
             return false;
         }
         this.getSession().sendPacketImmediately(packet);
