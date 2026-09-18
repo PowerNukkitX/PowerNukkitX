@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class StructureAPI {
-    private static final Map<String, Structure> structureCache = new HashMap<>();
+    private static final Map<String, Structure> structureCache = new ConcurrentHashMap<>();
 
     private static File resolvePathNamespaced(String name) {
         return resolveInsideStructureDir(name.replace(":", File.separator) + ".mcstructure");
@@ -53,9 +55,18 @@ public class StructureAPI {
         }
     }
 
+    public static CompletableFuture<Structure> loadAsync(String name){
+        Structure cached = structureCache.get(name);
+        if (cached != null){
+            return CompletableFuture.completedFuture(cached);
+        }
+        return CompletableFuture.supplyAsync(() -> load(name), Server.getInstance().getComputeThreadPool());
+    }
+
     public static Structure load(String name) {
-        if (structureCache.containsKey(name)) {
-            return structureCache.get(name);
+        Structure cached = structureCache.get(name);
+        if (cached != null) {
+            return cached;
         }
 
         File file = resolvePathWithFallback(name);
