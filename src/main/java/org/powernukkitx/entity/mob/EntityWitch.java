@@ -8,12 +8,15 @@ import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
 import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.executor.PotionThrowExecutor;
 import org.powernukkitx.entity.ai.executor.UsePotionExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -54,9 +57,14 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
         return BehaviorGroup.builder(this)
                 .coreBehaviors(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_WITCH_AMBIENT), new RandomSoundEvaluator(), 2, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true),
+                                all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                        new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 )
                 .behaviors(
+                        new Behavior(new RaiderCelebrationExecutor(Sound.MOB_WITCH_CELEBRATE, 30 * 20, 20, 50, 40, 100),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING), 9, 1),
                         new Behavior(new UsePotionExecutor(0.3f, 30, 20), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME),
                                 entity -> entity.getLevel().getTick() - getMemoryStorage().get(CoreMemoryTypes.LAST_BE_ATTACKED_TIME) <= 1
