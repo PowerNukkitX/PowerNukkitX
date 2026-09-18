@@ -20,6 +20,10 @@ public class AnimateHandler implements PacketHandler<AnimatePacket> {
         if (!player.spawned || !player.isAlive()) {
             return;
         }
+        // Each animation is relayed to every viewer, so an unthrottled client could flood them
+        if (!playerHandle.packetRateLimiter.tryAnimate()){
+            return;
+        }
 
         AnimatePacket.Action animation = packet.getAction();
 

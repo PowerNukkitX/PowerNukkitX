@@ -16,31 +16,57 @@ public final class PacketRateLimiter {
     private final RateLimiter chat;
     private final RateLimiter formResponse;
     private final RateLimiter movement;
+    private final RateLimiter animate;
+    private final RateLimiter emote;
 
     public PacketRateLimiter(RateLimitSettings settings) {
         this.command = RateLimiter.create(settings.maxCommandsPerSecondPerPlayer());
         this.chat = RateLimiter.create(settings.maxChatPerSecondPerPlayer());
         this.formResponse = RateLimiter.create(settings.maxFormResponsesPerSecondPerPlayer());
         this.movement = RateLimiter.create(settings.maxMovementPacketsPerSecondPerPlayer());
+        this.animate = RateLimiter.create(settings.maxAnimatePacketsPerSecondPerPlayer());
+        this.emote = RateLimiter.create(settings.maxEmotesPerSecondPerPlayer());
     }
 
-    /** @return true if the command packet should be processed, false if it should be dropped. */
+    /**
+     * @return true if the command packet should be processed, false if it should be dropped.
+     */
     public boolean tryCommand() {
         return command.tryAcquire();
     }
 
-    /** @return true if the chat packet should be processed, false if it should be dropped. */
+    /**
+     * @return true if the chat packet should be processed, false if it should be dropped.
+     */
     public boolean tryChat() {
         return chat.tryAcquire();
     }
 
-    /** @return true if the form response should be processed, false if it should be dropped. */
+    /**
+     * @return true if the form response should be processed, false if it should be dropped.
+     */
     public boolean tryFormResponse() {
         return formResponse.tryAcquire();
     }
 
-    /** @return true if the movement packet should be processed, false if it should be dropped. */
+    /**
+     * @return true if the movement packet should be processed, false if it should be dropped.
+     */
     public boolean tryMovement() {
         return movement.tryAcquire();
+    }
+
+    /**
+     * @return true if the animate packet should be processed, false if it should be dropped.
+     */
+    public boolean tryAnimate() {
+        return animate.tryAcquire();
+    }
+
+    /**
+     * @return true if the emote packet should be processed, false if it should be dropped.
+     */
+    public boolean tryEmote() {
+        return emote.tryAcquire();
     }
 }

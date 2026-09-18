@@ -202,6 +202,8 @@
   "pnx.settings.network.ratelimit.maxchatperplayer": "Maximum chat packets per second per player",
   "pnx.settings.network.ratelimit.maxformresponsesperplayer": "Maximum form response packets per second per player",
   "pnx.settings.network.ratelimit.maxmovementperplayer": "Maximum movement packets per second per player\nPlayers can only send one per tick (20/s), but high ping may lead to false rate-limiting.",
+  "pnx.settings.network.ratelimit.maxanimateperplayer": "Maximum animate packets (arm swings, boat rowing...) per second per player\nKeep some headroom: swinging and rowing send several per second.",
+  "pnx.settings.network.ratelimit.maxemoteperplayer": "Maximum emote packets per second per player",
   "pnx.settings.network.botnet": "Botnet and distributed flood detection settings",
   "pnx.settings.network.botnet.enabled": "Whether to enable botnet / distributed flood detection",
   "pnx.settings.network.botnet.suspiciousthreshold": "Packets per second a single session must exceed to be considered suspicious",
