@@ -6360,11 +6360,7 @@ public class Level implements Metadatable {
 
     public boolean hasTickingAreas() {
         var manager = getServer().getTickingAreaManager();
-        if (manager == null) return false;
-        for (var area : manager.getAllTickingArea()) {
-            if (area.getLevelName().equals(this.getName())) return true;
-        }
-        return false;
+        return manager != null && manager.getTickingAreaCount(this) > 0;
     }
 
     /**

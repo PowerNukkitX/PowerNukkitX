@@ -114,7 +114,11 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
 
     @Override
     public int getTickingAreaCount(Level level) {
-        return getTickingAreas(level).size();
+        int count = 0;
+        for (TickingArea area : areaMap.values()) {
+            if (area.getLevelName().equals(level.getName())) count++;
+        }
+        return count;
     }
 
     @Override

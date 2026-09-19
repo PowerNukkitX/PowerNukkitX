@@ -585,6 +585,8 @@ public final class PlayerChunkManager {
                     case MEDIUM -> 8;
                     case HIGH -> 0;
                 };
+        if (baseBudget == 0) return 0;
+
         final int activePlayerCount = player.getLevel().getPlayers().size();
         if (activePlayerCount <= 0) {
             return baseBudget;
