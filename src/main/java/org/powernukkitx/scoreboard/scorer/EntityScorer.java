@@ -7,26 +7,47 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.scoreboard.IScoreboard;
 import org.powernukkitx.scoreboard.IScoreboardLine;
 
-import java.util.UUID;
-
 
 @Getter
 public class EntityScorer implements IScorer {
 
-    private UUID entityUuid;
+    private final long uniqueId;
 
-    public EntityScorer(UUID uuid) {
-        this.entityUuid = uuid;
+    public EntityScorer(long uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
     public EntityScorer(Entity entity) {
-        this.entityUuid = entity.getUniqueId();
+        this.uniqueId = entity.uniqueIdLong();
+    }
+
+    /**
+     * Returns the scorer ActorUniqueID as its persisted string representation.
+     *
+     * @return ActorUniqueID string
+     */
+    public String uniqueId() {
+        return Long.toString(this.uniqueId);
+    }
+
+    /**
+     * Returns the scorer ActorUniqueID.
+     *
+     * @return ActorUniqueID
+     */
+    public long uniqueIdLong() {
+        return this.uniqueId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(this.uniqueId);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof EntityScorer entityScorer) {
-            return entityUuid.equals(entityScorer.entityUuid);
+            return this.uniqueId == entityScorer.uniqueId;
         }
         return false;
     }
@@ -38,7 +59,7 @@ public class EntityScorer implements IScorer {
 
     @Override
     public String getName() {
-        return entityUuid.toString();
+        return Long.toString(this.uniqueId);
     }
 
     @Override
@@ -47,7 +68,7 @@ public class EntityScorer implements IScorer {
         score.setScoreboardId(line.getLineId());
         score.setObjectiveName(scoreboard.getObjectiveName());
         score.setScoreValue(line.getScore());
-        score.setActorId(this.entityUuid.getMostSignificantBits());
+        score.setActorId(this.uniqueId);
         return score;
     }
 }

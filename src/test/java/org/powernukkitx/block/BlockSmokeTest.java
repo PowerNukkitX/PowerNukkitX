@@ -1,6 +1,5 @@
 package org.powernukkitx.block;
 
-import org.powernukkitx.item.Item;
 import org.powernukkitx.registry.Registries;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,6 +52,12 @@ public class BlockSmokeTest {
                 "too many block states failed the smoke pass (" + failCount + "/" + states.size() + ")" + failures);
     }
 
+    @Test
+    void vanillaPrecipitationBehaviorsMatchBedrock() {
+        Assertions.assertSame(PrecipitationBehavior.SNOWLOGGING, BlockRedShrub.PROPERTIES.getPrecipitationBehavior());
+        Assertions.assertSame(PrecipitationBehavior.NONE, BlockShelfMushroom.PROPERTIES.getPrecipitationBehavior());
+    }
+
     private void exerciseState(BlockState state) {
         Assertions.assertNotNull(state.getIdentifier());
         state.blockStateHash();
@@ -96,6 +101,7 @@ public class BlockSmokeTest {
         safe(block::getWaterloggingLevel);
         safe(block::isWaterLogged);
         safe(block::getSnowloggingLevel);
+        safe(block::getPrecipitationBehavior);
         safe(block::isSnowLogged);
         safe(block::canBeActivated);
         safe(block::hasEntityCollision);

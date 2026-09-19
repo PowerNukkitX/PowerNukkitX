@@ -82,8 +82,12 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
         } else if (tick2 != 0) {
             tick2++;
             if (tick2 > attackDelay) {
-                if (entity.getDataProperty(ActorDataTypes.TARGET, 0L) == target.getId()) {
-                    EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, ((EntityMob) entity).getDiffHandDamage(Server.getInstance().getDifficulty()));
+                if (entity.getDataProperty(ActorDataTypes.TARGET, 0L) == target.uniqueIdLong()) {
+                    EntityDamageByEntityEvent event = 
+                            new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, ((EntityMob) entity)
+                                .getDiffHandDamage(Server.getInstance()
+                                .getDifficulty())
+                            );
                     target.attack(event);
                     if (Server.getInstance().getDifficulty() >= 2) {
                         EntityDamageByEntityEvent event2 = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, 1);
@@ -123,7 +127,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     }
 
     private void startSequence(Entity entity) {
-        entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
+        entity.setDataProperty(ActorDataTypes.TARGET, this.target.uniqueIdLong());
         entity.level.addLevelSoundEvent(entity, SoundEvent.MOB_WARNING, -1, entity.getIdentifier(), false, false);
     }
 

@@ -68,6 +68,16 @@ public class BlockUpdateScheduler {
                         Level level = chunk.getLevel();
                         Block block = level.getBlock(entry.pos, entry.block.layer);
 
+                        if (entry.checkBlockWhenUpdate) {
+                            block = level.getBlock(entry.pos, 0);
+                            if (!Block.equals(block, entry.block, false)) {
+                                block = level.getBlock(entry.pos, 1);
+                                if (!Block.equals(block, entry.block, false)) {
+                                    continue;
+                                }
+                            }
+                        }
+
                         if (block.isTickingDisabled()) {
                             continue;
                         }
@@ -95,6 +105,24 @@ public class BlockUpdateScheduler {
         }
 
         return set;
+    }
+
+    /**
+     * Returns the last tick processed by this scheduler.
+     *
+     * @return last processed tick
+     */
+    public long getLastTick() {
+        return this.lastTick;
+    }
+
+    /**
+     * Returns pending block updates mapped to their scheduled tick.
+     *
+     * @return pending updates with scheduled ticks
+     */
+    public Map<BlockUpdateEntry, Long> getPendingBlockUpdatesWithTime() {
+        return new HashMap<>(this.entryToTick);
     }
 
     public Set<BlockUpdateEntry> getPendingBlockUpdates() {

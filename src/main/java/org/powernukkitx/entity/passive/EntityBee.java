@@ -32,6 +32,9 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.FloatTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,6 +61,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     private int homeHiveX = NO_HOME;
     private int homeHiveY = NO_HOME;
     private int homeHiveZ = NO_HOME;
+    private int homeDimensionId = NO_HOME;
 
     // Anti-stuck tracking for movement targets
     private int stuckTicksOnTarget = 0;
@@ -79,22 +83,23 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     }
 
     public boolean hasHomeHive() {
-        return this.homeHiveY != NO_HOME;
+        return this.homeHiveY != NO_HOME && this.homeDimensionId != NO_HOME;
     }
 
     public void setHomeHive(BlockEntityBeehive beehive) {
         if (beehive == null || beehive.getBlock() == null) {
-            homeHiveX = homeHiveY = homeHiveZ = NO_HOME;
+            homeHiveX = homeHiveY = homeHiveZ = homeDimensionId = NO_HOME;
             return;
         }
         Block block = beehive.getBlock();
         this.homeHiveX = block.getFloorX();
         this.homeHiveY = block.getFloorY();
         this.homeHiveZ = block.getFloorZ();
+        this.homeDimensionId = block.getLevel().getDimension();
     }
 
     public Block getHomeHiveBlock() {
-        if (!hasHomeHive() || this.level == null) return null;
+        if (!hasHomeHive() || this.level == null || this.level.getDimension() != this.homeDimensionId) return null;
 
         Block block = this.level.getBlock(homeHiveX, homeHiveY, homeHiveZ);
         if (!(block instanceof BlockBeehive)) {
@@ -214,7 +219,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
                     // If home hive is too far, forget it so bee can re-home
                     if (distSq > 128 * 128) {
-                        this.homeHiveX = this.homeHiveY = this.homeHiveZ = NO_HOME;
+                        this.homeHiveX = this.homeHiveY = this.homeHiveZ = this.homeDimensionId = NO_HOME;
                     } else {
                         // Push home hive into NEAREST_BLOCK so MoveToTarget can start flying back
                         this.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, homeHive);
@@ -342,25 +347,31 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.nbt.contains("HomeHiveX")) {
-            final CompoundTag nbtMap = this.getNbt();
-            this.homeHiveX = nbtMap.getInt("HomeHiveX");
-            this.homeHiveY = nbtMap.getInt("HomeHiveY");
-            this.homeHiveZ = nbtMap.getInt("HomeHiveZ");
+        if (this.nbt.containsList("HomePos", Tag.TAG_Float) && this.nbt.containsInt("HomeDimensionId")) {
+            ListTag<FloatTag> homePos = this.nbt.getList("HomePos", FloatTag.class);
+
+            if (homePos.size() == 3) {
+                this.homeHiveX = Math.round(homePos.get(0).data);
+                this.homeHiveY = Math.round(homePos.get(1).data);
+                this.homeHiveZ = Math.round(homePos.get(2).data);
+                this.homeDimensionId = this.nbt.getInt("HomeDimensionId");
+            }
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
+
         if (hasHomeHive()) {
-            this.nbt.putInt("HomeHiveX", homeHiveX)
-                    .putInt("HomeHiveY", homeHiveY)
-                    .putInt("HomeHiveZ", homeHiveZ);
+            this.nbt.putList("HomePos", new ListTag<FloatTag>()
+                    .add(new FloatTag(this.homeHiveX))
+                    .add(new FloatTag(this.homeHiveY))
+                    .add(new FloatTag(this.homeHiveZ))
+            );
+            this.nbt.putInt("HomeDimensionId", this.homeDimensionId);
         } else {
-            this.nbt.remove("HomeHiveX");
-            this.nbt.remove("HomeHiveY");
-            this.nbt.remove("HomeHiveZ");
+            this.nbt.remove("HomePos", "HomeDimensionId");
         }
     }
 

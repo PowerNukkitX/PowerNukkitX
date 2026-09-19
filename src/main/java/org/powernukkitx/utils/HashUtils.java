@@ -27,6 +27,12 @@ public class HashUtils {
     private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
     private static final long FNV1_PRIME_64 = 1099511628211L;
 
+    private static final long XXH64_PRIME1 = 0x9E3779B185EBCA87L;
+    private static final long XXH64_PRIME2 = 0xC2B2AE3D27D4EB4FL;
+    private static final long XXH64_PRIME3 = 0x165667B19E3779F9L;
+    private static final long XXH64_PRIME4 = 0x85EBCA77C2B2AE63L;
+    private static final long XXH64_PRIME5 = 0x27D4EB2F165667C5L;
+
     public int computeBlockStateHash(String identifier, List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> propertyValues) {
         if (identifier.equals(BlockID.UNKNOWN)) {
             return -2; // This is special case
@@ -111,6 +117,22 @@ public class HashUtils {
         }
     }
 
+    /**
+     * Computes the LevelChunkMetaData dictionary hash for network-NBT metadata.
+     *
+     * @param metadata metadata compound
+     * @return XXH64 metadata hash
+     */
+    @SneakyThrows
+    public long computeLevelChunkMetaDataHash(NbtMap metadata) {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             final NBTOutputStream nbtOutputStream = NbtUtils.createNetworkWriter(outputStream)) {
+            nbtOutputStream.writeTag(metadata);
+            nbtOutputStream.close();
+            return xxh64(outputStream.toByteArray(), 0);
+        }
+    }
+
     //CPU Ryzen PRO 5850U, 16G, Win11
     //Throughput 15736.451 ± 337.778  ops/ms
     public int fnv1a_32(final byte[] data) {
@@ -120,6 +142,128 @@ public class HashUtils {
             hash *= FNV1_PRIME_32;
         }
         return hash;
+    }
+
+    /**
+     * Computes an XXH64 hash with seed zero.
+     *
+     * @param data input data
+     * @return XXH64 hash
+     */
+    public long xxh64(final byte[] data) {
+        return xxh64(data, 0);
+    }
+
+    /**
+     * Computes an XXH64 hash using the supplied seed.
+     *
+     * @param data input data
+     * @param seed hash seed
+     * @return XXH64 hash
+     */
+    public long xxh64(final byte[] data, long seed) {
+        int length = data.length;
+        int index = 0;
+        long hash;
+
+        if (length >= 32) {
+            long v1 = seed + XXH64_PRIME1 + XXH64_PRIME2;
+            long v2 = seed + XXH64_PRIME2;
+            long v3 = seed;
+            long v4 = seed - XXH64_PRIME1;
+
+            int limit = length - 32;
+
+            do {
+                v1 = xxh64Round(v1, readLongLE(data, index));
+                index += 8;
+
+                v2 = xxh64Round(v2, readLongLE(data, index));
+                index += 8;
+
+                v3 = xxh64Round(v3, readLongLE(data, index));
+                index += 8;
+
+                v4 = xxh64Round(v4, readLongLE(data, index));
+                index += 8;
+            } while (index <= limit);
+
+            hash = Long.rotateLeft(v1, 1)
+                    + Long.rotateLeft(v2, 7)
+                    + Long.rotateLeft(v3, 12)
+                    + Long.rotateLeft(v4, 18);
+
+            hash = xxh64MergeRound(hash, v1);
+            hash = xxh64MergeRound(hash, v2);
+            hash = xxh64MergeRound(hash, v3);
+            hash = xxh64MergeRound(hash, v4);
+        } else {
+            hash = seed + XXH64_PRIME5;
+        }
+
+        hash += length;
+
+        while (index <= length - 8) {
+            long value = xxh64Round(0, readLongLE(data, index));
+
+            hash ^= value;
+            hash = Long.rotateLeft(hash, 27) * XXH64_PRIME1 + XXH64_PRIME4;
+
+            index += 8;
+        }
+
+        if (index <= length - 4) {
+            hash ^= (readIntLE(data, index) & 0xffffffffL) * XXH64_PRIME1;
+            hash = Long.rotateLeft(hash, 23) * XXH64_PRIME2 + XXH64_PRIME3;
+
+            index += 4;
+        }
+
+        while (index < length) {
+            hash ^= (data[index] & 0xffL) * XXH64_PRIME5;
+            hash = Long.rotateLeft(hash, 11) * XXH64_PRIME1;
+
+            index++;
+        }
+
+        hash ^= hash >>> 33;
+        hash *= XXH64_PRIME2;
+        hash ^= hash >>> 29;
+        hash *= XXH64_PRIME3;
+        hash ^= hash >>> 32;
+
+        return hash;
+    }
+
+    private long xxh64Round(long accumulator, long input) {
+        accumulator += input * XXH64_PRIME2;
+        accumulator = Long.rotateLeft(accumulator, 31);
+        accumulator *= XXH64_PRIME1;
+        return accumulator;
+    }
+
+    private long xxh64MergeRound(long accumulator, long value) {
+        accumulator ^= xxh64Round(0, value);
+        accumulator = accumulator * XXH64_PRIME1 + XXH64_PRIME4;
+        return accumulator;
+    }
+
+    private long readLongLE(byte[] data, int index) {
+        return (data[index] & 0xffL)
+                | ((data[index + 1] & 0xffL) << 8)
+                | ((data[index + 2] & 0xffL) << 16)
+                | ((data[index + 3] & 0xffL) << 24)
+                | ((data[index + 4] & 0xffL) << 32)
+                | ((data[index + 5] & 0xffL) << 40)
+                | ((data[index + 6] & 0xffL) << 48)
+                | ((data[index + 7] & 0xffL) << 56);
+    }
+
+    private int readIntLE(byte[] data, int index) {
+        return (data[index] & 0xff)
+                | ((data[index + 1] & 0xff) << 8)
+                | ((data[index + 2] & 0xff) << 16)
+                | ((data[index + 3] & 0xff) << 24);
     }
 
     /**

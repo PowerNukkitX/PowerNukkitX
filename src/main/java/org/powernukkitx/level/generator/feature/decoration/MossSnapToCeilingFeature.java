@@ -46,7 +46,7 @@ public class MossSnapToCeilingFeature extends GenerateFeature {
                 int baseZ = z + chunkZ << 4;
                 if(noise.noise2D(baseX * 0.25f, baseZ * 0.25f, true) > 0) {
                     for (int y = chunk.getHeightMap(x, z); y > level.getMinHeight(); y--) {
-                        if (chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
+                        if (chunk.getBiomeId(x, y, z) == BiomeID.LUSH_CAVES) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
                                 for (int _y = 1; _y <= 2; _y++) {
                                     int yy = y + _y;

@@ -6,9 +6,13 @@ import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.palette.Palette;
+import org.powernukkitx.level.generator.ChunkGenerationState;
+import org.powernukkitx.level.structure.AabbVolumes;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.scheduler.BlockUpdateScheduler;
+import org.powernukkitx.scheduler.RandomBlockUpdateScheduler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
 
@@ -16,13 +20,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
  * @author Cool_Loong
  */
 public interface IChunk {
-    int VERSION = 40;
+    int VERSION = 42;
 
     /**
      * Get Palette index
@@ -63,6 +68,13 @@ public interface IChunk {
 
     ChunkSection[] getSections();
 
+    /**
+     * Returns the per-section biome palettes.
+     *
+     * @return biome section palettes
+     */
+    Palette<Integer>[] getBiomeSections();
+
     int getX();
 
     void setX(int x);
@@ -101,6 +113,32 @@ public interface IChunk {
      */
     BlockState getBlockState(int x, int y, int z, int layer);
 
+    /**
+     * Provides block-state reads while the chunk block read lock is held.
+     */
+    @ApiStatus.Internal
+    @FunctionalInterface
+    interface BlockStateReader {
+
+        /**
+         * Returns a block state from the locked chunk view.
+         */
+        BlockState getBlockState(int x, int y, int z, int layer);
+
+        /**
+         * Returns a layer-zero block state from the locked chunk view.
+         */
+        default BlockState getBlockState(int x, int y, int z) {
+            return getBlockState(x, y, z, 0);
+        }
+    }
+
+    /**
+     * Executes block-state reads under one chunk block read lock.
+     */
+    @ApiStatus.Internal
+    <T> T readBlockStates(Function<BlockStateReader, T> action);
+
     BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer);
 
     default BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate) {
@@ -112,6 +150,15 @@ public interface IChunk {
     default void setBlockState(int x, int y, int z, BlockState blockstate) {
         setBlockState(x, y, z, blockstate, 0);
     }
+
+    /**
+     * Gets the first free Y above the highest precipitation obstruction.
+     *
+     * @param x the x 0~15
+     * @param z the z 0~15
+     * @return the first free precipitation Y
+     */
+    int getRainHeight(int x, int z);
 
     /**
      * @param x the x 0~15
@@ -142,22 +189,40 @@ public interface IChunk {
     void setBlockLight(int x, int y, int z, int level);
 
     /**
-     * Get a heightmap in this section coordinates, which is the highest block height
+     * Gets the first free Y above the highest heightmap blocker, matching BDS heightmap semantics.
      *
      * @param x the x 0~15
      * @param z the z 0~15
-     * @return the height map
+     * @return the first free Y
      */
     int getHeightMap(int x, int z);
 
     /**
-     * Sets height map for this coordinate,which is the highest block height
+     * Sets the first free Y above the highest heightmap blocker.
+     *
+     * @param x     the x 0~15
+     * @param z     the z 0~15
+     * @param value the first free Y
+     */
+    void setHeightMap(int x, int z, int value);
+
+    /**
+     * Gets the render height map for this coordinate.
+     *
+     * @param x the x 0~15
+     * @param z the z 0~15
+     * @return the render height map
+     */
+    int getRenderHeightMap(int x, int z);
+
+    /**
+     * Sets the render height map for this coordinate.
      *
      * @param x     the x 0~15
      * @param z     the z 0~15
      * @param value the value
      */
-    void setHeightMap(int x, int z, int value);
+    void setRenderHeightMap(int x, int z, int value);
 
     /**
      * Recalculate height map for this chunk.
@@ -169,6 +234,12 @@ public interface IChunk {
      */
     int recalculateHeightMapColumn(@Range(from = 0, to = 15) int x, @Range(from = 0, to = 15) int z);
 
+    /**
+     * Performs the legacy direct skylight population pass.
+     *
+     * @deprecated Initial lighting is managed by the chunk lighting pipeline.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     void populateSkyLight();
 
     /**
@@ -184,13 +255,55 @@ public interface IChunk {
 
     boolean isLightPopulated();
 
+    /**
+     * Sets the legacy light-populated state directly.
+     *
+     * @deprecated Use the chunk lighting state lifecycle instead.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     void setLightPopulated(boolean value);
 
+    /**
+     * Marks the legacy light-populated state as complete.
+     *
+     * @deprecated Use the chunk lighting state lifecycle instead.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     void setLightPopulated();
 
-    ChunkState getChunkState();
+    /**
+     * Returns the transient runtime generation-tree state.
+     *
+     * @return runtime generation state
+     */
+    @ApiStatus.Internal
+    ChunkGenerationState getGenerationState();
 
-    void setChunkState(ChunkState chunkState);
+    /**
+     * Returns the persisted chunk finalization state.
+     *
+     * @return finalization state
+     */
+    ChunkFinalizationState getFinalizationState();
+
+    /**
+     * Sets the persisted chunk finalization state.
+     *
+     * @param finalizationState finalization state
+     */
+    void setFinalizationState(
+            ChunkFinalizationState finalizationState
+    );
+
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    default ChunkState getChunkState() {
+        return ChunkState.fromFinalizationState(this.getFinalizationState());
+    }
+
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    default void setChunkState(ChunkState chunkState) {
+        this.setFinalizationState(chunkState.toFinalizationState());
+    }
 
     void addEntity(Entity entity);
 
@@ -209,6 +322,18 @@ public interface IChunk {
     void doMobSpawning();
 
     BlockUpdateScheduler getBlockUpdateScheduler();
+
+    /**
+     * Returns the scheduler for persisted random block updates.
+     *
+     * @return random block update scheduler
+     */
+    RandomBlockUpdateScheduler getRandomBlockUpdateScheduler();
+
+    /**
+     * Advances and returns the Bedrock per-chunk snow random value.
+     */
+    int nextSnowRandomValue();
 
     Map<Long, BlockEntity> getBlockEntities();
 
@@ -241,6 +366,31 @@ public interface IChunk {
     CompoundTag getExtraData();
 
     void setExtraData(CompoundTag extraData);
+
+    /**
+     * Returns this chunk's LevelChunkMetaData reference state.
+     */
+    LevelChunkMetaData getLevelChunkMetaData();
+
+    /**
+     * Replaces this chunk's LevelChunkMetaData reference state.
+     */
+    void setLevelChunkMetaData(LevelChunkMetaData levelChunkMetaData);
+
+    /**
+     * Returns the AABBVolumes data associated with this chunk.
+     */
+    AabbVolumes getAabbVolumes();
+
+    /**
+     * Replaces the AABBVolumes data associated with this chunk.
+     */
+    void setAabbVolumes(AabbVolumes aabbVolumes);
+
+    /**
+     * Returns the persisted Bedrock biome state associated with this chunk.
+     */
+    BiomeState getBiomeState();
 
     boolean hasChanged();
 
@@ -276,37 +426,33 @@ public interface IChunk {
         return getProvider().isTheEnd();
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     default boolean isGenerated() {
-        return this.getChunkState().ordinal() >= ChunkState.GENERATED.ordinal();
+        return this.getFinalizationState() != ChunkFinalizationState.NEEDS_INSTATICKING;
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     default boolean isPopulated() {
-        return this.getChunkState().ordinal() >= ChunkState.POPULATED.ordinal();
+        return this.getFinalizationState() == ChunkFinalizationState.DONE;
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     default boolean isFinished() {
-        return this.getChunkState().ordinal() == ChunkState.FINISHED.ordinal();
+        return this.getFinalizationState() == ChunkFinalizationState.DONE;
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     default void setGenerated() {
-        setChunkState(ChunkState.GENERATED);
+        setFinalizationState(ChunkFinalizationState.NEEDS_POPULATION);
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     default void setPopulated() {
-        setChunkState(ChunkState.POPULATED);
+        setFinalizationState(ChunkFinalizationState.DONE);
     }
 
-    boolean areBorderBlockColumnsInitialized();
-
-    void rebuildBorderBlockColumns();
-
-    void invalidateBorderBlockColumns();
-
-    long getBorderColumnsLow();
-
-    long getBorderColumnsMidLow();
-
-    long getBorderColumnsMidHigh();
-
-    long getBorderColumnsHigh();
+    /**
+     * Returns whether the specified local X/Z column contains a Border Block.
+     */
+    boolean hasBorderBlock(int localX, int localZ);
 }

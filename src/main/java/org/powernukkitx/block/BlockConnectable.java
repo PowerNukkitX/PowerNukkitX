@@ -13,6 +13,15 @@ public interface BlockConnectable {
 
     boolean canConnect(Block block);
 
+    /**
+     * Recomputes the persisted connection states from the surrounding blocks.
+     *
+     * @return whether any connection state changed
+     */
+    default boolean updateConnections() {
+        return HorizontalConnections.configure((Block & BlockConnectable) this);
+    }
+
     default boolean isStraight() {
         Set<BlockFace> connections = getConnections();
         if (connections.size() != 2) {

@@ -68,7 +68,7 @@ public class ChunkTest {
         IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
         levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
         chunk.recalculateHeightMap();
-        Assertions.assertEquals(4, chunk.getHeightMap(0, 0));
+        Assertions.assertEquals(5, chunk.getHeightMap(0, 0));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ChunkTest {
         IChunk chunk = levelDBProvider.getChunk(1000, 1000, true);
         levelDBProvider.getLevel().syncGenerateChunk(1000, 1000);
         chunk.recalculateHeightMapColumn(0, 0);
-        Assertions.assertEquals(4, chunk.getHeightMap(0, 0));
+        Assertions.assertEquals(5, chunk.getHeightMap(0, 0));
     }
 
     @Test

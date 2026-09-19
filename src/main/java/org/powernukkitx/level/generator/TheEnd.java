@@ -16,6 +16,7 @@ import org.powernukkitx.level.generator.stages.FinishedStage;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.random.Xoroshiro128;
 
+import java.util.List;
 import java.util.Map;
 
 public class TheEnd extends PopulatedGenerator implements BiomedGenerator {
@@ -33,6 +34,44 @@ public class TheEnd extends PopulatedGenerator implements BiomedGenerator {
         builder.next(Registries.GENERATE_STAGE.get(TheEndPopulatorStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
+    }
+
+    @Override
+    public List<ChunkGenerationTask> getGenerationTasks() {
+        return List.of(
+                new ChunkGenerationTask(
+                        "Chunk Gen",
+                        ChunkGenerationState.NEEDS_GENERATION,
+                        ChunkGenerationState.GENERATING,
+                        ChunkGenerationState.NEEDS_POPULATION,
+                        ChunkGenerationState.NEEDS_GENERATION,
+                        BiomeMapStage.NAME,
+                        GeneratedStage.NAME,
+                        ChunkGenerationDependency.NONE
+                ),
+
+                new ChunkGenerationTask(
+                        "Chunk PP",
+                        ChunkGenerationState.NEEDS_POPULATION,
+                        ChunkGenerationState.POPULATING,
+                        ChunkGenerationState.NEEDS_CFRD,
+                        ChunkGenerationState.NEEDS_POPULATION,
+                        TheEndPopulatorStage.NAME,
+                        TheEndPopulatorStage.NAME,
+                        ChunkGenerationDependency.NEIGHBORHOOD_PRESENT
+                ),
+
+                new ChunkGenerationTask(
+                        "Chunk CFRD",
+                        ChunkGenerationState.NEEDS_CFRD,
+                        ChunkGenerationState.CFRD,
+                        ChunkGenerationState.COMPLETE,
+                        ChunkGenerationState.NEEDS_CFRD,
+                        LightPopulationStage.NAME,
+                        FinishedStage.NAME,
+                        ChunkGenerationDependency.NEIGHBORHOOD_PRESENT
+                )
+        );
     }
 
     @Override

@@ -15,6 +15,7 @@ import org.powernukkitx.level.GameRule;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.registry.Registries;
 
@@ -39,7 +40,10 @@ import java.util.Set;
  * @since 29/07/2026
  */
 public class PlayerRecipeBook implements InventoryListener {
-    private static final String UNLOCKED_RECIPES_TAG = "UnlockedRecipes";
+    private static final String RECIPE_UNLOCKING_TAG = "recipe_unlocking";
+    private static final String UNLOCKED_RECIPES_TAG = "unlocked_recipes";
+    private static final String USED_CONTEXTS_TAG = "used_contexts";
+    private static final int DEFAULT_USED_CONTEXTS = 2;
 
     private final Player player;
     private final Set<String> unlockedRecipes = new ObjectOpenHashSet<>();
@@ -77,28 +81,46 @@ public class PlayerRecipeBook implements InventoryListener {
      */
     public void load(@NotNull CompoundTag nbt) {
         this.unlockedRecipes.clear();
-        if (!nbt.contains(UNLOCKED_RECIPES_TAG)) {
+
+        if (!nbt.containsCompound(RECIPE_UNLOCKING_TAG)) {
             return;
         }
-        for (StringTag tag : nbt.getList(UNLOCKED_RECIPES_TAG, StringTag.class).getAll()) {
+
+        final CompoundTag recipeUnlocking = nbt.getCompound(RECIPE_UNLOCKING_TAG);
+
+        for (StringTag tag : recipeUnlocking.getList(UNLOCKED_RECIPES_TAG, StringTag.class).getAll()) {
             this.unlockedRecipes.add(tag.parseValue());
         }
     }
 
     /**
-     * Writes the unlocked recipe ids into the player's root tag.
+     * Writes the unlocked recipe ids into the player's recipe state.
      *
      * @param nbt the player's root tag
      */
     public void save(@NotNull CompoundTag nbt) {
-        if (this.unlockedRecipes.isEmpty() && !nbt.contains(UNLOCKED_RECIPES_TAG)) {
+        if (this.unlockedRecipes.isEmpty() && !nbt.containsCompound(RECIPE_UNLOCKING_TAG)) {
             return;
         }
-        final ListTag<StringTag> list = new ListTag<>();
+
+        final boolean hadRecipeUnlocking = nbt.containsCompound(RECIPE_UNLOCKING_TAG);
+        final CompoundTag recipeUnlocking = hadRecipeUnlocking
+                ? nbt.getCompound(RECIPE_UNLOCKING_TAG).copy()
+                : new CompoundTag();
+
+        final ListTag<StringTag> list = new ListTag<>(Tag.TAG_String);
+
         for (String recipeId : this.unlockedRecipes) {
             list.add(new StringTag(recipeId));
         }
-        nbt.putList(UNLOCKED_RECIPES_TAG, list);
+
+        recipeUnlocking.putList(UNLOCKED_RECIPES_TAG, list);
+
+        if (!hadRecipeUnlocking) {
+            recipeUnlocking.putInt(USED_CONTEXTS_TAG, DEFAULT_USED_CONTEXTS);
+        }
+
+        nbt.putCompound(RECIPE_UNLOCKING_TAG, recipeUnlocking);
     }
 
     /**

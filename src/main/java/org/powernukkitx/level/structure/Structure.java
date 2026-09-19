@@ -3,7 +3,6 @@ package org.powernukkitx.level.structure;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
 import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.block.BlockState;
@@ -20,7 +19,6 @@ import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.StructureRotationUtil;
 
@@ -36,7 +34,6 @@ import java.util.concurrent.CompletableFuture;
  * @source <a href="https://github.com/AllayMC/Allay/blob/e86e4c950a360aa725fca913452d01d3037cea5a/api/src/main/java/org/allaymc/api/utils/Structure.java">AllayMC</a>
  */
 
-@Slf4j
 @Getter
 @ToString
 public class Structure extends AbstractStructure {
@@ -287,24 +284,15 @@ public class Structure extends AbstractStructure {
         for (var nbt : entities) {
             CompoundTag entityNbt = new CompoundTag(new HashMap<>(nbt.getTags()));
 
-            List<Double> posList = new ArrayList<>();
+            ListTag<FloatTag> posList =
+                    entityNbt.getList(
+                            "Pos",
+                            FloatTag.class
+                    );
 
-            if(entityNbt.getList("Pos").get(0).getId() == Tag.TAG_Double) {
-                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(0).getData());
-                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(1).getData());
-                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(2).getData());
-            } else if(entityNbt.getList("Pos").get(0).getId() == Tag.TAG_Float) {
-                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(0).getData());
-                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(1).getData());
-                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(2).getData());
-            } else {
-                log.error("Unknown Pos tag type: {}", entityNbt.getList("Pos").get(0).getId());
-                continue;
-            }
-
-            double origX = posList.get(0);
-            double origY = posList.get(1);
-            double origZ = posList.get(2);
+            double origX = posList.get(0).getData();
+            double origY = posList.get(1).getData();
+            double origZ = posList.get(2).getData();
 
             double relX = origX - this.x;
             double relY = origY - this.y;
@@ -314,20 +302,14 @@ public class Structure extends AbstractStructure {
             double newY = relY + y;
             double newZ = relZ + z;
 
-            entityNbt.putList("Pos", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(newX))
-                    .add(new DoubleTag(newY))
-                    .add(new DoubleTag(newZ))
-            ).putList("Motion", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0)));
-
-            if(!entityNbt.contains("Rotation")) {
-                entityNbt.putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(0))
-                        .add(new FloatTag(0)));
-            }
+            entityNbt.putList("Pos", new ListTag<FloatTag>()
+                    .add(new FloatTag((float) newX))
+                    .add(new FloatTag((float) newY))
+                    .add(new FloatTag((float) newZ))
+            ).putList("Motion", new ListTag<FloatTag>()
+                    .add(new FloatTag(0))
+                    .add(new FloatTag(0))
+                    .add(new FloatTag(0)));
 
             Entity e = Entity.createEntity(
                     entityNbt.getString("identifier"),

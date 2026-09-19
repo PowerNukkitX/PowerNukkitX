@@ -15,10 +15,15 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
  */
 public final class BlockLightProperties {
 
-    // Packed layout (int): bits 0-7 lightLevel, bits 8-15 lightFilter, bit 16 diffusesSkyLight, bit 17 isTransparent.
+    // Packed layout (int):
+    // bits 0-7 lightLevel, bits 8-15 lightFilter,
+    // bit 16 diffusesSkyLight, bit 17 isTransparent,
+    // bit 18 isHalfSlab, bit 19 isWater.
     private static final int FILTER_SHIFT = 8;
     private static final int DIFFUSES_BIT = 1 << 16;
     private static final int TRANSPARENT_BIT = 1 << 17;
+    private static final int HALF_SLAB_BIT = 1 << 18;
+    private static final int WATER_BIT = 1 << 19;
     private static final int BYTE_MASK = 0xFF;
 
     private static volatile Int2IntOpenHashMap table;
@@ -28,10 +33,11 @@ public final class BlockLightProperties {
     }
 
     private static int packOf(Block block) {
-        int packed = (block.getLightLevel() & BYTE_MASK)
-                | ((block.getLightFilter() & BYTE_MASK) << FILTER_SHIFT);
+        int packed = (block.getLightLevel() & BYTE_MASK) | ((block.getLightFilter() & BYTE_MASK) << FILTER_SHIFT);
         if (block.diffusesSkyLight()) packed |= DIFFUSES_BIT;
         if (block.isTransparent()) packed |= TRANSPARENT_BIT;
+        if (block instanceof BlockSlab) packed |= HALF_SLAB_BIT;
+        if (block instanceof BlockFlowingWater) packed |= WATER_BIT;
         return packed;
     }
 
@@ -80,7 +86,8 @@ public final class BlockLightProperties {
 
     /**
      * @return the packed lighting properties for {@code state}; decode with {@link #lightLevel(int)},
-     * {@link #lightFilter(int)}, {@link #diffusesSkyLight(int)}, {@link #isTransparent(int)}.
+     * {@link #lightFilter(int)}, {@link #diffusesSkyLight(int)}, {@link #isTransparent(int)},
+     * {@link #isHalfSlab(int)} and {@link #isWater(int)}.
      */
     public static int packed(BlockState state) {
         int packed = table().get(state.blockStateHash());
@@ -105,5 +112,46 @@ public final class BlockLightProperties {
 
     public static boolean isTransparent(int packed) {
         return (packed & TRANSPARENT_BIT) != 0;
+    }
+
+    /**
+     * Returns whether the packed light properties represent a half slab.
+     *
+     * @param packed packed light properties
+     * @return whether the half-slab flag is set
+     */
+    public static boolean isHalfSlab(int packed) {
+        return (packed & HALF_SLAB_BIT) != 0;
+    }
+
+    /**
+     * Returns whether the packed light properties represent water.
+     *
+     * @param packed packed light properties
+     * @return whether the water flag is set
+     */
+    public static boolean isWater(int packed) {
+        return (packed & WATER_BIT) != 0;
+    }
+
+    /**
+     * Returns whether the block contributes to the normal chunk heightmap.
+     *
+     * The primary layer also treats slabs as heightmap blockers, matching the
+     * existing PNX heightmap calculation.
+     */
+    public static boolean contributesToHeightMap(int packed, boolean primaryLayer) {
+        return lightFilter(packed) > 0 || primaryLayer && isHalfSlab(packed);
+    }
+
+    /**
+     * Returns whether the block state contributes to the normal chunk heightmap.
+     *
+     * @param state block state
+     * @param primaryLayer whether the state belongs to the primary storage layer
+     * @return whether the state contributes to the heightmap
+     */
+    public static boolean contributesToHeightMap(BlockState state, boolean primaryLayer) {
+        return state != BlockAir.STATE && contributesToHeightMap(packed(state), primaryLayer);
     }
 }

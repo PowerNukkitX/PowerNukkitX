@@ -17,7 +17,7 @@ public abstract class RandomizableContainer {
     protected final Map<List<ItemEntry>, RollEntry> pools;
 
     public RandomizableContainer() {
-        this.pools = Maps.newHashMap();
+        this.pools = Maps.newLinkedHashMap();
     }
 
     public void create(Inventory inventory, RandomSourceProvider random) {

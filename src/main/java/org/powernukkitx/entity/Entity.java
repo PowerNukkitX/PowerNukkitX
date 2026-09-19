@@ -51,7 +51,9 @@ import org.powernukkitx.level.Location;
 import org.powernukkitx.level.ParticleEffect;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
+import org.powernukkitx.level.format.ChunkFinalizationState;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.particle.ExplodeParticle;
 import org.powernukkitx.level.particle.HappyVillagerParticle;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -67,25 +69,22 @@ import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.metadata.MetadataValue;
 import org.powernukkitx.metadata.Metadatable;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.NumberTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.plugin.Plugin;
 import org.powernukkitx.registry.EntityRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.Task;
 import org.powernukkitx.tags.ItemTags;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.powernukkitx.utils.ChunkException;
+import org.powernukkitx.utils.DynamicProperties;
 import org.powernukkitx.utils.Hash;
 import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.PortalHelper;
 import org.powernukkitx.utils.TextFormat;
 import org.powernukkitx.utils.Utils;
-import com.google.common.collect.Iterables;
-import lombok.extern.slf4j.Slf4j;
+
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
 import org.cloudburstmc.protocol.bedrock.data.ActorSwingSource;
@@ -102,6 +101,11 @@ import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import com.google.common.collect.Iterables;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.util.*;
@@ -128,11 +132,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /**
      * Who is this entity riding on
      */
-    public static final String NBT_RIDING_UUID = "RidingUUID";
+    public static final String NBT_LINKS_TAG = "LinksTag";
+    public static final String NBT_LINK_ENTITY_ID = "entityID";
+    public static final String NBT_LINK_ID = "linkID";
     public final float SEATED_FACTOR = 0.75308642f;
     public Entity riding = null;
     private int passengerCount = 0;
-    protected int restoreMountTries = 0;
+    private final Map<Long, Integer> persistedActorLinkIds = new HashMap<>();
+    private boolean actorLinksDirty = false;
     protected Vector3f seatRawOffset;
 
     /**
@@ -155,6 +162,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected float lavaMovementSpeed = (this instanceof EntityLiving) ? DEFAULT_LAVA_MOVEMENT_SPEED : 0;
 
     protected static final String NBT_SOUND_VARIANT = "sound_variant";
+    public static final String NBT_PNX_CUSTOM = "PNXCustom";
+    public static final String PNX_CUSTOM_UUID = "uuid";
 
     public final static int DEFAULT_HEALTH = 20;
 
@@ -195,6 +204,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public int lastUpdate;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
+    protected int portalCooldown = 0;
+    protected int portalCooldownDuration = 300;
     public int freezingTicks = 0;//0 - 140
     public float scale = 1;
     protected CompoundTag nbt;
@@ -217,11 +228,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public boolean inBubbleColumn = false;
     /**
-     * spawned by server
+     * Legacy PNX entity UUID alias.
      * <p>
-     * player's UUID is sent by client,so this value cannot be used in Player
+     * UUID is no longer generated automatically and is not part of the canonical actor identity.
+     *
+     * @deprecated Use {@link #uniqueId()} for actor identity or {@link #getUUID()}
+     * for optional custom UUID data.
      */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     protected UUID entityUniqueId;
+    /**
+     * Optional custom UUID explicitly managed through the UUID APIs.
+     */
+    protected UUID entityCustomUUID;
+    /**
+     * Persistent ActorUniqueID used by modern actor storage.
+     */
+    protected long uniqueId;
     /**
      * Runtime entity ID used by the current server process.
      */
@@ -253,6 +276,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     private final Map<String, Float> floatProperties = new LinkedHashMap<>();
     private transient volatile PropertySyncData clientSyncPropertiesCache;
     protected final Map<Integer, Attribute> attributes = new HashMap<>();
+    private final List<String> definitions = new ArrayList<>();
 
     protected static final int DEFAULT_SOFT_DESPAWN_DISTANCE = 74;
     protected static final int DEFAULT_HARD_DESPAWN_DISTANCE = 128;
@@ -300,6 +324,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
+     * Returns the persistent entity UniqueID.
+     * <p>
+     * This ID is persisted across server restarts and is used by actor storage.
+     *
+     * @return persistent entity ID
+     */
+    public String uniqueId() {
+        return Long.toString(this.uniqueId);
+    }
+
+    /**
+     * Returns the persistent entity UniqueID as its native numeric value.
+     *
+     * @return persistent entity ID
+     */
+    public long uniqueIdLong() {
+        return this.uniqueId;
+    }
+
+    /**
      * Returns the runtime entity ID.
      * <p>
      * This ID is valid only for the current server runtime and may
@@ -312,10 +356,126 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
-     * Gets unique id(UUID)
+     * Returns an NBT copy for creating a distinct new actor.
+     * The persistent ActorUniqueID is intentionally not copied.
+     *
+     * @return NBT copy without the source actor UniqueID
      */
+    public CompoundTag copyNBTForNewActor() {
+        CompoundTag copy = this.nbt.copy();
+        copy.remove("UniqueID");
+        return copy;
+    }
+
+    /**
+     * Sets an optional custom UUID for this entity.
+     * <p>
+     * This UUID is stored as custom PNX data and is not part of the
+     * actor identity. Setting it does not change {@link #uniqueId()} or
+     * {@link #runtimeId()}.
+     *
+     * @param uuid custom UUID to store
+     */
+    public void setUUID(@NotNull UUID uuid) {
+        if (this instanceof EntityHuman) {
+            throw new UnsupportedOperationException("EntityHuman UUID is managed by the human/player identity");
+        }
+
+        Objects.requireNonNull(uuid, "uuid");
+
+        CompoundTag customData = this.getUuidCustomData();
+        customData.putString(PNX_CUSTOM_UUID, uuid.toString());
+        this.setUuidCustomData(customData);
+
+        this.entityCustomUUID = uuid;
+        this.entityUniqueId = uuid;
+
+        if (this.nbt != null) {
+            this.nbt.remove("uuid");
+        }
+    }
+
+    /**
+     * Generates and stores a new optional custom UUID for this entity.
+     * <p>
+     * This does not change the canonical persistent ActorUniqueID.
+     *
+     * @return generated custom UUID
+     */
+    @NotNull
+    public UUID generateUUID() {
+        if (this instanceof EntityHuman) {
+            throw new UnsupportedOperationException("EntityHuman UUID is managed by the human/player identity");
+        }
+
+        UUID uuid = UUID.randomUUID();
+        this.setUUID(uuid);
+        return uuid;
+    }
+
+    /**
+     * Returns the optional custom UUID associated with this entity.
+     *
+     * @return custom UUID, or {@code null} when none has been explicitly set
+     */
+    @Nullable
+    public UUID getUUID() {
+        return this.entityCustomUUID;
+    }
+
+    /**
+     * Removes the optional custom UUID from this entity.
+     *
+     * @return previously stored custom UUID, or {@code null} when none was set
+     */
+    @Nullable
+    public UUID removeUUID() {
+        if (this instanceof EntityHuman) {
+            throw new UnsupportedOperationException("EntityHuman UUID is managed by the human/player identity");
+        }
+
+        UUID previous = this.entityCustomUUID;
+
+        CompoundTag customData = this.getUuidCustomData();
+        customData.remove(PNX_CUSTOM_UUID);
+        this.setUuidCustomData(customData);
+
+        this.entityCustomUUID = null;
+        this.entityUniqueId = null;
+
+        if (this.nbt != null) {
+            this.nbt.remove("uuid");
+        }
+
+        return previous;
+    }
+
+    /**
+     * Returns the legacy PNX entity UUID.
+     * <p>
+     * Entity UUIDs are obsolete as actor identity and are no longer generated
+     * automatically. New entities therefore return {@code null} unless a custom
+     * UUID has explicitly been assigned.
+     * <p>
+     * For optional custom UUID data, use:
+     * <ul>
+     *     <li>{@link #setUUID(UUID)} to set a predefined UUID.</li>
+     *     <li>{@link #generateUUID()} to generate and store a UUID.</li>
+     *     <li>{@link #getUUID()} to retrieve the custom UUID.</li>
+     *     <li>{@link #removeUUID()} to remove and return the custom UUID.</li>
+     * </ul>
+     * <p>
+     * This UUID is not part of the canonical actor identity.
+     * Use {@link #uniqueId()} or {@link #uniqueIdLong()} for the persistent
+     * server ActorUniqueID instead.
+     *
+     * @return legacy/custom PNX entity UUID, or {@code null} when none is set
+     * @deprecated Use {@link #uniqueId()} for actor identity or {@link #getUUID()}
+     * for optional custom UUID data.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public UUID getUniqueId() {
-        return this.entityUniqueId;
+        return this.getUUID();
     }
 
     /**
@@ -396,6 +556,75 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
+     * Creates an entity using a predefined persistent ActorUniqueID.
+     * <p>
+     * The provided ID is placed into the entity NBT before initialization so
+     * the entity uses it from the beginning of its lifecycle, including the
+     * spawn event and all subsequent network packets.
+     * <p>
+     * The caller is responsible for ensuring that the provided ID does not
+     * conflict with another persistent actor.
+     *
+     * @param identifier entity identifier
+     * @param pos entity position
+     * @param uniqueId predefined persistent ActorUniqueID
+     * @param args additional entity constructor arguments
+     * @return created entity, or {@code null} when the identifier cannot be resolved
+     */
+    @Nullable
+    public static Entity createEntityWithUniqueId(@NotNull Identifier identifier, @NotNull Position pos, long uniqueId, @Nullable Object... args) {
+        return createEntityWithUniqueId(identifier.toString(), Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), uniqueId, args);
+    }
+
+    /**
+     * @see #createEntityWithUniqueId(Identifier, Position, long, Object...)
+     */
+    @Nullable
+    public static Entity createEntityWithUniqueId(@NotNull String identifier, @NotNull Position pos, long uniqueId, @Nullable Object... args) {
+        return createEntityWithUniqueId(identifier, Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), uniqueId, args);
+    }
+
+    /**
+     * @see #createEntityWithUniqueId(Identifier, Position, long, Object...)
+     */
+    @Nullable
+    public static Entity createEntityWithUniqueId(int type, @NotNull Position pos, long uniqueId, @Nullable Object... args) {
+        String entityIdentifier = Registries.ENTITY.getEntityIdentifier(type);
+        if (entityIdentifier == null) return null;
+        return createEntityWithUniqueId(entityIdentifier, Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), uniqueId, args);
+    }
+
+    /**
+     * Creates an entity from existing NBT using a predefined persistent ActorUniqueID.
+     *
+     * @param identifier entity identifier
+     * @param chunk entity chunk
+     * @param nbt entity NBT
+     * @param uniqueId predefined persistent ActorUniqueID
+     * @param args additional entity constructor arguments
+     * @return created entity
+     */
+    @Nullable
+    public static Entity createEntityWithUniqueId(@NotNull String identifier, @NotNull IChunk chunk, @NotNull CompoundTag nbt, long uniqueId, @Nullable Object... args) {
+        if (uniqueId == 0) {
+            throw new IllegalArgumentException("Persistent ActorUniqueID cannot be 0");
+        }
+
+        nbt.putLong("UniqueID", uniqueId);
+        return createEntity(identifier, chunk, nbt, args);
+    }
+
+    /**
+     * @see #createEntityWithUniqueId(String, IChunk, CompoundTag, long, Object...)
+     */
+    @Nullable
+    public static Entity createEntityWithUniqueId(int type, @NotNull IChunk chunk, @NotNull CompoundTag nbt, long uniqueId, @Nullable Object... args) {
+        String entityIdentifier = Registries.ENTITY.getEntityIdentifier(type);
+        if (entityIdentifier == null) return null;
+        return createEntityWithUniqueId(entityIdentifier, chunk, nbt, uniqueId, args);
+    }
+
+    /**
      * Get the identifier of the specified network id entity
      *
      * @return the identifier
@@ -438,14 +667,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     @NotNull
     public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
         return new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(pos.x))
-                        .add(new DoubleTag(pos.y))
-                        .add(new DoubleTag(pos.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(motion != null ? motion.x : 0))
-                        .add(new DoubleTag(motion != null ? motion.y : 0))
-                        .add(new DoubleTag(motion != null ? motion.z : 0)))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag((float) pos.x))
+                        .add(new FloatTag((float) pos.y))
+                        .add(new FloatTag((float) pos.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag((float) (motion != null ? motion.x : 0)))
+                        .add(new FloatTag((float) (motion != null ? motion.y : 0)))
+                        .add(new FloatTag((float) (motion != null ? motion.z : 0))))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(yaw))
                         .add(new FloatTag(pitch)));
@@ -485,6 +714,72 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     @NotNull
     public abstract String getIdentifier();
+
+    /**
+     * Returns the ordered Bedrock component-group definition states.
+     *
+     * @return immutable ordered definition state list
+     */
+    public List<String> getDefinitions() {
+        return List.copyOf(this.definitions);
+    }
+
+    /**
+     * Returns whether a component-group definition is currently active.
+     *
+     * @param definition component-group identifier without a state prefix
+     * @return whether the definition is active
+     */
+    public boolean hasDefinition(@NotNull String definition) {
+        definition = checkDefinitionIdentifier(definition);
+        int index = findDefinitionIndex(definition);
+        return index >= 0 && this.definitions.get(index).charAt(0) == '+';
+    }
+
+    /**
+     * Activates a component-group definition.
+     *
+     * @param definition component-group identifier without a state prefix
+     */
+    public void addDefinition(@NotNull String definition) {
+        setDefinitionState(checkDefinitionIdentifier(definition), true);
+    }
+
+    /**
+     * Deactivates a component-group definition while preserving its ordered entry.
+     *
+     * @param definition component-group identifier without a state prefix
+     */
+    public void removeDefinition(@NotNull String definition) {
+        setDefinitionState(checkDefinitionIdentifier(definition), false);
+    }
+
+    private static String checkDefinitionIdentifier(String definition) {
+        Preconditions.checkArgument(definition != null && !definition.isBlank(), "definition cannot be null or blank");
+        Preconditions.checkArgument(definition.charAt(0) != '+' && definition.charAt(0) != '-', "definition must not include a state prefix");
+        return definition;
+    }
+
+    private int findDefinitionIndex(String definition) {
+        for (int i = this.definitions.size() - 1; i >= 0; i--) {
+            String current = this.definitions.get(i);
+            if (current.length() != definition.length() + 1) continue;
+            char state = current.charAt(0);
+            if ((state == '+' || state == '-') && current.regionMatches(1, definition, 0, definition.length())) return i;
+        }
+        return -1;
+    }
+
+    private void setDefinitionState(String definition, boolean active) {
+        char state = active ? '+' : '-';
+        int index = findDefinitionIndex(definition);
+
+        if (index >= 0 && this.definitions.get(index).charAt(0) == state) return;
+        if (index < 0 && !active) return;
+
+        this.definitions.add(state + definition);
+        if (this.chunk != null) this.chunk.setChanged();
+    }
 
     public float getCurrentHeight() {
         if (isSwimming()) {
@@ -591,7 +886,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void setPersistent(boolean persistent) {
         this.despawnable = !persistent;
-        nbt.putBoolean("Persistent", persistent);
+        if (persistent) nbt.putBoolean("Persistent", true);
+        else nbt.remove("Persistent");
     }
 
     public boolean isInvulnerable() {
@@ -610,16 +906,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     protected void initEntity() {
         // =========================================================
-        // Load or generate UUID for non-player entities
+        // Load or generate persistent entity UniqueID
         // =========================================================
         final CompoundTag nbtMap = this.getNbt();
-        if (!(this instanceof Player)) {
-            if (this.nbt.contains("uuid")) {
-                this.entityUniqueId = UUID.fromString(nbtMap.getString("uuid"));
+        if (this instanceof Player player) {
+            this.uniqueId = this.server.requirePlayerUniqueId(player.getUniqueId(), this.nbt);
+        } else {
+            if (this.nbt.contains("UniqueID") && this.nbt.getLong("UniqueID") != 0) {
+                this.uniqueId = this.nbt.getLong("UniqueID");
             } else {
-                this.entityUniqueId = UUID.randomUUID();
+                this.uniqueId = this.level.getNewUniqueID();
+                this.nbt.putLong("UniqueID", this.uniqueId);
             }
         }
+
+        this.entityCustomUUID = this.readCustomUUID();
+        this.entityUniqueId = this.entityCustomUUID;
 
         // =========================================================
         // Initialize entity data defaults first
@@ -670,20 +972,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
 
         // =========================================================
-        // Load Attributes from NBT
-        // =========================================================
-        if (this.nbt.contains("Attributes")) {
-            ListTag<CompoundTag> attributes = nbtMap.getList("Attributes", CompoundTag.class);
-            for (var nbt : attributes.getAll()) {
-                Attribute attribute = Attribute.fromNBT(nbt);
-                this.attributes.put(attribute.getId(), attribute);
-            }
-        }
-        this.applyInitialHealth();
-        this.applyInitialRideJumpStrength();
-        this.applyInitialMovementSpeed();
-
-        // =========================================================
         // Send initial data + default flags
         // =========================================================
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), actorDataMap);
@@ -713,26 +1001,43 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.justCreated = true;
         this.nbt = nbt;
 
-        // Restore entity properties from NBT (overwriting defaults)
-        if (this.nbt.contains("IntProperties")) {
-            CompoundTag intProps = this.nbt.getCompound("IntProperties");
-            for (Map.Entry<String, org.powernukkitx.nbt.tag.Tag> entry : intProps.getTags().entrySet()) {
-                String key = entry.getKey();
-                if (entry.getValue() instanceof NumberTag<?> numTag) {
-                    this.intProperties.put(key, numTag.getData().intValue());
+        ListTag<StringTag> definitionsTag = this.nbt.getList("definitions", StringTag.class);
+        for (StringTag definition : definitionsTag.getAll()) {
+            this.definitions.add(definition.data);
+        }
+        if (this.definitions.size() == 0) {
+            this.definitions.add("+" + this.getIdentifier());
+        }
+
+        // Restore entity properties from NBT
+        if (this.nbt.containsCompound("properties")) {
+            CompoundTag properties = this.nbt.getCompound("properties");
+
+            for (EntityProperty property : EntityProperty.getEntityProperty(this.getIdentifier())) {
+                String identifier = property.getIdentifier();
+
+                switch (property) {
+                    case FloatEntityProperty ignored -> {
+                        if (properties.containsNumber(identifier)) this.floatProperties.put(identifier, properties.getFloat(identifier));
+                    }
+                    case IntEntityProperty ignored -> {
+                        if (properties.containsNumber(identifier)) this.intProperties.put(identifier, properties.getInt(identifier));
+                    }
+                    case BooleanEntityProperty ignored -> {
+                        if (properties.containsNumber(identifier)) this.intProperties.put(identifier, properties.getBoolean(identifier) ? 1 : 0);
+                    }
+                    case EnumEntityProperty enumProperty -> {
+                        if (properties.containsString(identifier)) {
+                            int index = enumProperty.findIndex(properties.getString(identifier));
+                            if (index >= 0) this.intProperties.put(identifier, index);
+                        }
+                    }
+                    default -> {
+                    }
                 }
             }
         }
 
-        if (this.nbt.contains("FloatProperties")) {
-            CompoundTag floatProps = this.nbt.getCompound("FloatProperties");
-            for (Map.Entry<String, org.powernukkitx.nbt.tag.Tag> entry : floatProps.getTags().entrySet()) {
-                String key = entry.getKey();
-                if (entry.getValue() instanceof NumberTag<?> numTag) {
-                    this.floatProperties.put(key, numTag.getData().floatValue());
-                }
-            }
-        }
         this.clientSyncPropertiesCache = null;
 
         this.chunk = chunk;
@@ -740,71 +1045,53 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.server = chunk.getProvider().getLevel().getServer();
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
-        ListTag<DoubleTag> posList = this.nbt.getList("Pos", DoubleTag.class);
+        ListTag<FloatTag> posList = this.nbt.getList("Pos", FloatTag.class);
+        ListTag<FloatTag> motionList = this.nbt.getList("Motion", FloatTag.class);
         ListTag<FloatTag> rotationList = this.nbt.getList("Rotation", FloatTag.class);
-        ListTag<DoubleTag> motionList = this.nbt.getList("Motion", DoubleTag.class);
+
         this.setPositionAndRotation(
                 this.temporalVector.setComponents(
-                        posList.get(0).data,
-                        posList.get(1).data,
-                        posList.get(2).data
+                        posList.size() > 0 ? posList.get(0).data : 0,
+                        posList.size() > 1 ? posList.get(1).data : 0,
+                        posList.size() > 2 ? posList.get(2).data : 0
                 ),
-                rotationList.get(0).data,
-                rotationList.get(1).data
+                rotationList.size() > 0 ? rotationList.get(0).data : 0,
+                rotationList.size() > 1 ? rotationList.get(1).data : 0
         );
 
         this.setMotion(this.temporalVector.setComponents(
-                motionList.get(0).data,
-                motionList.get(1).data,
-                motionList.get(2).data
+                motionList.size() > 0 ? motionList.get(0).data : 0,
+                motionList.size() > 1 ? motionList.get(1).data : 0,
+                motionList.size() > 2 ? motionList.get(2).data : 0
         ));
 
-        if (!this.nbt.contains("FallDistance")) {
-            this.nbt.putFloat("FallDistance", 0);
-        }
         this.fallDistance = this.nbt.getFloat("FallDistance");
-        this.highestPosition = this.y + this.nbt.getFloat("FallDistance");
-
-        if (!this.nbt.contains("Fire") || this.nbt.getShort("Fire") > 32767) {
-            this.nbt.putShort("Fire", 0);
-        }
+        this.highestPosition = this.y + this.fallDistance;
         this.fireTicks = this.nbt.getShort("Fire");
+        this.portalCooldown = this.nbt.getInt("PortalCooldown");
 
         if (!this.nbt.contains("Air")) {
             this.nbt.putShort("Air", 300);
         }
-        if (!this.nbt.contains("OnGround")) {
-            this.nbt.putBoolean("OnGround", false);
-        }
         this.onGround = this.nbt.getBoolean("OnGround");
-
-        if (!this.nbt.contains("Invulnerable")) {
-            this.nbt.putBoolean("Invulnerable", false);
-        }
         this.invulnerable = this.nbt.getBoolean("Invulnerable");
 
-        if (!this.nbt.contains("Scale")) {
-            this.nbt.putFloat("Scale", 1);
+        if (this.isPlayer) {
+            this.scale = 1f;
+            this.despawnable = false;
+        } else {
+            this.scale = this.nbt.containsNumber("Scale") ? this.nbt.getFloat("Scale") : 1f;
+            boolean persistent = (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) || this.nbt.getBoolean("Persistent");
+            this.despawnable = !persistent;
         }
-        this.scale = this.nbt.getFloat("Scale");
-        if (!this.nbt.contains("Despawnable")) {
-            boolean persistent =
-                    (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
-                            this.nbt.getBoolean("Persistent");
-
-            this.nbt.putBoolean("Despawnable", !persistent);
-        }
-        this.despawnable = this.nbt.getBoolean("Despawnable");
         try {
             this.initEntity();
-            if (this.initialized) {
-                // We've already initialized this entity
-                return;
-            }
+            if (this.initialized) return;
             this.initialized = true;
 
             this.chunk.addEntity(this);
             this.level.addEntity(this);
+            this.restoreActorLinksFromNBT();
 
             EntitySpawnEvent event = new EntitySpawnEvent(this);
             this.server.getPluginManager().callEvent(event);
@@ -1177,23 +1464,37 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 this.nbt.remove("CustomNameVisible");
                 this.nbt.remove("CustomNameAlwaysVisible");
             }
-            if (this.entityUniqueId == null) {
-                this.entityUniqueId = UUID.randomUUID();
+            if (this.uniqueId == 0) {
+                this.uniqueId = this.level.getNewUniqueID();
             }
-            this.nbt.putString("uuid", this.entityUniqueId.toString());
+            this.nbt.putLong("UniqueID", this.uniqueId);
+            saveActorLinks();
         }
 
-        this.nbt.putList("Pos", new ListTag<DoubleTag>()
-                .add(new DoubleTag(this.x))
-                .add(new DoubleTag(this.y))
-                .add(new DoubleTag(this.z))
+        if (this.definitions.size() == 0) {
+            this.definitions.add("+" + this.getIdentifier());
+        }
+        ListTag<StringTag> definitionsTag = new ListTag<>();
+        for (String definition : this.definitions) {
+            definitionsTag.add(new StringTag(definition));
+        }
+        this.nbt.putList("definitions", definitionsTag);
+
+        this.nbt.putList("Pos", new ListTag<FloatTag>()
+                .add(new FloatTag((float) this.x))
+                .add(new FloatTag((float) this.y))
+                .add(new FloatTag((float) this.z))
         );
 
-        this.nbt.putList("Motion", new ListTag<DoubleTag>()
-                .add(new DoubleTag(this.motionX))
-                .add(new DoubleTag(this.motionY))
-                .add(new DoubleTag(this.motionZ))
-        );
+        if (!this.onGround || (!(this instanceof EntityLiving) && !(this instanceof EntityArmorStand))) {
+            this.nbt.putList("Motion", new ListTag<FloatTag>()
+                    .add(new FloatTag((float) this.motionX))
+                    .add(new FloatTag((float) this.motionY))
+                    .add(new FloatTag((float) this.motionZ))
+            );
+        } else {
+            this.nbt.remove("Motion");
+        }
 
         this.nbt.putList("Rotation", new ListTag<FloatTag>()
                 .add(new FloatTag((float) this.yaw))
@@ -1202,11 +1503,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         this.nbt.putFloat("FallDistance", this.fallDistance);
         this.nbt.putShort("Fire", this.fireTicks);
+        this.nbt.putInt("PortalCooldown", this.portalCooldown);
         this.nbt.putShort("Air", this.getDataProperty(AIR_SUPPLY, (short) 0));
         this.nbt.putBoolean("OnGround", this.onGround);
         this.nbt.putBoolean("Invulnerable", this.invulnerable);
-        this.nbt.putBoolean("Despawnable", this.despawnable);
-        this.nbt.putFloat("Scale", this.scale);
+        if (!this.isPlayer) this.nbt.putBoolean("Saddled", this.isSaddled());
+
+        if (!this.isPlayer) {
+            if (this.scale != 1f) this.nbt.putFloat("Scale", this.scale);
+            else this.nbt.remove("Scale");
+            if (this.isPersistent()) this.nbt.putBoolean("Persistent", true);
+            else this.nbt.remove("Persistent");
+        }
 
         if (!this.effects.isEmpty()) {
             ListTag<CompoundTag> list = new ListTag<>();
@@ -1225,30 +1533,29 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.nbt.remove("ActiveEffects");
         }
 
-        if (!this.attributes.isEmpty()) {
-            ListTag<CompoundTag> attributes = new ListTag<>();
-            for (var attribute : this.attributes.values()) {
-                CompoundTag nbt = Attribute.toNBT(attribute);
-                attributes.add(nbt);
+        this.nbt.remove("Attributes");
+
+        boolean hadProperties = this.nbt.containsCompound("properties");
+        CompoundTag properties = hadProperties ? this.nbt.getCompound("properties").copy() : new CompoundTag();
+
+        for (EntityProperty property : EntityProperty.getEntityProperty(this.getIdentifier())) {
+            String identifier = property.getIdentifier();
+
+            switch (property) {
+                case FloatEntityProperty ignored -> properties.putFloat(identifier, this.floatProperties.get(identifier));
+                case IntEntityProperty ignored -> properties.putInt(identifier, this.intProperties.get(identifier));
+                case BooleanEntityProperty ignored -> properties.putByte(identifier, this.intProperties.get(identifier));
+                case EnumEntityProperty enumProperty -> {
+                    int index = this.intProperties.get(identifier);
+                    if (index >= 0 && index < enumProperty.getEnums().length) properties.putString(identifier, enumProperty.getEnums()[index]);
+                }
+                default -> { }
             }
-            this.nbt.putList("Attributes", attributes);
-        } else {
-            this.nbt.remove("Attributes");
         }
 
-        // Save intProperties & boolProperties
-        CompoundTag intProps = new CompoundTag();
-        for (Map.Entry<String, Integer> entry : intProperties.entrySet()) {
-            intProps.putInt(entry.getKey(), entry.getValue());
+        if (!properties.isEmpty() || hadProperties) {
+            this.nbt.putCompound("properties", properties);
         }
-        this.nbt.putCompound("IntProperties", intProps);
-
-        // Save floatProperties
-        CompoundTag floatProps = new CompoundTag();
-        for (Map.Entry<String, Float> entry : floatProperties.entrySet()) {
-            floatProps.putFloat(entry.getKey(), entry.getValue());
-        }
-        this.nbt.putCompound("FloatProperties", floatProps);
     }
 
     /**
@@ -1317,8 +1624,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             final SetActorLinkPacket setActorLinkPacket = new SetActorLinkPacket();
             setActorLinkPacket.setLink(
                     new ActorLink(
-                            this.riding.getId(),
-                            this.getId(),
+                            this.riding.uniqueIdLong(),
+                            this.uniqueIdLong(),
                             ActorLinkType.RIDING,
                             true,
                             false,
@@ -1344,8 +1651,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         for (int i = 0; i < this.passengers.size(); i++) {
             final ActorLinkType actorLinkType = (i == controlSeat ? ActorLinkType.RIDING : ActorLinkType.PASSENGER);
             final ActorLink actorLink = new ActorLink(
-                    this.getId(),
-                    this.passengers.get(i).getId(),
+                    this.uniqueIdLong(),
+                    this.passengers.get(i).uniqueIdLong(),
                     actorLinkType,
                     false,
                     false,
@@ -1353,7 +1660,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             );
             addActorPacket.getActorLinks().add(actorLink);
         }
-        addActorPacket.setTargetActorID(this.getId());
+        addActorPacket.setTargetActorID(this.uniqueIdLong());
         addActorPacket.setTargetRuntimeID(this.runtimeId());
         addActorPacket.setActorType(this.getIdentifier());
         addActorPacket.setPosition(this.getPosition().toNetwork());
@@ -1427,7 +1734,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             final RemoveActorPacket packet = new RemoveActorPacket();
-            packet.setTargetActorID(this.getId());
+            packet.setTargetActorID(this.uniqueIdLong());
             player.sendPacket(packet);
             this.hasSpawned.remove(player.getLoaderId());
         }
@@ -1732,14 +2039,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     }
                     this.despawnFromAll();
                     if (!this.isPlayer) {
-                        this.close();
+                        this.remove();
                     }
                 }
                 return this.deadTicks < 15;
             } else {
                 this.despawnFromAll();
                 if (!this.isPlayer) {
-                    this.close();
+                    this.remove();
                 }
             }
         }
@@ -1747,10 +2054,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.blocksAround = null;
             this.collisionBlocks = null;
         }
+
+        boolean wasJustCreated = this.justCreated;
         this.justCreated = false;
         this.stepOnBlocks = null;
 
-        if (riding != null && !riding.isAlive() && riding.isRideable()) {
+        if (wasJustCreated) {
+            this.checkChunks();
+            if (this.closed) return false;
+        }
+
+        if (riding != null && !riding.isAlive() && riding.isRideable() && (!(riding instanceof EntityLiving living) || !living.deadState || living.deathFinalized)) {
             riding.dismountEntity(this, true, false);
         }
         updatePassengers();
@@ -1819,28 +2133,37 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
         }
 
-        if (this.inPortalTicks == 80) { // Handle portal teleport
+        if (this.portalCooldown > 0) {
+            this.portalCooldown = Math.max(0, this.portalCooldown - tickDiff);
+            hasUpdate = true;
+        }
+
+        if (this.inPortalTicks == 80 && !isDimensionBound()) { // Handle portal teleport
             EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.NETHER);
             getServer().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
-                Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
+                Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this, ev.getDestinationLevel());
                 if (newPos != null) {
                     IChunk destChunk = newPos.getChunk();
-                    if (!destChunk.isGenerated()) {
+                    if (destChunk.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING) {
                         newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
-                        newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
+                        newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this, ev.getDestinationLevel());
                     }
                     if (newPos != null) {
                         // Use Optional for safer portal search
                         Optional<Position> nearestPortalOpt = PortalHelper.getNearestValidPortal(newPos);
                         if (nearestPortalOpt.isPresent()) {
-                            teleport(nearestPortalOpt.get().add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                            if (teleport(nearestPortalOpt.get().add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
+                                this.portalCooldown = this.portalCooldownDuration;
+                            }
                         } else {
                             final Position finalPos = newPos.add(1.5, 1, 1.5);
                             inPortalTicks = 81;
                             PortalHelper.spawnPortal(newPos);
-                            teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                            if (teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
+                                this.portalCooldown = this.portalCooldownDuration;
+                            }
                         }
                     } else {
                         getServer().getLogger().warning("Failed to calculate new Nether position for portal teleport.");
@@ -1883,7 +2206,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             // Hard distance -> immediate despawn
             if (nearestSq > hardDistSq) {
                 this.despawnFromAll();
-                this.close();
+                this.remove();
                 return hasUpdate;
             }
 
@@ -1895,7 +2218,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     this.lastPlayerNearbyTick = tickNow;
                 } else if ((tickNow - this.lastPlayerNearbyTick) >= DEFAULT_SOFT_DESPAWN_GRACE_TICKS) {
                     this.despawnFromAll();
-                    this.close();
+                    this.remove();
                     return hasUpdate;
                 }
             }
@@ -2480,10 +2803,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         entity.setDataFlag(ActorFlags.RIDING, true, false);
         passengers.add(entity);
 
-        if (!this.isPlayer && !(entity instanceof Player)) {
-            entity.nbt = entity.nbt.putString(NBT_RIDING_UUID, this.getUniqueId().toString());
+        if (entity.uniqueIdLong() != 0) {
+            this.persistedActorLinkIds.putIfAbsent(entity.uniqueIdLong(), Integer.MAX_VALUE);
         }
 
+        markActorLinksDirty();
         updatePassengers(true, riderInitiated);
 
         return true;
@@ -2523,6 +2847,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
 
         boolean reordered = reorderPassengers(passengers);
+        if (reordered) markActorLinksDirty();
         boolean countChanged = (passengers.size() != passengerCount);
         passengerCount = passengers.size();
 
@@ -2682,6 +3007,129 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
     }
 
+    private void restoreActorLinksFromNBT() {
+        this.persistedActorLinkIds.clear();
+
+        if (this.nbt == null || this.level == null) return;
+        if (!this.nbt.containsList(NBT_LINKS_TAG)) return;
+
+        ListTag<CompoundTag> links = this.nbt.getList(NBT_LINKS_TAG, CompoundTag.class);
+
+        for (CompoundTag link : links.getAll()) {
+            if (!link.containsNumber(NBT_LINK_ENTITY_ID)) continue;
+            if (!link.containsNumber(NBT_LINK_ID)) continue;
+
+            long passengerUniqueId = link.getLong(NBT_LINK_ENTITY_ID);
+            int linkId = link.getInt(NBT_LINK_ID);
+
+            if (passengerUniqueId == 0) continue;
+            if (passengerUniqueId == this.uniqueIdLong()) continue;
+            if (linkId < 0) continue;
+
+            this.persistedActorLinkIds.merge(passengerUniqueId, linkId, Math::min);
+        }
+
+        List<Map.Entry<Long, Integer>> orderedLinks = new ArrayList<>(this.persistedActorLinkIds.entrySet());
+
+        orderedLinks.sort(Comparator
+            .comparingInt((Map.Entry<Long, Integer> entry) -> entry.getValue())
+            .thenComparingLong(entry -> entry.getKey()));
+
+        for (Map.Entry<Long, Integer> link : orderedLinks) {
+            this.level.queueActorLink(this, link.getKey(), link.getValue());
+        }
+    }
+
+    /**
+     * Restores a persisted riding relationship for an actor passenger.
+     *
+     * @param passenger passenger entity
+     * @param linkId persisted actor link index
+     * @return whether the relationship was restored
+     */
+    public boolean restoreActorLink(@NotNull Entity passenger, int linkId) {
+        if (this.closed || passenger.closed) return false;
+        if (passenger == this) return false;
+        if (passenger.level != this.level) return false;
+        if (linkId < 0) return false;
+
+        if (passenger.riding != null && passenger.riding != this) return false;
+
+        passenger.riding = this;
+        passenger.setDataFlag(ActorFlags.RIDING, true, false);
+        this.persistedActorLinkIds.put(passenger.uniqueIdLong(), linkId);
+
+        if (!this.passengers.contains(passenger)) this.passengers.add(passenger);
+        this.passengers.sort(Comparator.comparingInt(current -> this.persistedActorLinkIds.getOrDefault(current.uniqueIdLong(), Integer.MAX_VALUE)));
+        this.passengerCount = this.passengers.size();
+
+        applySeatOffsets();
+        refreshRideMemory();
+
+        for (Entity current : this.passengers) {
+            updatePassengerPosition(current);
+        }
+
+        return true;
+    }
+
+    private void markActorLinksDirty() {
+        this.actorLinksDirty = true;
+        if (this.chunk != null) this.chunk.setChanged();
+    }
+
+    private void saveActorLinks() {
+        if (!this.actorLinksDirty && this.nbt.containsList(NBT_LINKS_TAG)) return;
+        List<Map.Entry<Long, Integer>> persistedLinks = new ArrayList<>(this.persistedActorLinkIds.entrySet());
+
+        persistedLinks.sort(Comparator
+                .comparingInt((Map.Entry<Long, Integer> entry) -> entry.getValue())
+                .thenComparingLong(entry -> entry.getKey()));
+
+        ListTag<CompoundTag> links = new ListTag<>();
+        Set<Long> writtenUniqueIds = new HashSet<>();
+        Map<Long, Integer> normalizedLinkIds = new HashMap<>();
+
+        int linkId = 0;
+
+        for (Entity passenger : this.passengers) {
+            if (passenger == null || passenger.closed) continue;
+
+            long passengerUniqueId = passenger.uniqueIdLong();
+
+            if (passengerUniqueId == 0) continue;
+            if (!writtenUniqueIds.add(passengerUniqueId)) continue;
+
+            links.add(new CompoundTag()
+                        .putLong(NBT_LINK_ENTITY_ID, passengerUniqueId)
+                        .putInt(NBT_LINK_ID, linkId));
+
+            normalizedLinkIds.put(passengerUniqueId, linkId);
+            linkId++;
+        }
+
+        for (Map.Entry<Long, Integer> persistedLink : persistedLinks) {
+            long passengerUniqueId = persistedLink.getKey();
+            if (writtenUniqueIds.contains(passengerUniqueId)) continue;
+            Entity loadedPassenger = this.level != null ? this.level.getEntityByUniqueId(passengerUniqueId ) : null;
+            if (loadedPassenger != null && loadedPassenger.riding != this) continue;
+
+            writtenUniqueIds.add(passengerUniqueId);
+            links.add(new CompoundTag().putLong(NBT_LINK_ENTITY_ID, passengerUniqueId).putInt(NBT_LINK_ID, linkId));
+            normalizedLinkIds.put(passengerUniqueId, linkId);
+            linkId++;
+        }
+
+        if (links.size() == 0) {
+            this.nbt.remove(NBT_LINKS_TAG);
+        } else {
+            this.nbt.putList(NBT_LINKS_TAG, links);
+        }
+
+        this.persistedActorLinkIds.clear();
+        this.persistedActorLinkIds.putAll(normalizedLinkIds);
+        this.actorLinksDirty = false;
+    }
 
     /// ///////////////////////////////////////////
     /// ////////// DISMOUNT CHAIN /////////////////
@@ -2721,6 +3169,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         entity.setSeatPosition(new Vector3f(), false);
         entity.seatRawOffset = null;
         passengers.remove(entity);
+
+        this.persistedActorLinkIds.remove(entity.uniqueIdLong());
+
+        markActorLinksDirty();
 
         Vector3 dismount = resolveDismountPosition(entity);
         lookLocation.setComponents(dismount.x, dismount.y, dismount.z);
@@ -2955,8 +3407,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         final SetActorLinkPacket packet = new SetActorLinkPacket();
         packet.setLink(
                 new ActorLink(
-                        this.getId(),
-                        rider.getId(),
+                        this.uniqueIdLong(),
+                        rider.uniqueIdLong(),
                         type,
                         false,
                         riderInitiated,
@@ -3018,6 +3470,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     /**
+     * Returns the {@code minecraft:attack} component definition used by this entity.
+     *
+     * @return attack component, or {@code null} when not defined
+     */
+    public @Nullable AttackComponent getComponentAttack() {
+        if (!isCustomEntity() || !meta().has(CustomEntityComponents.ATTACK)) return null;
+        return meta().getDefinitionAttackComponent(CustomEntityComponents.ATTACK);
+    }
+
+    /**
+     * Returns the {@code minecraft:attack_damage} component definition used by this entity.
+     *
+     * @return attack damage component, or {@code null} when not defined
+     */
+    public @Nullable AttackDamageComponent getComponentAttackDamage() {
+        if (!isCustomEntity() || !meta().has(CustomEntityComponents.ATTACK_DAMAGE)) return null;
+        return meta().getDefinitionAttackDamageComponent(CustomEntityComponents.ATTACK_DAMAGE);
+    }
+
+    /**
      * Returns the {@code minecraft:health} component definition used by this entity.
      *
      * <p>This method defines the initial health model of the entity, including fixed
@@ -3069,7 +3541,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         // 0) Respect persisted NBT (never overwrite / never reroll)
         Attribute existing = this.attributes.get(Attribute.HEALTH);
-        if (existing != null) return;
+        if (existing != null) {
+            this.health = existing.getValue();
+            return;
+        }
 
         // 1) Resolve component health
         HealthComponent health = getComponentHealth();
@@ -3107,6 +3582,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         attr.setValue(resolvedMaxHealth);
 
         this.attributes.put(attr.getId(), attr);
+        this.health = resolvedMaxHealth;
     }
 
     /**
@@ -5509,7 +5985,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
         }
 
-        if (endPortal) { // Handle End portal teleport
+        if (endPortal && !isDimensionBound()) { // Handle End portal teleport
             if (!inEndPortal) {
                 inEndPortal = true;
                 if (this.getRiding() == null && this.getPassengers().isEmpty() && !(this instanceof EntityEnderDragon)) {
@@ -5517,7 +5993,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_THE_END)) {
-                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
+                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this, ev.getDestinationLevel());
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
@@ -5636,15 +6112,35 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
+    /**
+     * Returns whether this entity is bound to its current dimension.
+     *
+     * @return whether the entity is dimension-bound
+     */
+    public boolean isDimensionBound() {
+        return false;
+    }
+
     protected void checkChunks() {
-        if (this.chunk == null || (this.chunk.getX() != ((int) this.x >> 4)) || this.chunk.getZ() != ((int) this.z >> 4)) {
+        if (this.justCreated) {
+            return;
+        }
+
+        int chunkX = (int) Math.floor((float) this.x) >> 4;
+        int chunkZ = (int) Math.floor((float) this.z) >> 4;
+        if (this.chunk == null || this.chunk.getX() != chunkX || this.chunk.getZ() != chunkZ) {
+            if (this.chunk != null && this.level.updateEntities.get(this.runtimeId()) != this && this.chunk.getProvider().deferEntityChunkMove(this, chunkX, chunkZ)) {
+                this.close(false);
+                return;
+            }
+
             if (this.chunk != null) {
                 this.chunk.removeEntity(this);
             }
-            this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
+            this.chunk = this.level.getChunk(chunkX, chunkZ, true);
 
             if (!this.justCreated) {
-                Map<Integer, Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
+                Map<Integer, Player> newChunk = this.level.getChunkPlayers(chunkX, chunkZ);
                 for (Player player : this.hasSpawned.values()) {
                     if (!newChunk.containsKey(player.getLoaderId())) {
                         this.despawnFrom(player);
@@ -5833,6 +6329,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         for (Player player : this.hasSpawned.values()) {
             this.despawnFrom(player);
         }
+    }
+
+    /**
+     * Permanently removes this entity and queues deletion of its persisted actor data when applicable.
+     */
+    public void remove() {
+        if (this.closed) return;
+
+        if (!(this instanceof Player) && this.level != null && this.level.getProvider() instanceof LevelDBProvider provider) {
+            provider.getStorage().queueActorDeletion(this.uniqueIdLong());
+        }
+
+        this.close();
     }
 
     public void close() {
@@ -6426,8 +6935,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                         intProperties.put(identifier, enumProperty.findIndex(enumProperty.getDefaultValue()));
                     }
                 }
-                default -> {
-                }
+                default -> { }
             }
         }
         this.clientSyncPropertiesCache = null;
@@ -6470,6 +6978,250 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return getComponentDashAction() != null;
     }
 
+    private CompoundTag getUuidCustomData() {
+        if (this.nbt == null || !this.nbt.containsCompound(NBT_PNX_CUSTOM)) return new CompoundTag();
+        return this.nbt.getCompound(NBT_PNX_CUSTOM).copy();
+    }
+
+    private void setUuidCustomData(CompoundTag customData) {
+        if (this.nbt == null) {
+            throw new IllegalStateException("Entity NBT is not initialized");
+        }
+
+        if (customData == null || customData.isEmpty()) {
+            this.nbt.remove(NBT_PNX_CUSTOM);
+            return;
+        }
+
+        this.nbt.putCompound(NBT_PNX_CUSTOM, customData.copy());
+    }
+
+    private @Nullable UUID readCustomUUID() {
+        CompoundTag customData = this.getUuidCustomData();
+        String value = customData.getString(PNX_CUSTOM_UUID);
+
+        if (value.isBlank()) return null;
+
+        try {
+            return UUID.fromString(value);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid custom UUID '{}' on entity {}", value, this.getIdentifier());
+            return null;
+        }
+    }
+
+    protected DynamicProperties getDynamicProperties() {
+        return new DynamicProperties(
+                () -> this.nbt != null && this.nbt.containsCompound(DynamicProperties.ROOT)
+                        ? this.nbt.getCompound(DynamicProperties.ROOT) : new CompoundTag(),
+                dynamicProperties -> {
+                    if (this.nbt == null) this.nbt = new CompoundTag();
+                    this.nbt.putCompound(DynamicProperties.ROOT, dynamicProperties);
+                    if (!this.isPlayer && this.chunk != null) this.chunk.setChanged();
+                });
+    }
+
+    /**
+     * Remove a DynamicProperty by key id.
+     *
+     * @param key the key id of the DynamicProperty
+     */
+    public Entity removeDynamicProperty(String key) {
+        getDynamicProperties().remove(Server.getDefaultDynamicPropertiesGroupUUID(), key);
+        return this;
+    }
+
+    /**
+     * Remove all DynamicProperties on the entity.
+     */
+    public Entity clearDynamicProperties() {
+        getDynamicProperties().clear(Server.getDefaultDynamicPropertiesGroupUUID());
+        return this;
+    }
+
+    /**
+     * Set a double int DynamicProperty.
+     *
+     * @param key   the key id of the DynamicProperty
+     * @param value the double int value of the DynamicProperty
+     */
+    public Entity setDynamicProperty(String key, Double value) {
+        getDynamicProperties().set(Server.getDefaultDynamicPropertiesGroupUUID(), key, value);
+        return this;
+    }
+
+    /**
+     * Set an int DynamicProperty.
+     *
+     * @param key   the key id of the DynamicProperty
+     * @param value the int value of the DynamicProperty
+     */
+    public Entity setDynamicProperty(String key, Integer value) {
+        return setDynamicProperty(key, value == null ? null : value.doubleValue());
+    }
+
+    /**
+     * Set a float DynamicProperty.
+     *
+     * @param key   the key id of the DynamicProperty
+     * @param value the float value of the DynamicProperty
+     */
+    public Entity setDynamicProperty(String key, Float value) {
+        return setDynamicProperty(key, value == null ? null : value.doubleValue());
+    }
+
+    /**
+     * Set a boolean DynamicProperty.
+     *
+     * @param key   the key id of the DynamicProperty
+     * @param value the boolean value of the DynamicProperty
+     */
+    public Entity setDynamicProperty(String key, Boolean value) {
+        getDynamicProperties().set(Server.getDefaultDynamicPropertiesGroupUUID(), key, value);
+        return this;
+    }
+
+    /**
+     * Set a string DynamicProperty.
+     *
+     * @param key   the key id of the DynamicProperty
+     * @param value the string value of the DynamicProperty
+     */
+    public Entity setDynamicProperty(String key, String value) {
+        getDynamicProperties().set(Server.getDefaultDynamicPropertiesGroupUUID(), key, value);
+        return this;
+    }
+
+    /**
+     * Set a Vec3 DynamicProperty.
+     *
+     * @param key   the key id of the DynamicProperty
+     * @param value the vec3 value of the DynamicProperty
+     */
+    public Entity setVec3DynamicProperty(String key, Vector3 value) {
+        getDynamicProperties().setVec3(Server.getDefaultDynamicPropertiesGroupUUID(), key, value);
+        return this;
+    }
+
+    /**
+     * Set a Vec3 DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param xyz a map with keys "x","y","z" and numeric values
+     */
+    public Entity setVec3DynamicProperty(String key, Map<String, Number> xyz) {
+        if (xyz == null) return removeDynamicProperty(key);
+
+        Number nx = xyz.get("x"), ny = xyz.get("y"), nz = xyz.get("z");
+        if (nx == null || ny == null || nz == null) {
+            log.warn("DynamicProperty '{}' rejected: vec3 map must contain numeric keys 'x','y','z'", key);
+            return this;
+        }
+
+        return setVec3DynamicProperty(key, new Vector3(nx.doubleValue(), ny.doubleValue(), nz.doubleValue()));
+    }
+
+    /**
+     * Get a double DynamicProperty.
+     */
+    public Double getDoubleDynamicProperty(String key) {
+        return getDynamicProperties().getDouble(Server.getDefaultDynamicPropertiesGroupUUID(), key);
+    }
+
+    /**
+     * Returns a double DynamicProperty or the supplied default when absent.
+     *
+     * @param key DynamicProperty key
+     * @param defaultValue value returned when the property is absent
+     * @return stored value or the default value
+     */
+    public Double getDoubleDynamicProperty(String key, double defaultValue) {
+        Double value = getDoubleDynamicProperty(key);
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Get an int DynamicProperty.
+     */
+    public Integer getIntDynamicProperty(String key) {
+        return getDynamicProperties().getInt(Server.getDefaultDynamicPropertiesGroupUUID(), key);
+    }
+
+    /**
+     * Returns an integer DynamicProperty or the supplied default when absent.
+     *
+     * @param key DynamicProperty key
+     * @param defaultValue value returned when the property is absent
+     * @return stored value or the default value
+     */
+    public int getIntDynamicProperty(String key, int defaultValue) {
+        Integer value = getIntDynamicProperty(key);
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Get a float DynamicProperty.
+     */
+    public Float getFloatDynamicProperty(String key) {
+        return getDynamicProperties().getFloat(Server.getDefaultDynamicPropertiesGroupUUID(), key);
+    }
+
+    /**
+     * Returns a float DynamicProperty or the supplied default when absent.
+     *
+     * @param key DynamicProperty key
+     * @param defaultValue value returned when the property is absent
+     * @return stored value or the default value
+     */
+    public float getFloatDynamicProperty(String key, float defaultValue) {
+        Float value = getFloatDynamicProperty(key);
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Get a boolean DynamicProperty.
+     */
+    public Boolean getBoolDynamicProperty(String key) {
+        return getDynamicProperties().getBoolean(Server.getDefaultDynamicPropertiesGroupUUID(), key);
+    }
+
+    /**
+     * Returns a boolean DynamicProperty or the supplied default when absent.
+     *
+     * @param key DynamicProperty key
+     * @param defaultValue value returned when the property is absent
+     * @return stored value or the default value
+     */
+    public boolean getBoolDynamicProperty(String key, boolean defaultValue) {
+        Boolean value = getBoolDynamicProperty(key);
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Get a string DynamicProperty.
+     */
+    public String getStringDynamicProperty(String key) {
+        return getDynamicProperties().getString(Server.getDefaultDynamicPropertiesGroupUUID(), key);
+    }
+
+    /**
+     * Returns a string DynamicProperty or the supplied default when absent.
+     *
+     * @param key DynamicProperty key
+     * @param defaultValue value returned when the property is absent
+     * @return stored value or the default value
+     */
+    public String getStringDynamicProperty(String key, String defaultValue) {
+        String value = getStringDynamicProperty(key);
+        return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Get a Vec3 DynamicProperty.
+     */
+    public Vector3 getVec3DynamicProperty(String key) {
+        return getDynamicProperties().getVec3(Server.getDefaultDynamicPropertiesGroupUUID(), key);
+    }
 
     public void setNbt(CompoundTag compoundTag) {
         this.nbt = compoundTag;

@@ -43,7 +43,7 @@ public class IcePatchFeature extends CountGenerateFeature {
         int localZ = 3 + random.nextInt(10);
         int sourceX = (chunk.getX() << 4) + localX;
         int sourceZ = (chunk.getZ() << 4) + localZ;
-        int sourceY = chunk.getHeightMap(localX, localZ);
+        int sourceY = chunk.getHeightMap(localX, localZ) - 1;
 
         if (level.getBiomeId(sourceX, sourceY, sourceZ) != BiomeID.ICE_PLAINS_SPIKES) {
             return;

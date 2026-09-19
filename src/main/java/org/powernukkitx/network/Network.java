@@ -284,6 +284,11 @@ public class Network implements NetworkInterface, SignalingService {
         return new BedrockServerInitializer() {
             @Override
             protected void postInitChannel(Channel channel) {
+                channel.config().setOption(
+                    RakChannelOption.RAK_METRICS,
+                    new RakNetNetworkMetrics()
+                );
+
                 if (query) {
                     channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
                         .addLast("queryPacketHandler", new QueryPacketHandler(

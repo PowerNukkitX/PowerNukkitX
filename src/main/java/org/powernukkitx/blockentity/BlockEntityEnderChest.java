@@ -3,11 +3,24 @@ package org.powernukkitx.blockentity;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 
 public class BlockEntityEnderChest extends BlockEntitySpawnable implements BlockEntityNameable {
-
     public BlockEntityEnderChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+
+        if (!this.nbt.contains("Findable")) {
+            this.nbt.putByte("Findable", 0);
+        }
+
+        if (!this.nbt.contains("Items")) {
+            this.nbt.putList("Items", new ListTag<>());
+        }
     }
 
     @Override

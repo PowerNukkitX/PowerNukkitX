@@ -1,6 +1,8 @@
 package org.powernukkitx.level.format;
 
 import org.powernukkitx.level.DimensionData;
+import org.powernukkitx.level.format.palette.Palette;
+import org.powernukkitx.level.structure.AabbVolumes;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 import java.util.List;
@@ -19,7 +21,20 @@ public interface IChunkBuilder {
 
     int getChunkZ();
 
-    IChunkBuilder state(ChunkState state);
+    /**
+     * Sets the chunk finalization state.
+     *
+     * @param finalizationState finalization state
+     * @return this builder
+     */
+    IChunkBuilder finalizationState(
+            ChunkFinalizationState finalizationState
+    );
+
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    default IChunkBuilder state(ChunkState state) {
+        return this.finalizationState(state.toFinalizationState());
+    }
 
     IChunkBuilder levelProvider(LevelProvider levelProvider);
 
@@ -31,6 +46,21 @@ public interface IChunkBuilder {
 
     ChunkSection[] getSections();
 
+    /**
+     * Sets the per-section biome palettes.
+     *
+     * @param biomeSections biome section palettes
+     * @return this builder
+     */
+    IChunkBuilder biomeSections(Palette<Integer>[] biomeSections);
+
+    /**
+     * Returns the configured per-section biome palettes.
+     *
+     * @return biome section palettes
+     */
+    Palette<Integer>[] getBiomeSections();
+
     IChunkBuilder heightMap(short[] heightMap);
 
     IChunkBuilder entities(List<CompoundTag> entities);
@@ -38,6 +68,26 @@ public interface IChunkBuilder {
     IChunkBuilder blockEntities(List<CompoundTag> blockEntities);
 
     IChunkBuilder extraData(CompoundTag extraData);
+
+    /**
+     * Sets LevelChunkMetaData reference state loaded for the chunk.
+     */
+    IChunkBuilder levelChunkMetaData(LevelChunkMetaData levelChunkMetaData);
+
+    /**
+     * Sets AABBVolumes data loaded for the chunk.
+     */
+    IChunkBuilder aabbVolumes(AabbVolumes aabbVolumes);
+
+    /**
+     * Sets the Bedrock biome state loaded for the chunk.
+     */
+    IChunkBuilder biomeState(BiomeState biomeState);
+
+    /**
+     * Sets the 16x16 Border Block column map loaded for the chunk.
+     */
+    IChunkBuilder borderBlockMap(boolean[] borderBlockMap);
 
     IChunk build();
 

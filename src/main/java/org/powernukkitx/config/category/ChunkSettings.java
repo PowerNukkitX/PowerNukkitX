@@ -30,8 +30,6 @@ public class ChunkSettings extends OkaeriConfig {
     int generationQueueSize = 8;
     @Comment("pnx.settings.chunk.saveGenerated")
     boolean saveGenerated = true;
-    @Comment("pnx.settings.chunk.convertBDSChunks")
-    boolean convertBDSChunks = false;
     @Comment("pnx.settings.chunk.disableblockticking")
     ArrayList<String> disableBlockTicking = new ArrayList<>();
 }

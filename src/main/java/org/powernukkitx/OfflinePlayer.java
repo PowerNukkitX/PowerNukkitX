@@ -18,7 +18,10 @@ import java.util.UUID;
  */
 public class OfflinePlayer implements IPlayer {
     private final Server server;
-    private final CompoundTag namedTag;
+    private final UUID uuid;
+    private final String name;
+    private final CompoundTag pnxExtraTag;
+    private final boolean playedBefore;
 
     /**
      * Initializes the object {@code OfflinePlayer}.
@@ -38,26 +41,19 @@ public class OfflinePlayer implements IPlayer {
     public OfflinePlayer(Server server, UUID uuid, String name) {
         this.server = server;
 
-        CompoundTag tag;
-
-        if (uuid != null) {
-            tag = this.server.getOfflinePlayerData(uuid, false);
-
-            if (tag == null) tag = new CompoundTag();
-
-            tag.putLong("UUIDMost", uuid.getMostSignificantBits())
-                    .putLong("UUIDLeast", uuid.getLeastSignificantBits());
-        } else if (name != null) {
-            tag = this.server.getOfflinePlayerData(name, false);
-
-            if (tag == null) tag = new CompoundTag();
-
-            tag.putString("NameTag", name);
-        } else {
+        if (uuid == null && name == null) {
             throw new IllegalArgumentException("Name and UUID cannot both be null");
         }
 
-        this.namedTag = tag;
+        UUID resolvedUuid = uuid != null ? uuid : this.server.lookupName(name).orElse(null);
+        Server.PlayerDataRecord record = resolvedUuid != null ? this.server.getOfflinePlayerDataRecord(resolvedUuid, false) : null;
+
+        this.uuid = resolvedUuid;
+        this.pnxExtraTag = record != null ? record.pnxExtra() : new CompoundTag();
+        this.playedBefore = record != null;
+
+        String storedName = this.pnxExtraTag.getString("NameTag");
+        this.name = name != null ? name : storedName.isBlank() ? null : storedName;
     }
 
     @Override
@@ -67,26 +63,12 @@ public class OfflinePlayer implements IPlayer {
 
     @Override
     public String getName() {
-        if (namedTag != null && namedTag.contains("NameTag")) {
-            return namedTag.getString("NameTag");
-        }
-        return null;
+        return this.name;
     }
 
     @Override
     public UUID getUniqueId() {
-        if (namedTag == null) {
-            return null;
-        }
-
-        long least = namedTag.getLong("UUIDLeast");
-        long most = namedTag.getLong("UUIDMost");
-
-        if (least == 0 || most == 0) {
-            return null;
-        }
-
-        return new UUID(most, least);
+        return this.uuid;
     }
 
     @Override
@@ -144,22 +126,25 @@ public class OfflinePlayer implements IPlayer {
 
     @Override
     public Player getPlayer() {
-        return this.server.getPlayerExact(this.getName());
+        if (this.uuid != null) {
+            return this.server.getPlayer(this.uuid).orElse(null);
+        }
+        return this.name != null ? this.server.getPlayerExact(this.name) : null;
     }
 
     @Override
     public Long getFirstPlayed() {
-        return this.namedTag != null ? this.namedTag.getLong("firstPlayed") : null;
+        return this.playedBefore ? this.pnxExtraTag.getLong("firstPlayed") : null;
     }
 
     @Override
     public Long getLastPlayed() {
-        return this.namedTag != null ? this.namedTag.getLong("lastPlayed") : null;
+        return this.playedBefore ? this.pnxExtraTag.getLong("lastPlayed") : null;
     }
 
     @Override
     public boolean hasPlayedBefore() {
-        return this.namedTag != null;
+        return this.playedBefore;
     }
 
     @Override

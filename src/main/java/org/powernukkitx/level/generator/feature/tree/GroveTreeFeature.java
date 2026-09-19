@@ -49,7 +49,7 @@ public class GroveTreeFeature extends GriddedFeature {
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int y = chunk.getHeightMap(x, z);
+                int y = chunk.getHeightMap(x, z) - 1;
                 BlockState support = chunk.getBlockState(x, y, z);
                 if (support.toBlock() instanceof BlockSpruceLeaves) {
                     object.setBlockStateAt(x + (chunk.getX() << 4), y + 1, z + (chunk.getZ() << 4), SNOW_LAYER);

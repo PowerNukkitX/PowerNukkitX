@@ -86,8 +86,8 @@ public class VillagerBreedingExecutor extends BreedingExecutor {
     @Override
     protected void breed(EntityIntelligent parent1, EntityIntelligent parent2) {
         var villageManager = parent1.getLevel().getVillageManager();
-        Village village = villageManager.getVillageForDweller(parent1.runtimeId()).orElse(null);
-        if (village == null || villageManager.getVillageForDweller(parent2.runtimeId())
+        Village village = villageManager.getVillageForDweller(parent1.uniqueIdLong()).orElse(null);
+        if (village == null || villageManager.getVillageForDweller(parent2.uniqueIdLong())
                 .filter(other -> other.uuid().equals(village.uuid())).isEmpty()) {
             sendAngryParticles(parent1);
             sendAngryParticles(parent2);

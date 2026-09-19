@@ -1,5 +1,6 @@
 package org.powernukkitx.level.format;
 
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.GameRules;
 import org.powernukkitx.level.Level;
@@ -20,6 +21,20 @@ public interface LevelProvider {
     DimensionData getDimensionData();
 
     Pair<ByteBuf, Integer> requestChunkData(int x, int z);
+
+    /**
+     * Builds the data required for client SubChunk request mode.
+     *
+     * @param x chunk X
+     * @param z chunk Z
+     * @return SubChunk request metadata
+     */
+    default SubChunkRequestData requestSubChunkModeData(int x, int z) {
+        throw new UnsupportedOperationException(getClass().getName() + " does not support SubChunk request mode");
+    }
+
+    record SubChunkRequestData(ByteBuf biomeData, ByteBuf borderBlockData, int requestLimit) {
+    }
 
     String getPath();
 
@@ -118,6 +133,23 @@ public interface LevelProvider {
     Map<Long, IChunk> getLoadedChunks();
 
     Level getLevel();
+
+    /**
+     * Defers a non-ticking entity move before normal chunk attachment.
+     *
+     * @return whether the move was deferred and the runtime entity must be detached
+     */
+    default boolean deferEntityChunkMove(Entity entity, int targetChunkX, int targetChunkZ) {
+        return false;
+    }
+
+    /**
+     * Called after a chunk completes runtime initialization.
+     *
+     * @param chunk initialized chunk
+     */
+    default void onChunkInitialized(IChunk chunk) {
+    }
 
     void close();
 

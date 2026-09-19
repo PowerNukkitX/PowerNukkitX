@@ -17,7 +17,9 @@ public class ObjectPaleOakTree extends TreeGenerator {
      * The metadata value of the wood to use in tree generation.
      */
     private final BlockState PALE_OAK_LOG = BlockPaleOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
-    private final BlockState CREAKING_HEART = BlockCreakingHeart.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
+    private final BlockState CREAKING_HEART = BlockCreakingHeart.PROPERTIES.getDefaultState()
+            .setPropertyValue(BlockCreakingHeart.PROPERTIES, CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y)
+            .setPropertyValue(BlockCreakingHeart.PROPERTIES, CommonBlockProperties.NATURAL, true);
 
     /**
      * The metadata value of the leaves to use in tree generation.

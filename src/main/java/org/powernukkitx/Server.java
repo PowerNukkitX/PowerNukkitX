@@ -23,6 +23,7 @@ import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
+import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +59,7 @@ import org.powernukkitx.event.server.QueryRegenerateEvent;
 import org.powernukkitx.event.server.ServerReloadEvent;
 import org.powernukkitx.event.server.ServerStartedEvent;
 import org.powernukkitx.event.server.ServerStopEvent;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.lang.BaseLang;
 import org.powernukkitx.lang.LangCode;
@@ -72,9 +74,10 @@ import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.LevelProviderFactory;
 import org.powernukkitx.level.format.LevelProviderManager;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
+import org.powernukkitx.migration.MigrationService;
 import org.powernukkitx.level.tickingarea.manager.SimpleTickingAreaManager;
 import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
-import org.powernukkitx.level.tickingarea.storage.JSONTickingAreaStorage;
+import org.powernukkitx.level.tickingarea.storage.LevelDBTickingAreaStorage;
 import org.powernukkitx.level.updater.Updater;
 import org.powernukkitx.level.updater.block.BlockStateUpdaterBase;
 import org.powernukkitx.math.NukkitMath;
@@ -84,9 +87,10 @@ import org.powernukkitx.metadata.LevelMetadataStore;
 import org.powernukkitx.metadata.PlayerMetadataStore;
 import org.powernukkitx.metrics.NukkitMetrics;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
@@ -117,7 +121,7 @@ import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.scheduler.Task;
 import org.powernukkitx.scoreboard.manager.IScoreboardManager;
 import org.powernukkitx.scoreboard.manager.ScoreboardManager;
-import org.powernukkitx.scoreboard.storage.JSONScoreboardStorage;
+import org.powernukkitx.scoreboard.storage.LevelDBScoreboardStorage;
 import org.powernukkitx.utils.*;
 import org.powernukkitx.utils.collection.FreezableArrayManager;
 import org.powernukkitx.wizard.WizardConfig;
@@ -144,10 +148,10 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 /**
  * Represents the main server singleton for PowerNukkitX.
@@ -221,6 +225,7 @@ public class Server {
      */
     public final ForkJoinPool computeThreadPool;
     private final ScheduledExecutorService levelTickExecutor;
+    private final ScheduledExecutorService chunkPublisherExecutor;
     private final boolean levelThreadMode;
     private SimpleCommandMap commandMap;
     private ResourcePackManager resourcePackManager;
@@ -250,16 +255,14 @@ public class Server {
     private final Set<UUID> uniquePlayers = new HashSet<>();
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
+    private final Map<Long, Player> playerListByUniqueId = new ConcurrentHashMap<>();
     private QueryRegenerateEvent queryRegenerateEvent;
     private PositionTrackingService positionTrackingService;
 
-    // Dynamic Properties defaults
-    private static final String DP_ROOT = "DynamicProperties";
-    private static volatile String DP_DEFAULT_GROUP_UUID = "00000000-0000-0000-0000-000000000000";
-    private static final int DP_MAX_STRING_BYTES = 32767;
-    private static final double DP_NUMBER_ABS_MAX = 9_223_372_036_854_775_807d;
-    private static final Pattern DP_UUID_CANON = Pattern
-        .compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+    /**
+     * Server-global Dynamic Properties namespace UUID.
+     */
+    private static volatile String DP_DEFAULT_GROUP_UUID;
 
     private final Map<Integer, Level> levels = new HashMap<>() {
         @Override
@@ -289,7 +292,12 @@ public class Server {
     private final long launchTime;
     private final ServerSettings settings;
     private Watchdog watchdog;
-    private DB playerDataDB;
+    private DB serverDataDB;
+    private ActorUniqueIdManager actorUniqueIdManager;
+    private DynamicProperties dynamicProperties;
+
+    record PlayerDataRecord(CompoundTag nbt, CompoundTag pnxExtra, CompoundTag custom) {
+    }
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
@@ -297,8 +305,7 @@ public class Server {
     // default levels
     private Level defaultLevel = null;
     private List<ExperimentToggle> experiments;
-
-    private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
+    private final MigrationService migrationService = new MigrationService(this);
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage,
            WizardConfig wizardConfig) {
@@ -310,12 +317,13 @@ public class Server {
 
         this.filePath = filePath;
 
-        File worlds, players, structures, pluginFile, commandDataFile;
+        File worlds, players, serverData, structures, pluginFile, commandDataFile;
         if (!(worlds = new File(dataPath + "worlds/")).exists()) {
             worlds.mkdirs();
         }
-        if (!(players = new File(dataPath + "players/")).exists()) {
-            players.mkdirs();
+        players = new File(dataPath + "players/");
+        if (!(serverData = new File(dataPath + "server_data/")).exists()) {
+            serverData.mkdirs();
         }
         if (!(structures = new File(dataPath + "structures/")).exists()) {
             structures.mkdirs();
@@ -403,6 +411,13 @@ public class Server {
             levelWorkerThreads = Runtime.getRuntime().availableProcessors();
         }
         this.levelTickExecutor = new ScheduledThreadPoolExecutor(levelWorkerThreads, r -> new Thread(r, "Level Worker"));
+
+        this.chunkPublisherExecutor = new ScheduledThreadPoolExecutor(1, r -> {
+            Thread thread = new Thread(r, "Chunk Publisher");
+            thread.setDaemon(true);
+            return thread;
+        });
+
         this.levelThreadMode = this.settings.levelSettings().levelThread();
 
         levelArray = Level.EMPTY_ARRAY;
@@ -515,6 +530,12 @@ public class Server {
             registryCache = cache;
         }
 
+        try {
+            migrationService.migrateStructures();
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to migrate structure storage", e);
+        }
+
         {//init
             CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
             CompletableFuture<Void> itemF = CompletableFuture.runAsync(Registries.ITEM::init, computeThreadPool);
@@ -536,6 +557,7 @@ public class Server {
             CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, computeThreadPool);
             CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
             CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
+            CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, computeThreadPool);
             CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
             CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
             CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
@@ -564,7 +586,7 @@ public class Server {
                     : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
 
             CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
-                fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
+                fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, structureSpawnOverrideF, effectF,
                 creativeF, recipeF, voxelF, disconnectF, trimF).join();
 
             if (useRegistryCache && registryCache == null) {
@@ -593,19 +615,58 @@ public class Server {
             this.settings.performanceSettings().melting(),
             this.settings.performanceSettings().singleOperation(),
             this.settings.performanceSettings().batchOperation());
-        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(commandDataPath + "/functions");
-        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
+        tickingAreaManager = new SimpleTickingAreaManager(new LevelDBTickingAreaStorage(this));
 
-        // Convert legacy data before plugins get the chance to mess with it.
         try {
-            playerDataDB = Iq80DBFactory.factory.open(new File(dataPath, "players"), new Options()
+            serverDataDB = Iq80DBFactory.factory.open(serverData, new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW));
+
+            if (serverDataDB.get(ServerDBStorageFormat.SERVER_DATA_STORAGE_VERSION_KEY) == null) {
+                serverDataDB.put(
+                    ServerDBStorageFormat.SERVER_DATA_STORAGE_VERSION_KEY,
+                    ServerDBStorageFormat.SERVER_DATA_INITIAL_VERSION.getBytes(StandardCharsets.UTF_8)
+                );
+            }
+
+            byte[] dynamicPropertiesUUID = serverDataDB.get(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY);
+            if (dynamicPropertiesUUID == null) {
+                DP_DEFAULT_GROUP_UUID = UUID.randomUUID().toString();
+                serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, DP_DEFAULT_GROUP_UUID.getBytes(StandardCharsets.UTF_8)
+                );
+            } else {
+                DP_DEFAULT_GROUP_UUID = UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
+            }
+
+            dynamicProperties = new DynamicProperties(this::readServerDynamicProperties, this::writeServerDynamicProperties);
+            actorUniqueIdManager = new ActorUniqueIdManager(serverDataDB);
+
+            migrationService.migrateLegacyPositionTracking(
+                    Path.of(this.dataPath, "services", "position_tracking_db"),
+                    serverDataDB
+            );
+
+            if (players.exists()) {
+                try (DB legacyPlayerDB = Iq80DBFactory.factory.open(players, new Options()
+                    .createIfMissing(false)
+                    .compressionType(CompressionType.ZLIB_RAW))) {
+                    migrationService.migratePlayers(legacyPlayerDB, serverDataDB, actorUniqueIdManager::assignPlayer);
+                }
+
+                FileUtils.deleteDirectory(players);
+                log.info("[PlayerData Migration] Deleted legacy player storage");
+            } else {
+                migrationService.migratePlayers(null, serverDataDB, actorUniqueIdManager::assignPlayer);
+            }
+
+            migrationService.migrateScoreboard(serverDataDB);
         } catch (IOException e) {
-            log.error("", e);
+            log.error("Failed to initialize or migrate server data storage", e);
             System.exit(1);
         }
+
+        scoreboardManager = new ScoreboardManager(new LevelDBScoreboardStorage(serverDataDB));
         this.resourcePackManager = new ResourcePackManager(
             new ZippedResourcePackLoader(new File(PowerNukkitX.DATA_PATH, "resource_packs")),
             new JarPluginResourcePackLoader(new File(this.pluginPath)),
@@ -616,13 +677,8 @@ public class Server {
         this.pluginManager.registerInterface(JavaPluginLoader.class);
         this.console.setExecutingCommands(true);
 
-        try {
-            log.debug("Loading position tracking service");
-            this.positionTrackingService = new PositionTrackingService(
-                new File(PowerNukkitX.DATA_PATH, "services/position_tracking_db"));
-        } catch (IOException e) {
-            log.error("Failed to start the Position Tracking DB service!", e);
-        }
+        log.debug("Loading position tracking service");
+        this.positionTrackingService = new PositionTrackingService(serverDataDB);
         this.pluginManager.loadInternalPlugin();
 
         this.serverID = UUID.randomUUID();
@@ -652,6 +708,19 @@ public class Server {
         LevelProviderManager.addProvider("leveldb", LevelDBProvider.class);
 
         BlockLightProperties.build();
+
+        try {
+            boolean scoreboardMigrated = this.migrationService.migrateWorlds(
+                    this.serverDataDB,
+                    this.actorUniqueIdManager::assignPlayer
+            );
+
+            if (scoreboardMigrated) {
+                this.scoreboardManager.read();
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to complete world storage migrations", e);
+        }
 
         loadLevels();
 
@@ -975,8 +1044,9 @@ public class Server {
 
         try {
             this.levelTickExecutor.shutdown();
+            this.chunkPublisherExecutor.shutdown();
         } catch (Throwable e) {
-            log.error("Exception while shutting down level tick executor", e);
+            log.error("Exception while shutting down level tick executors", e);
         }
 
         try {
@@ -989,7 +1059,7 @@ public class Server {
         try {
             log.debug("Stopping network interfaces");
             network.shutdown();
-            playerDataDB.close();
+            serverDataDB.close();
         } catch (Throwable e) {
             log.error("Exception while stopping network interfaces", e);
         }
@@ -1044,6 +1114,18 @@ public class Server {
         this.network.setState(NetworkState.STARTED);
         this.network.updatePong(this.network.getPong());
 
+        this.chunkPublisherExecutor.scheduleWithFixedDelay(() -> {
+            for (Player player : this.players.values()) {
+                try {
+                    if (player.isOnline()) {
+                        player.getPlayerChunkManager().tickPublisher();
+                    }
+                } catch (Throwable t) {
+                    log.error("Failed to update chunk publisher for player {}", player.getName(), t);
+                }
+            }
+        }, 0, 50, TimeUnit.MILLISECONDS);
+
         this.tickProcessor();
         this.forceShutdown();
     }
@@ -1079,7 +1161,7 @@ public class Server {
         boolean tickPlayers = getSettings().levelSettings().alwaysTickPlayers();
         for (Player player : new ArrayList<>(this.players.values())) {
             if (tickPlayers) player.onUpdate(currentTick);
-            if (!player.spawned) player.checkNetwork();
+            player.checkNetwork();
         }
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
@@ -1716,6 +1798,16 @@ public class Server {
             return;
         }
 
+        for (Player existing : new ArrayList<>(this.players.values())) {
+            if (existing == player || this.playerList.get(existing.getUniqueId()) == existing) {
+                continue;
+            }
+
+            if (existing.getUniqueId().equals(player.getUniqueId()) || existing.getName().equalsIgnoreCase(player.getName())) {
+                existing.close("disconnectionScreen.loggedinOtherLocation");
+            }
+        }
+
         this.players.put(socketAddress, player);
         if (this.sendUsageTicker > 0) {
             this.uniquePlayers.add(player.getUniqueId());
@@ -1764,6 +1856,16 @@ public class Server {
 
     @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
+        if (player.uniqueIdLong() == 0) {
+            throw new IllegalStateException("Player " + player.getName() + " has no persistent ActorUniqueID");
+        }
+
+        Player existing = this.playerListByUniqueId.putIfAbsent(player.uniqueIdLong(), player);
+
+        if (existing != null && existing != player) {
+            throw new IllegalStateException("Player ActorUniqueID " + player.uniqueIdLong() + " is already online as " + existing.getName());
+        }
+
         this.playerList.put(player.getUniqueId(), player);
 
         final List<Player> recipients = new ArrayList<>(this.playerList.values());
@@ -1774,7 +1876,7 @@ public class Server {
 
             this.updatePlayerListData(
                 player.getUniqueId(),
-                player.getId(),
+                player.uniqueIdLong(),
                 player.getDisplayName(),
                 player.getSkin(),
                 player.getXUID(),
@@ -1788,9 +1890,10 @@ public class Server {
 
     @ApiStatus.Internal
     public void removeOnlinePlayer(Player player) {
-        if (this.playerList.containsKey(player.getUniqueId())) {
-            this.playerList.remove(player.getUniqueId());
+        boolean removed = this.playerList.remove(player.getUniqueId(), player);
+        this.playerListByUniqueId.remove(player.uniqueIdLong(), player);
 
+        if (removed) {
             this.sendSleepingPlayersStatus(this.playerList.values());
 
             final PlayerListPacket pk = new PlayerListPacket();
@@ -1921,7 +2024,7 @@ public class Server {
         for (Player value : this.playerList.values()) {
             final PlayerListAddEntry entry = new PlayerListAddEntry();
             entry.setUuid(value.getUniqueId());
-            entry.setActorUniqueID(value.getId());
+            entry.setActorUniqueID(value.uniqueIdLong());
             entry.setPlayerName(value.getName());
             entry.setXblXUID(value.getXUID());
             entry.setPlatformOnlineID("");
@@ -1958,21 +2061,95 @@ public class Server {
     }
 
     /**
+     * Returns an online player by Bedrock ActorUniqueID.
+     *
+     * @param uniqueId actor unique ID
+     * @return matching online player
+     */
+    public Optional<Player> getPlayerByUniqueId(long uniqueId) {
+        return Optional.ofNullable(this.playerListByUniqueId.get(uniqueId));
+    }
+
+    /**
+     * Resolves a reserved player ActorUniqueID to its UUID.
+     *
+     * @param uniqueId actor unique ID
+     * @return matching player UUID
+     */
+    @ApiStatus.Internal
+    public Optional<UUID> getPlayerUuidByUniqueId(long uniqueId) {
+        return Optional.ofNullable(this.actorUniqueIdManager.getPlayerUuid(uniqueId));
+    }
+
+    /**
+     * Returns the registered ActorUniqueID for the specified player UUID.
+     *
+     * @param uuid player UUID
+     * @return registered actor unique ID
+     */
+    @ApiStatus.Internal
+    public long resolvePlayerUniqueId(UUID uuid) {
+        Preconditions.checkNotNull(uuid, "uuid");
+        return this.actorUniqueIdManager.requirePlayer(uuid);
+    }
+
+    /**
+     * Validates and returns the registered ActorUniqueID from canonical player data.
+     *
+     * @param uuid player UUID
+     * @param nbt canonical player data
+     * @return validated actor unique ID
+     */
+    @ApiStatus.Internal
+    public long requirePlayerUniqueId(UUID uuid, CompoundTag nbt) {
+        Preconditions.checkNotNull(uuid, "uuid");
+        Preconditions.checkNotNull(nbt, "nbt");
+        return this.actorUniqueIdManager.requirePlayer(uuid, nbt);
+    }
+
+    /**
+     * Returns whether an ActorUniqueID is reserved for a player.
+     *
+     * @param uniqueId actor unique ID
+     * @return whether the ID is player-reserved
+     */
+    @ApiStatus.Internal
+    public boolean isPlayerUniqueIdReserved(long uniqueId) {
+        return this.actorUniqueIdManager != null && this.actorUniqueIdManager.isPlayerReserved(uniqueId);
+    }
+
+    /**
+     * Allocates a new server-global ActorUniqueID.
+     *
+     * @return allocated actor unique ID
+     */
+    @ApiStatus.Internal
+    public long getNewActorUniqueId() {
+        if (this.actorUniqueIdManager == null) {
+            throw new IllegalStateException(
+                    "Server-global ActorUniqueID manager has not been initialized"
+            );
+        }
+
+        return this.actorUniqueIdManager.next();
+    }
+
+    /**
      * Find the UUID corresponding to the specified player name from the database.
      *
      * @param name player name
      * @return The player's UUID, which can be empty.
      */
     public Optional<UUID> lookupName(String name) {
-        byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
-        byte[] uuidBytes = playerDataDB.get(nameBytes);
+        byte[] nameKey = PlayerDataKeys.name(name);
+        byte[] uuidBytes = serverDataDB.get(nameKey);
         if (uuidBytes == null) {
             return Optional.empty();
         }
 
         if (uuidBytes.length != 16) {
             log.debug("Invalid uuid in name lookup database detected! Removing");
-            playerDataDB.delete(nameBytes);
+            serverDataDB.delete(nameKey);
             return Optional.empty();
         }
 
@@ -1990,15 +2167,15 @@ public class Server {
         var uniqueId = uuidFromXUID(info.getIdentityClaims().extraData.xuid);
         var name = info.getIdentityClaims().extraData.displayName;
 
-        byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
+        byte[] nameKey = PlayerDataKeys.name(name);
 
         ByteBuffer buffer = ByteBuffer.allocate(16);
         buffer.putLong(uniqueId.getMostSignificantBits());
         buffer.putLong(uniqueId.getLeastSignificantBits());
         byte[] array = buffer.array();
-        byte[] existing = playerDataDB.get(nameBytes);
+        byte[] existing = serverDataDB.get(nameKey);
         if (existing == null || !Arrays.equals(existing, array)) {
-            playerDataDB.put(nameBytes, array);
+            serverDataDB.put(nameKey, array);
         }
     }
 
@@ -2052,6 +2229,10 @@ public class Server {
         return getOfflinePlayerData(uuid, false);
     }
 
+    public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
+        return getOfflinePlayerDataInternal(uuid, create);
+    }
+
     /**
      * Retrieve the NBT data for the player specified by the UUID
      *
@@ -2059,8 +2240,12 @@ public class Server {
      * @param create If player data does not exist, whether to create.
      * @return {@link CompoundTag}
      */
-    public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
-        return getOfflinePlayerDataInternal(uuid, create);
+    PlayerDataRecord getOfflinePlayerDataRecord(UUID uuid, boolean create) {
+        CompoundTag nbt = getOfflinePlayerDataInternal(uuid, create);
+
+        if (nbt == null) return null;
+
+        return new PlayerDataRecord(nbt, getOfflinePlayerExtraDataInternal(uuid), getOfflinePlayerCustomDataInternal(uuid));
     }
 
     public CompoundTag getOfflinePlayerData(String name) {
@@ -2071,7 +2256,7 @@ public class Server {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
             log.debug("Invalid uuid in name lookup database detected! Removing");
-            playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
+            serverDataDB.delete(PlayerDataKeys.name(name));
             return null;
         }
         return getOfflinePlayerDataInternal(uuid.get(), create);
@@ -2081,18 +2266,14 @@ public class Server {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
             log.debug("Invalid uuid in name lookup database detected! Removing");
-            playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
+            serverDataDB.delete(PlayerDataKeys.name(name));
             return false;
         }
         return hasOfflinePlayerData(uuid.get());
     }
 
     public boolean hasOfflinePlayerData(UUID uuid) {
-        ByteBuffer buffer = ByteBuffer.allocate(16);
-        buffer.putLong(uuid.getMostSignificantBits());
-        buffer.putLong(uuid.getLeastSignificantBits());
-        byte[] bytes = playerDataDB.get(buffer.array());
-        return bytes != null;
+        return serverDataDB.get(PlayerDataKeys.player(uuid)) != null;
     }
 
     private CompoundTag getOfflinePlayerDataInternal(UUID uuid, boolean create) {
@@ -2100,56 +2281,137 @@ public class Server {
             log.error("UUID is empty, cannot query player data");
             return null;
         }
-        try {
-            ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
-            buffer.putLong(uuid.getMostSignificantBits());
-            buffer.putLong(uuid.getLeastSignificantBits());
-            byte[] bytes = playerDataDB.get(buffer.array());
-            if (bytes != null) {
-                try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-                     final NBTInputStream nbtInputStream = NbtUtils.createGZIPReader(inputStream)) {
-                    return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readTag());
-                }
+        byte[] bytes = serverDataDB.get(PlayerDataKeys.player(uuid));
+
+        if (bytes != null) {
+            try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+                 final NBTInputStream nbtInputStream = NbtUtils.createGZIPReader(inputStream)) {
+                return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readTag());
+            } catch (IOException e) {
+                log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", uuid), e);
+                return null;
             }
-
-            if (migrationService.hasBedrockData(uuid)) {
-                CompoundTag migrated = migrationService.migrate(uuid);
-
-                if (migrated != null) {
-                    migrated.putBoolean("BedrockMigrated", true);
-                    saveOfflinePlayerData(uuid, migrated, true);
-                    return migrated;
-                }
-            }
-        } catch (IOException e) {
-            log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", uuid), e);
         }
-        CompoundTag migrated = migrationService.migrate(uuid);
 
-        if (migrated != null) {
-            saveOfflinePlayerData(uuid, migrated, true);
-            return migrated;
-        }
         if (create) {
             if (this.getSettings().playerSettings().savePlayerData()) {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
             }
             Position spawn = this.getDefaultLevel().getSafeSpawn();
-            final CompoundTag nbt = new CompoundTag()
-                .putLong("firstPlayed", System.currentTimeMillis() / 1000)
-                .putLong("lastPlayed", System.currentTimeMillis() / 1000)
-                .putList("Pos", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(spawn.x))
-                    .add(new DoubleTag(spawn.y))
-                    .add(new DoubleTag(spawn.z)))
+
+            ListTag<CompoundTag> inventory = new ListTag<>(Tag.TAG_Compound);
+            for (int slot = 0; slot < 36; slot++) {
+                inventory.add(ItemHelper.write(Item.AIR, slot));
+            }
+
+            ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
+            for (int slot = 0; slot < 5; slot++) {
+                armor.add(ItemHelper.write(Item.AIR));
+            }
+
+            ListTag<CompoundTag> mainhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
+            ListTag<CompoundTag> offhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
+            ListTag<CompoundTag> enderChest = new ListTag<>(Tag.TAG_Compound);
+            for (int slot = 0; slot < 27; slot++) {
+                enderChest.add(ItemHelper.write(Item.AIR, slot));
+            }
+
+            Attribute knockbackResistance = Attribute.getAttribute(Attribute.KNOCKBACK_RESISTANCE)
+                .setMinValue(-2f)
+                .setDefaultMinimum(-2f);
+
+            Attribute attackDamage = Attribute.getAttribute(Attribute.ATTACK_DAMAGE)
+                .setMinValue(1f)
+                .setMaxValue(1f)
+                .setDefaultMinimum(1f)
+                .setDefaultMaximum(1f)
+                .setDefaultValue(1f)
+                .setValue(1f);
+
+            ListTag<CompoundTag> attributes = new ListTag<CompoundTag>(Tag.TAG_Compound)
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.HEALTH).setValue(20)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOLLOW_RANGE)))
+                .add(Attribute.toNBT(knockbackResistance))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.MOVEMENT_SPEED)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.UNDER_WATER_MOVEMENT_SPEED)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LAVA_MOVEMENT_SPEED)))
+                .add(Attribute.toNBT(attackDamage))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.ABSORPTION).setValue(0)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LUCK)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FRICTION_MODIFIER)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.BOUNCINESS)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.AIR_DRAG_MODIFIER)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOOD).setValue(20)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.SATURATION).setValue(5)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXHAUSTION).setValue(0)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setDefaultValue(0).setValue(0)))
+                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE).setDefaultValue(0).setValue(0)));
+
+            int defaultGamemode = this.getGamemode();
+            boolean creative = defaultGamemode == Player.CREATIVE;
+            boolean spectator = defaultGamemode == Player.SPECTATOR;
+
+            CompoundTag abilities = new CompoundTag()
+                .putByte("attackmobs", 1)
+                .putByte("attackplayers", 1)
+                .putByte("build", 1)
+                .putByte("doorsandswitches", 1)
+                .putFloat("flySpeed", Player.DEFAULT_FLY_SPEED)
+                .putByte("flying", spectator ? 1 : 0)
+                .putByte("instabuild", creative ? 1 : 0)
+                .putByte("invulnerable", 0)
+                .putByte("lightning", 0)
+                .putByte("mayfly", creative || spectator ? 1 : 0)
+                .putByte("mine", 1)
+                .putByte("op", 0)
+                .putByte("opencontainers", 1)
+                .putByte("teleport", 0)
+                .putFloat("verticalFlySpeed", 1f)
+                .putFloat("walkSpeed", Player.DEFAULT_SPEED);
+
+            long now = System.currentTimeMillis() / 1000;
+
+            final CompoundTag pnxExtra = new CompoundTag()
+                .putLong("firstPlayed", now)
+                .putLong("lastPlayed", now)
                 .putString("Level", this.getDefaultLevel().getName())
-                .putList("Inventory", new ListTag<>())
-                .putCompound("Achievements", new CompoundTag())
-                .putInt("playerGameType", this.getGamemode())
-                .putList("Motion", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0)))
+                .putCompound("Achievements", new CompoundTag());
+
+            final CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<FloatTag>()
+                    .add(new FloatTag((float) spawn.x))
+                    .add(new FloatTag((float) spawn.y))
+                    .add(new FloatTag((float) spawn.z)))
+                .putInt("DimensionId", this.getDefaultLevel().getDimension())
+                .putList("Inventory", inventory)
+                .putList("Armor", armor)
+                .putList("Mainhand", mainhand)
+                .putList("Offhand", offhand)
+                .putList("EnderChestInventory", enderChest)
+                .putInt("SelectedInventorySlot", 0)
+                .putInt("SelectedContainerId", 0)
+                .putList("Attributes", attributes)
+                .putList("definitions", new ListTag<StringTag>(Tag.TAG_String)
+                    .add(new StringTag("+minecraft:player")))
+                .putString("format_version", "1.12.0")
+                .putString("identifier", "minecraft:player")
+                .putList("fogCommandStack", new ListTag<>())
+                .putList("PlayerUIItems", new ListTag<>())
+                .putInt("SpawnX", Integer.MIN_VALUE)
+                .putInt("SpawnY", Integer.MIN_VALUE)
+                .putInt("SpawnZ", Integer.MIN_VALUE)
+                .putInt("SpawnBlockPositionX", Integer.MIN_VALUE)
+                .putInt("SpawnBlockPositionY", Integer.MIN_VALUE)
+                .putInt("SpawnBlockPositionZ", Integer.MIN_VALUE)
+                .putInt("SpawnDimension", 3)
+                .putInt("PlayerGameMode", Player.toStorageGamemode(defaultGamemode))
+                .putInt("PlayerLevel", 0)
+                .putFloat("PlayerLevelProgress", 0)
+                .putInt("EnchantmentSeed", Player.generateEnchantmentSeed())
+                .putList("Motion", new ListTag<FloatTag>()
+                    .add(new FloatTag(0))
+                    .add(new FloatTag(0))
+                    .add(new FloatTag(0)))
                 .putList("Rotation", new ListTag<FloatTag>()
                     .add(new FloatTag(0))
                     .add(new FloatTag(0)))
@@ -2157,13 +2419,40 @@ public class Server {
                 .putShort("Fire", 0)
                 .putShort("Air", 300)
                 .putBoolean("OnGround", true)
-                .putBoolean("Invulnerable", false);
+                .putBoolean("Invulnerable", false)
+                .putCompound("abilities", abilities)
+                .putInt("permissionsLevel", 0)
+                .putInt("playerPermissionsLevel", Player.PERMISSION_MEMBER);
 
-            this.saveOfflinePlayerData(uuid, nbt, true);
+            this.actorUniqueIdManager.assignPlayer(uuid, nbt);
+            this.saveOfflinePlayerDataInternal(nbt, pnxExtra, new CompoundTag(), uuid);
             return nbt;
         } else {
             log.error("Player {} does not exist and cannot read playerdata", uuid);
             return null;
+        }
+    }
+
+    private CompoundTag getOfflinePlayerExtraDataInternal(UUID uuid) {
+        return getOfflinePlayerSidecarDataInternal(PlayerDataKeys.pnxExtra(uuid), "PNX extra", uuid);
+    }
+
+    private CompoundTag getOfflinePlayerCustomDataInternal(UUID uuid) {
+        return getOfflinePlayerSidecarDataInternal(PlayerDataKeys.custom(uuid), "custom", uuid);
+    }
+
+    private CompoundTag getOfflinePlayerSidecarDataInternal(byte[] key, String type, UUID uuid) {
+        byte[] bytes = serverDataDB.get(key);
+
+        if (bytes == null) {
+            return new CompoundTag();
+        }
+
+        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+             final NBTInputStream nbtInputStream = NbtUtils.createGZIPReader(inputStream)) {
+            return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readTag());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Unable to read " + type + " player data for " + uuid, e);
         }
     }
 
@@ -2196,7 +2485,11 @@ public class Server {
      * @param async      Whether to save asynchronously
      */
     public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
-        UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
+        UUID uuid = lookupName(nameOrUUid).orElseGet(() -> UUID.fromString(nameOrUUid));
+        saveOfflinePlayerData(uuid, tag, null, null, async);
+    }
+
+    void saveOfflinePlayerData(UUID uuid, CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, boolean async) {
         if (this.getSettings().playerSettings().savePlayerData()) {
             this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
                 final AtomicBoolean hasRun = new AtomicBoolean(false);
@@ -2206,33 +2499,49 @@ public class Server {
                     this.onCancel();
                 }
 
-                // doing it like this ensures that the player data will be saved in a server
-                // shutdown
                 @Override
                 public void onCancel() {
                     if (!hasRun.getAndSet(true)) {
-                        saveOfflinePlayerDataInternal(tag, uuid);
+                        saveOfflinePlayerDataInternal(tag, pnxExtra, custom, uuid);
                     }
                 }
             }, async);
         }
     }
 
-    private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
+    private void saveOfflinePlayerDataInternal(CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, UUID uuid) {
         try {
             cleanupOfflinePlayerData(tag);
-            try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                 final NBTOutputStream nbtOutputStream = NbtUtils.createGZIPWriter(outputStream)) {
-                nbtOutputStream.writeTag(tag.toNetwork());
-                nbtOutputStream.close();
-                byte[] bytes = outputStream.toByteArray();
-                ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
-                buffer.putLong(uuid.getMostSignificantBits());
-                buffer.putLong(uuid.getLeastSignificantBits());
-                playerDataDB.put(buffer.array(), bytes);
+
+            try (WriteBatch batch = serverDataDB.createWriteBatch()) {
+                batch.put(PlayerDataKeys.player(uuid), writeOfflinePlayerCompound(tag));
+
+                writeOfflinePlayerSidecar(batch, PlayerDataKeys.pnxExtra(uuid), pnxExtra);
+                writeOfflinePlayerSidecar(batch, PlayerDataKeys.custom(uuid), custom);
+
+                serverDataDB.write(batch);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private static void writeOfflinePlayerSidecar(WriteBatch batch, byte[] key, CompoundTag tag) throws IOException {
+        if (tag == null) return;
+
+        if (tag.isEmpty()) {
+            batch.delete(key);
+        } else {
+            batch.put(key, writeOfflinePlayerCompound(tag));
+        }
+    }
+
+    private static byte[] writeOfflinePlayerCompound(CompoundTag tag) throws IOException {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             final NBTOutputStream nbtOutputStream = NbtUtils.createGZIPWriter(outputStream)) {
+            nbtOutputStream.writeTag(tag.toNetwork());
+            nbtOutputStream.close();
+            return outputStream.toByteArray();
         }
     }
 
@@ -2358,15 +2667,12 @@ public class Server {
 
     @ApiStatus.Internal
     public void removePlayer(Player player) {
-        Player toRemove = this.players.remove(player.getRawSocketAddress());
-        if (toRemove != null) {
+        if (this.players.remove(player.getRawSocketAddress(), player)) {
             return;
         }
 
         for (InetSocketAddress socketAddress : new ArrayList<>(this.players.keySet())) {
-            Player p = this.players.get(socketAddress);
-            if (player == p) {
-                this.players.remove(socketAddress);
+            if (this.players.remove(socketAddress, player)) {
                 break;
             }
         }
@@ -2382,29 +2688,25 @@ public class Server {
     }
 
     /**
-     * Deletes all player data (both UUID mapping and player data) for the specified
-     * player name.
-     * This method handles the LevelDB structure used by PowerNukkitX where player
-     * data is stored
-     * in two separate databases: one for name-to-UUID mapping and another for
-     * actual player data.
+     * Deletes all player data for the specified player name.
      *
-     * @param name The player name to delete it (case-insensitive)
+     * @param name The player name to delete (case-insensitive)
      */
     public void deletePlayerData(String name) {
         try {
-            byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
-            byte[] uuidBytes = playerDataDB.get(nameBytes);
+            byte[] nameKey = PlayerDataKeys.name(name);
+            byte[] uuidBytes = serverDataDB.get(nameKey);
 
             if (uuidBytes != null && uuidBytes.length == 16) {
                 ByteBuffer buffer = ByteBuffer.wrap(uuidBytes);
                 UUID uuid = new UUID(buffer.getLong(), buffer.getLong());
-                String uuidStr = uuid.toString();
 
-                playerDataDB.delete(uuidBytes); // Delete from player data DB
-                playerDataDB.delete(nameBytes); // Delete name-to-UUID mapping
+                serverDataDB.delete(PlayerDataKeys.player(uuid));
+                serverDataDB.delete(PlayerDataKeys.pnxExtra(uuid));
+                serverDataDB.delete(PlayerDataKeys.custom(uuid));
+                serverDataDB.delete(nameKey);
 
-                log.info("{} player data deleted (UUID: {})", name, uuidStr);
+                log.info("{} player data deleted (UUID: {})", name, uuid);
             } else {
                 log.warn("{} player not found or invalid UUID data", name);
             }
@@ -2425,17 +2727,21 @@ public class Server {
             buffer.putLong(uuid.getLeastSignificantBits());
             byte[] uuidBytes = buffer.array();
 
-            playerDataDB.delete(uuidBytes);
+            serverDataDB.delete(PlayerDataKeys.player(uuid));
+            serverDataDB.delete(PlayerDataKeys.pnxExtra(uuid));
+            serverDataDB.delete(PlayerDataKeys.custom(uuid));
 
-            try (DBIterator iterator = playerDataDB.iterator()) {
-                for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
-                    byte[] key = iterator.peekNext().getKey();
-                    byte[] value = iterator.peekNext().getValue();
+            try (DBIterator iterator = serverDataDB.iterator()) {
+                iterator.seekToFirst();
 
-                    if (Arrays.equals(value, uuidBytes)) {
-                        playerDataDB.delete(key);
-                        String playerName = new String(key, StandardCharsets.UTF_8);
-                        log.info("Deleted name mapping for {}", playerName);
+                while (iterator.hasNext()) {
+                    Map.Entry<byte[], byte[]> entry = iterator.next();
+                    byte[] key = entry.getKey();
+                    byte[] value = entry.getValue();
+
+                    if (PlayerDataKeys.isName(key) && Arrays.equals(value, uuidBytes)) {
+                        serverDataDB.delete(key);
+                        log.info("Deleted name mapping for {}", PlayerDataKeys.readName(key));
                         break;
                     }
                 }
@@ -2697,9 +3003,12 @@ public class Server {
      * @return whether load success
      */
     public boolean loadLevel(String levelFolderName) {
+        return loadLevelInternal(levelFolderName);
+    }
+
+    private boolean loadLevelInternal(String levelFolderName) {
         LevelConfig levelConfig = getLevelConfig(levelFolderName);
-        if (levelConfig == null)
-            return false;
+        if (levelConfig == null) return false;
 
         String path;
         if (levelFolderName.contains("/") || levelFolderName.contains("\\")) {
@@ -2710,11 +3019,15 @@ public class Server {
         String pathS = Path.of(path).toString();
 
         LevelProviderFactory provider = LevelProviderManager.getProviderFactory(pathS);
+        if (provider == null && "leveldb".equalsIgnoreCase(levelConfig.format())) {
+            return false;
+        }
         if (provider == null) {
             provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
         }
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
+
         for (var entry : generators.entrySet()) {
             String levelName = levelFolderName
                 + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
@@ -2724,15 +3037,18 @@ public class Server {
             Level level;
             try {
                 if (provider == null) {
-                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName,
-                        "the level does not exist"));
+                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "the level does not exist"));
                     return false;
                 }
+
                 level = new Level(this, levelName, pathS, generators.size(), provider, entry.getValue());
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, e.getMessage()), e);
                 return false;
             }
+
+            level.advanceWorldStartCount();
+
             this.levels.put(level.getId(), level);
             level.initLevel();
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
@@ -2789,7 +3105,11 @@ public class Server {
             log.error("Could not load level " + name, new LevelException("Level config is not a valid"));
             return false;
         }
-        for (var entry : levelConfig.generators().entrySet()) {
+        boolean freshLevelDBStorage = "leveldb".equalsIgnoreCase(levelConfig.format()) && !jpath.resolve("db").toFile().exists();
+        var generatorEntries = levelConfig.generators().entrySet().stream()
+                .sorted(Comparator.comparingInt(entry -> entry.getValue().dimensionData().getDimensionId() == Level.DIMENSION_OVERWORLD ? 0 : 1))
+                .toList();
+        for (var entry : generatorEntries) {
             LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
             var provider = LevelProviderManager.getProviderFactoryByName(levelConfig.format());
             if (provider == null) {
@@ -2808,11 +3128,22 @@ public class Server {
                 }
                 level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
 
+                level.advanceWorldStartCount();
+
                 this.getLevels().put(level.getId(), level);
                 level.initLevel();
                 level.setTickRate(getSettings().levelSettings().baseTickRate());
                 this.getPluginManager().callEvent(new LevelInitEvent(level));
                 this.getPluginManager().callEvent(new LevelLoadEvent(level));
+            } catch (Exception e) {
+                log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
+                return false;
+            }
+        }
+
+        if (freshLevelDBStorage && generatorEntries.size() != 0) {
+            try {
+                LevelDBProvider.completeGeneration(path, levelConfig);
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
                 return false;
@@ -3263,32 +3594,45 @@ public class Server {
         return experiments;
     }
 
-
-    /**
-     * Allow plugins to override the default DP group UUID (e.g., when migrating from BDS).
-     */
-    public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
-        if (uuid == null || !DP_UUID_CANON.matcher(uuid).matches()) {
-            log.warn("DynamicProperties default group UUID rejected: '{}'", uuid);
-            return;
-        }
-        DP_DEFAULT_GROUP_UUID = uuid.toLowerCase();
-    }
-
     public static String getDynamicPropertyRoot() {
-        return DP_ROOT;
+        return DynamicProperties.ROOT;
     }
 
     public static String getDefaultDynamicPropertiesGroupUUID() {
         return DP_DEFAULT_GROUP_UUID;
     }
 
+    /**
+     * Overrides the global Dynamic Properties namespace UUID and persists it.
+     */
+    public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
+        try {
+            String normalized = UUID.fromString(uuid).toString();
+            if (!normalized.equalsIgnoreCase(uuid)) throw new IllegalArgumentException();
+            DP_DEFAULT_GROUP_UUID = normalized;
+            if (instance != null && instance.serverDataDB != null) {
+                instance.serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, normalized.getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.warn("DynamicProperties global UUID rejected: '{}'", uuid);
+        }
+    }
+
     public static int getDynamicPropertiesMaxStringBytes() {
-        return DP_MAX_STRING_BYTES;
+        return DynamicProperties.MAX_STRING_BYTES;
     }
 
     public static double getDynamicPropertiesNumberAbsMax() {
-        return DP_NUMBER_ABS_MAX;
+        return DynamicProperties.NUMBER_ABS_MAX;
+    }
+
+    /**
+     * Returns the server-scoped dynamic properties.
+     *
+     * @return server dynamic properties
+     */
+    public DynamicProperties getDynamicProperties() {
+        return dynamicProperties;
     }
 
     /**
@@ -3297,20 +3641,7 @@ public class Server {
      * @param key the key id of the DynamicProperty
      */
     public Server removeDynamicProperty(String key) {
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return this;
-
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null) return this;
-
-        if (!root.contains(DP_ROOT)) return this;
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-
-        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID);
-        if (group == null || !group.contains(key)) return this;
-
-        group.remove(key);
-        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, group);
+        dynamicProperties.remove(DP_DEFAULT_GROUP_UUID, key);
         return this;
     }
 
@@ -3318,20 +3649,7 @@ public class Server {
      * Remove all DynamicProperties in the world.
      */
     public Server clearDynamicProperties() {
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return this;
-
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null) root = new CompoundTag();
-
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (dyn == null) dyn = new CompoundTag();
-
-        dyn.putCompound(DP_DEFAULT_GROUP_UUID, new CompoundTag());
-        root.putCompound(DP_ROOT, dyn);
-
-        provider.setWorldDynamicProperties(root);
-        provider.setWorldDynamicPropertiesDirty(true);
+        dynamicProperties.clear(DP_DEFAULT_GROUP_UUID);
         return this;
     }
 
@@ -3342,19 +3660,7 @@ public class Server {
      * @param value the double int value of the DynamicProperty
      */
     public Server setDynamicProperty(String key, Double value) {
-        if (value == null)
-            return removeDynamicProperty(key);
-        if (!isFiniteAndInRange(value)) {
-            log.warn("DynamicProperty '{}' rejected: out of numeric bounds or non-finite (value={})", key, value);
-            return this;
-        }
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null)
-            return this;
-
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
-            .putDouble(key, value);
-        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        dynamicProperties.set(DP_DEFAULT_GROUP_UUID, key, value);
         return this;
     }
 
@@ -3385,15 +3691,7 @@ public class Server {
      * @param bool the bool value of the DynamicProperty
      */
     public Server setDynamicProperty(String key, Boolean bool) {
-        if (bool == null)
-            return removeDynamicProperty(key);
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null)
-            return this;
-
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
-            .putBoolean(key, bool);
-        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        dynamicProperties.set(DP_DEFAULT_GROUP_UUID, key, bool);
         return this;
     }
 
@@ -3404,19 +3702,7 @@ public class Server {
      * @param string the string value of the DynamicProperty
      */
     public Server setDynamicProperty(String key, String string) {
-        if (string == null)
-            return removeDynamicProperty(key);
-        if (!fitsUtf8Limit(string)) {
-            log.warn("DynamicProperty '{}' rejected: string exceeds {} UTF-8 bytes", key, DP_MAX_STRING_BYTES);
-            return this;
-        }
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null)
-            return this;
-
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
-            .putString(key, string);
-        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        dynamicProperties.set(DP_DEFAULT_GROUP_UUID, key, string);
         return this;
     }
 
@@ -3427,26 +3713,7 @@ public class Server {
      * @param vec3 the vec3 value of the DynamicProperty
      */
     public Server setVec3DynamicProperty(String key, Vector3 vec3) {
-        if (vec3 == null)
-            return removeDynamicProperty(key);
-        if (!isFiniteAndInRange(vec3.x) || !isFiniteAndInRange(vec3.y) || !isFiniteAndInRange(vec3.z)) {
-            log.warn(
-                "DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})",
-                key, vec3.x, vec3.y, vec3.z);
-            return this;
-        }
-        ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag((float) vec3.x));
-        list.add(new FloatTag((float) vec3.y));
-        list.add(new FloatTag((float) vec3.z));
-
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null)
-            return this;
-
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        g.putList(key, list);
-        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        dynamicProperties.setVec3(DP_DEFAULT_GROUP_UUID, key, vec3);
         return this;
     }
 
@@ -3478,25 +3745,7 @@ public class Server {
      * @return the double int value or null if not available.
      */
     public Double getDoubleDynamicProperty(String key) {
-        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        switch (t) {
-            case null -> {
-                return null;
-            }
-            case Number number -> {
-                return number.doubleValue();
-            }
-            case String s -> {
-                try {
-                    return Double.parseDouble(s);
-                } catch (NumberFormatException e) {
-                    return null;
-                }
-            }
-            default -> {
-            }
-        }
-        return null;
+        return dynamicProperties.getDouble(DP_DEFAULT_GROUP_UUID, key);
     }
 
     /**
@@ -3568,17 +3817,7 @@ public class Server {
      * @return the bool value or false if not available.
      */
     public Boolean getBoolDynamicProperty(String key) {
-        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null) return null;
-        if (t instanceof Number) return ((Number) t).byteValue() != 0;
-        Double d = getDoubleDynamicProperty(key);
-        if (d != null) return d != 0.0;
-        if (t instanceof String string) {
-            String s = string.trim().toLowerCase();
-            if ("true".equals(s) || "1".equals(s)) return true;
-            if ("false".equals(s) || "0".equals(s)) return false;
-        }
-        return null;
+        return dynamicProperties.getBoolean(DP_DEFAULT_GROUP_UUID, key);
     }
 
     /**
@@ -3600,12 +3839,7 @@ public class Server {
      * @return the bool value or null if not available.
      */
     public String getStringDynamicProperty(String key) {
-        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        return switch (t) {
-            case Number number -> String.valueOf(number);
-            case String s -> s;
-            case null, default -> null;
-        };
+        return dynamicProperties.getString(DP_DEFAULT_GROUP_UUID, key);
     }
 
     /**
@@ -3627,91 +3861,30 @@ public class Server {
      * @return the bool value or null if not available.
      */
     public Vector3 getVec3DynamicProperty(String key) {
-        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null) return null;
-        if (t instanceof List<?> list &&
-            list.size() == 3 &&
-            list.get(0) instanceof Float fx &&
-            list.get(1) instanceof Float fy &&
-            list.get(2) instanceof Float fz) {
-            return new Vector3(fx, fy, fz);
-        }
-        return null;
+        return dynamicProperties.getVec3(DP_DEFAULT_GROUP_UUID, key);
     }
 
     // Dynamic Properties Helpers start
-    private static boolean isFiniteAndInRange(double v) {
-        return !Double.isNaN(v) && !Double.isInfinite(v) && Math.abs(v) <= DP_NUMBER_ABS_MAX;
-    }
+    private CompoundTag readServerDynamicProperties() {
+        byte[] bytes = serverDataDB.get(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_KEY);
+        if (bytes == null) return new CompoundTag();
 
-    private static boolean fitsUtf8Limit(String s) {
-        if (s == null)
-            return false;
-        int byteCount = s.getBytes(StandardCharsets.UTF_8).length;
-        return byteCount <= DP_MAX_STRING_BYTES;
-    }
-
-    private LevelDBProvider getWorldDynamicPropertiesProvider() {
-        Level level = this.getDefaultLevel();
-        if (level == null)
-            return null;
-
-        LevelProvider provider = level.getProvider();
-        if (!(provider instanceof LevelDBProvider ldb))
-            return null;
-
-        return ldb;
-    }
-
-    private CompoundTag ensureWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null) root = new CompoundTag();
-
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (!root.contains(DP_ROOT) || dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
+        try (var inputStream = new ByteArrayInputStream(bytes);
+             var nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+            return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readTag());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read server Dynamic Properties", e);
         }
-
-        CompoundTag group = dyn.getCompound(groupId);
-        if (group == null) group = new CompoundTag();
-
-        dyn.putCompound(groupId, group);
-        provider.setWorldDynamicProperties(root);
-        return group;
     }
 
-
-    private CompoundTag getWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null || !root.contains(DP_ROOT)) return null;
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (dyn == null) return null;
-        return dyn.getCompound(groupId);
-    }
-
-    private void saveWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId, CompoundTag group) {
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null) root = new CompoundTag();
-
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (!root.contains(DP_ROOT) || dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
+    private void writeServerDynamicProperties(CompoundTag root) {
+        try (var outputStream = new ByteArrayOutputStream();
+             var nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+            nbtOutputStream.writeTag(root.toNetwork());
+            serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_KEY, outputStream.toByteArray());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to write server Dynamic Properties", e);
         }
-
-        dyn.putCompound(groupId, group);
-        provider.setWorldDynamicProperties(root);
-        provider.setWorldDynamicPropertiesDirty(true);
-    }
-
-    private Object findWorldDynamicPropertyTagInConfiguredGroup(String key) {
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return null;
-
-        CompoundTag group = getWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        if (group == null || !group.contains(key)) return null;
-        return group.get(key);
     }
     // Dynamic Properties Helpers end
 

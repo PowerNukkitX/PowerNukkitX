@@ -35,6 +35,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -243,12 +244,12 @@ public class EntityCamelHusk extends EntityCamel {
 
         if (entityId.equals(Entity.HUSK)) {
             Item ironSpear = Item.get(Item.IRON_SPEAR, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(ironSpear));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(ironSpear)));
             nbt.putBoolean(NBT_HUSK_RIDER, true);
         }
         if (entityId.equals(Entity.PARCHED)) {
             Item bow = Item.get(Item.BOW, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(bow));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(bow)));
         }
 
         Entity newEntity = Entity.createEntity(entityId, this.getChunk(), nbt);

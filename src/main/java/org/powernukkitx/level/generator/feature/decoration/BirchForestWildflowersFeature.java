@@ -36,7 +36,7 @@ public class BirchForestWildflowersFeature extends GenerateFeature {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 if (random.nextInt(10) < 1) {
-                    int y = chunk.getHeightMap(x, z) + 1;
+                    int y = chunk.getHeightMap(x, z);
                     List<String> tags = Registries.BIOME.getTags(chunk.getBiomeId(x, y, z));
                     if (tags.contains(BiomeTags.FOREST) && tags.contains(BiomeTags.BIRCH)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();

@@ -8,9 +8,14 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
+import org.powernukkitx.level.vibration.VibrationListenerStorage;
 import org.powernukkitx.math.AxisAlignedBB;
+import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.ACTIVE;
 
@@ -86,8 +91,33 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
     }
 
     @Override
+    @NotNull public BlockEntitySculkShrieker createBlockEntity() {
+        return createBlockEntity(VibrationListenerStorage.createInitialData());
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, VibrationListenerStorage.createInitialData()) != null;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return false;
+    }
+
+    @Override
+    public boolean hasEntityStepSensor() {
+        return true;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED && isShrieking()) {
+            BlockEntitySculkShrieker blockEntity = getBlockEntity();
+            if (blockEntity != null) blockEntity.finishShrieking();
+            return type;
+        }
+        return 0;
     }
 
     @Override

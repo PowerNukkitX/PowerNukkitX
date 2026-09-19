@@ -60,6 +60,8 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.powernukkitx.utils.random.NukkitRandom;
@@ -184,8 +186,13 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder, E
         }
         this.inventory = new EntityEquipmentInventory(this);
 
-        if (nbtMap.contains("Mainhand")) {
-            this.inventory.setItemInHand(ItemHelper.read(nbtMap.getCompound("Mainhand")), true);
+        if (nbtMap.containsList("Mainhand", Tag.TAG_Compound)) {
+            ListTag<CompoundTag> mainhand = nbtMap.getList("Mainhand", CompoundTag.class);
+            if (mainhand.size() > 0) this.inventory.setItemInHand(ItemHelper.read(mainhand.get(0)), true);
+        }
+        if (nbtMap.containsList("Offhand", Tag.TAG_Compound)) {
+            ListTag<CompoundTag> offhand = nbtMap.getList("Offhand", CompoundTag.class);
+            if (offhand.size() > 0) this.inventory.setItemInOffhand(ItemHelper.read(offhand.get(0)), true);
         }
         setOxidation(Oxidation.valueOf(nbtMap.getString("oxidationLevel").toUpperCase(Locale.ROOT)));
         this.weatherTick = nbtMap.getInt("weatheredTick");
@@ -230,7 +237,11 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder, E
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putCompound("Mainhand", ItemHelper.write(this.getInventory().getItem(0), null))
+        ListTag<CompoundTag> armor = new ListTag<>();
+        for (int i = 0; i < 5; i++) armor.add(ItemHelper.write(Item.AIR));
+        this.nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(this.getInventory().getItemInHand())))
+                .putList("Offhand", new ListTag<CompoundTag>().add(ItemHelper.write(this.getInventory().getItemInOffhand())))
+                .putList("Armor", armor)
                 .putString("oxidationLevel", this.getOxidation().getName())
                 .putInt("weatheredTick", this.weatherTick);
     }

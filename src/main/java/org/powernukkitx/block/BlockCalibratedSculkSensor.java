@@ -8,6 +8,7 @@ import org.powernukkitx.blockentity.BlockEntityCalibratedSculkSensor;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
+import org.powernukkitx.level.vibration.VibrationListenerStorage;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.utils.RedstoneComponent;
@@ -61,15 +62,28 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getHorizontalIndex()) : BlockFace.SOUTH);
+    @NotNull public BlockEntityCalibratedSculkSensor createBlockEntity() {
+        return createBlockEntity(VibrationListenerStorage.createInitialData());
+    }
 
-        this.getLevel().setBlock(block, this, true, true);
-        return true;
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        setBlockFace(player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH);
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, VibrationListenerStorage.createInitialData()) != null;
     }
 
     public BlockFace getBlockFace() {
         return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
+    }
+
+    /**
+     * Returns the redstone signal entering the calibration input side.
+     *
+     * @return calibration input strength
+     */
+    public int getInputStrength() {
+        BlockFace inputFace = getBlockFace();
+        return level.getRedstonePower(getSide(inputFace), inputFace);
     }
 
     @Override
@@ -87,14 +101,27 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
         }
     }
 
+    /**
+     * Returns whether the sensor is in its inactive phase.
+     *
+     * @return whether the sensor is inactive
+     */
+    public boolean isInactive() {
+        return getPropertyValue(SCULK_SENSOR_PHASE) == 0;
+    }
+
     @Override
     public int onUpdate(int type) {
-        getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (level.getServer().getSettings().gameplaySettings().enableRedstone()) {
-                this.getBlockEntity().calPower();
-                this.setPhase(0);
-                updateAroundRedstone();
+                if (getPropertyValue(SCULK_SENSOR_PHASE) == 1) {
+                    this.getBlockEntity().clearPower();
+                    this.setPhase(2);
+                    updateAroundRedstone();
+                    level.scheduleUpdate(this, 10);
+                } else if (getPropertyValue(SCULK_SENSOR_PHASE) == 2) {
+                    this.setPhase(0);
+                }
             }
             return type;
         }
@@ -102,8 +129,9 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
     }
 
     public void setPhase(int phase) {
+        int oldPhase = getPropertyValue(SCULK_SENSOR_PHASE);
         if (phase == 1) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
-        else this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
+        else if (phase == 0 && oldPhase != 0) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setPropertyValue(SCULK_SENSOR_PHASE, phase);
         this.level.setBlock(this, this, true, false);
     }

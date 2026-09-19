@@ -1,29 +1,46 @@
 package org.powernukkitx.level.format.leveldb;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.api.UsedByReflection;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockState;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.GameRules;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.BiomeState;
 import org.powernukkitx.level.format.Chunk;
-import org.powernukkitx.level.format.ChunkConversion;
+import org.powernukkitx.level.format.ChunkFinalizationState;
 import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.format.UnsafeChunk;
+import org.powernukkitx.level.tickingarea.TickingArea;
+import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.migration.leveldb.LevelDBMigrationVersionStore;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.BlockUpdateEntry;
 import org.powernukkitx.utils.ChunkException;
+import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.SemVersion;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
+
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
@@ -31,23 +48,13 @@ import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NBTOutputStream;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
-import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.GameType;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.Options;
+
 import org.iq80.leveldb.WriteBatch;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -58,8 +65,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author CoolLoong (PNX Project)
@@ -67,17 +76,26 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 @Slf4j
 public class LevelDBProvider implements LevelProvider {
     static final Map<String, LevelDBStorage> CACHE = new ConcurrentHashMap<>();
-    private static final byte[] levelDatMagic = new byte[]{10, 0, 0, 0, 68, 11, 0, 0};
+    private static final int LEVEL_DAT_VERSION = 10;
+    private static final int BIOME_STATE_SAMPLE_ATTEMPTS = 10;
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
+    private final ConcurrentHashMap<Long, CompletableFuture<IChunk>> loadingChunks = new ConcurrentHashMap<>();
     private final Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> scheduledTicksMap = new ConcurrentHashMap<>();
+    private final Map<Long, LevelDBChunkSerializer.RandomTickData> randomTicksMap = new ConcurrentHashMap<>();
     private final Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> normalTicksMap = new ConcurrentHashMap<>();
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
     protected final Level level;
     protected final String path;
-    protected CompoundTag worldDynamicProperties;
-    protected boolean worldDynamicPropertiesDirty = false;
+    private long runtimeTime;
+    private long runtimeCurrentTick;
+    private boolean runtimeRaining;
+    private int runtimeRainTime;
+    private boolean runtimeThundering;
+    private int runtimeThunderTime;
+    private int runtimeNoSleepNight;
+    private final WorldBiomeSnowState biomeSnowState;
     /**
      * Network bytes an absent section serialises to, indexed by section Y offset into the byte
      * range. Sized from {@link Byte} because {@link ChunkSection#y()} is a {@code byte} that the
@@ -90,11 +108,6 @@ public class LevelDBProvider implements LevelProvider {
      */
     private static final AtomicReferenceArray<byte[]> EMPTY_SECTION_PAYLOADS =
             new AtomicReferenceArray<>(1 << Byte.SIZE);
-    /**
-     * Network bytes the biome palette of an absent section serialises to. One value for the whole
-     * server: unlike the section payload this does not encode the section Y.
-     */
-    private static volatile byte[] emptyBiomePayload;
 
     /**
      * @return int The nether coordinate scale for the world
@@ -107,14 +120,149 @@ public class LevelDBProvider implements LevelProvider {
         return this.storage;
     }
 
+    /**
+     * Advances the world-level biome snow and foliage accumulation state.
+     */
+    public void tickBiomeSnowAccumulation(float previousRainLevel, float currentRainLevel) {
+        if (getDimensionData().getDimensionId() != Level.DIMENSION_OVERWORLD) return;
+        biomeSnowState.tick(previousRainLevel, currentRainLevel);
+    }
+
+    /**
+     * Applies live precipitation snow attempts to a ticking chunk.
+     */
+    public void tickBiomeSnowPrecipitation(IChunk chunk, int attempts) {
+        if (getDimensionData().getDimensionId() != Level.DIMENSION_OVERWORLD || attempts <= 0) return;
+        BiomeSnowPrecipitation.tick(level, chunk, attempts, level.getRainLevel());
+    }
+
+    /**
+     * Performs one BiomeState maintenance pass for a loader ticking view.
+     */
+    public void tickBiomeSnowReconciliation(int centerChunkX, int centerChunkZ, int radius) {
+        if (getDimensionData().getDimensionId() != Level.DIMENSION_OVERWORLD || radius < 0) return;
+        sampleBiomeSnowArea(
+                centerChunkX - radius,
+                centerChunkZ - radius,
+                centerChunkX + radius,
+                centerChunkZ + radius,
+                null
+        );
+    }
+
+    /**
+     * Performs one BiomeState maintenance pass for an explicit ticking area.
+     */
+    public void tickBiomeSnowReconciliation(TickingArea area) {
+        if (getDimensionData().getDimensionId() != Level.DIMENSION_OVERWORLD
+                || area.getDimensionId() != Level.DIMENSION_OVERWORLD
+                || !level.getName().equals(area.getLevelName())
+                || area.getChunks().isEmpty()) {
+            return;
+        }
+
+        List<TickingArea.ChunkPos> bounds = area.minAndMaxChunkPos();
+        TickingArea.ChunkPos min = bounds.get(0);
+        TickingArea.ChunkPos max = bounds.get(1);
+        sampleBiomeSnowArea(min.x, min.z, max.x, max.z, area);
+    }
+
+    private void sampleBiomeSnowArea(int minChunkX, int minChunkZ, int maxChunkX, int maxChunkZ, @Nullable TickingArea area) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+
+        for (int attempt = 0; attempt < BIOME_STATE_SAMPLE_ATTEMPTS; attempt++) {
+            int chunkX = randomChunkCoordinate(random, minChunkX, maxChunkX);
+            int chunkZ = randomChunkCoordinate(random, minChunkZ, maxChunkZ);
+
+            if (area != null && !area.getChunks().contains(new TickingArea.ChunkPos(chunkX, chunkZ))) {
+                continue;
+            }
+
+            IChunk chunk = level.getChunkIfLoaded(chunkX, chunkZ);
+            if (chunk == null || !hasStaleBiomeState(chunk)) {
+                continue;
+            }
+
+            BiomeSnowChunkReconciler.reconcile(level, chunk);
+            refreshBiomeState(chunk);
+            return;
+        }
+    }
+
+    private static int randomChunkCoordinate(ThreadLocalRandom random, int min, int max) {
+        return min == max ? min : random.nextInt(min, max + 1);
+    }
+
+    @Override
+    public boolean deferEntityChunkMove(Entity entity, int targetChunkX, int targetChunkZ) {
+        if (!LevelDBLimboEntities.supportsDimension(getDimensionData()) || entity instanceof Player
+                || entity.chunk == null || entity.isClosed() || !entity.canBeSavedWithChunk()) {
+            return false;
+        }
+
+        try {
+            LevelDBActorStorage.getActorStorageKey(entity.uniqueIdLong());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        entity.saveNBT();
+        this.storage.deferActorToLimbo(entity.chunk, entity.getNbt().copy(), targetChunkX, targetChunkZ);
+        return true;
+    }
+
+    @Override
+    public void onChunkInitialized(IChunk chunk) {
+        if (LevelDBLimboEntities.supportsDimension(getDimensionData())) {
+            this.storage.consumeLimboEntities(chunk);
+        }
+    }
+
+    private boolean hasStaleBiomeState(IChunk chunk) {
+        boolean[] stale = {false};
+
+        chunk.batchProcess(unsafeChunk -> {
+            for (var entry : unsafeChunk.getBiomeState().snowAccumulation().int2ByteEntrySet()) {
+                int current = (int) (biomeSnowState.getSnowAccumulation(entry.getIntKey()) * 8.0f);
+                if (Byte.toUnsignedInt(entry.getByteValue()) != (current & 0xff)) {
+                    stale[0] = true;
+                    return;
+                }
+            }
+        });
+
+        return stale[0];
+    }
+
+    private void refreshBiomeState(IChunk chunk) {
+        boolean[] changed = {false};
+
+        chunk.batchProcess(unsafeChunk -> {
+            BiomeState biomeState = unsafeChunk.getBiomeState();
+
+            for (var entry : biomeState.snowAccumulation().int2ByteEntrySet()) {
+                byte current = (byte) (int) (biomeSnowState.getSnowAccumulation(entry.getIntKey()) * 8.0f);
+                if (entry.getByteValue() != current) {
+                    entry.setValue(current);
+                    changed[0] = true;
+                }
+            }
+
+            if (changed[0]) {
+                biomeState.markStorageChanged();
+            }
+        });
+
+        if (changed[0]) {
+            chunk.setChanged();
+        }
+    }
+
     public LevelDBProvider(Level level, String path) throws IOException {
         synchronized (CACHE) {
             this.storage = CACHE.computeIfAbsent(path, p -> {
                 try {
-                    return new LevelDBStorage(0, p, new Options()
-                            .createIfMissing(true)
-                            .compressionType(CompressionType.ZLIB_RAW)
-                            .blockSize(64 * 1024));
+                    return new LevelDBStorage(0, p);
                 } catch (IOException e) {
                     throw new UncheckedIOException("Failed to create LevelDBStorage instance", e);
                 }
@@ -123,18 +271,34 @@ public class LevelDBProvider implements LevelProvider {
         }
         this.path = path;
         this.level = level;
-        var levelDat = readLevelDat();
-        if (levelDat == null) {
-            levelDat = LevelDat.builder().build();
-            this.levelDat = levelDat;
-            saveLevelData();
-        } else {
-            this.levelDat = levelDat;
+
+        WorldMetadata metadata = this.storage.getWorldMetadata();
+        WorldMetadata.LoadResult levelDatLoad = metadata.getOrLoadLevelDat(this::readLevelDat);
+        this.levelDat = levelDatLoad.levelDat();
+        this.biomeSnowState = metadata.getBiomeSnowState();
+
+        int dimensionId = getDimensionData().getDimensionId();
+        if (dimensionId == Level.DIMENSION_OVERWORLD) {
+            this.storage.readWorldClocks();
         }
 
-        CompoundTag dp = this.storage.readWorldDynamicProperties();
-        this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
-        this.worldDynamicPropertiesDirty = false;
+        boolean dimensionMetadataInitialized = metadata.registerDimension(dimensionId);
+        WorldMetadata.RuntimeState runtimeState = metadata.getRuntimeState(dimensionId);
+        this.runtimeTime = runtimeState.time();
+        this.runtimeCurrentTick = runtimeState.currentTick();
+        this.runtimeRaining = runtimeState.raining();
+        this.runtimeRainTime = runtimeState.rainTime();
+        this.runtimeThundering = runtimeState.thundering();
+        this.runtimeThunderTime = runtimeState.thunderTime();
+        this.runtimeNoSleepNight = runtimeState.noSleepNight();
+
+        this.storage.loadLimboEntities(getDimensionData());
+
+        if (levelDatLoad.created() || dimensionMetadataInitialized) {
+            saveLevelData();
+        }
+
+        this.storage.getWorldDynamicProperties();
         this.level.getVillageManager().load(this.storage.readVillages(getDimensionData()));
     }
 
@@ -144,104 +308,295 @@ public class LevelDBProvider implements LevelProvider {
         if (!dataDir.exists() && !dataDir.mkdirs()) {
             throw new IOException("Could not create the directory " + dataDir);
         }
-        LevelDat levelData = LevelDat.builder().randomSeed(generatorConfig.seed()).name(name).lastPlayed(System.currentTimeMillis() / 1000).build();
-        writeLevelDat(path, generatorConfig.dimensionData(), levelData);
+
+        Path levelDatPath = Path.of(path).resolve("level.dat");
+        Path levelDatOldPath = Path.of(path).resolve("level.dat_old");
+        if (!Files.exists(levelDatPath) && !Files.exists(levelDatOldPath)) {
+            LevelDat levelData = LevelDat.builder().randomSeed(generatorConfig.seed()).name(name).lastPlayed(System.currentTimeMillis() / 1000).build();
+            writeLevelDat(path, levelData);
+        }
+
+        if (!LevelDBLimboEntities.supportsDimension(generatorConfig.dimensionData())) {
+            return;
+        }
+
+        LevelDBStorage generationStorage;
+        synchronized (CACHE) {
+            generationStorage = CACHE.get(path);
+            if (generationStorage == null) {
+                generationStorage = new LevelDBStorage(0, path);
+                CACHE.put(path, generationStorage);
+            }
+            generationStorage.incrementRefCount();
+        }
+
+        try {
+            generationStorage.initializeGeneratedLimboEntities(generatorConfig.dimensionData());
+        } finally {
+            generationStorage.close();
+        }
+    }
+
+    /**
+     * Completes storage metadata for a successfully generated LevelDB world.
+     */
+    public static void completeGeneration(String path, LevelConfig levelConfig) throws IOException {
+        Set<Integer> dimensionIds = new HashSet<>();
+        for (LevelConfig.GeneratorConfig generatorConfig : levelConfig.generators().values()) {
+            dimensionIds.add(generatorConfig.dimensionData().getDimensionId());
+        }
+
+        LevelDBStorage generationStorage;
+        synchronized (CACHE) {
+            generationStorage = CACHE.get(path);
+            if (generationStorage == null) {
+                generationStorage = new LevelDBStorage(0, path);
+                CACHE.put(path, generationStorage);
+            }
+            generationStorage.incrementRefCount();
+        }
+
+        try {
+            LevelDBMigrationVersionStore.writeGeneratedWorldVersions(generationStorage, dimensionIds);
+        } finally {
+            generationStorage.close();
+        }
     }
 
     @UsedByReflection
     public static boolean isValid(String path) {
-        boolean isValid = (new File(path, "level.dat").exists()) && new File(path, "db").isDirectory();
-        if (isValid) {
-            for (File file : Objects.requireNonNull(new File(path, "db").listFiles())) {
-                if (file.getName().endsWith(".ldb")) {
-                    return true;
-                }
+        boolean hasLevelDat = new File(path, "level.dat").exists() || new File(path, "level.dat_old").exists();
+        return hasLevelDat && isValidStorage(path);
+    }
+
+    /**
+     * Returns whether the world folder contains existing LevelDB storage.
+     *
+     * @param path world folder
+     * @return whether valid LevelDB storage exists
+     */
+    public static boolean isValidStorage(String path) {
+        File dbFolder = new File(path, "db");
+        if (!dbFolder.isDirectory()) {
+            return false;
+        }
+
+        File[] files = dbFolder.listFiles();
+        if (files == null) {
+            return false;
+        }
+
+        for (File file : files) {
+            if (file.getName().endsWith(".ldb")) {
+                return true;
             }
         }
         return false;
     }
 
-    public static void writeLevelDat(String pathName, DimensionData dimensionData, LevelDat levelDat) {
+    /**
+     * Writes canonical level.dat data for a world folder.
+     *
+     * @param pathName world folder path
+     * @param levelDat level data
+     */
+    public static void writeLevelDat(String pathName, LevelDat levelDat) {
+        writeLevelDat(pathName, levelDat, null, null);
+    }
+
+    static void writeLevelDat(String pathName, LevelDat levelDat, NbtMap dimensionRuntimeStates) {
+        writeLevelDat(pathName, levelDat, dimensionRuntimeStates, null);
+    }
+
+    static void writeLevelDat(String pathName, LevelDat levelDat, NbtMap dimensionRuntimeStates, NbtMap dimensionSpawns) {
         Path path = Path.of(pathName);
-        String levelDatName = "level.dat";
-        if (dimensionData.getDimensionId() != 0) {
-            levelDatName = "level_Dim%s.dat".formatted(dimensionData.getDimensionId());
-        }
-        var levelDatNow = path.resolve(levelDatName).toFile();
-        try (var output = new FileOutputStream(levelDatNow);
-             var nbtOutputStream = NbtUtils.createWriterLE(output)) {
-            if (levelDatNow.exists()) {
-                Files.copy(path.resolve(levelDatName), path.resolve(levelDatName + "_old"), StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                levelDatNow.createNewFile();
+        Path levelDatPath = path.resolve("level.dat");
+        Path levelDatOldPath = path.resolve("level.dat_old");
+        Path tempPath = null;
+
+        try {
+            NbtMap worldData = createWorldDataNBT(levelDat, dimensionRuntimeStates, dimensionSpawns);
+            ByteArrayOutputStream nbtOutput = new ByteArrayOutputStream();
+            try (var nbtOutputStream = NbtUtils.createWriterLE(nbtOutput)) {
+                nbtOutputStream.writeTag(worldData);
             }
-            output.write(levelDatMagic);//magic number
-            nbtOutputStream.writeTag(createWorldDataNBT(levelDat));
+
+            byte[] payload = nbtOutput.toByteArray();
+            ByteArrayOutputStream fileOutput = new ByteArrayOutputStream(payload.length + 8);
+            writeIntLE(fileOutput, LEVEL_DAT_VERSION);
+            writeIntLE(fileOutput, payload.length);
+            fileOutput.write(payload);
+            byte[] levelDatBytes = fileOutput.toByteArray();
+
+            if (Files.exists(levelDatPath) && Arrays.equals(Files.readAllBytes(levelDatPath), levelDatBytes)) {
+                levelDat.setRawData(worldData);
+                return;
+            }
+
+            tempPath = Files.createTempFile(path, "level.dat.", ".new");
+            try (FileOutputStream output = new FileOutputStream(tempPath.toFile())) {
+                output.write(levelDatBytes);
+                output.getFD().sync();
+            }
+
+            if (Files.exists(levelDatPath)) {
+                Files.copy(levelDatPath, levelDatOldPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            try {
+                Files.move(tempPath, levelDatPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+                Files.move(tempPath, levelDatPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            levelDat.setRawData(worldData);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to write level dat: ", e);
+        } finally {
+            if (tempPath != null) {
+                try {
+                    Files.deleteIfExists(tempPath);
+                } catch (IOException ignored) {
+                }
+            }
         }
+    }
+
+    private static void writeIntLE(ByteArrayOutputStream output, int value) {
+        output.write(value & 0xff);
+        output.write((value >>> 8) & 0xff);
+        output.write((value >>> 16) & 0xff);
+        output.write((value >>> 24) & 0xff);
+    }
+
+    private static int readIntLE(byte[] input, int offset) {
+        return (input[offset] & 0xff)
+                | (input[offset + 1] & 0xff) << 8
+                | (input[offset + 2] & 0xff) << 16
+                | (input[offset + 3] & 0xff) << 24;
     }
 
     public IChunk loadChunk(long index, int chunkX, int chunkZ, boolean create) {
         IChunk chunk = this.chunks.get(index);
-        if (chunk == null) {
-            try {
-                chunk = storage.readChunk(chunkX, chunkZ, this);
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to load chunk", e);
-            }
+        if (chunk != null) return chunk;
+
+        CompletableFuture<IChunk> loading = new CompletableFuture<>();
+        CompletableFuture<IChunk> existingLoad = this.loadingChunks.putIfAbsent(index, loading);
+
+        if (existingLoad != null) {
+            chunk = existingLoad.join();
+            if (chunk == null && create) return this.loadChunk(index, chunkX, chunkZ, true);
+            return chunk;
         }
-        if (chunk == null) {
-            if (create) {
-                chunk = getOrPutChunk(index, this.getEmptyChunk(chunkX, chunkZ));
-            }
-        } else {
-            if (Server.getInstance() != null && Server.getInstance().getSettings().chunkSettings().convertBDSChunks() && chunk.isPopulated()) {
-                CompoundTag extra = chunk.getExtraData();
-                if (extra == null || extra.isEmpty()) {
-                    chunk = ChunkConversion.convert(chunk);
+
+        try {
+            chunk = this.chunks.get(index);
+
+            if (chunk == null) {
+                try {
+                    chunk = storage.readChunk(chunkX, chunkZ, this);
+                } catch (IOException e) {
+                    throw new UncheckedIOException("Failed to load chunk", e);
                 }
             }
-            putChunk(index, chunk);
 
-            Level level = this.getLevel();
-            restoreBlockTicks(level, chunk);
+            if (chunk == null) {
+                if (create) {
+                    chunk = getOrPutChunk(index, this.getEmptyChunk(chunkX, chunkZ));
+                }
+            } else {
+                chunk = getOrPutChunk(index, chunk);
+
+                Level level = this.getLevel();
+                restoreBlockTicks(level, chunk);
+            }
+
+            loading.complete(chunk);
+            this.loadingChunks.remove(index, loading);
+
+            return chunk;
+        } catch (RuntimeException | Error e) {
+            loading.completeExceptionally(e);
+            this.loadingChunks.remove(index, loading);
+            throw e;
         }
-        return chunk;
     }
 
     public Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> getScheduledTicksMap() {
         return scheduledTicksMap;
     }
+
+    /**
+     * Returns the pending random block ticks loaded from LevelDB.
+     *
+     * @return random ticks indexed by chunk hash
+     */
+    public Map<Long, LevelDBChunkSerializer.RandomTickData> getRandomTicksMap() {
+        return randomTicksMap;
+    }
+
     public Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> getNormalTicksMap() {
         return normalTicksMap;
     }
 
     public void restoreBlockTicks(Level level, IChunk chunk) {
         long chunkKey = Level.chunkHash(chunk.getX(), chunk.getZ());
-
         List<LevelDBChunkSerializer.ScheduledTickInfo> scheduledList = this.scheduledTicksMap.remove(chunkKey);
+        LevelDBChunkSerializer.RandomTickData randomTickData = this.randomTicksMap.remove(chunkKey);
         List<LevelDBChunkSerializer.NormalTickInfo> normalList = this.normalTicksMap.remove(chunkKey);
 
         restoreScheduledTicks(level, chunk, scheduledList);
+        restoreRandomTicks(level, chunk, randomTickData);
         restoreNormalTicks(level, normalList);
+    }
+
+    private static void restoreRandomTicks(Level level, IChunk chunk, LevelDBChunkSerializer.RandomTickData randomTickData) {
+        if (randomTickData == null) return;
+
+        chunk.getRandomBlockUpdateScheduler().setLastTick(
+                randomTickData.currentTick
+        );
+
+        for (LevelDBChunkSerializer.RandomTickInfo info : randomTickData.ticks) {
+            Block block = level.getBlock(info.x, info.y, info.z, 0);
+            CompoundTag currentBlockState = CompoundTag.fromNetwork(block.getBlockState().getBlockStateTag());
+
+            if (!currentBlockState.equals(info.blockState)) continue;
+
+            chunk.getRandomBlockUpdateScheduler().add(
+                    new BlockUpdateEntry(
+                            new Vector3(info.x, info.y, info.z),
+                            block, Math.max(info.time, randomTickData.currentTick + 1), 0, true));
+        }
     }
 
     private static void restoreScheduledTicks(Level level, IChunk chunk, List<LevelDBChunkSerializer.ScheduledTickInfo> scheduledList) {
         if (scheduledList == null || scheduledList.isEmpty()) return;
 
         for (LevelDBChunkSerializer.ScheduledTickInfo info : scheduledList) {
-            Block block = level.getBlock(info.x, info.y, info.z, info.layer);
-            if (block.getId().equals(info.id)) {
-                chunk.getBlockUpdateScheduler().add(new BlockUpdateEntry(
-                        new Vector3(info.x, info.y, info.z),
-                        block,
-                        level.getCurrentTick() + Math.max(info.delay, 1),
-                        info.priority,
-                        info.checkBlockWhenUpdate
-                ));
-            }
+            BlockState blockState = resolveScheduledBlockState(info.blockState);
+            if (blockState == null) continue;
+
+            Block block = Block.get(blockState, level, info.x, info.y, info.z, 0);
+            chunk.getBlockUpdateScheduler().add(new BlockUpdateEntry(
+                    new Vector3(info.x, info.y, info.z),
+                    block,
+                    level.getCurrentTick() + Math.max(info.delay, 1),
+                    0,
+                    true
+            ));
         }
+    }
+
+    @Nullable
+    private static BlockState resolveScheduledBlockState(CompoundTag tag) {
+        BlockState blockState = ItemHelper.getBlockStateHelper(tag);
+        if (blockState != null || !tag.contains("version")) {
+            return blockState;
+        }
+
+        NbtMap updated = BlockStateUpdaters.updateBlockState(tag.toNetwork(), tag.getInt("version"));
+        return ItemHelper.getBlockStateHelper(updated);
     }
 
     private static void restoreNormalTicks(Level level, List<LevelDBChunkSerializer.NormalTickInfo> normalList) {
@@ -249,10 +604,11 @@ public class LevelDBProvider implements LevelProvider {
 
         for (LevelDBChunkSerializer.NormalTickInfo info : normalList) {
             Block block = level.getBlock(info.x, info.y, info.z, info.layer);
-            if (block.getId().equals(info.id)) {
-                BlockFace neighbor = info.neighbor >= 0 ? BlockFace.fromIndex(info.neighbor) : null;
-                level.getNormalUpdateQueue().add(new Level.QueuedUpdate(block, neighbor));
-            }
+
+            if (!block.getId().equals(info.id)) continue;
+
+            BlockFace neighbor = info.neighbor >= 0 ? BlockFace.fromIndex(info.neighbor) : null;
+            level.getNormalUpdateQueue().add(new Level.QueuedUpdate(block, neighbor));
         }
     }
 
@@ -345,9 +701,7 @@ public class LevelDBProvider implements LevelProvider {
                 //write block
                 if (level != null && level.isAntiXrayEnabled()) {
                     for (int i = 0; i < total; i++) {
-                        if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + minSectionY));
-                        }
+                        if (sections[i] == null) sections[i] = new ChunkSection((byte) (i + minSectionY), unsafeChunk.getBiomeSections()[i]);
                         sections[i].writeObfuscatedToBuf(level, byteBuf);
                     }
                 } else {
@@ -362,16 +716,12 @@ public class LevelDBProvider implements LevelProvider {
                 }
 
                 // Write biomes
+                final var biomeSections = unsafeChunk.getBiomeSections();
                 for (int i = 0; i < total; i++) {
-                    final ChunkSection section = sections[i];
-                    if (section != null) {
-                        section.biomes().writeToNetwork(byteBuf, Integer::intValue);
-                    } else {
-                        byteBuf.writeBytes(emptyBiomePayload());
-                    }
+                    biomeSections[i].writeToNetwork(byteBuf, Integer::intValue);
                 }
 
-                writeBorderBlockData(byteBuf, chunk);
+                writeBorderBlockData(byteBuf, unsafeChunk);
 
                 // Block entities
                 final List<CompoundTag> tagList = new ObjectArrayList<>();
@@ -405,6 +755,68 @@ public class LevelDBProvider implements LevelProvider {
             }
         });
         return Pair.of(data.get(), subChunkCountRef.get());
+    }
+
+    @Override
+    public LevelProvider.SubChunkRequestData requestSubChunkModeData(int x, int z) {
+        IChunk chunk = this.getChunk(x, z, false);
+        if (chunk == null) {
+            throw new ChunkException("Invalid Chunk Set");
+        }
+
+        AtomicReference<ByteBuf> biomeDataRef = new AtomicReference<>();
+        AtomicReference<ByteBuf> borderBlockDataRef = new AtomicReference<>();
+        AtomicReference<Integer> requestLimitRef = new AtomicReference<>(0);
+
+        chunk.batchProcess(unsafeChunk -> {
+            final ByteBuf biomeData = PooledByteBufAllocator.DEFAULT.ioBuffer();
+            final ByteBuf borderBlockData = PooledByteBufAllocator.DEFAULT.ioBuffer();
+            boolean success = false;
+
+            try {
+                final ChunkSection[] sections = unsafeChunk.getSections();
+                int requestLimit = 0;
+
+                for (int i = sections.length - 1; i >= 0; i--) {
+                    final ChunkSection section = sections[i];
+
+                    if (section == null) continue;
+
+                    if (!section.blockLayer()[0].isEmpty() || !section.blockLayer()[1].isEmpty()) {
+                        requestLimit = i + 1;
+                        break;
+                    }
+                }
+
+                final var biomeSections = unsafeChunk.getBiomeSections();
+
+                for (var biomeSection : biomeSections) {
+                    biomeSection.writeToNetwork(
+                        biomeData,
+                        Integer::intValue
+                    );
+                }
+
+                writeBorderBlockData(borderBlockData, unsafeChunk);
+
+                biomeDataRef.set(biomeData);
+                borderBlockDataRef.set(borderBlockData);
+                requestLimitRef.set(requestLimit);
+
+                success = true;
+            } finally {
+                if (!success) {
+                    biomeData.release();
+                    borderBlockData.release();
+                }
+            }
+        });
+
+        return new LevelProvider.SubChunkRequestData(
+            biomeDataRef.get(),
+            borderBlockDataRef.get(),
+            requestLimitRef.get()
+        );
     }
 
     /**
@@ -444,66 +856,25 @@ public class LevelDBProvider implements LevelProvider {
         return payload;
     }
 
-    /**
-     * @return the biome bytes of an absent section, which the caller must not modify
-     */
-    private static byte[] emptyBiomePayload() {
-        byte[] payload = emptyBiomePayload;
-        if (payload == null) {
-            final ByteBuf scratch = Unpooled.buffer();
-            try {
-                new ChunkSection((byte) 0).biomes().writeToNetwork(scratch, Integer::intValue);
-                payload = ByteBufUtil.getBytes(scratch);
-            } finally {
-                scratch.release();
-            }
-            emptyBiomePayload = payload;
-        }
-        return payload;
-    }
-
-    private void writeBorderBlockData(ByteBuf byteBuf, IChunk chunk) {
-        if (!chunk.areBorderBlockColumnsInitialized()) {
-            chunk.rebuildBorderBlockColumns();
-        }
-
+    private void writeBorderBlockData(ByteBuf byteBuf, UnsafeChunk chunk) {
         int countIndex = byteBuf.writerIndex();
         byteBuf.writeByte(0);
 
         int count = 0;
 
-        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsLow(), 0, count);
-        if (count >= 255) {
-            byteBuf.setByte(countIndex, count);
-            return;
+        outer:
+        for (int localX = 0; localX < 16; localX++) {
+            for (int localZ = 0; localZ < 16; localZ++) {
+                if (!chunk.hasBorderBlock(localX, localZ)) continue;
+                if (count >= 255) break outer;
+
+                // Unlike LevelDB 0x38, the network format stores Z in the high nibble and X in the low nibble.
+                byteBuf.writeByte((localZ << 4) | localX);
+                count++;
+            }
         }
 
-        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsMidLow(), 64, count);
-        if (count >= 255) {
-            byteBuf.setByte(countIndex, count);
-            return;
-        }
-
-        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsMidHigh(), 128, count);
-        if (count >= 255) {
-            byteBuf.setByte(countIndex, count);
-            return;
-        }
-
-        count = writeBorderColumnMask(byteBuf, chunk.getBorderColumnsHigh(), 192, count);
-
-        byteBuf.setByte(countIndex, Math.min(count, 255));
-    }
-
-    private int writeBorderColumnMask(ByteBuf byteBuf, long mask, int offset, int count) {
-        while (mask != 0L && count < 255) {
-            int bit = Long.numberOfTrailingZeros(mask);
-            byteBuf.writeByte(offset + bit);
-            mask &= ~(1L << bit);
-            count++;
-        }
-
-        return count;
+        byteBuf.setByte(countIndex, count);
     }
 
     @Override
@@ -518,12 +889,12 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public boolean isRaining() {
-        return this.levelDat.isRaining();
+        return this.runtimeRaining;
     }
 
     @Override
     public void setRaining(boolean raining) {
-        this.levelDat.setRaining(raining);
+        this.runtimeRaining = raining;
     }
 
     @Override
@@ -538,22 +909,22 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public int getRainTime() {
-        return this.levelDat.getRainTime();
+        return this.runtimeRainTime;
     }
 
     @Override
     public void setRainTime(int rainTime) {
-        this.levelDat.setRainTime(rainTime);
+        this.runtimeRainTime = rainTime;
     }
 
     @Override
     public boolean isThundering() {
-        return this.levelDat.isThundering();
+        return this.runtimeThundering;
     }
 
     @Override
     public void setThundering(boolean thundering) {
-        this.levelDat.setThundering(thundering);
+        this.runtimeThundering = thundering;
     }
 
     @Override
@@ -568,42 +939,42 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public int getThunderTime() {
-        return this.levelDat.getLightningTime();
+        return this.runtimeThunderTime;
     }
 
     @Override
     public void setThunderTime(int thunderTime) {
-        this.levelDat.setLightningTime(thunderTime);
+        this.runtimeThunderTime = thunderTime;
     }
 
     @Override
     public int getNoSleepNight() {
-        return this.levelDat.getNoSleepNight();
+        return this.runtimeNoSleepNight;
     }
 
     @Override
     public void setNoSleepNight(int noSleepNight) {
-        this.levelDat.setNoSleepNight(noSleepNight);
+        this.runtimeNoSleepNight = noSleepNight;
     }
 
     @Override
     public long getCurrentTick() {
-        return this.levelDat.getCurrentTick();
+        return this.runtimeCurrentTick;
     }
 
     @Override
     public void setCurrentTick(long currentTick) {
-        this.levelDat.setCurrentTick(currentTick);
+        this.runtimeCurrentTick = currentTick;
     }
 
     @Override
     public long getTime() {
-        return this.levelDat.getTime();
+        return this.runtimeTime;
     }
 
     @Override
     public void setTime(long value) {
-        this.levelDat.setTime(value);
+        this.runtimeTime = value;
     }
 
     @Override
@@ -618,12 +989,13 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public Vector3 getSpawn() {
-        return this.levelDat.getSpawnPoint().asVector3();
+        WorldMetadata.SpawnState spawn = this.storage.getWorldMetadata().getSpawnState(getDimensionData().getDimensionId());
+        return new BlockVector3(spawn.x(), spawn.y(), spawn.z()).asVector3();
     }
 
     @Override
     public void setSpawn(Vector3 pos) {
-        this.levelDat.setSpawnPoint(new BlockVector3((int) pos.x, (int) pos.y, (int) pos.z));
+        this.storage.getWorldMetadata().setSpawnState(getDimensionData().getDimensionId(), (int) pos.x, (int) pos.y, (int) pos.z);
     }
 
     @Override
@@ -643,18 +1015,46 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveChunks(Collection<IChunk> chunks) {
+        List<IChunk> changedChunks = chunks.stream()
+                .filter(IChunk::hasChanged)
+                .toList();
+
+        if (changedChunks.isEmpty()) {
+            return;
+        }
+
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
-            CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
+            Map<IChunk, Long> biomeStateVersions = new ConcurrentHashMap<>();
+
+            CompletableFuture.runAsync(() -> changedChunks.parallelStream().forEach(chunk -> {
+                BiomeState biomeState = chunk.getBiomeState();
+                if (biomeState.hasStorageChanges()) {
+                    biomeStateVersions.put(chunk, biomeState.getStorageChangeVersion());
+                }
+
                 // Clear the dirty flag before serializing so a change made
                 // mid-save (e.g. taking an item from a chest) re-marks the chunk
                 // dirty and gets persisted on the next save instead of being lost.
                 chunk.setChanged(false);
                 LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
             }), Server.getInstance().getComputeThreadPool()).join();
+
             helper.write(batch);
             helper.close();
+
+            for (IChunk chunk : changedChunks) {
+                storage.writeChunkActorData(batch, chunk);
+                storage.writeChunkMetaData(batch, chunk);
+            }
+
+            storage.writePendingActorDeletions(batch);
+            storage.writeLevelChunkMetaDataDictionary(batch);
             storage.writeBatch(batch);
+
+            for (var entry : biomeStateVersions.entrySet()) {
+                entry.getKey().getBiomeState().markStorageSaved(entry.getValue());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -691,11 +1091,31 @@ public class LevelDBProvider implements LevelProvider {
     public void saveLevelData() {
         flushWorldDynamicProperties();
         storage.writeVillages(getDimensionData(), level.getVillageManager().getVillages());
-        writeLevelDat(path, getDimensionData(), this.levelDat);
+        storage.saveLimboEntities(getDimensionData());
+        this.levelDat.setDifficulty(level.getServer().getDifficulty());
+
+        int dimensionId = getDimensionData().getDimensionId();
+        if (dimensionId == Level.DIMENSION_OVERWORLD) {
+            storage.writeWorldClocks((int) this.runtimeTime);
+        }
+
+        storage.getWorldMetadata().saveLevelDat(
+                dimensionId,
+                this.runtimeTime,
+                this.runtimeCurrentTick,
+                this.runtimeRaining,
+                this.runtimeRainTime,
+                this.runtimeThundering,
+                this.runtimeThunderTime,
+                this.runtimeNoSleepNight
+        );
     }
 
     @Override
     public void updateLevelName(String name) {
+        if (!storage.getWorldMetadata().isCanonicalAuthority(getDimensionData().getDimensionId())) {
+            return;
+        }
         if (!this.getName().equals(name)) {
             this.levelDat.setName(name);
         }
@@ -790,56 +1210,48 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public boolean isChunkPopulated(int chunkX, int chunkZ) {
         IChunk chunk = this.getChunk(chunkX, chunkZ);
-        return chunk != null && chunk.getChunkState().ordinal() >= 2;
+        return chunk != null && chunk.getFinalizationState() == ChunkFinalizationState.DONE;
     }
 
     @Override
     public void close() {
         flushWorldDynamicProperties();
+        storage.getWorldMetadata().unregisterDimension(getDimensionData().getDimensionId());
         storage.close();
     }
 
     @Override
     public boolean isChunkGenerated(int chunkX, int chunkZ) {
-        return true;
+        IChunk chunk = this.getChunk(chunkX, chunkZ);
+        return chunk != null && chunk.getFinalizationState() != ChunkFinalizationState.NEEDS_INSTATICKING;
     }
 
     public CompoundTag getWorldDynamicProperties() {
-        return this.worldDynamicProperties;
+        return this.storage.getWorldDynamicProperties();
     }
 
     public void setWorldDynamicProperties(CompoundTag tag) {
-        this.worldDynamicProperties = tag == null ? new CompoundTag() : tag;
-        this.worldDynamicPropertiesDirty = false;
+        this.storage.setWorldDynamicProperties(tag);
     }
 
     public boolean isWorldDynamicPropertiesDirty() {
-        return this.worldDynamicPropertiesDirty;
+        return this.storage.isWorldDynamicPropertiesDirty();
     }
 
     public void setWorldDynamicPropertiesDirty(boolean dirty) {
-        this.worldDynamicPropertiesDirty = dirty;
+        this.storage.setWorldDynamicPropertiesDirty(dirty);
     }
 
     private void flushWorldDynamicProperties() {
-        if (!this.worldDynamicPropertiesDirty) return;
-        this.storage.writeWorldDynamicProperties(this.worldDynamicProperties);
-        this.worldDynamicPropertiesDirty = false;
+        this.storage.flushWorldDynamicProperties();
     }
 
     public synchronized LevelDat readLevelDat() throws IOException {
-        File levelDat = Path.of(path).resolve("level.dat").toFile();
-        if (!levelDat.exists()) return null;
-        try (var input = new FileInputStream(levelDat)) {
-            //The first 8 bytes are magic number
-            input.skip(8);
-            final NbtMap d;
-            try (var stream = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
-                 var nbtInputStream = NbtUtils.createReaderLE(stream)) {
-                d = (NbtMap) nbtInputStream.readTag();
-            }
-            NbtMap abilities = d.getCompound("abilities");
-            NbtMap experiments = d.getCompound("experiments");
+        NbtMap d = readLevelDatNbt();
+        if (d == null) return null;
+
+            NbtMap abilities = getCompound(d, "abilities");
+            NbtMap experiments = getCompound(d, "experiments");
             GameRules gameRules = readGameRules(d);
 
             Map<String, Boolean> experimentMap = new HashMap<>();
@@ -947,15 +1359,93 @@ public class LevelDBProvider implements LevelProvider {
             if (d.containsKey("thundering")) {
                 levelDatBuilder.thundering(this.getBoolean(d, "thundering"));//PNX Custom field
             }
-            return levelDatBuilder.build();
-        } catch (FileNotFoundException e) {
-            log.error("The level.dat file does not exist!");
-        }
-        throw new IllegalStateException("level.dat is null!");
+            if (d.containsKey("nosleepnights")) {
+                levelDatBuilder.noSleepNight(d.getInt("nosleepnights"));//PNX Custom field
+            }
+            return levelDatBuilder.rawData(d).build();
     }
 
-    private static NbtMap createWorldDataNBT(LevelDat worldData) {
-        NbtMapBuilder levelDat = NbtMap.builder();
+    private NbtMap readLevelDatNbt() throws IOException {
+        Path levelDatPath = Path.of(path).resolve("level.dat");
+        Path levelDatOldPath = Path.of(path).resolve("level.dat_old");
+        IOException levelDatError = null;
+
+        if (Files.exists(levelDatPath)) {
+            try {
+                return readLevelDatNbt(levelDatPath);
+            } catch (Exception e) {
+                levelDatError = toLevelDatIOException(levelDatPath, e);
+            }
+        }
+
+        if (Files.exists(levelDatOldPath)) {
+            try {
+                NbtMap recovered = readLevelDatNbt(levelDatOldPath);
+                try {
+                    Files.copy(levelDatOldPath, levelDatPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    log.warn("Loaded level.dat_old but could not restore level.dat: {}", e.getMessage());
+                }
+
+                if (levelDatError == null) {
+                    log.warn("level.dat missing, level.dat_old used instead");
+                } else {
+                    log.warn("level.dat corrupted/unreadable, level.dat_old used instead");
+                }
+                return recovered;
+            } catch (Exception e) {
+                IOException levelDatOldError = toLevelDatIOException(levelDatOldPath, e);
+                if (levelDatError != null) {
+                    levelDatOldError.addSuppressed(levelDatError);
+                }
+                throw levelDatOldError;
+            }
+        }
+
+        if (levelDatError != null) {
+            throw levelDatError;
+        }
+        return null;
+    }
+
+    private static NbtMap readLevelDatNbt(Path file) throws IOException {
+        byte[] data = Files.readAllBytes(file);
+        if (data.length < 8) {
+            throw new IOException("level.dat is smaller than its 8-byte header");
+        }
+
+        int version = readIntLE(data, 0);
+        int payloadLength = readIntLE(data, 4);
+        if (version <= 0) {
+            throw new IOException("Invalid level.dat version " + version);
+        }
+        if (payloadLength < 0 || payloadLength != data.length - 8) {
+            throw new IOException("Invalid level.dat payload length " + payloadLength + ", expected " + (data.length - 8));
+        }
+
+        try (var input = new ByteArrayInputStream(data, 8, payloadLength);
+             var nbtInputStream = NbtUtils.createReaderLE(input)) {
+            Object tag = nbtInputStream.readTag();
+            if (!(tag instanceof NbtMap levelData)) {
+                throw new IOException("level.dat root tag is not a compound");
+            }
+            return levelData;
+        }
+    }
+
+    private static IOException toLevelDatIOException(Path file, Exception cause) {
+        return cause instanceof IOException ioException ? ioException : new IOException("Failed to read " + file.getFileName(), cause);
+    }
+
+    private static NbtMap createWorldDataNBT(LevelDat worldData, NbtMap dimensionRuntimeStates, NbtMap dimensionSpawns) {
+        NbtMap rawData = worldData.getRawData();
+        NbtMapBuilder levelDat = copyLevelDatNbt(rawData);
+        if (dimensionRuntimeStates != null) {
+            levelDat.put(WorldMetadata.DIMENSION_RUNTIME_STATES_TAG, dimensionRuntimeStates);
+        }
+        if (dimensionSpawns != null) {
+            levelDat.put(WorldMetadata.DIMENSION_SPAWNS_TAG, dimensionSpawns);
+        }
         levelDat.putString("BiomeOverride", worldData.getBiomeOverride());
         levelDat.putBoolean("CenterMapsToOrigin", worldData.isCenterMapsToOrigin());
         levelDat.putBoolean("ConfirmedPlatformLockedContent", worldData.isConfirmedPlatformLockedContent());
@@ -988,9 +1478,29 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("StorageVersion", worldData.getStorageVersion());
         levelDat.putLong("Time", worldData.getTime());
         levelDat.putInt("WorldVersion", worldData.getWorldVersion());
+        levelDat.putLong(
+                "worldStartCount",
+                worldData.getWorldStartCount()
+        );
         levelDat.putInt("XBLBroadcastIntent", worldData.getXBLBroadcastIntent());
-        NbtMap abilities = NbtMap.builder().putBoolean("attackmobs", worldData.getAbilities().isAttackMobs()).putBoolean("attackplayers", worldData.getAbilities().isAttackPlayers()).putBoolean("build", worldData.getAbilities().isBuild()).putBoolean("doorsandswitches", worldData.getAbilities().isDoorsAndSwitches()).putBoolean("flying", worldData.getAbilities().isFlying()).putBoolean("instabuild", worldData.getAbilities().isInstaBuild()).putBoolean("invulnerable", worldData.getAbilities().isInvulnerable()).putBoolean("lightning", worldData.getAbilities().isLightning()).putBoolean("mayfly", worldData.getAbilities().isMayFly()).putBoolean("mine", worldData.getAbilities().isMine()).putBoolean("op", worldData.getAbilities().isOp()).putBoolean("opencontainers", worldData.getAbilities().isOpenContainers()).putBoolean("teleport", worldData.getAbilities().isTeleport()).putFloat("flySpeed", worldData.getAbilities().getFlySpeed()).putFloat("walkSpeed", worldData.getAbilities().getWalkSpeed()).build();
-        NbtMapBuilder experiments = NbtMap.builder();
+        NbtMapBuilder abilities = copyNbt(getCompound(rawData, "abilities"));
+        abilities.putBoolean("attackmobs", worldData.getAbilities().isAttackMobs());
+        abilities.putBoolean("attackplayers", worldData.getAbilities().isAttackPlayers());
+        abilities.putBoolean("build", worldData.getAbilities().isBuild());
+        abilities.putBoolean("doorsandswitches", worldData.getAbilities().isDoorsAndSwitches());
+        abilities.putBoolean("flying", worldData.getAbilities().isFlying());
+        abilities.putBoolean("instabuild", worldData.getAbilities().isInstaBuild());
+        abilities.putBoolean("invulnerable", worldData.getAbilities().isInvulnerable());
+        abilities.putBoolean("lightning", worldData.getAbilities().isLightning());
+        abilities.putBoolean("mayfly", worldData.getAbilities().isMayFly());
+        abilities.putBoolean("mine", worldData.getAbilities().isMine());
+        abilities.putBoolean("op", worldData.getAbilities().isOp());
+        abilities.putBoolean("opencontainers", worldData.getAbilities().isOpenContainers());
+        abilities.putBoolean("teleport", worldData.getAbilities().isTeleport());
+        abilities.putFloat("flySpeed", worldData.getAbilities().getFlySpeed());
+        abilities.putFloat("walkSpeed", worldData.getAbilities().getWalkSpeed());
+
+        NbtMapBuilder experiments = copyNbt(getCompound(rawData, "experiments"));
         for (Map.Entry<String, Boolean> entry : worldData.getExperiments().getEntries().entrySet()) {
             experiments.putBoolean(entry.getKey(), entry.getValue());
         }
@@ -1000,7 +1510,7 @@ public class LevelDBProvider implements LevelProvider {
             experiments.putBoolean("saved_with_toggled_experiments", true);
         }
 
-        levelDat.put("abilities", abilities);
+        levelDat.put("abilities", abilities.build());
         levelDat.put("experiments", experiments.build());
 
         levelDat.putBoolean("bonusChestEnabled", worldData.isBonusChestEnabled());
@@ -1017,52 +1527,48 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putFloat("rainLevel", worldData.getRainLevel());
         levelDat.putInt("rainTime", worldData.getRainTime());
 
-        levelDat.put("commandBlockOutput", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCK_OUTPUT).getTag());
-        levelDat.put("commandBlocksEnabled", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCKS_ENABLED).getTag());
-        levelDat.put("doDayLightCycle", worldData.getGameRules().getGameRules().get(GameRule.DO_DAYLIGHT_CYCLE).getTag());
-        levelDat.put("doEntityDrops", worldData.getGameRules().getGameRules().get(GameRule.DO_ENTITY_DROPS).getTag());
-        levelDat.put("doFireTick", worldData.getGameRules().getGameRules().get(GameRule.DO_FIRE_TICK).getTag());
-        levelDat.put("doImmediateRespawn", worldData.getGameRules().getGameRules().get(GameRule.DO_IMMEDIATE_RESPAWN).getTag());
-        levelDat.put("doInsomnia", worldData.getGameRules().getGameRules().get(GameRule.DO_INSOMNIA).getTag());
-        levelDat.put("doLimitedCrafting", worldData.getGameRules().getGameRules().get(GameRule.DO_LIMITED_CRAFTING).getTag());
-        levelDat.put("doMobLoot", worldData.getGameRules().getGameRules().get(GameRule.DO_MOB_LOOT).getTag());
-        levelDat.put("doMobSpawning", worldData.getGameRules().getGameRules().get(GameRule.DO_MOB_SPAWNING).getTag());
-        levelDat.put("doTileDrops", worldData.getGameRules().getGameRules().get(GameRule.DO_TILE_DROPS).getTag());
-        levelDat.put("doWeatherCycle", worldData.getGameRules().getGameRules().get(GameRule.DO_WEATHER_CYCLE).getTag());
-        levelDat.put("drowningDamage", worldData.getGameRules().getGameRules().get(GameRule.DROWNING_DAMAGE).getTag());
-        levelDat.put("experimentalGameplay", worldData.getGameRules().getGameRules().get(GameRule.EXPERIMENTAL_GAMEPLAY).getTag());
-        levelDat.put("fallDamage", worldData.getGameRules().getGameRules().get(GameRule.FALL_DAMAGE).getTag());
-        levelDat.put("fireDamage", worldData.getGameRules().getGameRules().get(GameRule.FIRE_DAMAGE).getTag());
-        levelDat.put("freezeDamage", worldData.getGameRules().getGameRules().get(GameRule.FREEZE_DAMAGE).getTag());
-        levelDat.put("functionCommandLimit", worldData.getGameRules().getGameRules().get(GameRule.FUNCTION_COMMAND_LIMIT).getTag());
-        levelDat.put("keepInventory", worldData.getGameRules().getGameRules().get(GameRule.KEEP_INVENTORY).getTag());
-        levelDat.put("locatorBar", worldData.getGameRules().getGameRules().get(GameRule.LOCATOR_BAR).getTag());
-        levelDat.put("maxCommandChainLength", worldData.getGameRules().getGameRules().get(GameRule.MAX_COMMAND_CHAIN_LENGTH).getTag());
-        levelDat.put("mobGriefing", worldData.getGameRules().getGameRules().get(GameRule.MOB_GRIEFING).getTag());
-        levelDat.put("naturalRegeneration", worldData.getGameRules().getGameRules().get(GameRule.NATURAL_REGENERATION).getTag());
-        levelDat.put("playersSleepingPercentage", worldData.getGameRules().getGameRules().get(GameRule.PLAYERS_SLEEPING_PERCENTAGE).getTag());
-        levelDat.put("projectilesCanBreakBlocks", worldData.getGameRules().getGameRules().get(GameRule.PROJECTILES_CAN_BREAK_BLOCKS).getTag());
-        levelDat.put("pvp", worldData.getGameRules().getGameRules().get(GameRule.PVP).getTag());
-        levelDat.put("randomTickSpeed", worldData.getGameRules().getGameRules().get(GameRule.RANDOM_TICK_SPEED).getTag());
-        levelDat.put("recipesUnlock", worldData.getGameRules().getGameRules().get(GameRule.RECIPES_UNLOCK).getTag());
-        levelDat.put("respawnBlocksExplode", worldData.getGameRules().getGameRules().get(GameRule.RESPAWN_BLOCKS_EXPLODE).getTag());
-        levelDat.put("sendCommandFeedback", worldData.getGameRules().getGameRules().get(GameRule.SEND_COMMAND_FEEDBACK).getTag());
-        levelDat.put("showBorderEffect", worldData.getGameRules().getGameRules().get(GameRule.SHOW_BORDER_EFFECT).getTag());
-        levelDat.put("showCoordinates", worldData.getGameRules().getGameRules().get(GameRule.SHOW_COORDINATES).getTag());
-        levelDat.put("playerWaypoints", worldData.getGameRules().getGameRules().get(GameRule.PLAYER_WAYPOINTS).getTag());
-        levelDat.put("showDaysPlayed", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DAYS_PLAYED).getTag());
-        levelDat.put("showDeathMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DEATH_MESSAGES).getTag());
-        levelDat.put("showRecipeMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_RECIPE_MESSAGES).getTag());
-        levelDat.put("showTags", worldData.getGameRules().getGameRules().get(GameRule.SHOW_TAGS).getTag());
-        levelDat.put("spawnRadius", worldData.getGameRules().getGameRules().get(GameRule.SPAWN_RADIUS).getTag());
-        levelDat.put("tntExplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());
-        levelDat.put("tntExplosionDropDecay", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLOSION_DROP_DECAY).getTag());
+        Map<GameRule, GameRules.Value<?>> gameRules = worldData.getGameRules().getGameRules();
+        for (GameRule rule : GameRule.values()) {
+            if (rule.isDeprecated()) continue;
+            GameRules.Value<?> value = gameRules.get(rule);
+            if (value != null) {
+                levelDat.put(rule.getName().toLowerCase(Locale.ROOT), value.getTag());
+            }
+        }
 
         //PNX Custom field
         levelDat.putBoolean("raining", worldData.isRaining());
         levelDat.putBoolean("thundering", worldData.isThundering());
         levelDat.putInt("nosleepnights", worldData.getNoSleepNight());
         return levelDat.build();
+    }
+
+    private static NbtMapBuilder copyLevelDatNbt(NbtMap source) {
+        NbtMapBuilder builder = NbtMap.builder();
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            if (!isManagedGameRuleKey(entry.getKey())) builder.put(entry.getKey(), entry.getValue());
+        }
+        return builder;
+    }
+
+    private static NbtMapBuilder copyNbt(NbtMap source) {
+        NbtMapBuilder builder = NbtMap.builder();
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            builder.put(entry.getKey(), entry.getValue());
+        }
+        return builder;
+    }
+
+    private static NbtMap getCompound(NbtMap source, String key) {
+        Object value = source.get(key);
+        return value instanceof NbtMap map ? map : NbtMap.EMPTY;
+    }
+
+    private static boolean isManagedGameRuleKey(String key) {
+        for (GameRule rule : GameRule.values()) {
+            if (!rule.isDeprecated() && rule.getName().equalsIgnoreCase(key)) return true;
+        }
+        return false;
     }
 
     private boolean getBoolean(NbtMap nbtMap, String key) {

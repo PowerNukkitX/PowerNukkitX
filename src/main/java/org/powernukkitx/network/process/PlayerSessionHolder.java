@@ -224,7 +224,7 @@ public class PlayerSessionHolder {
         final PlayerListAddEntry playerListEntry = new PlayerListAddEntry();
 
         playerListEntry.setUuid(this.player.getUniqueId());
-        playerListEntry.setActorUniqueID(this.player.getId());
+        playerListEntry.setActorUniqueID(this.player.uniqueIdLong());
         playerListEntry.setPlayerName(this.player.getName());
         playerListEntry.setXblXUID(this.player.getXUID());
         playerListEntry.setPlatformOnlineID("");
@@ -325,11 +325,11 @@ public class PlayerSessionHolder {
 
     private void sendStartGame(Server server) {
         final StartGamePacket packet = new StartGamePacket();
-        packet.setEntityID(this.player.getId());
+        packet.setEntityID(this.player.uniqueIdLong());
         packet.setRuntimeID(this.player.runtimeId());
         packet.setGameType(GameType.from(Player.toNetworkGamemode(this.player.getGamemode())));
         packet.setPosition(this.player.getInitialSpawnPosition());
-        packet.setRotation(Vector2f.from(this.player.getYaw(), this.player.getPitch()));
+        packet.setRotation(Vector2f.from(this.player.getPitch(), this.player.getYaw()));
 
         packet.getSettings().setSeed(-1L);
         packet.getSettings().getSpawnSettings().setDimension(DimensionType.from(this.player.level.getDimension()));

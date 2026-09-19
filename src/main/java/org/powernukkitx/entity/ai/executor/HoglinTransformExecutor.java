@@ -44,7 +44,7 @@ public class HoglinTransformExecutor implements EntityControl, IBehaviorExecutor
 
     private void transform(EntityIntelligent entity) {
         entity.saveNBT();
-        EntityZoglin zoglin = new EntityZoglin(entity.getChunk(), entity.getNbt());
+        EntityZoglin zoglin = new EntityZoglin(entity.getChunk(), entity.copyNBTForNewActor());
         EntityTransformEvent event = new EntityTransformEvent(entity, zoglin);
         Server.getInstance().getPluginManager().callEvent(event);
         if(event.isCancelled()) {
