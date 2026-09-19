@@ -26,6 +26,8 @@ import org.powernukkitx.registry.Registries;
 
 import java.util.List;
 
+import static org.powernukkitx.block.property.CommonBlockProperties.HEIGHT;
+
 public class IglooPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_igloo";
@@ -65,9 +67,9 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
                 for (int z = 2; z < size.getZ() + 2; z++) {
                     int y = chunk.getHeightMap(x, z);
 
-                    Block block = chunk.getBlockState(x, y, z).toBlock();
-                    while (block.canBeReplaced() && y > 64) {
-                        block = chunk.getBlockState(x, --y, z).toBlock();
+                    BlockState state = chunk.getBlockState(x, y, z);
+                    while (isReplaceableSurface(chunk, x, y, z, state) && y > 64) {
+                        state = chunk.getBlockState(x, --y, z);
                     }
 
                     sumY += Math.max(64, y);
@@ -141,6 +143,13 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
             );
             queueObject(chunk, object);
         }
+    }
+
+    private static boolean isReplaceableSurface(IChunk chunk, int x, int y, int z, BlockState state) {
+        if (BlockID.SNOW_LAYER.equals(state.getIdentifier())) {
+            return state.getPropertyValue(HEIGHT) < HEIGHT.getMax() && chunk.getBlockState(x, y, z, 1).equals(BlockAir.STATE);
+        }
+        return state.toBlock().canBeReplaced();
     }
 
     @Override

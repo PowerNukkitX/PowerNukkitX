@@ -1,6 +1,7 @@
 package org.powernukkitx.level.generator.populator.normal;
 
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockChest;
 import org.powernukkitx.block.BlockJigsaw;
 import org.powernukkitx.block.BlockState;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.powernukkitx.block.BlockID.*;
+import static org.powernukkitx.block.property.CommonBlockProperties.HEIGHT;
 
 public class PillagerOutpostPopulator extends Populator implements PopulatorStructure {
 
@@ -103,9 +105,9 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
             random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
             int y = chunk.getHeightMap(0, 0);
 
-            Block block = chunk.getBlockState(0, y, 0).toBlock();
-            while (block.canBeReplaced() && y > 1) {
-                block = chunk.getBlockState(0, --y, 0).toBlock();
+            BlockState state = chunk.getBlockState(0, y, 0);
+            while (isReplaceableSurface(chunk, 0, y, 0, state) && y > 1) {
+                state = chunk.getBlockState(0, --y, 0);
             }
             Position vec = new Position(chunkX << 4, y+1, chunkZ << 4);
             List<BoundingBox> structurePieces = new ArrayList<>(6);
@@ -186,14 +188,21 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
                     case OAK_FENCE:
                     case DARK_OAK_FENCE:
                         int y = baseY - 1;
-                        Block id = chunk.getBlockState(x, y, z).toBlock();
-                        while (id.canBeReplaced() && y > 1) {
+                        BlockState state = chunk.getBlockState(x, y, z);
+                        while (isReplaceableSurface(chunk, x, y, z, state) && y > 1) {
                             chunk.setBlockState(x, y, z, Registries.BLOCK.get(baseId).getBlockState());
-                            id = chunk.getBlockState(x, --y, z).toBlock();
+                            state = chunk.getBlockState(x, --y, z);
                         }
                 }
             }
         }
+    }
+
+    private static boolean isReplaceableSurface(IChunk chunk, int x, int y, int z, BlockState state) {
+        if (SNOW_LAYER.equals(state.getIdentifier())) {
+            return state.getPropertyValue(HEIGHT) < HEIGHT.getMax() && chunk.getBlockState(x, y, z, 1).equals(BlockAir.STATE);
+        }
+        return state.toBlock().canBeReplaced();
     }
 
     protected void tryPlaceFeature(IChunk chunk, RandomSourceProvider random, BlockManager manager) {

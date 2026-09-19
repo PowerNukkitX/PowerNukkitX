@@ -3,7 +3,9 @@ package org.powernukkitx.level.generator.populator.normal;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockChest;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockMagma;
+import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockStructureBlock;
 import org.powernukkitx.block.BlockWater;
 import org.powernukkitx.item.Item;
@@ -32,6 +34,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.powernukkitx.block.property.CommonBlockProperties.HEIGHT;
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class OceanRuinPopulator extends Populator implements PopulatorStructure {
@@ -246,9 +249,9 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
             for (int cz = z; cz < z + size.getZ(); cz++) {
                 int h = chunk.getHeightMap(cx, cz);
 
-                Block id = chunk.getBlockState(cx, h, cz).toBlock();
-                while (id.canBeReplaced() && h > 1) {
-                    id = chunk.getBlockState(cx, --h, cz).toBlock();
+                BlockState state = chunk.getBlockState(cx, h, cz);
+                while (isReplaceableSurface(chunk, cx, h, cz, state) && h > 1) {
+                    state = chunk.getBlockState(cx, --h, cz);
                 }
 
                 y = Math.min(h, y);
@@ -294,6 +297,13 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
         }
 
         return new BoundingBox(worldX, y, worldZ, worldX + size.getX() - 1, y + size.getY() - 1, worldZ + size.getZ() - 1);
+    }
+
+    private static boolean isReplaceableSurface(IChunk chunk, int x, int y, int z, BlockState state) {
+        if (BlockID.SNOW_LAYER.equals(state.getIdentifier())) {
+            return state.getPropertyValue(HEIGHT) < HEIGHT.getMax() && chunk.getBlockState(x, y, z, 1).equals(BlockAir.STATE);
+        }
+        return state.toBlock().canBeReplaced();
     }
 
     protected static class SmallChestPopulator extends RandomizableContainer {
