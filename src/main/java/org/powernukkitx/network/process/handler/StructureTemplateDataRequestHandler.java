@@ -30,7 +30,7 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
             return;
         }
 
-        final long playerId = player.runtimeId();
+        final long playerId = player.getId();
         if (!PENDING_REQUESTS.add(playerId)) {
             return;
         }
