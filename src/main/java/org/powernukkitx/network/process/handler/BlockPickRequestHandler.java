@@ -8,7 +8,7 @@ import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.event.player.PlayerBlockPickEvent;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.math.Vector3;
+import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -26,27 +26,27 @@ public class BlockPickRequestHandler implements PacketHandler<BlockPickRequestPa
     public void handle(BlockPickRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
-        Block block = player.level.getBlock(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ(), false);
 
         if (!player.spawned || !player.isAlive()) {
             log.debug("Player {} tried to send a block pick request while not spawned or dead", playerHandle.getUsername());
             return;
         }
 
-        if (block.distanceSquared(player) > 1000) {
+        BlockVector3 position = BlockVector3.fromNetwork(packet.getPosition());
+        if (!player.canInteract(position.add(0.5, 0.5, 0.5))) {
             log.debug("{}: Block pick request for a block too far away", playerHandle.getUsername());
             return;
         }
+
+        Block block = player.level.getBlock(position.x, position.y, position.z, false);
         Item item = block.toItem();
 
-        if (packet.isWithData()) {
-            BlockEntity blockEntity = player.getLevel().getBlockEntity(new Vector3(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ()));
-            if (blockEntity != null) {
-                CompoundTag nbt = blockEntity.getCleanedNBT();
-                if (nbt != null) {
-                    item.setCustomBlockData(nbt);
-                    item.setLore("+(DATA)");
-                }
+        if (packet.isWithData() && player.isCreative()) {
+            BlockEntity blockEntity = player.getLevel().getBlockEntity(position);
+            CompoundTag nbt = blockEntity == null ? null : blockEntity.getPickNBT(player);
+            if (nbt != null && !nbt.isEmpty()) {
+                item.setCustomBlockData(nbt);
+                item.setLore("+(DATA)");
             }
         }
 
@@ -61,7 +61,7 @@ public class BlockPickRequestHandler implements PacketHandler<BlockPickRequestPa
         if (!pickEvent.isCancelled()) {
             boolean itemExists = false;
             int itemSlot = -1;
-            for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+            for (int slot = 0; slot < HumanInventory.ARMORS_INDEX; slot++) {
                 if (player.getInventory().getItem(slot).equals(pickEvent.getItem())) {
                     if (slot < player.getInventory().getHotbarSize()) {
                         player.getInventory().setHeldItemSlot(slot);
