@@ -12,7 +12,7 @@ public class SpaceMoveController implements IController {
     public boolean control(EntityIntelligent entity) {
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             Vector3 direction = entity.getMoveDirectionEnd();
-            var speed = entity.getMovementSpeed();
+            var speed = entity.getMovementSpeed() * entity.getMovementSpeedFactor();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 return false;
             }
