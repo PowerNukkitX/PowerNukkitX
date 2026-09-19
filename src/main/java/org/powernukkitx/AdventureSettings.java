@@ -1,8 +1,8 @@
 package org.powernukkitx;
 
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.IntTag;
-import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.nbt.tag.NumberTag;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
@@ -28,11 +28,24 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class AdventureSettings implements Cloneable {
-    public static final String KEY_ABILITIES = "Abilities";
-    public static final String KEY_PLAYER_PERMISSION = "PlayerPermission";
-    public static final String KEY_COMMAND_PERMISSION = "CommandPermission";
+    public static final String KEY_ABILITIES = "abilities";
+    public static final String KEY_PLAYER_PERMISSION = "playerPermissionsLevel";
+    public static final String KEY_COMMAND_PERMISSION = "permissionsLevel";
+    private static final String PNX_EXTRA_ADVENTURE_SETTINGS = "AdventureSettings";
 
     private static final Map<AbilitiesIndex, Type> ability2TypeMap = new HashMap<>();
+
+    private static final Type[] PNX_EXTRA_TYPES = new Type[]{
+            Type.WORLD_IMMUTABLE,
+            Type.NO_PVM,
+            Type.SHOW_NAME_TAGS,
+            Type.AUTO_JUMP,
+            Type.NO_CLIP,
+            Type.WORLD_BUILDER,
+            Type.MUTED,
+            Type.PRIVILEGED_BUILDER,
+            Type.VERTICAL_FLY_SPEED
+    };
 
     //Controllable capabilities in the permission list
     public static final AbilitiesIndex[] CONTROLLABLE_ABILITIES = new AbilitiesIndex[]{
@@ -74,15 +87,9 @@ public class AdventureSettings implements Cloneable {
     }
 
     public void init(@Nullable CompoundTag nbt) {
-        if (nbt != null && nbt.contains(KEY_ABILITIES)) {
-            this.readNBT(nbt);
-            this.opCheck();
-            return;
-        }
-
         boolean immutable = this.player.isAdventure() || this.player.isSpectator();
+
         set(Type.WORLD_IMMUTABLE, immutable);
-        // !player.isAdventure() && !player.isSpectator()
         set(Type.WORLD_BUILDER, !immutable);
         set(Type.AUTO_JUMP, true);
         set(Type.ALLOW_FLIGHT, this.player.isCreative() || this.player.isSpectator());
@@ -91,8 +98,20 @@ public class AdventureSettings implements Cloneable {
         set(Type.OPERATOR, this.player.isOp());
         set(Type.TELEPORT, this.player.isOp());
 
-        this.commandPermission = this.player.isOp() ? CommandPermissionLevel.GAME_DIRECTORS : CommandPermissionLevel.ANY;
-        this.playerPermission = this.player.isOp() ? PlayerPermissionLevel.OPERATOR : PlayerPermissionLevel.MEMBER;
+        this.commandPermission = this.player.isOp()
+                ? CommandPermissionLevel.GAME_DIRECTORS
+                : CommandPermissionLevel.ANY;
+
+        this.playerPermission = this.player.isOp()
+                ? PlayerPermissionLevel.OPERATOR
+                : PlayerPermissionLevel.MEMBER;
+
+        if (nbt != null && nbt.containsCompound(KEY_ABILITIES)) {
+            this.readNBT(nbt);
+            this.opCheck();
+        }
+
+        this.readPnxExtraNBT();
     }
 
     private void opCheck() {
@@ -192,7 +211,7 @@ public class AdventureSettings implements Cloneable {
 
     public SerializedAbilitiesData buildSerializedAbilitiesData() {
         final SerializedAbilitiesData data = new SerializedAbilitiesData();
-        data.setTargetPlayerRawId(this.player.getId());
+        data.setTargetPlayerRawId(this.player.uniqueIdLong());
         data.setPlayerPermissions(this.playerPermission);
         data.setCommandPermissions(this.commandPermission);
 
@@ -224,11 +243,37 @@ public class AdventureSettings implements Cloneable {
      */
     public void saveNBT() {
         CompoundTag nbt = player.getNbt();
-        CompoundTag abilityTag = new CompoundTag();
-        this.values.forEach((type, bool) -> abilityTag.put(type.name(), new IntTag(bool ? 1 : 0)));
-        nbt.put(KEY_ABILITIES, abilityTag);
-        nbt.putString(KEY_PLAYER_PERMISSION, playerPermission.name());
-        nbt.putString(KEY_COMMAND_PERMISSION, commandPermission.name());
+        CompoundTag abilityTag = nbt.containsCompound(KEY_ABILITIES) ? nbt.getCompound(KEY_ABILITIES).copy() : new CompoundTag();
+
+        abilityTag.putByte("attackmobs", this.get(Type.ATTACK_MOBS) ? 1 : 0);
+        abilityTag.putByte("attackplayers", this.get(Type.ATTACK_PLAYERS) ? 1 : 0);
+        abilityTag.putByte("build", this.get(Type.BUILD) ? 1 : 0);
+        abilityTag.putByte("doorsandswitches", this.get(Type.DOORS_AND_SWITCHED) ? 1 : 0);
+        abilityTag.putFloat("flySpeed", this.player.getHorizontalFlySpeed());
+        abilityTag.putByte("flying", this.get(Type.FLYING) ? 1 : 0);
+        abilityTag.putByte("instabuild", this.player.isCreative() ? 1 : 0);
+        abilityTag.putByte("invulnerable", this.get(Type.NO_MVP) ? 1 : 0);
+
+        if (!abilityTag.containsByte("lightning")) {
+            abilityTag.putByte("lightning", 0);
+        }
+
+        abilityTag.putByte("mayfly", this.get(Type.ALLOW_FLIGHT) ? 1 : 0);
+        abilityTag.putByte("mine", this.get(Type.MINE) ? 1 : 0);
+        abilityTag.putByte("op", this.get(Type.OPERATOR) ? 1 : 0);
+        abilityTag.putByte("opencontainers", this.get(Type.OPEN_CONTAINERS) ? 1 : 0);
+        abilityTag.putByte("teleport", this.get(Type.TELEPORT) ? 1 : 0);
+        abilityTag.putFloat("verticalFlySpeed", this.player.getVerticalFlySpeed());
+
+        if (!abilityTag.containsFloat("walkSpeed")) {
+            abilityTag.putFloat("walkSpeed", Player.DEFAULT_SPEED);
+        }
+
+        nbt.putCompound(KEY_ABILITIES, abilityTag);
+        nbt.putInt(KEY_COMMAND_PERMISSION, toStorageCommandPermission(this.commandPermission));
+        nbt.putInt(KEY_PLAYER_PERMISSION, toStoragePlayerPermission(this.playerPermission));
+
+        this.savePnxExtraNBT();
     }
 
     /**
@@ -236,33 +281,125 @@ public class AdventureSettings implements Cloneable {
      */
     public void readNBT(CompoundTag nbt) {
         CompoundTag abilityTag = nbt.getCompound(KEY_ABILITIES);
-        for (Map.Entry<String, Tag> e : abilityTag.getTags().entrySet()) {
-            if (e.getValue() instanceof IntTag tag) {
-                Type type = Type.valueOf(e.getKey());
-                this.set(type, tag.parseValue() == 1);
-            }
-        }
-        this.playerPermission = PlayerPermissionLevel.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
 
-        final String commandPermissionLevelRaw = nbt.getString(KEY_COMMAND_PERMISSION);
-        this.commandPermission = parseCommandPermission(commandPermissionLevelRaw);
+        readBooleanAbility(abilityTag, "attackmobs", Type.ATTACK_MOBS);
+        readBooleanAbility(abilityTag, "attackplayers", Type.ATTACK_PLAYERS);
+        readBooleanAbility(abilityTag, "build", Type.BUILD);
+        readBooleanAbility(abilityTag, "doorsandswitches", Type.DOORS_AND_SWITCHED);
+
+        if (abilityTag.containsFloat("flySpeed")) {
+            this.player.horizontalFlySpeed = abilityTag.getFloat("flySpeed");
+        }
+
+        readBooleanAbility(abilityTag, "flying", Type.FLYING);
+        readBooleanAbility(abilityTag, "invulnerable", Type.NO_MVP);
+        readBooleanAbility(abilityTag, "mayfly", Type.ALLOW_FLIGHT);
+        readBooleanAbility(abilityTag, "mine", Type.MINE);
+        readBooleanAbility(abilityTag, "op", Type.OPERATOR);
+        readBooleanAbility(abilityTag, "opencontainers", Type.OPEN_CONTAINERS);
+        readBooleanAbility(abilityTag, "teleport", Type.TELEPORT);
+
+        if (abilityTag.containsFloat("verticalFlySpeed")) {
+            this.player.verticalFlySpeed = abilityTag.getFloat("verticalFlySpeed");
+        }
+
+        if (nbt.containsInt(KEY_PLAYER_PERMISSION)) {
+            this.playerPermission = fromStoragePlayerPermission(nbt.getInt(KEY_PLAYER_PERMISSION));
+        }
+
+        if (nbt.containsInt(KEY_COMMAND_PERMISSION)) {
+            this.commandPermission = fromStorageCommandPermission(nbt.getInt(KEY_COMMAND_PERMISSION));
+        }
     }
 
-    /**
-     * Parse a {@link CommandPermissionLevel} from its saved name, tolerating the legacy enum
-     * constants used before the protocol migration (NORMAL/OPERATOR/AUTOMATION).
-     */
-    private static CommandPermissionLevel parseCommandPermission(String raw) {
-        try {
-            return CommandPermissionLevel.valueOf(raw);
-        } catch (IllegalArgumentException e) {
-            return switch (raw.toUpperCase()) {
-                case "NORMAL" -> CommandPermissionLevel.ANY;
-                case "OPERATOR" -> CommandPermissionLevel.GAME_DIRECTORS;
-                case "AUTOMATION" -> CommandPermissionLevel.INTERNAL;
-                default -> CommandPermissionLevel.ANY;
-            };
+    private void readPnxExtraNBT() {
+        CompoundTag pnxExtra = this.player.pnxExtraNbt;
+
+        if (!pnxExtra.containsCompound(PNX_EXTRA_ADVENTURE_SETTINGS)) return;
+
+        CompoundTag adventureSettings = pnxExtra.getCompound(PNX_EXTRA_ADVENTURE_SETTINGS);
+
+        for (Type type : PNX_EXTRA_TYPES) {
+            if (adventureSettings.get(type.name()) instanceof NumberTag<?> number) {
+                this.set(type, number.getData().intValue() != 0);
+            }
         }
+    }
+
+    private void savePnxExtraNBT() {
+        CompoundTag pnxExtra = this.player.pnxExtraNbt;
+
+        CompoundTag existingAdventureSettings = pnxExtra.containsCompound(PNX_EXTRA_ADVENTURE_SETTINGS)
+                ? pnxExtra.getCompound(PNX_EXTRA_ADVENTURE_SETTINGS)
+                : null;
+
+        CompoundTag adventureSettings = existingAdventureSettings != null
+                ? existingAdventureSettings.copy()
+                : new CompoundTag();
+
+        for (Type type : PNX_EXTRA_TYPES) {
+            if (this.values.containsKey(type)) {
+                adventureSettings.putInt(type.name(), this.get(type) ? 1 : 0);
+            } else {
+                adventureSettings.remove(type.name());
+            }
+        }
+
+        if (adventureSettings.isEmpty()) {
+            if (pnxExtra.contains(PNX_EXTRA_ADVENTURE_SETTINGS)) {
+                pnxExtra.remove(PNX_EXTRA_ADVENTURE_SETTINGS);
+                this.player.pnxExtraDirty = true;
+            }
+        } else if (!adventureSettings.equals(existingAdventureSettings)) {
+            pnxExtra.putCompound(PNX_EXTRA_ADVENTURE_SETTINGS, adventureSettings);
+            this.player.pnxExtraDirty = true;
+        }
+    }
+
+    private void readBooleanAbility(CompoundTag abilities, String name, Type type) {
+        if (abilities.containsByte(name)) {
+            this.set(type, abilities.getBoolean(name));
+        }
+    }
+
+    private static int toStoragePlayerPermission(PlayerPermissionLevel permission) {
+        return switch (permission) {
+            case VISITOR -> 0;
+            case MEMBER -> 1;
+            case OPERATOR -> 2;
+            case CUSTOM -> 3;
+        };
+    }
+
+    private static PlayerPermissionLevel fromStoragePlayerPermission(int permission) {
+        return switch (permission) {
+            case 0 -> PlayerPermissionLevel.VISITOR;
+            case 2 -> PlayerPermissionLevel.OPERATOR;
+            case 3 -> PlayerPermissionLevel.CUSTOM;
+            default -> PlayerPermissionLevel.MEMBER;
+        };
+    }
+
+    private static int toStorageCommandPermission(CommandPermissionLevel permission) {
+        return switch (permission) {
+            case ANY -> 0;
+            case GAME_DIRECTORS -> 1;
+            case ADMIN -> 2;
+            case HOST -> 3;
+            case OWNER -> 4;
+            case INTERNAL -> 5;
+        };
+    }
+
+    private static CommandPermissionLevel fromStorageCommandPermission(int permission) {
+        return switch (permission) {
+            case 1 -> CommandPermissionLevel.GAME_DIRECTORS;
+            case 2 -> CommandPermissionLevel.ADMIN;
+            case 3 -> CommandPermissionLevel.HOST;
+            case 4 -> CommandPermissionLevel.OWNER;
+            case 5 -> CommandPermissionLevel.INTERNAL;
+            default -> CommandPermissionLevel.ANY;
+        };
     }
 
     public void updateAdventureSettings() {

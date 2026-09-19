@@ -18,8 +18,10 @@ import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.Beardifier;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
@@ -30,6 +32,7 @@ import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.random.NukkitRandom;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.powernukkitx.block.BlockID.*;
@@ -67,10 +70,10 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
             new BannerPattern(BannerPatternType.BORDER, DyeColor.BLACK)
     };
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+    public static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
             .salt(165745296L)
-            .minDistance(8)
-            .maxDistance(32)
+            .minDistance(24)
+            .maxDistance(80)
             .isBiomeValid(biome -> biome == BiomeID.PLAINS
                     || biome == BiomeID.DESERT
                     || biome == BiomeID.SAVANNA
@@ -85,7 +88,7 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
                     || biome == BiomeID.FROZEN_PEAKS
                     || biome == BiomeID.STONY_PEAKS
                     || biome == BiomeID.CHERRY_GROVE)
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.TRIANGULAR);
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -95,7 +98,7 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
+        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7) - 1, 7);
         if (PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
             int y = chunk.getHeightMap(0, 0);
@@ -105,11 +108,14 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
                 block = chunk.getBlockState(0, --y, 0).toBlock();
             }
             Position vec = new Position(chunkX << 4, y+1, chunkZ << 4);
+            List<BoundingBox> structurePieces = new ArrayList<>(6);
             StructureHelper helper = new StructureHelper(level, vec.asBlockVector3());
             Position relativeOrigin = new Position(0, 0, 0, level);
             WATCHTOWER.preparePlace(relativeOrigin, helper);
+            structurePieces.add(structureBounds(vec, WATCHTOWER));
             StructureHelper helper2 = new StructureHelper(level, vec.asBlockVector3());
             WATCHTOWER_OVERGROWN.preparePlace(relativeOrigin, helper2);
+            structurePieces.add(structureBounds(vec, WATCHTOWER_OVERGROWN));
             for(Block b : helper2.getBlocks()) {
                 if(random.nextInt(20) != 0) helper2.unsetBlockStateAt(b);
             }
@@ -128,16 +134,16 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
             fillBase(chunk, y, 0, 0, size.getX(), size.getZ());
             random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ 0x5DEECE66DL);
             if (random.nextBoolean()) {
-                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX - 1, chunkZ - 1), random, manager);
+                structurePieces.add(this.tryPlaceFeatureWithBounds(level.getOrGenerateChunk(chunkX - 1, chunkZ - 1), random, manager));
             }
             if (random.nextBoolean()) {
-                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX - 1, chunkZ + 1), random, manager);
+                structurePieces.add(this.tryPlaceFeatureWithBounds(level.getOrGenerateChunk(chunkX - 1, chunkZ + 1), random, manager));
             }
             if (random.nextBoolean()) {
-                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX + 1, chunkZ - 1), random, manager);
+                structurePieces.add(this.tryPlaceFeatureWithBounds(level.getOrGenerateChunk(chunkX + 1, chunkZ - 1), random, manager));
             }
             if (random.nextBoolean()) {
-                this.tryPlaceFeature(level.getOrGenerateChunk(chunkX + 1, chunkZ + 1), random, manager);
+                structurePieces.add(this.tryPlaceFeatureWithBounds(level.getOrGenerateChunk(chunkX + 1, chunkZ + 1), random, manager));
             }
             for(Block block1 : manager.getBlocks()) {
                 if(block1.isAir()) manager.unsetBlockStateAt(block1);
@@ -157,6 +163,7 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
                     });
                 }
             }
+            StructureAabbVolumes.addDynamic(level, "minecraft:pillager_outpost", structurePieces);
             queueObject(chunk, manager);
         }
     }
@@ -190,18 +197,26 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
     }
 
     protected void tryPlaceFeature(IChunk chunk, RandomSourceProvider random, BlockManager manager) {
+        this.tryPlaceFeatureWithBounds(chunk, random, manager);
+    }
+
+    private BoundingBox tryPlaceFeatureWithBounds(IChunk chunk, RandomSourceProvider random, BlockManager manager) {
         PNXStructure template = FEATURES[random.nextInt(FEATURES.length)];
         int seed = random.nextInt();
-        this.placeFeature(template, chunk, seed, manager);
+        return this.placeFeatureWithBounds(template, chunk, seed, manager);
     }
 
     protected void placeFeature(PNXStructure template, IChunk chunk, int seed, BlockManager manager) {
+        this.placeFeatureWithBounds(template, chunk, seed, manager);
+    }
+
+    private BoundingBox placeFeatureWithBounds(PNXStructure template, IChunk chunk, int seed, BlockManager manager) {
         NukkitRandom random = new NukkitRandom(seed);
 
         BlockVector3 size = new BlockVector3(template.getSizeX(), template.getSizeY(), template.getSizeZ());
         int x = random.nextBoundedInt(16 - size.getX());
         int z = random.nextBoundedInt(16 - size.getZ());
-        int y = chunk.getHeightMap(x, z);
+        int y = chunk.getHeightMap(x, z) - 1;
 
         Position base = new Position((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z, manager.getLevel());
         template.preparePlace(base, manager);
@@ -223,6 +238,18 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
             }
         }, 10);
         fillBase(chunk, y, x, z, size.getX(), size.getZ());
+        return structureBounds(base, template);
+    }
+
+    private static BoundingBox structureBounds(Position base, PNXStructure template) {
+        return new BoundingBox(
+                base.getFloorX(),
+                base.getFloorY(),
+                base.getFloorZ(),
+                base.getFloorX() + template.getSizeX() - 1,
+                base.getFloorY() + template.getSizeY() - 1,
+                base.getFloorZ() + template.getSizeZ() - 1
+        );
     }
 
     @Override

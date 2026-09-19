@@ -9,6 +9,7 @@ import org.powernukkitx.event.scoreboard.ScoreboardObjectiveChangeEvent;
 import org.powernukkitx.scoreboard.data.DisplaySlot;
 import org.powernukkitx.scoreboard.displayer.IScoreboardViewer;
 import org.powernukkitx.scoreboard.IScoreboard;
+import org.powernukkitx.scoreboard.ScoreboardLine;
 import org.powernukkitx.scoreboard.scorer.EntityScorer;
 import org.powernukkitx.scoreboard.scorer.PlayerScorer;
 import org.powernukkitx.scoreboard.storage.IScoreboardStorage;
@@ -21,7 +22,6 @@ import java.util.*;
 
 @Getter
 public class ScoreboardManager implements IScoreboardManager{
-
     protected Map<String, IScoreboard> scoreboards = new HashMap<>();
     protected Map<DisplaySlot, IScoreboard> display = new HashMap<>();
     protected Set<IScoreboardViewer> viewers = new HashSet<>();
@@ -157,6 +157,7 @@ public class ScoreboardManager implements IScoreboardManager{
         storage.removeAllScoreboard();
         storage.saveScoreboard(scoreboards.values());
         storage.saveDisplay(display);
+        storage.saveLastUniqueId(ScoreboardLine.getLastUniqueId());
     }
 
     @Override
@@ -165,6 +166,7 @@ public class ScoreboardManager implements IScoreboardManager{
         new ArrayList<>(this.scoreboards.values()).forEach(this::removeScoreboard);
         this.display.forEach((slot, scoreboard) -> setDisplay(slot, null));
 
+        ScoreboardLine.resetIdentityState(storage.readLastUniqueId());
         scoreboards = storage.readScoreboard();
         storage.readDisplay().forEach((slot, objectiveName) -> {
             var scoreboard = getScoreboard(objectiveName);

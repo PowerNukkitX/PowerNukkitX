@@ -11,7 +11,6 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.Identifier;
@@ -50,42 +49,37 @@ public class BlockEntityBeehive extends BlockEntity {
     @Override
     public void loadNBT() {
         super.loadNBT();
+
         this.occupants = new ArrayList<>(4);
+
         if (!this.nbt.contains("ShouldSpawnBees")) {
             this.nbt.putByte("ShouldSpawnBees", 0);
         }
 
-        if (!this.nbt.contains("Occupants")) {
-            this.nbt.putList("Occupants", new ListTag<>());
-        } else {
-            ListTag<CompoundTag> occupantsTag = nbt.getList("Occupants", CompoundTag.class);
-            for (int i = 0; i < occupantsTag.size(); i++) {
-                this.occupants.add(new Occupant(occupantsTag.get(i)));
-            }
-        }
+        if (this.nbt.containsList("Occupants")) {
+            ListTag<CompoundTag> occupantsTag = this.nbt.getList("Occupants", CompoundTag.class);
 
-        // Backward compatibility
-        if (this.nbt.contains("HoneyLevel")) {
-            Block block = getBlock();
-            if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.nbt.getByte("HoneyLevel");
-                beehive.setBlockFace(beehive.getBlockFace());
-                beehive.setHoneyLevel(honeyLevel);
-                if (this.chunk != null) {
-                    this.chunk.setBlockState(this.getFloorX() & 0x0f, this.getFloorY(), this.getFloorZ() & 0x0f, beehive.getBlockState());
-                }
+            for (CompoundTag occupantTag : occupantsTag.getAll()) {
+                this.occupants.add(new Occupant(occupantTag));
             }
-            this.nbt.remove("HoneyLevel");
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
+
+        if (occupants.isEmpty()) {
+            this.nbt.remove("Occupants");
+            return;
+        }
+
         ListTag<CompoundTag> occupantsTag = new ListTag<>();
+
         for (Occupant occupant : occupants) {
             occupantsTag.add(occupant.saveNBT());
         }
+
         this.nbt.putList("Occupants", occupantsTag);
     }
 
@@ -134,11 +128,16 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
-        entity.saveNBT();
-        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.getNbt().copy());
-        if (!addOccupant(occupant)) {
-            return null;
+        if (entity instanceof EntityBee bee) {
+            bee.setNectar(hasNectar);
         }
+
+        entity.saveNBT();
+
+        CompoundTag saveData = entity.getNbt().copy();
+        Occupant occupant = new Occupant(ticksLeftToStay, toStorageActorIdentifier(entity.getIdentifier()), saveData);
+
+        if (!addOccupant(occupant)) return null;
 
         entity.close();
         if (playSound) {
@@ -230,12 +229,19 @@ public class BlockEntityBeehive extends BlockEntity {
         if (validFaces != null && validFaces.isEmpty()) {
             return null;
         }
-        if (!Identifier.isValid(occupant.getActorIdentifier())) {
+        String runtimeIdentifier =
+                toRuntimeActorIdentifier(
+                        occupant.getActorIdentifier()
+                );
+
+        if (!Identifier.isValid(runtimeIdentifier)) {
             log.warn("Invalid beehive occupant identifier: {}", occupant.getActorIdentifier());
-            occupant.setActorIdentifier("minecraft:bee");
+            runtimeIdentifier = "minecraft:bee";
+            occupant.setActorIdentifier("minecraft:bee<>");
         }
 
-        CompoundTag saveData = occupant.saveData.copy();
+        CompoundTag saveData =
+                occupant.saveData.copy();
 
         Position lookAt;
         Position spawnPosition;
@@ -247,16 +253,16 @@ public class BlockEntityBeehive extends BlockEntity {
                     face.getZOffset() * 0.25 - face.getXOffset() * 0.5
             );
 
-            saveData.putList("Pos", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(spawnPosition.x))
-                    .add(new DoubleTag(spawnPosition.y))
-                    .add(new DoubleTag(spawnPosition.z))
+            saveData.putList("Pos", new ListTag<FloatTag>()
+                    .add(new FloatTag((float) spawnPosition.x))
+                    .add(new FloatTag((float) spawnPosition.y))
+                    .add(new FloatTag((float) spawnPosition.z))
             );
 
-            saveData.putList("Motion", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0))
+            saveData.putList("Motion", new ListTag<FloatTag>()
+                    .add(new FloatTag(0))
+                    .add(new FloatTag(0))
+                    .add(new FloatTag(0))
             );
 
             lookAt = getSide(face, 2);
@@ -287,7 +293,7 @@ public class BlockEntityBeehive extends BlockEntity {
                 .add(new FloatTag(0))
         );
 
-        Entity entity = Entity.createEntity(occupant.actorIdentifier, spawnPosition.getChunk(), saveData);
+        Entity entity = Entity.createEntity(runtimeIdentifier, spawnPosition.getChunk(), saveData);
         if (entity != null) {
             removeOccupant(occupant);
             level.addSound(this, Sound.BLOCK_BEEHIVE_EXIT);
@@ -371,24 +377,45 @@ public class BlockEntityBeehive extends BlockEntity {
         return id == Block.BEEHIVE || id == Block.BEE_NEST;
     }
 
+    private static String toStorageActorIdentifier(String identifier) {
+
+        if (identifier == null || identifier.isEmpty()) {
+            return "minecraft:bee<>";
+        }
+
+        return identifier.endsWith("<>") ? identifier : identifier + "<>";
+    }
+
+    private static String toRuntimeActorIdentifier(String identifier) {
+        if (identifier == null) return "";
+        return identifier.endsWith("<>") ? identifier.substring(0, identifier.length() - 2) : identifier;
+    }
+
+    /**
+     * Represents an actor persisted inside a beehive.
+     *
+     * @author Curse
+     */
     public static final class Occupant implements Cloneable {
-
-
         public static final Occupant[] EMPTY_ARRAY = new Occupant[0];
-
         private int ticksLeftToStay;
         private String actorIdentifier;
         private CompoundTag saveData;
         private Sound workSound = Sound.BLOCK_BEEHIVE_WORK;
         private float workSoundPitch = 1;
-        private boolean hasNectar;
         private boolean muted;
 
 
-        public Occupant(int ticksLeftToStay, String actorIdentifier, boolean hasNectar, CompoundTag saveData) {
+        /**
+         * Creates a beehive occupant.
+         *
+         * @param ticksLeftToStay ticks remaining before the occupant can leave
+         * @param actorIdentifier persisted actor identifier
+         * @param saveData persisted actor data
+         */
+        public Occupant(int ticksLeftToStay, String actorIdentifier, CompoundTag saveData) {
             this.ticksLeftToStay = ticksLeftToStay;
             this.actorIdentifier = actorIdentifier;
-            this.hasNectar = hasNectar;
             this.saveData = saveData;
         }
 
@@ -396,84 +423,146 @@ public class BlockEntityBeehive extends BlockEntity {
             this.ticksLeftToStay = saved.getInt("TicksLeftToStay");
             this.actorIdentifier = saved.getString("ActorIdentifier");
             this.saveData = saved.getCompound("SaveData").copy();
-            if (saved.contains("WorkSound")) {
-                try {
-                    this.workSound = Sound.valueOf(saved.getString("WorkSound"));
-                } catch (IllegalArgumentException ignored) {
-
-                }
-            }
-            if (saved.contains("WorkSoundPitch")) {
-                this.workSoundPitch = saved.getFloat("WorkSoundPitch");
-            }
-            this.hasNectar = saved.getBoolean("HasNectar");
-            this.muted = saved.getBoolean("Muted");
         }
 
+        /**
+         * Serializes this occupant to its persisted NBT representation.
+         *
+         * @return serialized occupant data
+         */
         public CompoundTag saveNBT() {
-            CompoundTag compoundTag = new CompoundTag();
-            compoundTag.putString("ActorIdentifier", actorIdentifier)
-                    .putInt("TicksLeftToStay", ticksLeftToStay)
+            return new CompoundTag()
+                    .putString("ActorIdentifier", actorIdentifier)
                     .putCompound("SaveData", saveData)
-                    .putString("WorkSound", workSound.name())
-                    .putFloat("WorkSoundPitch", workSoundPitch)
-                    .putBoolean("HasNectar", hasNectar)
-                    .putBoolean("Muted", muted);
-            return compoundTag;
+                    .putInt("TicksLeftToStay", ticksLeftToStay);
         }
 
+        /**
+         * Returns whether the persisted actor carries nectar.
+         *
+         * @return whether the actor has nectar
+         */
         public boolean getHasNectar() {
-            return hasNectar;
+            if (!saveData.containsCompound("properties")) return false;
+            CompoundTag properties = saveData.getCompound("properties");
+            return properties.getBoolean("minecraft:has_nectar");
         }
 
+        /**
+         * Updates the persisted nectar state.
+         *
+         * @param hasNectar whether the actor has nectar
+         */
         public void setHasNectar(boolean hasNectar) {
-            this.hasNectar = hasNectar;
+            CompoundTag properties = saveData.containsCompound("properties" ) ? saveData.getCompound("properties") : new CompoundTag();
+            properties.putByte("minecraft:has_nectar", hasNectar ? 1 : 0);
+            saveData.putCompound("properties", properties);
         }
 
+        /**
+         * Returns the ticks remaining before this occupant can leave.
+         *
+         * @return ticks remaining
+         */
         public int getTicksLeftToStay() {
             return ticksLeftToStay;
         }
 
+        /**
+         * Sets the ticks remaining before this occupant can leave.
+         *
+         * @param ticksLeftToStay ticks remaining
+         */
         public void setTicksLeftToStay(int ticksLeftToStay) {
             this.ticksLeftToStay = ticksLeftToStay;
         }
 
+        /**
+         * Returns the persisted actor identifier.
+         *
+         * @return actor identifier
+         */
         public String getActorIdentifier() {
             return actorIdentifier;
         }
 
+        /**
+         * Sets the persisted actor identifier.
+         *
+         * @param actorIdentifier actor identifier
+         */
         public void setActorIdentifier(String actorIdentifier) {
             this.actorIdentifier = actorIdentifier;
         }
 
+        /**
+         * Returns a copy of the persisted actor data.
+         *
+         * @return actor save data
+         */
         public CompoundTag getSaveData() {
             return saveData.copy();
         }
 
+        /**
+         * Replaces the persisted actor data with a copy of the supplied compound.
+         *
+         * @param saveData actor save data
+         */
         public void setSaveData(CompoundTag saveData) {
             this.saveData = saveData.copy();
         }
 
+        /**
+         * Returns the sound played while this occupant works.
+         *
+         * @return work sound
+         */
         public Sound getWorkSound() {
             return workSound;
         }
 
+        /**
+         * Sets the sound played while this occupant works.
+         *
+         * @param workSound work sound
+         */
         public void setWorkSound(Sound workSound) {
             this.workSound = workSound;
         }
 
+        /**
+         * Returns the pitch used for the occupant work sound.
+         *
+         * @return work sound pitch
+         */
         public float getWorkSoundPitch() {
             return workSoundPitch;
         }
 
+        /**
+         * Sets the pitch used for the occupant work sound.
+         *
+         * @param workSoundPitch work sound pitch
+         */
         public void setWorkSoundPitch(float workSoundPitch) {
             this.workSoundPitch = workSoundPitch;
         }
 
+        /**
+         * Returns whether occupant sounds are muted.
+         *
+         * @return whether sounds are muted
+         */
         public boolean isMuted() {
             return muted;
         }
 
+        /**
+         * Sets whether occupant sounds are muted.
+         *
+         * @param muted whether sounds are muted
+         */
         public void setMuted(boolean muted) {
             this.muted = muted;
         }

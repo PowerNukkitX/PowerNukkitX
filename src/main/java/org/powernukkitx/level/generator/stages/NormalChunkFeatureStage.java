@@ -1,7 +1,6 @@
 package org.powernukkitx.level.generator.stages;
 
 import org.powernukkitx.level.format.ChunkSection;
-import org.powernukkitx.level.format.ChunkState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateFeature;
@@ -21,18 +20,22 @@ import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 @Slf4j
 public class NormalChunkFeatureStage extends GenerateStage {
 
     public static final String NAME = "feature";
+    protected static final String PREGENERATION_PASS = "pregeneration_pass";
+    private static final int PREGENERATION_BIOME_CACHE_LIMIT = 8192;
+    private static final Map<IChunk, IntOpenHashSet> PREGENERATION_BIOMES = new WeakHashMap<>();
 
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
-        final int minHeight = chunk.getLevel().getMinHeight();
-        final IntOpenHashSet allBiomesInChunk = collectBiomesInChunk(chunk, minHeight);
+        final IntOpenHashSet allBiomesInChunk = this.resolveBiomesInChunk(chunk);
 
         Set<String> featureIdentifiers = new ObjectOpenHashSet<>();
         Int2ObjectOpenHashMap<BiomeConsolidatedFeatureData> featuresByIdentifier = new Int2ObjectOpenHashMap<>();
@@ -44,6 +47,9 @@ public class NormalChunkFeatureStage extends GenerateStage {
                 List<BiomeConsolidatedFeatureData> consolidatedFeaturesData = chunkGenData.getConsolidatedFeatures();
                 if (consolidatedFeaturesData != null) {
                     for (BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeaturesData) {
+                        if (!this.shouldApplyFeature(consolidatedFeatureData)) {
+                            continue;
+                        }
                         if (featureIdentifiers.add(Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.getIdentifier()))) {
                             featuresByIdentifier.put(consolidatedFeatureData.getIdentifier(), consolidatedFeatureData);
                         }
@@ -79,7 +85,46 @@ public class NormalChunkFeatureStage extends GenerateStage {
             }
         }
         root.applySubChunkUpdate();
-        chunk.setChunkState(ChunkState.POPULATED);
+    }
+
+    protected boolean cacheBiomesForPopulation() {
+        return false;
+    }
+
+    static void cacheGeneratedBiomes(IChunk chunk, IntOpenHashSet biomes) {
+        synchronized (PREGENERATION_BIOMES) {
+            if (PREGENERATION_BIOMES.size() >= PREGENERATION_BIOME_CACHE_LIMIT && !PREGENERATION_BIOMES.containsKey(chunk)) {
+                PREGENERATION_BIOMES.clear();
+            }
+            PREGENERATION_BIOMES.put(chunk, biomes);
+        }
+    }
+
+    private IntOpenHashSet resolveBiomesInChunk(IChunk chunk) {
+        if (this.cacheBiomesForPopulation()) {
+            synchronized (PREGENERATION_BIOMES) {
+                IntOpenHashSet cached = PREGENERATION_BIOMES.get(chunk);
+                if (cached != null) {
+                    return cached;
+                }
+            }
+
+            IntOpenHashSet biomes = collectBiomesInChunk(chunk, chunk.getLevel().getMinHeight());
+            cacheGeneratedBiomes(chunk, biomes);
+            return biomes;
+        }
+
+        synchronized (PREGENERATION_BIOMES) {
+            IntOpenHashSet cached = PREGENERATION_BIOMES.remove(chunk);
+            if (cached != null) {
+                return cached;
+            }
+        }
+        return collectBiomesInChunk(chunk, chunk.getLevel().getMinHeight());
+    }
+
+    protected boolean shouldApplyFeature(BiomeConsolidatedFeatureData feature) {
+        return !PREGENERATION_PASS.equals(Registries.BIOME.getFromBiomeStringList(feature.getPass()));
     }
 
     private static IntOpenHashSet collectBiomesInChunk(IChunk chunk, int minHeight) {
@@ -89,9 +134,11 @@ public class NormalChunkFeatureStage extends GenerateStage {
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int y = chunk.getHeightMap(x, z);
+                int y = chunk.getHeightMap(x, z) - 1;
                 int currentSectionY = Integer.MIN_VALUE;
                 ChunkSection currentSection = null;
+                int previousBiomeId = 0;
+                boolean hasPreviousBiome = false;
 
                 while (y > minHeight) {
                     int sectionY = y >> 4;
@@ -107,7 +154,12 @@ public class NormalChunkFeatureStage extends GenerateStage {
                     }
 
                     for (int yInSection = y & 0x0f; yInSection >= 0 && y > minHeight; yInSection--, y--) {
-                        allBiomesInChunk.add(currentSection.getBiomeId(x, yInSection, z));
+                        int biomeId = currentSection.getBiomeId(x, yInSection, z);
+                        if (!hasPreviousBiome || biomeId != previousBiomeId) {
+                            allBiomesInChunk.add(biomeId);
+                            previousBiomeId = biomeId;
+                            hasPreviousBiome = true;
+                        }
                     }
                 }
             }

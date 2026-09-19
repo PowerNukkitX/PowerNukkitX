@@ -7,4 +7,9 @@ public interface VibrationManager {
     void addListener(VibrationListener listener);
 
     void removeListener(VibrationListener listener);
+
+    /**
+     * Advances pending vibration deliveries by one tick.
+     */
+    void tick();
 }

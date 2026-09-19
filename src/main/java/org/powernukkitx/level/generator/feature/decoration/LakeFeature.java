@@ -31,7 +31,7 @@ public abstract class LakeFeature extends GenerateFeature {
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ name().hashCode());
         BlockManager manager = new BlockManager(level);
         int minY = level.getMinHeight() + 5;
-        int maxY = Math.max(minY, chunk.getHeightMap(random.nextInt(16), random.nextInt(16)));
+        int maxY = Math.max(minY, chunk.getHeightMap(random.nextInt(16), random.nextInt(16)) - 1);
 
         for (int i = 0; i < placementAttempts(); i++) {
             int x = (chunkX << 4) + random.nextInt(16);

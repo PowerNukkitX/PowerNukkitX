@@ -248,7 +248,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
 
     protected boolean transform() {
         this.saveNBT();
-        Entity drowned = new EntityDrowned(this.getChunk(), this.getNbt().copy().remove("Health"));
+        Entity drowned = new EntityDrowned(this.getChunk(), this.copyNBTForNewActor().remove("Health"));
         EntityTransformEvent event = new EntityTransformEvent(this, drowned);
         server.getPluginManager().callEvent(event);
         if(event.isCancelled()) {

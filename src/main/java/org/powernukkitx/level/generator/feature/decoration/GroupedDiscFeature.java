@@ -46,9 +46,12 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
+        int minHeight = level.getMinHeight();
         int randomX = random.nextInt(15);
         int randomZ = random.nextInt(15);
         int height = getY(chunk, randomX, randomZ);
+        if (height < minHeight) return;
+
         int sourceX = (chunkX << 4) + randomX;
         int sourceZ = (chunkZ << 4) + randomZ;
         double probability = getProbability();
@@ -98,6 +101,9 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
                             }
                             int localZ = z & 15;
                             int supportY = getY(targetChunk, localX, localZ);
+                            if (supportY < minHeight) {
+                                continue;
+                            }
                             if (unsafeChunk.getBlockState(localX, supportY + 1, localZ, 0) != BlockAir.STATE) {
                                 continue;
                             }
@@ -134,7 +140,6 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
     }
 
     public int getY(IChunk chunk, int x, int z) {
-        return chunk.getHeightMap(x, z);
+        return chunk.getHeightMap(x, z) - 1;
     }
-
 }

@@ -81,7 +81,7 @@ public class Attribute implements Cloneable {
         addAttribute(ABSORPTION, "minecraft:absorption", 0.00f, 16.00f, 0.00f);
         addAttribute(SATURATION, "minecraft:player.saturation", 0.00f, 20.00f, 5.00f);
         addAttribute(EXHAUSTION, "minecraft:player.exhaustion", 0.00f, 20.00f, 0.00f);
-        addAttribute(KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00f, 1.00f, 0.00f);
+        addAttribute(KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", -2.00f, 1.00f, 0.00f);
         addAttribute(HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
         addAttribute(MOVEMENT_SPEED, "minecraft:movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.10f);
         addAttribute(UNDER_WATER_MOVEMENT_SPEED, "minecraft:underwater_movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.02f);
@@ -202,14 +202,12 @@ public class Attribute implements Cloneable {
                 defMax = max;
             }
 
-            attr.setMinValue(min);
-            attr.setMaxValue(max);
-
+            attr.minValue = min;
+            attr.maxValue = max;
             attr.defaultMinimum = defMin;
             attr.defaultMaximum = defMax;
-
-            attr.setDefaultValue(Math.min(Math.max(NBT.getFloat("Base"), min), max));
-            attr.setValue(NBT.getFloat("Current"), true);
+            attr.defaultValue = NBT.getFloat("Base");
+            attr.currentValue = NBT.getFloat("Current");
 
             return attr;
         }
@@ -297,6 +295,20 @@ public class Attribute implements Cloneable {
             value = Math.min(Math.max(value, this.getMinValue()), this.getMaxValue());
         }
         this.currentValue = value;
+        return this;
+    }
+
+    Attribute setRuntimeBounds(float minValue, float maxValue) {
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.defaultMinimum = minValue;
+        this.defaultMaximum = maxValue;
+        return this;
+    }
+
+    Attribute setBaseAndCurrent(float baseValue, float currentValue) {
+        this.defaultValue = baseValue;
+        this.currentValue = currentValue;
         return this;
     }
 

@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Function;
 
 
@@ -112,6 +111,18 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         return json.exists("scoreboard." + name);
     }
 
+    @Override
+    public long readLastUniqueId() {
+        Object value = json.get("lastUniqueId");
+        return value instanceof Number number ? number.longValue() : 0;
+    }
+
+    @Override
+    public void saveLastUniqueId(long lastUniqueId) {
+        json.set("lastUniqueId", lastUniqueId);
+        json.save();
+    }
+
     private Map<String, Object> serializeToMap(IScoreboard scoreboard) {
         Map<String, Object> map = new HashMap<>();
         map.put("objectiveName", scoreboard.getObjectiveName());
@@ -121,11 +132,12 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         List<Map<String, Object>> lines = new ArrayList<>();
         for (IScoreboardLine e : scoreboard.getLines().values()) {
             Map<String, Object> line = new HashMap<>();
+            line.put("scoreboardId", e.getLineId());
             line.put("score", e.getScore());
             line.put("scorerType", e.getScorer().getScorerType().name());
             line.put("name", switch (e.getScorer().getScorerType()) {
-                case CHANGE_PLAYER -> ((PlayerScorer) e.getScorer()).getUuid().toString();
-                case CHANGE_ENTITY -> ((EntityScorer) e.getScorer()).getEntityUuid().toString();
+                case CHANGE_PLAYER -> ((PlayerScorer) e.getScorer()).uniqueId();
+                case CHANGE_ENTITY -> ((EntityScorer) e.getScorer()).uniqueId();
                 case CHANGE_FAKE_PLAYER -> ((FakeScorer) e.getScorer()).getFakeName();
                 default -> null;
             });
@@ -159,27 +171,28 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         List<Map<String, Object>> linesList = (List<Map<String, Object>>) linesObj;
         for (Map<String, Object> line : linesList) {
             if (!line.containsKey("score") || !line.containsKey("scorerType")) continue;
+            long scoreboardId = line.get("scoreboardId") instanceof Number number ? number.longValue() : 0;
             int score = ((Number) line.get("score")).intValue();
             String scorerType = Objects.toString(line.get("scorerType"), null);
             String name = Objects.toString(line.get("name"), null);
             if (scorerType == null) continue;
             IScorer scorer = null;
             switch (scorerType) {
-                case "PLAYER":
+                case "PLAYER", "CHANGE_PLAYER":
                     if (name != null)
-                        scorer = new PlayerScorer(UUID.fromString(name));
+                        scorer = new PlayerScorer(name);
                     break;
-                case "ENTITY":
+                case "ENTITY", "CHANGE_ENTITY":
                     if (name != null)
-                        scorer = new EntityScorer(UUID.fromString(name));
+                        scorer = new EntityScorer(Long.parseLong(name));
                     break;
-                case "FAKE":
+                case "FAKE", "CHANGE_FAKE_PLAYER":
                     if (name != null)
                         scorer = new FakeScorer(name);
                     break;
             }
             if (scorer != null) {
-                scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
+                scoreboard.addLine(scoreboardId > 0 ? new ScoreboardLine(scoreboard, scorer, score, scoreboardId) : new ScoreboardLine(scoreboard, scorer, score));
             }
         }
         return scoreboard;

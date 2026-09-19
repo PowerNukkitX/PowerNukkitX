@@ -3,7 +3,6 @@ package org.powernukkitx.entity.ai.executor;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.memory.MemoryType;
 import org.powernukkitx.entity.mob.EntityWarden;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
@@ -18,6 +17,7 @@ import java.util.Map;
 
 
 public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
+    private static final int SONIC_BOOM_COOLDOWN_TICKS = 100;
 
     protected int attackTick;
     protected MemoryType<? extends Entity> memory;
@@ -55,7 +55,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
 
         oldTarget = floor;
 
-        if (entity.distanceSquared(target) <= 4 && attackTick > coolDown) {
+        if (entity.distanceSquared(target) <= 4 && attackTick >= coolDown) {
             Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damages.put(EntityDamageEvent.DamageModifier.BASE, this.damage);
 
@@ -63,6 +63,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
 
             ev.setBreakShield(true);
             target.attack(ev);
+            ((EntityWarden) entity).setSonicBoomCooldown(SONIC_BOOM_COOLDOWN_TICKS);
             playAttackAnimation(entity);
             entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
             attackTick = 0;
@@ -72,12 +73,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
     }
 
     protected int calCoolDown(EntityIntelligent entity, Entity target) {
-        if (entity instanceof EntityWarden warden) {
-            var anger = warden.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE).getOrDefault(target, 0);
-            return anger >= 145 ? 18 : 36;
-        } else {
-            return 20;
-        }
+        return 20;
     }
 
     @Override
@@ -90,7 +86,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //reset speed
-        entity.setMovementSpeed(0.1f);
+        entity.setMovementSpeed(0.3f);
         entity.setEnablePitch(false);
     }
 
@@ -99,7 +95,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //reset speed
-        entity.setMovementSpeed(0.1f);
+        entity.setMovementSpeed(0.3f);
         entity.setEnablePitch(false);
     }
 

@@ -10,7 +10,6 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -61,14 +60,14 @@ public class ItemTrident extends ItemTool {
         this.useOn(player);
 
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(player.x))
-                        .add(new DoubleTag(player.y + player.getEyeHeight()))
-                        .add(new DoubleTag(player.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(player.x))
+                        .add(new FloatTag(player.y + player.getEyeHeight()))
+                        .add(new FloatTag(player.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(-Math.sin(player.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag((float) -player.pitch)));

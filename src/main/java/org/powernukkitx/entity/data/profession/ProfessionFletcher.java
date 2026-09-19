@@ -5,6 +5,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.TradeRecipeBuildUtils;
 import org.powernukkitx.utils.Utils;
@@ -14,7 +15,7 @@ import java.util.Random;
 public class ProfessionFletcher extends Profession {
 
     public ProfessionFletcher() {
-        super(4, BlockID.FLETCHING_TABLE, "entity.villager.fletcher", Sound.DIG_WOOD);
+        super(4, BlockID.FLETCHING_TABLE, "entity.villager.fletcher", Sound.DIG_WOOD, SoundEvent.FLETCHING_TABLE_USE);
     }
 
     @Override

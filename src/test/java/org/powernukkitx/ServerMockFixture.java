@@ -24,13 +24,17 @@ import org.powernukkitx.utils.collection.FreezableArrayManager;
 import eu.okaeri.configs.ConfigManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.Options;
+import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
@@ -164,11 +168,20 @@ public final class ServerMockFixture {
         doReturn(simpleCommandMap).when(server).getCommandMap();
         doReturn(null).when(server).getScoreboardManager();
         try {
-            final PositionTrackingService positionTrackingService =
-                    new PositionTrackingService(new File(PowerNukkitX.DATA_PATH,
-                            "services/position_tracking_db_" + ProcessHandle.current().pid()));
-            doReturn(positionTrackingService).when(server).getPositionTrackingService();
-        } catch (FileNotFoundException e) {
+            final File positionTrackingDir = new File(
+                    PowerNukkitX.DATA_PATH,
+                    "position_tracking_db_" + ProcessHandle.current().pid() + "_" + System.nanoTime()
+            );
+            final DB positionTrackingDB = Iq80DBFactory.factory.open(positionTrackingDir, new Options().createIfMissing(true));
+            doReturn(new PositionTrackingService(positionTrackingDB)).when(server).getPositionTrackingService();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    positionTrackingDB.close();
+                } catch (IOException ignored) {
+                }
+                FileUtils.deleteQuietly(positionTrackingDir);
+            }));
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
         doNothing().when(server).sendRecipeList(any());

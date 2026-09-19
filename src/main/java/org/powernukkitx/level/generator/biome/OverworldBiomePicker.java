@@ -2,6 +2,7 @@ package org.powernukkitx.level.generator.biome;
 
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.generator.biome.result.OverworldBiomeResult;
+import org.powernukkitx.level.generator.densityfunction.DensityCommon;
 import org.powernukkitx.level.generator.densityfunction.DensityFunction;
 import org.powernukkitx.level.generator.holder.NormalObjectHolder;
 import org.powernukkitx.utils.random.NukkitRandom;
@@ -22,6 +23,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     public static final int CONTINENT_FAR_INLAND = 6;
 
     private final Level level;
+    private final ThreadLocal<SampleContext> sampleContext = ThreadLocal.withInitial(SampleContext::new);
 
     public OverworldBiomePicker(Level level) {
         super(new NukkitRandom(level.getSeed()));
@@ -30,15 +32,27 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
 
     @Override
     public OverworldBiomeResult pick(int x, int y, int z) {
-        return pick(x, y, z, new DensityFunction.SinglePointContext(x, y, z));
+        SampleContext sample = sampleContext.get();
+        sample.clear();
+        try {
+            return pick(x, y, z, sample.point.set(x, y, z));
+        } finally {
+            sample.clear();
+        }
     }
 
     public OverworldBiomeResult pick(int x, int y, int z, DensityFunction.FunctionContext point) {
-        return pickRaw(x, y, z, point).correct(y - level.getHeightMap(x, z));
+        return pickRaw(x, y, z, point).correct(y - level.getHeightMap(x, z) + 1);
     }
 
     public OverworldBiomeResult pickRaw(int x, int y, int z) {
-        return pickRaw(x, y, z, new DensityFunction.SinglePointContext(x, y, z));
+        SampleContext sample = sampleContext.get();
+        sample.clear();
+        try {
+            return pickRaw(x, y, z, sample.point.set(x, y, z));
+        } finally {
+            sample.clear();
+        }
     }
 
     public OverworldBiomeResult pickRaw(int x, int y, int z, DensityFunction.FunctionContext point) {
@@ -64,6 +78,37 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
         };
 
         return new OverworldBiomeResult(biome, continental, temperature, humidity, erosion, weirdness, pv);
+    }
+
+    /**
+     * Predicts the terrain-stage heightmap without loading or generating the target chunk.
+     */
+    public int predictSurfaceHeight(int x, int z) {
+        NormalObjectHolder.TerrainHolder terrain = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
+        SampleContext sample = sampleContext.get();
+        sample.clear();
+        try {
+            int upperY = (int) Math.ceil(terrain.getPreliminarySurfaceUpperBound().compute(sample.point.set(x, 0, z)));
+            upperY = Math.min(level.getMaxHeight() - 1, Math.max(SEA_LEVEL, upperY));
+
+            for (int y = upperY; y >= SEA_LEVEL; y--) {
+                if (terrain.getDensityFunction().compute(sample.point.set(x, y, z)) > 0.0d) {
+                    return y;
+                }
+            }
+            return SEA_LEVEL - 1;
+        } finally {
+            sample.clear();
+        }
+    }
+
+    private static final class SampleContext {
+        private final DensityCommon.ChunkCache cache = new DensityCommon.ChunkCache();
+        private final DensityCommon.CellFunctionContext point = new DensityCommon.CellFunctionContext(cache);
+
+        private void clear() {
+            cache.clear();
+        }
     }
 
     protected int getNonInlandBiome(int temperatureLevel, int continentalLevel) {

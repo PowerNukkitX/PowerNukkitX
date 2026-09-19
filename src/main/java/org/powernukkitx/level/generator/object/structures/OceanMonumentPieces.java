@@ -11,7 +11,6 @@ import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.random.RandomSourceProvider;
@@ -191,13 +190,13 @@ public class OceanMonumentPieces {
                     EntityElderGuardian guardian = (EntityElderGuardian) Entity.createEntity(Entity.ELDER_GUARDIAN,
                             chunk, new CompoundTag()
                                     .putList("Pos", new ListTag<>()
-                                            .add(new DoubleTag(worldX + 0.5))
-                                            .add(new DoubleTag(worldY))
-                                            .add(new DoubleTag(worldZ + 0.5)))
+                                            .add(new FloatTag(worldX + 0.5))
+                                            .add(new FloatTag(worldY))
+                                            .add(new FloatTag(worldZ + 0.5)))
                                     .putList("Motion", new ListTag<>()
-                                            .add(new DoubleTag(0))
-                                            .add(new DoubleTag(0))
-                                            .add(new DoubleTag(0)))
+                                            .add(new FloatTag(0))
+                                            .add(new FloatTag(0))
+                                            .add(new FloatTag(0)))
                                     .putList("Rotation", new ListTag<>()
                                             .add(new FloatTag(0))
                                             .add(new FloatTag(0)))

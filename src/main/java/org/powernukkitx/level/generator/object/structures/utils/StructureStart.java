@@ -29,6 +29,14 @@ public abstract class StructureStart {
         this.boundingBox = BoundingBox.getUnknownBox();
     }
 
+    protected StructureStart(BlockManager level, int chunkX, int chunkZ, RandomSourceProvider random) {
+        this.level = level;
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
+        this.random = random;
+        this.boundingBox = BoundingBox.getUnknownBox();
+    }
+
     public abstract void generatePieces(BlockManager level, int chunkX, int chunkZ);
 
     public BoundingBox getBoundingBox() {
@@ -41,8 +49,29 @@ public abstract class StructureStart {
 
     public void postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
         synchronized (this.pieces) {
-            this.pieces.removeIf(piece -> piece.getBoundingBox().intersects(boundingBox) && !piece.postProcess(level, random, boundingBox, chunkX, chunkZ));
-            this.calculateBoundingBox();
+            this.postProcessPieces0(level, random, boundingBox, chunkX, chunkZ);
+
+            var chunk = level.getLevel().getChunk(chunkX, chunkZ, true);
+            if (chunk != null) {
+                StructureAabbVolumes.addDynamic(chunk, this.getType(), this.boundingBox, this.pieces);
+            }
+        }
+    }
+
+    /**
+     * Processes intersecting structure pieces without updating AABBVolumes metadata.
+     */
+    public void postProcessPieces(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        synchronized (this.pieces) {
+            this.postProcessPieces0(level, random, boundingBox, chunkX, chunkZ);
+        }
+    }
+
+    private void postProcessPieces0(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        for (StructurePiece piece : this.pieces) {
+            if (piece.getBoundingBox().intersects(boundingBox)) {
+                piece.postProcess(level, random, boundingBox, chunkX, chunkZ);
+            }
         }
     }
 

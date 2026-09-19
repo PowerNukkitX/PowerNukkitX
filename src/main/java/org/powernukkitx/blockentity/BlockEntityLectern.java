@@ -11,13 +11,11 @@ import org.powernukkitx.utils.RedstoneComponent;
 
 
 public class BlockEntityLectern extends BlockEntitySpawnable {
-
-    private int totalPages;
-
-
     public BlockEntityLectern(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+
+    private int totalPages;
 
     @Override
     protected void initBlockEntity() {
@@ -28,13 +26,29 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.nbt.containsCompound("book")) {
-            this.nbt.remove("book");
+
+        if (this.nbt.containsCompound("book")) {
+            this.totalPages = this.nbt.getInt("totalPages");
+        } else {
+            this.totalPages = 0;
+        }
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        Item book = getBook();
+
+        if (book.isNull()) {
+            this.nbt.remove("book", "hasBook", "page", "totalPages");
+            return;
         }
 
-        if (!this.nbt.containsInt("page")) {
-            this.nbt.remove("page");
-        }
+        this.nbt.putCompound("book", ItemHelper.write(book));
+        this.nbt.putByte("hasBook", 1);
+        this.nbt.putInt("page", getRawPage());
+        this.nbt.putInt("totalPages", totalPages);
     }
 
     @Override
@@ -86,7 +100,8 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
     public void setBook(Item item) {
         if (item.getId().equals(Item.WRITTEN_BOOK) || item.getId().equals(Item.WRITABLE_BOOK)) {
-            this.nbt.putCompound("book", ItemHelper.write(item, null));
+            this.nbt.putCompound("book", ItemHelper.write(item));
+            this.nbt.putInt("page", 0);
         } else {
             this.nbt.remove("book");
             this.nbt.remove("page");

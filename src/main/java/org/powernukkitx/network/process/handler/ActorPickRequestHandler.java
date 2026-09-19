@@ -124,8 +124,8 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
 
     private CompoundTag getCleanedNBT(Entity entity) {
         entity.saveNBT();
-        CompoundTag tag = entity.getNbt().copy();
-        tag.remove("Pos", "Motion", "OnGround", "Rotation", "uuid");
+        CompoundTag tag = entity.copyNBTForNewActor();
+        tag.remove("Pos", "Motion", "OnGround", "Rotation", "uuid", Entity.NBT_LINKS_TAG);
         if (!tag.getTags().isEmpty()) {
             return tag;
         } else {

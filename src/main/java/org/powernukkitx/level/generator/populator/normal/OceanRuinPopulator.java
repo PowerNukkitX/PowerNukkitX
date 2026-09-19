@@ -15,8 +15,11 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
+import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
@@ -26,6 +29,7 @@ import org.powernukkitx.utils.random.NukkitRandom;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
@@ -34,12 +38,12 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
 
     public static final String NAME = "normal_ocean_ruin";
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+    public static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
             .salt(14357621L)
             .minDistance(8)
             .maxDistance(20)
             .isBiomeValid(biome -> Registries.BIOME.getTags(biome).contains(BiomeTags.OCEAN))
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.LINEAR);
 
     private static final SmallChestPopulator SMALL_CHEST_POPULATOR = new SmallChestPopulator();
     private static final LargeChestPopulator LARGE_CHEST_POPULATOR = new LargeChestPopulator();
@@ -157,14 +161,21 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
                 template = RUINS_BRICK[index];
             }
             BlockManager manager = new BlockManager(level);
-            this.placeRuin(template, chunk, random.nextInt(), isLarge, index, manager);
+            List<BoundingBox> structurePieces = new ArrayList<>();
+            BoundingBox mainPiece = this.placeRuinWithBounds(template, chunk, random.nextInt(), isLarge, index, manager);
+            if (mainPiece != null) {
+                structurePieces.add(mainPiece);
+            }
 
             if (isLarge && random.nextBoundedInt(100) <= 90) {
                 List<ChunkPosition> adjacentChunks = Lists.newArrayList(ADJACENT_CHUNKS);
                 for (int i = 0; i < random.nextInt(4, 8); i++) {
                     ChunkPosition chunkPos = adjacentChunks.remove(random.nextBoundedInt(adjacentChunks.size() - 1));
                     IChunk adjacentChunk = level.getOrGenerateChunk(chunkX + chunkPos.x, chunkZ + chunkPos.z);
-                    this.placeAdjacentRuin(adjacentChunk, random, isWarm, manager);
+                    BoundingBox adjacentPiece = this.placeAdjacentRuinWithBounds(adjacentChunk, random, isWarm, manager);
+                    if (adjacentPiece != null) {
+                        structurePieces.add(adjacentPiece);
+                    }
                 }
             }
             for(Block block : manager.getBlocks()) {
@@ -190,13 +201,18 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }
             }
+            StructureAabbVolumes.addDynamic(level, "minecraft:ocean_ruin", structurePieces);
             queueObject(chunk, manager);
         }
     }
 
     protected void placeAdjacentRuin(IChunk chunk, RandomSourceProvider random, boolean isWarm, BlockManager manager) {
+        this.placeAdjacentRuinWithBounds(chunk, random, isWarm, manager);
+    }
+
+    private BoundingBox placeAdjacentRuinWithBounds(IChunk chunk, RandomSourceProvider random, boolean isWarm, BlockManager manager) {
         if (chunk == null) {
-            return;
+            return null;
         }
         PNXStructure template;
         int index;
@@ -210,15 +226,15 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
         }
 
         int seed = random.nextInt();
-
-        this.placeRuin(template, chunk, seed, false, index, manager);
-
+        return this.placeRuinWithBounds(template, chunk, seed, false, index, manager);
     }
 
     protected void placeRuin(PNXStructure template, IChunk chunk, int seed, boolean isLarge, int index, BlockManager manager) {
-        if (template == null || chunk == null) {
-            return;
-        }
+        this.placeRuinWithBounds(template, chunk, seed, isLarge, index, manager);
+    }
+
+    private BoundingBox placeRuinWithBounds(PNXStructure template, IChunk chunk, int seed, boolean isLarge, int index, BlockManager manager) {
+        if (template == null || chunk == null) return null;
         NukkitRandom random = new NukkitRandom(seed);
 
         BlockVector3 size = new BlockVector3(template.getSizeX(), template.getSizeY(), template.getSizeZ());
@@ -239,7 +255,9 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
             }
         }
 
-        Position vec = new Position((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z);
+        int worldX = (chunk.getX() << 4) + x;
+        int worldZ = (chunk.getZ() << 4) + z;
+        Position vec = new Position(worldX, y, worldZ);
         BlockManager manager1 = new BlockManager(manager.getLevel());
         template.preparePlace(vec, manager1);
         for (Block block : manager1.getBlocks()) {
@@ -274,6 +292,8 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
             }
             manager.merge(manager3);
         }
+
+        return new BoundingBox(worldX, y, worldZ, worldX + size.getX() - 1, y + size.getY() - 1, worldZ + size.getZ() - 1);
     }
 
     protected static class SmallChestPopulator extends RandomizableContainer {

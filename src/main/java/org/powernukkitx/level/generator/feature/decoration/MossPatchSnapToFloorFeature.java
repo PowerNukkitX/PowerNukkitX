@@ -73,7 +73,7 @@ public class MossPatchSnapToFloorFeature extends GenerateFeature {
         int y;
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = chunk.getHeightMap(x, z); y > chunk.getLevel().getMinHeight(); --y) {
-            if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
+            if(chunk.getBiomeId(x, y, z) == BiomeID.LUSH_CAVES) {
                 String b = chunk.getBlockState(x, y, z).getIdentifier();
                 if ((b == STONE || b == DEEPSLATE) && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
                     blockYs.add(y);

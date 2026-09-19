@@ -4,6 +4,7 @@ import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.noise.minecraft.noise.NormalNoise;
 import org.powernukkitx.math.NukkitMath;
+import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.Arrays;
@@ -84,6 +85,9 @@ public final class DensityCommon {
         }
 
         public void clear() {
+            for (Marker marker : states.keySet()) {
+                marker.clearStateBinding(this);
+            }
             states.clear();
         }
     }
@@ -621,6 +625,7 @@ public final class DensityCommon {
 
         protected final DensityFunction wrapped;
         private final Type type;
+        private final ThreadLocal<StateBinding> stateBinding = new ThreadLocal<>();
 
         protected Marker(Type type, DensityFunction wrapped) {
             this.type = type;
@@ -650,9 +655,35 @@ public final class DensityCommon {
         @SuppressWarnings("unchecked")
         protected final <S> S state(FunctionContext context, ThreadLocal<S> localState, Supplier<S> stateFactory) {
             if (context instanceof ChunkCacheContext chunkCacheContext) {
-                return (S) chunkCacheContext.densityChunkCache().getOrCreate(this, stateFactory);
+                ChunkCache chunkCache = chunkCacheContext.densityChunkCache();
+                StateBinding binding = this.stateBinding.get();
+                if (binding != null && binding.chunkCache == chunkCache) {
+                    return (S) binding.state;
+                }
+
+                S state = (S) chunkCache.getOrCreate(this, stateFactory);
+                if (binding == null) {
+                    binding = new StateBinding();
+                    this.stateBinding.set(binding);
+                }
+                binding.chunkCache = chunkCache;
+                binding.state = state;
+                return state;
             }
             return localState.get();
+        }
+
+        private void clearStateBinding(ChunkCache chunkCache) {
+            StateBinding binding = this.stateBinding.get();
+            if (binding != null && binding.chunkCache == chunkCache) {
+                binding.chunkCache = null;
+                binding.state = null;
+            }
+        }
+
+        private static final class StateBinding {
+            private ChunkCache chunkCache;
+            private Object state;
         }
     }
 
@@ -915,8 +946,13 @@ public final class DensityCommon {
             private final double[] values = new double[CELL_VALUE_COUNT];
             private final MutableFunctionContext context = new MutableFunctionContext();
             private final MutableChunkCacheContext chunkCacheContext = new MutableChunkCacheContext();
+            private final Long2DoubleOpenHashMap cornerValues = new Long2DoubleOpenHashMap(1024);
 
             private long lastKey = Long.MAX_VALUE;
+
+            private InterpolatedState() {
+                cornerValues.defaultReturnValue(Double.NaN);
+            }
 
             private double[] getOrCreateCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, FunctionContext sourceContext) {
                 long key = (((long) cellX & 0x1FFFFFL) << 42) | (((long) cellY & 0x1FFFFFL) << 21) | ((long) cellZ & 0x1FFFFFL);
@@ -927,6 +963,20 @@ public final class DensityCommon {
                 fillCell(cellX, cellY, cellZ, wrapped, sourceContext);
                 lastKey = key;
                 return values;
+            }
+
+            private double cornerValue(DensityFunction wrapped, FunctionContext context) {
+                final int blockX = context.blockX();
+                final int blockY = context.blockY();
+                final int blockZ = context.blockZ();
+                final long key = (((long) blockX & 0x3FFFFFFL) << 38) | (((long) blockZ & 0x3FFFFFFL) << 12) | ((long) blockY & 0xFFFL);
+
+                final double cached = cornerValues.get(key);
+                if (!Double.isNaN(cached)) return cached;
+
+                final double value = wrapped.compute(context);
+                cornerValues.put(key, value);
+                return value;
             }
 
             private void fillCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, FunctionContext sourceContext) {
@@ -942,14 +992,14 @@ public final class DensityCommon {
                 int nextY = cellY + CELL_SIZE_Y;
                 int nextZ = cellZ + CELL_SIZE_XZ;
                 fillValues(
-                        wrapped.compute(context.set(cellX, cellY, cellZ)),
-                        wrapped.compute(context.set(nextX, cellY, cellZ)),
-                        wrapped.compute(context.set(cellX, nextY, cellZ)),
-                        wrapped.compute(context.set(nextX, nextY, cellZ)),
-                        wrapped.compute(context.set(cellX, cellY, nextZ)),
-                        wrapped.compute(context.set(nextX, cellY, nextZ)),
-                        wrapped.compute(context.set(cellX, nextY, nextZ)),
-                        wrapped.compute(context.set(nextX, nextY, nextZ))
+                        cornerValue(wrapped, context.set(cellX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, nextZ))
                 );
             }
 
@@ -958,14 +1008,14 @@ public final class DensityCommon {
                 int nextY = cellY + CELL_SIZE_Y;
                 int nextZ = cellZ + CELL_SIZE_XZ;
                 fillValues(
-                        wrapped.compute(context.set(cellX, cellY, cellZ)),
-                        wrapped.compute(context.set(nextX, cellY, cellZ)),
-                        wrapped.compute(context.set(cellX, nextY, cellZ)),
-                        wrapped.compute(context.set(nextX, nextY, cellZ)),
-                        wrapped.compute(context.set(cellX, cellY, nextZ)),
-                        wrapped.compute(context.set(nextX, cellY, nextZ)),
-                        wrapped.compute(context.set(cellX, nextY, nextZ)),
-                        wrapped.compute(context.set(nextX, nextY, nextZ))
+                        cornerValue(wrapped, context.set(cellX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, nextZ))
                 );
             }
 

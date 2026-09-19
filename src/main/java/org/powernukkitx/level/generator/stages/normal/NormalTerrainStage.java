@@ -14,7 +14,6 @@ import org.powernukkitx.level.generator.GenerateStage;
 import org.powernukkitx.level.generator.densityfunction.DensityCommon;
 import org.powernukkitx.level.generator.holder.NormalObjectHolder;
 import org.powernukkitx.level.generator.material.Aquifer;
-import org.powernukkitx.level.generator.material.MultiMaterial;
 import org.powernukkitx.utils.random.NukkitRandom;
 
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
@@ -42,7 +41,6 @@ public class NormalTerrainStage extends GenerateStage {
         final Level level = chunk.getLevel();
         final NormalObjectHolder.TerrainHolder terrainHolder = ((NormalObjectHolder) level.getGeneratorObjectHolder())
                 .getTerrainHolder();
-        final MultiMaterial multiMaterial = terrainHolder.getMultiMaterial();
         final int minY = level.getMinHeight();
         final int maxY = level.getMaxHeight() - 1;
         final int yBlockSize = level.getMaxHeight() - minY;
@@ -70,6 +68,7 @@ public class NormalTerrainStage extends GenerateStage {
         }
 
         terrainHolder.beginAquifer(chunk, level, chunkCache, minY, yBlockSize, SEA_LEVEL);
+        final Aquifer aquifer = terrainHolder.getAquifer().get();
         try {
             chunk.batchProcess(unsafeChunk -> {
                 final boolean[] queued = new boolean[CELL_X_COUNT * cellYCount * CELL_Z_COUNT];
@@ -92,7 +91,7 @@ public class NormalTerrainStage extends GenerateStage {
                                     unsafeChunk,
                                     level,
                                     terrainHolder,
-                                    multiMaterial,
+                                    aquifer,
                                     functionContext,
                                     random,
                                     chunkBaseX,
@@ -130,7 +129,7 @@ public class NormalTerrainStage extends GenerateStage {
                             unsafeChunk,
                             level,
                             terrainHolder,
-                            multiMaterial,
+                            aquifer,
                             functionContext,
                             random,
                             chunkBaseX,
@@ -174,7 +173,7 @@ public class NormalTerrainStage extends GenerateStage {
             UnsafeChunk unsafeChunk,
             Level level,
             NormalObjectHolder.TerrainHolder terrainHolder,
-            MultiMaterial multiMaterial,
+            Aquifer aquifer,
             DensityCommon.CellFunctionContext functionContext,
             NukkitRandom random,
             int chunkBaseX,
@@ -186,19 +185,21 @@ public class NormalTerrainStage extends GenerateStage {
             int cellZ
     ) {
         boolean hasNonAir = false;
-        final Aquifer aquifer = terrainHolder.getAquifer().get();
         for (int localX = 0; localX < CELL_XZ_SIZE; localX++) {
             final int x = cellX + localX;
             final int worldX = chunkBaseX + x;
             for (int localZ = 0; localZ < CELL_XZ_SIZE; localZ++) {
                 final int z = cellZ + localZ;
                 final int worldZ = chunkBaseZ + z;
+                final int originalHeight = unsafeChunk.getHeightMap(x, z);
+                int updatedHeight = originalHeight;
+
                 for (int localY = CELL_HEIGHT - 1; localY >= 0; localY--) {
                     final int y = cellY + localY;
                     if (y < minY || y > maxY) {
                         continue;
                     }
-                    BlockState generatedState = multiMaterial.calculate(functionContext.set(worldX, y, worldZ));
+                    BlockState generatedState = terrainHolder.calculateTerrainMaterial(functionContext.set(worldX, y, worldZ), aquifer);
                     if (generatedState != null) {
                         if (generatedState.blockStateHash() == STONE_HASH && shouldPlaceDeepslate(random, y)) {
                             generatedState = DEEPSLATE;
@@ -209,11 +210,15 @@ public class NormalTerrainStage extends GenerateStage {
                         }
                         if (generatedState != BlockAir.STATE) {
                             hasNonAir = true;
-                            if (y > unsafeChunk.getHeightMap(x, z)) {
-                                unsafeChunk.setHeightMap(x, z, y);
+                            if (y + 1 > updatedHeight) {
+                                updatedHeight = y + 1;
                             }
                         }
                     }
+                }
+
+                if (updatedHeight != originalHeight) {
+                    unsafeChunk.setHeightMap(x, z, updatedHeight);
                 }
             }
         }

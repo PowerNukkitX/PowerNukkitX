@@ -1,6 +1,5 @@
 package org.powernukkitx.level.generator.feature.ore;
 
-import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockDeepslate;
 import org.powernukkitx.block.BlockNetherrack;
 import org.powernukkitx.block.BlockState;
@@ -82,12 +81,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
                 }
             }
             if(!skip) {
-                for(Block block : object.getBlocks()) {
-                    IChunk blockChunk = level.getChunk(block.getChunkX(), block.getChunkZ());
-                    if(block.isValid() && blockChunk != null && blockChunk.isGenerated()) {
-                        manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                    }
-                }
+                manager.mergeGeneratedBlocks(object);
             }
         }
 
@@ -132,7 +126,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
                                 double zVal = ((double) zSeg + 0.5D - scaleZ) / (randVec1 / 2.0D);
 
                                 if (xVal * xVal + yVal * yVal + zVal * zVal < 1.0D) {
-                                    BlockState original = level.getBlockIfCachedOrLoaded(xSeg, ySeg, zSeg).getBlockState();
+                                    BlockState original = level.getBlockStateIfCachedOrLoaded(xSeg, ySeg, zSeg);
                                     if(canBeReplaced(original)) {
                                         level.setBlockStateAt(xSeg, ySeg, zSeg, getState(original));
                                     }

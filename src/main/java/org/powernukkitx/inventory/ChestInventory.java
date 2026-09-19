@@ -5,15 +5,12 @@ import org.powernukkitx.block.BlockTrappedChest;
 import org.powernukkitx.blockentity.BlockEntityChest;
 import org.powernukkitx.blockentity.BlockEntityNameable;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
-import org.powernukkitx.level.Level;
-import org.powernukkitx.level.Sound;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.utils.LevelException;
 import org.powernukkitx.utils.RedstoneComponent;
-import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
-import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,6 +50,65 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
         return (BlockEntityChest) this.holder;
     }
 
+    private void unpackLootTable() {
+        this.getHolder().unpackLootTable();
+    }
+
+    @NotNull
+    @Override
+    public Item getItem(int index) {
+        this.unpackLootTable();
+        return super.getItem(index);
+    }
+
+    @Override
+    public Item getUnclonedItem(int index) {
+        this.unpackLootTable();
+        return super.getUnclonedItem(index);
+    }
+
+    @Override
+    public Map<Integer, Item> getContents() {
+        this.unpackLootTable();
+        return super.getContents();
+    }
+
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        this.unpackLootTable();
+        return super.setItem(index, item, send);
+    }
+
+    @Override
+    public boolean clear(int index, boolean send) {
+        this.unpackLootTable();
+        return super.clear(index, send);
+    }
+
+    @Override
+    public void decreaseCount(int slot, int amount) {
+        this.unpackLootTable();
+        super.decreaseCount(slot, amount);
+    }
+
+    @Override
+    public boolean isFull() {
+        this.unpackLootTable();
+        return super.isFull();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        this.unpackLootTable();
+        return super.isEmpty();
+    }
+
+    @Override
+    public int getFreeSpace(Item item) {
+        this.unpackLootTable();
+        return super.getFreeSpace(item);
+    }
+
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
@@ -62,16 +118,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
         }
 
         if (this.getVisibleViewersCount() == 1) {
-            final BlockEventPacket pk = new BlockEventPacket();
-            pk.setBlockPosition(Vector3i.from(this.getHolder().getX(), this.getHolder().getY(), this.getHolder().getZ()));
-            pk.setEventType(1);
-            pk.setEventValue(2);
-
-            Level level = this.getHolder().getLevel();
-            if (level != null) {
-                level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
-                level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
-            }
+            this.getHolder().broadcastLidState(true);
         }
         try {
             if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
@@ -88,16 +135,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     @Override
     public void onClose(Player who) {
         if (this.getVisibleViewersCount() == 1) {
-            final BlockEventPacket pk = new BlockEventPacket();
-            pk.setBlockPosition(Vector3i.from(this.getHolder().getX(), this.getHolder().getY(), this.getHolder().getZ()));
-            pk.setEventType(1);
-            pk.setEventValue(0);
-
-            Level level = this.getHolder().getLevel();
-            if (level != null) {
-                level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
-                level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
-            }
+            this.getHolder().broadcastLidState(false);
         }
 
         try {
@@ -113,7 +151,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
         super.onClose(who);
     }
 
-    public void setDoubleInventory(@NotNull DoubleChestInventory doubleInventory) {
+    public void setDoubleInventory(@Nullable DoubleChestInventory doubleInventory) {
         this.doubleInventory = doubleInventory;
     }
 

@@ -9,8 +9,42 @@ import org.powernukkitx.nbt.tag.CompoundTag;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
+    private float rotation;
+
     public BlockEntityEnchantTable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.rotation = this.nbt.getFloat("rott");
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.nbt.putFloat("rott", this.rotation);
+    }
+
+    /**
+     * Returns the persisted enchanting table book rotation.
+     *
+     * @return book rotation
+     */
+    public float getRotation() {
+        return this.rotation;
+    }
+
+    /**
+     * Sets and persists the enchanting table book rotation.
+     *
+     * @param rotation book rotation
+     */
+    public void setRotation(float rotation) {
+        this.rotation = rotation;
+        this.nbt.putFloat("rott", rotation);
+        this.setDirty();
     }
 
     @Override
@@ -40,7 +74,8 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound();
+        CompoundTag c = super.getSpawnCompound()
+                .putFloat("rott", this.rotation);
 
         if (this.hasName()) {
             c.putString("CustomName", this.getNbt().getString("CustomName"));

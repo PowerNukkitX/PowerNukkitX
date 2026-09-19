@@ -11,7 +11,6 @@ import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockEntitySpawnable extends BlockEntity {
-
     public BlockEntitySpawnable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -19,12 +18,14 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
     @Override
     protected void initBlockEntity() {
         super.initBlockEntity();
-        this.spawnToAll();
+        if (this.chunk.isInitiated()) {
+            this.spawnToAll();
+        }
     }
-
 
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
+                .putInt("BlockEntityVersion", 0)
                 .putString("id", getNbt().getString("id"))
                 .putInt("x", getFloorX())
                 .putInt("y", getFloorY())

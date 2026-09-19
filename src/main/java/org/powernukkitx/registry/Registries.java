@@ -17,6 +17,7 @@ public final class Registries {
     public static final PopulatorRegistry POPULATOR = new PopulatorRegistry();
     public static final GenerateFeatureRegistry GENERATE_FEATURE = new GenerateFeatureRegistry();
     public static final StructureRegistry STRUCTURE = new StructureRegistry();
+    public static final StructureSpawnOverrideRegistry STRUCTURE_SPAWN_OVERRIDE = new StructureSpawnOverrideRegistry();
     public static final EffectRegistry EFFECT = new EffectRegistry();
     public static final RecipeRegistry RECIPE = new RecipeRegistry();
     public static final VoxelShapeRegistry VOXEL_SHAPE = new VoxelShapeRegistry();

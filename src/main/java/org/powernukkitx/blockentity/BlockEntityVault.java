@@ -3,6 +3,7 @@ package org.powernukkitx.blockentity;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockVault;
+import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.VaultState;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.effect.PotionType;
@@ -13,7 +14,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.nbt.tag.LongTag;
 import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.random.RandomSourceProvider;
@@ -30,7 +31,6 @@ import java.util.Set;
 
 public class BlockEntityVault extends BlockEntitySpawnable {
     public static final String TAG_CONFIG = "config";
-    public static final String TAG_SERVER_DATA = "server_data";
     public static final String DATA = "data";
 
     public static final String TAG_LOOT_TABLE = "loot_table";
@@ -46,27 +46,27 @@ public class BlockEntityVault extends BlockEntitySpawnable {
 
     public static final String TAG_DISPLAY_ITEM = "display_item";
     public static final String TAG_CONNECTED_PLAYERS = "connected_players";
-    public static final String TAG_CONNECTED_PARTICLES_RANGE = "connected_particles_range";
+    public static final String TAG_CONNECTED_PARTICLE_RANGE = "connected_particle_range";
 
-    public static final String DEFAULT_LOOT_TABLE = "minecraft:chests/trial_chambers/reward";
+    public static final String DEFAULT_LOOT_TABLE = "loot_tables/chests/trial_chambers/reward.json";
     public static final double DEFAULT_ACTIVATION_RANGE = 4.0d;
     public static final double DEFAULT_DEACTIVATION_RANGE = 4.5d;
     public static final double DEFAULT_CONNECTED_PARTICLES_RANGE = 4.5d;
 
-    private String lootTable = DEFAULT_LOOT_TABLE;
-    private String overrideLootTableToDisplay = "";
-    private double activationRange = DEFAULT_ACTIVATION_RANGE;
-    private double deactivationRange = DEFAULT_DEACTIVATION_RANGE;
-    private Item keyItem = Item.get(ItemID.TRIAL_KEY);
+    private String lootTable;
+    private String overrideLootTableToDisplay;
+    private double activationRange;
+    private double deactivationRange;
+    private Item keyItem;
 
-    private LinkedHashSet<String> rewardedPlayers;
+    private LinkedHashSet<Long> rewardedPlayers;
     private long stateUpdatingResumesAt;
     private List<Item> itemsToEject;
     private int totalEjectionsNeeded;
 
-    private Item displayItem = Item.get(BlockID.AIR);
-    private Set<String> connectedPlayers;
-    private double connectedParticlesRange = DEFAULT_CONNECTED_PARTICLES_RANGE;
+    private Item displayItem;
+    private Set<Long> connectedPlayers;
+    private double connectedParticlesRange;
 
     public BlockEntityVault(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -83,26 +83,27 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         ensureCollections();
 
         final CompoundTag nbtMap = getNbt();
+
         CompoundTag config = nbtMap.getCompound(TAG_CONFIG);
         lootTable = config.contains(TAG_LOOT_TABLE) ? config.getString(TAG_LOOT_TABLE) : DEFAULT_LOOT_TABLE;
         overrideLootTableToDisplay = config.getString(TAG_OVERRIDE_LOOT_TABLE_TO_DISPLAY);
-        activationRange = config.contains(TAG_ACTIVATION_RANGE) ? config.getDouble(TAG_ACTIVATION_RANGE) : DEFAULT_ACTIVATION_RANGE;
-        deactivationRange = config.contains(TAG_DEACTIVATION_RANGE) ? config.getDouble(TAG_DEACTIVATION_RANGE) : DEFAULT_DEACTIVATION_RANGE;
+        activationRange = config.contains(TAG_ACTIVATION_RANGE) ? config.getFloat(TAG_ACTIVATION_RANGE) : DEFAULT_ACTIVATION_RANGE;
+        deactivationRange = config.contains(TAG_DEACTIVATION_RANGE) ? config.getFloat(TAG_DEACTIVATION_RANGE) : DEFAULT_DEACTIVATION_RANGE;
         keyItem = config.contains(TAG_KEY_ITEM) ? ItemHelper.read(config.getCompound(TAG_KEY_ITEM)) : Item.get(ItemID.TRIAL_KEY);
 
-        CompoundTag serverData = nbtMap.getCompound(TAG_SERVER_DATA);
+        CompoundTag data = nbtMap.getCompound(DATA);
         rewardedPlayers.clear();
-        rewardedPlayers.addAll(readStringSet(serverData, TAG_REWARDED_PLAYERS));
-        stateUpdatingResumesAt = serverData.getLong(TAG_STATE_UPDATING_RESUMES_AT);
-        itemsToEject.clear();
-        itemsToEject.addAll(readItemList(serverData, TAG_ITEMS_TO_EJECT));
-        totalEjectionsNeeded = serverData.getInt(TAG_TOTAL_EJECTIONS_NEEDED);
+        rewardedPlayers.addAll(readLongSet(data, TAG_REWARDED_PLAYERS));
+        stateUpdatingResumesAt = data.getLong(TAG_STATE_UPDATING_RESUMES_AT);
 
-        CompoundTag sharedData = nbtMap.getCompound(DATA);
-        displayItem = sharedData.contains(TAG_DISPLAY_ITEM) ? ItemHelper.read(sharedData.getCompound(TAG_DISPLAY_ITEM)) : Item.get(BlockID.AIR);
+        itemsToEject.clear();
+        itemsToEject.addAll(readItemList(data, TAG_ITEMS_TO_EJECT));
+
+        totalEjectionsNeeded = itemsToEject.size();
+        displayItem = data.containsCompound(TAG_DISPLAY_ITEM) ? ItemHelper.read(data.getCompound(TAG_DISPLAY_ITEM)) : Item.get(BlockID.AIR);
+
         connectedPlayers.clear();
-        connectedPlayers.addAll(readStringSet(sharedData, TAG_CONNECTED_PLAYERS));
-        connectedParticlesRange = sharedData.contains(TAG_CONNECTED_PARTICLES_RANGE) ? sharedData.getDouble(TAG_CONNECTED_PARTICLES_RANGE) : DEFAULT_CONNECTED_PARTICLES_RANGE;
+        connectedParticlesRange = DEFAULT_CONNECTED_PARTICLES_RANGE;
     }
 
     @Override
@@ -114,16 +115,12 @@ public class BlockEntityVault extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putCompound(TAG_CONFIG, createConfigTag())
-                .putCompound(TAG_SERVER_DATA, createServerDataTag())
-                .putCompound(DATA, createSharedDataTag());
+        this.nbt.putCompound(TAG_CONFIG, createStorageConfigTag()).putCompound(DATA, createStorageDataTag());
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
-                .putCompound(TAG_CONFIG, createConfigTag())
-                .putCompound(DATA, createSharedDataTag());
+        return createSharedDataTag();
     }
 
     @Override
@@ -136,14 +133,14 @@ public class BlockEntityVault extends BlockEntitySpawnable {
             var deactivationBox = level.getCollidingEntities(
                     this.getBlock().getBoundingBox().grow(deactivationRange, deactivationRange, deactivationRange)
             );
-            Set<String> connectedPlayers = new HashSet<>(getConnectedPlayers());
-            Set<String> rewardedPlayers = new HashSet<>(getRewardedPlayers());
+            Set<Long> connectedPlayers = new HashSet<>(getConnectedPlayers());
+            Set<Long> rewardedPlayers = new HashSet<>(getRewardedPlayers());
 
             boolean changed = connectedPlayers.removeIf(id ->
                     Arrays.stream(deactivationBox).noneMatch(entity ->
                             entity instanceof Player player
-                                    && player.getUniqueId().toString().equals(id)
-                                    && !rewardedPlayers.contains(id)
+                                    && player.runtimeId() == id
+                                    && !rewardedPlayers.contains(player.uniqueIdLong())
                                     && !(player.isSpectator() || player.getDataFlag(ActorFlags.SILENT))
                     )
             );
@@ -154,23 +151,33 @@ public class BlockEntityVault extends BlockEntitySpawnable {
 
             for (Entity entity : activationBox) {
                 if (entity instanceof Player player) {
-                    String id = player.getUniqueId().toString();
+                    long uniqueId = player.uniqueIdLong();
+                    long runtimeId = player.runtimeId();
 
-                    if (!rewardedPlayers.contains(id) && !connectedPlayers.contains(id) && !(player.isSpectator() || player.getDataFlag(ActorFlags.SILENT))) {
-                        connectedPlayers.add(id);
+                    if (!rewardedPlayers.contains(uniqueId) && !connectedPlayers.contains(runtimeId) && !(player.isSpectator() || player.getDataFlag(ActorFlags.SILENT))) {
+                        connectedPlayers.add(runtimeId);
                         changed = true;
                     }
                 }
+            }
+
+            boolean displayChanged = false;
+
+            if (displayItem.isNull() && !connectedPlayers.isEmpty()) {
+                boolean ominous = getBlock() instanceof BlockVault vault && vault.getPropertyValue(CommonBlockProperties.OMINOUS);
+                displayItem = TrialChambersVaultLoot.rollDisplayItem(resolveLootTable(ominous), RandomSourceProvider.create());
+                setDirty();
+                displayChanged = true;
             }
 
             if (changed) {
                 setConnectedPlayers(connectedPlayers);
 
                 if (getBlock() instanceof BlockVault vault) {
-                    vault.setVaultState(connectedPlayers.isEmpty()
-                            ? VaultState.INACTIVE
-                            : VaultState.ACTIVE);
+                    vault.setVaultState(connectedPlayers.isEmpty() ? VaultState.INACTIVE : VaultState.ACTIVE);
                 }
+            } else if (displayChanged) {
+                spawnToAll();
             }
         }
         if (level.getTick() % 20 == 0) {
@@ -186,7 +193,15 @@ public class BlockEntityVault extends BlockEntitySpawnable {
                 level.addLevelSoundEvent(this, SoundEvent.VAULT_EJECT_ITEM);
                 if (!itemsToEject.isEmpty()) {
                     setDisplayItem(itemsToEject.getFirst());
-                } else setDisplayItem(Item.AIR);
+                } else {
+                    setDisplayItem(Item.AIR);
+
+                    if (getBlock() instanceof BlockVault vault) {
+                        vault.setVaultState(connectedPlayers.isEmpty()
+                                ? VaultState.INACTIVE
+                                : VaultState.ACTIVE);
+                    }
+                }
             }
         }
         this.scheduleUpdate();
@@ -238,19 +253,29 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         setDirty();
     }
 
-    public Set<String> getRewardedPlayers() {
+    public Set<Long> getRewardedPlayers() {
         ensureCollections();
         return Set.copyOf(rewardedPlayers);
     }
 
-    public void setRewardedPlayers(@NotNull Set<String> rewardedPlayers) {
+    /**
+     * Replaces the set of player ActorUniqueIDs that have received a reward.
+     *
+     * @param rewardedPlayers rewarded player ActorUniqueIDs
+     */
+    public void setRewardedPlayers(@NotNull Set<Long> rewardedPlayers) {
         ensureCollections();
         this.rewardedPlayers.clear();
         this.rewardedPlayers.addAll(rewardedPlayers);
         setDirty();
     }
 
-    public void addRewardedPlayer(@NotNull String rewardedPlayer) {
+    /**
+     * Records a rewarded player, retaining at most 64 entries.
+     *
+     * @param rewardedPlayer rewarded player ActorUniqueID
+     */
+    public void addRewardedPlayer(long rewardedPlayer) {
         ensureCollections();
         rewardedPlayers.addLast(rewardedPlayer);
         if (rewardedPlayers.size() > 64) rewardedPlayers.removeFirst();
@@ -284,26 +309,48 @@ public class BlockEntityVault extends BlockEntitySpawnable {
 
     public void setDisplayItem(@NotNull Item displayItem) {
         this.displayItem = displayItem.clone();
+        setDirty();
         spawnToAll();
     }
 
-    public Set<String> getConnectedPlayers() {
+    public Set<Long> getConnectedPlayers() {
         ensureCollections();
         return Set.copyOf(connectedPlayers);
     }
 
-    public void setConnectedPlayers(@NotNull Set<String> connectedPlayers) {
+    /**
+     * Replaces the set of player ActorUniqueIDs currently connected to this vault.
+     *
+     * @param connectedPlayers connected player ActorUniqueIDs
+     */
+    public void setConnectedPlayers(@NotNull Set<Long> connectedPlayers) {
         ensureCollections();
         this.connectedPlayers.clear();
         this.connectedPlayers.addAll(connectedPlayers);
         this.spawnToAll();
-        setDirty();
     }
 
-    public void addConnectedPlayer(@NotNull String connectedPlayer) {
+    /**
+     * Adds a player to this vault's connected-player set.
+     *
+     * @param connectedPlayer player ActorUniqueID
+     */
+    public void addConnectedPlayer(long connectedPlayer) {
         ensureCollections();
         connectedPlayers.add(connectedPlayer);
-        setDirty();
+        spawnToAll();
+    }
+
+    /**
+     * Removes a player from this vault's connected-player set.
+     *
+     * @param connectedPlayer player ActorUniqueID
+     */
+    public void removeConnectedPlayer(long connectedPlayer) {
+        ensureCollections();
+        if (connectedPlayers.remove(connectedPlayer)) {
+            spawnToAll();
+        }
     }
 
     public double getConnectedParticlesRange() {
@@ -312,7 +359,7 @@ public class BlockEntityVault extends BlockEntitySpawnable {
 
     public boolean canPlayerOpen(@NotNull Player player) {
         ensureCollections();
-        return !rewardedPlayers.contains(player.getUniqueId().toString());
+        return !rewardedPlayers.contains(player.uniqueIdLong());
     }
 
     public boolean matchesKey(@NotNull Item item, boolean ominous) {
@@ -361,38 +408,45 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         return keyItem.isNull() ? ItemID.TRIAL_KEY : keyItem.getId();
     }
 
-    private CompoundTag createConfigTag() {
+    private CompoundTag createStorageConfigTag() {
         CompoundTag config = new CompoundTag()
                 .putString(TAG_LOOT_TABLE, lootTable)
-                .putDouble(TAG_ACTIVATION_RANGE, activationRange)
-                .putDouble(TAG_DEACTIVATION_RANGE, deactivationRange)
-                .putCompound(TAG_KEY_ITEM, ItemHelper.write(keyItem, null));
+                .putFloat(TAG_ACTIVATION_RANGE, (float) activationRange)
+                .putFloat(TAG_DEACTIVATION_RANGE, (float) deactivationRange)
+                .putCompound(TAG_KEY_ITEM, ItemHelper.write(keyItem));
         if (!overrideLootTableToDisplay.isEmpty()) {
             config.putString(TAG_OVERRIDE_LOOT_TABLE_TO_DISPLAY, overrideLootTableToDisplay);
+        } else {
+            config.putString(TAG_OVERRIDE_LOOT_TABLE_TO_DISPLAY, "");
         }
         return config;
     }
 
-    private CompoundTag createServerDataTag() {
+    private CompoundTag createStorageDataTag() {
         ensureCollections();
-        return new CompoundTag()
-                .putList(TAG_REWARDED_PLAYERS, writeStringSet(rewardedPlayers))
-                .putLong(TAG_STATE_UPDATING_RESUMES_AT, stateUpdatingResumesAt)
+        CompoundTag data = new CompoundTag()
                 .putList(TAG_ITEMS_TO_EJECT, writeItemList(itemsToEject))
-                .putInt(TAG_TOTAL_EJECTIONS_NEEDED, totalEjectionsNeeded);
+                .putList(TAG_REWARDED_PLAYERS, writeLongSet(rewardedPlayers))
+                .putLong(TAG_STATE_UPDATING_RESUMES_AT, stateUpdatingResumesAt);
+
+        if (!displayItem.isNull()) {
+            data.putCompound(TAG_DISPLAY_ITEM, ItemHelper.write(displayItem));
+        }
+
+        return data;
     }
 
     private CompoundTag createSharedDataTag() {
         ensureCollections();
         return new CompoundTag()
                 .putCompound(TAG_DISPLAY_ITEM, ItemHelper.write(displayItem, null))
-                .putList(TAG_CONNECTED_PLAYERS, writeStringSet(connectedPlayers))
-                .putDouble(TAG_CONNECTED_PARTICLES_RANGE, connectedParticlesRange);
+                .putList(TAG_CONNECTED_PLAYERS, writeLongSet(connectedPlayers))
+                .putFloat(TAG_CONNECTED_PARTICLE_RANGE, (float) connectedParticlesRange);
     }
 
-    private static Set<String> readStringSet(CompoundTag source, String key) {
-        LinkedHashSet<String> values = new LinkedHashSet<>();
-        for (StringTag tag : source.getList(key, StringTag.class).getAll()) {
+    private static Set<Long> readLongSet(CompoundTag source, String key) {
+        LinkedHashSet<Long> values = new LinkedHashSet<>();
+        for (LongTag tag : source.getList(key, LongTag.class).getAll()) {
             values.add(tag.data);
         }
         return values;
@@ -409,15 +463,15 @@ public class BlockEntityVault extends BlockEntitySpawnable {
     private static ListTag<CompoundTag> writeItemList(List<Item> items) {
         ListTag<CompoundTag> tags = new ListTag<>();
         for (Item item : items) {
-            tags.add(ItemHelper.write(item, null));
+            tags.add(ItemHelper.write(item));
         }
         return tags;
     }
 
-    private static ListTag<StringTag> writeStringSet(Set<String> values) {
-        ListTag<StringTag> tags = new ListTag<>();
-        for (String value : values) {
-            tags.add(new StringTag(value));
+    private static ListTag<LongTag> writeLongSet(Set<Long> values) {
+        ListTag<LongTag> tags = new ListTag<>();
+        for (long value : values) {
+            tags.add(new LongTag(value));
         }
         return tags;
     }
@@ -428,7 +482,16 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         }
 
         int separator = key.indexOf(':');
-        return separator >= 0 ? key.substring(separator + 1) : key;
+        String normalized = separator >= 0 ? key.substring(separator + 1) : key;
+
+        if (normalized.startsWith("loot_tables/")) {
+            normalized = normalized.substring("loot_tables/".length());
+        }
+        if (normalized.endsWith(".json")) {
+            normalized = normalized.substring(0, normalized.length() - ".json".length());
+        }
+
+        return normalized;
     }
 
     private void ensureCollections() {
@@ -721,11 +784,7 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         }
 
         private static String normalize(String lootTable) {
-            if (lootTable == null || lootTable.isBlank()) {
-                return "";
-            }
-            int separator = lootTable.indexOf(':');
-            return separator >= 0 ? lootTable.substring(separator + 1) : lootTable;
+            return normalizeResourceKey(lootTable);
         }
 
         private record WeightedEntry<T>(int weight, Roll<T> roller) {

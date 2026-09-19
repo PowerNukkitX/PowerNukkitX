@@ -46,7 +46,71 @@ public class PNXStructure extends AbstractStructure {
     }
 
     public BlockVector3 getBounds() {
-        return new BlockVector3(sizeX, sizeY, sizeZ);
+        return getBounds(Rotation.NONE);
+    }
+
+    /**
+     * Returns the structure bounds after applying the specified rotation.
+     *
+     * @param rotation structure rotation
+     * @return rotated structure bounds
+     */
+    public BlockVector3 getBounds(Rotation rotation) {
+        return new BlockVector3(getRotatedSizeX(rotation), sizeY, getRotatedSizeZ(rotation));
+    }
+
+    /**
+     * Returns the structure X size after rotation.
+     *
+     * @param rotation structure rotation
+     * @return rotated X size
+     */
+    public int getRotatedSizeX(Rotation rotation) {
+        return rotation == Rotation.ROTATE_90 || rotation == Rotation.ROTATE_270 ? sizeZ : sizeX;
+    }
+
+    /**
+     * Returns the structure Z size after rotation.
+     *
+     * @param rotation structure rotation
+     * @return rotated Z size
+     */
+    public int getRotatedSizeZ(Rotation rotation) {
+        return rotation == Rotation.ROTATE_90 || rotation == Rotation.ROTATE_270 ? sizeX : sizeZ;
+    }
+
+    /**
+     * Rotates a structure-local X coordinate.
+     *
+     * @param x local X
+     * @param z local Z
+     * @param rotation structure rotation
+     * @return rotated X coordinate
+     */
+    public int getRotatedX(int x, int z, Rotation rotation) {
+        return switch (rotation) {
+            case ROTATE_90 -> z;
+            case ROTATE_180 -> sizeX - 1 - x;
+            case ROTATE_270 -> sizeZ - 1 - z;
+            default -> x;
+        };
+    }
+
+    /**
+     * Rotates a structure-local Z coordinate.
+     *
+     * @param x local X
+     * @param z local Z
+     * @param rotation structure rotation
+     * @return rotated Z coordinate
+     */
+    public int getRotatedZ(int x, int z, Rotation rotation) {
+        return switch (rotation) {
+            case ROTATE_90 -> sizeX - 1 - x;
+            case ROTATE_180 -> sizeZ - 1 - z;
+            case ROTATE_270 -> x;
+            default -> z;
+        };
     }
 
     public static PNXStructure fromNbt(CompoundTag nbt) {
@@ -140,27 +204,109 @@ public class PNXStructure extends AbstractStructure {
 
     @Override
     public void preparePlace(Position position, BlockManager blockManager) {
-        placeBlocks(position, blockManager, getBlockInstances(), new BlockAccessor<StructureBlockInstance>() {
-            @Override
-            public int x(StructureBlockInstance block) {
-                return block.x;
+        preparePlace(position, blockManager, Rotation.NONE);
+    }
+
+    /**
+     * Prepares this structure for placement using the specified rotation.
+     *
+     * @param position structure origin
+     * @param blockManager target block manager
+     * @param rotation structure rotation
+     */
+    public void preparePlace(Position position, BlockManager blockManager, Rotation rotation) {
+        int baseX = position.getFloorX();
+        int baseY = position.getFloorY();
+        int baseZ = position.getFloorZ();
+
+        BlockState[] placementPalette = getPlacementPalette(rotation);
+
+        int index = 0;
+
+        switch (rotation) {
+            case NONE -> {
+                for (int z = 0; z < sizeZ; z++) {
+                    for (int y = 0; y < sizeY; y++) {
+                        for (int x = 0; x < sizeX; x++) {
+                            placeEncodedBlock(index++, baseX + x, baseY + y, baseZ + z, placementPalette, blockManager);
+                        }
+                    }
+                }
+            }
+            case ROTATE_90 -> {
+                for (int z = 0; z < sizeZ; z++) {
+                    for (int y = 0; y < sizeY; y++) {
+                        for (int x = 0; x < sizeX; x++) {
+                            placeEncodedBlock(index++, baseX + z, baseY + y, baseZ + sizeX - 1 - x, placementPalette, blockManager);
+                        }
+                    }
+                }
+            }
+            case ROTATE_180 -> {
+                for (int z = 0; z < sizeZ; z++) {
+                    for (int y = 0; y < sizeY; y++) {
+                        for (int x = 0; x < sizeX; x++) {
+                            placeEncodedBlock(index++, baseX + sizeX - 1 - x, baseY + y, baseZ + sizeZ - 1 - z, placementPalette, blockManager);
+                        }
+                    }
+                }
+            }
+            case ROTATE_270 -> {
+                for (int z = 0; z < sizeZ; z++) {
+                    for (int y = 0; y < sizeY; y++) {
+                        for (int x = 0; x < sizeX; x++) {
+                            placeEncodedBlock(index++, baseX + sizeZ - 1 - z, baseY + y, baseZ + x, placementPalette, blockManager);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void placeEncodedBlock(int blockIndex, int x, int y, int z, BlockState[] placementPalette, BlockManager blockManager) {
+        int paletteIndex = (blocks[blockIndex] & 0xFF) - 1;
+        if (paletteIndex == -1) return;
+
+        BlockState state;
+
+        if (paletteIndex < 0 || paletteIndex >= placementPalette.length) {
+            state = STATE_UNKNOWN;
+        } else {
+            state = placementPalette[paletteIndex];
+        }
+
+        if (state == STATE_STRUCTURE_VOID) return;
+
+        blockManager.setBlockStateAt(x, y, z, state);
+    }
+
+    private BlockState[] getPlacementPalette(Rotation geometryRotation) {
+        Rotation stateRotation = inverseRotation(geometryRotation);
+        if (stateRotation == Rotation.NONE) return palette;
+
+        BlockState[] rotatedPalette = new BlockState[palette.length];
+
+        for (int i = 0; i < palette.length; i++) {
+            BlockState state = palette[i];
+
+            if (state == STATE_STRUCTURE_VOID || state == STATE_UNKNOWN) {
+                rotatedPalette[i] = state;
+                continue;
             }
 
-            @Override
-            public int y(StructureBlockInstance block) {
-                return block.y;
-            }
+            rotatedPalette[i] = rotateState(state, stateRotation);
+        }
 
-            @Override
-            public int z(StructureBlockInstance block) {
-                return block.z;
-            }
+        return rotatedPalette;
+    }
 
-            @Override
-            public BlockState state(StructureBlockInstance block) {
-                return block.state;
-            }
-        });
+    private BlockState rotateState(BlockState state, Rotation rotation) {
+        return switch (rotation) {
+            case ROTATE_90 -> StructureRotationUtil.clockwise90(state);
+            case ROTATE_180 -> StructureRotationUtil.clockwise180(state);
+            case ROTATE_270 -> StructureRotationUtil.counterclockwise90(state);
+            default -> state;
+        };
     }
 
     @Override
@@ -184,6 +330,32 @@ public class PNXStructure extends AbstractStructure {
         }
         if (!changed) return this;
         return new PNXStructure(sizeX, sizeY, sizeZ, mappedPalette, blocks, jigsaws);
+    }
+
+    /**
+     * Returns the structure jigsaws transformed for the specified rotation.
+     *
+     * @param rotation structure rotation
+     * @return rotated jigsaws
+     */
+    public Jigsaw[] getJigsaws(Rotation rotation) {
+        if (rotation == Rotation.NONE) {
+            return jigsaws;
+        }
+
+        Rotation stateRotation = inverseRotation(rotation);
+
+        Jigsaw[] rotatedJigsaws = new Jigsaw[jigsaws.length];
+
+        for (int i = 0; i < jigsaws.length; i++) {
+            Jigsaw jigsaw = jigsaws[i];
+            int rx = getRotatedX(jigsaw.x, jigsaw.z, rotation);
+            int rz = getRotatedZ(jigsaw.x, jigsaw.z, rotation);
+            BlockState rotatedFinalState = rotateState(jigsaw.finalState, stateRotation);
+            rotatedJigsaws[i] = new Jigsaw(rx, jigsaw.y, rz, rotatedFinalState, jigsaw.name, jigsaw.joint, jigsaw.pool, jigsaw.target, jigsaw.placementPriority, jigsaw.selectionPriority);
+        }
+
+        return rotatedJigsaws;
     }
 
     @Override
@@ -347,7 +519,17 @@ public class PNXStructure extends AbstractStructure {
             this.x = pos[0];
             this.y = pos[1];
             this.z = pos[2];
-            this.finalState = Registries.BLOCKSTATE.get(tag.getInt("final_state"));
+
+            int finalStateHash = tag.getInt("final_state");
+            this.finalState = Registries.BLOCKSTATE.get(finalStateHash);
+            if (this.finalState == null) {
+                this.finalState = LegacyBlockStateHashes.get(finalStateHash);
+            }
+            if (this.finalState == null) {
+                log.warn("Unknown jigsaw final_state hash in structure: {}", finalStateHash);
+                this.finalState = PNXStructure.STATE_AIR;
+            }
+
             this.name = tag.getString("name");
             this.joint = tag.getString("joint");
             this.pool = tag.getString("pool");

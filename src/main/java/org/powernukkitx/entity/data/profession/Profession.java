@@ -1,9 +1,11 @@
 package org.powernukkitx.entity.data.profession;
 
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.registry.mappings.MappingRegistries;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -37,12 +39,23 @@ public abstract class Profession {
     private final String blockId;
     private final String name;
     private final Sound workSound;
+    private final SoundEvent workSoundEvent;
 
     public Profession(int index, String blockId, String name, Sound workSound) {
+        this(index, blockId, name, workSound, resolveWorkSoundEvent(workSound));
+    }
+
+    protected Profession(int index, String blockId, String name, Sound workSound, SoundEvent workSoundEvent) {
         this.index = index;
         this.blockId = blockId;
         this.name = name;
         this.workSound = workSound;
+        this.workSoundEvent = workSoundEvent;
+    }
+
+    private static SoundEvent resolveWorkSoundEvent(Sound sound) {
+        Integer id = MappingRegistries.LEVEL_SOUND_EVENT.get().inverse().get(sound.getSound());
+        return id == null || id < 0 || id >= SoundEvent.values().length ? SoundEvent.UNDEFINED : SoundEvent.values()[id];
     }
 
     public ListTag<CompoundTag> buildTrades(int seed) {
@@ -92,5 +105,14 @@ public abstract class Profession {
 
     public Sound getWorkSound() {
         return this.workSound;
+    }
+
+    /**
+     * Gets the level sound event associated with this profession's workstation.
+     *
+     * @return the workstation level sound event
+     */
+    public SoundEvent getWorkSoundEvent() {
+        return this.workSoundEvent;
     }
 }

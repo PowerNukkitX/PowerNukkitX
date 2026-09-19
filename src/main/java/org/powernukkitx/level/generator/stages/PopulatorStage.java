@@ -1,6 +1,5 @@
 package org.powernukkitx.level.generator.stages;
 
-import org.powernukkitx.level.format.ChunkState;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateStage;
 import org.powernukkitx.level.generator.object.BlockManager;
@@ -15,7 +14,6 @@ public abstract class PopulatorStage extends GenerateStage {
 
     @Override
     public final void apply(ChunkGenerateContext context) {
-        context.getChunk().setChunkState(ChunkState.POPULATED);
         BlockManager root = new BlockManager(context.getLevel());
         for(String name : populators()) {
             try {

@@ -51,6 +51,7 @@ dependencies {
     api(libs.bedrock.connection)
 
     implementation(libs.bundles.leveldb)
+    implementation(libs.rng.core)
     implementation(libs.rng.simple)
     implementation(libs.rng.sampling)
     implementation(libs.asm)

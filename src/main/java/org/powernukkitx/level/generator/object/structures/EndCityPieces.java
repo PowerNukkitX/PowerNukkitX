@@ -227,6 +227,7 @@ public final class EndCityPieces {
 
     public static PostPlacement place(BlockManager manager, BlockVector3 origin, Rotation rotation, RandomSourceProvider random) {
         List<EndCityPiece> pieces = generate(origin, rotation, random);
+        List<BoundingBox> pieceBounds = new ArrayList<>(pieces.size());
         List<BlockVector3> chests = new ArrayList<>();
         List<BlockVector3> banners = new ArrayList<>();
         List<BlockVector3> itemFrames = new ArrayList<>();
@@ -234,6 +235,7 @@ public final class EndCityPieces {
         List<BlockVector3> shulkerMarkers = new ArrayList<>();
 
         for (EndCityPiece piece : pieces) {
+            pieceBounds.add(piece.boundingBox());
             piece.place(manager);
         }
 
@@ -259,7 +261,7 @@ public final class EndCityPieces {
             }
         }
 
-        return new PostPlacement(chests, banners, itemFrames, brewingStands, shulkerMarkers);
+        return new PostPlacement(pieceBounds, chests, banners, itemFrames, brewingStands, shulkerMarkers);
     }
 
     public static void populatePlacedData(Level level, List<BlockVector3> chests, List<BlockVector3> banners, List<BlockVector3> itemFrames, List<BlockVector3> brewingStands, List<BlockVector3> shulkerMarkers, RandomSourceProvider random) {
@@ -390,18 +392,34 @@ public final class EndCityPieces {
     }
 
     public static final class PostPlacement {
+        private final List<BoundingBox> pieceBounds;
         private final List<BlockVector3> chests;
         private final List<BlockVector3> banners;
         private final List<BlockVector3> itemFrames;
         private final List<BlockVector3> brewingStands;
         private final List<BlockVector3> shulkerMarkers;
 
-        private PostPlacement(List<BlockVector3> chests, List<BlockVector3> banners, List<BlockVector3> itemFrames, List<BlockVector3> brewingStands, List<BlockVector3> shulkerMarkers) {
+        private PostPlacement(
+                List<BoundingBox> pieceBounds,
+                List<BlockVector3> chests,
+                List<BlockVector3> banners,
+                List<BlockVector3> itemFrames,
+                List<BlockVector3> brewingStands,
+                List<BlockVector3> shulkerMarkers
+        ) {
+            this.pieceBounds = List.copyOf(pieceBounds);
             this.chests = List.copyOf(chests);
             this.banners = List.copyOf(banners);
             this.itemFrames = List.copyOf(itemFrames);
             this.brewingStands = List.copyOf(brewingStands);
             this.shulkerMarkers = List.copyOf(shulkerMarkers);
+        }
+
+        /**
+         * Returns the ordered structure-piece bounding boxes.
+         */
+        public List<BoundingBox> pieceBounds() {
+            return this.pieceBounds;
         }
 
         public List<BlockVector3> chests() {

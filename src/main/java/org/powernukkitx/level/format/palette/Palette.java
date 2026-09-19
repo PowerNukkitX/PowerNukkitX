@@ -8,6 +8,7 @@ import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.bitarray.BitArray;
 import org.powernukkitx.level.format.bitarray.BitArrayVersion;
 import org.powernukkitx.level.updater.block.BlockStateUpdaters;
+import org.powernukkitx.level.updater.chunk.NeighborAwareChunkUpgrader;
 import org.powernukkitx.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.utils.HashUtils;
@@ -266,6 +267,7 @@ public class Palette<V> {
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
             NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
             final int storedVersion = blockTag.getInt("version");
+
             final NbtMapBuilder builder = blockTag.toBuilder();
             builder.remove("version");
             blockTag = builder.build();
@@ -353,11 +355,39 @@ public class Palette<V> {
     }
 
     protected void onResize(BitArrayVersion version) {
-        final BitArray newBitArray = version.createArray(ChunkSection.SIZE);
-        for (int i = 0; i < ChunkSection.SIZE; i++)
-            newBitArray.set(i, this.bitArray.get(i));
+        final BitArray source = this.bitArray;
+        final BitArrayVersion sourceVersion = source.version();
+        if (sourceVersion == BitArrayVersion.V0) {
+            this.bitArray = version.createArray(ChunkSection.SIZE);
+            return;
+        }
 
-        this.bitArray = newBitArray;
+        final int[] sourceWords = source.words();
+        final int[] targetWords = new int[version.getWordsForSize(ChunkSection.SIZE)];
+        final int sourceEntriesPerWord = sourceVersion.entriesPerWord;
+        final int sourceBits = sourceVersion.bits;
+        final int sourceMask = sourceVersion.maxEntryValue;
+        final int targetEntriesPerWord = version.entriesPerWord;
+        final int targetBits = version.bits;
+
+        int sourceIndex = 0;
+        int targetWordIndex = 0;
+        int targetEntryIndex = 0;
+
+        for (int sourceWord : sourceWords) {
+            int entries = Math.min(sourceEntriesPerWord, ChunkSection.SIZE - sourceIndex);
+            for (int sourceEntryIndex = 0; sourceEntryIndex < entries; sourceEntryIndex++, sourceIndex++) {
+                int value = sourceWord >>> (sourceEntryIndex * sourceBits) & sourceMask;
+                targetWords[targetWordIndex] |= value << (targetEntryIndex * targetBits);
+
+                if (++targetEntryIndex == targetEntriesPerWord) {
+                    targetEntryIndex = 0;
+                    targetWordIndex++;
+                }
+            }
+        }
+
+        this.bitArray = version.createArray(ChunkSection.SIZE, targetWords);
     }
 
     public void copyTo(Palette<V> palette) {

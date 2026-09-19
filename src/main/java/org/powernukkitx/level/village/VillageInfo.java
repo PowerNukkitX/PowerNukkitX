@@ -23,10 +23,12 @@ public record VillageInfo(long breedingCooldownTime, long golemSpawnCooldownTime
                 .putLong("BDTime", breedingCooldownTime).putLong("GDTime", golemSpawnCooldownTime)
                 .putBoolean("Initialized", initialized).putLong("MTick", mergeTick)
                 .putLong("PDTick", playerDetectionTick)
-                .putInt("RX0", raidBoundsMin.x).putInt("RY0", raidBoundsMin.y).putInt("RZ0", raidBoundsMin.z)
-                .putInt("RX1", raidBoundsMax.x).putInt("RY1", raidBoundsMax.y).putInt("RZ1", raidBoundsMax.z)
+                .putInt("RX0", raidBoundsMin.x).putInt("RX1", raidBoundsMax.x)
+                .putInt("RY0", raidBoundsMin.y).putInt("RY1", raidBoundsMax.y)
+                .putInt("RZ0", raidBoundsMin.z).putInt("RZ1", raidBoundsMax.z)
                 .putLong("Tick", tick).putByte("Version", version)
-                .putInt("X0", boundsMin.x).putInt("Y0", boundsMin.y).putInt("Z0", boundsMin.z)
-                .putInt("X1", boundsMax.x).putInt("Y1", boundsMax.y).putInt("Z1", boundsMax.z);
+                .putInt("X0", boundsMin.x).putInt("X1", boundsMax.x)
+                .putInt("Y0", boundsMin.y).putInt("Y1", boundsMax.y)
+                .putInt("Z0", boundsMin.z).putInt("Z1", boundsMax.z);
     }
 }
