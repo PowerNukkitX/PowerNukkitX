@@ -6,39 +6,75 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class StructureAPI {
-    private static final Map<String, Structure> structureCache = new HashMap<>();
+    private static final Map<String, Structure> structureCache = new ConcurrentHashMap<>();
 
     private static File resolvePathNamespaced(String name) {
-        String relativePath = name.replace(":", File.separator) + ".mcstructure";
-        return new File(Server.getInstance().structurePath, relativePath);
+        return resolveInsideStructureDir(name.replace(":", File.separator) + ".mcstructure");
     }
 
     private static File resolvePathRoot(String name) {
-        return new File(Server.getInstance().structurePath, name + ".mcstructure");
+        return resolveInsideStructureDir(name + ".mcstructure");
     }
 
     private static File resolvePathWithFallback(String name) {
         File file = resolvePathNamespaced(name);
-        if (file.exists()) {
+        if (file != null && file.exists()) {
             return file;
         }
         return resolvePathRoot(name);
     }
 
+    @Nullable
+    private static File resolveInsideStructureDir(String relativePath) {
+        File root = new File(Server.getInstance().structurePath);
+        File file = new File(root, relativePath);
+        try {
+            Path rootPath = root.getCanonicalFile().toPath();
+            Path filePath = file.getCanonicalFile().toPath();
+            if (!filePath.startsWith(rootPath) || filePath.equals(rootPath)) {
+                log.warn("Rejected structure path outside of the structure directory: {}", relativePath);
+                return null;
+            }
+            return file;
+        } catch (IOException exception) {
+            log.debug("Cannot resolve structure path {}", relativePath, exception);
+            return null;
+        }
+    }
+
+    public static CompletableFuture<Structure> loadAsync(String name){
+        Structure cached = structureCache.get(name);
+        if (cached != null){
+            return CompletableFuture.completedFuture(cached);
+        }
+        return CompletableFuture.supplyAsync(() -> load(name), Server.getInstance().getComputeThreadPool());
+    }
+
     public static Structure load(String name) {
-        if (structureCache.containsKey(name)) {
-            return structureCache.get(name);
+        Structure cached = structureCache.get(name);
+        if (cached != null) {
+            return cached;
         }
 
-        try (var stream = new FileInputStream(resolvePathWithFallback(name));
+        File file = resolvePathWithFallback(name);
+        if (file == null){
+            return null;
+        }
+
+        try (var stream = new FileInputStream(file);
              var nbtInputStream = NbtUtils.createReaderLE(stream)) {
             NbtMap root = (NbtMap) nbtInputStream.readTag();
 
@@ -58,6 +94,9 @@ public class StructureAPI {
     public static void save(Structure structure, String name) {
         try {
             File file = resolvePathNamespaced(name); // always save in namespace path
+            if (file == null){
+                return;
+            }
             file.getParentFile().mkdirs();
 
             try (var stream = new FileOutputStream(file);
@@ -74,15 +113,16 @@ public class StructureAPI {
     }
 
     public static boolean exists(String name) {
-        return resolvePathNamespaced(name).exists() || resolvePathRoot(name).exists();
+        File file = resolvePathWithFallback(name);
+        return file != null && file.exists();
     }
 
     public static boolean delete(String name) {
         structureCache.remove(name);
 
-        File file = resolvePathNamespaced(name);
-        if (!file.exists()) {
-            file = resolvePathRoot(name);
+        File file = resolvePathWithFallback(name);
+        if (file == null){
+            return false;
         }
 
         if (file.exists()) {
