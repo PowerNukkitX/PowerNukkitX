@@ -1617,8 +1617,6 @@ public abstract class Item implements Cloneable, ItemID {
 
     @Override
     public final int hashCode() {
-        // Only what equals(Object) always compares may take part, so that equal stacks keep equal hashes.
-        // NBT and count are deliberately left out - they only cost collisions, never correctness.
         return 31 * this.getId().hashCode() + (this.hasMeta() ? this.getDamage() : 0);
     }
 
