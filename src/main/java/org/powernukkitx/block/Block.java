@@ -1867,6 +1867,17 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        // Two blocks at the same coordinates are only the same block when they sit on the same layer, which is what
+        // hashCode() encodes. A bare Vector3 carries no layer, so positional comparisons against one stay
+        // layer-agnostic - piston and explosion code relies on that.
+        return !(obj instanceof Block other) || this.layer == other.layer;
+    }
+
+    @Override
     public int hashCode() {
         return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23) ^ (layer << 31);
     }
