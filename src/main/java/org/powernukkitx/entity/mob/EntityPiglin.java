@@ -41,6 +41,7 @@ import org.powernukkitx.inventory.EntityInventoryHolder;
 import org.powernukkitx.inventory.InventorySlice;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemCrossbow;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemGoldIngot;
 import org.powernukkitx.item.ItemPorkchop;
 import org.powernukkitx.item.ItemTool;
@@ -186,11 +187,12 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     protected void initEntity() {
         this.diffHandDamage = new float[]{3f, 5f, 7f};
         super.initEntity();
-        if (!isBaby()) setItemInHand(Item.get(Utils.rand() ? Item.GOLDEN_SWORD : Item.CROSSBOW));
-        if (Utils.rand(0, 10) == 0) setHelmet(Item.get(Item.GOLDEN_HELMET));
-        if (Utils.rand(0, 10) == 0) setChestplate(Item.get(Item.GOLDEN_CHESTPLATE));
-        if (Utils.rand(0, 10) == 0) setLeggings(Item.get(Item.GOLDEN_LEGGINGS));
-        if (Utils.rand(0, 10) == 0) setBoots(Item.get(Item.GOLDEN_BOOTS));
+        if (!isBaby()) {
+            Item weapon = Utils.rand()
+                    ? Item.get(Utils.rand(0, 19) == 0 ? ItemID.GOLDEN_SPEAR : ItemID.GOLDEN_SWORD)
+                    : Item.get(Item.CROSSBOW);
+            setItemInHand(enchantGear(weapon, 0.1f));
+        }
     }
 
     @Override
@@ -214,6 +216,13 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(16);
+    }
+
+    @Override
+    protected void equipOnSpawn() {
+        if (rollGearChance(0.15f)) {
+            equipArmorSet(2);
+        }
     }
 
     @Override

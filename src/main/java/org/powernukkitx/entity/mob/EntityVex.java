@@ -28,9 +28,11 @@ import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -154,10 +156,15 @@ public class EntityVex extends EntityMob implements EntityFlyable {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        if(getItemInHand() instanceof ItemTool tool) {
-            tool.setDamage(ThreadLocalRandom.current().nextInt(tool.getMaxDurability()));
+        if (getItemInHand() instanceof ItemTool tool) {
+            int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+            if (Utils.rand(0, 99) >= (25 + looting * 5)) {
+                return Item.EMPTY_ARRAY;
+            }
+            Item drop = tool.clone();
+            drop.setDamage(ThreadLocalRandom.current().nextInt(tool.getMaxDurability()));
             return new Item[] {
-                tool
+                drop
             };
         }
         return super.getDrops(weapon);

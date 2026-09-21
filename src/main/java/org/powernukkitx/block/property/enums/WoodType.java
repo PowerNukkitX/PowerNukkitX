@@ -21,7 +21,9 @@ public enum WoodType {
 
     MANGROVE("Mangrove"),
 
-    PALE_OAK("Pale Oak");
+    PALE_OAK("Pale Oak"),
+
+    POPLAR("Poplar");
 
     @Getter
     private final String name;

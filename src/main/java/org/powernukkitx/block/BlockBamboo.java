@@ -89,6 +89,11 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         return false;
     }
 
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
     public int countHeight() {
         int count = 0;
         Optional<Block> opt;

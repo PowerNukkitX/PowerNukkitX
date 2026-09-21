@@ -67,6 +67,14 @@ public interface LevelProvider {
 
     void setRaining(boolean raining);
 
+    default float getRainLevel() {
+        return isRaining() ? 1.0f : 0.0f;
+    }
+
+    default void setRainLevel(float rainLevel) {
+        setRaining(rainLevel > 0.0f);
+    }
+
     int getRainTime();
 
     void setRainTime(int rainTime);
@@ -74,6 +82,14 @@ public interface LevelProvider {
     boolean isThundering();
 
     void setThundering(boolean thundering);
+
+    default float getLightningLevel() {
+        return isThundering() ? 1.0f : 0.0f;
+    }
+
+    default void setLightningLevel(float lightningLevel) {
+        setThundering(lightningLevel > 0.0f);
+    }
 
     int getThunderTime();
 

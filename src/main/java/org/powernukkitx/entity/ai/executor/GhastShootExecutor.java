@@ -202,14 +202,14 @@ public class GhastShootExecutor implements EntityControl, IBehaviorExecutor {
         this.shootSequenceEndDelay = 0;
         entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
         entity.setDataFlag(ActorFlags.CHARGED, true);
-        entity.setDataProperty(ActorDataTypes.CHARGE_AMOUNT, 0x1);
+        entity.setDataProperty(ActorDataTypes.CHARGE_AMOUNT, (byte) 0x1);
         entity.level.addLevelEvent(entity, LevelEvent.SOUND_GHAST_WARNING);
     }
 
     private void endShootSequence(Entity entity) {
         entity.setDataProperty(ActorDataTypes.TARGET, 0L);
         entity.setDataFlag(ActorFlags.CHARGED, false);
-        entity.setDataProperty(ActorDataTypes.CHARGE_AMOUNT, 0x0);
+        entity.setDataProperty(ActorDataTypes.CHARGE_AMOUNT, (byte) 0x0);
         entity.level.addLevelEvent(entity, LevelEvent.SOUND_GHAST_FIREBALL);
     }
 }

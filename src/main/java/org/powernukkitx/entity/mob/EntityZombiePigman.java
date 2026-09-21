@@ -28,6 +28,7 @@ import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -92,6 +93,15 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.LOOKING_BLOCK, BlockTurtleEgg.class);
+        if (getEquipmentInventory().getItemInHand().isNull()) {
+            setItemInHand(Item.get(Utils.rand(0, 99) < 5 ? Item.GOLDEN_SPEAR : Item.GOLDEN_SWORD));
+        }
+    }
+
+    @Override
+    protected void equipOnSpawn() {
+        Item weapon = Item.get(Utils.rand(0, 19) == 0 ? ItemID.GOLDEN_SPEAR : ItemID.GOLDEN_SWORD);
+        getEquipmentInventory().setItemInHand(enchantGear(weapon, 0.25f));
     }
 
     @Override
@@ -174,21 +184,12 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
         }
 
         if (weapon != Item.AIR) {
-            if (Utils.rand(0, 199) < (5 + looting)) {
-                Item sword = Item.get(Item.GOLDEN_SWORD);
-                drops.add(sword);
-            }
-
-            if (/* TODO: isPiglinBruteZoombified() &&*/ Utils.rand(0, 199) < (5 + looting)) {
-                Item axe = Item.get(Item.GOLDEN_AXE);
-                drops.add(axe);
-            }
-
-            if (hand.getId() == Item.CROSSBOW) {
+            if (!hand.isNull() && hand.getId() != Item.WARPED_FUNGUS_ON_A_STICK
+                    && Utils.rand(0, 99) < (25 + looting * 5)) {
                 drops.add(hand.clone());
             }
 
-            if (Utils.rand(0, 999) < (10 + looting * 5)) {
+            if (Utils.rand(0, 999) < (25 + looting * 10)) {
                 drops.add(Item.get(Item.GOLD_INGOT, 0, 1));
             }
         }

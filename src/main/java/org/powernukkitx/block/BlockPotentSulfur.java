@@ -3,14 +3,14 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.blockentity.BlockEntityID;
-import org.powernukkitx.blockentity.BlockEntityPotentSulfur;
+import org.powernukkitx.blockentity.BlockEntityPotentSulfurBlock;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.POTENT_SULFUR_STATE;
 
-public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<BlockEntityPotentSulfur> {
+public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<BlockEntityPotentSulfurBlock> {
     public static final BlockProperties PROPERTIES = new BlockProperties(POTENT_SULFUR, POTENT_SULFUR_STATE);
 
     @Override
@@ -29,7 +29,7 @@ public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<B
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        BlockEntityPotentSulfur entity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true);
+        BlockEntityPotentSulfurBlock entity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true);
         if (entity != null) {
             entity.scheduleUpdate();
             return true;
@@ -72,12 +72,12 @@ public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<B
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityPotentSulfur> getBlockEntityClass() {
-        return BlockEntityPotentSulfur.class;
+    public @NotNull Class<? extends BlockEntityPotentSulfurBlock> getBlockEntityClass() {
+        return BlockEntityPotentSulfurBlock.class;
     }
 
     @Override
     public @NotNull String getBlockEntityType() {
-        return BlockEntityID.POTENT_SULFUR;
+        return BlockEntityID.POTENT_SULFUR_BLOCK;
     }
 }

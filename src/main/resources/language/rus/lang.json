@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "Мир \"{%0}\" использует старый формат, конвертация",
   "nukkit.player.invalidEntity": "{%0} попытался атаковать неправильную сущность",
   "nukkit.player.invalidMove": "{%0} некорректно передвинулся!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] вошел с id сущности {%3} на ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] вошел с uniqueId сущности {%3} на ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] отключился: {%3}",
   "nukkit.plugin.aliasError": "Не удалось загрузить псевдоним {%0} для плагина {%1}",
   "nukkit.plugin.circularDependency": "Обнаружена круговая зависимость",

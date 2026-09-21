@@ -151,12 +151,9 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
 
-        float pearlChance = 0.5f + (0.05f * looting);
-        pearlChance = Math.min(pearlChance, 1.0f);
-
-        if (Utils.rand(0f, 1f) < pearlChance) {
-            int amount = Utils.rand(1, 1 + looting);
-            drops.add(Item.get(Item.ENDER_PEARL, 0, amount));
+        int pearls = Utils.rand(0, 1 + looting);
+        if (pearls > 0) {
+            drops.add(Item.get(Item.ENDER_PEARL, 0, pearls));
         }
 
         Item hand = getItemInHand();

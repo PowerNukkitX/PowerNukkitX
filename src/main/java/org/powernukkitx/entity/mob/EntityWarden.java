@@ -2,6 +2,7 @@ package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityCreature;
 import org.powernukkitx.entity.EntityWalkable;
@@ -30,6 +31,7 @@ import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -359,5 +361,10 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     @Override
     public void setOnFire(int seconds) {
         //against fire
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        return new Item[]{Item.get(BlockID.SCULK_CATALYST)};
     }
 }

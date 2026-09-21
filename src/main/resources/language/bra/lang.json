@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "Dados antigos do mundo \"{%0}\" encontrados, convertendo para o novo formato",
   "nukkit.player.invalidEntity": "{%0} tentou atacar uma entidade inválida",
   "nukkit.player.invalidMove": "{%0} moveu erradamente!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] entrou com o id de entidade {%3} em ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] entrou com o uniqueId de entidade {%3} em ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] saiu devido a {%3}",
   "nukkit.plugin.aliasError": "Não foi possível carregar apelido de comando {%0} para o plugin {%1}",
   "nukkit.plugin.circularDependency": "Dependência circular detectada",

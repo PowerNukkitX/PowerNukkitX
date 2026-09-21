@@ -236,7 +236,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
             float knockBack = 0.3f;
             if (player.isSprinting()) {
-                knockBack += 0.5f;
+                knockBack += 0.09f;
             }
             EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
             entityDamageByEntityEvent.setBreakShield(item.canBreakShield());

@@ -1,5 +1,6 @@
 package org.powernukkitx.entity.data.profession;
 
+import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -46,6 +47,18 @@ public abstract class Profession {
 
     public ListTag<CompoundTag> buildTrades(int seed) {
         return new ListTag<>();
+    }
+
+    /**
+     * Builds the trades of a villager whose biome outfit is {@code clothing}. Professions whose
+     * offers depend on where the villager comes from override this, the others fall back on
+     * {@link #buildTrades(int)}.
+     *
+     * @param seed     the villager's trade seed
+     * @param clothing the villager's biome outfit
+     */
+    public ListTag<CompoundTag> buildTrades(int seed, EntityVillagerV2.Clothing clothing) {
+        return buildTrades(seed);
     }
 
 

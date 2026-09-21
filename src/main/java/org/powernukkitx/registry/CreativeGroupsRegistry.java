@@ -20,21 +20,19 @@ import java.util.Map;
  */
 @Slf4j
 public class CreativeGroupsRegistry {
-    private static final ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> INJECTED_GROUPS = new ObjectLinkedOpenHashSet<>();
+    private static final ObjectLinkedOpenHashSet<CreativeCustomGroups.CustomGroupDefinition> PENDING_DEFINITIONS = new ObjectLinkedOpenHashSet<>();
 
     /**
-     * Registers a new custom creative group. If this is the first group being registered,
-     * triggers the injection process into the existing creative registry.
+     * Stages a custom creative group for later registration.
+     * This only records the definition (group name, category and icon ID); nothing is injected
+     * into the creative registry and the icon is <b>not</b> resolved yet. The actual finalization
+     * happens in {@link #register()}, which PNX invokes automatically after all plugins (and their
+     * custom items/blocks) have been loaded. Plugins should therefore not call {@link #register()}
+     * manually.
      */
     public static void load(CreativeCustomGroups.CustomGroupDefinition def) {
         if (!isValid(def)) return;
-
-        Item icon = resolveIcon(def);
-        CreativeGroupInfoPayload group = new CreativeGroupInfoPayload();
-        group.setCreativeCategory(def.getCategory());
-        group.setName(def.getName());
-        group.setGroupIconItem(icon.toNetwork());
-        INJECTED_GROUPS.add(group);
+        PENDING_DEFINITIONS.add(def);
     }
 
     private static boolean isValid(CreativeCustomGroups.CustomGroupDefinition def) {
@@ -54,14 +52,21 @@ public class CreativeGroupsRegistry {
     }
 
     /**
-     * Injects all registered custom groups into the group index map and runtime list.
+     * Finalizes all staged custom groups and injects them into the group index map and runtime list.
+     * Icons are resolved here (not when the group is staged in {@link #load(CreativeCustomGroups.CustomGroupDefinition)}),
+     * so an icon referencing a custom item is resolved correctly once every custom item/block is loaded.
+     * PNX calls this automatically after plugin loading; plugins should not call it manually.
      */
     public static void register() {
+        if (PENDING_DEFINITIONS.isEmpty()) return;
+
+        List<CreativeGroupInfoPayload> injected = buildStagedGroups();
+
         List<CreativeGroupInfoPayload> allOriginalGroups = new ArrayList<>(Registries.CREATIVE.getGroupList());
         Map<CreativeGroupInfoPayload, Integer> originalGroupIndices = extractOriginalGroupIndices(allOriginalGroups);
 
         Map<CreativeCategory, List<CreativeGroupInfoPayload>> groupedVanilla = groupByCategory(allOriginalGroups);
-        Map<CreativeCategory, List<CreativeGroupInfoPayload>> groupedCustom = groupByCategory(new ArrayList<>(INJECTED_GROUPS));
+        Map<CreativeCategory, List<CreativeGroupInfoPayload>> groupedCustom = groupByCategory(injected);
 
         Map<Integer, Integer> groupIndexMap = new HashMap<>();
         List<CreativeGroupInfoPayload> rebuilt = rebuildGroupsAndRemap(groupedVanilla, groupedCustom, originalGroupIndices, groupIndexMap);
@@ -70,6 +75,24 @@ public class CreativeGroupsRegistry {
         Registries.CREATIVE.getGroupList().addAll(rebuilt);
 
         remapCreativeItemGroups(groupIndexMap);
+        PENDING_DEFINITIONS.clear();
+    }
+
+    /**
+     * Builds the {@link CreativeGroupInfoPayload} for every staged definition, resolving each icon now
+     * that all custom items/blocks are loaded.
+     */
+    private static List<CreativeGroupInfoPayload> buildStagedGroups() {
+        List<CreativeGroupInfoPayload> injected = new ArrayList<>();
+        for (CreativeCustomGroups.CustomGroupDefinition def : PENDING_DEFINITIONS) {
+            Item icon = resolveIcon(def);
+            CreativeGroupInfoPayload group = new CreativeGroupInfoPayload();
+            group.setCreativeCategory(def.getCategory());
+            group.setName(def.getName());
+            group.setGroupIconItem(icon.toNetwork());
+            injected.add(group);
+        }
+        return injected;
     }
 
     private static Map<CreativeGroupInfoPayload, Integer> extractOriginalGroupIndices(List<CreativeGroupInfoPayload> allGroups) {
@@ -151,17 +174,13 @@ public class CreativeGroupsRegistry {
         for (CreativeItemEntryPayload data : current) {
             Item item = Item.fromNetwork(data.getItemInstance());
             int originalGroupId = data.getGroupIndex();
-            int newGroupId = CreativeItemRegistry.LAST_ITEMS_INDEX;
+            int newGroupId;
 
             String originalId = data.getItemInstance().getDefinition().getIdentifier();
-            String rebuiltId = item.getItemDefinition().getIdentifier();
 
-            // Vanilla item: remap based on old group index
-            if (!isCategoryFallbackIndex(originalGroupId)) {
+            if (!CreativeItemRegistry.CUSTOM_ITEM_IDENTIFIERS.contains(originalId)){
                 Integer mapped = groupIndexMap.get(originalGroupId);
-                if (mapped != null) {
-                    newGroupId = mapped;
-                }
+                newGroupId = (mapped != null) ? mapped : originalGroupId;
             } else {
                 // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
                 String key = originalId;
@@ -221,13 +240,6 @@ public class CreativeGroupsRegistry {
         current.clear();
         current.addAll(rebuilt);
         CreativeItemRegistry.ITEM_GROUP_MAP.clear();
-    }
-
-    private static boolean isCategoryFallbackIndex(int groupId) {
-        return groupId == CreativeItemRegistry.LAST_CONSTRUCTION_INDEX
-            || groupId == CreativeItemRegistry.LAST_EQUIPMENTS_INDEX
-            || groupId == CreativeItemRegistry.LAST_ITEMS_INDEX
-            || groupId == CreativeItemRegistry.LAST_NATURE_INDEX;
     }
 
     public static CreativeCategory getCategoryFromFallbackIndex(int groupId) {

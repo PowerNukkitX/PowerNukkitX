@@ -105,6 +105,10 @@ public abstract class PositionNode extends ParamNode<Position> {
             try {
                 Location loc = sender.getLocation();
                 for (String s : TMP) {
+                    if (index >= coordinate.length) {
+                        this.error();
+                        return;
+                    }
                     if (s.charAt(0) == '~') {
                         this.setRelative(index);
                         String relativeCoordinate = s.substring(1);
@@ -171,6 +175,7 @@ public abstract class PositionNode extends ParamNode<Position> {
     public void reset() {
         super.reset();
         this.relative = 0b0000;
+        this.index = 0;
     }
 
     public void setRelative(byte index) {

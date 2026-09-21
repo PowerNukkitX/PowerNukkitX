@@ -2,7 +2,6 @@ package org.powernukkitx.entity.data.profession;
 
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -21,11 +20,6 @@ public class ProfessionShepherd extends Profession {
     public ListTag<CompoundTag> buildTrades(int seed) {
         ListTag<CompoundTag> recipes = new ListTag<>();
         Random random = new Random(seed);
-
-        Item rod = Item.get(Item.FISHING_ROD);
-        Enchantment rodEnchantment = Enchantment.getEnchantment(new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_LURE, Enchantment.ID_FORTUNE_FISHING}[random.nextInt(2)]);
-        rodEnchantment.setLevel(random.nextInt(3) + 1);
-        rod.addEnchantment(rodEnchantment);
 
         recipes.add(TradeRecipeBuildUtils.of(Item.get("minecraft:" + new DyeColor[]{DyeColor.WHITE, DyeColor.BROWN, DyeColor.BLACK, DyeColor.GRAY}[random.nextInt(4)].name().toLowerCase() + "_wool", 0, 18), Item.get(Item.EMERALD))
                         .setMaxUses(16)

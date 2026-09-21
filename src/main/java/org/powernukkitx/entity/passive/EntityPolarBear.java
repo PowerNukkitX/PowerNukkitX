@@ -71,26 +71,22 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
         List<Item> drops = new ArrayList<>();
 
-        if (Utils.rand(0, 2) != 0) {
-            int amount = Utils.rand(0, 2 + looting);
-            if (amount > 0) {
-                drops.add(Item.get(
-                        this.isOnFire() ? Item.COOKED_COD : Item.COD,
-                        0,
-                        amount
-                ));
-            }
+        int cod = Utils.rand(0, 2 + looting);
+        if (cod > 0) {
+            drops.add(Item.get(
+                    this.isOnFire() ? Item.COOKED_COD : Item.COD,
+                    0,
+                    cod
+            ));
         }
 
-        if (Utils.rand(0, 2) != 0) {
-            int amount = Utils.rand(0, 2 + looting);
-            if (amount > 0) {
-                drops.add(Item.get(
-                        this.isOnFire() ? Item.COOKED_SALMON : Item.SALMON,
-                        0,
-                        amount
-                ));
-            }
+        int salmon = Utils.rand(0, 2 + looting);
+        if (salmon > 0) {
+            drops.add(Item.get(
+                    this.isOnFire() ? Item.COOKED_SALMON : Item.SALMON,
+                    0,
+                    salmon
+            ));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);

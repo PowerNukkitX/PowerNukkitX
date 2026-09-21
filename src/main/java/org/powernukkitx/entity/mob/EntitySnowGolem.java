@@ -7,6 +7,7 @@ import org.powernukkitx.block.BlockPumpkin;
 import org.powernukkitx.block.BlockSnow;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -33,6 +34,7 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.Utils;
 import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -44,10 +46,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 
-public class EntitySnowGolem extends EntityGolem {
+public class EntitySnowGolem extends EntityGolem implements EntityInteractable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -135,6 +136,19 @@ public class EntitySnowGolem extends EntityGolem {
         super.initEntity();
     }
 
+    @Override
+    public String getInteractButtonText(Player player) {
+        if (!isSheared() && player.getInventory().getItemInMainHand().isShears()) {
+            return "action.interact.shear";
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
+    }
+
     public void setSheared(boolean sheared) {
         setDataFlag(ActorFlags.SHEARED, sheared);
     }
@@ -165,23 +179,14 @@ public class EntitySnowGolem extends EntityGolem {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        int randDrop = random.nextInt(3);
-
-        switch (randDrop) {
-            case 0:
-                return new Item[]{
-                        Item.get(ItemID.SNOWBALL, 0, random.nextInt(0, 9))
-                };
-            case 1:
-                return new Item[]{
-                        Item.get(ItemID.SNOWBALL, 0, random.nextInt(8, 17))
-                };
-            case 2:
-                return Item.EMPTY_ARRAY;
-            default:
-                return Item.EMPTY_ARRAY;
+        int snowballs = Utils.rand(0, 15);
+        if (snowballs == 0) {
+            return Item.EMPTY_ARRAY;
         }
+
+        return new Item[]{
+                Item.get(ItemID.SNOWBALL, 0, snowballs)
+        };
     }
 
     @Override

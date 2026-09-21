@@ -73,8 +73,8 @@ public class EntityBoat extends EntityVehicle {
     public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
-        this.setHealthMax(40);
-        this.setHealthCurrent(40);
+        this.setHealthMax(4);
+        this.setHealthCurrent(4);
     }
 
     @Override
@@ -135,8 +135,6 @@ public class EntityBoat extends EntityVehicle {
         if (invulnerable) {
             return false;
         } else {
-            source.setDamage(source.getDamage() * 2);
-
             boolean attack = super.attack(source);
 
             if (isAlive()) {
@@ -190,6 +188,10 @@ public class EntityBoat extends EntityVehicle {
 
         if (this.isAlive()) {
             hasUpdate = this.updateBoat(tickDiff) || hasUpdate;
+        }
+
+        if (this.isAlive() && this.health < this.getMaxHealth()) {
+            this.health = Math.min(this.getMaxHealth(), this.health + 0.1f);
         }
 
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
