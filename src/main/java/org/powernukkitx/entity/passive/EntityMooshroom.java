@@ -261,12 +261,10 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
             shear();
             return true;
         } else if (item.getId().equals(Item.BUCKET) && item.getDamage() == 0) {
-            item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
         } else if (item.getId().equals(Item.BOWL) && item.getDamage() == 0) {
-            item.count--;
-            if (hasStewEffect()) {
+            if (getVariantType() == Variant.BROWN && hasStewEffect()) {
                 player.getInventory().addItem(Item.get(Item.SUSPICIOUS_STEW, getMarkVariant()));
                 this.level.addSound(this, Sound.MOB_MOOSHROOM_SUSPICIOUS_MILK);
                 clearStewEffect();
@@ -277,7 +275,6 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         } else if (getVariantType() == Variant.BROWN && !hasStewEffect()) {
             int stewEffect = STEW_EFFECTS.getOrDefault(item.getId(), -1);
             if (stewEffect != -1) {
-                item.count--;
                 setMarkVariant(stewEffect);
                 this.level.addSound(this, Sound.MOB_MOOSHROOM_EAT);
                 return true;
@@ -318,6 +315,9 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         if (held.getId().equals(ItemID.BOWL) && held.getDamage() == 0) {
             return "action.interact.moostew";
         }
+        if (getVariantType() == Variant.BROWN && !hasStewEffect() && STEW_EFFECTS.containsKey(held.getId())) {
+            return "action.interact.feed";
+        }
         return "";
     }
 
@@ -346,6 +346,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         super.onStruckByLightning(entity);
 
         setVariantType(getVariantType().next());
+        clearStewEffect();
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
