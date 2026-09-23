@@ -2255,7 +2255,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public boolean canCollide() {
-        return gamemode != SPECTATOR;
+        return super.canCollide() && gamemode != SPECTATOR;
     }
 
     @Override
@@ -3300,10 +3300,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.isSpectator()) {
             this.onGround = false;
-            this.setDataFlag(ActorFlags.HAS_COLLISION, false);
-        } else {
-            this.setDataFlag(ActorFlags.HAS_COLLISION, true);
         }
+        this.setDataFlag(ActorFlags.HAS_COLLISION, this.canCollide());
 
         this.nbt.putInt("playerGameType", this.gamemode);
 
