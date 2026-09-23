@@ -35,7 +35,7 @@ public record ChunkSection(byte y, BlockPalette[] blockLayer, Palette<Integer> b
     public static final int VERSION = 9;
 
     public ChunkSection(byte sectionY) {
-        this(sectionY, new Palette<>(BiomeID.PLAINS));
+        this(sectionY, new Palette<>(BiomeID.PLAINS, BitArrayVersion.V0));
     }
 
     public ChunkSection(byte sectionY, Palette<Integer> biomes) {
@@ -48,7 +48,7 @@ public record ChunkSection(byte y, BlockPalette[] blockLayer, Palette<Integer> b
     }
 
     public ChunkSection(byte sectionY, BlockPalette[] blockLayer) {
-        this(sectionY, blockLayer, new Palette<>(BiomeID.PLAINS));
+        this(sectionY, blockLayer, new Palette<>(BiomeID.PLAINS, BitArrayVersion.V0));
     }
 
     public ChunkSection(byte sectionY, BlockPalette[] blockLayer, Palette<Integer> biomes) {

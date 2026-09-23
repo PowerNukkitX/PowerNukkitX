@@ -40,7 +40,7 @@ public class BiomeMapStage extends GenerateStage {
                     int x = chunkX * 16 + _x;
                     for(int _z = 0; _z < 16; _z++) {
                         int z = chunkZ * 16 + _z;
-                        biomes[_x * 16 + _z] = overworldBiomePicker.pick(x, SEA_LEVEL, z, functionContext.set(x, SEA_LEVEL, z));
+                        biomes[_x * 16 + _z] = overworldBiomePicker.pickRaw(x, SEA_LEVEL, z, functionContext.set(x, SEA_LEVEL, z));
                     }
                 }
             } finally {

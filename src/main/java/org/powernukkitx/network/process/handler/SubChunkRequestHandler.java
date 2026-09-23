@@ -7,6 +7,7 @@ import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.network.process.PacketHandler;
@@ -64,7 +65,7 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
         }
 
         final DimensionData dimensionData = level.getDimensionData();
-        final boolean cacheSupported = !shouldBypassCacheForRequest(player, centerPos, packet) && ClientBlobCacheManager.isEnabled(player.getSession());
+        final boolean cacheSupported = ClientBlobCacheManager.isEnabled(player.getSession());
 
         if (cacheSupported) {
             cacheTransfer = ClientBlobCacheManager.startTransfer(player.getSession());
@@ -85,8 +86,13 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
 
                 final IChunk chunk = level.getChunkIfLoaded(subChunkPos.getX(), subChunkPos.getZ());
 
-                if (chunk == null) {
-                    responsePacket.getSubChunkData().add(createFailureData(offsetPos, SubChunkRequestResult.LEVEL_CHUNK_DOESNT_EXIST));
+                if (!(chunk instanceof Chunk concreteChunk)
+                        || !concreteChunk.isStorageResolved()
+                        || !concreteChunk.isGenerationComplete()
+                        || !concreteChunk.isLightingReady()
+                        || !concreteChunk.isAvailable()) {
+                    responsePacket.getSubChunkData().add(
+                            createFailureData(offsetPos, SubChunkRequestResult.LEVEL_CHUNK_DOESNT_EXIST));
                     continue;
                 }
 
@@ -97,7 +103,8 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
                     continue;
                 }
 
-                responsePacket.getSubChunkData().add(createSuccessData(chunk, section, offsetPos, subChunkPos, level, cacheTransfer));
+                responsePacket.getSubChunkData().add(
+                        createSuccessData(chunk, section, offsetPos, subChunkPos, level, cacheTransfer));
             }
 
             player.sendPacketImmediately(responsePacket);
@@ -108,16 +115,14 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
         }
     }
 
-    private boolean shouldBypassCacheForRequest(Player player, Vector3i centerPos, SubChunkRequestPacket packet) {
-        for (Vector3i offsetPos : packet.getSubChunkPosOffsetList()) {
-            final Vector3i subChunkPos = centerPos.add(offsetPos);
-            if (player.getPlayerChunkManager().shouldBypassChunkCache(Level.chunkHash(subChunkPos.getX(), subChunkPos.getZ()))) return true;
-        }
-
-        return false;
-    }
-
-    private SubChunkPacketData createSuccessData(IChunk chunk, ChunkSection section, Vector3i offsetPos, Vector3i subChunkPos, Level level, ClientBlobCacheManager.TransferBuilder cacheTransfer) {
+    private SubChunkPacketData createSuccessData(
+            IChunk chunk,
+            ChunkSection section,
+            Vector3i offsetPos,
+            Vector3i subChunkPos,
+            Level level,
+            ClientBlobCacheManager.TransferBuilder cacheTransfer
+    ) {
         final ByteBuf terrainData = PooledByteBufAllocator.DEFAULT.ioBuffer();
         final ByteBuf serializedSubChunk = PooledByteBufAllocator.DEFAULT.ioBuffer();
         boolean success = false;

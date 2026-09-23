@@ -1,7 +1,7 @@
 package org.powernukkitx.level.lighting;
 
 /**
- * Represents persisted chunk lighting progress and its storage ID.
+ * Represents chunk lighting-engine progress.
  *
  * @author Curse
  */
@@ -18,14 +18,19 @@ public enum ChunkLightingState {
     }
 
     /**
-     * Returns the persisted storage ID.
+     * Returns the lighting-state ID.
+     *
+     * @return lighting-state ID
      */
     public int getNativeId() {
         return nativeId;
     }
 
     /**
-     * Resolves a lighting state from its persisted storage ID.
+     * Resolves a lighting state from its ID.
+     *
+     * @param nativeId lighting-state ID
+     * @return lighting state
      */
     public static ChunkLightingState fromNativeId(int nativeId) {
         return switch (nativeId) {

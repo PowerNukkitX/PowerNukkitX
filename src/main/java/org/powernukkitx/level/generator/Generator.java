@@ -8,14 +8,14 @@ import org.powernukkitx.level.generator.holder.EmptyObjectHolder;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
 import org.powernukkitx.level.generator.object.structures.utils.StructureBoundsCache;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStartCache;
-import com.google.common.base.Preconditions;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -81,7 +81,7 @@ public abstract class Generator implements BlockID {
                         "Chunk Gen",
                         ChunkGenerationState.NEEDS_GENERATION,
                         ChunkGenerationState.GENERATING,
-                        ChunkGenerationState.COMPLETE,
+                        ChunkGenerationState.NEEDS_LIGHTING,
                         ChunkGenerationState.NEEDS_GENERATION,
                         start.name(),
                         end.name(),

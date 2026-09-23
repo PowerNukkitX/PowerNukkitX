@@ -8,8 +8,8 @@ package org.powernukkitx.level.generator;
  * @param activeState value for this API
  * @param successState value for this API
  * @param failureState value for this API
- * @param firstStage value for this API
- * @param lastStage value for this API
+ * @param firstStage first generator stage, or {@code null} for a state-only task
+ * @param lastStage last generator stage, or {@code null} for a state-only task
  * @param dependency value for this API
  *
  * @author Curse

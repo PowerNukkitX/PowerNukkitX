@@ -42,7 +42,7 @@ public abstract class PopulatedGenerator extends Generator {
                         "Chunk Post Processing",
                         ChunkGenerationState.NEEDS_STRUCTURE_PP,
                         ChunkGenerationState.STRUCTURE_PP,
-                        ChunkGenerationState.COMPLETE,
+                        ChunkGenerationState.NEEDS_LIGHTING,
                         ChunkGenerationState.NEEDS_STRUCTURE_PP,
                         populationStart.name(),
                         end.name(),

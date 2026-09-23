@@ -209,7 +209,7 @@ public final class ClientBlobCacheManager {
      */
     public static int getMaximumConcurrentTransfers(BedrockServerSession session) {
         final var metrics = session.getPeer().getChannel().config().getOption(RakChannelOption.RAK_METRICS);
-        if (!(metrics instanceof RakNetNetworkMetrics networkMetrics)) return 0;
+        if (!(metrics instanceof RakNetNetworkMetrics networkMetrics)) return 20;
 
         return switch (networkMetrics.getNetworkLoad()) {
             case UNRESTRICTED -> 200;

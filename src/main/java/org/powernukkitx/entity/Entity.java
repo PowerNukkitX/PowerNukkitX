@@ -51,9 +51,9 @@ import org.powernukkitx.level.Location;
 import org.powernukkitx.level.ParticleEffect;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
-import org.powernukkitx.level.format.ChunkFinalizationState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
+import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.level.particle.ExplodeParticle;
 import org.powernukkitx.level.particle.HappyVillagerParticle;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -2146,7 +2146,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this, ev.getDestinationLevel());
                 if (newPos != null) {
                     IChunk destChunk = newPos.getChunk();
-                    if (destChunk.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING) {
+                    if (destChunk.getGenerationState() != ChunkGenerationState.COMPLETE) {
                         newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
                         newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this, ev.getDestinationLevel());
                     }

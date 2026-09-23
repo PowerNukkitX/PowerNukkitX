@@ -1,9 +1,7 @@
 package org.powernukkitx.level.generator;
 
-import org.powernukkitx.level.format.ChunkFinalizationState;
-
 /**
- * Represents the chunk generation state used by the server and native storage IDs.
+ * Represents transient chunk generation progress and its runtime ID.
  *
  * @author Curse
  */
@@ -20,10 +18,11 @@ public enum ChunkGenerationState {
     NEEDS_CFRD(6),
     CFRD(7),
 
-    NEEDS_NEIGHBOR_UPGRADE(8),
-    NEIGHBOR_UPGRADE(9),
+    NEEDS_LIGHTING(8),
+    LIGHTING(9),
 
-    COMPLETE(10);
+    NEEDS_COMPLETION(10),
+    COMPLETE(11);
 
     private final int nativeId;
 
@@ -32,40 +31,23 @@ public enum ChunkGenerationState {
     }
 
     /**
-     * Returns the native ID.
-     * @return the requested value
+     * Returns the runtime ID.
+     *
+     * @return runtime ID
      */
     public int getNativeId() {
         return nativeId;
     }
 
     /**
-     * Returns whether this state is active.
-     * @return the requested value
+     * Returns whether generation work is active for this state.
+     *
+     * @return whether the state is active
      */
     public boolean isActive() {
         return switch (this) {
-            case GENERATING,
-                    STRUCTURE_PP,
-                    POPULATING,
-                    CFRD,
-                    NEIGHBOR_UPGRADE -> true;
-
+            case GENERATING, STRUCTURE_PP, POPULATING, CFRD, LIGHTING -> true;
             default -> false;
-        };
-    }
-
-    /**
-     * Maps a finalization state to a generation state.
-     *
-     * @param finalizationState value for this API
-     * @return the requested value
-     */
-    public static ChunkGenerationState fromFinalizationState(ChunkFinalizationState finalizationState) {
-        return switch (finalizationState) {
-            case NEEDS_INSTATICKING -> NEEDS_GENERATION;
-            case NEEDS_POPULATION -> NEEDS_STRUCTURE_PP;
-            case DONE -> COMPLETE;
         };
     }
 }

@@ -87,7 +87,7 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
                         "Chunk CFRD",
                         ChunkGenerationState.NEEDS_CFRD,
                         ChunkGenerationState.CFRD,
-                        ChunkGenerationState.COMPLETE,
+                        ChunkGenerationState.NEEDS_LIGHTING,
                         ChunkGenerationState.NEEDS_CFRD,
                         LightPopulationStage.NAME,
                         FinishedStage.NAME,

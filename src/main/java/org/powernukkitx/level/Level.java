@@ -62,6 +62,7 @@ import org.powernukkitx.level.format.UnsafeChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.level.generator.BiomedGenerator;
 import org.powernukkitx.level.generator.ChunkGenerationManager;
+import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.level.lighting.InitialLightingManager;
 import org.powernukkitx.level.lighting.RuntimeLightingManager;
 import org.powernukkitx.level.lighting.SubChunkLightUpdate;
@@ -397,6 +398,9 @@ public class Level implements Metadatable {
      * <ChunkIndex,<ChunkLoader ID,ChunkLoader>>
      */
     private final Long2ObjectNonBlockingMap<Map<Integer, ChunkLoader>> chunkLoaders = new Long2ObjectNonBlockingMap<>();
+    private final Long2IntOpenHashMap chunkViewReferences = new Long2IntOpenHashMap();
+    private final Long2IntOpenHashMap generationTaskReferences = new Long2IntOpenHashMap();
+    private final Map<UUID, LongOpenHashSet> tickingAreaChunkViews = new HashMap<>();
     // Computation atomicity may be required in addChunkPacket(int, int, DataPacket)
     private final ConcurrentHashMap<Long, Deque<BedrockPacket>> chunkPackets = new ConcurrentHashMap<>();
     @NonComputationAtomic
@@ -442,6 +446,7 @@ public class Level implements Metadatable {
     public int tickRateOptDelay = 1;
     public GameRules gameRules;
     private AtomicReference<LevelProvider> provider;
+    private final AtomicBoolean closing = new AtomicBoolean();
     private DynamicProperties dynamicProperties;
     /// Cumulative world game time in ticks. Stored as a long (the provider persists it as a long)
     private long time;
@@ -574,7 +579,7 @@ public class Level implements Metadatable {
             throw new LevelException("Level provider " + providerFactory.getName() + " failed to open " + path, e);
         }
 
-        this.chunkGenerationManager = new ChunkGenerationManager(this, this.generator, this::onChunkAvailableForLighting);
+        this.chunkGenerationManager = new ChunkGenerationManager(this, this.generator);
         LevelProvider levelProvider = requireProvider();
         LevelDBProvider levelDBProvider = levelProvider instanceof LevelDBProvider provider ? provider : null;
         this.dynamicProperties = levelDBProvider != null ? levelDBProvider.getStorage().getDynamicProperties() : null;
@@ -938,7 +943,8 @@ public class Level implements Metadatable {
         }
         this.gameRules = this.requireProvider().getGamerules();
         Position spawn = this.getSpawnLocation();
-        if (getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getFinalizationState() != ChunkFinalizationState.DONE) {
+        IChunk spawnChunk = getChunk(spawn.getChunkX(), spawn.getChunkZ(), true);
+        if (!(spawnChunk instanceof Chunk concreteChunk) || !concreteChunk.isGenerationComplete()) {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
         }
         subTickGameLoop.setRunning(true);
@@ -1046,6 +1052,8 @@ public class Level implements Metadatable {
     }
 
     public void close() {
+        this.closing.set(true);
+
         if (isThreadRunning()) {
             this.baseTickGameLoop.stop();
             // Wake the loop thread from its inter-tick wait so it can exit promptly
@@ -1589,6 +1597,184 @@ public class Level implements Metadatable {
         return unregisterChunkLoader(loader, chunkX, chunkZ, true);
     }
 
+    /**
+     * Updates the physical chunk view supporting a ticking area.
+     *
+     * @param area ticking area
+     */
+    @ApiStatus.Internal
+    public void updateTickingAreaChunkView(TickingArea area) {
+        Preconditions.checkArgument(area.getLevelName().equals(this.getName()), "Ticking area belongs to another level");
+        Preconditions.checkArgument(
+                area.getDimensionId() == this.getDimensionData().getDimensionId(),
+                "Ticking area belongs to another dimension");
+
+        if (area.getChunks().isEmpty()) {
+            removeTickingAreaChunkView(area.getUuid());
+            return;
+        }
+
+        List<TickingArea.ChunkPos> bounds = area.minAndMaxChunkPos();
+        TickingArea.ChunkPos min = bounds.get(0);
+        TickingArea.ChunkPos max = bounds.get(1);
+        ChunkBuildOrderPolicy.SupportBounds support =
+                ChunkBuildOrderPolicy.createSupportBounds(min.x, min.z, max.x, max.z);
+
+        LongOpenHashSet next = new LongOpenHashSet();
+        for (int x = support.minX(); x <= support.maxX(); x++) {
+            for (int z = support.minZ(); z <= support.maxZ(); z++) {
+                next.add(chunkHash(x, z));
+            }
+        }
+
+        boolean acquiredChunkView = false;
+
+        synchronized (this.tickingAreaChunkViews) {
+            LongOpenHashSet previous = this.tickingAreaChunkViews.get(area.getUuid());
+
+            LongIterator iterator = next.longIterator();
+            while (iterator.hasNext()) {
+                long hash = iterator.nextLong();
+                if (previous == null || !previous.contains(hash)) {
+                    retainChunkView(hash);
+                    acquiredChunkView = true;
+                }
+            }
+
+            this.tickingAreaChunkViews.put(area.getUuid(), next);
+
+            if (previous != null) {
+                iterator = previous.longIterator();
+                while (iterator.hasNext()) {
+                    long hash = iterator.nextLong();
+                    if (!next.contains(hash)) {
+                        releaseChunkView(hash);
+                    }
+                }
+            }
+        }
+
+        if (acquiredChunkView) {
+            completeChunkViewAcquisition();
+        }
+    }
+
+    /**
+     * Releases the physical chunk view supporting a ticking area.
+     *
+     * @param areaId ticking-area UUID
+     */
+    @ApiStatus.Internal
+    public void removeTickingAreaChunkView(UUID areaId) {
+        synchronized (this.tickingAreaChunkViews) {
+            LongOpenHashSet chunks = this.tickingAreaChunkViews.remove(areaId);
+            if (chunks == null) return;
+
+            LongIterator iterator = chunks.longIterator();
+            while (iterator.hasNext()) {
+                releaseChunkView(iterator.nextLong());
+            }
+        }
+    }
+
+    /**
+     * Returns whether a coordinate is retained by the active physical chunk view.
+     *
+     * @param hash chunk hash
+     * @return whether the physical view currently retains the chunk
+     */
+    @ApiStatus.Internal
+    public boolean isChunkViewRetained(long hash) {
+        synchronized (this.chunkViewReferences) {
+            return this.chunkViewReferences.containsKey(hash);
+        }
+    }
+
+    void retainChunkView(long hash) {
+        boolean firstReference;
+        synchronized (this.chunkViewReferences) {
+            firstReference = this.chunkViewReferences.addTo(hash, 1) == 0;
+        }
+
+        if (firstReference) {
+            this.cancelUnloadChunkRequest(hash);
+        }
+
+        reacquireChunkView(hash);
+    }
+
+    void reacquireChunkView(long hash) {
+        int chunkX = getHashX(hash);
+        int chunkZ = getHashZ(hash);
+        IChunk acquired = this.requireProvider().acquireChunk(chunkX, chunkZ);
+
+        if (acquired != null) {
+            this.chunkGenerationManager.onChunkViewAcquired(acquired);
+        }
+    }
+
+    void completeChunkViewAcquisition() {
+        this.chunkGenerationManager.onChunkViewAcquisitionComplete();
+    }
+
+    /**
+     * Retains a chunk while an asynchronous generation operation owns it.
+     *
+     * @param hash chunk hash
+     */
+    @ApiStatus.Internal
+    public void retainGenerationTask(long hash) {
+        synchronized (this.generationTaskReferences) {
+            this.generationTaskReferences.addTo(hash, 1);
+        }
+        this.cancelUnloadChunkRequest(hash);
+    }
+
+    /**
+     * Releases generation-task ownership of a chunk.
+     *
+     * @param hash chunk hash
+     */
+    @ApiStatus.Internal
+    public void releaseGenerationTask(long hash) {
+        boolean lastReference = false;
+
+        synchronized (this.generationTaskReferences) {
+            int references = this.generationTaskReferences.get(hash);
+            if (references <= 0) return;
+
+            if (references == 1) {
+                this.generationTaskReferences.remove(hash);
+                lastReference = true;
+            } else {
+                this.generationTaskReferences.put(hash, references - 1);
+            }
+        }
+
+        if (lastReference && !this.isClosing() && !this.isChunkInUse(hash)) {
+            this.unloadChunkRequest(getHashX(hash), getHashZ(hash), true);
+        }
+    }
+
+    void releaseChunkView(long hash) {
+        boolean lastReference = false;
+        synchronized (this.chunkViewReferences) {
+            int references = this.chunkViewReferences.get(hash);
+            if (references <= 0) return;
+
+            if (references == 1) {
+                this.chunkViewReferences.remove(hash);
+                lastReference = true;
+            } else {
+                this.chunkViewReferences.put(hash, references - 1);
+            }
+        }
+
+        if (lastReference) {
+            this.unloadChunkRequest(getHashX(hash), getHashZ(hash), true);
+        }
+    }
+
     public GameplaySettings getGameplaySettings() {
         return gameplaySettings;
     }
@@ -1884,7 +2070,11 @@ public class Level implements Metadatable {
                 this.hasAsyncPrepareEntities = seenAsyncPrepare;
             }
             if (prof) phase[5] = -phaseStart + (phaseStart = System.nanoTime());
-            this.updateBlockEntities.removeIf(blockEntity -> !(!blockEntity.closed && blockEntity.isValid() && blockEntity.onUpdate()));
+            this.updateBlockEntities.removeIf(blockEntity -> {
+                synchronized (blockEntity) {
+                    return blockEntity.closed || blockEntity.getLevel() != this || !blockEntity.onUpdate();
+                }
+            });
             this.vibrationManager.tick();
             if (prof) phase[6] = -phaseStart + (phaseStart = System.nanoTime());
 
@@ -2472,8 +2662,10 @@ public class Level implements Metadatable {
                 while (iter.hasNext()) {
                     Long2IntMap.Entry entry = iter.next();
                     long index = entry.getLongKey();
-                    if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
-                            && !areNeighboringChunksLoaded(index)) {
+                    boolean tickingAreaChunk =
+                            this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index);
+
+                    if (!tickingAreaChunk && !areNeighboringChunksLoaded(index)) {
                         iter.remove();
                         continue;
                     }
@@ -2489,6 +2681,7 @@ public class Level implements Metadatable {
                         continue;
                     } else if (loaders <= 0) {
                         iter.remove();
+                        if (tickingAreaChunk && !isTickingAreaChunkReady(chunk)) continue;
                     }
 
                     tickChunk(chunk, tickSpeed);
@@ -2506,18 +2699,26 @@ public class Level implements Metadatable {
      */
     private void tickAllChunksCached(TickingAreaManager areaManager, boolean hasTickingAreas, long areaVersion, int tickSpeed) {
         boolean coverageChanged = refreshLoaderCoverage();
-        if (this.cachedTickChunks == null || this.tickChunkCacheDirty
-                || areaVersion != this.tickingAreaHashesVersion
-                || coverageChanged) {
+        if (this.cachedTickChunks == null || this.tickChunkCacheDirty || areaVersion != this.tickingAreaHashesVersion || coverageChanged) {
             this.tickChunkCacheDirty = false;
             resolveTickChunks(areaManager, hasTickingAreas, areaVersion);
         }
         for (IChunk chunk : this.cachedTickChunks) {
-            if (!chunk.isLoaded()) {
+            if (!chunk.isLoaded()) continue;
+
+            long index = chunk.getIndex();
+            if (this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index) && !this.loaderCoverage.containsKey(index) && !isTickingAreaChunkReady(chunk)) {
                 continue;
             }
+
             tickChunk(chunk, tickSpeed);
         }
+    }
+
+    private static boolean isTickingAreaChunkReady(IChunk chunk) {
+        return chunk instanceof Chunk concreteChunk
+                && concreteChunk.isGenerationComplete()
+                && concreteChunk.isAvailable();
     }
 
     private static Int2LongOpenHashMap newCoveragePositionMap() {
@@ -3477,8 +3678,8 @@ public class Level implements Metadatable {
                 chunk = getChunkIfLoaded(cx, cz);
             }
             if (chunk != null) {
-                if(this.isChunkGenerating(cx, cz)) {
-                    fullState = new UnsafeChunk((Chunk) chunk).getBlockState(x & 0xF, y, z & 0xF, layer);
+                if (chunk instanceof Chunk concreteChunk && concreteChunk.getGenerationState().isActive()) {
+                    fullState = new UnsafeChunk(concreteChunk).getBlockState(x & 0xF, y, z & 0xF, layer);
                 } else {
                     fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
                 }
@@ -3668,7 +3869,8 @@ public class Level implements Metadatable {
         int maxY = getDimensionData().getMaxHeight();
         int lcx = x & 0xF;
         int lcz = z & 0xF;
-        UnsafeChunk unsafeChunk = isChunkGenerating(chunkX, chunkZ) ? new UnsafeChunk((Chunk) chunk) : null;
+        UnsafeChunk unsafeChunk = chunk instanceof Chunk concreteChunk && concreteChunk.getGenerationState().isActive()
+                ? new UnsafeChunk(concreteChunk) : null;
         int level = 15;
 
         int _y = maxY;
@@ -5279,7 +5481,7 @@ public class Level implements Metadatable {
         BlockState statePrevious = chunk.getBlockState(x & 0x0f, blockY, z & 0x0f, layer);
         chunk.setBlockState(x & 0x0f, blockY, z & 0x0f, state, layer);
 
-        if (chunk.getFinalizationState() == ChunkFinalizationState.DONE) {
+        if (chunk instanceof Chunk concreteChunk && concreteChunk.isGenerationComplete() && concreteChunk.isAvailable()) {
             addBlockChange(x, y, z, layer);
         }
 
@@ -5351,6 +5553,25 @@ public class Level implements Metadatable {
     }
 
     public IChunk getChunkIfLoaded(int chunkX, int chunkZ) {
+        IChunk chunk = this.getPhysicalChunkIfLoaded(chunkX, chunkZ);
+
+        if (chunk instanceof Chunk concreteChunk
+                && (!concreteChunk.isStorageResolved() || !concreteChunk.isInitiated())) {
+            return null;
+        }
+
+        return chunk;
+    }
+
+    /**
+     * Returns the physical chunk object even while its storage/runtime initialization is pending.
+     *
+     * @param chunkX chunk X
+     * @param chunkZ chunk Z
+     * @return physical chunk, or {@code null}
+     */
+    @ApiStatus.Internal
+    public IChunk getPhysicalChunkIfLoaded(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
         return this.requireProvider().getLoadedChunk(index);
     }
@@ -5668,6 +5889,111 @@ public class Level implements Metadatable {
         return true;
     }
 
+    boolean trySendChunk(Chunk chunk, Player player) {
+        final int x = chunk.getX();
+        final int z = chunk.getZ();
+        final long index = chunkHash(x, z);
+
+        if (!player.isConnected()) return false;
+        if (chunk.isDiscarded() || this.getChunkIfLoaded(x, z) != chunk) return false;
+
+        final boolean generationReady = chunk.isGenerationComplete();
+        final boolean lightingReady = generationReady && chunk.isLightingReady();
+
+        if (!generationReady || !lightingReady) {
+            prepareChunkLightingForSend(x, z, false);
+            return false;
+        }
+
+        if (!chunk.isAvailable()) return false;
+
+        ByteBuf inlineChunkData = null;
+        LevelProvider.SubChunkRequestData subChunkModeData = null;
+        ByteBuf subChunkModeInlineData = null;
+        ClientBlobCacheManager.TransferBuilder cacheTransfer = null;
+        boolean closeCacheTransfer = false;
+
+        try {
+            final boolean useSubChunkRequestSystem =
+                    this.requireProvider() instanceof LevelDBProvider &&
+                    player.getClientChainData() != null &&
+                    player.getClientChainData().isCompatibleWithClientSideChunkGen();
+
+            final LevelChunkPacket levelChunkPacket = new LevelChunkPacket();
+            levelChunkPacket.setChunkX(x);
+            levelChunkPacket.setChunkZ(z);
+            levelChunkPacket.setDimension(DimensionType.from(this.getDimensionData().getDimensionId()));
+
+            if (useSubChunkRequestSystem) {
+                subChunkModeData = this.requireProvider().requestSubChunkModeData(x, z);
+                final boolean cacheSupported = ClientBlobCacheManager.isEnabled(player.getSession());
+
+                if (cacheSupported) {
+                    cacheTransfer = ClientBlobCacheManager.tryStartTransfer(player.getSession());
+                    if (cacheTransfer == null) return false;
+                    closeCacheTransfer = true;
+                }
+
+                levelChunkPacket.setSubChunksCount(0);
+                levelChunkPacket.setClientNeedsToRequestSubChunks(true);
+                levelChunkPacket.setClientRequestSubChunkLimit(subChunkModeData.requestLimit());
+                levelChunkPacket.setCacheEnabled(cacheSupported);
+
+                if (cacheSupported) {
+                    final ClientBlobCacheManager.Blob biomeBlob = ClientBlobCacheManager.rememberBlob(subChunkModeData.biomeData());
+                    cacheTransfer.add(biomeBlob);
+                    levelChunkPacket.getCacheBlobs().add(biomeBlob.id());
+                    levelChunkPacket.setSerializedChunkData(subChunkModeData.borderBlockData().retainedDuplicate());
+                } else {
+                    subChunkModeInlineData = PooledByteBufAllocator.DEFAULT.ioBuffer(
+                            subChunkModeData.biomeData().readableBytes() + subChunkModeData.borderBlockData().readableBytes());
+                    subChunkModeInlineData.writeBytes(
+                            subChunkModeData.biomeData(),
+                            subChunkModeData.biomeData().readerIndex(),
+                            subChunkModeData.biomeData().readableBytes());
+                    subChunkModeInlineData.writeBytes(
+                            subChunkModeData.borderBlockData(),
+                            subChunkModeData.borderBlockData().readerIndex(),
+                            subChunkModeData.borderBlockData().readableBytes());
+                    levelChunkPacket.setSerializedChunkData(subChunkModeInlineData.retainedDuplicate());
+                }
+            } else {
+                final var pair = this.requireProvider().requestChunkData(x, z);
+                inlineChunkData = pair.first();
+                levelChunkPacket.setSubChunksCount(pair.second());
+                levelChunkPacket.setClientNeedsToRequestSubChunks(false);
+                levelChunkPacket.setClientRequestSubChunkLimit(null);
+                levelChunkPacket.setCacheEnabled(false);
+                levelChunkPacket.setSerializedChunkData(inlineChunkData.retainedDuplicate());
+            }
+
+            if (!player.getPlayerChunkManager().isInRadiusChunk(index)) return false;
+            if (!chunk.isAvailable() || chunk.isDiscarded() || this.getChunkIfLoaded(x, z) != chunk) return false;
+
+            player.sendChunk(x, z, levelChunkPacket);
+            return player.getPlayerChunkManager().isSentChunk(index);
+        } finally {
+            if (closeCacheTransfer
+                    && cacheTransfer != null
+                    && player.getPlayerChunkManager().isSentChunk(index)) {
+                cacheTransfer.close();
+            }
+
+            if (inlineChunkData != null) {
+                inlineChunkData.release();
+            }
+
+            if (subChunkModeInlineData != null) {
+                subChunkModeInlineData.release();
+            }
+
+            if (subChunkModeData != null) {
+                subChunkModeData.biomeData().release();
+                subChunkModeData.borderBlockData().release();
+            }
+        }
+    }
+
     public void subTick(GameLoop currentTick) {
         try {
             processChunkRequest();
@@ -5690,11 +6016,29 @@ public class Level implements Metadatable {
                 requests = this.chunkSendQueue.get(index);
             }
             if (requests != null) {
+                boolean hasCurrentRequest = false;
+
+                for (ChunkSendRequest request : new ArrayList<>(requests.values())) {
+                    Player requestPlayer = request.player();
+
+                    if (requestPlayer.isConnected()
+                            && requestPlayer.getPlayerChunkManager().isInServerViewChunk(index)) {
+                        hasCurrentRequest = true;
+                        continue;
+                    }
+
+                    requestPlayer.getPlayerChunkManager().cancelInFlightChunk(index);
+                    completeChunkSendRequest(index, request);
+                }
+
+                if (!hasCurrentRequest) continue;
+
                 IChunk chunk = this.getChunk(x, z);
+                Chunk concreteChunk = chunk instanceof Chunk loadedChunk ? loadedChunk : null;
+                boolean generationReady = concreteChunk != null && concreteChunk.isGenerationComplete();
+                boolean lightingReady = generationReady && concreteChunk.isLightingReady();
 
-                boolean lightingReady = !(chunk instanceof Chunk concreteChunk) || concreteChunk.isLightingReady();
-
-                if (chunk != null && chunk.getFinalizationState() == ChunkFinalizationState.DONE && chunk.isInitiated() && lightingReady) {
+                if (generationReady && concreteChunk.isAvailable() && lightingReady) {
                     final List<ChunkSendRequest> requestsToSend;
 
                     synchronized (this.chunkSendQueue) {
@@ -5743,9 +6087,7 @@ public class Level implements Metadatable {
                                         subChunkModeData = this.requireProvider().requestSubChunkModeData(x, z);
                                     }
 
-                                    final boolean cacheSupported =
-                                        !player.getPlayerChunkManager().shouldBypassChunkCache(index) &&
-                                        ClientBlobCacheManager.isEnabled(player.getSession());
+                                    final boolean cacheSupported = ClientBlobCacheManager.isEnabled(player.getSession());
 
                                     if (cacheSupported && cacheTransfer == null) {
                                         cacheTransfer = ClientBlobCacheManager.tryStartTransfer(player.getSession());
@@ -5808,6 +6150,10 @@ public class Level implements Metadatable {
                                     continue;
                                 }
 
+                                if (!concreteChunk.isAvailable() || concreteChunk.isDiscarded() || this.getChunkIfLoaded(x, z) != concreteChunk) {
+                                    continue;
+                                }
+
                                 player.sendChunk(x, z, levelChunkPacket);
 
                                 if (player.getPlayerChunkManager().isSentChunk(index)) {
@@ -5835,10 +6181,10 @@ public class Level implements Metadatable {
                             subChunkModeData.borderBlockData().release();
                         }
                     }
-                } else if (chunk != null && chunk.getFinalizationState() == ChunkFinalizationState.DONE && chunk.isInitiated() && !lightingReady) {
+                } else if (concreteChunk != null && (!generationReady || !lightingReady)) {
                     prepareChunkLightingForSend(x, z, false);
-                } else if (chunk == null || chunk.getFinalizationState() != ChunkFinalizationState.DONE) {
-                    this.generateChunk(x, z, true);
+                } else if (chunk == null) {
+                    prepareChunkLightingForSend(x, z, false);
                 }
             }
         }
@@ -5964,6 +6310,14 @@ public class Level implements Metadatable {
             return true;
         }
 
+        synchronized (this.chunkViewReferences) {
+            if (this.chunkViewReferences.containsKey(hash)) return true;
+        }
+
+        synchronized (this.generationTaskReferences) {
+            if (this.generationTaskReferences.containsKey(hash)) return true;
+        }
+
         var tickingAreaManager = getServer().getTickingAreaManager();
         if (tickingAreaManager != null && tickingAreaManager.getTickingAreaByChunk(this.getName(), new TickingArea.ChunkPos(getHashX(hash), getHashZ(hash))) != null) {
             return true;
@@ -5987,8 +6341,10 @@ public class Level implements Metadatable {
         IChunk chunk = this.requireProvider().getLoadedChunk(index);
         if (chunk == null) {
             chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
-        } else if (!chunk.isInitiated()) {
-            chunk.initChunk();
+        } else if (!chunk.isInitiated()
+                && isChunkStorageResolved(chunk)
+                && initializeLoadedChunk(index, chunkX, chunkZ, chunk)) {
+            chunkGenerationManager.onChunkLoaded(chunk);
         }
         return chunk;
     }
@@ -5996,12 +6352,13 @@ public class Level implements Metadatable {
     public @NotNull IChunk getOrGenerateChunk(int chunkX, int chunkZ) {
         IChunk chunk = this.getChunk(chunkX, chunkZ, true);
 
-        if (chunk.getFinalizationState() ==
-                ChunkFinalizationState.NEEDS_INSTATICKING &&
-                !this.isChunkGenerating(chunkX, chunkZ)) {
+        if (chunk instanceof Chunk concreteChunk
+                && concreteChunk.getGenerationState() == ChunkGenerationState.NEEDS_GENERATION
+                && !this.isChunkGenerating(chunkX, chunkZ)) {
             this.syncGenerateChunk(chunkX, chunkZ);
             chunk = this.getChunk(chunkX, chunkZ, true);
         }
+
         return chunk;
     }
 
@@ -6020,8 +6377,10 @@ public class Level implements Metadatable {
         if (levelProvider != null) {
             IChunk loaded = levelProvider.getLoadedChunk(index);
             if (loaded != null) {
-                if (!loaded.isInitiated()) {
-                    loaded.initChunk();
+                if (!loaded.isInitiated()
+                        && isChunkStorageResolved(loaded)
+                        && initializeLoadedChunk(index, chunkX, chunkZ, loaded)) {
+                    chunkGenerationManager.onChunkLoaded(loaded);
                 }
                 return CompletableFuture.completedFuture(loaded);
             }
@@ -6048,25 +6407,60 @@ public class Level implements Metadatable {
         return forceLoadChunk(index, x, z, generate) != null;
     }
 
-    private IChunk forceLoadChunk(long index, int x, int z, boolean generate) {
-        IChunk chunk = this.requireProvider().getChunk(x, z, generate);
-        if (chunk == null) {
-            if (generate) {
-                throw new IllegalStateException("Could not create new Chunk");
-            }
-            return null;
+    private static boolean isChunkStorageResolved(IChunk chunk) {
+        return !(chunk instanceof Chunk concreteChunk) || concreteChunk.isStorageResolved();
+    }
+
+    /**
+     * Acquires a physical chunk for generation without forcing storage resolution on the caller thread.
+     *
+     * @param chunkX chunk X
+     * @param chunkZ chunk Z
+     * @return acquired chunk
+     */
+    @ApiStatus.Internal
+    public IChunk acquireGenerationChunk(int chunkX, int chunkZ) {
+        long index = Level.chunkHash(chunkX, chunkZ);
+        IChunk chunk = this.requireProvider().acquireChunk(chunkX, chunkZ);
+
+        if (chunk != null && !this.isChunkInUse(index)) {
+            this.unloadQueue.put(index, (Long) System.currentTimeMillis());
         }
 
-        if (chunk.getProvider() != null) {
-            chunk.initChunk();
-            NeighborAwareChunkUpgrader.tryUpgradeAround(this, x, z);
-            this.tickChunkCacheDirty = true;
-            this.server.getPluginManager().callEvent(new ChunkLoadEvent(chunk, chunk.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING));
-            onChunkAvailableForLighting(chunk);
-        } else {
+        return chunk;
+    }
+
+    /**
+     * Initializes an acquired chunk after its storage state has been resolved.
+     *
+     * @param chunk acquired chunk
+     */
+    @ApiStatus.Internal
+    public void initializeAcquiredChunk(Chunk chunk) {
+        if (chunk.isDiscarded() || !chunk.isStorageResolved()) return;
+        if (this.getPhysicalChunkIfLoaded(chunk.getX(), chunk.getZ()) != chunk) return;
+
+        initializeLoadedChunk(chunk.getIndex(), chunk.getX(), chunk.getZ(), chunk);
+    }
+
+    private boolean initializeLoadedChunk(long index, int x, int z, IChunk chunk) {
+        if (!isChunkStorageResolved(chunk) || chunk.isInitiated()) return false;
+
+        if (chunk.getProvider() == null) {
             this.unloadChunk(x, z, false);
-            return chunk;
+            return false;
         }
+
+        synchronized (chunk) {
+            if (chunk.isInitiated()) return false;
+            chunk.initChunk();
+            if (!chunk.isInitiated()) return false;
+        }
+
+        NeighborAwareChunkUpgrader.tryUpgradeAround(this, x, z);
+        this.tickChunkCacheDirty = true;
+        this.server.getPluginManager().callEvent(
+                new ChunkLoadEvent(chunk, chunk.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING));
 
         if (this.isChunkInUse(index)) {
             this.unloadQueue.remove(index);
@@ -6076,6 +6470,27 @@ public class Level implements Metadatable {
         } else {
             this.unloadQueue.put(index, (Long) System.currentTimeMillis());
         }
+
+        return true;
+    }
+
+    private IChunk forceLoadChunk(long index, int x, int z, boolean generate) {
+        IChunk chunk = this.requireProvider().getChunk(x, z, generate);
+        if (chunk == null) {
+            if (generate) {
+                throw new IllegalStateException("Could not create new Chunk");
+            }
+            return null;
+        }
+
+        if (!isChunkStorageResolved(chunk)) {
+            return chunk;
+        }
+
+        if (initializeLoadedChunk(index, x, z, chunk)) {
+            chunkGenerationManager.onChunkLoaded(chunk);
+        }
+
         return chunk;
     }
 
@@ -6358,9 +6773,23 @@ public class Level implements Metadatable {
         return baseTickGameLoop.isThreadAlive() || (subTickTask != null && !subTickTask.isDone());
     }
 
+    /**
+     * Returns whether this level is shutting down.
+     *
+     * @return whether level teardown has started
+     */
+    @ApiStatus.Internal
+    public boolean isClosing() {
+        return closing.get();
+    }
+
     public boolean hasTickingAreas() {
         var manager = getServer().getTickingAreaManager();
-        return manager != null && manager.getTickingAreaCount(this) > 0;
+        if (manager == null) return false;
+        for (var area : manager.getAllTickingArea()) {
+            if (area.getLevelName().equals(this.getName())) return true;
+        }
+        return false;
     }
 
     /**
@@ -6499,27 +6928,21 @@ public class Level implements Metadatable {
     }
 
     /**
-     * Ensures a finalized chunk has entered the initial-lighting pipeline before network serialization.
+     * Ensures a chunk continues toward network-ready generation state.
      *
      * @param chunkX chunk X
      * @param chunkZ chunk Z
-     * @param force reserved force flag
-     * @return whether lighting is ready for network serialization
+     * @param force whether generation is explicitly requested
+     * @return whether generation and initial lighting are complete
      */
     @ApiStatus.Internal
     public boolean prepareChunkLightingForSend(int chunkX, int chunkZ, boolean force) {
         IChunk loadedChunk = getChunkIfLoaded(chunkX, chunkZ);
-        if (!(loadedChunk instanceof Chunk chunk) || chunk.getFinalizationState() != ChunkFinalizationState.DONE) return false;
-        if (chunk.isLightingReady()) return true;
-        initialLightingManager.scheduleIfNeeded(chunk);
-        return chunk.isLightingReady();
-    }
+        if (loadedChunk instanceof Chunk chunk && chunk.isGenerationComplete() && chunk.isLightingReady()) return true;
 
-    private void onChunkAvailableForLighting(IChunk availableChunk) {
-        if (!(availableChunk instanceof Chunk chunk) || chunk.getFinalizationState() != ChunkFinalizationState.DONE || chunk.isLightingReady()) return;
-        initialLightingManager.scheduleIfNeeded(chunk);
+        chunkGenerationManager.requestView(chunkX, chunkZ);
+        return false;
     }
-
 
     public boolean isChunkGenerating(int x, int z) {
         return this.chunkGenerationManager.isGenerating(x, z);
@@ -6536,17 +6959,11 @@ public class Level implements Metadatable {
     public void syncGenerateChunk(int x, int z) {
         IChunk chunk = this.getChunk(x, z, true);
 
-        if (chunk.getFinalizationState() == ChunkFinalizationState.DONE) return;
+        if (chunk instanceof Chunk concreteChunk && concreteChunk.isGenerationComplete()) return;
 
-        /*
-         * Preserve the old PopulatedGenerator.syncGenerate() behavior.
-         *
-         * A brand-new chunk without loaders was synchronously generated only
-         * through GeneratedStage. Structure populators depend on this when
-         * requesting neighboring terrain.
-         */
-        if (chunk.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING && this.getChunkLoaders(x, z).length == 0) {
-
+        if (chunk instanceof Chunk concreteChunk
+                && concreteChunk.getGenerationState() == ChunkGenerationState.NEEDS_GENERATION
+                && this.getChunkLoaders(x, z).length == 0) {
             if (this.isChunkGenerating(x, z)) {
                 this.chunkGenerationManager.requestTerrain(x, z).join();
             } else {

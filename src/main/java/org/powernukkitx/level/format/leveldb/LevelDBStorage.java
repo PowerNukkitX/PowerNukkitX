@@ -9,6 +9,7 @@ import org.powernukkitx.level.format.LevelChunkMetaData;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.level.portal.PortalManager;
 import org.powernukkitx.level.util.LevelDBKeyUtil;
 import org.powernukkitx.level.village.Village;
@@ -180,7 +181,17 @@ public final class LevelDBStorage {
 
         DimensionData dimensionData = levelProvider.getDimensionData();
         builder.levelChunkMetaData(readChunkMetaData(x, z, dimensionData));
-        return builder.build();
+
+        Chunk chunk = builder.build();
+        Preconditions.checkState(
+                chunk.compareAndSetGenerationState(
+                        ChunkGenerationState.NEEDS_GENERATION,
+                        ChunkGenerationState.NEEDS_CFRD),
+                "Loaded chunk (%s, %s) has an unexpected runtime generation state",
+                x,
+                z
+        );
+        return chunk;
     }
 
     private LevelChunkMetaData readChunkMetaData(int x, int z, DimensionData dimensionData) {
@@ -235,6 +246,8 @@ public final class LevelDBStorage {
     }
 
     public void writeChunk(IChunk chunk) throws IOException {
+        if (chunk.getGenerationState() != ChunkGenerationState.COMPLETE) return;
+
         LevelChunkMetaData persistedMetaData = null;
         BiomeState biomeState = chunk.getBiomeState();
         long biomeStateVersion = biomeState.hasStorageChanges() ? biomeState.getStorageChangeVersion() : -1;

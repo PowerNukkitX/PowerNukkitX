@@ -148,7 +148,7 @@ import org.powernukkitx.level.MusicRepeatMode;
 import org.powernukkitx.level.PlayerChunkManager;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.Sound;
-import org.powernukkitx.level.format.ChunkFinalizationState;
+import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.particle.BreakBlockParticle;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -1012,9 +1012,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return getLocation();
     }
 
+    private static boolean isMovementChunkReady(IChunk chunk) {
+        return chunk instanceof Chunk concreteChunk && concreteChunk.isGenerationComplete() && concreteChunk.isAvailable();
+    }
+
     protected void handleMovement(Location clientPos) {
         if (!this.firstMove
-                && this.chunk != null && this.chunk.getFinalizationState() == ChunkFinalizationState.DONE
+                && isMovementChunkReady(this.chunk)
                 && clientPos.x == this.x && clientPos.y == this.y && clientPos.z == this.z
                 && clientPos.yaw == this.yaw && clientPos.pitch == this.pitch && clientPos.headYaw == this.headYaw) {
             return;
@@ -1027,11 +1031,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //before check
         if (isCheckingMovement() && distanceSquared > 128) {
             invalidMotion = true;
-        } else if (this.chunk == null || chunk.getFinalizationState() != ChunkFinalizationState.DONE) {
+        } else if (!isMovementChunkReady(this.chunk)) {
             IChunk chunk = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
             this.chunk = chunk;
 
-            if (this.chunk == null || chunk.getFinalizationState() != ChunkFinalizationState.DONE) {
+            if (!isMovementChunkReady(this.chunk)) {
                 invalidMotion = true;
                 this.nextChunkOrderRun = 0;
                 if (this.chunk != null) {
@@ -3141,7 +3145,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 levelChunkPacket.isClientNeedsToRequestSubChunks();
 
         if (packet instanceof LevelChunkPacket) {
-            this.playerChunkManager.onLevelChunkSent(chunkHash, subChunkRequestMode);
+            this.playerChunkManager.onLevelChunkSent(chunkHash);
         }
 
         if (this.spawned && this.level.getProvider() != null) {
@@ -3659,7 +3663,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
-            return false;
+            return this.connected.get();
         }
 
         int tickDiff = currentTick - this.lastUpdate;

@@ -18,6 +18,7 @@ import org.powernukkitx.level.entity.spawners.SpawnRule;
 import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.level.generator.densityfunction.DensityCommon;
 import org.powernukkitx.level.lighting.ChunkLightingState;
+import org.powernukkitx.level.format.bitarray.BitArrayVersion;
 import org.powernukkitx.level.format.palette.Palette;
 import org.powernukkitx.level.structure.AabbVolumes;
 import org.powernukkitx.level.structure.spawn.SpawnCategory;
@@ -99,6 +100,9 @@ public class Chunk implements IChunk {
     protected final StampedLock lightLock;
     protected final LevelProvider provider;
     protected volatile boolean isInit;
+    private volatile boolean available;
+    private volatile boolean discarded;
+    private volatile boolean storageResolved = true;
     protected boolean isInitializing;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
@@ -110,7 +114,7 @@ public class Chunk implements IChunk {
         Palette<Integer>[] biomeSections = (Palette<Integer>[]) new Palette<?>[sectionCount];
 
         for (int i = 0; i < sectionCount; i++) {
-            biomeSections[i] = new Palette<>(BiomeID.PLAINS);
+            biomeSections[i] = new Palette<>(BiomeID.PLAINS, BitArrayVersion.V0);
         }
 
         return biomeSections;
@@ -164,7 +168,7 @@ public class Chunk implements IChunk {
             final boolean[] borderBlockMap
     ) {
         this.finalizationState = new AtomicReference<>(finalizationState);
-        this.generationState = new AtomicReference<>(ChunkGenerationState.fromFinalizationState(finalizationState));
+        this.generationState = new AtomicReference<>(ChunkGenerationState.NEEDS_GENERATION);
         this.lightingState = new AtomicReference<>(ChunkLightingState.NEEDS_LIGHTING);
         this.x = chunkX;
         setZ(chunkZ);
@@ -290,6 +294,83 @@ public class Chunk implements IChunk {
     }
 
     /**
+     * Returns whether persisted chunk data has been resolved.
+     *
+     * @return whether storage resolution has completed
+     */
+    @ApiStatus.Internal
+    public boolean isStorageResolved() {
+        return storageResolved;
+    }
+
+    /**
+     * Marks this chunk as awaiting persisted-data resolution.
+     */
+    @ApiStatus.Internal
+    public void markStoragePending() {
+        Preconditions.checkState(!this.isInit, "Cannot mark an initialized chunk as storage-pending");
+        this.storageResolved = false;
+    }
+
+    /**
+     * Marks persisted-data resolution as complete.
+     */
+    @ApiStatus.Internal
+    public void markStorageResolved() {
+        this.storageResolved = true;
+    }
+
+    /**
+     * Applies persisted data from a detached chunk while preserving this chunk's runtime identity and generation state.
+     *
+     * @param source loaded persisted chunk
+     */
+    @ApiStatus.Internal
+    public void applyPersistentData(Chunk source) {
+        Preconditions.checkNotNull(source);
+        Preconditions.checkArgument(source != this, "Source chunk must be detached");
+        Preconditions.checkArgument(source.provider == this.provider, "Chunk provider does not match");
+        Preconditions.checkArgument(source.x == this.x && source.z == this.z, "Chunk position does not match");
+        Preconditions.checkState(!this.isInit, "Cannot hydrate an initialized chunk");
+        Preconditions.checkState(!this.storageResolved, "Chunk storage is already resolved");
+
+        Preconditions.checkState(source.sections.length == this.sections.length, "Chunk section count does not match");
+        Preconditions.checkState(
+                source.biomeSections.length == this.biomeSections.length,
+                "Chunk biome section count does not match"
+        );
+
+        long blockStamp = blockLock.writeLock();
+        long heightAndBiomeStamp = heightAndBiomeLock.writeLock();
+        long lightStamp = lightLock.writeLock();
+
+        try {
+            System.arraycopy(source.sections, 0, this.sections, 0, this.sections.length);
+            System.arraycopy(source.biomeSections, 0, this.biomeSections, 0, this.biomeSections.length);
+            System.arraycopy(source.heightMap, 0, this.heightMap, 0, this.heightMap.length);
+            System.arraycopy(source.renderHeightMap, 0, this.renderHeightMap, 0, this.renderHeightMap.length);
+            System.arraycopy(source.rainHeightMap, 0, this.rainHeightMap, 0, this.rainHeightMap.length);
+            System.arraycopy(source.borderBlockMap, 0, this.borderBlockMap, 0, this.borderBlockMap.length);
+
+            this.finalizationState.set(source.finalizationState.get());
+            this.lightingState.set(source.lightingState.get());
+            this.entityNBT = source.entityNBT;
+            this.blockEntityNBT = source.blockEntityNBT;
+            this.extraData = source.extraData;
+            this.aabbVolumes = source.aabbVolumes;
+            this.biomeState = source.biomeState;
+            this.levelChunkMetaData = source.levelChunkMetaData;
+            this.densityChunkCache = null;
+            this.changes.set(0);
+            this.storageResolved = true;
+        } finally {
+            lightLock.unlockWrite(lightStamp);
+            heightAndBiomeLock.unlockWrite(heightAndBiomeStamp);
+            blockLock.unlockWrite(blockStamp);
+        }
+    }
+
+    /**
      * Returns whether transient generation has completed.
      *
      * @return whether generation is complete
@@ -297,6 +378,37 @@ public class Chunk implements IChunk {
     @ApiStatus.Internal
     public boolean isGenerationComplete() {
         return generationState.get() == ChunkGenerationState.COMPLETE;
+    }
+
+    /**
+     * Returns whether this chunk is admitted to the active runtime lifecycle.
+     *
+     * @return whether the chunk is available
+     */
+    @ApiStatus.Internal
+    public boolean isAvailable() {
+        return available && !discarded;
+    }
+
+    /**
+     * Updates this chunk's runtime availability.
+     *
+     * @param available availability state
+     */
+    @ApiStatus.Internal
+    public synchronized void setAvailable(boolean available) {
+        if (available && discarded) return;
+        this.available = available;
+    }
+
+    /**
+     * Returns whether this chunk has entered unload processing.
+     *
+     * @return whether the chunk is being discarded
+     */
+    @ApiStatus.Internal
+    public boolean isDiscarded() {
+        return discarded;
     }
 
     /**
@@ -1251,6 +1363,12 @@ public class Chunk implements IChunk {
                 }
             }
         }
+
+        synchronized (this) {
+            this.available = false;
+            this.discarded = true;
+        }
+
         for (Entity entity : new ArrayList<>(this.getEntities().values())) {
             if (entity instanceof Player) {
                 continue;

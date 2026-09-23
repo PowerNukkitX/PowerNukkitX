@@ -21,8 +21,7 @@ public abstract class TickingAreaManager {
     }
 
     /**
-     * Monotonic counter bumped on every area addition/removal. Lets consumers cache
-     * derived data (e.g. per-level chunk lists) and cheaply detect staleness.
+     * Monotonic counter bumped when ticking-area state changes.
      */
     public long getVersion() {
         return version.get();

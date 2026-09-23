@@ -43,7 +43,7 @@ public class TheEnd extends PopulatedGenerator implements BiomedGenerator {
                         "Chunk Gen",
                         ChunkGenerationState.NEEDS_GENERATION,
                         ChunkGenerationState.GENERATING,
-                        ChunkGenerationState.NEEDS_POPULATION,
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
                         ChunkGenerationState.NEEDS_GENERATION,
                         BiomeMapStage.NAME,
                         GeneratedStage.NAME,
@@ -51,11 +51,22 @@ public class TheEnd extends PopulatedGenerator implements BiomedGenerator {
                 ),
 
                 new ChunkGenerationTask(
+                        "Structure Post Processing",
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
+                        ChunkGenerationState.STRUCTURE_PP,
+                        ChunkGenerationState.NEEDS_POPULATION,
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
+                        null,
+                        null,
+                        ChunkGenerationDependency.NEIGHBORHOOD_GENERATED
+                ),
+
+                new ChunkGenerationTask(
                         "Chunk PP",
                         ChunkGenerationState.NEEDS_POPULATION,
                         ChunkGenerationState.POPULATING,
                         ChunkGenerationState.NEEDS_CFRD,
-                        ChunkGenerationState.NEEDS_POPULATION,
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
                         TheEndPopulatorStage.NAME,
                         TheEndPopulatorStage.NAME,
                         ChunkGenerationDependency.NEIGHBORHOOD_PRESENT
@@ -65,7 +76,7 @@ public class TheEnd extends PopulatedGenerator implements BiomedGenerator {
                         "Chunk CFRD",
                         ChunkGenerationState.NEEDS_CFRD,
                         ChunkGenerationState.CFRD,
-                        ChunkGenerationState.COMPLETE,
+                        ChunkGenerationState.NEEDS_LIGHTING,
                         ChunkGenerationState.NEEDS_CFRD,
                         LightPopulationStage.NAME,
                         FinishedStage.NAME,

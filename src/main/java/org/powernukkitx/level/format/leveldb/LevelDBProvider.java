@@ -21,6 +21,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.UnsafeChunk;
+import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.level.tickingarea.TickingArea;
 import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.math.BlockVector3;
@@ -213,6 +214,8 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void onChunkInitialized(IChunk chunk) {
+        restoreBlockTicks(this.level, chunk);
+
         if (LevelDBLimboEntities.supportsDimension(getDimensionData())) {
             this.storage.consumeLimboEntities(chunk);
         }
@@ -506,9 +509,6 @@ public class LevelDBProvider implements LevelProvider {
                 }
             } else {
                 chunk = getOrPutChunk(index, chunk);
-
-                Level level = this.getLevel();
-                restoreBlockTicks(level, chunk);
             }
 
             loading.complete(chunk);
@@ -718,7 +718,7 @@ public class LevelDBProvider implements LevelProvider {
                 // Write biomes
                 final var biomeSections = unsafeChunk.getBiomeSections();
                 for (int i = 0; i < total; i++) {
-                    biomeSections[i].writeToNetwork(byteBuf, Integer::intValue);
+                    biomeSections[i].writeToNetwork(byteBuf, Integer::intValue, i == 0 ? null : biomeSections[i - 1]);
                 }
 
                 writeBorderBlockData(byteBuf, unsafeChunk);
@@ -790,10 +790,11 @@ public class LevelDBProvider implements LevelProvider {
 
                 final var biomeSections = unsafeChunk.getBiomeSections();
 
-                for (var biomeSection : biomeSections) {
-                    biomeSection.writeToNetwork(
+                for (int i = 0; i < biomeSections.length; i++) {
+                    biomeSections[i].writeToNetwork(
                         biomeData,
-                        Integer::intValue
+                        Integer::intValue,
+                        i == 0 ? null : biomeSections[i - 1]
                     );
                 }
 
@@ -1017,6 +1018,7 @@ public class LevelDBProvider implements LevelProvider {
     public void saveChunks(Collection<IChunk> chunks) {
         List<IChunk> changedChunks = chunks.stream()
                 .filter(IChunk::hasChanged)
+                .filter(chunk -> chunk.getGenerationState() == ChunkGenerationState.COMPLETE)
                 .toList();
 
         if (changedChunks.isEmpty()) {
@@ -1168,11 +1170,12 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public IChunk getLoadedChunk(int chunkX, int chunkZ) {
+        long index = Level.chunkHash(chunkX, chunkZ);
         var tmp = getThreadLastChunk();
-        if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
+        if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ && chunks.get(index) == tmp) {
             return tmp;
         }
-        long index = Level.chunkHash(chunkX, chunkZ);
+
         lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         return tmp;
     }
@@ -1180,9 +1183,10 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public IChunk getLoadedChunk(long hash) {
         var tmp = getThreadLastChunk();
-        if (tmp != null && tmp.getIndex() == hash) {
+        if (tmp != null && tmp.getIndex() == hash && chunks.get(hash) == tmp) {
             return tmp;
         }
+
         lastChunk.set(new WeakReference<>(tmp = chunks.get(hash)));
         return tmp;
     }
@@ -1200,6 +1204,71 @@ public class LevelDBProvider implements LevelProvider {
             lastChunk.set(new WeakReference<>(tmp));
         }
         return tmp;
+    }
+
+    @Override
+    public IChunk acquireChunk(int chunkX, int chunkZ) {
+        long index = Level.chunkHash(chunkX, chunkZ);
+
+        while (true) {
+            IChunk loaded = this.chunks.get(index);
+            if (loaded != null) {
+                if (!(loaded instanceof Chunk chunk) || !chunk.isDiscarded()) {
+                    lastChunk.set(new WeakReference<>(loaded));
+                    return loaded;
+                }
+
+                this.chunks.remove(index, loaded);
+                lastChunk.remove();
+                continue;
+            }
+
+            Chunk placeholder = (Chunk) getEmptyChunk(chunkX, chunkZ);
+            placeholder.markStoragePending();
+
+            IChunk acquired = getOrPutChunk(index, placeholder);
+            if (acquired instanceof Chunk chunk && chunk.isDiscarded()) {
+                this.chunks.remove(index, acquired);
+                lastChunk.remove();
+                continue;
+            }
+
+            lastChunk.set(new WeakReference<>(acquired));
+            return acquired;
+        }
+    }
+
+    @Override
+    public boolean loadPersistentChunk(IChunk chunk) {
+        if (!(chunk instanceof Chunk target)) {
+            throw new IllegalArgumentException("LevelDBProvider requires Chunk, got " + chunk.getClass().getName());
+        }
+
+        if (target.isStorageResolved()) return false;
+
+        long index = target.getIndex();
+        if (this.chunks.get(index) != target || target.isDiscarded()) return false;
+
+        final IChunk loaded;
+        try {
+            loaded = storage.readChunk(target.getX(), target.getZ(), this);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to load chunk", e);
+        }
+
+        if (this.chunks.get(index) != target || target.isDiscarded()) return false;
+
+        if (loaded == null) {
+            target.markStorageResolved();
+            return false;
+        }
+
+        if (!(loaded instanceof Chunk stored)) {
+            throw new IllegalStateException("LevelDB storage returned " + loaded.getClass().getName());
+        }
+
+        target.applyPersistentData(stored);
+        return true;
     }
 
     @Override

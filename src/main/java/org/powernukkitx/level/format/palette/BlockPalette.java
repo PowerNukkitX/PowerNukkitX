@@ -43,6 +43,40 @@ public class BlockPalette extends Palette<BlockState> {
     }
 
     @Override
+    protected void addToPalette(BlockState value) {
+        this.palette.add(value);
+    }
+
+    @Override
+    protected void rebuildPaletteIndex() {
+        this.paletteIndex = null;
+    }
+
+    @Override
+    public int paletteIndexFor(BlockState value) {
+        int index = identityIndexOf(value);
+        if (index != -1) return index;
+
+        index = this.palette.size();
+        this.palette.add(value);
+
+        final BitArrayVersion version = this.bitArray.version();
+        if (index > version.maxEntryValue) {
+            final BitArrayVersion next = version.next;
+            if (next != null) this.onResize(next);
+        }
+
+        return index;
+    }
+
+    private int identityIndexOf(BlockState value) {
+        for (int i = 0, size = this.palette.size(); i < size; i++) {
+            if (this.palette.get(i) == value) return i;
+        }
+        return -1;
+    }
+
+    @Override
     public void set(int index, BlockState value) {
         if (nonAirCount >= 0) {
             updateNonAirCount(get(index), value);

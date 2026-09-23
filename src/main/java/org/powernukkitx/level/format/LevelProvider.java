@@ -48,6 +48,27 @@ public interface LevelProvider {
 
     IChunk getEmptyChunk(int x, int z);
 
+    /**
+     * Acquires a physical chunk object without requiring persistent data to be resolved first.
+     *
+     * @param x chunk X
+     * @param z chunk Z
+     * @return acquired chunk
+     */
+    default IChunk acquireChunk(int x, int z) {
+        return getChunk(x, z, true);
+    }
+
+    /**
+     * Resolves persisted data for an acquired chunk.
+     *
+     * @param chunk acquired chunk
+     * @return whether persisted chunk data was loaded
+     */
+    default boolean loadPersistentChunk(IChunk chunk) {
+        return false;
+    }
+
     void saveChunks();
 
     void saveChunks(Collection<IChunk> chunks);

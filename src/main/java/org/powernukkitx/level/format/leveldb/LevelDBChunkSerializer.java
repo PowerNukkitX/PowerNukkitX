@@ -277,7 +277,7 @@ public class LevelDBChunkSerializer {
     }
 
     static ChunkFinalizationState decodeFinalizationState(byte[] finalized) {
-        if (finalized == null) return ChunkFinalizationState.DONE;
+        if (finalized == null) return ChunkFinalizationState.NEEDS_INSTATICKING;
 
         if (finalized.length != Integer.BYTES) {
             throw new IllegalStateException("Invalid chunk finalization state length: " + finalized.length);
@@ -430,7 +430,7 @@ public class LevelDBChunkSerializer {
             Palette<Integer>[] biomeSections = (Palette<Integer>[]) new Palette<?>[sectionCount];
 
             for (int i = 0; i < sectionCount; i++) {
-                biomeSections[i] = new Palette<>(BiomeID.PLAINS);
+                biomeSections[i] = new Palette<>(BiomeID.PLAINS, BitArrayVersion.V0);
             }
 
             builder.biomeSections(biomeSections);
