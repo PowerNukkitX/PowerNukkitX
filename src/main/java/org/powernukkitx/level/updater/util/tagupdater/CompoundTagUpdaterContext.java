@@ -1,7 +1,9 @@
 package org.powernukkitx.level.updater.util.tagupdater;
 
+import org.cloudburstmc.nbt.NbtList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -109,8 +111,8 @@ public class CompoundTagUpdaterContext {
     private static Object toMutableValue(Object value) {
         if (value instanceof NbtMap nbtMap) {
             return toMutable(nbtMap);
-        } else if (value instanceof List<?> list) {
-            List<Object> result = new ArrayList<>(list.size());
+        } else if (value instanceof NbtList<?> list) {
+            MutableList result = new MutableList(list.getType(), list.size());
             for (Object element : list) {
                 result.add(toMutableValue(element));
             }
@@ -127,7 +129,7 @@ public class CompoundTagUpdaterContext {
         return builder.build();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Object toNbtValue(Object value) {
         if (value instanceof Map) {
             return toNbt((Map<String, Object>) value);
@@ -136,13 +138,24 @@ public class CompoundTagUpdaterContext {
             for (Object element : list) {
                 result.add(toNbtValue(element));
             }
-            return result;
+            NbtType<?> type = list instanceof MutableList mutable ? mutable.type
+                    : result.isEmpty() ? NbtType.END : NbtType.byClass(result.getFirst().getClass());
+            return new NbtList(type, result);
         }
         return value;
     }
 
+    private static final class MutableList extends ArrayList<Object> {
+        private final NbtType<?> type;
+
+        private MutableList(NbtType<?> type, int capacity) {
+            super(capacity);
+            this.type = type;
+        }
+    }
+
     private CompoundTagUpdater getLatestUpdater() {
-        return this.updaters.isEmpty() ? null : this.updaters.get(this.updaters.size() - 1);
+        return this.updaters.isEmpty() ? null : this.updaters.getLast();
     }
 
     public int getLatestVersion() {

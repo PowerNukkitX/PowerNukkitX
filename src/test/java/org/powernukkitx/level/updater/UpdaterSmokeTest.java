@@ -1,6 +1,8 @@
 package org.powernukkitx.level.updater;
 
+import org.cloudburstmc.nbt.NbtList;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.junit.jupiter.api.Test;
 import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.level.updater.item.ItemUpdaters;
@@ -9,14 +11,15 @@ import org.powernukkitx.level.updater.util.tagupdater.CompoundTagEditHelper;
 import org.powernukkitx.level.updater.util.tagupdater.CompoundTagUpdater;
 import org.powernukkitx.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,25 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class UpdaterSmokeTest {
 
-    private final AtomicInteger checked = new AtomicInteger();
-
-    private void safe(Runnable r) {
-        try {
-            r.run();
-        } catch (Throwable ignored) {
-        }
-    }
-
-    private void safe(Supplier<?> s) {
-        try {
-            Object out = s.get();
-            if (out != null) {
-                checked.incrementAndGet();
-            }
-        } catch (Throwable ignored) {
-        }
-    }
-
     private static NbtMap blockTag(String name) {
         return NbtMap.builder()
                 .putString("name", name)
@@ -55,10 +39,14 @@ class UpdaterSmokeTest {
     }
 
     private static CompoundTag itemTag(String name) {
+        ListTag<StringTag> lore = new ListTag<>();
+        lore.add(new StringTag("lore"));
         CompoundTag tag = new CompoundTag();
         tag.putString("Name", name);
         tag.putShort("Damage", (short) 0);
         tag.putByte("Count", (byte) 1);
+        tag.putCompound("tag", new CompoundTag().putCompound("display", new CompoundTag().putList("Lore", lore)));
+        tag.putCompound("Block", new CompoundTag().putString("name", name).putCompound("states", new CompoundTag()));
         return tag;
     }
 
@@ -76,11 +64,10 @@ class UpdaterSmokeTest {
 
         for (String name : blocks) {
             // legacy version 0 forces the full updater chain to run
-            safe(() -> BlockStateUpdaters.updateBlockState(blockTag(name), 0));
+            assertNotNull(BlockStateUpdaters.updateBlockState(blockTag(name), 0));
             // already-current version path
-            safe(() -> BlockStateUpdaters.updateBlockState(blockTag(name), latest));
+            assertNotNull(BlockStateUpdaters.updateBlockState(blockTag(name), latest));
         }
-        assertTrue(checked.get() > 0, "no block updater produced output");
     }
 
     @Test
@@ -96,16 +83,20 @@ class UpdaterSmokeTest {
         String[] items = {
                 "minecraft:lightning_rod", "minecraft:chain", "minecraft:apple",
                 "minecraft:diamond_sword", "minecraft:stone", "minecraft:stick",
-                "minecraft:banner", "minecraft:skull", "minecraft:filled_map"
+                "minecraft:banner", "minecraft:skull", "minecraft:filled_map",
+                "minecraft:oak_fence"
         };
         int latest = ItemUpdaters.getLatestVersion();
         assertTrue(latest > 0, "expected a positive latest item version");
 
         for (String name : items) {
-            safe(() -> ItemUpdaters.updateItem(itemTag(name), 0));
-            safe(() -> ItemUpdaters.updateItem(itemTag(name), latest));
+            for (int version : new int[]{0, latest}) {
+                CompoundTag out = ItemUpdaters.updateItem(itemTag(name), version);
+                assertEquals(latest, out.getInt("version"), name);
+                ListTag<StringTag> lore = out.getCompound("tag").getCompound("display").getList("Lore", StringTag.class);
+                assertEquals("lore", lore.get(0).data, name);
+            }
         }
-        assertTrue(checked.get() > 0, "no item updater produced output");
     }
 
     @Test
@@ -142,9 +133,18 @@ class UpdaterSmokeTest {
                 .edit("name", h -> h.replaceWith("name", "minecraft:new"))
                 .build();
 
-        NbtMap in = NbtMap.builder().putString("name", "minecraft:old").build();
+        NbtMap in = NbtMap.builder()
+                .putString("name", "minecraft:old")
+                .putList("lore", NbtType.STRING, "a", "b")
+                .putList("empty", NbtType.COMPOUND, List.of())
+                .putList("nested", NbtType.LIST, new NbtList<>(NbtType.INT, 1, 2))
+                .build();
         NbtMap out = ctx.updateStates(in, 0);
         assertEquals("minecraft:new", out.getString("name"));
+        // rebuilt lists must stay NbtList and keep their element type, even when empty
+        assertEquals(List.of("a", "b"), out.getList("lore", NbtType.STRING));
+        assertEquals(NbtType.COMPOUND, assertInstanceOf(NbtList.class, out.get("empty")).getType());
+        assertEquals(NbtType.INT, assertInstanceOf(NbtList.class, out.getList("nested", NbtType.LIST).get(0)).getType());
 
         // non-matching tag passes through untouched
         NbtMap other = NbtMap.builder().putString("name", "minecraft:keep").build();
@@ -160,7 +160,7 @@ class UpdaterSmokeTest {
 
         CompoundTagEditHelper helper = new CompoundTagEditHelper(root);
         assertEquals(root, helper.getRootTag());
-        assertTrue(helper.getTag() instanceof Map);
+        assertInstanceOf(Map.class, helper.getTag());
 
         helper.pushChild("states");
         assertTrue(helper.canPopChild());
