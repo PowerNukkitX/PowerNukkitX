@@ -404,14 +404,8 @@ public final class ScoreboardMigrationExecutor {
             return;
         }
 
-        ListTag<CompoundTag> entries = getCompoundList(root, "Entries");
-        ListTag<CompoundTag> remappedEntries = new ListTag<>(Tag.TAG_Compound);
-        Set<Long> skippedScoreboardIds = new HashSet<>();
-        int skippedPlayers = 0;
-
-        for (CompoundTag entry : entries.getAll()) {
+        for (CompoundTag entry : root.getList("Entries", CompoundTag.class).getAll()) {
             if (entry.getByte("IdentityType") != IDENTITY_PLAYER) {
-                remappedEntries.add(entry.copy());
                 continue;
             }
 
@@ -419,43 +413,11 @@ public final class ScoreboardMigrationExecutor {
             Long newUniqueId = playerUniqueIdRemap.get(oldUniqueId);
 
             if (newUniqueId == null) {
-                skippedScoreboardIds.add(entry.getLong("ScoreboardId"));
-                skippedPlayers++;
-                continue;
+                throw new IOException("BDS scoreboard references unmigrated player ActorUniqueID " + oldUniqueId);
             }
 
-            remappedEntries.add(entry.copy().putLong("PlayerId", newUniqueId));
+            entry.putLong("PlayerId", newUniqueId);
         }
-
-        root.putList("Entries", remappedEntries);
-
-        if (skippedScoreboardIds.size() == 0) {
-            return;
-        }
-
-        int skippedScores = 0;
-
-        for (CompoundTag objective : getCompoundList(root, "Objectives").getAll()) {
-            ListTag<CompoundTag> scores = getCompoundList(objective, "Scores");
-            ListTag<CompoundTag> filteredScores = new ListTag<>(Tag.TAG_Compound);
-
-            for (CompoundTag score : scores.getAll()) {
-                if (skippedScoreboardIds.contains(score.getLong("ScoreboardId"))) {
-                    skippedScores++;
-                    continue;
-                }
-
-                filteredScores.add(score.copy());
-            }
-
-            objective.putList("Scores", filteredScores);
-        }
-
-        log.warn(
-                "[Scoreboard Migration] Skipped {} unresolved BDS player identities and {} associated scores",
-                skippedPlayers,
-                skippedScores
-        );
     }
 
     private record Identity(byte type, long uniqueId, String fakeName) {
