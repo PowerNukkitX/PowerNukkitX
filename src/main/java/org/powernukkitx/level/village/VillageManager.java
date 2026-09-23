@@ -432,7 +432,7 @@ public final class VillageManager {
     private VillageRaid tickGroupInPlay(Village village, VillageRaid raid) {
         List<Long> alive = new ArrayList<>();
         for (long raiderId : raid.raiders()) {
-            Entity raider = level.getEntity(raiderId);
+            Entity raider = level.getEntityByUniqueId(raiderId);
             if (raider != null) {
                 if (raider.isClosed() || !raider.isAlive()) {
                     village.raiderPositions().remove(raiderId);
@@ -518,7 +518,7 @@ public final class VillageManager {
 
     private void expireRaiders(VillageRaid raid, boolean celebrating) {
         for (long raiderId : raid.raiders()) {
-            Entity raider = level.getEntity(raiderId);
+            Entity raider = level.getEntityByUniqueId(raiderId);
             if (raider == null) {
                 continue;
             }
@@ -534,7 +534,7 @@ public final class VillageManager {
     private void celebrate(Village village) {
         for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
             for (VillageDwellers.Actor actor : dweller.actors()) {
-                if (level.getEntity(actor.id()) instanceof EntityVillagerV2 villager) {
+                if (level.getEntityByUniqueId(actor.id()) instanceof EntityVillagerV2 villager) {
                     villager.getMemoryStorage().put(CoreMemoryTypes.CELEBRATING, true);
                 }
             }
@@ -633,7 +633,7 @@ public final class VillageManager {
                 }
                 raider.setPersistent(true);
                 raider.spawnToAll();
-                raiders.add(raider.runtimeId());
+                raiders.add(raider.uniqueIdLong());
                 if (raider instanceof EntityRavager ravager) {
                     mounts.add(ravager);
                 } else if (type == RAID_GROUP_RIDERS[Math.min(raid.groupNumber(), RAID_GROUP_RIDERS.length - 1)]) {
@@ -651,7 +651,7 @@ public final class VillageManager {
     private float totalMaxHealth(List<Long> raiders) {
         float total = 0f;
         for (long raiderId : raiders) {
-            Entity raider = level.getEntity(raiderId);
+            Entity raider = level.getEntityByUniqueId(raiderId);
             if (raider != null) {
                 total += raider.getMaxHealth();
             }
@@ -689,7 +689,7 @@ public final class VillageManager {
     private void setDwellersHiding(Village village, boolean hiding) {
         for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
             for (VillageDwellers.Actor actor : dweller.actors()) {
-                if (level.getEntity(actor.id()) instanceof EntityVillagerV2 villager) {
+                if (level.getEntityByUniqueId(actor.id()) instanceof EntityVillagerV2 villager) {
                     villager.getMemoryStorage().put(CoreMemoryTypes.HIDING_FROM_RAID, hiding);
                 }
             }
