@@ -79,6 +79,14 @@ public abstract class PositionNode extends ParamNode<Position> {
         return (E) this.value;
     }
 
+    public Position clonePosition(Position basePos) {
+        if (this.value == null) return null;
+        double x = this.getRelative(0) ? this.value.x + basePos.getX() : this.value.x;
+        double y = this.getRelative(1) ? this.value.y + basePos.getY() : this.value.y;
+        double z = this.getRelative(2) ? this.value.z + basePos.getZ() : this.value.z;
+        return new Position(x, y, z, basePos.getLevel());
+    }
+
     @Override
     public int getUsedArgs() {
         return 3;
