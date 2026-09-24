@@ -134,7 +134,9 @@ public class EntityXpOrb extends Entity {
             this.exp = 1;
         }
 
-        this.actorDataMap.put(ActorDataTypes.VALUE, this.exp);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.VALUE, this.exp);
+        }
 
         //call event item spawn event
     }

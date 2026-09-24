@@ -50,7 +50,9 @@ public class EntitySplashPotion extends EntityProjectile {
 
         potionId = this.getNbt().getShort("PotionId");
 
-        this.actorDataMap.put(ActorDataTypes.AUX_VALUE_DATA, this.potionId);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.AUX_VALUE_DATA, this.potionId);
+        }
 
         /*Effect effect = Potion.getEffect(potionId, true); TODO: potion color
 
