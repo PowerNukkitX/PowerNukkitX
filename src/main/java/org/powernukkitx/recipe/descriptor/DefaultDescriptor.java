@@ -75,6 +75,13 @@ public class DefaultDescriptor implements ItemDescriptor {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof final DefaultDescriptor other)) return false;
+        return this.item.equalsExact(other.getItem());
+    }
+
+    @Override
     public int hashCode() {
         return item.hashCode();
     }

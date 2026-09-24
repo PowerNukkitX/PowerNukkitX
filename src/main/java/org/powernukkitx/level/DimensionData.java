@@ -90,6 +90,11 @@ public class DimensionData {
         return dimensionId == that.dimensionId && minHeight == that.minHeight && maxHeight == that.maxHeight && height == that.height && chunkSectionCount == that.chunkSectionCount && dimensionName.equals(that.dimensionName);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(dimensionName, dimensionId, minHeight, maxHeight, height, chunkSectionCount);
+    }
+
     public String toString() {
         return "DimensionData(dimensionName=" + this.getDimensionName() + ", dimensionId=" + this.getDimensionId() + ", minHeight=" + this.getMinHeight() + ", maxHeight=" + this.getMaxHeight() + ", height=" + this.getHeight() + ", chunkSectionCount=" + this.getChunkSectionCount() + ")";
     }

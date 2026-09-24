@@ -185,6 +185,11 @@ public class BlockColor implements Cloneable {
     }
 
     @Override
+    public int hashCode() {
+        return this.getARGB();
+    }
+
+    @Override
     public String toString() {
         return "BlockColor[r=" + this.red + ",g=" + this.green + ",b=" + this.blue + ",a=" + this.alpha + "]";
     }

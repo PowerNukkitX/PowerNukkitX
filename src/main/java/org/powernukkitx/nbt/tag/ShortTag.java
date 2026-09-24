@@ -48,14 +48,4 @@ public class ShortTag extends NumberTag<Short> {
     public Tag copy() {
         return new ShortTag(data);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            ShortTag o = (ShortTag) obj;
-            return data == o.data;
-        }
-        return false;
-    }
-
 }
