@@ -468,7 +468,22 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
-    public void addEnchantment(Enchantment... enchantments) {
+    /**
+     * Adds enchantments to this item's NBT.
+     * <p>
+     * An enchantment whose {@link Enchantment#getIdentifier()} is {@code null} is written to the
+     * vanilla {@code ench} list, otherwise to the {@code custom_ench} list. In both lists an entry
+     * with the same id is overwritten, so re-adding an enchantment replaces its level instead of
+     * stacking a second entry. If the item ends up holding any custom enchantment, its
+     * {@code display.Name} tag is rewritten to show the enchantment lore.
+     * <p>
+     * Both lists are created even when {@code enchantments} is empty, which gives the item an NBT
+     * compound it did not necessarily have before.
+     *
+     * @param enchantments the enchantments to add
+     * @return this item, for chaining
+     */
+    public Item addEnchantment(Enchantment... enchantments) {
         CompoundTag tag;
         if (!this.hasNbt()) {
             tag = new CompoundTag();
@@ -542,6 +557,7 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
         this.setNbt(tag);
+        return this;
     }
 
     private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
@@ -1342,8 +1358,17 @@ public abstract class Item implements Cloneable, ItemID {
         return count;
     }
 
-    public void setCount(int count) {
+    /**
+     * Sets the stack size. The value is stored as given: it is not clamped to
+     * {@link #getMaxStackSize()}, and a count of {@code 0} or less makes {@link #isNull()}
+     * return true without turning the item into air.
+     *
+     * @param count the new stack size
+     * @return this item, for chaining
+     */
+    public Item setCount(int count) {
         this.count = count;
+        return this;
     }
 
     public boolean isNull() {
