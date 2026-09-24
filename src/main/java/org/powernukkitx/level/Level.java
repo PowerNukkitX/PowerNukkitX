@@ -6548,17 +6548,14 @@ public class Level implements Metadatable {
             return false;
         }
 
-        if (!this.isChunkLoaded(x, z)) {
+        IChunk chunk = this.getPhysicalChunkIfLoaded(x, z);
+        if (chunk == null) {
             return true;
         }
 
-        IChunk chunk = this.getChunk(x, z);
+        boolean initiated = chunk.isInitiated();
 
-        if (!chunk.isInitiated()) {
-            return false;
-        }
-
-        if (chunk != null && chunk.getProvider() != null) {
+        if (initiated && chunk.getProvider() != null) {
             ChunkUnloadEvent ev = new ChunkUnloadEvent(chunk);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
@@ -6568,7 +6565,8 @@ public class Level implements Metadatable {
 
         try {
             LevelProvider levelProvider = this.requireProvider();
-            if (chunk != null) {
+
+            if (initiated) {
                 if (trySave && this.getAutoSave()) {
                     int entities = 0;
                     for (Entity e : chunk.getEntities().values()) {
@@ -6595,18 +6593,23 @@ public class Level implements Metadatable {
                         levelProvider.saveChunk(x, z);
                     }
                 }
+
                 for (ChunkLoader loader : this.getChunkLoaders(x, z)) {
                     loader.onChunkUnloaded(chunk);
                 }
             }
-            levelProvider.unloadChunk(x, z, safe);
-            this.circuitSystem.removeChunk( x, z);
+
+            if (!levelProvider.unloadChunk(x, z, safe)) {
+                return false;
+            }
+
+            this.circuitSystem.removeChunk(x, z);
             this.tickChunkCacheDirty = true;
+            return true;
         } catch (Exception e) {
             log.error(this.server.getLanguage().tr("nukkit.level.chunkUnloadError", e.toString()), e);
+            return false;
         }
-
-        return true;
     }
 
     public boolean isSpawnChunk(int x, int z) {

@@ -719,8 +719,7 @@ public final class ChunkGenerationManager {
     }
 
     private void runTask(GenerationRequest request, Chunk chunk, ChunkGenerationTask task) {
-        if (!isCurrentChunk(chunk)) {
-            chunk.compareAndSetGenerationState(task.activeState(), task.failureState());
+        if (!isSameChunkIdentity(chunk)) {
             finishTask(request);
             return;
         }
@@ -994,15 +993,11 @@ public final class ChunkGenerationManager {
 
     /**
      * Immutable key for one stable generation-state request.
-     *
-     * @author Curse
      */
     private record GenerationRequestKey(long chunkHash, ChunkGenerationState state) {}
 
     /**
      * Tracks one immutable stable-state scheduling request.
-     *
-     * @author Curse
      */
     private static final class GenerationRequest {
         private final GenerationRequestKey key;
@@ -1025,8 +1020,6 @@ public final class ChunkGenerationManager {
 
     /**
      * Tracks API completion demand independently from scheduler stage requests.
-     *
-     * @author Curse
      */
     private static final class GenerationDemand {
         private final int chunkX;
