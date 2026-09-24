@@ -51,6 +51,11 @@ public class EntityFishingHook extends SlenderProjectile {
     public int attractTimer = 0;
     public boolean caught = false;
     public int caughtTimer = 0;
+    /**
+     * @deprecated no longer written by the hook itself; use {@link #setCollisionEnabled(boolean)} and
+     * {@link #isCollisionEnabled()} instead. Still honoured by {@link #canCollide()} so existing plugins keep working.
+     */
+    @Deprecated(forRemoval = true, since = "3.0.6")
     @SuppressWarnings("java:S1845")
     public boolean canCollide = true;
 
@@ -85,9 +90,10 @@ public class EntityFishingHook extends SlenderProjectile {
         return 0.04f;
     }
 
+    // TODO: Remove method when removing canCollide
     @Override
     public boolean canCollide() {
-        return this.canCollide;
+        return super.canCollide() && this.canCollide;
     }
 
     @Override
@@ -360,7 +366,7 @@ public class EntityFishingHook extends SlenderProjectile {
                 ActorDataTypes.TARGET,
                 entity != null ? entity.uniqueIdLong() : 0L
         );
-        this.canCollide = entity == null;
+        this.setCollisionEnabled(entity == null);
     }
 
     /**

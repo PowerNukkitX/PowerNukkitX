@@ -83,7 +83,7 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public boolean canCollide() {
-        return Objects.equals(blockState.getIdentifier(), BlockID.ANVIL);
+        return super.canCollide() && Objects.equals(blockState.getIdentifier(), BlockID.ANVIL);
     }
 
     @Override

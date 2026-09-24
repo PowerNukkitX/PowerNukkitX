@@ -4745,7 +4745,7 @@ public class Level implements Metadatable {
             for (Entity e : entities) {
                 if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityAreaEffectCloud ||
                         e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
-                        (e instanceof Player p && p.isSpectator())) {
+                        (e instanceof Player p && p.isSpectator()) || !e.isCollisionEnabled()) {
                     continue;
                 }
                 ++realCount;

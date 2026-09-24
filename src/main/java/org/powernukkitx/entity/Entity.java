@@ -222,6 +222,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public double highestPosition;
     public boolean closed = false;
     public boolean noClip = false;
+    private boolean collisionEnabled = true;
     /**
      * Set by {@link BlockBubbleColumn} on every tick the entity is inside a column, and cleared once the entity's
      * physics have consumed it. While it is set, the column owns the entity's vertical motion.
@@ -849,7 +850,38 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public boolean canCollide() {
-        return true;
+        return this.collisionEnabled;
+    }
+
+    /**
+     * @return {@code false} if collision was switched off with {@link #setCollisionEnabled(boolean)}
+     */
+    public boolean isCollisionEnabled() {
+        return this.collisionEnabled;
+    }
+
+    /**
+     * Switches the entity's physical presence on or off without touching anything else about it, e.g. for vanish
+     * or custom spectator systems that must not use the spectator game mode.
+     * <p>
+     * While disabled, {@link #canCollide()} returns {@code false}: the entity neither pushes nor gets pushed by
+     * other entities, its own entity collision checks find nothing, it does not obstruct block placement, and
+     * clients are told it has no collision ({@link ActorFlags#HAS_COLLISION}). Other entities' projectiles and
+     * attacks still hit it, and a player keeps every ability of their game mode. Collision with blocks is
+     * unaffected, so the entity does not fall through the world.
+     * <p>
+     * Entity types whose {@link #canCollide()} is always {@code false} (items, XP orbs, primed TNT...) are not
+     * made collidable by enabling it. The state is not saved and resets to enabled when the entity is recreated.
+     * Must be called on the thread that ticks the entity's level.
+     *
+     * @param enabled {@code false} to stop the entity from colliding with other entities
+     */
+    public void setCollisionEnabled(boolean enabled) {
+        if (this.collisionEnabled == enabled) {
+            return;
+        }
+        this.collisionEnabled = enabled;
+        this.setDataFlag(ActorFlags.HAS_COLLISION, this.canCollide());
     }
 
     public float getGravity() {
