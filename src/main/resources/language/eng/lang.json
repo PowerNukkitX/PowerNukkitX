@@ -169,6 +169,7 @@
   "pnx.settings.network.encryption": "Whether to enable Bedrock packet encryption. Only applies to the raknet transport; NetherNet already carries the session inside DTLS",
   "pnx.settings.network.logintime": "Login time",
   "pnx.settings.network.transport": "Which transport carries Bedrock sessions. raknet: the classic UDP transport every client finds through the server list. nethernet: WebRTC data channels reached through a signalling endpoint. Only one is bound",
+  "pnx.settings.network.upstreambandwidth": "Server upstream bandwidth in Mbps used to budget chunk publication across all players",
   "pnx.settings.network.raknet": "RakNet transport settings",
   "pnx.settings.network.raknet.packetlimit": "Maximum number of packets per second",
   "pnx.settings.network.raknet.autoflush": "Whether RakNet automatically flushes each connection's outgoing packet queue on a timer. Disabling stops packets from being sent until something flushes manually, so leave this on unless you flush yourself",

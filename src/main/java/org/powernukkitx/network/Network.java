@@ -600,6 +600,18 @@ public class Network implements NetworkInterface, SignalingService {
         return -1;
     }
 
+    @Override
+    public NetworkPressure getNetworkPressure(Player player) {
+        if (this.transport != NetworkSettings.TransportType.RAKNET) {
+            return NetworkPressure.UNKNOWN;
+        }
+
+        final var metrics = player.getSession().getPeer().getChannel().config().getOption(RakChannelOption.RAK_METRICS);
+        return metrics instanceof RakNetNetworkMetrics networkMetrics
+            ? networkMetrics.getNetworkPressure()
+            : NetworkPressure.UNKNOWN;
+    }
+
     /**
      * Block an address forever.
      *

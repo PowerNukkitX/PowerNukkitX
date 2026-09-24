@@ -1,6 +1,7 @@
 package org.powernukkitx.network;
 
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelMetrics;
+import org.powernukkitx.network.NetworkInterface.NetworkPressure;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class RakNetNetworkMetrics implements RakChannelMetrics {
     private static final long BANDWIDTH_WINDOW_NANOS = TimeUnit.SECONDS.toNanos(1);
     private static final float BITS_TO_BYTES = 0.125f;
+    private static final float LOW_LOAD_RATIO = 0.01f;
     private static final float HIGH_LOAD_RATIO = 0.05f;
     private static final float BANDWIDTH_DECAY = 0.01f;
 
@@ -23,15 +25,19 @@ public final class RakNetNetworkMetrics implements RakChannelMetrics {
     private long windowStartNanos = System.nanoTime();
 
     /**
-     * Classifies the current RakNet network pressure.
+     * Immutable RakNet traffic/pressure sample.
      *
-     * @author Curse
+     * @param bytesOutPerSecond approximate bytes sent during the rolling one-second window
+     * @param queuedPacketBytes currently queued outbound RakNet bytes
+     * @param estimatedBandwidthBps highest/decaying observed bandwidth estimate in bits per second
+     * @param pressure classified network pressure
      */
-    public enum NetworkLoad {
-        UNRESTRICTED,
-        LOW,
-        MEDIUM,
-        HIGH
+    public record NetworkSnapshot(
+            long bytesOutPerSecond,
+            int queuedPacketBytes,
+            int estimatedBandwidthBps,
+            NetworkPressure pressure
+    ) {
     }
 
     @Override
@@ -45,26 +51,13 @@ public final class RakNetNetworkMetrics implements RakChannelMetrics {
     }
 
     /**
-     * Returns the current network load.
-     * @return the requested value
+     * Returns one coherent traffic and pressure sample.
+     *
+     * @return current RakNet network sample
      */
-    public NetworkLoad getNetworkLoad() {
-        this.updateBandwidthEstimate();
-        final int queuedBytes = this.queuedPacketBytes;
-
-        if (queuedBytes <= 0) return NetworkLoad.LOW;
-
-        final int maxBps = this.approximateMaxBps;
-        if (maxBps <= 0) return NetworkLoad.HIGH;
-
-        final float queueRatio = queuedBytes / (maxBps * BITS_TO_BYTES);
-
-        return queueRatio > HIGH_LOAD_RATIO ? NetworkLoad.HIGH : NetworkLoad.MEDIUM;
-    }
-
-    private synchronized void updateBandwidthEstimate() {
-        final long actualBytesSent = this.getApproximateBytesSentLastSecond();
-        final int actualBps = (int) Math.min(Integer.MAX_VALUE, actualBytesSent * 8L);
+    public synchronized NetworkSnapshot snapshot() {
+        final long bytesOutPerSecond = this.getApproximateBytesSentLastSecond();
+        final int actualBps = (int) Math.min(Integer.MAX_VALUE, bytesOutPerSecond * 8L);
         int estimate = Math.max(this.approximateMaxBps, actualBps);
 
         if (this.queuedPacketBytes > 0) {
@@ -72,6 +65,36 @@ public final class RakNetNetworkMetrics implements RakChannelMetrics {
         }
 
         this.approximateMaxBps = Math.max(0, estimate);
+
+        final int queuedBytes = this.queuedPacketBytes;
+        final NetworkPressure pressure;
+
+        if (queuedBytes <= 0) {
+            pressure = NetworkPressure.UNRESTRICTED;
+        } else if (this.approximateMaxBps <= 0) {
+            pressure = NetworkPressure.HIGH;
+        } else {
+            final float queueRatio = queuedBytes / (this.approximateMaxBps * BITS_TO_BYTES);
+
+            if (queueRatio <= LOW_LOAD_RATIO) {
+                pressure = NetworkPressure.LOW;
+            } else if (queueRatio <= HIGH_LOAD_RATIO) {
+                pressure = NetworkPressure.MEDIUM;
+            } else {
+                pressure = NetworkPressure.HIGH;
+            }
+        }
+
+        return new NetworkSnapshot(bytesOutPerSecond, queuedBytes, this.approximateMaxBps, pressure);
+    }
+
+    /**
+     * Returns the current network pressure.
+     *
+     * @return current network pressure
+     */
+    public NetworkPressure getNetworkPressure() {
+        return this.snapshot().pressure();
     }
 
     private long getApproximateBytesSentLastSecond() {

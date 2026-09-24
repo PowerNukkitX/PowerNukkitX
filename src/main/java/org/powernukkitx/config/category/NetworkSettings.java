@@ -33,6 +33,9 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.transport")
     String transport = "raknet";
 
+    @Comment("pnx.settings.network.upstreambandwidth")
+    @CustomKey("upstream-bandwidth")
+    int upstreamBandwidth = 1000;
     @Comment("pnx.settings.network.queryplugins")
     boolean queryPlugins = true;
     @Comment("pnx.settings.network.compressionlevel")

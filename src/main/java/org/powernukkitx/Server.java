@@ -64,6 +64,7 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.lang.BaseLang;
 import org.powernukkitx.lang.LangCode;
 import org.powernukkitx.lang.TextContainer;
+import org.powernukkitx.level.ChunkPublisherBudgetController;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
@@ -226,6 +227,7 @@ public class Server {
     public final ForkJoinPool computeThreadPool;
     private final ScheduledExecutorService levelTickExecutor;
     private final ScheduledExecutorService chunkPublisherExecutor;
+    private final ChunkPublisherBudgetController chunkPublisherBudgetController;
     private final boolean levelThreadMode;
     private SimpleCommandMap commandMap;
     private ResourcePackManager resourcePackManager;
@@ -417,6 +419,7 @@ public class Server {
             thread.setDaemon(true);
             return thread;
         });
+        this.chunkPublisherBudgetController = new ChunkPublisherBudgetController(this);
 
         this.levelThreadMode = this.settings.levelSettings().levelThread();
 
@@ -3584,6 +3587,15 @@ public class Server {
 
     public ForkJoinPool getComputeThreadPool() {
         return computeThreadPool;
+    }
+
+    /**
+     * Returns the global adaptive chunk publication controller.
+     *
+     * @return chunk publication controller
+     */
+    public ChunkPublisherBudgetController getChunkPublisherBudgetController() {
+        return chunkPublisherBudgetController;
     }
 
     public boolean allowVibrantVisuals() {

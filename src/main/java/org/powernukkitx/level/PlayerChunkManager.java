@@ -8,12 +8,10 @@ import org.powernukkitx.event.player.PlayerPreChunkRequestEvent;
 import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
-import org.powernukkitx.network.RakNetNetworkMetrics;
 import org.powernukkitx.network.process.cache.ClientBlobCacheManager;
 
 import org.cloudburstmc.math.vector.Vector2i;
 import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -356,22 +354,11 @@ public final class PlayerChunkManager {
     }
 
     private int getChunkSendBudget() {
-        final var metrics = player.getSession().getPeer().getChannel().config().getOption(RakChannelOption.RAK_METRICS);
-        final int baseBudget;
-
-        if (metrics instanceof RakNetNetworkMetrics networkMetrics) {
-            baseBudget = switch (networkMetrics.getNetworkLoad()) {
-                case UNRESTRICTED -> 40;
-                case LOW -> 20;
-                case MEDIUM -> 8;
-                case HIGH -> 0;
-            };
-        } else {
-            baseBudget = 20;
-        }
-
-        final int activePlayerCount = player.getServer().getOnlinePlayers().size();
-        return activePlayerCount == 0 ? baseBudget : Math.max(1, baseBudget / activePlayerCount);
+        return player.getServer().getChunkPublisherBudgetController().acquireChunkSendBudget(
+                player,
+                chunkReadyToSend.size(),
+                player.getServer().getNetwork().getNetworkPressure(player)
+        );
     }
 
     private void loadQueuedChunks(boolean force) {
@@ -493,41 +480,46 @@ public final class PlayerChunkManager {
         final LongArrayList deferred = new LongArrayList();
         int sent = 0;
 
-        while (!chunkReadyToSend.isEmpty() && sent < sendBudget) {
-            final long chunkHash = chunkReadyToSend.dequeueLong();
-            final Chunk chunk = resolvePendingChunk(chunkHash);
+        try {
+            while (!chunkReadyToSend.isEmpty() && sent < sendBudget) {
+                final long chunkHash = chunkReadyToSend.dequeueLong();
+                final Chunk chunk = resolvePendingChunk(chunkHash);
 
-            if (chunk == null) {
-                if (inRadiusChunks.contains(chunkHash) && !sentChunks.contains(chunkHash)) {
+                if (chunk == null) {
+                    if (inRadiusChunks.contains(chunkHash) && !sentChunks.contains(chunkHash)) {
+                        chunkSendQueue.enqueue(chunkHash);
+                    }
+                    continue;
+                }
+
+                if (!inRadiusChunks.contains(chunkHash)) {
+                    deferred.add(chunkHash);
+                    continue;
+                }
+
+                final int chunkX = Level.getHashX(chunkHash);
+                final int chunkZ = Level.getHashZ(chunkHash);
+
+                if (!PlayerChunkRequestEvent.getHandlers().isEmpty()) {
+                    PlayerChunkRequestEvent event = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
+                    player.getServer().getPluginManager().callEvent(event);
+                }
+
+                if (player.level.trySendChunk(chunk, player)) {
+                    sent++;
+                } else if (resolvePendingChunk(chunkHash) == chunk) {
+                    deferred.add(chunkHash);
+                } else if (inRadiusChunks.contains(chunkHash) && !sentChunks.contains(chunkHash)) {
                     chunkSendQueue.enqueue(chunkHash);
                 }
-                continue;
+            }
+        } finally {
+            for (int i = 0; i < deferred.size(); i++) {
+                chunkReadyToSend.enqueue(deferred.getLong(i));
             }
 
-            if (!inRadiusChunks.contains(chunkHash)) {
-                deferred.add(chunkHash);
-                continue;
-            }
-
-            final int chunkX = Level.getHashX(chunkHash);
-            final int chunkZ = Level.getHashZ(chunkHash);
-
-            if (!PlayerChunkRequestEvent.getHandlers().isEmpty()) {
-                PlayerChunkRequestEvent event = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
-                player.getServer().getPluginManager().callEvent(event);
-            }
-
-            if (player.level.trySendChunk(chunk, player)) {
-                sent++;
-            } else if (resolvePendingChunk(chunkHash) == chunk) {
-                deferred.add(chunkHash);
-            } else if (inRadiusChunks.contains(chunkHash) && !sentChunks.contains(chunkHash)) {
-                chunkSendQueue.enqueue(chunkHash);
-            }
-        }
-
-        for (int i = 0; i < deferred.size(); i++) {
-            chunkReadyToSend.enqueue(deferred.getLong(i));
+            player.getServer().getChunkPublisherBudgetController()
+                    .releaseUnusedChunkBudget(player, sendBudget - sent);
         }
     }
 

@@ -3140,11 +3140,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.playerChunkManager.getUsedChunks().add(chunkHash);
         }
 
+        final LevelChunkPacket levelChunkPacket = packet instanceof LevelChunkPacket levelChunk ? levelChunk : null;
         final boolean subChunkRequestMode =
-                packet instanceof LevelChunkPacket levelChunkPacket &&
-                levelChunkPacket.isClientNeedsToRequestSubChunks();
+                levelChunkPacket != null && levelChunkPacket.isClientNeedsToRequestSubChunks();
 
-        if (packet instanceof LevelChunkPacket) {
+        if (levelChunkPacket != null) {
+            final var serializedChunkData = levelChunkPacket.getSerializedChunkData();
+            if (serializedChunkData != null) {
+                this.server.getChunkPublisherBudgetController()
+                        .recordChunkPayloadBytes(serializedChunkData.readableBytes());
+            }
             this.playerChunkManager.onLevelChunkSent(chunkHash);
         }
 
@@ -3185,7 +3190,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.sendPacket(playerActionPacket);
         }
     }
-
 
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
