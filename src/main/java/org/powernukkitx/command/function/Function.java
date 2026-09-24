@@ -61,8 +61,8 @@ public class Function {
         this.fullPath = fullPath;
         try {
             commands = Files.readAllLines(fullPath);
-            // Remove blank lines and comments (anything after '#')
-            commands = commands.stream().filter(s -> !s.isBlank()).map(s -> s.split("#")[0]).filter(s -> !s.isEmpty()).toList();
+            // Remove blank lines and comment lines; '#' elsewhere is part of the command (e.g. text or JSON)
+            commands = commands.stream().map(String::strip).filter(s -> !s.isEmpty() && !s.startsWith("#")).toList();
         } catch (IOException e) {
             e.printStackTrace();
         }
