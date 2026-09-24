@@ -10,6 +10,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.signaling.ProviderClient;
+import org.cloudburstmc.netty.signaling.ProviderDiagnostic;
 import org.cloudburstmc.netty.signaling.ProviderStateStore;
 import org.cloudburstmc.netty.signaling.ProviderTransport;
 import org.cloudburstmc.netty.signaling.ServerStatus;
@@ -96,7 +97,7 @@ public class NetherNetProvider implements AutoCloseable {
             host.warnings().forEach(log::warn);
 
             this.client = new ProviderClient(runtime.clientConfiguration(), store, transport, this::status,
-                () -> this.health(runtime.capacity()), log::warn);
+                () -> this.health(runtime.capacity()), NetherNetProvider::diagnostic);
             // The client owns the store and the transport from here
             store = null;
             transport = null;
@@ -165,6 +166,14 @@ public class NetherNetProvider implements AutoCloseable {
         return new ProviderClient.Health(true, this.accepting(), capacity, load, "nethernet",
             this.server.getNukkitVersion(),
             new ProviderClient.PlayerCount(players, System.currentTimeMillis()));
+    }
+
+    private static void diagnostic(ProviderDiagnostic diagnostic) {
+        switch (diagnostic.level()) {
+            case DEBUG -> log.debug(diagnostic.message());
+            case INFO -> log.info(diagnostic.message());
+            case WARN -> log.warn(diagnostic.message());
+        }
     }
 
     private static String registrationMessage(JsonObject registration) {
