@@ -5,6 +5,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityMarkVariant;
 import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityShearable;
 import org.powernukkitx.entity.EntityVariant;
@@ -48,12 +49,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityVariant, EntityInteractable {
+public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityVariant, EntityInteractable, EntityMarkVariant {
 
     /**
      * The mooshroom variants. Adding a new one only means adding a constant here - the id, the
@@ -97,6 +99,36 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     private static final int[] VARIANTS = Arrays.stream(Variant.values()).mapToInt(Variant::getId).toArray();
 
     private static final int SHEAR_MUSHROOM_COUNT = 5;
+
+    /**
+     * Mark variant of a brown mooshroom that has not eaten a flower yet.
+     */
+    private static final int NO_STEW_EFFECT = -1;
+
+    /**
+     * The flower a brown mooshroom ate, mapped to the suspicious stew meta it gives when milked
+     * with a bowl. The value is stored as the mark variant, the way vanilla does it.
+     */
+    private static final Map<String, Integer> STEW_EFFECTS = Map.ofEntries(
+            Map.entry(BlockID.POPPY, 0),
+            Map.entry(BlockID.CORNFLOWER, 1),
+            Map.entry(BlockID.RED_TULIP, 2),
+            Map.entry(BlockID.ORANGE_TULIP, 2),
+            Map.entry(BlockID.WHITE_TULIP, 2),
+            Map.entry(BlockID.PINK_TULIP, 2),
+            Map.entry(BlockID.AZURE_BLUET, 3),
+            Map.entry(BlockID.LILY_OF_THE_VALLEY, 4),
+            Map.entry(BlockID.DANDELION, 5),
+            Map.entry(BlockID.BLUE_ORCHID, 6),
+            Map.entry(BlockID.ALLIUM, 7),
+            Map.entry(BlockID.OXEYE_DAISY, 8),
+            Map.entry(BlockID.WITHER_ROSE, 9),
+            Map.entry(BlockID.TORCHFLOWER, 10),
+            Map.entry(BlockID.OPEN_EYEBLOSSOM, 11),
+            Map.entry(BlockID.CLOSED_EYEBLOSSOM, 12)
+    );
+
+    private static final int[] MARK_VARIANTS = STEW_EFFECTS.values().stream().mapToInt(Integer::intValue).distinct().toArray();
 
     @Override
     @NotNull public String getIdentifier() {
@@ -229,16 +261,46 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
             shear();
             return true;
         } else if (item.getId().equals(Item.BUCKET) && item.getDamage() == 0) {
-            item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
         } else if (item.getId().equals(Item.BOWL) && item.getDamage() == 0) {
-            item.count--;
-            player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
+            if (getVariantType() == Variant.BROWN && hasStewEffect()) {
+                player.getInventory().addItem(Item.get(Item.SUSPICIOUS_STEW, getMarkVariant()));
+                this.level.addSound(this, Sound.MOB_MOOSHROOM_SUSPICIOUS_MILK);
+                clearStewEffect();
+            } else {
+                player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
+            }
             return true;
+        } else if (getVariantType() == Variant.BROWN && !hasStewEffect()) {
+            int stewEffect = STEW_EFFECTS.getOrDefault(item.getId(), -1);
+            if (stewEffect != -1) {
+                setMarkVariant(stewEffect);
+                this.level.addSound(this, Sound.MOB_MOOSHROOM_EAT);
+                return true;
+            }
         }
 
         return false;
+    }
+
+    /**
+     * @return true if this mooshroom ate a flower and has not been milked since
+     */
+    public boolean hasStewEffect() {
+        return hasMarkVariant() && getMarkVariant() != NO_STEW_EFFECT;
+    }
+
+    /**
+     * Forgets the flower this mooshroom ate, so it gives a plain mushroom stew again.
+     */
+    public void clearStewEffect() {
+        setMarkVariant(NO_STEW_EFFECT);
+    }
+
+    @Override
+    public int[] getAllMarkVariant() {
+        return MARK_VARIANTS;
     }
 
     @Override
@@ -252,6 +314,9 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         }
         if (held.getId().equals(ItemID.BOWL) && held.getDamage() == 0) {
             return "action.interact.moostew";
+        }
+        if (getVariantType() == Variant.BROWN && !hasStewEffect() && STEW_EFFECTS.containsKey(held.getId())) {
+            return "action.interact.feed";
         }
         return "";
     }
@@ -281,6 +346,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         super.onStruckByLightning(entity);
 
         setVariantType(getVariantType().next());
+        clearStewEffect();
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
