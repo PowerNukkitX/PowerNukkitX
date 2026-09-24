@@ -79,8 +79,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
 
         ChunkSettings chunk = settings.chunkSettings();
         LegacyServerSettings.ChunkSettings chunkOld = legacyNukkit.chunkSettings();
-        chunk.perTickSend(chunkOld.perTickSend())
-                .spawnThreshold(chunkOld.spawnThreshold())
+        chunk.spawnThreshold(chunkOld.spawnThreshold())
                 .chunksPerTicks(chunkOld.chunksPerTicks())
                 .tickRadius(chunkOld.tickRadius())
                 .lightUpdates(chunkOld.lightUpdates())

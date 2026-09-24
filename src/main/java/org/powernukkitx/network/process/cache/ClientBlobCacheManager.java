@@ -171,6 +171,9 @@ public final class ClientBlobCacheManager {
 
         synchronized (state) {
             final int maximumTransfers = getMaximumConcurrentTransfers(session);
+
+            // BDS treats this as a publisher pressure threshold, not an inclusive hard maximum.
+            // Equality is intentionally allowed; the next committed transfer may raise the count to limit + 1.
             if (state.activeTransfers.size() > maximumTransfers) return null;
             return new TransferBuilder(session, state);
         }

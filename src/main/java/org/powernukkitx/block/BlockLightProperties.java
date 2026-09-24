@@ -33,7 +33,10 @@ public final class BlockLightProperties {
     }
 
     private static int packOf(Block block) {
-        int packed = (block.getLightLevel() & BYTE_MASK) | ((block.getLightFilter() & BYTE_MASK) << FILTER_SHIFT);
+        int lightLevel = Math.max(0, Math.min(15, block.getLightLevel()));
+        int lightFilter = Math.max(0, Math.min(15, block.getLightFilter()));
+
+        int packed = lightLevel | (lightFilter << FILTER_SHIFT);
         if (block.diffusesSkyLight()) packed |= DIFFUSES_BIT;
         if (block.isTransparent()) packed |= TRANSPARENT_BIT;
         if (block instanceof BlockSlab) packed |= HALF_SLAB_BIT;

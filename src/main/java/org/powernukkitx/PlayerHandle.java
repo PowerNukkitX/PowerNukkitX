@@ -75,8 +75,21 @@ public final class PlayerHandle {
         return player.hiddenPlayers;
     }
 
+    /**
+     * Returns the current unrestricted base budget of the adaptive chunk publisher.
+     * <p>
+     * This is no longer a fixed per-player chunks-per-tick limit. Actual publication
+     * grants are calculated dynamically by the server-global chunk publisher using
+     * network capacity, active-streamer fairness, transport pressure, recent chunk
+     * payload cost, available byte tokens, and runtime resource pressure.
+     *
+     * @return current unrestricted global chunk publication base
+     * @deprecated LevelChunk publication no longer uses a fixed per-player chunks-per-tick
+     * limit. Use the adaptive chunk publisher architecture instead.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public int getChunksPerTick() {
-        return player.chunksPerTick;
+        return player.getChunkSendCountPerTick();
     }
 
     public int getSpawnThreshold() {

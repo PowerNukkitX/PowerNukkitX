@@ -269,7 +269,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final Set<UUID> hiddenFromPlayerList = new HashSet<>();
-    protected final int chunksPerTick;
     protected final int spawnThreshold;
     protected int messageLimitCounter = 2;
     protected AtomicBoolean connected = new AtomicBoolean(true);
@@ -470,7 +469,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.socketAddress = (InetSocketAddress) this.getSession().getSocketAddress();
         this.rawSocketAddress = socketAddress;
         this.loaderId = Level.generateChunkLoaderId(this);
-        this.chunksPerTick = this.server.getSettings().chunkSettings().perTickSend();
         this.spawnThreshold = this.server.getSettings().chunkSettings().spawnThreshold();
         this.spawnPoint = null;
         this.gamemode = this.server.getGamemode();
@@ -4128,7 +4126,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Set the player's viewing distance (range 0--{@link Server#getViewDistance})
+     * Set the player's viewing distance (range 2--{@link Server#getViewDistance})
      *
      * @param distance view distance
      */
@@ -4139,12 +4137,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Stores the chunk radius requested by the client and applies its server-clamped value.
+     * <p>
+     * Client requests normally use a minimum radius of
+     * {@link #MIN_CLIENT_REQUESTED_CHUNK_RADIUS}, but the configured server view
+     * distance remains the absolute upper limit.
      *
      * @param distance client-requested chunk radius
      */
     public void setClientRequestedChunkRadius(int distance) {
         this.clientRequestedChunkRadius = distance;
-        int clampedDistance = Math.max(MIN_CLIENT_REQUESTED_CHUNK_RADIUS, Math.min(distance, this.server.getViewDistance()));
+        int clampedDistance = Math.min(this.server.getViewDistance(), Math.max(MIN_CLIENT_REQUESTED_CHUNK_RADIUS, distance));
         this.applyViewDistance(clampedDistance);
     }
 
@@ -7156,8 +7158,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.flySneaking;
     }
 
+    /**
+     * Returns the current unrestricted base budget of the adaptive chunk publisher.
+     * <p>
+     * This is no longer a fixed per-player chunks-per-tick limit. Actual publication
+     * grants are calculated dynamically by {@link org.powernukkitx.level.ChunkPublisherBudgetController}
+     * using network capacity, active-streamer fairness, transport pressure, recent
+     * chunk payload cost, available byte tokens, and runtime resource pressure.
+     * Consequently, the number returned here may be higher than the number of chunks
+     * actually granted to this player during a publisher pass.
+     *
+     * @return current unrestricted global chunk publication base
+     * @deprecated LevelChunk publication no longer uses a fixed per-player chunks-per-tick
+     * limit. Plugins should not use this value to control or predict chunk publication.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public int getChunkSendCountPerTick() {
-        return chunksPerTick;
+        return this.server.getChunkPublisherBudgetController().getDynamicBaseBudget();
     }
 
     public void setEnderChestOpen(boolean v) {
