@@ -79,6 +79,8 @@ public record EffectType(String stringId, Integer id) {
 
     public static final EffectType INFESTED = new EffectType("infested", 35);
 
+    public static final EffectType RAID_OMEN = new EffectType("raid_omen", 36);
+
     public static EffectType get(String stringId) {
         return Registries.EFFECT.getType(stringId);
     }

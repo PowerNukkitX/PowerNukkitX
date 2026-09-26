@@ -2123,6 +2123,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 this.checkSleep();
             }
 
+            this.villageManager.tick(currentTick);
+
             if (!this.chunkPackets.isEmpty()) {
                 for (var entry : this.chunkPackets.entrySet()) {
                     long index = entry.getKey();
