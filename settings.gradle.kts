@@ -1,8 +1,3 @@
-include(":plugins:InnerWorld")
-project(":plugins:InnerWorld").projectDir = file("plugins/innerworld")
-
-rootProject.name = "powernukkitx"
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
