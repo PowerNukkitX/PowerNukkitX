@@ -11,7 +11,10 @@ import org.powernukkitx.nbt.tag.ListTag;
 import java.io.IOException;
 
 /**
- * Converts legacy PNX chunk metadata and scheduled tick storage to the canonical 3.1.0 representation.
+ * Converts legacy chunk storage to the canonical 3.1.0 representation.
+ * <p>
+ * This includes legacy PNX metadata and scheduled ticks as well as legacy BDS formats which,
+ * such as the one-byte BiomeState header and biome IDs.
  *
  * @author Curse
  */
@@ -32,6 +35,7 @@ public final class ChunkV3_1_0Migration implements MigrationStep<ChunkMigrationD
         CompoundTag extraData = value.extraData();
         CompoundTag pendingTicks = value.pendingTicks();
         boolean pendingTicksPresent = value.pendingTicksPresent();
+        byte[] biomeState = migrateBiomeState(value.biomeState(), value.chunkX(), value.chunkZ());
 
         if (extraData.contains("pendingScheduledTicks") && !pendingTicksPresent) {
             ListTag<CompoundTag> legacyTicks = extraData.getList("pendingScheduledTicks", CompoundTag.class);
@@ -88,7 +92,48 @@ public final class ChunkV3_1_0Migration implements MigrationStep<ChunkMigrationD
                 extraData,
                 value.scheduledTicks(),
                 pendingTicksPresent,
-                pendingTicks
+                pendingTicks,
+                biomeState
         );
+    }
+
+    private static byte[] migrateBiomeState(byte[] data, int chunkX, int chunkZ) throws IOException {
+        if (data == null) return null;
+
+        if (data.length >= Short.BYTES) {
+            int count = Byte.toUnsignedInt(data[0]) | (Byte.toUnsignedInt(data[1]) << Byte.SIZE);
+            if (data.length == Short.BYTES + count * 3) {
+                return data;
+            }
+        }
+
+        if (data.length == 0) {
+            throw new IOException("Invalid BiomeState storage in chunk [" + chunkX + "," + chunkZ + "]: empty value");
+        }
+
+        int legacyCount = Byte.toUnsignedInt(data[0]);
+        int expectedLength = Byte.BYTES + legacyCount * 2;
+
+        if (data.length != expectedLength) {
+            throw new IOException(
+                    "Invalid BiomeState storage in chunk [" + chunkX + "," + chunkZ +
+                            "]: expected legacy length " + expectedLength + ", got " + data.length
+            );
+        }
+
+        byte[] migrated = new byte[Short.BYTES + legacyCount * 3];
+        migrated[0] = (byte) legacyCount;
+        migrated[1] = 0;
+
+        for (int i = 0; i < legacyCount; i++) {
+            int sourceIndex = Byte.BYTES + i * 2;
+            int targetIndex = Short.BYTES + i * 3;
+
+            migrated[targetIndex] = data[sourceIndex];
+            migrated[targetIndex + 1] = 0;
+            migrated[targetIndex + 2] = data[sourceIndex + 1];
+        }
+
+        return migrated;
     }
 }

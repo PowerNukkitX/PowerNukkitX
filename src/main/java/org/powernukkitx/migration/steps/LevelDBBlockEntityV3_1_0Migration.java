@@ -26,7 +26,7 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Converts legacy PNX Block Entity storage to the BDS-compatible 3.1.0 representation.
+ * Converts legacy PNX Block Entity storage and legacy BDS representations to the canonical 3.1.0 format.
  *
  * @author Curse
  */
@@ -2253,14 +2253,22 @@ public final class LevelDBBlockEntityV3_1_0Migration implements MigrationStep<Le
     private static boolean validateStorageItemList(CompoundTag owner, String name) {
         if (!owner.contains(name)) return true;
 
-        if (!owner.containsList(name, Tag.TAG_Compound)) {
+        if (!owner.containsList(name)) {
+            logSkippedBlockEntityMigration(owner, "unexpected " + name + " tag type");
+            return false;
+        }
+
+        ListTag<?> items = owner.getList(name);
+        if (items.size() == 0) return true;
+
+        if (items.type != Tag.TAG_Compound) {
             logSkippedBlockEntityMigration(owner, "unexpected " + name + " list type");
             return false;
         }
 
-        ListTag<CompoundTag> items = owner.getList(name, CompoundTag.class);
-        for (int i = 0; i < items.size(); i++) {
-            if (!validateStorageItem(owner, items.get(i), name + "[" + i + "]")) {
+        ListTag<CompoundTag> storageItems = owner.getList(name, CompoundTag.class);
+        for (int i = 0; i < storageItems.size(); i++) {
+            if (!validateStorageItem(owner, storageItems.get(i), name + "[" + i + "]")) {
                 return false;
             }
         }
@@ -2310,6 +2318,12 @@ public final class LevelDBBlockEntityV3_1_0Migration implements MigrationStep<Le
     private static boolean migrateStorageItemList(CompoundTag owner, String name, boolean createIfMissing) {
         if (!owner.contains(name)) {
             if (!createIfMissing) return false;
+            owner.putList(name, new ListTag<>(Tag.TAG_Compound));
+            return true;
+        }
+
+        ListTag<?> storedItems = owner.getList(name);
+        if (storedItems.size() == 0 && storedItems.type != Tag.TAG_Compound) {
             owner.putList(name, new ListTag<>(Tag.TAG_Compound));
             return true;
         }

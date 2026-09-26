@@ -49,6 +49,7 @@ public final class ChunkMigrationExecutor {
             IChunk chunk,
             int generatorType,
             CompoundTag extraData,
+            boolean pnxManagedStorage,
             MigrationService migrationService,
             MigrationVersion currentVersion
     ) throws IOException {
@@ -73,6 +74,9 @@ public final class ChunkMigrationExecutor {
         }
 
         byte[] pendingTicksKey = LevelDBKeyUtil.PENDING_TICKS.getKey(chunkX, chunkZ, dimensionData);
+        byte[] biomeStateKey = LevelDBKeyUtil.BIOME_STATE.getKey(chunkX, chunkZ, dimensionData);
+        byte[] biomeState = db.get(biomeStateKey);
+
         ChunkMigrationData migrated = migrationService.apply(
                 MigrationFormat.CHUNK,
                 currentVersion,
@@ -82,11 +86,23 @@ public final class ChunkMigrationExecutor {
                         extraData,
                         scheduledTicks,
                         db.get(pendingTicksKey) != null,
-                        null
+                        null,
+                        biomeState
                 )
         );
 
-        normalizeLegacySnowlogging(chunk);
+        if (!Arrays.equals(biomeState, migrated.biomeState())) {
+            if (migrated.biomeState() == null) {
+                batch.delete(biomeStateKey);
+            } else {
+                batch.put(biomeStateKey, migrated.biomeState());
+            }
+        }
+
+        if (pnxManagedStorage) {
+            normalizeLegacySnowlogging(chunk);
+        }
+
         chunk.recalculateHeightMap();
         LevelDBChunkSerializer.INSTANCE.serializeTerrain(batch, chunk);
         serializeLegacyBorderBlocks(batch, chunk, dimensionData);

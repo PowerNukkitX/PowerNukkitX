@@ -1,3 +1,8 @@
+include(":plugins:InnerWorld")
+project(":plugins:InnerWorld").projectDir = file("plugins/innerworld")
+
+rootProject.name = "powernukkitx"
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -33,8 +38,6 @@ dependencyResolutionManagement {
         }
     }
 }
-
-rootProject.name = "powernukkitx"
 
 // Enable Gradle enterprise features for better build insights
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")

@@ -85,7 +85,7 @@ public final class InitialSubChunkLighter {
         clearWorkState();
         center.clearBlockLight();
         seedCenter(center);
-        seedBoundarySources();
+        seedBoundarySources(center);
         processSkyAddition();
         processBlockAddition();
         commitTouchedSections();
@@ -163,67 +163,73 @@ public final class InitialSubChunkLighter {
                 || localZ < 15 && (skyLight[cellIndex + 0x010] & 0xff) < maximumCandidate;
     }
 
-    private void seedBoundarySources() {
-        // X boundaries
+    private void seedBoundarySources(Slot center) {
+        Slot negativeX = slots[slotIndex(0, CENTER, CENTER)];
+        Slot positiveX = slots[slotIndex(2, CENTER, CENTER)];
+        Slot negativeZ = slots[slotIndex(CENTER, CENTER, 0)];
+        Slot positiveZ = slots[slotIndex(CENTER, CENTER, 2)];
+        Slot negativeY = slots[slotIndex(CENTER, 0, CENTER)];
+        Slot positiveY = slots[slotIndex(CENTER, 2, CENTER)];
+
+        int centerNegativeX = SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 0, 0, 0);
+        int negativeXBase = SubChunkLightIndex.pack(0, CENTER, CENTER, 15, 0, 0);
+        int centerPositiveX = SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 15, 0, 0);
+        int positiveXBase = SubChunkLightIndex.pack(2, CENTER, CENTER, 0, 0, 0);
+
         for (int localY = 0; localY < 16; localY++) {
             for (int localZ = 0; localZ < 16; localZ++) {
-                seedBoundaryPair(
-                        SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 0, localY, localZ),
-                        SubChunkLightIndex.pack(0, CENTER, CENTER, 15, localY, localZ));
-                seedBoundaryPair(
-                        SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 15, localY, localZ),
-                        SubChunkLightIndex.pack(2, CENTER, CENTER, 0, localY, localZ));
+                int offset = localZ << 6 | localY;
+                seedBoundaryPair(center, centerNegativeX + offset, negativeX, negativeXBase + offset);
+                seedBoundaryPair(center, centerPositiveX + offset, positiveX, positiveXBase + offset);
             }
         }
 
-        // Z boundaries
+        int centerNegativeZ = SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 0, 0, 0);
+        int negativeZBase = SubChunkLightIndex.pack(CENTER, CENTER, 0, 0, 0, 15);
+        int centerPositiveZ = SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 0, 0, 15);
+        int positiveZBase = SubChunkLightIndex.pack(CENTER, CENTER, 2, 0, 0, 0);
+
         for (int localY = 0; localY < 16; localY++) {
             for (int localX = 0; localX < 16; localX++) {
-                seedBoundaryPair(
-                        SubChunkLightIndex.pack(CENTER, CENTER, CENTER, localX, localY, 0),
-                        SubChunkLightIndex.pack(CENTER, CENTER, 0, localX, localY, 15));
-                seedBoundaryPair(
-                        SubChunkLightIndex.pack(CENTER, CENTER, CENTER, localX, localY, 15),
-                        SubChunkLightIndex.pack(CENTER, CENTER, 2, localX, localY, 0));
+                int offset = localX << 12 | localY;
+                seedBoundaryPair(center, centerNegativeZ + offset, negativeZ, negativeZBase + offset);
+                seedBoundaryPair(center, centerPositiveZ + offset, positiveZ, positiveZBase + offset);
             }
         }
 
-        // Y boundaries
+        int centerNegativeY = SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 0, 0, 0);
+        int negativeYBase = SubChunkLightIndex.pack(CENTER, 0, CENTER, 0, 15, 0);
+        int centerPositiveY = SubChunkLightIndex.pack(CENTER, CENTER, CENTER, 0, 15, 0);
+        int positiveYBase = SubChunkLightIndex.pack(CENTER, 2, CENTER, 0, 0, 0);
+
         for (int localZ = 0; localZ < 16; localZ++) {
             for (int localX = 0; localX < 16; localX++) {
-                seedBoundaryPair(
-                        SubChunkLightIndex.pack(CENTER, CENTER, CENTER, localX, 0, localZ),
-                        SubChunkLightIndex.pack(CENTER, 0, CENTER, localX, 15, localZ));
-                seedBoundaryPair(
-                        SubChunkLightIndex.pack(CENTER, CENTER, CENTER, localX, 15, localZ),
-                        SubChunkLightIndex.pack(CENTER, 2, CENTER, localX, 0, localZ));
+                int offset = localX << 12 | localZ << 6;
+                seedBoundaryPair(center, centerNegativeY + offset, negativeY, negativeYBase + offset);
+                seedBoundaryPair(center, centerPositiveY + offset, positiveY, positiveYBase + offset);
             }
         }
     }
 
-    private void seedBoundaryPair(int first, int second) {
-        Slot firstSlot = getSlot(first);
-        Slot secondSlot = getSlot(second);
-        if (firstSlot == null || !firstSlot.available || secondSlot == null || !secondSlot.available) {
-            return;
+    private void seedBoundaryPair(Slot center, int centerIndex, Slot neighbor, int neighborIndex) {
+        if (!neighbor.available) return;
+
+        int centerCellIndex = SubChunkLightIndex.cellIndex(centerIndex);
+        int neighborCellIndex = SubChunkLightIndex.cellIndex(neighborIndex);
+        int centerSky = center.getSkyLight(centerCellIndex);
+        int neighborSky = neighbor.getSkyLight(neighborCellIndex);
+        if (centerSky > neighborSky) {
+            queueSkySource(centerIndex, centerSky);
+        } else if (neighborSky > centerSky) {
+            queueSkySource(neighborIndex, neighborSky);
         }
 
-        int firstCellIndex = SubChunkLightIndex.cellIndex(first);
-        int secondCellIndex = SubChunkLightIndex.cellIndex(second);
-        int firstSky = firstSlot.getSkyLight(firstCellIndex);
-        int secondSky = secondSlot.getSkyLight(secondCellIndex);
-        if (firstSky > secondSky) {
-            queueSkySource(first, firstSky);
-        } else if (secondSky > firstSky) {
-            queueSkySource(second, secondSky);
-        }
-
-        int firstBlock = ensureIntrinsicEmissionResolved(firstSlot, firstCellIndex);
-        int secondBlock = ensureIntrinsicEmissionResolved(secondSlot, secondCellIndex);
-        if (firstBlock > secondBlock) {
-            queueBlockAdditionResolved(first, firstBlock);
-        } else if (secondBlock > firstBlock) {
-            queueBlockAdditionResolved(second, secondBlock);
+        int centerBlock = center.blockLight[centerCellIndex] & 0xff;
+        int neighborBlock = ensureIntrinsicEmissionResolved(neighbor, neighborCellIndex);
+        if (centerBlock > neighborBlock) {
+            queueBlockAdditionResolved(centerIndex, centerBlock);
+        } else if (neighborBlock > centerBlock) {
+            queueBlockAdditionResolved(neighborIndex, neighborBlock);
         }
     }
 
@@ -312,55 +318,88 @@ public final class InitialSubChunkLighter {
             Slot slot = slots[slotIndex(index)];
             int cellIndex = SubChunkLightIndex.cellIndex(index);
             slot.setQueuedSkyLight(cellIndex, light);
-            spreadSkyLight(index, light);
+            if (light > 1) spreadSkyLight(index, light);
         }
 
         skyPropagationPendingMask &= ~lightMask;
     }
 
     private void spreadSkyLight(int sourceIndex, int sourceLight) {
-        if (sourceLight <= 1) return;
-
+        int maximumCandidate = sourceLight - 1;
         int sourceWord = sourceIndex >>> 6;
         long sourceMask = 1L << (sourceIndex & 63);
         int toDoWord = sourceWord + 64;
         if ((skyToDo[toDoWord] & sourceMask) == 0L) {
-            spreadSkyLightTo(sourceIndex + SubChunkLightIndex.POSITIVE_X, sourceLight, toDoWord, sourceMask);
+            spreadSkyLightTo(
+                    sourceIndex + SubChunkLightIndex.POSITIVE_X,
+                    sourceLight,
+                    maximumCandidate,
+                    toDoWord,
+                    sourceMask);
         }
 
         toDoWord = sourceWord - 64;
         if ((skyToDo[toDoWord] & sourceMask) == 0L) {
-            spreadSkyLightTo(sourceIndex + SubChunkLightIndex.NEGATIVE_X, sourceLight, toDoWord, sourceMask);
+            spreadSkyLightTo(
+                    sourceIndex + SubChunkLightIndex.NEGATIVE_X,
+                    sourceLight,
+                    maximumCandidate,
+                    toDoWord,
+                    sourceMask);
         }
 
         long verticalToDo = skyToDo[sourceWord];
         long positiveYMask = sourceMask << 1;
         if ((verticalToDo & positiveYMask) == 0L) {
-            spreadSkyLightTo(sourceIndex + SubChunkLightIndex.POSITIVE_Y, sourceLight, sourceWord, positiveYMask);
+            spreadSkyLightTo(
+                    sourceIndex + SubChunkLightIndex.POSITIVE_Y,
+                    sourceLight,
+                    maximumCandidate,
+                    sourceWord,
+                    positiveYMask);
         }
 
         long negativeYMask = sourceMask >>> 1;
         if ((verticalToDo & negativeYMask) == 0L) {
-            spreadSkyLightTo(sourceIndex + SubChunkLightIndex.NEGATIVE_Y, sourceLight, sourceWord, negativeYMask);
+            spreadSkyLightTo(
+                    sourceIndex + SubChunkLightIndex.NEGATIVE_Y,
+                    sourceLight,
+                    maximumCandidate,
+                    sourceWord,
+                    negativeYMask);
         }
 
         toDoWord = sourceWord + 1;
         if ((skyToDo[toDoWord] & sourceMask) == 0L) {
-            spreadSkyLightTo(sourceIndex + SubChunkLightIndex.POSITIVE_Z, sourceLight, toDoWord, sourceMask);
+            spreadSkyLightTo(
+                    sourceIndex + SubChunkLightIndex.POSITIVE_Z,
+                    sourceLight,
+                    maximumCandidate,
+                    toDoWord,
+                    sourceMask);
         }
 
         toDoWord = sourceWord - 1;
         if ((skyToDo[toDoWord] & sourceMask) == 0L) {
-            spreadSkyLightTo(sourceIndex + SubChunkLightIndex.NEGATIVE_Z, sourceLight, toDoWord, sourceMask);
+            spreadSkyLightTo(
+                    sourceIndex + SubChunkLightIndex.NEGATIVE_Z,
+                    sourceLight,
+                    maximumCandidate,
+                    toDoWord,
+                    sourceMask);
         }
     }
 
-    private void spreadSkyLightTo(int neighborIndex, int sourceLight, int toDoWord, long toDoMask) {
+    private void spreadSkyLightTo(
+            int neighborIndex,
+            int sourceLight,
+            int maximumCandidate,
+            int toDoWord,
+            long toDoMask) {
         Slot slot = slots[slotIndex(neighborIndex)];
         if (slot == null || !slot.available) return;
 
         int cellIndex = SubChunkLightIndex.cellIndex(neighborIndex);
-        int maximumCandidate = sourceLight - 1;
         int current = slot.getSkyLight(cellIndex);
         if (current >= maximumCandidate) return;
 
@@ -370,7 +409,7 @@ public final class InitialSubChunkLighter {
         }
 
         int filter = (properties[cellIndex] & 0xff) >>> 4;
-        int candidate = sourceLight - (filter < 1 ? 1 : filter);
+        int candidate = filter < 1 ? maximumCandidate : sourceLight - filter;
         if (candidate <= current) return;
 
         skyToDo[toDoWord] |= toDoMask;
@@ -663,8 +702,12 @@ public final class InitialSubChunkLighter {
 
         private void setQueuedSkyLight(int cellIndex, int light) {
             if (skyMode != SKY_EXPLICIT) {
-                byte[] storage = getOrCreateSkyArray();
-                Arrays.fill(storage, (byte) 0);
+                if (skyLight == null) {
+                    skyLight = new byte[ChunkSection.SIZE];
+                } else {
+                    Arrays.fill(skyLight, (byte) 0);
+                }
+
                 skyMode = SKY_EXPLICIT;
             }
 
@@ -683,13 +726,15 @@ public final class InitialSubChunkLighter {
         private void ensureBlockLoaded() {
             if (blockLoaded) return;
 
+            boolean created = false;
             if (blockLight == null) {
                 blockLight = new byte[ChunkSection.SIZE];
+                created = true;
             }
 
             if (section != null) {
                 section.lighting().copyBlockLightTo(blockLight);
-            } else {
+            } else if (!created) {
                 Arrays.fill(blockLight, (byte) 0);
             }
 

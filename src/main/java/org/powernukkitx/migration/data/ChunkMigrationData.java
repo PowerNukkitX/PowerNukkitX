@@ -5,7 +5,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import java.util.List;
 
 /**
- * Carries chunk storage data through versioned migration steps, including legacy scheduled and pending ticks.
+ * Carries chunk storage data through versioned migration steps, including legacy tick and BiomeState storage.
  *
  * @author Curse
  */
@@ -15,7 +15,8 @@ public record ChunkMigrationData(
         CompoundTag extraData,
         List<ScheduledTick> scheduledTicks,
         boolean pendingTicksPresent,
-        CompoundTag pendingTicks
+        CompoundTag pendingTicks,
+        byte[] biomeState
 ) {
     /**
      * Represents one scheduled block tick carried through chunk migration.

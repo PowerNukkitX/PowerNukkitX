@@ -286,9 +286,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Vector3 newPosition = null;
     protected int chunkRadius;
     protected int clientRequestedChunkRadius;
-    private boolean initialRespawnSearchSent;
-    private boolean initialRespawnReady;
-    private Position initialRespawnPosition;
+    protected boolean initialRespawnSearchSent;
+    protected boolean initialRespawnReady;
+    protected Position initialRespawnPosition;
     protected int viewDistance;
     protected Position spawnPoint;
     protected SpawnPointType spawnPointType;
@@ -313,7 +313,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected CompoundTag customNbt = new CompoundTag();
     protected boolean pnxExtraDirty;
     protected boolean customDirty;
-    private final PlayerCamera camera = new PlayerCamera(this);
+    protected final PlayerCamera camera = new PlayerCamera(this);
     protected boolean checkMovement = true;
     protected PlayerFood foodData = null;
     protected boolean enableClientCommand = true;
@@ -2913,7 +2913,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendInitialRespawnReady();
     }
 
-    private AxisAlignedBB getInitialRespawnCandidateBoundingBox() {
+    protected AxisAlignedBB getInitialRespawnCandidateBoundingBox() {
         final double halfWidth = this.getWidth() / 2.0;
 
         return new SimpleAxisAlignedBB(
@@ -2926,11 +2926,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         );
     }
 
-    private boolean isInitialRespawnAreaReady() {
+    protected boolean isInitialRespawnAreaReady() {
         return this.level.isAreaLoaded(this.getInitialRespawnCandidateBoundingBox());
     }
 
-    private Position resolveInitialRespawnPosition() {
+    protected Position resolveInitialRespawnPosition() {
         if (this.initialRespawnPosition != null) {
             return this.initialRespawnPosition;
         }
@@ -2947,7 +2947,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.initialRespawnPosition;
     }
 
-    private boolean isInitialSpawnReady() {
+    protected boolean isInitialSpawnReady() {
         if (!this.loggedIn || this.spawned || !this.initialRespawnReady) return false;
         if (this.playerChunkManager.getInitialLoadedChunksScore() <= INITIAL_SPAWN_CHUNK_LIMIT) return false;
         return this.playerChunkManager.getLevelChunksSentSinceStart() > INITIAL_SPAWN_CHUNK_LIMIT;
@@ -2972,7 +2972,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param includeLoginOnlyAttributes whether to include the additional attributes present in the initial pre-spawn snapshot
      */
-    private void sendInitialAttributes(boolean includeLoginOnlyAttributes) {
+    protected void sendInitialAttributes(boolean includeLoginOnlyAttributes) {
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
         packet.setRuntimeID(this.runtimeId());
 
@@ -3216,7 +3216,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return !event.isCancelled();
     }
 
-    private boolean sendPacketAccepted(BedrockPacket packet) {
+    protected boolean sendPacketAccepted(BedrockPacket packet) {
         if (!this.callPacketSendEvent(packet)) {
             return false;
         }
@@ -4148,7 +4148,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.applyViewDistance(clampedDistance);
     }
 
-    private void applyViewDistance(int clampedDistance) {
+    protected void applyViewDistance(int clampedDistance) {
         int previousDistance = this.chunkRadius;
         this.chunkRadius = clampedDistance;
 
@@ -4772,7 +4772,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.save(false);
     }
 
-    private void updatePersistentPlayerAttributes() {
+    protected void updatePersistentPlayerAttributes() {
         this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute).setMaxValue(this.getHealthMax()).setValue(this.getHealthCurrent());
         this.attributes.computeIfAbsent(Attribute.ABSORPTION, Attribute::getAttribute).setValue(this.getAbsorption());
 
@@ -4913,7 +4913,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    private @Nullable CompoundTag takePnxExtraSaveSnapshot() {
+    protected @Nullable CompoundTag takePnxExtraSaveSnapshot() {
         if (!this.pnxExtraDirty) return null;
 
         CompoundTag snapshot = this.pnxExtraNbt.copy();
@@ -4921,7 +4921,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return snapshot;
     }
 
-    private @Nullable CompoundTag takeCustomSaveSnapshot() {
+    protected @Nullable CompoundTag takeCustomSaveSnapshot() {
         if (!this.customDirty) return null;
 
         CompoundTag snapshot = this.customNbt.copy();

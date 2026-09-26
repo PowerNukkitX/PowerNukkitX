@@ -220,9 +220,18 @@ public final class LevelDBMigrationChunkSerializer {
     }
 
     /**
-     * Reads a stored chunk using migration-compatible legacy decoding.
+     * Reads a stored chunk using migration-compatible BDS or legacy PNX decoding.
+     *
+     * @param pnxManagedStorage whether the chunk contained PNX extra data before migration
      */
-    public static IChunk readChunk(DB db, int chunkX, int chunkZ, LevelProvider provider, CompoundTag extraData) throws IOException {
+    public static IChunk readChunk(
+            DB db,
+            int chunkX,
+            int chunkZ,
+            LevelProvider provider,
+            CompoundTag extraData,
+            boolean pnxManagedStorage
+    ) throws IOException {
         IChunkBuilder builder = Chunk.builder().chunkX(chunkX).chunkZ(chunkZ).levelProvider(provider);
         byte[] versionValue = db.get(LevelDBKeyUtil.VERSION.getKey(chunkX, chunkZ, provider.getDimensionData()));
         if (versionValue == null) {
@@ -236,7 +245,7 @@ public final class LevelDBMigrationChunkSerializer {
         builder.extraData(extraData);
         byte[] finalized = db.get(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(chunkX, chunkZ, provider.getDimensionData()));
         builder.finalizationState(decodeLegacyFinalizationState(finalized));
-        boolean legacyPnxStorage = (versionValue[0] & 0xff) < (IChunk.VERSION & 0xff);
+        boolean legacyPnxStorage = pnxManagedStorage && (versionValue[0] & 0xff) < (IChunk.VERSION & 0xff);
         if (legacyPnxStorage) {
             initializeBiomeSections(builder);
             LevelDBChunkSerializer.INSTANCE.deserializeBlock(db, builder);

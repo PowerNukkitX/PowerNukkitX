@@ -2,6 +2,7 @@ package org.powernukkitx.config.category;
 
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
+import eu.okaeri.configs.annotation.CustomKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -28,4 +29,7 @@ public class LevelSettings extends OkaeriConfig {
     int entitySpawnCap = 512;
     @Comment("pnx.settings.level.levelworkerthreads")
     int levelWorkerThreads = -1;
+    @Comment("pnx.settings.level.leveldbbackend")
+    @CustomKey("leveldb-backend")
+    String levelDBBackend = "java";
 }

@@ -29,7 +29,6 @@ import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import com.google.common.base.Preconditions;
 import java.io.ByteArrayInputStream;
@@ -159,7 +158,7 @@ public final class LevelDBStorage {
 
         File dbFolder = path.resolve("db").toFile();
         if (!dbFolder.exists()) dbFolder.mkdirs();
-        db = new Iq80DBFactory().open(dbFolder, options);
+        db = LevelDBBackendFactory.open(dbFolder, options);
         this.worldMetadata = new WorldMetadata(pathFolder, this);
         levelChunkMetaDataDictionary = new LevelChunkMetaDataDictionary(db);
         limboEntities = new LevelDBLimboEntities(this);

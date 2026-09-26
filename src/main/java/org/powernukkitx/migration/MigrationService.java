@@ -414,7 +414,7 @@ public final class MigrationService {
 
         int migrated = 0;
         int alreadyMigrated = 0;
-        int nonPnxChunks = 0;
+        int actorOnlyChunks = 0;
 
         Map<LevelDBActorV3_1_0Migration.CreakingHeartPosition, Long> migratedCreakingLinks = new HashMap<>();
         Map<UUID, Long> migratedActorUniqueIdsByUuid =
@@ -436,7 +436,7 @@ public final class MigrationService {
             switch (result) {
                 case MIGRATED -> migrated++;
                 case ALREADY_MIGRATED -> alreadyMigrated++;
-                case NOT_PNX -> nonPnxChunks++;
+                case ACTOR_ONLY -> actorOnlyChunks++;
             }
 
             int processed = i + 1;
@@ -451,8 +451,8 @@ public final class MigrationService {
         BlockEntityMigrationExecutor.reconcileNetherPortals(storage, dimensionData, migratedNetherPortalBlocks);
 
         log.info(
-                "[LevelDB Migration] Dimension {} completed: {} migrated, {} already migrated, {} non-PNX",
-                dimensionId, migrated, alreadyMigrated, nonPnxChunks
+                "[LevelDB Migration] Dimension {} completed: {} migrated, {} already migrated, {} actor-only",
+                dimensionId, migrated, alreadyMigrated, actorOnlyChunks
         );
     }
 
@@ -471,17 +471,19 @@ public final class MigrationService {
         DB db = storage.getDb();
         byte[] extraDataKey = LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(chunkX, chunkZ, dimensionData);
         byte[] extraDataBytes = db.get(extraDataKey);
+        boolean pnxManagedStorage = extraDataBytes != null;
 
-        /*
-         * The absence of PNX_EXTRA_DATA is significant.
-         *
-         * Native BDS chunks use that absence to select the BDS entity
-         * translation path, so never create PNX_EXTRA_DATA for a chunk
-         * which did not already have it.
-         */
-        if (extraDataBytes == null) {
+        if (!pnxManagedStorage) {
             ActorMigrationExecutor.reconcileNativeBdsActorDigest(storage, db, chunkX, chunkZ, dimensionData);
-            return MigrationResult.NOT_PNX;
+
+            byte[] versionValue = db.get(LevelDBKeyUtil.VERSION.getKey(chunkX, chunkZ, dimensionData));
+            if (versionValue == null) {
+                versionValue = db.get(LevelDBKeyUtil.LEGACY_VERSION.getKey(chunkX, chunkZ, dimensionData));
+            }
+
+            if (versionValue == null) {
+                return MigrationResult.ACTOR_ONLY;
+            }
         }
 
         CompoundTag extraData = LevelDBMigrationChunkSerializer.readBigEndianCompound(extraDataBytes);
@@ -509,7 +511,14 @@ public final class MigrationService {
              * Deserialize terrain only when a pending CHUNK or BLOCK_ENTITY
              * migration actually requires it.
              */
-            chunk = LevelDBMigrationChunkSerializer.readChunk(db, chunkX, chunkZ, migrationProvider, extraData);
+            chunk = LevelDBMigrationChunkSerializer.readChunk(
+                    db,
+                    chunkX,
+                    chunkZ,
+                    migrationProvider,
+                    extraData,
+                    pnxManagedStorage
+            );
 
             if (chunk == null) {
                 throw new IOException("Chunk [" + chunkX + "," + chunkZ + "] exists in LevelDB but could not be deserialized");
@@ -526,6 +535,7 @@ public final class MigrationService {
                         chunk,
                         generatorType,
                         extraData,
+                        pnxManagedStorage,
                         this,
                         chunkVersion
                 );
@@ -679,6 +689,6 @@ public final class MigrationService {
     private enum MigrationResult {
         MIGRATED,
         ALREADY_MIGRATED,
-        NOT_PNX
+        ACTOR_ONLY
     }
 }
