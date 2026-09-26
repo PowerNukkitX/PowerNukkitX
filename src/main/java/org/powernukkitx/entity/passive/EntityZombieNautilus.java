@@ -33,6 +33,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
@@ -325,7 +326,7 @@ public class EntityZombieNautilus extends EntityNautilus {
 
         if (this.jockeyType == SpawnRiderType.DROWNED_JOCKEY) {
             Item trident = Item.get(Item.TRIDENT, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(trident));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(trident)));
         }
 
         Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);

@@ -32,16 +32,14 @@ import org.powernukkitx.entity.components.RideableComponent;
 import org.powernukkitx.entity.weather.EntityLightningBolt;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
-import org.powernukkitx.inventory.EntityArmorInventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
+import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
@@ -295,16 +293,16 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
 
         double spread = 1.5d;
         CompoundTag nbt1 = nbt.copy();
-        nbt1.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x + spread));
-        nbt1.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z));
+        nbt1.getList("Pos", FloatTag.class).add(0, new FloatTag(vector.x + spread));
+        nbt1.getList("Pos", FloatTag.class).add(2, new FloatTag(vector.z));
 
         CompoundTag nbt2 = nbt.copy();
-        nbt2.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
-        nbt2.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z + (spread * 0.866d)));
+        nbt2.getList("Pos", FloatTag.class).add(0, new FloatTag(vector.x - (spread * 0.5d)));
+        nbt2.getList("Pos", FloatTag.class).add(2, new FloatTag(vector.z + (spread * 0.866d)));
 
         CompoundTag nbt3 = nbt.copy();
-        nbt3.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
-        nbt3.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z - (spread * 0.866d)));
+        nbt3.getList("Pos", FloatTag.class).add(0, new FloatTag(vector.x - (spread * 0.5d)));
+        nbt3.getList("Pos", FloatTag.class).add(2, new FloatTag(vector.z - (spread * 0.866d)));
 
         Entity skeletonHorse1 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt1);
         Entity skeletonHorse2 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt2);
@@ -358,7 +356,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                 1 + ThreadLocalRandom.current().nextInt(2),
                 false
         );
-        nbt.putCompound("Mainhand", ItemHelper.write(bow));
+        nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(bow)));
 
         // Iron helmet + enchants
         Item helmet = Item.get(Item.IRON_HELMET, 0, 1);
@@ -367,8 +365,9 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                 1 + ThreadLocalRandom.current().nextInt(3),
                 false
         );
-        ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
-        armor.add(ItemHelper.write(helmet, EntityArmorInventory.SLOT_HEAD));
+        ListTag<CompoundTag> armor = new ListTag<>();
+        armor.add(ItemHelper.write(helmet));
+        for (int i = 1; i < 5; i++) armor.add(ItemHelper.write(Item.AIR));
         nbt.putList("Armor", armor);
 
         return Entity.createEntity(entityId, this.getChunk(), nbt);

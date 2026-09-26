@@ -20,6 +20,7 @@ import java.util.Objects;
  */
 public class BlockEntitySign extends BlockEntitySpawnable {
     public static final String TAG_TEXT_BLOB = "Text";
+    public static final String TAG_FILTERED_TEXT = "FilteredText";
     public static final String TAG_TEXT_LINE = "Text%d";
     public static final String TAG_HIDE_GLOW_OUTLINE = "HideGlowOutline";
     public static final String TAG_TEXT_OWNER = "TextOwner";
@@ -34,6 +35,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     private String[] frontText;
     private String[] backText;
+    private long editorEntityRuntimeId = -1L;
 
     public BlockEntitySign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -44,18 +46,17 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         super.loadNBT();
         frontText = new String[4];
         backText = new String[4];
-        if (nbt.containsCompound(TAG_FRONT_TEXT)) {
-            getLines(true);
-        } else {
-            this.frontText[0] = "";
-            this.nbt.putCompound(TAG_FRONT_TEXT, new CompoundTag().putString(TAG_TEXT_BLOB, String.join("\n", "")));
+
+        if (!nbt.containsCompound(TAG_FRONT_TEXT)) {
+            this.nbt.putCompound(TAG_FRONT_TEXT, createDefaultTextTag());
         }
-        if (nbt.containsCompound(TAG_BACK_TEXT)) {
-            getLines(false);
-        } else {
-            this.backText[0] = "";
-            this.nbt.putCompound(TAG_BACK_TEXT, new CompoundTag().putString(TAG_TEXT_BLOB, String.join("\n", "")));
+
+        if (!nbt.containsCompound(TAG_BACK_TEXT)) {
+            this.nbt.putCompound(TAG_BACK_TEXT, createDefaultTextTag());
         }
+
+        getLines(true);
+        getLines(false);
 
         // Check old text to sanitize
         if (frontText != null) {
@@ -76,21 +77,15 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         if (!this.nbt.getCompound(TAG_BACK_TEXT).containsByte(TAG_GLOWING_TEXT)) {
             this.setGlowing(false, false);
         }
-        updateLegacyCompoundTag();
         this.setEditorEntityRuntimeId(null);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.getCompound(TAG_FRONT_TEXT)
-                .putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText))
-                .putByte(TAG_PERSIST_FORMATTING, 1);
-        this.nbt.getCompound(TAG_BACK_TEXT)
-                .putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", backText))
-                .putByte(TAG_PERSIST_FORMATTING, 1);
-        this.nbt.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
-                .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
+
+        this.nbt.getCompound(TAG_FRONT_TEXT).putByte(TAG_PERSIST_FORMATTING, 1);
+        this.nbt.getCompound(TAG_BACK_TEXT).putByte(TAG_PERSIST_FORMATTING, 1);
     }
 
     /**
@@ -188,7 +183,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
         SignChangeEvent signChangeEvent = new SignChangeEvent(this.getBlock(), player, lines);
 
-        if (!this.nbt.contains(TAG_LOCKED_FOR_EDITING_BY) || !Objects.equals(player.getId(), this.getEditorEntityRuntimeId())) {
+        if (!this.nbt.contains(TAG_LOCKED_FOR_EDITING_BY) || !Objects.equals(player.runtimeId(), this.getEditorEntityRuntimeId())) {
             signChangeEvent.setCancelled();
         }
 
@@ -216,11 +211,11 @@ public class BlockEntitySign extends BlockEntitySpawnable {
      * from editing signs they didn't place.
      */
     public long getEditorEntityRuntimeId() {
-        return this.nbt.getLong(TAG_LOCKED_FOR_EDITING_BY);
+        return this.editorEntityRuntimeId;
     }
 
     public void setEditorEntityRuntimeId(Long editorEntityRuntimeId) {
-        this.nbt.putLong(TAG_LOCKED_FOR_EDITING_BY, editorEntityRuntimeId == null ? -1L : editorEntityRuntimeId);
+        this.editorEntityRuntimeId = editorEntityRuntimeId == null ? -1L : editorEntityRuntimeId;
     }
 
     public BlockColor getColor() {
@@ -274,22 +269,8 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putCompound(TAG_FRONT_TEXT, new CompoundTag()
-                        .putString(TAG_TEXT_BLOB, this.nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB))
-                        .putInt(TAG_TEXT_COLOR, this.getColor(true).getARGB())
-                        .putBoolean(TAG_GLOWING_TEXT, this.isGlowing())
-                        .putBoolean(TAG_PERSIST_FORMATTING, true)
-                        .putBoolean(TAG_HIDE_GLOW_OUTLINE, false)
-                        .putString(TAG_TEXT_OWNER, "")
-                )
-                .putCompound(TAG_BACK_TEXT, new CompoundTag()
-                        .putString(TAG_TEXT_BLOB, this.nbt.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB))
-                        .putInt(TAG_TEXT_COLOR, this.getColor(false).getARGB())
-                        .putBoolean(TAG_GLOWING_TEXT, this.isGlowing(false))
-                        .putBoolean(TAG_PERSIST_FORMATTING, true)
-                        .putBoolean(TAG_HIDE_GLOW_OUTLINE, false)
-                        .putString(TAG_TEXT_OWNER, "")
-                )
+                .putCompound(TAG_FRONT_TEXT, this.nbt.getCompound(TAG_FRONT_TEXT).copy())
+                .putCompound(TAG_BACK_TEXT, this.nbt.getCompound(TAG_BACK_TEXT).copy())
                 .putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putByte(TAG_WAXED, this.nbt.getByte(TAG_WAXED))
                 .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
@@ -316,44 +297,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         }
     }
 
-    // Since 1.19.80 signs have text on both sides and the NBT structure changed. This updates pre-1.19.70 NBT to the latest structure.
-    private void updateLegacyCompoundTag() {
-        if (this.nbt.contains(TAG_TEXT_BLOB)) {
-            String[] lines = nbt.getString(TAG_TEXT_BLOB).split("\n", 4);
-            for (int i = 0; i < frontText.length; i++) {
-                if (i < lines.length)
-                    frontText[i] = lines[i];
-                else
-                    frontText[i] = "";
-            }
-            this.nbt.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText));
-            this.nbt.remove(TAG_TEXT_BLOB);
-        } else {
-            int count = 0;
-            for (int i = 1; i <= 4; i++) {
-                String key = TAG_TEXT_BLOB + i;
-                if (nbt.contains(key)) {
-                    String line = nbt.getString(key);
-                    this.frontText[i - 1] = line;
-                    this.nbt.remove(key);
-                    count++;
-                }
-            }
-            if (count == 4) {
-                this.nbt.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText));
-            }
-        }
-        if (this.nbt.contains(TAG_GLOWING_TEXT)) {
-            this.setGlowing(true, this.nbt.getBoolean(TAG_GLOWING_TEXT));
-            this.nbt.remove(TAG_GLOWING_TEXT);
-        }
-        if (this.nbt.contains(TAG_TEXT_COLOR)) {
-            this.setColor(true, new BlockColor(this.nbt.getInt(TAG_TEXT_COLOR), true));
-            this.nbt.remove(TAG_TEXT_COLOR);
-        }
-        this.nbt.remove("Creator");
-    }
-
     // Validates whether the line text meets the requirements.
     private static void sanitizeText(String[] lines) {
         for (int i = 0; i < lines.length; i++) {
@@ -364,4 +307,14 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         }
     }
 
+    private static CompoundTag createDefaultTextTag() {
+        return new CompoundTag()
+                .putString(TAG_FILTERED_TEXT, "")
+                .putByte(TAG_HIDE_GLOW_OUTLINE, 0)
+                .putByte(TAG_GLOWING_TEXT, 0)
+                .putByte(TAG_PERSIST_FORMATTING, 1)
+                .putInt(TAG_TEXT_COLOR, DyeColor.BLACK.getSignColor().getARGB())
+                .putString(TAG_TEXT_BLOB, "")
+                .putString(TAG_TEXT_OWNER, "");
+    }
 }

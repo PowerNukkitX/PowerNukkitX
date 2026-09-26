@@ -50,12 +50,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public boolean pendingPowered;
     public float progress;
     public float lastProgress;
-    private boolean pistonMovable = true;
+    private boolean pistonMovable;
 
     private final Set<Long> movedEntitiesThisTick = new HashSet<>();
     private final Set<Long> affectedEntitiesThisTick = new HashSet<>();
 
-    public boolean finished = true;
+    public boolean finished;
 
     public BlockEntityPistonArm(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

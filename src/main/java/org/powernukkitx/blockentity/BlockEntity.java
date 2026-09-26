@@ -207,7 +207,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         level.scheduleBlockEntityUpdate(this);
     }
 
-    public void close() {
+    public synchronized void close() {
         if (!this.closed) {
             this.closed = true;
             if (this.chunk != null) {

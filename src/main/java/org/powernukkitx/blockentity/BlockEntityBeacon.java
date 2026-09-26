@@ -19,6 +19,10 @@ import java.util.Map;
 public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected BeaconInventory inventory;
 
+    private int powerLevel;
+    private int primaryPower;
+    private int secondaryPower;
+
     public BlockEntityBeacon(IChunk chunk, CompoundTag  nbt) {
         super(chunk, nbt);
         inventory = new BeaconInventory(this);
@@ -33,21 +37,19 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.containsString("Lock")) {
-            this.nbt.putString("Lock", "");
+
+        this.powerLevel = 0;
+
+        if (!this.nbt.containsInt("primary")) {
+            this.nbt.putInt("primary", 0);
         }
 
-        if (!nbt.containsInt("Levels")) {
-            this.nbt.putInt("Levels", 0);
+        if (!this.nbt.containsInt("secondary")) {
+            this.nbt.putInt("secondary", 0);
         }
 
-        if (!nbt.containsInt("Primary")) {
-            this.nbt.putInt("Primary", 0);
-        }
-
-        if (!nbt.containsInt("Secondary")) {
-            this.nbt.putInt("Secondary", 0);
-        }
+        this.primaryPower = this.nbt.getInt("primary");
+        this.secondaryPower = this.nbt.getInt("secondary");
     }
 
     @Override
@@ -59,10 +61,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putString("Lock", this.nbt.getString("Lock"))
-                .putInt("Levels", this.nbt.getInt("Levels"))
-                .putInt("primary", this.nbt.getInt("Primary"))
-                .putInt("secondary", this.nbt.getInt("Secondary"));
+                .putInt("Levels", this.powerLevel)
+                .putInt("primary", this.primaryPower)
+                .putInt("secondary", this.secondaryPower);
     }
 
     private long currentTick = 0;
@@ -196,39 +197,37 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     }
 
     public int getPowerLevel() {
-        return getNbt().getInt("Levels");
+        return this.powerLevel;
     }
 
     public void setPowerLevel(int level) {
-        int currentLevel = getPowerLevel();
-        if (level != currentLevel) {
-            this.nbt.putInt("Levels", level);
-            setDirty();
+        if (level != this.powerLevel) {
+            this.powerLevel = level;
             this.spawnToAll();
         }
     }
 
     public int getPrimaryPower() {
-        return getNbt().getInt("Primary");
+        return this.primaryPower;
     }
 
     public void setPrimaryPower(int power) {
-        int currentPower = getPrimaryPower();
-        if (power != currentPower) {
-            this.nbt.putInt("Primary", power);
+        if (power != this.primaryPower) {
+            this.primaryPower = power;
+            this.nbt.putInt("primary", power);
             setDirty();
             this.spawnToAll();
         }
     }
 
     public int getSecondaryPower() {
-        return getNbt().getInt("Secondary");
+        return this.secondaryPower;
     }
 
     public void setSecondaryPower(int power) {
-        int currentPower = getSecondaryPower();
-        if (power != currentPower) {
-            this.nbt.putInt("Secondary", power);
+        if (power != this.secondaryPower) {
+            this.secondaryPower = power;
+            this.nbt.putInt("secondary", power);
             setDirty();
             this.spawnToAll();
         }

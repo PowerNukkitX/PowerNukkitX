@@ -1,9 +1,9 @@
 package org.powernukkitx.level.generator.feature.tree;
 
 import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockFlowable;
 import org.powernukkitx.block.BlockSnowLayer;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.PrecipitationBehavior;
 import org.powernukkitx.block.property.enums.WoodType;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.biome.BiomeID;
@@ -48,7 +48,7 @@ public class TaigaTreeFeature extends GriddedFeature {
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int y = chunk.getHeightMap(x, z);
+                int y = chunk.getHeightMap(x, z) - 1;
                 BlockState support = chunk.getBlockState(x, y, z);
                 if(support.toBlock().isFullBlock()) {
                     int cx = x + (chunk.getX() << 4);
@@ -59,8 +59,9 @@ public class TaigaTreeFeature extends GriddedFeature {
                         Block above = root.getCachedBlock(cx, y + 1, cz);
                         if(above.isAir()) {
                             object.setBlockStateAt(cx, y + 1, cz, SNOW_LAYER);
-                        } else if(above instanceof BlockFlowable) {
-                            object.setBlockStateAt(cx, y + 1, cz, 1, SNOW_LAYER);
+                        } else if(above.getPrecipitationBehavior() == PrecipitationBehavior.SNOWLOGGING) {
+                            object.setBlockStateAt(cx, y + 1, cz, 1, above.getBlockState());
+                            object.setBlockStateAt(cx, y + 1, cz, SNOW_LAYER);
                         }
                     }
                 }

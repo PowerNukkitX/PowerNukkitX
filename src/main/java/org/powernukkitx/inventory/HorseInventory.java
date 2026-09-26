@@ -263,7 +263,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         final UpdateEquipPacket updateEquipPacket = new UpdateEquipPacket();
         updateEquipPacket.setContainerId((short) who.getWindowId(this));
         updateEquipPacket.setType((short) this.getType().getId());
-        updateEquipPacket.setEntityUniqueId(this.getHolder().getId());
+        updateEquipPacket.setEntityUniqueId(this.getHolder().uniqueIdLong());
         updateEquipPacket.setTag(nbt);
         return updateEquipPacket;
     }

@@ -7,12 +7,13 @@ import org.powernukkitx.block.BlockCactus;
 import org.powernukkitx.block.BlockMagma;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.components.AgeableComponent;
+import org.powernukkitx.entity.components.AttackComponent;
+import org.powernukkitx.entity.components.AttackDamageComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealableComponent;
 import org.powernukkitx.entity.components.NameableComponent;
 import org.powernukkitx.entity.components.TameableComponent;
 import org.powernukkitx.entity.custom.CustomEntityComponents;
-import org.powernukkitx.entity.custom.CustomEntityDefinition.Meta;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
@@ -40,7 +41,7 @@ import org.powernukkitx.level.particle.ItemBreakParticle;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.FloatTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.TickCachedBlockIterator;
 import org.powernukkitx.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -57,14 +58,35 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
+import java.util.random.RandomGenerator;
 
 
 @Slf4j
 public abstract class EntityLiving extends Entity implements EntityDamageable {
+    private static final int[] BASELINE_MOB_ATTRIBUTES = {
+            Attribute.HEALTH,
+            Attribute.FOLLOW_RANGE,
+            Attribute.KNOCKBACK_RESISTANCE,
+            Attribute.MOVEMENT_SPEED,
+            Attribute.UNDER_WATER_MOVEMENT_SPEED,
+            Attribute.LAVA_MOVEMENT_SPEED,
+            Attribute.ABSORPTION,
+            Attribute.LUCK,
+            Attribute.FRICTION_MODIFIER,
+            Attribute.BOUNCINESS,
+            Attribute.AIR_DRAG_MODIFIER
+    };
+
+    private static final String TAG_DEAD = "Dead";
+    private static final String TAG_DEATH_TIME = "DeathTime";
+    private static final int DEFAULT_DEATH_DURATION_TICKS = 21;
+
     protected int attackTime = 0;
+    protected short hurtTime = 0;
+    protected int deathTime = 0;
+    protected boolean deadState = false;
+    protected boolean deathFinalized = false;
     protected boolean invisible = false;
     protected int turtleTicks = 0;
     protected boolean attackTimeByShieldKb;
@@ -85,6 +107,76 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    private void materializeBaselineMobAttributes() {
+        if (this.isPlayer) return;
+
+        for (int attributeId : BASELINE_MOB_ATTRIBUTES) {
+            this.attributes.putIfAbsent(attributeId, Attribute.getAttribute(attributeId));
+        }
+    }
+
+    static Attribute createAttackDamageAttribute(AttackComponent attack, AttackDamageComponent attackDamage, RandomGenerator random) {
+        if (attack == null && attackDamage == null) return null;
+
+        Attribute attribute = Attribute.getAttribute(Attribute.ATTACK_DAMAGE);
+
+        if (attack != null) {
+            float initial = attack.min();
+            attribute.setRuntimeBounds(initial, initial);
+            attribute.setBaseAndCurrent(initial, initial);
+        }
+
+        if (attackDamage != null) {
+            float definitionMin = attackDamage.min() == null ? attribute.getDefaultMinimum() : attackDamage.min();
+            float definitionMax = attackDamage.max() == null ? attribute.getDefaultMaximum() : attackDamage.max();
+            float min = Math.min(definitionMin, definitionMax);
+            float max = Math.max(definitionMin, definitionMax);
+
+            attribute.setRuntimeBounds(min, max);
+
+            float value = attackDamage.resolve(random);
+            value = Math.max(min, Math.min(value, max));
+            attribute.setBaseAndCurrent(value, value);
+        }
+
+        return attribute;
+    }
+
+    static float rollAttackDamage(Attribute attribute, AttackComponent attack, RandomGenerator random) {
+        float damage = attack.resolve(random);
+        attribute.setBaseAndCurrent(damage, damage);
+        return damage;
+    }
+
+    private void materializeAttackDamageAttribute() {
+        if (this.isPlayer || this.attributes.containsKey(Attribute.ATTACK_DAMAGE)) return;
+
+        Attribute attribute = createAttackDamageAttribute(
+                this.getComponentAttack(),
+                this.getComponentAttackDamage(),
+                RandomGenerator.getDefault()
+        );
+
+        if (attribute != null) this.attributes.put(Attribute.ATTACK_DAMAGE, attribute);
+    }
+
+    /**
+     * Resolves the attack damage consumed by a melee attack.
+     *
+     * @return current {@code minecraft:attack_damage}, or zero when absent
+     */
+    public float resolveAttackDamage() {
+        Attribute attribute = this.attributes.get(Attribute.ATTACK_DAMAGE);
+        if (attribute == null) return 0f;
+
+        AttackComponent attack = this.getComponentAttack();
+        if (attack != null) {
+            return rollAttackDamage(attribute, attack, RandomGenerator.getDefault());
+        }
+
+        return attribute.getValue();
     }
 
     protected static float calculateDamageReduction(float damage, int armorPoints, int toughnessPoints) {
@@ -140,17 +232,26 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.nbt.contains("HealF")) {
-            this.nbt.putFloat("Health", this.nbt.getShort("HealF"));
-            this.nbt.remove("HealF");
+        if (this.nbt.contains("Attributes")) {
+            ListTag<CompoundTag> attributes = this.nbt.getList("Attributes", CompoundTag.class);
+            for (var attributeNbt : attributes.getAll()) {
+                Attribute attribute = Attribute.fromNBT(attributeNbt);
+                this.attributes.put(attribute.getId(), attribute);
+            }
         }
 
-        if (!this.nbt.contains("Health") || !(this.nbt.get("Health") instanceof FloatTag)) {
-            this.nbt.putFloat("Health", this.getHealthMax());
-        }
+        this.applyInitialHealth();
+        this.applyInitialRideJumpStrength();
+        this.applyInitialMovementSpeed();
+        this.materializeBaselineMobAttributes();
+        this.materializeAttackDamageAttribute();
+        this.hurtTime = this.nbt.getShort("HurtTime");
 
-        this.setHealthMax(this.getHealthMax());
-        setHealthCurrent(this.nbt.getFloat("Health"));
+        if (!this.isPlayer) {
+            this.deathTime = Short.toUnsignedInt(this.nbt.getShort(TAG_DEATH_TIME));
+            this.deadState = this.nbt.getBoolean(TAG_DEAD);
+            this.deathFinalized = false;
+        }
 
         // Load Tame and Chest from NBT
         if (this.nbt.contains("Tamed")) {
@@ -168,17 +269,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (this.canBeSaddled()) {
-            if (this.nbt.contains("saddled")) {
-                this.setDataFlag(ActorFlags.SADDLED, this.nbt.getBoolean("saddled"));
-            } else {
-                this.setDataFlag(ActorFlags.SADDLED, false);
-            }
-        }
-
-        if (this.isBaby()) loadParentFromNBT();
-
-        if (!this.isPlayer && this.nbt != null && this.nbt.contains(NBT_RIDING_UUID)) {
-            this.restoreMountTries = 60;
+            this.setDataFlag(ActorFlags.SADDLED, this.nbt.getBoolean("Saddled"));
         }
     }
 
@@ -226,109 +317,40 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
     }
 
-    protected void loadParentFromNBT() {
-        if (!(this instanceof EntityIntelligent ei)) return;
-        if (this.nbt == null) return;
-        if (!this.isBaby()) return;
-        if (ei.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT)) return;
-
-        UUID wanted = null;
-        String parentStr = this.getNbt().getString("Parent");
-        if (parentStr != null && !parentStr.isEmpty()) {
-            try {
-                wanted = UUID.fromString(parentStr);
-            } catch (IllegalArgumentException ignored) {
-                wanted = null;
-            }
-        }
-
-        List<Entity> nearby = new ArrayList<>();
-        EntityQueryOptions opts = new EntityQueryOptions()
-                .location(this)
-                .maxDistance(8);
-
-        this.level.getEntities(opts, nearby);
-
-        Entity foundByUuid = null;
-        Entity fallbackSameTypeAdult = null;
-        double bestUuidD2 = Double.MAX_VALUE;
-        double bestFallbackD2 = Double.MAX_VALUE;
-
-        for (Entity e : nearby) {
-            if (e == null || e == this) continue;
-
-            double d2 = this.distanceSquared(e);
-
-            if (wanted != null) {
-                var uid = e.getUniqueId();
-                if (uid != null && wanted.equals(uid) && d2 < bestUuidD2) {
-                    bestUuidD2 = d2;
-                    foundByUuid = e;
-                    continue;
-                }
-            }
-
-            if (e instanceof EntityCreature c) {
-                if (!c.getIdentifier().equals(this.getIdentifier())) continue;
-                if (c.isBaby()) continue;
-                if (d2 < bestFallbackD2) {
-                    bestFallbackD2 = d2;
-                    fallbackSameTypeAdult = c;
-                }
-            }
-        }
-
-        Entity chosen = (foundByUuid != null) ? foundByUuid : fallbackSameTypeAdult;
-        if (chosen == null) return;
-
-        ei.getMemoryStorage().put(CoreMemoryTypes.PARENT, chosen);
-
-        var chosenUuid = chosen.getUniqueId();
-        if (chosenUuid != null) {
-            this.nbt.putString("Parent", chosenUuid.toString());
-        }
-    }
-
     @Override
     public boolean onUpdate(int currentTick) {
-        this.initializeHomeMemoryIfNeeded();
+        if (this.deadState) {
+            if (this.closed) return false;
 
-        if (restoreMountTries > 0) {
-            restoreMountTries--;
-            if ((restoreMountTries % 4) == 0) tryRestoreMountLink();
-            if (restoreMountTries == 0 && this.riding == null) this.nbt.remove(NBT_RIDING_UUID);
+            int tickDiff = currentTick - this.lastUpdate;
+            if (tickDiff == 0) return false;
+            if (tickDiff < 0) tickDiff = 1;
+            this.lastUpdate = currentTick;
+
+            if (!getServer().isRunning()) return true;
+            return this.tickDeath(tickDiff);
         }
 
+        this.initializeHomeMemoryIfNeeded();
         return super.onUpdate(currentTick);
     }
 
-    private void tryRestoreMountLink() {
-        String uuidStr = this.getNbt().getString(NBT_RIDING_UUID);
-        UUID wanted;
-        try {
-            wanted = UUID.fromString(uuidStr);
-        } catch (IllegalArgumentException ignored) {
-            this.nbt.remove(NBT_RIDING_UUID);
-            restoreMountTries = 0;
-            return;
-        }
-
-        double radius = 8;
-        for (Entity e : this.level.getNearbyEntities(this.boundingBox.grow(radius, radius, radius), this)) {
-            if (e == null || e.closed) continue;
-            if (e instanceof Player) continue;
-
-            if (wanted.equals(e.getUniqueId())) {
-                e.mountEntity(this, false);
-                if (this.riding != null) restoreMountTries = 0;
-                return;
-            }
-        }
+    @Override
+    public boolean isAlive() {
+        return !this.deadState && super.isAlive();
     }
 
     @Override
     public void setHealthCurrent(float health) {
         boolean wasAlive = this.isAlive();
+
+        if (health >= 1 && this.deadState) {
+            this.deadState = false;
+            this.deathTime = 0;
+            this.deathFinalized = false;
+            if (this.chunk != null) this.chunk.setChanged();
+        }
+
         super.setHealthCurrent(health);
         if (this.isAlive() && !wasAlive) {
             final ActorEventPacket pk = new ActorEventPacket();
@@ -341,7 +363,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putFloat("Health", this.getHealthCurrent());
+
+        this.nbt.putShort("HurtTime", this.hurtTime);
+
+        if (!this.isPlayer) {
+            this.nbt.putShort(TAG_DEATH_TIME, this.deathTime);
+            this.nbt.putBoolean(TAG_DEAD, this.deadState);
+        }
+
+        if (!this.attributes.isEmpty()) {
+            ListTag<CompoundTag> attributes = new ListTag<>();
+            for (var attribute : this.attributes.values()) {
+                attributes.add(Attribute.toNBT(attribute));
+            }
+            this.nbt.putList("Attributes", attributes);
+        }
 
         if (!isAgeable()) return;
         if (!isBaby()) {
@@ -352,10 +388,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (growDirty) {
             this.nbt.putInt(TAG_ENTITY_GROW_LEFT, Math.max(0, ticksGrowLeft));
             growDirty = false;
-        }
-
-        if (this.canBeSaddled()) {
-            this.nbt.putBoolean("saddled", isSaddled());
         }
     }
 
@@ -497,9 +529,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.setOnFire(2 * this.server.getDifficulty());
                 }
 
-                double deltaX = this.x - damager.x;
-                double deltaZ = this.z - damager.z;
-                this.knockBack(damager, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
+                if (source.getCause() != DamageCause.SONIC_BOOM) {
+                    double deltaX = this.x - damager.x;
+                    double deltaZ = this.z - damager.z;
+                    this.knockBack(damager, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
+                }
             }
 
             final ActorEventPacket actorEventPacket = new ActorEventPacket();
@@ -507,6 +541,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             actorEventPacket.setType(this.getHealthCurrent() <= 0 ? ActorEvent.DEATH : ActorEvent.HURT);
             Server.broadcastPacket(this.hasSpawned.values(), actorEventPacket);
 
+            this.hurtTime = 10;
             this.attackTime = source.getAttackCooldown();
             this.attackTimeByShieldKb = false;
             this.scheduleUpdate();
@@ -571,10 +606,23 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public void kill() {
-        if (!this.isAlive()) {
-            return;
-        }
+        if (!this.beginDeath()) return;
+        this.processDeathConsequences();
+    }
+
+    protected boolean beginDeath() {
+        if (!this.isAlive()) return false;
+
         super.kill();
+        this.deadState = true;
+        this.deathTime = 0;
+        this.deathFinalized = false;
+
+        if (this.chunk != null) this.chunk.setChanged();
+        return true;
+    }
+
+    protected void processDeathConsequences() {
         Item weapon = Item.AIR;
         if (this.getLastDamageCause() instanceof EntityDamageByEntityEvent event
                 && event.getDamager() instanceof EntityHandItem handItem) {
@@ -599,6 +647,44 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
     }
 
+    protected int getDeathDurationTicks() {
+        return DEFAULT_DEATH_DURATION_TICKS;
+    }
+
+    protected void onDeathTick(int previousDeathTime) {
+        if (previousDeathTime < 2 && this.deathTime >= 2) {
+            this.ejectPassengersForDeath();
+        }
+    }
+
+    protected void ejectPassengersForDeath() {
+        for (Entity passenger : List.copyOf(this.passengers)) {
+            this.dismountEntity(passenger, true, false);
+        }
+    }
+
+    protected void onDeathComplete() {
+        this.ejectPassengersForDeath();
+        this.despawnFromAll();
+        if (!this.isPlayer) this.remove();
+    }
+
+    private boolean tickDeath(int tickDiff) {
+        int previousDeathTime = this.deathTime;
+        this.deathTime = (this.deathTime + tickDiff) & 0xffff;
+
+        if (this.chunk != null) this.chunk.setChanged();
+
+        this.onDeathTick(previousDeathTime);
+
+        if (!this.deathFinalized && this.deathTime >= this.getDeathDurationTicks()) {
+            this.deathFinalized = true;
+            this.onDeathComplete();
+        }
+
+        return !this.deathFinalized;
+    }
+
     @Override
     public boolean entityBaseTick() {
         return this.entityBaseTick(1);
@@ -606,6 +692,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean entityBaseTick(int tickDiff) {
+        if (this.deadState) {
+            if (!getServer().isRunning()) return true;
+            return this.tickDeath(tickDiff);
+        }
+
         boolean isBreathing = !this.isInsideOfWater();
 
         if (this instanceof Player player) {
@@ -678,6 +769,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             if (this.attackTime <= 0) {
                 attackTimeByShieldKb = false;
             }
+            hasUpdate = true;
+        }
+
+        if (this.hurtTime > 0) {
+            this.hurtTime = (short) Math.max(0, this.hurtTime - tickDiff);
             hasUpdate = true;
         }
 
@@ -823,13 +919,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
      * Gets the attack power of the entity.
      */
     public int getAttackPower() {
-        if (isCustomEntity()) {
-            Meta.Attack atk = meta().getAttack(CustomEntityComponents.ATTACK);
-            int min = atk.min();
-            int max = atk.max();
-            if (max > min) return ThreadLocalRandom.current().nextInt(min, max + 1);
-            return max;
-        }
+        if (isCustomEntity()) return Math.round(resolveAttackDamage());
         return 1;
     }
 

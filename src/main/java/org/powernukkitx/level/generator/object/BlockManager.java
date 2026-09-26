@@ -7,6 +7,7 @@ import org.powernukkitx.block.BlockEntityHolder;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.ChunkFinalizationState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockVector3;
@@ -19,6 +20,7 @@ import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.RuntimeBlockDefinition;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.cloudburstmc.math.vector.Vector3i;
@@ -29,6 +31,8 @@ import org.cloudburstmc.protocol.bedrock.packet.UpdateSubChunkBlocksPacket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 public class BlockManager {
@@ -37,6 +41,12 @@ public class BlockManager {
     private final Level level;
     private final Long2ObjectOpenHashMap<Block> caches;
     private final Long2ObjectOpenHashMap<Block> places;
+    private IChunk stateChunk0;
+    private int stateChunkX0;
+    private int stateChunkZ0;
+    private IChunk stateChunk1;
+    private int stateChunkX1;
+    private int stateChunkZ1;
 
     protected final ObjectOpenHashSet<Runnable> hooks;
 
@@ -68,7 +78,50 @@ public class BlockManager {
     }
 
     public String getBlockIdIfCachedOrLoaded(int x, int y, int z) {
-        return getBlockIfCachedOrLoaded(x, y, z).getId();
+        return getBlockStateIfCachedOrLoaded(x, y, z).getIdentifier();
+    }
+
+    private IChunk getStateChunkIfLoaded(int chunkX, int chunkZ) {
+        if (this.stateChunk0 != null && this.stateChunkX0 == chunkX && this.stateChunkZ0 == chunkZ) {
+            return this.stateChunk0;
+        }
+        if (this.stateChunk1 != null && this.stateChunkX1 == chunkX && this.stateChunkZ1 == chunkZ) {
+            IChunk chunk = this.stateChunk1;
+            this.stateChunk1 = this.stateChunk0;
+            this.stateChunkX1 = this.stateChunkX0;
+            this.stateChunkZ1 = this.stateChunkZ0;
+            this.stateChunk0 = chunk;
+            this.stateChunkX0 = chunkX;
+            this.stateChunkZ0 = chunkZ;
+            return chunk;
+        }
+
+        IChunk chunk = level.getChunkIfLoaded(chunkX, chunkZ);
+        if (chunk != null) {
+            this.stateChunk1 = this.stateChunk0;
+            this.stateChunkX1 = this.stateChunkX0;
+            this.stateChunkZ1 = this.stateChunkZ0;
+            this.stateChunk0 = chunk;
+            this.stateChunkX0 = chunkX;
+            this.stateChunkZ0 = chunkZ;
+        }
+        return chunk;
+    }
+
+    /**
+     * Returns the queued or loaded block state without materializing a Block.
+     */
+    public BlockState getBlockStateIfCachedOrLoaded(int x, int y, int z) {
+        Block cached = this.caches.get(hashXYZ(x, y, z, 0));
+        if (cached != null) {
+            return cached.getBlockState();
+        }
+        if (y < level.getMinHeight() || y >= level.getMaxHeight()) {
+            return BlockAir.STATE;
+        }
+
+        IChunk chunk = getStateChunkIfLoaded(x >> 4, z >> 4);
+        return chunk == null ? BlockAir.STATE : chunk.getBlockState(x & 0x0f, y, z & 0x0f);
     }
 
     public String getBlockIdAt(int x, int y, int z) {
@@ -203,6 +256,42 @@ public class BlockManager {
         this.hooks.addAll(manager.getHooks());
     }
 
+    /**
+     * Merges valid blocks targeting generated chunks without rematerializing same-level blocks.
+     */
+    public void mergeGeneratedBlocks(BlockManager manager) {
+        if (manager.places.isEmpty()) {
+            this.hooks.addAll(manager.getHooks());
+            return;
+        }
+
+        if (this.level == manager.level) {
+            for (var entry : manager.places.long2ObjectEntrySet()) {
+                Block block = entry.getValue();
+                IChunk blockChunk = level.getChunk(block.getChunkX(), block.getChunkZ());
+                if (block.isValid() && blockChunk != null && blockChunk.getFinalizationState() != ChunkFinalizationState.NEEDS_INSTATICKING) {
+                    long hash = entry.getLongKey();
+                    this.places.put(hash, block);
+                    this.caches.put(hash, block);
+                }
+            }
+        } else {
+            for (Block block : manager.places.values()) {
+                IChunk blockChunk = level.getChunk(block.getChunkX(), block.getChunkZ());
+                if (block.isValid() && blockChunk != null && blockChunk.getFinalizationState() != ChunkFinalizationState.NEEDS_INSTATICKING) {
+                    this.setBlockStateAt(
+                            block.getFloorX(),
+                            block.getFloorY(),
+                            block.getFloorZ(),
+                            block.layer,
+                            block.getBlockState()
+                    );
+                }
+            }
+        }
+        this.hooks.addAll(manager.getHooks());
+    }
+
     public Level getLevel() {
         return level;
     }
@@ -274,10 +363,10 @@ public class BlockManager {
         applyHooks();
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void generateChunks() {
         for (Block block : this.getBlocks()) {
-            if (!block.getChunk().isGenerated()) {
+            if (block.getChunk().getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING) {
                 block.getLevel().syncGenerateChunk(block.getChunkX(), block.getChunkZ());
             }
         }
@@ -311,108 +400,126 @@ public class BlockManager {
             caches.clear();
             return;
         }
-        HashMap<IChunk, ArrayList<Block>> chunks = new HashMap<>(Math.max(16, blockList.size() >> 3));
-        boolean shouldBroadcast = !level.getPlayers().isEmpty();
-        HashMap<SubChunkEntry, UpdateSubChunkBlocksPacket> batchs = shouldBroadcast ? new HashMap<>(Math.max(16, blockList.size() >> 2)) : null;
-        HashMap<Long, List<Player>> recipientsByChunk = shouldBroadcast ? new HashMap<>() : null;
-        for (var b : blockList) {
-            ArrayList<Block> chunk = chunks.computeIfAbsent(level.getChunk(b.getChunkX(), b.getChunkZ(), true), c -> new ArrayList<>());
-            chunk.add(b);
-            if (shouldBroadcast) {
-                long chunkHash = Level.chunkHash(b.getChunkX(), b.getChunkZ());
-                List<Player> recipients = recipientsByChunk.computeIfAbsent(chunkHash, hash -> {
-                    List<Player> result = new ArrayList<>();
-                    for (Player player : level.getChunkPlayers(b.getChunkX(), b.getChunkZ()).values()) {
-                        if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(hash)) {
-                            result.add(player);
-                        }
-                    }
-                    return result;
-                });
-                if (recipients.isEmpty()) {
-                    continue;
-                }
-                UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> {
-                    final UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
-                    packet.setSubChunkBlockPosition(Vector3i.from(s.x, s.y, s.z));
-                    return packet;
-                });
-                if (b.layer == 1) {
-                    batch.getExtraBlocks().add(new BlockChangeEntry(b.asBlockVector3().toNetwork(), new RuntimeBlockDefinition((int) b.getBlockState().unsignedBlockStateHash()), 0, -1, ActorBlockSyncMessageId.NONE));
-                } else {
-                    batch.getStandardBlocks().add(new BlockChangeEntry(b.asBlockVector3().toNetwork(), new RuntimeBlockDefinition((int) b.getBlockState().unsignedBlockStateHash()), 0, -1, ActorBlockSyncMessageId.NONE));
-                }
+
+        LongOpenHashSet retainedChunks = new LongOpenHashSet();
+        for (Block block : blockList) {
+            long chunkHash = Level.chunkHash(block.getChunkX(), block.getChunkZ());
+            if (retainedChunks.add(chunkHash)) {
+                level.retainGenerationTask(chunkHash);
             }
         }
-        chunks.entrySet().parallelStream().forEach(entry -> {
-            final var key = entry.getKey();
-            final var value = entry.getValue();
 
-            if (!key.isGenerated()) {
-                queuePendingSubChunkUpdates(key, value);
-                return;
-            }
-            key.batchProcess(unsafeChunk -> {
-                int[] highestNewColumnY = new int[16 * 16];
-                boolean[] touchedColumn = new boolean[16 * 16];
-                int[] touchedColumnIndexes = new int[16 * 16];
-                int touchedCount = 0;
-                for (Block b : value) {
-                    int localX = b.getFloorX() & 15;
-                    int localZ = b.getFloorZ() & 15;
-                    int floorY = b.getFloorY();
-                    unsafeChunk.setBlockState(localX, floorY, localZ, b.getBlockState(), b.layer);
-                    if (b.layer == 0 && !b.isAir()) {
-                        int columnIndex = (localZ << 4) | localX;
-                        if (!touchedColumn[columnIndex]) {
-                            touchedColumn[columnIndex] = true;
-                            touchedColumnIndexes[touchedCount++] = columnIndex;
-                            highestNewColumnY[columnIndex] = floorY;
-                        } else if (floorY > highestNewColumnY[columnIndex]) {
-                            highestNewColumnY[columnIndex] = floorY;
+        try {
+            HashMap<IChunk, ArrayList<Block>> chunks = new HashMap<>(Math.max(16, blockList.size() >> 3));
+            Set<Long> deferredChunks = ConcurrentHashMap.newKeySet();
+            boolean shouldBroadcast = !level.getPlayers().isEmpty();
+            HashMap<SubChunkEntry, UpdateSubChunkBlocksPacket> batchs =
+                    shouldBroadcast ? new HashMap<>(Math.max(16, blockList.size() >> 2)) : null;
+            HashMap<Long, List<Player>> recipientsByChunk = shouldBroadcast ? new HashMap<>() : null;
+
+            for (var b : blockList) {
+                ArrayList<Block> chunk =
+                        chunks.computeIfAbsent(level.getChunk(b.getChunkX(), b.getChunkZ(), true), c -> new ArrayList<>());
+                chunk.add(b);
+                if (shouldBroadcast) {
+                    long chunkHash = Level.chunkHash(b.getChunkX(), b.getChunkZ());
+                    List<Player> recipients = recipientsByChunk.computeIfAbsent(chunkHash, hash -> {
+                        List<Player> result = new ArrayList<>();
+                        for (Player player : level.getChunkPlayers(b.getChunkX(), b.getChunkZ()).values()) {
+                            if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(hash)) {
+                                result.add(player);
+                            }
                         }
+                        return result;
+                    });
+                    if (recipients.isEmpty()) {
+                        continue;
+                    }
+                    UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(
+                            new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4),
+                            s -> {
+                                final UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
+                                packet.setSubChunkBlockPosition(Vector3i.from(s.x, s.y, s.z));
+                                return packet;
+                            });
+                    if (b.layer == 1) {
+                        batch.getExtraBlocks().add(new BlockChangeEntry(
+                                b.asBlockVector3().toNetwork(),
+                                new RuntimeBlockDefinition((int) b.getBlockState().unsignedBlockStateHash()),
+                                0,
+                                -1,
+                                ActorBlockSyncMessageId.NONE
+                        ));
+                    } else {
+                        batch.getStandardBlocks().add(new BlockChangeEntry(
+                                b.asBlockVector3().toNetwork(),
+                                new RuntimeBlockDefinition((int) b.getBlockState().unsignedBlockStateHash()),
+                                0,
+                                -1,
+                                ActorBlockSyncMessageId.NONE
+                        ));
                     }
                 }
-                for (int i = 0; i < touchedCount; i++) {
-                    int columnIndex = touchedColumnIndexes[i];
-                    int localX = columnIndex & 15;
-                    int localZ = columnIndex >> 4;
-                    int highestNewY = highestNewColumnY[columnIndex];
-                    if (highestNewY > unsafeChunk.getHeightMap(localX, localZ)) {
-                        unsafeChunk.setHeightMap(localX, localZ, highestNewY);
-                    }
+            }
+
+            chunks.entrySet().parallelStream().forEach(entry -> {
+                final var key = entry.getKey();
+                final var value = entry.getValue();
+
+                if (key.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING) {
+                    deferredChunks.add(Level.chunkHash(key.getX(), key.getZ()));
+                    queuePendingSubChunkUpdates(key, value);
+                    return;
                 }
+                key.batchProcess(unsafeChunk -> {
+                    for (Block b : value) {
+                        unsafeChunk.setBlockState(
+                                b.getFloorX() & 15,
+                                b.getFloorY(),
+                                b.getFloorZ() & 15,
+                                b.getBlockState(),
+                                b.layer
+                        );
+                    }
+                });
+                if (queueSave) {
+                    key.setChanged();
+                }
+                key.reObfuscateChunk();
             });
-            if (queueSave) {
-                key.setChanged();
-            }
-            key.reObfuscateChunk();
-        });
 
-        applyHooks();
-        for (var b : blockList) {
-            if (b instanceof BlockEntityHolder<?> holder) {
-                holder.getOrCreateBlockEntity();
-            }
-        }
-
-        if (shouldBroadcast) {
-            for (var entry : batchs.entrySet()) {
-                SubChunkEntry subChunk = entry.getKey();
-                List<Player> recipients = recipientsByChunk.get(Level.chunkHash(subChunk.x >> 4, subChunk.z >> 4));
-                if (recipients == null) {
-                    continue;
+            applyHooks();
+            for (var b : blockList) {
+                long chunkHash = Level.chunkHash(b.getChunkX(), b.getChunkZ());
+                if (!deferredChunks.contains(chunkHash) && b instanceof BlockEntityHolder<?> holder) {
+                    holder.getOrCreateBlockEntity();
                 }
-                long chunkHash = Level.chunkHash(subChunk.x >> 4, subChunk.z >> 4);
-                for (Player player : recipients) {
-                    if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(chunkHash)) {
-                        player.sendPacket(entry.getValue());
+            }
+
+            if (shouldBroadcast) {
+                for (var entry : batchs.entrySet()) {
+                    SubChunkEntry subChunk = entry.getKey();
+                    long chunkHash = Level.chunkHash(subChunk.x >> 4, subChunk.z >> 4);
+                    if (deferredChunks.contains(chunkHash)) {
+                        continue;
+                    }
+                    List<Player> recipients = recipientsByChunk.get(chunkHash);
+                    if (recipients == null) {
+                        continue;
+                    }
+                    for (Player player : recipients) {
+                        if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(chunkHash)) {
+                            player.sendPacket(entry.getValue());
+                        }
                     }
                 }
             }
+
+            places.clear();
+            caches.clear();
+        } finally {
+            retainedChunks.forEach(level::releaseGenerationTask);
         }
-        places.clear();
-        caches.clear();
     }
 
     private void queuePendingSubChunkUpdates(IChunk chunk, List<Block> blocks) {
@@ -436,7 +543,7 @@ public class BlockManager {
     }
 
     public static void applyPendingSubChunkUpdates(Level level, IChunk chunk) {
-        if (!chunk.isGenerated()) {
+        if (chunk.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING) {
             return;
         }
 

@@ -51,7 +51,7 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                 for (int z = 0; z < 16; z++) {
                     int lx = x + (unsafeChunk.getX() << 4);
                     int lz = z + (unsafeChunk.getZ() << 4);
-                    int y = unsafeChunk.getHeightMap(x, z);
+                    int y = unsafeChunk.getHeightMap(x, z) - 1;
                     int biomeId = unsafeChunk.getBiomeId(x, y, z);
                     switch (biomeId) {
                         case MESA,
@@ -83,8 +83,9 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                                 BlockState state = unsafeChunk.getBlockState(x, y+1, z);
                                 if(state.equals(BlockAir.STATE)) {
                                     unsafeChunk.setBlockState(x, y+1, z, SNOW_LAYER, 0);
-                                } else {
-                                    unsafeChunk.getAndSetBlockState(x, y+1, z, SNOW_LAYER, 1);
+                                } else if(state.toBlock().getPrecipitationBehavior() == PrecipitationBehavior.SNOWLOGGING) {
+                                    unsafeChunk.setBlockState(x, y+1, z, state, 1);
+                                    unsafeChunk.setBlockState(x, y+1, z, SNOW_LAYER, 0);
                                 }
                             }
                         }

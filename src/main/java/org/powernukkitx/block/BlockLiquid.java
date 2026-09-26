@@ -307,7 +307,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                     BlockFromToEvent event = new BlockFromToEvent(this, to);
                     level.getServer().getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {
-                        this.level.setBlock(this, layer, event.getTo(), true, true);
+                        this.level.setBlock(this, layer, event.getTo(), false, true);
                         if (!decayed) {
                             this.level.scheduleUpdate(this, this.tickRate());
                         }
@@ -391,7 +391,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 if (block.layer == 0 && !block.isAir()) {
                     this.level.useBreakOn(block, block instanceof BlockWeb ? Item.get(Item.WOODEN_SWORD) : Item.AIR);
                 }
-                this.level.setBlock(block, block.layer, getLiquidWithNewDepth(newFlowDecay), true, true);
+                this.level.setBlock(block, block.layer, getLiquidWithNewDepth(newFlowDecay), false, true);
                 this.level.scheduleUpdate(block, this.tickRate());
             }
         }

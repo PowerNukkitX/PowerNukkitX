@@ -11,8 +11,9 @@ public interface IStructBlock extends InventoryHolder {
     String TAG_IGNORE_ENTITIES = "ignoreEntities";
     String TAG_INCLUDE_PLAYERS = "includePlayers";
     String TAG_INTEGRITY = "integrity";
-    String TAG_MIRROR = "mirror";
     String TAG_IS_POWERED = "isPowered";
+    String TAG_LAST_TOUCHED_PLAYER_ID = "lastTouchedPlayerId";
+    String TAG_MIRROR = "mirror";
     String TAG_REDSTONE_SAVEMODE = "redstoneSaveMode";
     String TAG_REMOVE_BLOCKS = "removeBlocks";
     String TAG_ROTATION = "rotation";

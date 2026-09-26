@@ -27,7 +27,7 @@ public class ReedsFeature extends GenerateFeature {
         int maxReed = random.nextInt(3);
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
-                if(chunk.getHeightMap(x, z) == SEA_LEVEL) {
+                if(chunk.getHeightMap(x, z) == SEA_LEVEL + 1) {
                     if(BlockReeds.isSupportValid(level.getBlock(x + (chunkX << 4), SEA_LEVEL, z + (chunkZ << 4)))) {
                         for(int i = 1; i < 4; i++) {
                             chunk.setBlockState(x, SEA_LEVEL + i, z, STATE);

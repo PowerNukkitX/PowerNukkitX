@@ -284,6 +284,11 @@ public class Network implements NetworkInterface, SignalingService {
         return new BedrockServerInitializer() {
             @Override
             protected void postInitChannel(Channel channel) {
+                channel.config().setOption(
+                    RakChannelOption.RAK_METRICS,
+                    new RakNetNetworkMetrics()
+                );
+
                 if (query) {
                     channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
                         .addLast("queryPacketHandler", new QueryPacketHandler(
@@ -593,6 +598,18 @@ public class Network implements NetworkInterface, SignalingService {
      */
     public int getNetworkLatency(Player player) {
         return -1;
+    }
+
+    @Override
+    public NetworkPressure getNetworkPressure(Player player) {
+        if (this.transport != NetworkSettings.TransportType.RAKNET) {
+            return NetworkPressure.UNKNOWN;
+        }
+
+        final var metrics = player.getSession().getPeer().getChannel().config().getOption(RakChannelOption.RAK_METRICS);
+        return metrics instanceof RakNetNetworkMetrics networkMetrics
+            ? networkMetrics.getNetworkPressure()
+            : NetworkPressure.UNKNOWN;
     }
 
     /**

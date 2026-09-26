@@ -7,7 +7,6 @@ import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntityLiving;
 import org.powernukkitx.entity.ai.memory.MemoryType;
 import org.powernukkitx.entity.projectile.EntityArrow;
-import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.event.entity.EntityShootBowEvent;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
 import org.powernukkitx.item.Item;
@@ -16,7 +15,6 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -150,14 +148,14 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
         final CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(entity.x))
-                        .add(new DoubleTag(entity.y + entity.getCurrentHeight() / 2 + 0.2f))
-                        .add(new DoubleTag(entity.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(entity.x))
+                        .add(new FloatTag(entity.y + entity.getCurrentHeight() / 2 + 0.2f))
+                        .add(new FloatTag(entity.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(-Math.sin(entity.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag((float) -entity.pitch)))
@@ -171,7 +169,6 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         if (arrow == null) {
             return;
         }
-        arrow.setPickupMode(EntityProjectile.PICKUP_NONE);
 
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(entity, bow, arrow, f);
         Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
@@ -195,7 +192,7 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
     private void playBowAnimation(Entity entity, int chargeAmount) {
         if(chargeAmount == 0) {
             entity.level.addSound(entity, Sound.CROSSBOW_LOADING_START);
-            entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
+            entity.setDataProperty(ActorDataTypes.TARGET, this.target.uniqueIdLong());
             entity.setDataFlag(ActorFlags.USING_ITEM);
         } else entity.setDataProperty(ActorDataTypes.CHARGE_AMOUNT, (byte) (chargeAmount * 2));
         if(chargeAmount == 30) entity.level.addSound(entity, Sound.CROSSBOW_LOADING_MIDDLE);

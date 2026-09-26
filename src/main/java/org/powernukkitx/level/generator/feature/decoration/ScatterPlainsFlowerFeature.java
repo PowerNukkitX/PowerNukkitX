@@ -31,7 +31,7 @@ public class ScatterPlainsFlowerFeature extends CountGenerateFeature implements 
             for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
                 if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
                     if(random.nextFloat() < 0.1f) {
-                        int height = level.getHeightMap(x, z);
+                        int height = level.getHeightMap(x, z) - 1;
                         BlockState topBlockState = level.getBlockStateAt(x, height, z);
                         if(isSupportValid(topBlockState.toBlock())) {
                             populateFlower(random.nextBoundedInt(8), object, x, height + 1, z);

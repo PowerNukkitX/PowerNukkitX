@@ -7,6 +7,7 @@ import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.NetherBridgePieces;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStart;
 import org.powernukkitx.level.generator.populator.Populator;
@@ -16,74 +17,29 @@ import org.powernukkitx.math.ChunkVector2;
 import org.powernukkitx.utils.random.NukkitRandom;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NetherFortressPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "nether_nether_fortress";
     protected static final int MAX_DISTANCE = NetherComplexPlacement.REGION_SIZE_CHUNKS;
-    protected static final int MIN_DISTANCE = NetherComplexPlacement.EDGE_EXCLUSION_CHUNKS + 1;
+    protected static final int MIN_DISTANCE = NetherComplexPlacement.EDGE_EXCLUSION_CHUNKS;
+    private static final int START_SEARCH_RADIUS = 8;
     public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
-            .salt(0x42415354494F4EL)
+            .salt(NetherComplexPlacement.PLACEMENT_SALT)
             .minDistance(MIN_DISTANCE)
             .maxDistance(MAX_DISTANCE)
             .build()) {
         @Override
         public boolean canGenerate(long levelSeed, RandomSourceProvider random, int chunkX, int chunkZ, int biome) {
-            return NetherComplexPlacement.isNetherComplexStart(levelSeed, chunkX, chunkZ, random)
-                    && !NetherComplexPlacement.shouldGenerateBastion(levelSeed, chunkX, chunkZ, random);
+            return NetherComplexPlacement.isNetherComplexStart(levelSeed, chunkX, chunkZ)
+                    && !NetherComplexPlacement.shouldGenerateBastion(levelSeed, chunkX, chunkZ);
         }
 
         @Override
         public ChunkVector2 findNearestGenerationChunk(ChunkVector2 origin, RandomSourceProvider random, BiomePicker<?> biomePicker, int radius) {
-            if (origin == null || random == null || radius < 0) {
-                return null;
-            }
-
-            long levelSeed = random.getSeed();
-            int originX = origin.getX();
-            int originZ = origin.getZ();
-            int minChunkX = originX - radius;
-            int maxChunkX = originX + radius;
-            int minChunkZ = originZ - radius;
-            int maxChunkZ = originZ + radius;
-
-            int minRegionX = Math.floorDiv(minChunkX, MAX_DISTANCE);
-            int maxRegionX = Math.floorDiv(maxChunkX, MAX_DISTANCE);
-            int minRegionZ = Math.floorDiv(minChunkZ, MAX_DISTANCE);
-            int maxRegionZ = Math.floorDiv(maxChunkZ, MAX_DISTANCE);
-
-            ChunkVector2 nearest = null;
-            long nearestDistanceSq = Long.MAX_VALUE;
-            for (int regionX = minRegionX; regionX <= maxRegionX; regionX++) {
-                int originRegionX = regionX * MAX_DISTANCE;
-                for (int regionZ = minRegionZ; regionZ <= maxRegionZ; regionZ++) {
-                    int originRegionZ = regionZ * MAX_DISTANCE;
-                    random.setSeed((levelSeed ^ 0x42415354494F4EL) + Level.chunkHash(regionX, regionZ));
-                    int chunkX = originRegionX + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE);
-                    int chunkZ = originRegionZ + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE);
-                    if (chunkX < minChunkX || chunkX > maxChunkX || chunkZ < minChunkZ || chunkZ > maxChunkZ) {
-                        continue;
-                    }
-                    if (!canGenerate(levelSeed, random, chunkX, chunkZ, 0)) {
-                        continue;
-                    }
-
-                    long dx = (long) chunkX - originX;
-                    long dz = (long) chunkZ - originZ;
-                    long distanceSq = dx * dx + dz * dz;
-                    if (distanceSq < nearestDistanceSq
-                            || (distanceSq == nearestDistanceSq && (nearest == null
-                            || chunkX < nearest.getX()
-                            || (chunkX == nearest.getX() && chunkZ < nearest.getZ())))) {
-                        nearestDistanceSq = distanceSq;
-                        nearest = new ChunkVector2(chunkX, chunkZ);
-                    }
-                }
-            }
-
-            random.setSeed(levelSeed);
-            return nearest;
+            return NetherComplexPlacement.findNearestGenerationChunk(origin, random, biomePicker, radius, false);
         }
     };
 
@@ -99,35 +55,59 @@ public class NetherFortressPopulator extends Populator implements PopulatorStruc
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         long seed = level.getSeed();
+        BlockManager manager = new BlockManager(level);
+        BoundingBox chunkBounds = new BoundingBox(chunkX << 4, chunkZ << 4, (chunkX << 4) + 15, (chunkZ << 4) + 15);
+        random.setSeed(seed);
+        int r1 = random.nextInt();
+        int r2 = random.nextInt();
+        List<StructureAabbVolumes.DynamicStructure> aabbStructures = new ArrayList<>();
 
-        if (PLACEMENT.canGenerate(seed, random, chunkX, chunkZ, 0)) {
-            random.setSeed(seed);
-            int r1 = random.nextInt();
-            int r2 = random.nextInt();
-            BlockManager manager = new BlockManager(level);
-
-            NetherFortressStart start = new NetherFortressStart(manager, chunkX, chunkZ);
-            start.generatePieces(manager, chunkX, chunkZ);
-
-            if (start.isValid()) {
-                BoundingBox boundingBox = start.getBoundingBox();
-                for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
-                    for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                        NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
-                        int x = cx << 4;
-                        int z = cz << 4;
-                        start.postProcess(manager, rand, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
-                    }
+        for (int startChunkX = chunkX - START_SEARCH_RADIUS; startChunkX <= chunkX + START_SEARCH_RADIUS; startChunkX++) {
+            for (int startChunkZ = chunkZ - START_SEARCH_RADIUS; startChunkZ <= chunkZ + START_SEARCH_RADIUS; startChunkZ++) {
+                if (!PLACEMENT.canGenerate(seed, random, startChunkX, startChunkZ, 0)) {
+                    continue;
                 }
-                queueObject(chunk, manager);
+
+                final int originChunkX = startChunkX;
+                final int originChunkZ = startChunkZ;
+                NetherFortressStart start = context.getGenerator().getStructureStartCache().getOrCreate(
+                        NetherFortressStart.class,
+                        originChunkX,
+                        originChunkZ,
+                        () -> createStart(level, originChunkX, originChunkZ)
+                );
+                if (start.isValid() && start.getBoundingBox().intersects(chunkBounds)) {
+                    NukkitRandom postProcessRandom = new NukkitRandom((long) chunkX * r1 ^ (long) chunkZ * r2 ^ seed);
+                    start.postProcessPieces(manager, postProcessRandom, chunkBounds, chunkX, chunkZ);
+                    aabbStructures.add(StructureAabbVolumes.DynamicStructure.fromStart(start));
+                }
             }
         }
+
+        StructureAabbVolumes.replaceDynamic(chunk, "minecraft:fortress", aabbStructures);
+        queueObject(chunk, manager);
+    }
+
+    private static NetherFortressStart createStart(Level level, int chunkX, int chunkZ) {
+        BlockManager manager = new BlockManager(level);
+        NetherFortressStart start = new NetherFortressStart(
+                manager,
+                chunkX,
+                chunkZ,
+                NetherComplexPlacement.createPostSelectionRandom(level.getSeed(), chunkX, chunkZ)
+        );
+        start.generatePieces(manager, chunkX, chunkZ);
+        return start;
     }
 
     public static class NetherFortressStart extends StructureStart {
 
         public NetherFortressStart(BlockManager level, int chunkX, int chunkZ) {
             super(level, chunkX, chunkZ);
+        }
+
+        private NetherFortressStart(BlockManager level, int chunkX, int chunkZ, RandomSourceProvider random) {
+            super(level, chunkX, chunkZ, random);
         }
 
         @Override
@@ -148,7 +128,7 @@ public class NetherFortressPopulator extends Populator implements PopulatorStruc
 
         @Override
         public String getType() {
-            return "Fortress";
+            return "minecraft:fortress";
         }
     }
 

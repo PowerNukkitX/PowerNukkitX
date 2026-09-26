@@ -7,37 +7,37 @@ import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.OceanMonumentPieces;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStart;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.OceanMonumentPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockFace;
-import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.random.NukkitRandom;
 import org.powernukkitx.utils.random.RandomSourceProvider;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import org.powernukkitx.utils.random.Xoroshiro128;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OceanMonumentPopulator extends Populator implements PopulatorStructure {
-
     public static final String NAME = "normal_ocean_monument";
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+    public static final StructurePlacement PLACEMENT = new OceanMonumentPlacement(StructurePlacement.PlacementSettings.builder()
             .salt(10387313L)
             .minDistance(5)
             .maxDistance(32)
             .isBiomeValid(biome -> switch (biome) {
                 case BiomeID.DEEP_OCEAN,
+                     BiomeID.DEEP_WARM_OCEAN,
+                     BiomeID.DEEP_LUKEWARM_OCEAN,
                      BiomeID.DEEP_COLD_OCEAN,
-                     BiomeID.DEEP_FROZEN_OCEAN,
-                     BiomeID.DEEP_LUKEWARM_OCEAN -> true;
+                     BiomeID.DEEP_FROZEN_OCEAN -> true;
                 default -> false;
             })
             .build());
-    protected final Map<Long, Set<Long>> waitingChunks = Maps.newConcurrentMap();
+    private static final int START_SEARCH_RADIUS = 2;
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -46,80 +46,47 @@ public class OceanMonumentPopulator extends Populator implements PopulatorStruct
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level l = chunk.getLevel();
-        int biome = Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7)).second().getId();
-        if (!PLACEMENT.canGenerate(l.getSeed(), random, chunkX, chunkZ, biome)) {
-            return;
-        }
+        Level level = chunk.getLevel();
+        long seed = level.getSeed();
+        BlockManager manager = new BlockManager(level);
+        BoundingBox chunkBounds = new BoundingBox(chunkX << 4, chunkZ << 4, (chunkX << 4) + 15, (chunkZ << 4) + 15);
+        Xoroshiro128 placementRandom = new Xoroshiro128(seed);
+        NukkitRandom chunkRandom = new NukkitRandom(seed);
+        int r1 = chunkRandom.nextInt();
+        int r2 = chunkRandom.nextInt();
+        List<StructureAabbVolumes.DynamicStructure> aabbStructures = new ArrayList<>();
 
-        BlockManager level = new BlockManager(l);
-        int startX = (chunkX << 4) + 9;
-        int startZ = (chunkZ << 4) + 9;
-
-        Set<IChunk> chunks = Sets.newHashSet();
-        Set<Long> indexes = Sets.newConcurrentHashSet();
-
-        for (int ckX = (startX - 29) >> 4; ckX <= (startX + 29) >> 4; ckX++) {
-            for (int ckZ = (startZ - 29) >> 4; ckZ <= (startZ + 29) >> 4; ckZ++) {
-                IChunk ck = level.getChunk(ckX, ckZ);
-                if (ck == null) {
-                    ck = chunk.getProvider().getChunk(ckX, ckZ, true);
+        for (int startChunkX = chunkX - START_SEARCH_RADIUS; startChunkX <= chunkX + START_SEARCH_RADIUS; startChunkX++) {
+            for (int startChunkZ = chunkZ - START_SEARCH_RADIUS; startChunkZ <= chunkZ + START_SEARCH_RADIUS; startChunkZ++) {
+                if (!PLACEMENT.canGenerate(seed, placementRandom, startChunkX, startChunkZ, level.getBiomePicker())) {
+                    continue;
                 }
-                if (!ck.isGenerated()) {
-                    chunks.add(ck);
-                    indexes.add(Level.chunkHash(ck.getX(), ck.getZ()));
+
+                final int originChunkX = startChunkX;
+                final int originChunkZ = startChunkZ;
+                OceanMonumentStart start = context.getGenerator().getStructureStartCache().getOrCreate(
+                        OceanMonumentStart.class,
+                        originChunkX,
+                        originChunkZ,
+                        () -> createStart(level, originChunkX, originChunkZ)
+                );
+                if (start.isValid() && start.getBoundingBox().intersects(chunkBounds)) {
+                    NukkitRandom postProcessRandom = new NukkitRandom((long) chunkX * r1 ^ (long) chunkZ * r2 ^ seed);
+                    start.postProcessPieces(manager, postProcessRandom, chunkBounds, chunkX, chunkZ);
+                    aabbStructures.add(StructureAabbVolumes.DynamicStructure.fromStart(start));
                 }
             }
         }
 
-        if (!chunks.isEmpty()) {
-            this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
-            for (IChunk ck : chunks) {
-                if (ck.isGenerated())
-                    level.getLevel().syncGenerateChunk(ck.getX(), ck.getZ());
-                generateChunkCallback(level, startX, startZ, chunk, ck.getX(), ck.getZ());
-            }
-            queueObject(chunk, level);
-            return;
-        }
-
-        this.place(level, startX, startZ, chunk);
-        queueObject(chunk, level);
+        StructureAabbVolumes.replaceDynamic(chunk, "minecraft:monument", aabbStructures);
+        queueObject(chunk, manager);
     }
 
-
-    public void place(BlockManager level, int startX, int startZ, IChunk chunk) {
-        int chunkX = startX >> 4;
-        int chunkZ = startZ >> 4;
-
-        //\\ OceanMonumentFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
-        OceanMonumentStart start = new OceanMonumentStart(level, chunkX, chunkZ);
-        start.generatePieces(level, chunkX, chunkZ);
-
-        if (start.isValid()) {
-            long seed = level.getSeed();
-            NukkitRandom random = new NukkitRandom(seed);
-            int r1 = random.nextInt();
-            int r2 = random.nextInt();
-
-            BoundingBox boundingBox = start.getBoundingBox();
-            for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
-                for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                    NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
-                    int x = cx << 4;
-                    int z = cz << 4;
-                    start.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
-                }
-            }
-        }
-    }
-
-    public synchronized void generateChunkCallback(BlockManager level, int startX, int startZ, IChunk chunk, int chunkX, int chunkZ) {
-        Set<Long> indexes = this.waitingChunks.get(Level.chunkHash(startX >> 4, startZ >> 4));
-        indexes.remove(Level.chunkHash(chunkX, chunkZ));
-        if (indexes.isEmpty()) {
-            this.place(level, startX, startZ, chunk);
-        }
+    private static OceanMonumentStart createStart(Level level, int chunkX, int chunkZ) {
+        BlockManager manager = new BlockManager(level);
+        OceanMonumentStart start = new OceanMonumentStart(manager, chunkX, chunkZ);
+        start.generatePieces(manager, chunkX, chunkZ);
+        return start;
     }
 
     @Override
@@ -137,7 +104,12 @@ public class OceanMonumentPopulator extends Populator implements PopulatorStruct
 
         @Override //\\ OceanMonumentStart::createMonument(Dimension &,Random &,int,int)
         public void generatePieces(BlockManager level, int chunkX, int chunkZ) {
-            this.pieces.add(new OceanMonumentPieces.MonumentBuilding(this.random, chunkX * 16 - 29, chunkZ * 16 - 29, BlockFace.Plane.HORIZONTAL.random(this.random)));
+            this.pieces.add(new OceanMonumentPieces.MonumentBuilding(
+                    this.random,
+                    (chunkX << 4) - 21,
+                    (chunkZ << 4) - 21,
+                    BlockFace.Plane.HORIZONTAL.random(this.random)
+            ));
             this.calculateBoundingBox();
 
             this.isCreated = true;
@@ -145,17 +117,26 @@ public class OceanMonumentPopulator extends Populator implements PopulatorStruct
 
         @Override //\\ OceanMonumentStart::postProcess(BlockSource *,Random &,BoundingBox const &)
         public void postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+            this.ensureCreated(level);
+            super.postProcess(level, random, boundingBox, chunkX, chunkZ);
+        }
+
+        @Override
+        public void postProcessPieces(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+            this.ensureCreated(level);
+            super.postProcessPieces(level, random, boundingBox, chunkX, chunkZ);
+        }
+
+        private void ensureCreated(BlockManager level) {
             if (!this.isCreated) {
                 this.pieces.clear();
-                this.generatePieces(level, chunkX, chunkZ);
+                this.generatePieces(level, this.getChunkX(), this.getChunkZ());
             }
-
-            super.postProcess(level, random, boundingBox, chunkX, chunkZ);
         }
 
         @Override //\\ OceanMonumentStart::getType(void) // 4
         public String getType() {
-            return "Monument";
+            return "minecraft:monument";
         }
     }
 }

@@ -46,7 +46,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature implements 
         for (int i = 0; i < amount; ++i) {
             int x = random.nextInt(15);
             int z = random.nextInt(15);
-            int y = chunk.getHeightMap(x, z);
+            int y = chunk.getHeightMap(x, z) - 1;
             if (y < level.getMinHeight()) {
                 continue;
             }

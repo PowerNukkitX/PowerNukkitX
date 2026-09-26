@@ -174,9 +174,9 @@ public class EntityTypeBehaviorSmokeTest {
             safe(item::getPickupDelay);
             safe(() -> item.setPickupDelay(20));
             safe(item::getPickupDelay);
-            safe(() -> item.setThrower("tester"));
-            safe(item::getThrower);
-            safe(() -> item.setOwner("owner"));
+            safe(() -> item.setOwnerId(1L));
+            safe(item::getOwnerId);
+            safe(() -> item.setOwnerName("owner"));
             safe(item::getOwnerName);
             safe(() -> item.setDisplayOnly(true));
             safe(item::isDisplayOnly);
@@ -189,8 +189,6 @@ public class EntityTypeBehaviorSmokeTest {
         if (orb != null) {
             safe(() -> orb.setExp(7));
             safe(orb::getExp);
-            safe(orb::getPickupDelay);
-            safe(() -> orb.setPickupDelay(5));
             safe(() -> EntityXpOrb.getMaxOrbSize(100));
             safe(() -> EntityXpOrb.splitIntoOrbSizes(100));
             checked++;

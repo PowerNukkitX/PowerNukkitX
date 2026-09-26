@@ -284,8 +284,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             final T result;
             try {
                 result = work.get();
-            } catch (Exception e) {
-                log.debug("Error while validating login", e);
+            } catch (Exception | AssertionError | LinkageError e) {
+                log.error("Error while validating login", e);
                 eventLoop.execute(() -> {
                     if (holder.getSession().isConnected()) {
                         failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);

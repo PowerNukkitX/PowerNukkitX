@@ -224,21 +224,69 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
         /**
-         * Sets an entity's melee attack
-         * @param damage Int value
+         * Sets a fixed {@code minecraft:attack} damage value.
+         *
+         * @param damage attack damage
          */
         public SimpleBuilder attack(int damage) {
+            return attack((float) damage);
+        }
+
+        /**
+         * Sets a fixed {@code minecraft:attack} damage value.
+         *
+         * @param damage attack damage
+         */
+        public SimpleBuilder attack(float damage) {
             return attack(damage, damage);
         }
 
         /**
-         * Sets an entity's melee attack, final value is a random between min and max.
-         * @param min Int value
-         * @param max Int value
+         * Sets the {@code minecraft:attack} damage range.
+         *
+         * @param min minimum damage
+         * @param max maximum damage
          */
         public SimpleBuilder attack(int min, int max) {
-            Preconditions.checkArgument(max >= min, "max value must be higher or equal to min value.");
-            return withObject(CustomEntityComponents.ATTACK, new Attack(min, max));
+            return attack((float) min, (float) max);
+        }
+
+        /**
+         * Sets the {@code minecraft:attack} damage range.
+         *
+         * @param min minimum damage
+         * @param max maximum damage
+         */
+        public SimpleBuilder attack(float min, float max) {
+            return withObject(CustomEntityComponents.ATTACK, AttackComponent.range(min, max));
+        }
+
+        /**
+         * Sets a fixed {@code minecraft:attack_damage} value.
+         *
+         * @param damage attack damage
+         */
+        public SimpleBuilder attackDamage(float damage) {
+            return attackDamage(AttackDamageComponent.value(damage));
+        }
+
+        /**
+         * Sets a ranged {@code minecraft:attack_damage} value.
+         *
+         * @param min minimum value
+         * @param max maximum value
+         */
+        public SimpleBuilder attackDamageRange(float min, float max) {
+            return attackDamage(AttackDamageComponent.range(min, max));
+        }
+
+        /**
+         * Sets the complete {@code minecraft:attack_damage} definition.
+         *
+         * @param component attack damage definition
+         */
+        public SimpleBuilder attackDamage(AttackDamageComponent component) {
+            return withObject(CustomEntityComponents.ATTACK_DAMAGE, Preconditions.checkNotNull(component, "component"));
         }
 
         /**
@@ -1468,19 +1516,14 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
 
-        // Attack Meta
-        public static record Attack(int min, int max) {
-            public Attack {
-                min = Math.max(0, min);
-                max = Math.max(0, max);
-            }
-            public int value() { return min; }
-            public int max() { return max; }
+        public @Nullable AttackComponent getDefinitionAttackComponent(String key) {
+            Object obj = components.get(key);
+            return obj instanceof AttackComponent data ? data : null;
         }
 
-        public Attack getAttack(String key) {
+        public @Nullable AttackDamageComponent getDefinitionAttackDamageComponent(String key) {
             Object obj = components.get(key);
-            return (obj instanceof Attack data) ? data : new Attack(1, 1);
+            return obj instanceof AttackDamageComponent data ? data : null;
         }
 
 

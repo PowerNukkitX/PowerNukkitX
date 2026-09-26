@@ -373,7 +373,7 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     protected int getPlacementY(Level level, int x, int z) {
-        int height = level.getHeightMap(x, z);
+        int height = level.getHeightMap(x, z) - 1;
         Block topBlock = level.getBlock(x, height, z);
         if (topBlock instanceof BlockFlowingWater || topBlock.isWaterLogged()) {
             return height + 1;

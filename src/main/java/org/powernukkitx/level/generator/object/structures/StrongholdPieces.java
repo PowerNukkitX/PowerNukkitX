@@ -7,12 +7,10 @@ import org.powernukkitx.block.property.enums.TorchFacingDirection;
 import org.powernukkitx.blockentity.BlockEntityChest;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.item.Item;
-import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.generator.object.BlockManager;
-import org.powernukkitx.level.generator.object.RandomizableContainer;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
 import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
+import org.powernukkitx.level.loot.VanillaLootTables;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -25,10 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class StrongholdPieces {
-
-    private static CorridorChestPopulator CORRIDOR = new CorridorChestPopulator();
-    private static CrossingChestPopulator CROSSING = new CrossingChestPopulator();
-    private static LibraryChestPopulator LIBRARY = new LibraryChestPopulator();
 
     private static final BlockState INFESTED_STONE_BRICKS = BlockInfestedStoneBricks.PROPERTIES.getDefaultState();
     private static final BlockState STONE_BRICKS = BlockStoneBricks.PROPERTIES.getDefaultState();
@@ -96,6 +90,19 @@ public class StrongholdPieces {
 
     public static Object getLock() {
         return lock;
+    }
+
+    private static void addLootChestHook(BlockManager level, int x, int y, int z, String lootTable, int lootTableSeed) {
+        level.addHook(() -> {
+            if (!(level.getBlockAt(x, y, z) instanceof BlockChest chest)) return;
+
+            BlockEntityChest blockEntity = chest.getBlockEntity();
+            if (blockEntity == null) {
+                chest.createBlockEntity(new CompoundTag().putString("LootTable", lootTable).putInt("LootTableSeed", lootTableSeed));
+            } else {
+                blockEntity.setLootTable(lootTable, lootTableSeed);
+            }
+        });
     }
 
     public static void resetPieces() {
@@ -521,7 +528,7 @@ public class StrongholdPieces {
 
         @Override //\\ SHStairsDown::postProcess(BlockSource *,Random &,BoundingBox const &)
         public boolean postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
-            this.generateBox(level, boundingBox, 0, 0, 0, 4, 10, 4, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 4, 10, 4, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 4);
 
@@ -610,7 +617,7 @@ public class StrongholdPieces {
 
         @Override
         public boolean postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
-            this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 6, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 6, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 6);
 
@@ -691,14 +698,14 @@ public class StrongholdPieces {
                 this.placeBlock(chest, BlockChest.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue((orientation == null ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.valueOf(orientation.getOpposite().getName().toUpperCase())))), 3, 2, 3, boundingBox);
                 level.merge(chest);
                 for (Block block : chest.getBlocks()) {
-                    int fx = block.getFloorX();
-                    int fy = block.getFloorY();
-                    int fz = block.getFloorZ();
-                    level.addHook(() -> {
-                        @SuppressWarnings("unchecked")
-                        var holder = (BlockEntityHolder<BlockEntityChest>) level.getBlockAt(fx, fy, fz);
-                        CORRIDOR.create(holder.getOrCreateBlockEntity().getInventory(), random);
-                    });
+                    addLootChestHook(
+                            level,
+                            block.getFloorX(),
+                            block.getFloorY(),
+                            block.getFloorZ(),
+                            VanillaLootTables.STRONGHOLD_CORRIDOR,
+                            random.nextInt()
+                    );
                 }
             }
 
@@ -736,7 +743,7 @@ public class StrongholdPieces {
 
         @Override
         public boolean postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
-            this.generateBox(level, boundingBox, 0, 0, 0, 4, 10, 7, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 4, 10, 7, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 7);
 
@@ -803,7 +810,7 @@ public class StrongholdPieces {
 
         @Override
         public boolean postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
-            this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 4, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 4, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
 
             BlockFace orientation = this.getOrientation();
@@ -908,7 +915,7 @@ public class StrongholdPieces {
 
         @Override
         public boolean postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
-            this.generateBox(level, boundingBox, 0, 0, 0, 10, 6, 10, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 10, 6, 10, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 4, 1, 0);
             this.generateBox(level, boundingBox, 4, 1, 10, 6, 3, 10, BlockAir.STATE, BlockAir.STATE, false);
             this.generateBox(level, boundingBox, 0, 1, 4, 0, 3, 6, BlockAir.STATE, BlockAir.STATE, false);
@@ -1016,11 +1023,14 @@ public class StrongholdPieces {
 
                     BlockVector3 vec = new BlockVector3(this.getWorldX(3, 8), this.getWorldY(4), this.getWorldZ(3, 8));
                     if (boundingBox.isInside(vec)) {
-                    level.addHook(() -> {
-                        @SuppressWarnings("unchecked")
-                        var holder = (BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z);
-                        CROSSING.create(holder.getOrCreateBlockEntity().getInventory(), random);
-                    });
+                        addLootChestHook(
+                                level,
+                                vec.x,
+                                vec.y,
+                                vec.z,
+                                VanillaLootTables.STRONGHOLD_CROSSING,
+                                random.nextInt()
+                        );
                     }
             }
 
@@ -1058,7 +1068,7 @@ public class StrongholdPieces {
 
         @Override
         public boolean postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
-            this.generateBox(level, boundingBox, 0, 0, 0, 8, 4, 10, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 8, 4, 10, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateBox(level, boundingBox, 1, 1, 10, 3, 3, 10, BlockAir.STATE, BlockAir.STATE, false);
 
@@ -1135,7 +1145,7 @@ public class StrongholdPieces {
                 height = 6;
             }
 
-            this.generateBox(level, boundingBox, 0, 0, 0, 13, height - 1, 14, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 13, height - 1, 14, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 4, 1, 0);
             this.generateMaybeBox(level, boundingBox, random, 7, 2, 1, 1, 11, 4, 13, COBWEB, COBWEB, false, false);
 
@@ -1223,11 +1233,14 @@ public class StrongholdPieces {
 
             BlockVector3 vec = new BlockVector3(this.getWorldX(3, 5), this.getWorldY(3), this.getWorldZ(3, 5));
             if (boundingBox.isInside(vec)) {
-                if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
-                    level.addHook(() -> {
-                        LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
-                    });
-                }
+                addLootChestHook(
+                        level,
+                        vec.x,
+                        vec.y,
+                        vec.z,
+                        VanillaLootTables.STRONGHOLD_LIBRARY,
+                        random.nextInt()
+                );
             }
 
             if (this.isTall) {
@@ -1236,11 +1249,14 @@ public class StrongholdPieces {
 
                 vec.setComponents(this.getWorldX(12, 1), this.getWorldY(8), this.getWorldZ(12, 1));
                 if (boundingBox.isInside(vec)) {
-                    if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
-                        level.addHook(() -> {
-                            LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
-                        });
-                    }
+                    addLootChestHook(
+                            level,
+                            vec.x,
+                            vec.y,
+                            vec.z,
+                            VanillaLootTables.STRONGHOLD_LIBRARY,
+                            random.nextInt()
+                    );
                 }
             }
 
@@ -1322,7 +1338,7 @@ public class StrongholdPieces {
 
         @Override
         public boolean postProcess(BlockManager level, RandomSourceProvider random, BoundingBox boundingBox, int chunkX, int chunkZ) {
-            this.generateBox(level, boundingBox, 0, 0, 0, 9, 8, 10, true, random, SMOOTH_STONE_SELECTOR);
+            this.generateBox(level, boundingBox, 0, 0, 0, 9, 8, 10, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 4, 3, 0);
 
             if (this.leftLow) {
@@ -1522,84 +1538,5 @@ public class StrongholdPieces {
                 this.next = BlockAir.STATE;
             }
         }
-    }
-
-    protected static class CorridorChestPopulator extends RandomizableContainer {
-        public CorridorChestPopulator() {
-            PoolBuilder pool1 = new PoolBuilder()
-                    .register(new ItemEntry(Item.ENDER_PEARL, 50))
-                    .register(new ItemEntry(Item.EMERALD, 0, 1, 3, 15))
-                    .register(new ItemEntry(Item.DIAMOND, 0, 1, 3, 15))
-                    .register(new ItemEntry(Item.IRON_INGOT, 0, 1, 5, 50))
-                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 1, 3, 25))
-                    .register(new ItemEntry(Item.REDSTONE, 0, 4, 9, 25))
-                    .register(new ItemEntry(Item.BREAD, 0, 1, 3, 75))
-                    .register(new ItemEntry(Item.APPLE, 0, 1, 3, 75))
-                    .register(new ItemEntry(Item.IRON_PICKAXE, 25))
-                    .register(new ItemEntry(Item.IRON_SWORD, 25))
-                    .register(new ItemEntry(Item.IRON_CHESTPLATE, 25))
-                    .register(new ItemEntry(Item.IRON_HELMET, 25))
-                    .register(new ItemEntry(Item.IRON_LEGGINGS, 25))
-                    .register(new ItemEntry(Item.IRON_BOOTS, 25))
-                    .register(new ItemEntry(Item.GOLDEN_APPLE, 5))
-                    .register(new ItemEntry(Item.LEATHER, 0, 1, 5, 5))
-                    .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 5))
-                    .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
-                    .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
-                    .register(new ItemEntry(Item.MUSIC_DISC_OTHERSIDE, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 6, getTreasure()));
-
-            this.pools.put(pool1.build(), new RollEntry(3, 2, pool1.getTotalWeight()));
-
-            PoolBuilder pool2 = new PoolBuilder()
-                    .register(new ItemEntry(Block.AIR, 9))
-                    .register(new ItemEntry(Item.EYE_ARMOR_TRIM_SMITHING_TEMPLATE, 1));
-
-            this.pools.put(pool2.build(), new RollEntry(1, 1, pool2.getTotalWeight()));
-        }
-    }
-
-    protected static class CrossingChestPopulator extends RandomizableContainer {
-        public CrossingChestPopulator() {
-            PoolBuilder pool = new PoolBuilder()
-                    .register(new ItemEntry(Item.IRON_INGOT, 0, 1, 5, 50))
-                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 1, 3, 25))
-                    .register(new ItemEntry(Item.REDSTONE, 0, 4, 9, 25))
-                    .register(new ItemEntry(Item.COAL, 0, 3, 8, 50))
-                    .register(new ItemEntry(Item.BREAD, 0, 1, 3, 75))
-                    .register(new ItemEntry(Item.APPLE, 0, 1, 3, 75))
-                    .register(new ItemEntry(Item.IRON_PICKAXE, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 6, getTreasure()))
-                    .register(new ItemEntry(Item.INK_SAC, 0, 1, 3, 75));
-
-            this.pools.put(pool.build(), new RollEntry(4, 1, pool.getTotalWeight()));
-        }
-    }
-
-    protected static class LibraryChestPopulator extends RandomizableContainer {
-        public LibraryChestPopulator() {
-            PoolBuilder pool1 = new PoolBuilder()
-                    .register(new ItemEntry(Item.BOOK, 0, 1, 3, 100))
-                    .register(new ItemEntry(Item.PAPER, 0, 2, 7, 100))
-                    .register(new ItemEntry(Item.EMPTY_MAP, 5))
-                    .register(new ItemEntry(Item.COMPASS, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 60, getTreasure()));
-
-            this.pools.put(pool1.build(), new RollEntry(10, 2, pool1.getTotalWeight()));
-
-            PoolBuilder pool2 = new PoolBuilder()
-                    .register(new ItemEntry(Item.EYE_ARMOR_TRIM_SMITHING_TEMPLATE, 1));
-
-            this.pools.put(pool2.build(), new RollEntry(1, 1, pool2.getTotalWeight()));
-        }
-    }
-
-    private static Enchantment[] getTreasure() {
-        return new Enchantment[]{
-                Enchantment.getEnchantment(Enchantment.ID_BINDING_CURSE),
-                Enchantment.getEnchantment(Enchantment.ID_VANISHING_CURSE),
-                Enchantment.getEnchantment(Enchantment.ID_FROST_WALKER),
-                Enchantment.getEnchantment(Enchantment.ID_MENDING)
-        };
     }
 }

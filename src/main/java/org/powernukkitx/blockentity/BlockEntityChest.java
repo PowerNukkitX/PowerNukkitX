@@ -7,9 +7,12 @@ import org.powernukkitx.inventory.BaseInventory;
 import org.powernukkitx.inventory.ChestInventory;
 import org.powernukkitx.inventory.ContainerInventory;
 import org.powernukkitx.inventory.DoubleChestInventory;
+import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,6 +28,12 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.nbt.putByte("Findable", this.nbt.getByte("Findable"));
+    }
+
+    @Override
     protected ContainerInventory requireContainerInventory() {
         return Objects.requireNonNullElseGet(this.inventory, () -> new ChestInventory(this));
     }
@@ -37,8 +46,8 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
                 for (Player player : new HashSet<>(dblInv.getViewers())) {
                     player.removeWindow(dblInv);
                 }
-                this.doubleInventory = null;
             }
+            this.clearDoubleInventory();
             ChestInventory realInv = this.getRealInventory();
             for (Player player : new HashSet<>(realInv.getViewers())) {
                 player.removeWindow(realInv);
@@ -77,35 +86,55 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         return (ChestInventory) inventory;
     }
 
+    private void clearDoubleInventory() {
+        this.doubleInventory = null;
+        this.getRealInventory().setDoubleInventory(null);
+
+        BlockEntityChest pair = this.getPair();
+        if (pair != null) {
+            pair.doubleInventory = null;
+            pair.getRealInventory().setDoubleInventory(null);
+        }
+    }
+
+    private BlockEntityChest getPairLead() {
+        if (!this.isPaired() || this.nbt.getBoolean("pairlead")) {
+            return this;
+        }
+        BlockEntityChest pair = this.getPair();
+        return pair != null && pair.nbt.getBoolean("pairlead") ? pair : this;
+    }
+
     protected void checkPairing() {
         BlockEntityChest pair = this.getPair();
 
         if (pair != null) {
             if (!pair.isPaired()) {
-                pair.pairWith(this);
-                this.pairWith(pair);
+                pair.nbt.putBoolean("pairlead", !this.nbt.getBoolean("pairlead"))
+                        .putInt("pairx", (int) this.x)
+                        .putInt("pairz", (int) this.z);
+                pair.nbt.remove("forceunpair");
+                pair.setDirty();
             }
 
             if (pair.doubleInventory != null) {
                 this.doubleInventory = pair.doubleInventory;
-                this.nbt.putBoolean("pairlead", false);
             } else if (this.doubleInventory == null) {
-                this.nbt.putBoolean("pairlead", true);
-                if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { //Order them correctly
-                    this.doubleInventory = new DoubleChestInventory(pair, this);
-                } else {
+                if (this.nbt.getBoolean("pairlead")) {
+                    pair.nbt.putBoolean("pairlead", false);
                     this.doubleInventory = new DoubleChestInventory(this, pair);
+                } else if (pair.nbt.getBoolean("pairlead")) {
+                    this.doubleInventory = new DoubleChestInventory(pair, this);
                 }
+                pair.doubleInventory = this.doubleInventory;
             }
         } else {
             int pairChunkX = this.nbt.getInt("pairx") >> 4;
             int pairChunkZ = this.nbt.getInt("pairz") >> 4;
             IChunk pairChunk = level.getChunkIfLoaded(pairChunkX, pairChunkZ);
             if (pairChunk != null && pairChunk.isInitiated()) {
-                this.doubleInventory = null;
-                this.nbt.remove("pairx");
-                this.nbt.remove("pairz");
-                this.nbt.remove("pairlead");
+                this.clearDoubleInventory();
+                this.nbt.remove("pairx", "pairz", "pairlead");
                 this.setDirty();
             }
         }
@@ -148,7 +177,11 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             }
         }
 
-        this.createPair(chest);
+        if (!this.isPaired() && !chest.isPaired()) {
+            this.createPair(chest);
+        } else if (this.isPaired() != chest.isPaired()) {
+            return false;
+        }
         this.checkPairing();
 
         chest.spawnToAll();
@@ -158,10 +191,16 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public void createPair(BlockEntityChest chest) {
-        this.nbt.putInt("pairx", (int) chest.x)
+        this.nbt.putBoolean("pairlead", true)
+                .putInt("pairx", (int) chest.x)
                 .putInt("pairz", (int) chest.z);
-        chest.nbt.putInt("pairx", (int) this.x)
+        chest.nbt.putBoolean("pairlead", false)
+                .putInt("pairx", (int) this.x)
                 .putInt("pairz", (int) this.z);
+        this.nbt.remove("forceunpair");
+        chest.nbt.remove("forceunpair");
+        this.setDirty();
+        chest.setDirty();
     }
 
     public boolean unpair() {
@@ -169,23 +208,28 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             return false;
         }
         BlockEntityChest chest = this.getPair();
+        DoubleChestInventory dblInv = this.doubleInventory != null ? this.doubleInventory : chest != null ? chest.doubleInventory : null;
 
-        this.doubleInventory = null;
-        this.nbt.remove("pairx");
-        this.nbt.remove("pairz");
+        if (dblInv != null) {
+            for (Player player : new HashSet<>(dblInv.getViewers())) {
+                player.removeWindow(dblInv);
+            }
+        }
+
+        this.clearDoubleInventory();
+        this.nbt.remove("pairx", "pairz", "pairlead", "forceunpair");
+        if (chest != null) {
+            this.nbt.putBoolean("forceunpair", true);
+        }
         this.setDirty();
-
         this.spawnToAll();
 
         if (chest != null) {
-            chest.nbt.remove("pairx");
-            chest.nbt.remove("pairz");
-            chest.doubleInventory = null;
-            chest.checkPairing();
+            chest.nbt.remove("pairx", "pairz", "pairlead", "forceunpair");
+            chest.nbt.putBoolean("forceunpair", true);
             chest.setDirty();
             chest.spawnToAll();
         }
-        this.checkPairing();
 
         return true;
     }
@@ -194,6 +238,31 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         if (this.isPaired()) {
             this.unpair();
         }
+    }
+
+    /**
+     * Broadcasts the chest lid state and sound.
+     *
+     * @param open whether the lid is open
+     */
+    public void broadcastLidState(boolean open) {
+        BlockEntityChest lead = this.getPairLead();
+        var level = lead.getLevel();
+        if (level == null) {
+            return;
+        }
+
+        final BlockEventPacket packet = new BlockEventPacket();
+        packet.setBlockPosition(Vector3i.from(lead.x, lead.y, lead.z));
+        packet.setEventType(1);
+        packet.setEventValue(open ? 1 : 0);
+
+        BlockEntityChest pair = lead.getPair();
+        Vector3 soundPosition = pair != null
+                ? new Vector3((lead.x + pair.x) * 0.5 + 0.5, lead.y + 0.5, (lead.z + pair.z) * 0.5 + 0.5)
+                : lead.add(0.5, 0.5, 0.5);
+        level.addSound(soundPosition, open ? Sound.RANDOM_CHESTOPEN : Sound.RANDOM_CHESTCLOSED);
+        level.addChunkPacket((int) lead.x >> 4, (int) lead.z >> 4, packet);
     }
 
     @Override

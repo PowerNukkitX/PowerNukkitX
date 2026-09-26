@@ -77,6 +77,7 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         }
         tag.putList("storage_item_component_content", items);
         this.setNbt(tag);
+        getLevel().getChunk((int) getX() >> 4, (int) getZ() >> 4).setChanged();
     }
 
     @Override

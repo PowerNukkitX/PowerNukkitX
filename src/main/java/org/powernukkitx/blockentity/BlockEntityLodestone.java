@@ -17,30 +17,75 @@ import java.util.OptionalInt;
 /**
  * @author joserobjr
  */
-
-
 @Slf4j
 public class BlockEntityLodestone extends BlockEntitySpawnable {
+    private static final String PNX_EXTRA_TRACKING_HANDLES = "lodestoneTrackingHandles";
 
+    private static String getTrackingKey(int x, int y, int z) {
+        return x + "," + y + "," + z;
+    }
+
+    private static int getPnxTrackingHandle(CompoundTag extraData, int x, int y, int z) {
+        if (!extraData.containsCompound(PNX_EXTRA_TRACKING_HANDLES)) return 0;
+
+        CompoundTag handles = extraData.getCompound(PNX_EXTRA_TRACKING_HANDLES);
+        String key = getTrackingKey(x, y, z);
+        return handles.containsNumber(key) ? handles.getInt(key) : 0;
+    }
+
+    /**
+     * Updates the PNX lodestone tracking-handle mapping for a block position.
+     *
+     * @param extraData PNX extra data
+     * @param x block X
+     * @param y block Y
+     * @param z block Z
+     * @param trackingHandle tracking handle, or a non-positive value to remove it
+     * @return whether the mapping changed
+     */
+    public static boolean setPnxTrackingHandle(CompoundTag extraData, int x, int y, int z, int trackingHandle) {
+        String key = getTrackingKey(x, y, z);
+
+        if (trackingHandle <= 0) {
+            if (!extraData.containsCompound(PNX_EXTRA_TRACKING_HANDLES)) return false;
+
+            CompoundTag handles = extraData.getCompound(PNX_EXTRA_TRACKING_HANDLES);
+            if (!handles.contains(key)) return false;
+
+            handles.remove(key);
+            if (handles.isEmpty()) {
+                extraData.remove(PNX_EXTRA_TRACKING_HANDLES);
+            } else {
+                extraData.putCompound(PNX_EXTRA_TRACKING_HANDLES, handles);
+            }
+            return true;
+        }
+
+        CompoundTag handles = extraData.containsCompound(PNX_EXTRA_TRACKING_HANDLES)
+                ? extraData.getCompound(PNX_EXTRA_TRACKING_HANDLES)
+                : new CompoundTag();
+
+        if (handles.containsNumber(key) && handles.getInt(key) == trackingHandle) return false;
+
+        handles.putInt(key, trackingHandle);
+        extraData.putCompound(PNX_EXTRA_TRACKING_HANDLES, handles);
+        return true;
+    }
 
     public BlockEntityLodestone(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        if (nbt.contains("trackingHandler")) {
-            this.nbt.put("trackingHandle", this.nbt.removeAndGet("trackingHandler"));
-        }
-    }
-
     @NotNull
     public OptionalInt getTrackingHandler() {
-        if (nbt.contains("trackingHandle")) {
-            return OptionalInt.of(getNbt().getInt("trackingHandle"));
+        int handler = getPnxTrackingHandle(this.chunk.getExtraData(), this.getFloorX(), this.getFloorY(), this.getFloorZ());
+        return handler > 0 ? OptionalInt.of(handler) : OptionalInt.empty();
+    }
+
+    private void setTrackingHandler(int trackingHandle) {
+        if (setPnxTrackingHandle(this.chunk.getExtraData(), this.getFloorX(), this.getFloorY(), this.getFloorZ(), trackingHandle)) {
+            this.chunk.setChanged();
         }
-        return OptionalInt.empty();
     }
 
     public int requestTrackingHandler() throws IOException {
@@ -50,13 +95,11 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         if (opt.isPresent()) {
             int handler = opt.getAsInt();
             PositionTracking position = positionTrackingService.getPosition(handler);
-            if (position != null && position.matchesNamedPosition(floor)) {
-                return handler;
-            }
+            if (position != null && position.matchesNamedPosition(floor)) return handler;
         }
 
         int handler = positionTrackingService.addOrReusePosition(floor);
-        this.nbt.putInt("trackingHandle", handler);
+        this.setTrackingHandler(handler);
         return handler;
     }
 
@@ -67,13 +110,13 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
 
     @Override
     public void onBreak(boolean isSilkTouch) {
+        this.setTrackingHandler(0);
+
         IntList handlers;
         PositionTrackingService positionTrackingService = Server.getInstance().getPositionTrackingService();
         try {
             handlers = positionTrackingService.findTrackingHandlers(this);
-            if (handlers.isEmpty()) {
-                return;
-            }
+            if (handlers.isEmpty()) return;
         } catch (IOException e) {
             log.error("Failed to remove the tracking position handler for {}", getLocation());
             return;

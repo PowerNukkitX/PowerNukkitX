@@ -22,7 +22,7 @@ public final class VillagePois {
 
     public CompoundTag toCompound() {
         ListTag<CompoundTag> poiTag = new ListTag<>();
-        poi.forEach(entry -> poiTag.add(entry.toCompound()));
+        poi.stream().filter(entry -> entry.villagerId() != -1).forEach(entry -> poiTag.add(entry.toCompound()));
         return new CompoundTag().putList("POI", poiTag);
     }
 }

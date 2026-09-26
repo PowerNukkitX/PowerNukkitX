@@ -78,7 +78,9 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
         setBlockFace(face);
         CompoundTag nbt = new CompoundTag()
                 .putByte("SkullType", (byte) item.getDamage())
-                .putByte("Rot", (byte) ((int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f));
+                .putFloat("Rotation", Math.round(player.yaw / 22.5f) * 22.5f)
+                .putBoolean("DoingAnimation", false)
+                .putInt("MouthTickCount", 0);
         if (item.hasCustomBlockData()) {
             for (var entry : item.getCustomBlockData().getEntrySet()) {
                 nbt.put(entry.getKey(), entry.getValue().copy());

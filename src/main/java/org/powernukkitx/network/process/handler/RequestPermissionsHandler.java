@@ -26,11 +26,7 @@ public class RequestPermissionsHandler implements PacketHandler<RequestPermissio
 
             return;
         }
-        var player = server.getOnlinePlayers().values()
-                .stream()
-                .filter(p -> p.getId() == packet.getTargetPlayerId())
-                .findAny()
-                .orElse(null);
+        var player = server.getPlayerByUniqueId(packet.getTargetPlayerId()).orElse(null);
         if (player != null && player.isOnline()) {
             var customPermissions = packet.getCommandPermissionFlags();
             for (AbilitiesIndex controllableAbility : AdventureSettings.CONTROLLABLE_ABILITIES) {

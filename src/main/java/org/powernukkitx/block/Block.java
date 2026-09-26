@@ -535,6 +535,16 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
+     * Returns the Bedrock precipitation behavior, or null when the native component is absent.
+     */
+    @Nullable
+    public PrecipitationBehavior getPrecipitationBehavior() {
+        PrecipitationBehavior behavior = getProperties().getPrecipitationBehavior();
+        if (behavior != null) return behavior;
+        return getSnowloggingLevel() > 0 ? PrecipitationBehavior.SNOWLOGGING : null;
+    }
+
+    /**
      * Checks if this block is snowlogged.
      * Returns {@code true} if this block supports snowlogging and has a snow layer on layer 0.
      */

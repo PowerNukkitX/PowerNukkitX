@@ -43,7 +43,7 @@ public class ObjectBigSpruceTree extends TreeGenerator {
                 int px = midX + x;
                 int pz = midZ + z;
                 if((calcX * calcX) + (calcZ * calcZ) < (calcRad * calcRad))
-                    placePodzolAt(level, px, level.getLevel().getHeightMap(px, pz), pz);
+                    placePodzolAt(level, px, level.getLevel().getHeightMap(px, pz) - 1, pz);
             }
         }
 

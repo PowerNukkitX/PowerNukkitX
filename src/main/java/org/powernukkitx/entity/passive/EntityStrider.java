@@ -21,6 +21,7 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.FollowEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.ai.sensor.ParentSensor;
 import org.powernukkitx.entity.ai.sensor.StriderLavaSensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BoostableComponent;
@@ -36,6 +37,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -322,7 +324,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
         if (this.jockeyType == SpawnRiderType.PIGLIN_JOCKEY) {
             Item stick = Item.get(Item.WARPED_FUNGUS_ON_A_STICK, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(stick));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(stick)));
         }
 
         Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);
@@ -573,6 +575,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                         )
                 )
                 .sensors(
+                        new ParentSensor(8, 20),
                         new FollowEntitySensor(6f, 2f),
                         new StriderLavaSensor(24, 200),
                         new NearestPlayerSensor(8, 0, 20)

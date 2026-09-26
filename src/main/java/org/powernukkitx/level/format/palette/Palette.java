@@ -40,6 +40,8 @@ public class Palette<V> {
     protected final List<V> palette;
     protected Object2IntOpenHashMap<V> paletteIndex;
     protected BitArray bitArray;
+    private V lastPaletteValue;
+    private int lastPaletteIndex = -1;
 
     public Palette(V first) {
         this(first, BitArrayVersion.V2);
@@ -49,12 +51,16 @@ public class Palette<V> {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = new ArrayList<>(16);
         this.addToPalette(first);
+        this.lastPaletteValue = first;
+        this.lastPaletteIndex = 0;
     }
 
     public Palette(V first, List<V> palette, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = palette;
         this.addToPalette(first);
+        this.lastPaletteValue = first;
+        this.lastPaletteIndex = 0;
     }
 
     protected void addToPalette(V value) {
@@ -74,6 +80,8 @@ public class Palette<V> {
     protected void clearPalette() {
         this.palette.clear();
         this.paletteIndex = null;
+        this.lastPaletteValue = null;
+        this.lastPaletteIndex = -1;
     }
 
     private void buildPaletteIndex() {
@@ -102,7 +110,16 @@ public class Palette<V> {
     }
 
     public void set(int index, V value) {
-        final int paletteIndex = this.paletteIndexFor(value);
+        final int paletteIndex;
+        if (this.lastPaletteIndex >= 0 && this.lastPaletteValue == value) {
+            paletteIndex = this.lastPaletteIndex;
+        } else {
+            paletteIndex = this.paletteIndexFor(value);
+            this.lastPaletteValue = value;
+            this.lastPaletteIndex = paletteIndex;
+        }
+
+        if (this.bitArray.version() == BitArrayVersion.V0) return;
         this.bitArray.set(index, paletteIndex);
     }
 
@@ -113,7 +130,24 @@ public class Palette<V> {
      * @param serializer the serializer
      */
     public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
+        if (this.bitArray.version() == BitArrayVersion.V0) {
+            byteBuf.writeByte(getPaletteHeader(BitArrayVersion.V0, true));
+            VarInts.writeInt(byteBuf, serializer.serialize(this.palette.getFirst()));
+            return;
+        }
         writeWords(byteBuf, serializer);
+    }
+
+    /**
+     * Writes the palette to the network, copying the previous palette when identical.
+     *
+     * @param byteBuf byte buffer
+     * @param serializer value serializer
+     * @param last previous palette
+     */
+    public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {
+        if (writeLast(byteBuf, last)) return;
+        writeToNetwork(byteBuf, serializer);
     }
 
     public void readFromNetwork(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
@@ -132,7 +166,7 @@ public class Palette<V> {
     }
 
     protected boolean writeLast(ByteBuf byteBuf, Palette<V> last) {
-        if (last != null && last.palette.equals(this.palette)) {
+        if (last != null && last.equals(this)) {
             byteBuf.writeByte(COPY_LAST_FLAG_HEADER);
             return true;
         }
@@ -217,8 +251,6 @@ public class Palette<V> {
             this.bitArray = version.createArray(ChunkSection.SIZE, null);
             this.clearPalette();
             this.addToPalette(deserializer.deserialize(byteBuf.readIntLE()));
-
-            this.onResize(BitArrayVersion.V2);
             return;
         }
 
@@ -266,6 +298,7 @@ public class Palette<V> {
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
             NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
             final int storedVersion = blockTag.getInt("version");
+
             final NbtMapBuilder builder = blockTag.toBuilder();
             builder.remove("version");
             blockTag = builder.build();
@@ -353,11 +386,39 @@ public class Palette<V> {
     }
 
     protected void onResize(BitArrayVersion version) {
-        final BitArray newBitArray = version.createArray(ChunkSection.SIZE);
-        for (int i = 0; i < ChunkSection.SIZE; i++)
-            newBitArray.set(i, this.bitArray.get(i));
+        final BitArray source = this.bitArray;
+        final BitArrayVersion sourceVersion = source.version();
+        if (sourceVersion == BitArrayVersion.V0) {
+            this.bitArray = version.createArray(ChunkSection.SIZE);
+            return;
+        }
 
-        this.bitArray = newBitArray;
+        final int[] sourceWords = source.words();
+        final int[] targetWords = new int[version.getWordsForSize(ChunkSection.SIZE)];
+        final int sourceEntriesPerWord = sourceVersion.entriesPerWord;
+        final int sourceBits = sourceVersion.bits;
+        final int sourceMask = sourceVersion.maxEntryValue;
+        final int targetEntriesPerWord = version.entriesPerWord;
+        final int targetBits = version.bits;
+
+        int sourceIndex = 0;
+        int targetWordIndex = 0;
+        int targetEntryIndex = 0;
+
+        for (int sourceWord : sourceWords) {
+            int entries = Math.min(sourceEntriesPerWord, ChunkSection.SIZE - sourceIndex);
+            for (int sourceEntryIndex = 0; sourceEntryIndex < entries; sourceEntryIndex++, sourceIndex++) {
+                int value = sourceWord >>> (sourceEntryIndex * sourceBits) & sourceMask;
+                targetWords[targetWordIndex] |= value << (targetEntryIndex * targetBits);
+
+                if (++targetEntryIndex == targetEntriesPerWord) {
+                    targetEntryIndex = 0;
+                    targetWordIndex++;
+                }
+            }
+        }
+
+        this.bitArray = version.createArray(ChunkSection.SIZE, targetWords);
     }
 
     public void copyTo(Palette<V> palette) {
@@ -365,6 +426,8 @@ public class Palette<V> {
         palette.palette.clear();
         palette.palette.addAll(this.palette);
         palette.rebuildPaletteIndex();
+        palette.lastPaletteValue = null;
+        palette.lastPaletteIndex = -1;
     }
 
     protected static boolean hasCopyLastFlag(short header) {

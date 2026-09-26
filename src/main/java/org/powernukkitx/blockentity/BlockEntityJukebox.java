@@ -120,13 +120,17 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putCompound("RecordItem", ItemHelper.write(this.recordItem, null));
+
+        if (this.recordItem == null || this.recordItem.isNull()) {
+            this.nbt.remove("RecordItem");
+        } else {
+            this.nbt.putCompound("RecordItem", ItemHelper.write(this.recordItem));
+        }
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
-            .putCompound("RecordItem", ItemHelper.write(this.recordItem, null));
+        return super.getSpawnCompound().putCompound("RecordItem", ItemHelper.write(this.recordItem, null));
     }
 
     @Override
