@@ -174,14 +174,14 @@ public class OceanRuinPopulator extends Populator implements PopulatorStructure 
                 }
                 if(block instanceof BlockStructureBlock) {
                     manager.setBlockStateAt(block, BlockChest.PROPERTIES.getDefaultState());
-                    manager.addHook(() -> {
+                    manager.addHook(block, () -> {
                         BlockChest chest = (BlockChest) manager.getBlockAt(block);
                         RandomizableContainer container = isLarge ? LARGE_CHEST_POPULATOR : SMALL_CHEST_POPULATOR;
                         container.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
                 if (block instanceof BlockMagma) {
-                    manager.addHook(() -> {
+                    manager.addHook(block, () -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
                 }

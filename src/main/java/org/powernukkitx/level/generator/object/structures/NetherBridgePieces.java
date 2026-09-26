@@ -692,7 +692,7 @@ public class NetherBridgePieces {
                         Block block = level.getBlockAt(vec.x, vec.y, vec.z);
                         if (block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntityMobSpawner spawner) {
                             int entityId = Registries.ENTITY.getEntityNetworkId(EntityID.BLAZE);
-                            level.addHook(() -> {
+                            level.addHook(vec, () -> {
                                 spawner.setSpawnEntityType(entityId);
                             });
                         }
@@ -1120,7 +1120,7 @@ public class NetherBridgePieces {
                     if (chunk != null) {
                         Block block = level.getBlockAt(vec.getX(), vec.getY(), vec.getZ());
                         if (block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntityChest chest) {
-                            level.addHook(() -> {
+                            level.addHook(vec, () -> {
                                 CHEST_POPULATOR.create(chest.getInventory(), random);
                             });
                         }
@@ -1204,7 +1204,7 @@ public class NetherBridgePieces {
                     if (chunk != null) {
                         Block block = level.getBlockAt(vec.getX(), vec.getY(), vec.getZ());
                         if (block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntityChest chest) {
-                            level.addHook(() -> {
+                            level.addHook(vec, () -> {
                                 CHEST_POPULATOR.create(chest.getInventory(), random);
                             });
                         }
