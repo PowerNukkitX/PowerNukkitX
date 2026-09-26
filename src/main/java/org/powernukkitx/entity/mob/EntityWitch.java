@@ -7,12 +7,15 @@ import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
 import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.executor.PotionThrowExecutor;
 import org.powernukkitx.entity.ai.executor.UsePotionExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -54,7 +57,13 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
         return EntityAI.of(this)
                 .coreBehavior(new PlaySoundExecutor(Sound.MOB_WITCH_AMBIENT))
                         .when(new RandomSoundEvaluator())
+                .coreBehavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true))
+                        .when(all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)))
                 .coreBehavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
+
+                .behavior(new RaiderCelebrationExecutor(Sound.MOB_WITCH_CELEBRATE, 30 * 20, 20, 50, 40, 100))
+                        .when(entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING))
                 .behavior(new UsePotionExecutor(0.3f, 30, 20))
                         .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME),
