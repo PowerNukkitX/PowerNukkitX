@@ -14,6 +14,7 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
+import org.powernukkitx.level.format.leveldb.LevelDBTestFixtureUtil;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.plugin.JavaPluginLoader;
@@ -35,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -197,6 +197,7 @@ public final class ServerMockFixture {
             FieldUtils.writeDeclaredField(server, "network", network, true);
 
             FileUtils.copyDirectory(new File("src/test/resources/level"), levelDir);
+            LevelDBTestFixtureUtil.canonicalizeCopiedWorld(levelDir.toPath());
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

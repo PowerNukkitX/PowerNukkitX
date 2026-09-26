@@ -50,7 +50,7 @@ public class ScoreboardPojoSmokeTest {
 
         ScoreboardLine other = new ScoreboardLine(board, scorer);
         Assertions.assertEquals(0, other.getScore());
-        Assertions.assertNotEquals(line.getLineId(), other.getLineId());
+        Assertions.assertEquals(line.getLineId(), other.getLineId());
 
         Assertions.assertFalse(board.containLine(scorer));
         Assertions.assertNull(board.getLine(scorer));

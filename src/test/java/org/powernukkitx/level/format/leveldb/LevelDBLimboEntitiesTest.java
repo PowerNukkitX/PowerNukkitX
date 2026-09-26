@@ -180,6 +180,7 @@ class LevelDBLimboEntitiesTest {
     private static LevelDBLimboEntities deferActor(LevelDBStorage storage, CompoundTag actor) throws Exception {
         LevelDBLimboEntities limbo = new LevelDBLimboEntities(storage);
         limbo.initializeGeneratedDimension(OVERWORLD);
+        limbo.loadDimension(OVERWORLD);
 
         long actorStorageKey = LevelDBActorStorage.getActorStorageKey(ACTOR_ID);
         try (WriteBatch batch = storage.createBatch()) {

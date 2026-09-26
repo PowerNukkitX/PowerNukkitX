@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.format.LevelChunkMetaData;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.network.NetworkConstants;
 
@@ -55,9 +56,12 @@ class LevelChunkMetaDataFactoryTest {
         assertEquals(1, overworld.getShort("SkullFlatteningPerformed"));
         assertEquals(1, nether.getShort("SkullFlatteningPerformed"));
         assertEquals(1, theEnd.getShort("SkullFlatteningPerformed"));
-        assertEquals(1, overworld.getInt("NeighborAwareBlockUpgradeVersion"));
-        assertEquals(1, nether.getInt("NeighborAwareBlockUpgradeVersion"));
-        assertEquals(1, theEnd.getInt("NeighborAwareBlockUpgradeVersion"));
+        assertEquals(LevelChunkMetaData.CURRENT_NEIGHBOR_AWARE_BLOCK_UPGRADE_VERSION,
+                overworld.getInt("NeighborAwareBlockUpgradeVersion"));
+        assertEquals(LevelChunkMetaData.CURRENT_NEIGHBOR_AWARE_BLOCK_UPGRADE_VERSION,
+                nether.getInt("NeighborAwareBlockUpgradeVersion"));
+        assertEquals(LevelChunkMetaData.CURRENT_NEIGHBOR_AWARE_BLOCK_UPGRADE_VERSION,
+                theEnd.getInt("NeighborAwareBlockUpgradeVersion"));
 
         assertFalse(overworld.containsKey("BlendingVersion"));
         assertFalse(nether.containsKey("BlendingVersion"));
