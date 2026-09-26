@@ -10,6 +10,7 @@ import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.event.server.QueryRegenerateEvent;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.lang.BaseLang;
+import org.powernukkitx.level.ChunkPublisherBudgetController;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.LevelConfig;
@@ -154,9 +155,11 @@ public final class ServerMockFixture {
         doReturn(queryRegenerateEvent).when(server).getQueryInformation();
         doCallRealMethod().when(server).getNetwork();
         doReturn(false).when(server).getAutoSave();
+        doReturn(true).when(server).isRunning();
         doReturn(1).when(server).getTick();
         doReturn(4).when(server).getViewDistance();
         doReturn(20).when(server).getBaseTps();
+        doReturn(new ChunkPublisherBudgetController(server)).when(server).getChunkPublisherBudgetController();
         doReturn(java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "fixture-level-tick");
             t.setDaemon(true);
