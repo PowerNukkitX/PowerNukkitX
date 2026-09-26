@@ -6,16 +6,21 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityCushion;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.DyeColor;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 /**
  * Places a cushion entity, there is no cushion block to put down.
  */
 public abstract class ItemCushion extends Item {
+    private static final double CUSHION_WIDTH = 0.999;
+    private static final double CUSHION_HEIGHT = 0.249;
+
     private final DyeColor color;
 
     protected ItemCushion(String id, DyeColor color) {
@@ -66,29 +71,40 @@ public abstract class ItemCushion extends Item {
             return false;
         }
 
-        IChunk chunk = block.getChunk();
-        if (chunk == null || !block.canBeReplaced()) {
+        // a cushion is only placed on the top face, at the height that was clicked
+        if (face != BlockFace.UP) {
             return false;
         }
 
-        // a cushion rests on whatever is under it, so it needs something solid to sit on
-        if (!block.down().isSolid()) {
+        IChunk chunk = target.getChunk();
+        if (chunk == null) {
             return false;
         }
 
-        SimpleAxisAlignedBB space = new SimpleAxisAlignedBB(block.x, block.y, block.z, block.x + 1, block.y + 1, block.z + 1);
-        for (Entity collidingEntity : level.getCollidingEntities(space)) {
-            if (collidingEntity instanceof EntityCushion) {
-                return false;
+        Vector3 click = new Vector3(target.x + fx, target.y + fy, target.z + fz);
+        SimpleAxisAlignedBB space = new SimpleAxisAlignedBB(
+            target.x, click.y, target.z,
+            target.x + CUSHION_WIDTH, click.y + CUSHION_HEIGHT, target.z + CUSHION_WIDTH
+        );
+        for (Entity nearby : level.getCollidingEntities(space.grow(1, 1, 1))) {
+            if (nearby instanceof EntityCushion) {
+                AxisAlignedBB other = nearby.getBoundingBox();
+                if (other.intersectsWith(space) || isInside(other, click)) {
+                    return false;
+                }
             }
         }
 
-        CompoundTag nbt = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), (float) ((player.yaw + 180f) % 360), 0f)
-                .putByte("Color", this.color.getWoolData());
+        CompoundTag nbt = Entity.getDefaultNBT(new Vector3(target.x + 0.5, click.y, target.z + 0.5), new Vector3(), (float) getPlacedYaw(player.yaw), 0f)
+                .putInt("Variant", this.color.getDyeData());
 
         Entity entity = Entity.createEntity(Entity.CUSHION, chunk, nbt);
         if (entity == null) {
             return false;
+        }
+
+        if (this.hasCustomName()) {
+            entity.setNameTag(this.getCustomName());
         }
 
         if (!player.isCreative()) {
@@ -96,6 +112,37 @@ public abstract class ItemCushion extends Item {
         }
 
         entity.spawnToAll();
+        level.addLevelSoundEvent(entity, SoundEvent.SPAWN, -1, Entity.CUSHION, false, false);
         return true;
+    }
+
+    /**
+     * Whether the clicked point lies within the box of another cushion.
+     */
+    private static boolean isInside(AxisAlignedBB box, Vector3 click) {
+        return click.x > box.getMinX() && click.x < box.getMaxX()
+            && click.z > box.getMinZ() && click.z < box.getMaxZ()
+            && click.y - 0.001 < box.getMaxY() && click.y + 0.001 > box.getMinY();
+    }
+
+    /**
+     * A placed cushion faces the player, rounded to 90 degrees.
+     */
+    private static double getPlacedYaw(double playerYaw) {
+        double wrapped = playerYaw % 360;
+        if (wrapped < 0) {
+            wrapped += 360;
+        }
+
+        double yaw = Math.floor((wrapped - 135) / 90) * 90;
+        if (yaw >= 180) {
+            yaw -= 360;
+        }
+        return yaw;
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 16;
     }
 }
