@@ -12,17 +12,20 @@ import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.DistanceEvaluator;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.PassByTimeEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.DoNothingExecutor;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.FleeFromTargetExecutor;
 import org.powernukkitx.entity.ai.executor.LookAtTargetExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
 import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.ColorConversionExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.FangCircleExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.FangLineExecutor;
 import org.powernukkitx.entity.ai.executor.evocation.VexSummonExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -64,6 +67,8 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
     protected IBehaviorGroup requireBehaviorGroup() {
         return BehaviorGroup.builder(this)
                 .behaviors(
+                        new Behavior(new RaiderCelebrationExecutor(Sound.MOB_EVOCATION_ILLAGER_CELEBRATE, 30 * 20, 20, 50, 40, 100),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING), 11, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_EVOCATION_ILLAGER_AMBIENT), new RandomSoundEvaluator(), 10, 1),
                         new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.5f, true, 9), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
@@ -145,6 +150,9 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                                 entity -> !entity.getDataFlag(ActorFlags.CASTING)
                         ), 3, 1),
                         new Behavior(new DoNothingExecutor(), entity -> entity.getDataFlag(ActorFlags.CASTING), 2, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true),
+                                all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                        new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 )
                 .sensors(
