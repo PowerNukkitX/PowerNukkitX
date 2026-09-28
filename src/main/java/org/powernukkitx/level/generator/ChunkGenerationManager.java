@@ -1,4 +1,6 @@
 package org.powernukkitx.level.generator;
+
+import com.google.common.base.Preconditions;
 import org.powernukkitx.Player;
 import org.powernukkitx.level.ChunkBuildOrderPolicy;
 import org.powernukkitx.level.Level;
@@ -58,8 +60,16 @@ public final class ChunkGenerationManager {
         this.executor = level.getServer().getComputeThreadPool();
 
         final int workerCount = Math.max(1, executor.getParallelism());
-        this.refillLowWater = workerCount * 2;
-        this.refillHighWater = workerCount * 6;
+        final int generationQueueSize = level.getServer().getSettings().chunkSettings().generationQueueSize();
+        Preconditions.checkArgument(generationQueueSize >= -1, "generationQueueSize must be -1 or greater");
+
+        if (generationQueueSize <= 0) {
+            this.refillLowWater = workerCount * 2;
+            this.refillHighWater = workerCount * 6;
+        } else {
+            this.refillLowWater = generationQueueSize;
+            this.refillHighWater = generationQueueSize;
+        }
 
         for (ChunkGenerationTask task : generator.getGenerationTasks()) {
             ChunkGenerationTask previous = tasksByState.put(task.stableState(), task);

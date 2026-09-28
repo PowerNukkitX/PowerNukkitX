@@ -155,7 +155,7 @@
   "pnx.settings.chunk.tickRadius": "Tick radius of chunks",
   "pnx.settings.chunk.lightupdates": "Whether chunks perform light updates",
   "pnx.settings.chunk.clearticklist": "Whether to clear the tick list at the end of each tick",
-  "pnx.settings.chunk.generationqueuesize": "Maximum number of terrain generation tasks executed simultaneously",
+  "pnx.settings.chunk.generationqueuesize": "Maximum number of terrain generation tasks executed simultaneously. Set to -1 or 0 to disable this limit and use dynamic generation scheduling.",
   "pnx.settings.chunk.spawnlimit": "Limits how many entities can spawn naturally in a chunk. ",
   "pnx.settings.chunk.checkfortickable": "Check for redstone and liquids to be ticked once at chunk load.",
   "pnx.settings.chunk.saveGenerated": "If enabled, every new generated chunk will be saved. Improves performance but world sizes will grow faster.",

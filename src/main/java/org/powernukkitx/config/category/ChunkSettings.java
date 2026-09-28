@@ -25,7 +25,7 @@ public class ChunkSettings extends OkaeriConfig {
     @Comment("pnx.settings.chunk.clearticklist")
     boolean clearTickList = true;
     @Comment("pnx.settings.chunk.generationqueuesize")
-    int generationQueueSize = 8;
+    int generationQueueSize = -1;
     @Comment("pnx.settings.chunk.saveGenerated")
     boolean saveGenerated = true;
     @Comment("pnx.settings.chunk.disableblockticking")
