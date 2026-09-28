@@ -322,17 +322,15 @@ public class Network implements NetworkInterface, SignalingService {
 
     /**
      * Resolves the configured RakNet connection-cookie mode, falling back to {@link RakServerCookieMode#ACTIVE}
-     * (the RakNet default) for unknown or invalid values.
+     * for unknown values.
      */
     private RakServerCookieMode parseCookieMode(String mode) {
         try {
-            RakServerCookieMode parsed = RakServerCookieMode.valueOf(mode.trim().toUpperCase(Locale.ROOT));
-            if (parsed != RakServerCookieMode.INVALID) {
-                return parsed;
-            }
+            return RakServerCookieMode.valueOf(mode.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ignored) {
         }
-        log.warn("Invalid network cookie-mode '{}', falling back to ACTIVE. Valid values: ACTIVE, OFFLOADED, OFFLOADED_PSK, OFF", mode);
+        log.warn("Invalid network cookie-mode '{}', falling back to ACTIVE. "
+            + "Valid values: ACTIVE, OFFLOADED, OFFLOADED_PSK, OFF, INVALID", mode);
         return RakServerCookieMode.ACTIVE;
     }
 
