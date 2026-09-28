@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrayPriorityQueue;
+import it.unimi.dsi.fastutil.longs.LongHeapPriorityQueue;
 import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -61,10 +62,10 @@ public final class PlayerChunkManager {
     // holds all chunk hash values to be sent this tick
     private final @NotNull LongOpenHashSet inRadiusChunks;
     private final LongOpenHashSet serverBuiltChunks;
-    private final LongArrayPriorityQueue chunkSendQueue;
+    private final LongHeapPriorityQueue chunkSendQueue;
     private final Long2ObjectOpenHashMap<CompletableFuture<IChunk>> chunkLoadingQueue;
     private final Long2ObjectOpenHashMap<WeakReference<Chunk>> pendingChunks;
-    private final LongArrayPriorityQueue chunkReadyToSend;
+    private final LongHeapPriorityQueue chunkReadyToSend;
     private final LongOpenHashSet inFlightChunks;
     private final LongOpenHashSet serverViewChunks;
     private final LongOpenHashSet serverViewScratch;
@@ -85,10 +86,10 @@ public final class PlayerChunkManager {
         this.sentChunks = new LongOpenHashSet(initialCapacity);
         this.inRadiusChunks = new LongOpenHashSet(initialCapacity);
         this.serverBuiltChunks = new LongOpenHashSet(initialCapacity);
-        this.chunkSendQueue = new LongArrayPriorityQueue(initialCapacity, chunkDistanceComparator);
+        this.chunkSendQueue = new LongHeapPriorityQueue(initialCapacity, chunkDistanceComparator);
         this.chunkLoadingQueue = new Long2ObjectOpenHashMap<>(initialCapacity);
         this.pendingChunks = new Long2ObjectOpenHashMap<>(initialCapacity);
-        this.chunkReadyToSend = new LongArrayPriorityQueue(initialCapacity, chunkDistanceComparator);
+        this.chunkReadyToSend = new LongHeapPriorityQueue(initialCapacity, chunkDistanceComparator);
         this.inFlightChunks = new LongOpenHashSet();
         this.serverViewChunks = new LongOpenHashSet(initialCapacity);
         this.serverViewScratch = new LongOpenHashSet(initialCapacity);
@@ -533,7 +534,7 @@ public final class PlayerChunkManager {
                 > ClientBlobCacheManager.getMaximumConcurrentTransfers(player.getSession());
     }
 
-    private void reprioritizeQueue(LongArrayPriorityQueue queue) {
+    private void reprioritizeQueue(LongHeapPriorityQueue queue) {
         if (queue.isEmpty()) return;
 
         LongOpenHashSet queued = queueScratch;
