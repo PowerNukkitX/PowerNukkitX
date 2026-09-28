@@ -189,6 +189,7 @@ public class Network implements NetworkInterface, SignalingService {
                 .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[]{codec.getRaknetProtocolVersion()})
                 .option(RakChannelOption.RAK_PACKET_LIMIT, rak.packetLimit())
                 .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, parseCookieMode(rak.cookieMode()))
+                .childOption(RakChannelOption.RAK_PROTOCOL_VERSION, codec.getRaknetProtocolVersion())
                 .childOption(RakChannelOption.RAK_AUTO_FLUSH, rak.autoFlush())
                 .childOption(RakChannelOption.RAK_FLUSH_INTERVAL, rak.flushInterval())
                 .childOption(RakChannelOption.RAK_MAX_QUEUED_BYTES, rak.maxQueuedBytes())
