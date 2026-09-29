@@ -3836,8 +3836,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             foodData.sendFood();
         }
 
-        this.sendNetworkStackLatencyPacket();
-
         return true;
     }
 
