@@ -426,8 +426,7 @@ public class Structure extends AbstractStructure {
         ListTag<CompoundTag> blockPaletteList = new ListTag<>();
         for (BlockState state : uniqueBlockStates) {
             CompoundTag blockStateTag = CompoundTag.fromNetwork(state.getBlockStateTag());
-            blockStateTag.remove("version");
-            blockPaletteList.add(blockStateTag);
+x:             blockPaletteList.add(blockStateTag);
         }
         defaultPalette.putList("block_palette", blockPaletteList);
 
