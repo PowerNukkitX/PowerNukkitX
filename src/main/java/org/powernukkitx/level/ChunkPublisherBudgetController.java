@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
 import com.sun.management.OperatingSystemMXBean;
@@ -45,7 +48,9 @@ public final class ChunkPublisherBudgetController {
     private final List<MemoryPoolMXBean> memoryPools;
     private final List<GarbageCollectorMXBean> garbageCollectors;
     private final Map<Integer, StreamerState> activeStreamers = new HashMap<>();
+    private final ScheduledExecutorService cpuLoadSamplerExecutor;
 
+    private volatile double sampledProcessCpuLoad = -1d;
     private long lastResourceSampleNanos;
     private long lastStreamerCleanupNanos;
     private long lastTokenRefillNanos;
@@ -70,6 +75,20 @@ public final class ChunkPublisherBudgetController {
         this.operatingSystem = bean instanceof OperatingSystemMXBean osBean ? osBean : null;
         this.memoryPools = ManagementFactory.getMemoryPoolMXBeans();
         this.garbageCollectors = ManagementFactory.getGarbageCollectorMXBeans();
+        this.cpuLoadSamplerExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread thread = new Thread(r, "CPU Load Sampler");
+            thread.setDaemon(true);
+            return thread;
+        });
+
+        if (this.operatingSystem != null) {
+            this.cpuLoadSamplerExecutor.scheduleWithFixedDelay(
+                    this::sampleProcessCpuLoad,
+                    0L,
+                    RESOURCE_SAMPLE_INTERVAL_NANOS,
+                    TimeUnit.NANOSECONDS
+            );
+        }
     }
 
     /**
@@ -187,6 +206,32 @@ public final class ChunkPublisherBudgetController {
         return Math.max(1, (int) Math.round(averageChunkBytes));
     }
 
+    /**
+     * Returns the latest asynchronously sampled process CPU load.
+     *
+     * @return process CPU load from 0 to 1, or a negative value when unavailable
+     */
+    @ApiStatus.Internal
+    public double getSampledProcessCpuLoad() {
+        return sampledProcessCpuLoad;
+    }
+
+    /**
+     * Stops asynchronous resource sampling.
+     */
+    @ApiStatus.Internal
+    public void shutdown() {
+        cpuLoadSamplerExecutor.shutdownNow();
+    }
+
+    private void sampleProcessCpuLoad() {
+        try {
+            sampledProcessCpuLoad = operatingSystem.getProcessCpuLoad();
+        } catch (RuntimeException ignored) {
+            sampledProcessCpuLoad = -1d;
+        }
+    }
+
     private void refreshResourceSnapshot(long now) {
         if (lastResourceSampleNanos != 0 && now - lastResourceSampleNanos < RESOURCE_SAMPLE_INTERVAL_NANOS) return;
         lastResourceSampleNanos = now;
@@ -230,11 +275,9 @@ public final class ChunkPublisherBudgetController {
         final double tickFactor = pressureFactor(tickUsage, 0.65d, 0.95d, 0.15d);
 
         double cpuFactor = 1d;
-        if (operatingSystem != null) {
-            final double cpuLoad = operatingSystem.getProcessCpuLoad();
-            if (cpuLoad >= 0d) {
-                cpuFactor = pressureFactor(clamp(cpuLoad, 0d, 1d), 0.70d, 0.95d, 0.20d);
-            }
+        final double cpuLoad = sampledProcessCpuLoad;
+        if (cpuLoad >= 0d) {
+            cpuFactor = pressureFactor(clamp(cpuLoad, 0d, 1d), 0.70d, 0.95d, 0.20d);
         }
 
         return Math.min(Math.min(tpsFactor, tickFactor), cpuFactor);

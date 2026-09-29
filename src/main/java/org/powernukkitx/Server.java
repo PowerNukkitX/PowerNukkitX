@@ -1,7 +1,6 @@
 package org.powernukkitx;
 
 import com.google.common.base.Preconditions;
-import com.sun.management.OperatingSystemMXBean;
 import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
@@ -134,7 +133,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -1049,6 +1047,7 @@ public class Server {
         try {
             this.levelTickExecutor.shutdown();
             this.chunkPublisherExecutor.shutdown();
+            this.chunkPublisherBudgetController.shutdown();
         } catch (Throwable e) {
             log.error("Exception while shutting down level tick executors", e);
         }
@@ -1416,11 +1415,9 @@ public class Server {
     }
 
     public String getCPULoad() {
-        if (ManagementFactory.getOperatingSystemMXBean() instanceof OperatingSystemMXBean osBean) {
-            double load = osBean.getProcessCpuLoad();
-            if (load >= 0) {
-                return String.format("%.1f%%", load * 100);
-            }
+        double load = this.chunkPublisherBudgetController.getSampledProcessCpuLoad();
+        if (load >= 0) {
+            return String.format("%.1f%%", load * 100);
         }
         return "N/A";
     }
