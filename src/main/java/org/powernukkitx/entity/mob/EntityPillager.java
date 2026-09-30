@@ -9,10 +9,14 @@ import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.CrossBowShootExecutor;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
 import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -49,10 +53,15 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     public IBehaviorGroup requireBehaviorGroup() {
         return BehaviorGroup.builder(this)
                 .behaviors(
+                        new Behavior(new RaiderCelebrationExecutor(Sound.MOB_PILLAGER_CELEBRATE, 30 * 20, 20, 50, 40, 100),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING), 6, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_PILLAGER_IDLE, 0.8f, 1.2f, 0.8f, 0.8f), new RandomSoundEvaluator(), 5, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 80), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 3, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true),
+                                all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                        new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 )
                 .sensors(
@@ -122,6 +131,7 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
             drops.add(Item.get(Item.ARROW, 0, arrows));
         }
 
+        drops.addAll(Arrays.asList(raidDrops(weapon)));
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 }

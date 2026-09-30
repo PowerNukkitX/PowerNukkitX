@@ -44,6 +44,12 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Vector3> MOVE_TARGET = new MemoryType<>("minecraft:move_target");
 
+    MemoryType<Vector3> RAID_TARGET = new MemoryType<>("minecraft:raid_target");
+
+    MemoryType<Boolean> HIDING_FROM_RAID = new MemoryType<>("minecraft:hiding_from_raid", false);
+
+    MemoryType<Boolean> CELEBRATING = new MemoryType<>("minecraft:celebrating", false);
+
     MemoryType<Boolean> FORCE_PERCHING = new MemoryType<>("minecraft:force_perching", false);
 
     MemoryType<Vector3> STAY_NEARBY = new MemoryType<>("minecraft:stay_nearby");
