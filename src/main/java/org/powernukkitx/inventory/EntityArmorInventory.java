@@ -113,7 +113,7 @@ public class EntityArmorInventory extends BaseInventory {
             player.sendPacket(inventorySlotPacket);
         } else {
             final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.getId());
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.runtimeId());
             mobArmorEquipmentPacket.setHead(this.getHelmet().toNetwork());
             mobArmorEquipmentPacket.setTorso(this.getChestplate().toNetwork());
             mobArmorEquipmentPacket.setLegs(this.getLeggings().toNetwork());
@@ -149,7 +149,7 @@ public class EntityArmorInventory extends BaseInventory {
             player.sendPacket(inventoryContentPacket);
         } else {
             final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.getId());
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.runtimeId());
             mobArmorEquipmentPacket.setHead(this.getHelmet().toNetwork());
             mobArmorEquipmentPacket.setTorso(this.getChestplate().toNetwork());
             mobArmorEquipmentPacket.setLegs(this.getLeggings().toNetwork());

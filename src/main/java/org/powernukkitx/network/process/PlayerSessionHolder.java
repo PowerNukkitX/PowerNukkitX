@@ -243,6 +243,7 @@ public class PlayerSessionHolder {
         this.player.getLevel().sendTime(this.player);
 
         this.player.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
+        this.player.sendPacketImmediately(Registries.STRUCTURE.getJigsawStructureData());
         this.sendStartGame(server);
 
         for (SyncActorPropertyPacket syncActorPropertyPacket : EntityProperty.getEntityPropertyCache()) {
@@ -325,7 +326,7 @@ public class PlayerSessionHolder {
     private void sendStartGame(Server server) {
         final StartGamePacket packet = new StartGamePacket();
         packet.setEntityID(this.player.getId());
-        packet.setRuntimeID(this.player.getId());
+        packet.setRuntimeID(this.player.runtimeId());
         packet.setGameType(GameType.from(Player.toNetworkGamemode(this.player.getGamemode())));
         packet.setPosition(this.player.getInitialSpawnPosition());
         packet.setRotation(Vector2f.from(this.player.getYaw(), this.player.getPitch()));
@@ -397,6 +398,7 @@ public class PlayerSessionHolder {
         packet.setLevelCurrentTime(this.player.getLevel().getCurrentTick());
         packet.setEnchantmentSeed(this.player.getEnchantmentSeed());
 
+        packet.getBlockProperties().addAll(Registries.BLOCK.getDataDrivenProperties());
         for (final CustomBlockDefinition definition : Registries.BLOCK.getCustomBlockDefinitionList()) {
             packet.getBlockProperties().add(definition.toNetwork());
         }

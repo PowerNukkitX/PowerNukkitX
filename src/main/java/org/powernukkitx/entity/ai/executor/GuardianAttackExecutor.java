@@ -130,7 +130,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     private void endSequence(Entity entity) {
         entity.setDataProperty(ActorDataTypes.TARGET, 0L);
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(entity.getId());
+        pk.setTargetRuntimeID(entity.runtimeId());
         pk.setType(ActorEvent.GUARDIAN_ATTACK_SOUND);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

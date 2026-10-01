@@ -146,7 +146,6 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         final CompoundTag nbtMap = getNbt();
         CompoundTag compoundTag = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable())
                 .putList("Items", new ListTag<>(Tag.TAG_Compound))
                 .putShort("PotionId", nbtMap.getShort("PotionId"))
                 .putShort("PotionType", nbtMap.getShort("PotionType"));

@@ -11,6 +11,8 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -120,10 +122,12 @@ public class EntityTropicalfish extends EntityFish {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        if (Utils.rand(0, 3) == 1) {
-            return new Item[]{Item.get(Item.TROPICAL_FISH), Item.get(Item.BONE, 0, Utils.rand(1, 2))};
-        }
-        return new Item[]{Item.get(Item.TROPICAL_FISH)};
+        List<Item> drops = new ArrayList<>();
+        drops.add(Item.get(Item.TROPICAL_FISH));
+
+        addBoneDrop(drops, weapon);
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     public int getColor() {

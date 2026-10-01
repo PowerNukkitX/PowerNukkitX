@@ -21,6 +21,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
 import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
 import org.jetbrains.annotations.ApiStatus;
@@ -541,7 +542,8 @@ public abstract class BaseInventory implements Inventory {
         InventoryContentPacket pk = new InventoryContentPacket();
 
         for (int i = 0; i < this.getSize(); i++) {
-            pk.getSlots().add(this.getUnclonedItem(i).toNetwork());
+            Item item = this.getUnclonedItem(i);
+            pk.getSlots().add(item.isNull() ? ItemData.AIR : item.toNetwork());
         }
 
         for (Player player : players) {
@@ -630,7 +632,8 @@ public abstract class BaseInventory implements Inventory {
         InventorySlotPacket pk = new InventorySlotPacket();
         int slot = toNetworkSlot(index);
         pk.setSlot(slot);
-        pk.setItem(this.getUnclonedItem(index).toNetwork());
+        Item slotItem = this.getUnclonedItem(index);
+        pk.setItem(slotItem.isNull() ? ItemData.AIR : slotItem.toNetwork());
 
         for (Player player : players) {
             int id = player.getWindowId(this);

@@ -160,7 +160,7 @@ public class EntityArrow extends SlenderProjectile {
     protected void addHitEffect() {
         this.level.addSound(this, Sound.RANDOM_BOWHIT);
         final ActorEventPacket packet = new ActorEventPacket();
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setType(ActorEvent.SHAKE);
         packet.setData(7); // TODO Magic value. I have no idea why we have to set it to 7 here...
         Server.broadcastPacket(this.hasSpawned.values(), packet);

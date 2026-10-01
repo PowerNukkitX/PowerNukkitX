@@ -142,7 +142,7 @@ public final class VillageManager {
                     if (entity instanceof EntityVillagerV2 villager) {
                         BlockVector3 pos = villager.asBlockVector3();
                         if (isInside(min, max, pos)) {
-                            actors.add(new VillageDwellers.Actor(villager.getId(), pos, tick, null));
+                            actors.add(new VillageDwellers.Actor(villager.runtimeId(), pos, tick, null));
                         }
                     }
                 }

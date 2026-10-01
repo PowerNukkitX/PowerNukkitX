@@ -29,15 +29,10 @@ public class SetWorldSpawnCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        Level level;
-        Vector3 pos;
-        if (!result.getValue().hasResult(0)) {
-            level = sender.getPosition().level;
-            pos = sender.getPosition().round();
-        } else {
-            level = sender.getServer().getDefaultLevel();
-            pos = result.getValue().getResult(0);
-        }
+        Level level = sender.getPosition().level;
+        Vector3 pos = result.getValue().hasResult(0)
+                ? result.getValue().getResult(0)
+                : sender.getPosition().round();
         level.setSpawnLocation(pos);
         DecimalFormat round2 = new DecimalFormat("##0.00");
         log.addSuccess("commands.setworldspawn.success", round2.format(pos.x),

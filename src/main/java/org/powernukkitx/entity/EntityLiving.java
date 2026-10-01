@@ -332,7 +332,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         super.setHealthCurrent(health);
         if (this.isAlive() && !wasAlive) {
             final ActorEventPacket pk = new ActorEventPacket();
-            pk.setTargetRuntimeID(this.getId());
+            pk.setTargetRuntimeID(this.runtimeId());
             pk.setType(ActorEvent.SPAWN_ALIVE);
             Server.broadcastPacket(this.hasSpawned.values(), pk);
         }
@@ -469,7 +469,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
                 if (event.isCriticalHit()) {
                     final AnimatePacket animatePacket = new AnimatePacket();
-                    animatePacket.setTargetRuntimeID(this.getId());
+                    animatePacket.setTargetRuntimeID(this.runtimeId());
                     animatePacket.setAction(AnimatePacket.Action.CRITICAL_HIT);
                     animatePacket.setData(55f);
 
@@ -485,7 +485,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     }
                     if (enchantmentBonus > 0) {
                         final AnimatePacket magicCritPacket = new AnimatePacket();
-                        magicCritPacket.setTargetRuntimeID(this.getId());
+                        magicCritPacket.setTargetRuntimeID(this.runtimeId());
                         magicCritPacket.setAction(AnimatePacket.Action.MAGIC_CRITICAL_HIT);
                         magicCritPacket.setData(55f);
 
@@ -503,7 +503,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
 
             final ActorEventPacket actorEventPacket = new ActorEventPacket();
-            actorEventPacket.setTargetRuntimeID(this.getId());
+            actorEventPacket.setTargetRuntimeID(this.runtimeId());
             actorEventPacket.setType(this.getHealthCurrent() <= 0 ? ActorEvent.DEATH : ActorEvent.HURT);
             Server.broadcastPacket(this.hasSpawned.values(), actorEventPacket);
 
@@ -1305,7 +1305,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public void sendBreedingAnimation(Item item) {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setType(ActorEvent.FEED);
         pk.setData(item.getFullId());
         Server.broadcastPacket(this.getViewers().values(), pk);
@@ -1313,7 +1313,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public void sendLoveParticles() {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(this.getViewers().values(), pk);
     }

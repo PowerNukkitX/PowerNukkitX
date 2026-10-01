@@ -148,7 +148,7 @@ public class EntityFireworksRocket extends Entity {
             if (this.fireworkAge >= this.lifetime) {
                 final ActorEventPacket pk = new ActorEventPacket();
                 pk.setData(0);
-                pk.setTargetRuntimeID(this.getId());
+                pk.setTargetRuntimeID(this.runtimeId());
                 pk.setType(ActorEvent.FIREWORKS_EXPLODE);
 
                 level.addLevelSoundEvent(this, SoundEvent.LARGE_BLAST, -1, getNetworkId());

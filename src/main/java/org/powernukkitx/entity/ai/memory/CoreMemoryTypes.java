@@ -292,7 +292,7 @@ public interface CoreMemoryTypes {
                             entity.setDataFlag(ActorFlags.TAMED, true);
                             var owner = entity.getServer().getPlayerExact(data);
                             if (owner != null && owner.isOnline()) {
-                                entity.setDataProperty(ActorDataTypes.OWNER, owner.getId());
+                                entity.setDataProperty(ActorDataTypes.OWNER, owner.runtimeId());
                             }
                         }
                     })

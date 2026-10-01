@@ -203,6 +203,7 @@ public class DummyBossBar {
         packet.setTargetActorID(this.bossBarId);
         packet.setEventType(BossEventUpdateType.ADD);
         packet.setName(this.text);
+        packet.setFilteredName(this.text);
         packet.setHealthPercent(this.length / 100f);
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
@@ -216,6 +217,7 @@ public class DummyBossBar {
         packet.setTargetActorID(this.bossBarId);
         packet.setEventType(BossEventUpdateType.REMOVE);
         packet.setName("");
+        packet.setFilteredName("");
         packet.setHealthPercent(0f);
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
@@ -229,6 +231,7 @@ public class DummyBossBar {
         packet.setTargetActorID(this.bossBarId);
         packet.setEventType(BossEventUpdateType.UPDATE_STYLE);
         packet.setName(this.text);
+        packet.setFilteredName(this.text);
         packet.setHealthPercent(this.length / 100f);
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
@@ -242,6 +245,7 @@ public class DummyBossBar {
         packet.setTargetActorID(this.bossBarId);
         packet.setEventType(BossEventUpdateType.UPDATE_NAME);
         packet.setName(this.text);
+        packet.setFilteredName(this.text);
         packet.setHealthPercent(this.length / 100f);
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
@@ -255,6 +259,7 @@ public class DummyBossBar {
         packet.setTargetActorID(this.bossBarId);
         packet.setEventType(BossEventUpdateType.UPDATE_PERCENT);
         packet.setName(this.text);
+        packet.setFilteredName(this.text);
         packet.setHealthPercent(this.length / 100f);
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());

@@ -119,6 +119,16 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
     }
 
     @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return false;
     }
