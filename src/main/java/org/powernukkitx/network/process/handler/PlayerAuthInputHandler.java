@@ -1,6 +1,5 @@
 package org.powernukkitx.network.process.handler;
 
-import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
@@ -9,10 +8,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityPhysical;
 import org.powernukkitx.entity.item.EntityBoat;
 import org.powernukkitx.event.player.*;
-import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Location;
-import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockID;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector2f;
@@ -237,21 +233,8 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                     // fire only sends START_DESTROY_BLOCK, so extinguish it before filtering the action out
                     Vector3 hitPos = Vector3.fromNetwork(action.getBlockPosition().toFloat());
                     BlockFace hitFace = BlockFace.fromIndex(action.getFacing());
-                    Block target = player.getLevel().getBlock(hitPos);
-                    Block fire = Player.getFireAt(target, hitFace);
-
-                    if (fire != null) {
-                        Item hand = player.getInventory().getItemInMainHand();
-                        PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, hand, fire, hitFace,
-                            PlayerInteractEvent.Action.LEFT_CLICK_BLOCK);
-                        server.getPluginManager().callEvent(interactEvent);
-                        new PlayerHandle(player).setInteract();
-
-                        if (interactEvent.isCancelled()) {
-                            player.getLevel().sendBlocks(new Player[]{player}, new Block[]{fire}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
-                        } else {
-                            player.extinguishFire(fire);
-                        }
+                    if (Player.getFireAt(player.getLevel().getBlock(hitPos), hitFace) != null) {
+                        player.onBlockBreakStart(hitPos, hitFace);
                     }
                     continue;
                 }
@@ -277,7 +260,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                 boolean continueAfterPrediction = lastAction != null
                         && lastAction.getPlayerActionType() == PlayerActionType.PREDICT_DESTROY_BLOCK;
                 if (action.getPlayerActionType() == PlayerActionType.CONTINUE_DESTROY_BLOCK
-                        && (blockPositionChanged || !player.isBreakingBlock() || continueAfterPrediction)) {
+                        && (blockPositionChanged || continueAfterPrediction)) {
                     playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
                 }
 

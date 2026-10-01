@@ -583,7 +583,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Block block = target.getSide(face);
         Block fire = getFireAt(target, face);
         if (fire != null) {
-            extinguishFire(fire);
+            if (this.canInteract(fire.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7) && fire.isBlockChangeAllowed(this)) {
+                extinguishFire(fire);
+            } else {
+                this.getLevel().sendBlocks(new Player[]{this}, new Block[]{fire}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+            }
+            resetBlockBreak();
             return;
         }
 
