@@ -1,15 +1,17 @@
 package org.powernukkitx.block;
 
-import org.powernukkitx.blockentity.BlockEntity;
-import org.powernukkitx.blockentity.BlockEntityTarget;
+import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntityArrow;
-import org.powernukkitx.entity.projectile.EntitySmallFireball;
 import org.powernukkitx.entity.projectile.EntityThrownTrident;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.MovingObjectPosition;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.redstone.circuit.CircuitSystem;
+import org.powernukkitx.level.redstone.circuit.components.BaseCircuitComponent;
+import org.powernukkitx.level.redstone.circuit.components.ProducerComponent;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockFace.Axis;
 import org.powernukkitx.math.NukkitMath;
@@ -24,9 +26,10 @@ import java.util.List;
 /**
  * @author joserobjr
  */
-public class BlockTarget extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityTarget> {
-
+public class BlockTarget extends BlockSolid implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TARGET);
+    private static final int NON_DIRECTIONAL_PRODUCER = 6;
+    private static final float TARGET_FACE_RADIUS = 0.70710677f;
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -47,24 +50,25 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityTarget> getBlockEntityClass() {
-        return BlockEntityTarget.class;
-    }
-
-    @Override
-    @NotNull public String getBlockEntityType() {
-        return BlockEntity.TARGET;
-    }
-
-    @Override
     public boolean isPowerSource() {
         return true;
     }
 
     @Override
     public int getWeakPower(BlockFace face) {
-        BlockEntityTarget target = getBlockEntity();
-        return target == null? 0 : target.getActivePower();
+        return getActivePower();
+    }
+
+    private int getActivePower() {
+        CircuitSystem circuitSystem = this.level.getCircuitSystem();
+        BaseCircuitComponent component = circuitSystem.getBaseComponent(this);
+
+        if (component == null) {
+            circuitSystem.setupPoweredBlock(this);
+            return 0;
+        }
+
+        return component instanceof ProducerComponent ? component.getStrength() : 0;
     }
 
     public boolean activatePower(int power) {
@@ -77,33 +81,46 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             return deactivatePower();
         }
 
-        if (!level.getServer().getSettings().gameplaySettings().enableRedstone()) {
-            return false;
-        }
+        if (!level.getServer().getSettings().gameplaySettings().enableRedstone()) return false;
 
-        BlockEntityTarget target = getOrCreateBlockEntity();
-        int previous = target.getActivePower();
+        int previous = getActivePower();
+        CircuitSystem circuitSystem = level.getCircuitSystem();
+        circuitSystem.removeComponent(this);
+        circuitSystem.setupProducer(this, NON_DIRECTIONAL_PRODUCER, power);
+        int current = circuitSystem.getStrength(this);
         level.cancelScheduledUpdate(this, this);
         level.scheduleUpdate(this, ticks);
-        target.setActivePower(power);
-        if (previous != power) {
+
+        if (previous != current) {
             updateAroundRedstone();
         }
+
         return true;
     }
 
     public boolean deactivatePower() {
-        BlockEntityTarget target = getBlockEntity();
-        if (target != null) {
-            int currentPower = target.getActivePower();
-            target.setActivePower(0);
-            target.close();
-            if (currentPower != 0 && level.getServer().getSettings().gameplaySettings().enableRedstone()) {
-                updateAroundRedstone();
-            }
-            return true;
+        CircuitSystem circuitSystem = this.level.getCircuitSystem();
+
+        BaseCircuitComponent component = circuitSystem.getBaseComponent(this);
+        if (!(component instanceof ProducerComponent)) return false;
+
+        int previous = component.getStrength();
+        circuitSystem.removeComponent(this);
+        circuitSystem.setupPoweredBlock(this);
+        int current = getActivePower();
+
+        if (previous != current && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+            updateAroundRedstone();
         }
-        return false;
+
+        return true;
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) return false;
+        this.level.getCircuitSystem().setupPoweredBlock(this);
+        return true;
     }
 
     @Override
@@ -117,42 +134,40 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        int ticks = 8;
-        if (projectile instanceof EntityArrow || projectile instanceof EntityThrownTrident || projectile instanceof EntitySmallFireball) {
-            ticks = 20;
-        }
-
-        MovingObjectPosition intercept = calculateIntercept(position, position.add(motion.multiply(2)));
-        if (intercept == null) {
-            return false;
-        }
+        int ticks = projectile instanceof EntityArrow || projectile instanceof EntityThrownTrident ? 20 : 8;
+        MovingObjectPosition intercept = getBoundingBox().calculateIntercept(position, position.add(motion.multiply(2)));
+        if (intercept == null) return false;
 
         BlockFace faceHit = intercept.getFaceHit();
-        if (faceHit == null) {
-            return false;
-        }
+        if (faceHit == null) return false;
 
         Vector3 hitVector = intercept.hitVector.subtract(x, y, z);
         List<Axis> axes = new ArrayList<>(Arrays.asList(Axis.values()));
-        axes.remove(faceHit.getAxis());
-        
-        double[] coords = new double[] { hitVector.getAxis(axes.get(0)), hitVector.getAxis(axes.get(1)) };
 
-        for (int i = 0; i < 2 ; i++) {
-            if (coords[i] == 0.5) {
-                coords[i] = 1;
-            } else if (coords[i] <= 0 || coords[i] >= 1) {
-                coords[i] = 0;
-            } else if (coords[i] < 0.5) {
-                coords[i] *= 2;
-            } else {
-                coords[i] = (coords[i] / (-0.5)) + 2;
-            }
+        axes.remove(faceHit.getAxis());
+
+        float firstOffset = (float) hitVector.getAxis(axes.get(0)) - 0.5f;
+        float secondOffset = (float) hitVector.getAxis(axes.get(1)) - 0.5f;
+        float distance = (float) Math.sqrt(firstOffset * firstOffset + secondOffset * secondOffset);
+        int power = NukkitMath.clamp((int) ((TARGET_FACE_RADIUS - distance) * 16.0f / TARGET_FACE_RADIUS), 1, 15);
+
+        if (activatePower(power, ticks)) {
+            this.level.updateAroundObserver(this);
         }
 
-        double scale = (coords[0] + coords[1]) / 2;
-        activatePower(NukkitMath.ceilDouble(16 * scale), ticks);
         return true;
+    }
+
+    @Override
+    public void afterRemoval(Block newBlock, boolean update) {
+        int previous =this.level.getCircuitSystem().getStrength(this);
+        this.level.getCircuitSystem().removeComponent(this);
+
+        if (previous != 0 && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+            updateAroundRedstone();
+        }
+
+        super.afterRemoval(newBlock, update);
     }
 
     @Override

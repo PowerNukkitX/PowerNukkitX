@@ -35,10 +35,13 @@ import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.Utils;
 import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,6 +67,19 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     @Override
     public String getOriginalName() {
         return "Turtle";
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int seagrass = Utils.rand(0, 2 + looting);
+        if (seagrass == 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        return new Item[]{
+                Item.get(BlockID.SEAGRASS, 0, seagrass)
+        };
     }
 
     @Override

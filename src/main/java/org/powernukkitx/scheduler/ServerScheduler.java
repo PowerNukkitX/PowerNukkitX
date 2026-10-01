@@ -70,7 +70,7 @@ public class ServerScheduler {
     }
 
     /**
-     * Schedule a async task
+     * Schedule an async task
      * <p>
      * the asynctask is executed in other thread(not main thread)
      *

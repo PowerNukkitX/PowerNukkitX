@@ -24,7 +24,7 @@ import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.LookAtTargetExecutor;
 import org.powernukkitx.entity.ai.executor.LoveTimeoutExecutor;
 import org.powernukkitx.entity.ai.executor.MeleeAttackExecutor;
-import org.powernukkitx.entity.ai.executor.SleepOnOwnerBedExecutor;
+import org.powernukkitx.entity.ai.executor.CatSleepOnOwnerBedExecutor;
 import org.powernukkitx.entity.ai.executor.TemptExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -332,7 +332,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
                 )
                 .behaviors(
                         new Behavior( // Sleep Priority 7
-                                new SleepOnOwnerBedExecutor(),
+                                new CatSleepOnOwnerBedExecutor(),
                                 entity -> {
                                     if (this.isSitting()) return false; // sitting should block sleeping pathing
                                     var player = this.getOwner();

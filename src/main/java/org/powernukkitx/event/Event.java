@@ -5,8 +5,8 @@ import org.powernukkitx.utils.EventException;
 /**
  * Describes things that happens in the server.
  *
- * <p>Things that happens in the server is called a <b>event</b>. Define a procedure that should be executed
- * when a event happens, this procedure is called a <b>listener</b>.</p>
+ * <p>Things that happens in the server is called an <b>event</b>. Define a procedure that should be executed
+ * when an event happens, this procedure is called a <b>listener</b>.</p>
  *
  * <p>When Nukkit is calling a handler, the event needed to listen is judged by the type of the parameter. </p>
  *

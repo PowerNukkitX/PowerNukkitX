@@ -289,7 +289,7 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockTripwireHook(), 0);
     }
 
     @Override

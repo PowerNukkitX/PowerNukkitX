@@ -86,7 +86,7 @@ public class RideableTameExecutor extends FlatRandomRoamExecutor {
 
             if (Utils.rand(0, 100) <= tameProbability) {
                 final ActorEventPacket packet = new ActorEventPacket();
-                packet.setTargetRuntimeID(animal.getId());
+                packet.setTargetRuntimeID(animal.runtimeId());
                 packet.setType(ActorEvent.TAMING_SUCCEEDED);
 
                 animal.setOwnerName(animal.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME));
@@ -99,7 +99,7 @@ public class RideableTameExecutor extends FlatRandomRoamExecutor {
 
             } else {
                 final ActorEventPacket packet = new ActorEventPacket();
-                packet.setTargetRuntimeID(animal.getId());
+                packet.setTargetRuntimeID(animal.runtimeId());
                 packet.setType(ActorEvent.TAMING_FAILED);
                 Player player = (Player) animal.getRider();
                 if (player == null) return false;

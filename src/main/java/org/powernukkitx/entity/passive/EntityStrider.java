@@ -173,7 +173,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
             float mountedOffsetY = standingEyeHeight * 0.75308642f;
             return new Vector3f(0f, mountedOffsetY - 0.13f, 0f); // Player needs to shift a bit down
         } else if (passenger instanceof EntityStrider) {
-            return new Vector3f(0f, 0f, 0f); // Strider baby dont have sitting animation, so its base must be zero
+            return new Vector3f(0f, 0f, 0f); // Strider baby doesn't have a sitting animation, so its base must be zero
         }
         float mountedOffsetY = -passenger.getHeight() * 0.24691358f;
         return new Vector3f(0f, mountedOffsetY - 0.13f, 0f); // Regular mobs needs to shift a bit down

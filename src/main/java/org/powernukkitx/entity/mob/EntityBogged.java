@@ -1,6 +1,9 @@
 package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.entity.EntityInteractable;
+import org.powernukkitx.entity.EntityShearable;
 import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
@@ -19,13 +22,18 @@ import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.vibration.VibrationEvent;
+import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.Utils;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite {
+public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite, EntityShearable, EntityInteractable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -45,11 +53,61 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
     }
 
     @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (super.onInteract(player, item, clickedPos)) {
+            return true;
+        }
+
+        if (item.isShears() && shear()) {
+            item.useOn(this);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean shear() {
+        if (!EntityShearable.super.shear()) {
+            return false;
+        }
+
+        for (int i = 0; i < 2; i++) {
+            this.level.dropItem(this, Item.get(Utils.rand(0, 1) == 0
+                    ? BlockID.BROWN_MUSHROOM
+                    : BlockID.RED_MUSHROOM));
+        }
+
+        this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
+        this.level.getVibrationManager().callVibrationEvent(
+                new VibrationEvent(this, this.getVector3(), VibrationType.SHEAR));
+        return true;
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        if (player.getInventory().getItemInMainHand().isShears() && !this.isSheared()) {
+            return "action.interact.shear";
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
+    }
+
+    @Override
     protected void initEntity() {
         super.initEntity();
         if (getItemInHand().isNull()) {
-            setItemInHand(Item.get(ItemID.BOW));
+            setItemInHand(enchantGear(Item.get(ItemID.BOW), 0.1f));
         }
+    }
+
+    @Override
+    protected void equipOnSpawn() {
+        equipArmorSet(3, 3, 0.1087f);
     }
 
     @Override
@@ -97,17 +155,19 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
             drops.add(Item.get(Item.ARROW, 0, arrowAmount));
         }
 
-        float poisonChance = 0.5f - (looting * (1f / 12f));
-        if (poisonChance < 0f) {
-            poisonChance = 0f;
-        }
-
-        if (Utils.rand(0f, 1f) < poisonChance) {
-            int poisonAmount = Utils.rand(1, Math.min(1 + looting, 4));
-            drops.add(Item.get(Item.ARROW, 27, poisonAmount));
+        if (killedByPlayer()) {
+            int poisonAmount = Utils.rand(0, 1 + looting);
+            if (poisonAmount > 0) {
+                drops.add(Item.get(Item.ARROW, 26, poisonAmount));
+            }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

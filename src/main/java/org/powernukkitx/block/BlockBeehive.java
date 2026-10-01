@@ -101,7 +101,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
         if (beehive.getNbt().getByte("ShouldSpawnBees") > 0) {
             BlockEntityBeehive.Occupant[] occupants = beehive.getOccupants();
             int delayPerBee = 40; // 40 ticks
-            int baseDelay = 20;   // small initial delay so they dont pop instantly on place
+            int baseDelay = 20;   // small initial delay so they don't pop instantly on place
 
             int index = 0;
             for (BlockEntityBeehive.Occupant occupant : occupants) {
