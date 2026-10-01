@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Kaooot
@@ -88,9 +89,10 @@ public class PlayerSessionHolder {
     private InternalPackManager internalPackManager;
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
+    private static final long DISCONNECT_TIMEOUT_SECONDS = 10L;
 
     private final Object rateLimitLock = new Object();
-    private boolean disconnected = false;
+    private volatile boolean disconnected = false;
 
     public InternalPackManager getInternalPackManager() {
         if (this.internalPackManager == null) {
@@ -149,11 +151,13 @@ public class PlayerSessionHolder {
     }
 
     public void disconnect(DisconnectFailReason reason) {
-        this.disconnected = true;
         this.disconnect(reason, Registries.DISCONNECT_REASON.get(reason));
     }
 
     public void disconnect(DisconnectFailReason reason, String message) {
+        if (this.disconnected) {
+            return;
+        }
         this.disconnected = true;
 
         final DisconnectPacket packet = new DisconnectPacket();
@@ -161,7 +165,13 @@ public class PlayerSessionHolder {
         packet.setMessages(new DisconnectPacketMessages(message, ""));
 
         this.session.sendPacketImmediately(packet);
-        this.session.close(message);
+        // Same idea as BedrockServerSession#disconnect, which we can't use since it drops the reason:
+        // let the client read the message and leave first, then close whatever is still open.
+        this.session.getPeer().getChannel().eventLoop().schedule(() -> {
+            if (this.session.isConnected()) {
+                this.session.close(message);
+            }
+        }, DISCONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         SocketAddress socketAddress = this.getSession().getSocketAddress();
 
