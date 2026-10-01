@@ -21,6 +21,8 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
             .breaksWhenMoved(false)
+            .canBePushed(false)
+            .canBePulled(false)
             .isPowerSource(true)
             .canBeFlowedInto(false)
             .waterloggingLevel(1)

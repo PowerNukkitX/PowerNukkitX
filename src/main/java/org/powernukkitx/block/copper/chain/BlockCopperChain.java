@@ -50,7 +50,7 @@ public class BlockCopperChain extends AbstractBlockCopperChain {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockCopperChain(), 0);
     }
 
     @Override

@@ -21,7 +21,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 
 import java.util.HashSet;
 
-public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStructBlock, BlockEntityInventoryHolder {
+public class BlockEntityStructureBlock extends BlockEntitySpawnable implements IStructBlock, BlockEntityInventoryHolder {
     private AnimationMode animationMode;
     private float animationSeconds;
     private StructureBlockType data;
@@ -42,7 +42,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private StructBlockInventory structBlockInventory;
 
 
-    public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityStructureBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         structBlockInventory = new StructBlockInventory(this);
     }
@@ -290,5 +290,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         );
 
         StructureAPI.save(structure, structureName);
+    }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return player.isOp() ? this.getCleanedNBT() : null;
     }
 }

@@ -24,6 +24,8 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
             .breaksWhenMoved(false)
+            .canBePushed(false)
+            .canBePulled(false)
             .isPowerSource(true)
             .canBeFlowedInto(false)
             .waterloggingLevel(1)

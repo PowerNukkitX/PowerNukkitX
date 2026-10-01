@@ -16,10 +16,15 @@ public class TickSyncHandler implements PacketHandler<TickSyncPacket> {
     }
 
     @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
+
+    @Override
     public void handle(TickSyncPacket packet, PlayerSessionHolder holder, Server server) {
         final TickSyncPacket responsePacket = new TickSyncPacket();
         responsePacket.setRequestTimestamp(packet.getRequestTimestamp());
         responsePacket.setResponseTimestamp(server.getTick());
-        holder.getPlayer().sendPacketImmediately(responsePacket);
+        holder.getSession().sendPacketImmediately(responsePacket);
     }
 }

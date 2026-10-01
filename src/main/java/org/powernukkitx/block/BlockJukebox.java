@@ -55,7 +55,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockJukebox(), 0);
     }
 
     
@@ -84,4 +84,13 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }

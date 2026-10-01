@@ -1,6 +1,7 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.block.definition.BlockDefinition;
+import org.powernukkitx.block.property.CommonBlockProperties;
 
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockIronBars extends BlockThin {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(IRON_BARS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(IRON_BARS, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(5)
             .resistance(10)
@@ -42,7 +43,7 @@ public class BlockIronBars extends BlockThin {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockIronBars(), 0);
     }
 
     

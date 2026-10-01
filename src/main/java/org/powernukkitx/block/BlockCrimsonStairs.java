@@ -6,7 +6,7 @@ import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonStairs extends BlockStairsWood {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
     public static final BlockDefinition DEFINITION = BlockStairsWood.DEFINITION.toBuilder()
             .burnChance(-1)
             .burnAbility(0)

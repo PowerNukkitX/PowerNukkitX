@@ -183,7 +183,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
             if (!armor.isNull()) getHolder().getLevel().addSound(getHolder(), Sound.MOB_HORSE_ARMOR);
 
             final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getId());
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().runtimeId());
             mobArmorEquipmentPacket.setHead(ItemData.AIR);
             mobArmorEquipmentPacket.setTorso(ItemData.AIR);
             mobArmorEquipmentPacket.setLegs(ItemData.AIR);
@@ -200,7 +200,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
             // TODO: Do Nautilus play a sound on equip armor?
 
             final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getId());
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().runtimeId());
             mobArmorEquipmentPacket.setHead(ItemData.AIR);
             mobArmorEquipmentPacket.setTorso(ItemData.AIR);
             mobArmorEquipmentPacket.setLegs(ItemData.AIR);
@@ -301,7 +301,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         if (armor.isNull()) armor = Item.AIR;
 
         final MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-        pk.setTargetRuntimeID(this.getHolder().getId());
+        pk.setTargetRuntimeID(this.getHolder().runtimeId());
         pk.setHead(ItemData.AIR);
         pk.setTorso(ItemData.AIR);
         pk.setLegs(ItemData.AIR);

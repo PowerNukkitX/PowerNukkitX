@@ -6,7 +6,7 @@ import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockAndesiteStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ANDESITE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ANDESITE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
 
     public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
             .hardness(1.5)

@@ -1113,7 +1113,7 @@
   "nukkit.level.updating": "发现旧的世界 \"{%0}\"，正在转换格式",
   "nukkit.player.invalidEntity": "{%0} 尝试攻击一个无效的实体",
   "nukkit.player.invalidMove": "{%0} 行动可疑！",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] 登入游戏，实体 ID 为 {%3}，坐标位于 ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] 登入游戏，实体 uniqueId 为 {%3}，坐标位于 ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] 登出游戏，原因：{%3}",
   "nukkit.plugin.aliasError": "无法读取 {%1} 插件的 {%0} 别名",
   "nukkit.plugin.circularDependency": "检测到循环依赖",

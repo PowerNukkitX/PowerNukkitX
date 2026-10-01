@@ -32,6 +32,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBePushed(false)
+            .canBePulled(false)
             .sticksToPiston(false)
             .canBeActivated(true)
             .canHarvestWithHand(false)

@@ -7,7 +7,7 @@ import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSmoothRedSandstoneStairs extends BlockStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_RED_SANDSTONE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_RED_SANDSTONE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
     public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
             .hardness(2)
             .resistance(30)

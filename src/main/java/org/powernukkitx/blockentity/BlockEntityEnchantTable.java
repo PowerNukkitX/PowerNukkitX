@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.inventory.EnchantInventory;
 import org.powernukkitx.level.format.IChunk;
@@ -40,8 +41,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound()
-                .putBoolean("isMovable", false);
+        CompoundTag c = super.getSpawnCompound();
 
         if (this.hasName()) {
             c.putString("CustomName", this.getNbt().getString("CustomName"));
@@ -53,5 +53,10 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     @Override
     public EnchantInventory getInventory() {
         return new EnchantInventory(this);
+    }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
     }
 }

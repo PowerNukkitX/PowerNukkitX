@@ -64,6 +64,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.MANGROVE_LOG, 300);
         register0(BlockID.CHERRY_LOG, 300);
         register0(BlockID.PALE_OAK_LOG, 300);
+        register0(BlockID.POPLAR_LOG, 300);
 
         register0(BlockID.STRIPPED_OAK_LOG, 300);
         register0(BlockID.STRIPPED_DARK_OAK_LOG, 300);
@@ -74,6 +75,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.STRIPPED_MANGROVE_LOG, 300);
         register0(BlockID.STRIPPED_CHERRY_LOG, 300);
         register0(BlockID.STRIPPED_PALE_OAK_LOG, 300);
+        register0(BlockID.STRIPPED_POPLAR_LOG, 300);
 
         register0(BlockID.ACACIA_PLANKS, 300);
         register0(BlockID.BAMBOO_PLANKS, 300);
@@ -85,6 +87,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.SPRUCE_PLANKS, 300);
         register0(BlockID.DARK_OAK_PLANKS, 300);
         register0(BlockID.PALE_OAK_PLANKS, 300);
+        register0(BlockID.POPLAR_PLANKS, 300);
 
         register0(BlockID.ACACIA_FENCE, 300);
         register0(BlockID.BAMBOO_FENCE, 300);
@@ -96,6 +99,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.SPRUCE_FENCE, 300);
         register0(BlockID.DARK_OAK_FENCE, 300);
         register0(BlockID.PALE_OAK_FENCE, 300);
+        register0(BlockID.POPLAR_FENCE, 300);
 
         register0(BlockID.ACACIA_FENCE_GATE, 300);
         register0(BlockID.BAMBOO_FENCE_GATE, 300);
@@ -107,6 +111,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.SPRUCE_FENCE_GATE, 300);
         register0(BlockID.DARK_OAK_FENCE_GATE, 300);
         register0(BlockID.PALE_OAK_FENCE_GATE, 300);
+        register0(BlockID.POPLAR_FENCE_GATE, 300);
 
         register0(BlockID.OAK_STAIRS, 300);
         register0(BlockID.ACACIA_STAIRS, 300);
@@ -118,6 +123,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.SPRUCE_STAIRS, 300);
         register0(BlockID.DARK_OAK_STAIRS, 300);
         register0(BlockID.PALE_OAK_STAIRS, 300);
+        register0(BlockID.POPLAR_STAIRS, 300);
         register0(BlockID.BAMBOO_MOSAIC_STAIRS, 300);
 
         register0(ItemID.ACACIA_SIGN, 200);
@@ -129,6 +135,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(ItemID.SPRUCE_SIGN, 200);
         register0(ItemID.DARK_OAK_SIGN, 200);
         register0(ItemID.PALE_OAK_SIGN, 200);
+        register0(ItemID.POPLAR_SIGN, 200);
         register0(ItemID.OAK_SIGN, 200);
 
 
@@ -141,6 +148,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(Block.SPRUCE_HANGING_SIGN, 200);
         register0(Block.DARK_OAK_HANGING_SIGN, 200);
         register0(ItemID.PALE_OAK_HANGING_SIGN, 200);
+        register0(ItemID.POPLAR_HANGING_SIGN, 200);
         register0(Block.OAK_HANGING_SIGN, 200);
 
         register0(BlockID.WOODEN_PRESSURE_PLATE, 300);
@@ -152,6 +160,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.MANGROVE_PRESSURE_PLATE, 300);
         register0(BlockID.CHERRY_PRESSURE_PLATE, 300);
         register0(BlockID.PALE_OAK_PRESSURE_PLATE, 300);
+        register0(BlockID.POPLAR_PRESSURE_PLATE, 300);
         register0(BlockID.BAMBOO_PRESSURE_PLATE, 300);
 
         register0(BlockID.ACACIA_SAPLING,100);
@@ -163,6 +172,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.DARK_OAK_SAPLING,100);
         register0(BlockID.BIRCH_SAPLING,100);
         register0(BlockID.PALE_OAK_SAPLING, 100);
+        register0(BlockID.POPLAR_SAPLING, 100);
 
         register0(ItemID.STICK, 100);
         register0(BlockID.AZALEA, 100);
@@ -202,6 +212,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.BIRCH_SLAB, 300);
         register0(BlockID.DARK_OAK_SLAB, 300);
         register0(BlockID.PALE_OAK_SLAB, 300);
+        register0(BlockID.POPLAR_SLAB, 300);
 
         register0(BlockID.ACACIA_DOUBLE_SLAB,300);
         register0(BlockID.OAK_DOUBLE_SLAB,300);
@@ -212,6 +223,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.CHERRY_DOUBLE_SLAB,300);
         register0(BlockID.BIRCH_DOUBLE_SLAB,300);
         register0(BlockID.PALE_OAK_DOUBLE_SLAB, 300);
+        register0(BlockID.POPLAR_DOUBLE_SLAB, 300);
 
         register0(ItemID.BLAZE_ROD, 2400);
         register0(BlockID.BROWN_MUSHROOM_BLOCK, 300);
@@ -228,6 +240,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(ItemID.MANGROVE_BOAT, 1200);
         register0(ItemID.CHERRY_BOAT, 1200);
         register0(ItemID.PALE_OAK_BOAT, 1200);
+        register0(ItemID.POPLAR_BOAT, 1200);
         register0(ItemID.BAMBOO_RAFT, 1200);
 
         register0(ItemID.OAK_CHEST_BOAT, 1200);
@@ -241,6 +254,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(ItemID.CHERRY_CHEST_BOAT, 1200);
         register0(ItemID.BAMBOO_CHEST_RAFT, 1200);
         register0(ItemID.PALE_OAK_CHEST_BOAT, 1200);
+        register0(ItemID.POPLAR_CHEST_BOAT, 1200);
 
         register0(BlockID.WOODEN_BUTTON, 100);
         register0(BlockID.SPRUCE_BUTTON, 100);
@@ -252,6 +266,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.CHERRY_BUTTON, 100);
         register0(BlockID.BAMBOO_BUTTON, 100);
         register0(BlockID.PALE_OAK_BUTTON, 100);
+        register0(BlockID.POPLAR_BUTTON, 100);
 
         register0(BlockID.WOODEN_DOOR, 200);
         register0(BlockID.SPRUCE_DOOR, 200);
@@ -263,6 +278,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.MANGROVE_DOOR, 200);
         register0(BlockID.CHERRY_DOOR, 200);
         register0(BlockID.PALE_OAK_DOOR, 200);
+        register0(BlockID.POPLAR_DOOR, 200);
 
         register0(BlockID.TRAPDOOR, 300);
         register0(BlockID.SPRUCE_TRAPDOOR, 300);
@@ -274,6 +290,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.CHERRY_TRAPDOOR, 300);
         register0(BlockID.BAMBOO_TRAPDOOR, 300);
         register0(BlockID.PALE_OAK_TRAPDOOR, 300);
+        register0(BlockID.POPLAR_TRAPDOOR, 300);
 
         register0(BlockID.CARTOGRAPHY_TABLE, 300);
         register0(BlockID.FLETCHING_TABLE, 300);

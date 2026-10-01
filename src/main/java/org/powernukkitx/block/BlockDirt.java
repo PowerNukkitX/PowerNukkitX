@@ -42,8 +42,7 @@ public class BlockDirt extends BlockSolid implements Natural {
 
     @Override
     public double getHardness() {
-        //Although the hardness on the wiki is 0.5, after testing, a hardness of 0.6 is more suitable for the vanilla
-        return 0.6;
+        return 0.5;
     }
 
     

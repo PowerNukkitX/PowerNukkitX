@@ -20,8 +20,7 @@ import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
-public class BlockEntityPotentSulfur extends BlockEntity {
-
+public class BlockEntityPotentSulfurBlock extends BlockEntity {
     private static final int EFFECT_INTERVAL_TICKS = 10;
     private static final int EFFECT_DURATION_TICKS = 80;
     private static final int ALLOWED_WATER_BLOCKS_ABOVE = 4;
@@ -34,7 +33,7 @@ public class BlockEntityPotentSulfur extends BlockEntity {
     private int waitingCountdown = -1;
     private long eruptionTick = -1L;
 
-    public BlockEntityPotentSulfur(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityPotentSulfurBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

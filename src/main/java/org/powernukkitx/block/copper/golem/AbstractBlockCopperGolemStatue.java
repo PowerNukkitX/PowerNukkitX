@@ -7,6 +7,7 @@ import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonPropertyMap;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.blockentity.BlockEntityCopperGolemStatue;
+import org.powernukkitx.blockentity.BlockEntityCopperGolemStatue.CopperPose;
 import org.powernukkitx.blockentity.BlockEntityID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
@@ -33,6 +34,8 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
             .resistance(6)
             .canBeActivated(true)
             .canHarvestWithHand(false)
+            .canBePulled(false)
+            .breaksWhenMoved(true)
             .build();
     public AbstractBlockCopperGolemStatue(BlockState blockState) {
         super(blockState, DEFINITION);

@@ -30,6 +30,8 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
             .lightEmission(7)
             .canBeActivated(true)
             .canHarvestWithHand(false)
+            .canBePushed(false)
+            .canBePulled(false)
             .waterloggingLevel(1)
             .build();
 

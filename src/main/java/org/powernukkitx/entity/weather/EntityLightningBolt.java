@@ -218,7 +218,7 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
                 bb.setMaxX(bb.getMaxX() + 6);
 
                 for (Entity entity : this.level.getCollidingEntities(bb, this)) {
-                    if (struckEntities.add(entity.getId())) {
+                    if (struckEntities.add(entity.runtimeId())) {
                         entity.onStruckByLightning(this);
                     }
                 }

@@ -8,6 +8,7 @@ import org.powernukkitx.item.randomitem.Selector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class FishingEnchantmentItemSelector extends EnchantmentItemSelector {
 
@@ -23,6 +24,18 @@ public class FishingEnchantmentItemSelector extends EnchantmentItemSelector {
         super(Item.get(id, meta, count), parent);
     }
 
+    /**
+     * Fished treasure draws from the fishable enchantments, which unlike the enchanting table pool also holds
+     * treasure enchantments such as Mending.
+     *
+     * @return the filter applied to the enchantment pool
+     */
+    @Override
+    protected Predicate<Enchantment> getEnchantmentPool() {
+        return Enchantment::isFishable;
+    }
+
+    @Deprecated
     @Override
     public List<Enchantment> getSupportEnchantments(Item item) {
         ArrayList<Enchantment> enchantments = new ArrayList<>();

@@ -35,6 +35,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
             .toolType(ItemTool.TYPE_AXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .breaksWhenMoved(true)
+            .canBePulled(false)
             .canBeActivated(true)
             .waterloggingLevel(1)
             .build();

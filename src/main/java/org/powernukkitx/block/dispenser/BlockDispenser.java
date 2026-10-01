@@ -94,7 +94,7 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockDispenser(), 0);
     }
 
     @Override

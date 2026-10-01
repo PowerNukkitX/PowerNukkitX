@@ -38,6 +38,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
             .resistance(10)
             .toolType(ItemTool.TYPE_PICKAXE)
             .breaksWhenMoved(true)
+            .canBePulled(false)
             .sticksToPiston(false)
             .canBeActivated(true)
             .canHarvestWithHand(false)

@@ -70,7 +70,7 @@ public class BlockComposter extends BlockSolid {
     
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockComposter(), 0);
     }
 
     
@@ -232,6 +232,9 @@ public class BlockComposter extends BlockSolid {
                 CHERRY_LEAVES,
                 AZALEA_LEAVES,
                 PALE_OAK_LEAVES,
+                RED_POPLAR_LEAVES,
+                ORANGE_POPLAR_LEAVES,
+                YELLOW_POPLAR_LEAVES,
                 OAK_SAPLING,
                 SPRUCE_SAPLING,
                 BIRCH_SAPLING,
@@ -240,6 +243,7 @@ public class BlockComposter extends BlockSolid {
                 DARK_OAK_SAPLING,
                 CHERRY_SAPLING,
                 PALE_OAK_SAPLING,
+                POPLAR_SAPLING,
                 MANGROVE_ROOTS,
                 MANGROVE_PROPAGULE,
                 SEAGRASS,
