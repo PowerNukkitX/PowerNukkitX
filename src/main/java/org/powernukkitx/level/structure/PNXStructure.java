@@ -198,17 +198,7 @@ public class PNXStructure extends AbstractStructure {
         int newSizeZ = rotatedSizeZ(sizeX, sizeZ, geometryRotation);
         BlockState[] rotatedPalette = new BlockState[palette.length];
         for (int i = 0; i < palette.length; i++) {
-            BlockState state = palette[i];
-            if (state == STATE_STRUCTURE_VOID || state == STATE_UNKNOWN) {
-                rotatedPalette[i] = state;
-                continue;
-            }
-            rotatedPalette[i] = switch (stateRotation) {
-                case ROTATE_90 -> StructureRotationUtil.clockwise90(state);
-                case ROTATE_180 -> StructureRotationUtil.clockwise180(state);
-                case ROTATE_270 -> StructureRotationUtil.counterclockwise90(state);
-                default -> state;
-            };
+            rotatedPalette[i] = rotateState(palette[i], stateRotation);
         }
 
         byte[] rotatedBlocks = new byte[blocks.length];
@@ -229,16 +219,25 @@ public class PNXStructure extends AbstractStructure {
             Jigsaw jigsaw = this.jigsaws[idx];
             int rx = rotateX(sizeX, sizeZ, jigsaw.x, jigsaw.z, geometryRotation);
             int rz = rotateZ(sizeX, sizeZ, jigsaw.x, jigsaw.z, geometryRotation);
-            BlockState rotatedFinalState = switch (stateRotation) {
-                case ROTATE_90 -> StructureRotationUtil.clockwise90(jigsaw.finalState);
-                case ROTATE_180 -> StructureRotationUtil.clockwise180(jigsaw.finalState);
-                case ROTATE_270 -> StructureRotationUtil.counterclockwise90(jigsaw.finalState);
-                default -> jigsaw.finalState;
-            };
+            BlockState rotatedFinalState = rotateState(jigsaw.finalState, stateRotation);
             rotatedJigsaws[idx] = new Jigsaw(rx, jigsaw.y, rz, rotatedFinalState, jigsaw.name, jigsaw.joint, jigsaw.pool, jigsaw.target, jigsaw.placementPriority, jigsaw.selectionPriority);
         }
 
         return new PNXStructure(newSizeX, sizeY, newSizeZ, rotatedPalette, rotatedBlocks, rotatedJigsaws);
+    }
+
+    /**
+     * Placeholder states pass through untouched. A jigsaw final state is null when its
+     * final_state runtime id did not resolve, and placement already turns that into air.
+     */
+    private static BlockState rotateState(BlockState state, Rotation rotation) {
+        if (state == null || state == STATE_STRUCTURE_VOID || state == STATE_UNKNOWN) return state;
+        return switch (rotation) {
+            case ROTATE_90 -> StructureRotationUtil.clockwise90(state);
+            case ROTATE_180 -> StructureRotationUtil.clockwise180(state);
+            case ROTATE_270 -> StructureRotationUtil.counterclockwise90(state);
+            default -> state;
+        };
     }
 
     private Rotation inverseRotation(Rotation rotation) {
