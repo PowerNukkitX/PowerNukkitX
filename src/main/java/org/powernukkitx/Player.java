@@ -237,6 +237,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
     private static final byte PLAYER_FLAG_SLEEP = 0x2;
+    private static final double CREATIVE_BLOCK_REACH = 13;
+    private static final double SURVIVAL_BLOCK_REACH = 7;
     private static final long POST_TELEPORT_GRACE_MS = 1000L;
     /// static fields
     public boolean playedBefore;
@@ -262,6 +264,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
     protected int lastSentBreakTick = 0;
+    private static final double MAX_BLOCK_BREAK_SECONDS = 300.0;
     protected final BedrockServerSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
@@ -512,6 +515,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInMainHand(), this);
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
+            if (!(miningTimeRequired > 0)) {
+                this.resetBlockBreak();
+                return;
+            }
+            if (!this.isBreakStillValid(pos, miningTimeRequired)) {
+                this.onBlockBreakAbort(pos);
+                return;
+            }
+
             if (miningTimeRequired > 0) {
                 int breakTick = Math.max(1, (int) Math.ceil(miningTimeRequired * 20));
 
@@ -563,6 +575,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
+        if (!this.canInteract(pos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7)) {
+            return;
+        }
 
         Block target = this.level.getBlock(pos);
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInMainHand(), target, face,
@@ -633,6 +648,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
+    private boolean isBreakStillValid(Vector3 pos, double miningTimeRequired) {
+        if (!this.spawned || !this.isAlive()) {
+            return false;
+        }
+        if (!Double.isFinite(miningTimeRequired) || miningTimeRequired > MAX_BLOCK_BREAK_SECONDS) {
+            return false;
+        }
+        if (this.breakingBlock.getLevel() != this.level) {
+            return false;
+        }
+        if (!this.canInteract(pos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7)) {
+            return false;
+        }
+        Block current = this.level.getBlock(this.breakingBlock, false);
+        return current.getId().equals(this.breakingBlock.getId());
+    }
+
     protected void resetBlockBreak() {
         this.blockBreakProgress = 0;
         this.breakingBlock = null;
@@ -658,7 +690,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Item handItem = this.getInventory().getItemInMainHand();
         Item clone = handItem.clone();
 
-        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
+        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5));
         if (canInteract) {
             handItem = this.level.useBreakOn(blockPos.asVector3(), face, handItem, this, true);
             if (handItem != null && this.isSurvival()) {
@@ -3779,6 +3811,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
             this.doFirstSpawn();
         }
+    }
+
+    /**
+     * Same as {@link #canInteract(Vector3, double)} with the reach a player is allowed for block
+     * interactions, which is longer in creative mode.
+     *
+     * @param pos the position the client claims to be acting on
+     * @return whether this player is close enough to it, and facing it
+     */
+    public boolean canInteract(Vector3 pos) {
+        return this.canInteract(pos, this.isCreative() ? CREATIVE_BLOCK_REACH : SURVIVAL_BLOCK_REACH);
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance) {

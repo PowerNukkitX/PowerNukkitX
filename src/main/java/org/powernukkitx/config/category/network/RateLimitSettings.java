@@ -24,4 +24,6 @@ public class RateLimitSettings extends OkaeriConfig {
     int maxFormResponsesPerSecondPerPlayer = 20;
     @Comment("pnx.settings.network.ratelimit.maxmovementperplayer")
     int maxMovementPacketsPerSecondPerPlayer = 40;
+    @Comment("pnx.settings.network.ratelimit.maxworldinteractionperplayer")
+    int maxWorldInteractionPacketsPerSecondPerPlayer = 30;
 }

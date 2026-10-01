@@ -12,6 +12,8 @@ import lombok.experimental.Accessors;
 public class RakNetSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.raknet.packetlimit")
     int packetLimit = 8000;
+    @Comment("pnx.settings.network.raknet.globalpacketlimit")
+    int globalPacketLimit = 100000;
     @Comment("pnx.settings.network.raknet.autoflush")
     boolean autoFlush = true;
     @Comment("pnx.settings.network.raknet.flushinterval")

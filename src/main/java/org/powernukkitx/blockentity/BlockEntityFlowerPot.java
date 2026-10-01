@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -25,5 +26,10 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
         if (nbt.containsCompound("PlantBlock"))
             tag.putCompound("PlantBlock", nbt.getCompound("PlantBlock"));
         return tag;
+    }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
     }
 }

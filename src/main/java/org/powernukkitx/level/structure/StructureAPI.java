@@ -5,7 +5,6 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,12 +19,47 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StructureAPI {
     private static final Map<String, Structure> structureCache = new ConcurrentHashMap<>();
 
+    private static boolean isNameSafe(String name) {
+        if (name == null || name.isEmpty() || name.length() > 256) {
+            return false;
+        }
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            boolean allowed = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+                    || c == '_' || c == '-' || c == '.' || c == ':';
+            if (!allowed) {
+                return false;
+            }
+        }
+        return !name.contains("..");
+    }
+
+    private static File confine(File candidate) {
+        try {
+            Path root = new File(Server.getInstance().structurePath).getCanonicalFile().toPath();
+            Path resolved = candidate.getCanonicalFile().toPath();
+            if (!resolved.startsWith(root)) {
+                return null;
+            }
+            return resolved.toFile();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     private static File resolvePathNamespaced(String name) {
-        return resolveInsideStructureDir(name.replace(":", File.separator) + ".mcstructure");
+        if (!isNameSafe(name)) {
+            return null;
+        }
+        String relativePath = name.replace(":", File.separator) + ".mcstructure";
+        return confine(new File(Server.getInstance().structurePath, relativePath));
     }
 
     private static File resolvePathRoot(String name) {
-        return resolveInsideStructureDir(name + ".mcstructure");
+        if (!isNameSafe(name)) {
+            return null;
+        }
+        return confine(new File(Server.getInstance().structurePath, name + ".mcstructure"));
     }
 
     private static File resolvePathWithFallback(String name) {
@@ -34,24 +68,6 @@ public class StructureAPI {
             return file;
         }
         return resolvePathRoot(name);
-    }
-
-    @Nullable
-    private static File resolveInsideStructureDir(String relativePath) {
-        File root = new File(Server.getInstance().structurePath);
-        File file = new File(root, relativePath);
-        try {
-            Path rootPath = root.getCanonicalFile().toPath();
-            Path filePath = file.getCanonicalFile().toPath();
-            if (!filePath.startsWith(rootPath) || filePath.equals(rootPath)) {
-                log.warn("Rejected structure path outside of the structure directory: {}", relativePath);
-                return null;
-            }
-            return file;
-        } catch (IOException exception) {
-            log.debug("Cannot resolve structure path {}", relativePath, exception);
-            return null;
-        }
     }
 
     /**
@@ -76,12 +92,13 @@ public class StructureAPI {
             return cached;
         }
 
-        File file = resolvePathWithFallback(name);
-        if (file == null) {
+        File source = resolvePathWithFallback(name);
+        if (source == null) {
+            log.debug("Rejected structure name {}", name);
             return null;
         }
 
-        try (var stream = Files.newInputStream(file.toPath());
+        try (var stream = Files.newInputStream(source.toPath());
              var nbtInputStream = NbtUtils.createReaderLE(stream)) {
             NbtMap root = (NbtMap) nbtInputStream.readTag();
 
@@ -102,6 +119,7 @@ public class StructureAPI {
         try {
             File file = resolvePathNamespaced(name); // always save in namespace path
             if (file == null) {
+                log.warn("Rejected structure name {}", name);
                 return;
             }
             file.getParentFile().mkdirs();
@@ -120,14 +138,22 @@ public class StructureAPI {
     }
 
     public static boolean exists(String name) {
-        File file = resolvePathWithFallback(name);
-        return file != null && file.exists();
+        File namespaced = resolvePathNamespaced(name);
+        if (namespaced != null && namespaced.exists()) {
+            return true;
+        }
+        File root = resolvePathRoot(name);
+        return root != null && root.exists();
     }
 
     public static boolean delete(String name) {
         structureCache.remove(name);
 
-        File file = resolvePathWithFallback(name);
+        File file = resolvePathNamespaced(name);
+        if (file == null || !file.exists()) {
+            file = resolvePathRoot(name);
+        }
+
         if (file == null) {
             return false;
         }
