@@ -234,6 +234,19 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return null;
     }
 
+    public SoulCampfireRecipe findSoulCampfireRecipe(Item... items) {
+        Int2ObjectArrayMap<Set<Recipe>> map = recipeMaps.get(RecipeType.SOUL_CAMPFIRE);
+        if (map != null) {
+            Set<Recipe> recipes = map.get(items.length);
+            if (recipes != null) {
+                for (var r : recipes) {
+                    if (r.fastCheck(items)) return (SoulCampfireRecipe) r;
+                }
+            }
+        }
+        return null;
+    }
+
     public Set<MultiRecipe> getMultiRecipeMap() {
         HashSet<MultiRecipe> result = new HashSet<>();
         for (var s : recipeMaps.get(RecipeType.MULTI).values()) {

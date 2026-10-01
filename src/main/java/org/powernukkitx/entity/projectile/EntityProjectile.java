@@ -169,7 +169,7 @@ public abstract class EntityProjectile extends Entity {
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        return (entity instanceof EntityLiving || entity instanceof EntityEnderCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat) && !this.onGround;
+        return (entity instanceof EntityLiving || entity instanceof EntityProjectile || entity instanceof EntityEnderCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat) && !this.onGround;
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.format.UnsafeChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.ItemHelper;
 import lombok.SneakyThrows;
@@ -19,10 +20,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -169,6 +176,56 @@ public class ChunkTest {
                 throw new IllegalStateException(e);
             }
         });
+    }
+
+    @Test
+    void test_batchProcess_and_recalculateHeightMapColumn_no_deadlock(LevelProvider levelDBProvider) throws InterruptedException {
+        final IChunk chunk = levelDBProvider.getChunk(0, 0, true);
+        final Duration timeout = Duration.ofSeconds(5);
+
+        final CountDownLatch bothReady = new CountDownLatch(2);
+        final CountDownLatch release = new CountDownLatch(1);
+        final AtomicBoolean batchProcessCompleted = new AtomicBoolean(false);
+        final AtomicBoolean heightMapColumnCompleted = new AtomicBoolean(false);
+
+        final ExecutorService pool = Executors.newFixedThreadPool(2);
+
+        pool.submit(() -> {
+            awaitRelease(bothReady, release);
+            chunk.batchProcess(UnsafeChunk::recalculateHeightMap);
+            batchProcessCompleted.set(true);
+        });
+
+        pool.submit(() -> {
+            awaitRelease(bothReady, release);
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    chunk.recalculateHeightMapColumn(x, z);
+                }
+            }
+            heightMapColumnCompleted.set(true);
+        });
+
+        bothReady.await(timeout.toSeconds(), TimeUnit.SECONDS);
+        release.countDown();
+
+        pool.shutdown();
+        final boolean finishedInTime = pool.awaitTermination(timeout.toSeconds(), TimeUnit.SECONDS);
+        if (!finishedInTime) {
+            pool.shutdownNow();
+        }
+
+        assertTrue(finishedInTime, "Deadlock detected : batchProcessCompleted=" + batchProcessCompleted.get()
+            + ", heightMapColumnCompleted=" + heightMapColumnCompleted.get());
+    }
+
+    private void awaitRelease(CountDownLatch bothReady, CountDownLatch release) {
+        bothReady.countDown();
+        try {
+            release.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Test

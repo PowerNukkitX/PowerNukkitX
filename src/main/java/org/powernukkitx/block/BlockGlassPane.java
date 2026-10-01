@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockGlassPane extends BlockThin {
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
     @Override
     @NotNull public BlockProperties getProperties() {

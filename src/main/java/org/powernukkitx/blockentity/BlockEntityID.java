@@ -81,7 +81,7 @@ public interface BlockEntityID {
 
     String PISTON_ARM = "PistonArm";
 
-    String POTENT_SULFUR = "PotentSulfur";
+    String POTENT_SULFUR_BLOCK = "PotentSulfurBlock";
 
     String SCULK_CATALYST = "SculkCatalyst";
 
@@ -99,6 +99,8 @@ public interface BlockEntityID {
 
     String SMOKER = "Smoker";
 
+    String SPORE_BLOSSOM = "SporeBlossom";
+
     String STRUCTURE_BLOCK = "StructureBlock";
 
     String MOVING_BLOCK = "MovingBlock";
@@ -106,8 +108,6 @@ public interface BlockEntityID {
     String NETHER_REACTOR = "NetherReactor";
 
     String END_GATEWAY = "EndGateway";
-
-    String TARGET = "Target";//???? todo check this
 
     String TRIAL_SPAWNER = "TrialSpawner";
 

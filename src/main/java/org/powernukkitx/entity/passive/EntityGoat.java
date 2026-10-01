@@ -46,12 +46,12 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
 
     @Override
     public float getHeight() {
-        return this.isBaby() ? 0.65f : 1.3f;
+        return 1.3f;
     }
 
     @Override
     public float getWidth() {
-        return this.isBaby() ? 0.45f : 0.9f;
+        return 0.9f;
     }
 
     @Override

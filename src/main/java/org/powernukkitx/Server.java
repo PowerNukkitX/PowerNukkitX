@@ -1,7 +1,6 @@
 package org.powernukkitx;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.sun.management.OperatingSystemMXBean;
 import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -27,6 +26,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.powernukkitx.block.BlockComposter;
 import org.powernukkitx.block.BlockLightProperties;
 import org.powernukkitx.block.dispenser.DispenseBehaviorRegister;
@@ -39,6 +39,7 @@ import org.powernukkitx.command.SimpleCommandMap;
 import org.powernukkitx.command.defaults.WorldCommand;
 import org.powernukkitx.command.function.FunctionManager;
 import org.powernukkitx.config.ServerSettings;
+import org.powernukkitx.config.category.NetworkSettings;
 import org.powernukkitx.config.YamlSnakeYamlConfigurer;
 import org.powernukkitx.config.updater.ConfigUpdater;
 import org.powernukkitx.console.NukkitConsole;
@@ -104,6 +105,7 @@ import org.powernukkitx.plugin.service.NKServiceManager;
 import org.powernukkitx.plugin.service.ServiceManager;
 import org.powernukkitx.network.positiontracking.PositionTrackingService;
 import org.powernukkitx.recipe.Recipe;
+import org.powernukkitx.registry.CreativeGroupsRegistry;
 import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.RegistryCache;
@@ -248,6 +250,7 @@ public class Server {
     private final Set<UUID> uniquePlayers = new HashSet<>();
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
+    private final Map<UUID, Player> onlinePlayersView = Collections.unmodifiableMap(playerList);
     private QueryRegenerateEvent queryRegenerateEvent;
     private PositionTrackingService positionTrackingService;
 
@@ -294,8 +297,6 @@ public class Server {
 
     // default levels
     private Level defaultLevel = null;
-    private boolean allowNether;
-    private boolean allowTheEnd;
     private List<ExperimentToggle> experiments;
 
     private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
@@ -419,8 +420,6 @@ public class Server {
             return;
         }
 
-        this.allowNether = this.settings.gameplaySettings().allowNether();
-        this.allowTheEnd = this.settings.gameplaySettings().allowTheEnd();
         this.checkLoginTime = this.settings.networkSettings().checkLoginTime();
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
@@ -436,7 +435,15 @@ public class Server {
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
 
-        this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
+        // NetherNet carries the session inside DTLS and a real client answers ServerToClientHandshake
+        // in plaintext, so Bedrock packet encryption has no place on top of it.
+        final boolean netherNet = this.settings.networkSettings().resolvedTransport()
+            == NetworkSettings.TransportType.NETHERNET;
+        if (netherNet && this.settings.networkSettings().networkEncryption()) {
+            log.warn("network-settings.networkEncryption is ignored on the NetherNet transport, "
+                + "which is already encrypted");
+        }
+        this.enabledNetworkEncryption = !netherNet && this.settings.networkSettings().networkEncryption();
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
@@ -542,7 +549,7 @@ public class Server {
                 computeThreadPool);
             CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
             CompletableFuture<Void> creativeF = creativeInventoryEnabled
-                    ? CompletableFuture.allOf(itemF, blockStateF)
+                    ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
                             .thenRunAsync(
                                     registryCache != null
                                             ? () -> registryCache.restoreCreative(Registries.CREATIVE)
@@ -675,6 +682,8 @@ public class Server {
         EntityProperty.buildPlayerProperty();
 
         if (settings.gameplaySettings().enableEducation()) Education.registerCreative();
+
+        CreativeGroupsRegistry.register();
 
         if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
@@ -861,6 +870,7 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+        CreativeGroupsRegistry.register();
         this.network.setState(NetworkState.STARTED);
     }
 
@@ -908,8 +918,6 @@ public class Server {
                 log.error("Exception while kicking player on shutdown", e);
             }
         }
-
-        this.getSettings().save();
 
         try {
             log.debug("Disabling all plugins");
@@ -2366,12 +2374,15 @@ public class Server {
     }
 
     /**
-     * Get all online players Map.
+     * Returns a live, unmodifiable view of the online players keyed by UUID - not a snapshot, so joins and quits are
+     * reflected immediately. Iteration is weakly consistent and never throws {@link ConcurrentModificationException},
+     * so it is safe from any thread; copy it if you need a stable set.
      *
-     * @return a map of players uuid and a player instance object
+     * @return an unmodifiable view of the online players
      */
+    @UnmodifiableView
     public Map<UUID, Player> getOnlinePlayers() {
-        return ImmutableMap.copyOf(playerList);
+        return this.onlinePlayersView;
     }
 
     /**
@@ -2586,7 +2597,7 @@ public class Server {
      * Get world from world id, 0 OVERWORLD 1 NETHER 2 THE_END
      *
      * @param levelId world id
-     * @return level level instance
+     * @return level The Level instance
      */
     public Level getLevel(int levelId) {
         if (this.levels.containsKey(levelId)) {
@@ -2868,6 +2879,7 @@ public class Server {
 
     public void setWhitelistMessage(String message) {
         this.settings.baseSettings().allowListMessage(message);
+        this.settings.save();
     }
 
     public boolean isOp(String name) {
@@ -3040,6 +3052,7 @@ public class Server {
         if (value > 3)
             value = 3;
         this.settings.gameplaySettings().difficulty(value);
+        this.settings.save();
     }
 
     /**
@@ -3047,6 +3060,16 @@ public class Server {
      */
     public boolean hasWhitelist() {
         return this.settings.baseSettings().allowList();
+    }
+
+    /**
+     * Enable or disable the server whitelist and persist the change.
+     *
+     * @param value whether the whitelist should be enforced
+     */
+    public void setWhitelist(boolean value) {
+        this.settings.baseSettings().allowList(value);
+        this.settings.save();
     }
 
     /**
@@ -3097,6 +3120,7 @@ public class Server {
      */
     public void setMotd(String motd) {
         this.settings.baseSettings().motd(motd);
+        this.settings.save();
         this.getNetwork().updatePong(this.getNetwork().getPong().motd(motd));
     }
 
@@ -3118,6 +3142,7 @@ public class Server {
      */
     public void setSubMotd(String subMotd) {
         this.settings.baseSettings().subMotd(subMotd);
+        this.settings.save();
         this.getNetwork().updatePong(this.getNetwork().getPong().subMotd(subMotd));
     }
 
@@ -3193,14 +3218,6 @@ public class Server {
 
     public void setProxyAuthProvider(ProxyAuthProvider proxyAuthProvider) {
         this.proxyAuthProvider = proxyAuthProvider;
-    }
-
-    public boolean isNetherAllowed() {
-        return this.allowNether;
-    }
-
-    public boolean isTheEndAllowed() {
-        return this.allowTheEnd;
     }
 
     public boolean canLogPacket(Class<? extends BedrockPacket> clazz) {

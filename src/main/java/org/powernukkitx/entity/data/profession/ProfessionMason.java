@@ -106,7 +106,7 @@ public class ProfessionMason extends Profession {
                         .build());
                 break;
             case 3:
-                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(BlockID.DRIPSTONE_BLOCK, 0, 1))
+                recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(BlockID.DRIPSTONE_BLOCK, 0, 4))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(3)

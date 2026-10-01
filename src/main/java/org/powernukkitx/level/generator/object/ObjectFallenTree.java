@@ -190,6 +190,7 @@ public class ObjectFallenTree extends TreeGenerator {
             case PALE_OAK -> BlockPaleOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, axis);
             case SPRUCE -> BlockSpruceLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, axis);
             case OAK -> BlockOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, axis);
+            case POPLAR -> BlockPoplarLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, axis);
         };
     }
 }

@@ -8,12 +8,12 @@ If you are a human, read [CONTRIBUTING.md](CONTRIBUTING.md) instead - it is the 
 
 ## The project
 
-PowerNukkitX is a Minecraft: Bedrock Edition server software written in Java. It is a fork of Nukkit. Root package is `org.powernukkitx` - older `cn.nukkit` paths in search results, blog posts, or model memory are **out of date**, do not reintroduce them.
+PowerNukkitX is a Minecraft: Bedrock Edition server software written in Java. Root package is `org.powernukkitx` - older `cn.nukkit` paths in search results, blog posts, or model memory are **out of date**, do not reintroduce them.
 
 - **Java:** 21. Source and target compatibility are pinned; do not use preview features or a newer language level.
 - **Build system:** Gradle (Kotlin DSL, `build.gradle.kts`).
 - **License:** LGPL-3.0.
-- **Branch:** work off `master`.
+- **Branch:** work off `stable` if bug fixes, if it's major, use `beta`.
 
 ---
 

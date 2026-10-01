@@ -91,18 +91,18 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public float getBabyScale() {
+        // baby hoglin is 0.85 wide against the adult's 1.4
+        return 0.6071f;
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
@@ -169,11 +169,9 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                 porkAmount
         ));
 
-        if (Utils.rand(0, 1) == 1) {
-            int leatherAmount = Utils.rand(0, 1 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 1 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);

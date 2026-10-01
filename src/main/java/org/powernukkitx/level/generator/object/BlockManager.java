@@ -21,6 +21,7 @@ import org.powernukkitx.utils.RuntimeBlockDefinition;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.ActorBlockSyncMessageId;
 import org.cloudburstmc.protocol.bedrock.data.BlockChangeEntry;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateSubChunkBlocksPacket;
@@ -333,9 +334,7 @@ public class BlockManager {
                 }
                 UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> {
                     final UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
-                    packet.setChunkX(s.x);
-                    packet.setChunkY(s.y);
-                    packet.setChunkZ(s.z);
+                    packet.setSubChunkBlockPosition(Vector3i.from(s.x, s.y, s.z));
                     return packet;
                 });
                 if (b.layer == 1) {

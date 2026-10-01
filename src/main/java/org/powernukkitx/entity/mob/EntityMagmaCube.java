@@ -195,8 +195,8 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             return new Item[]{Item.get(froglight)};
         }
 
-        if (getVariant() != SIZE_SMALL && Utils.rand(0, 2) != 0) {
-            int amount = Utils.rand(0, 2 + looting);
+        if (getVariant() != SIZE_SMALL) {
+            int amount = Utils.rand(0, 1 + looting);
             if (amount > 0) {
                 drops.add(Item.get(Item.MAGMA_CREAM, 0, amount));
             }
@@ -224,12 +224,16 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     public void kill() {
-        if (getVariant() != SIZE_SMALL) {
+        if (!this.justCreated && getVariant() != SIZE_SMALL) {
+            final int smaller = getSmaller();
             for (int i = 1; i < Utils.rand(2, 5); i++) {
-                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), this.getNbt());
-                magmaCube.setPosition(this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
+                CompoundTag childNbt = Entity.getDefaultNBT(
+                    this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
+                childNbt.putInt(TAG_SLIME_SIZE, smaller);
+
+                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), childNbt);
                 magmaCube.setRotation(this.yaw, this.pitch);
-                magmaCube.setVariant(getSmaller());
+                magmaCube.setVariant(smaller);
                 magmaCube.spawnToAll();
             }
         }

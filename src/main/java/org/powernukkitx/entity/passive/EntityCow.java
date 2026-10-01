@@ -77,17 +77,11 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.45f;
-        }
         return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 
@@ -174,11 +168,9 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
                 beefAmount
         ));
 
-        if (Utils.rand(0f, 1f) < (2f / 3f)) {
-            int leatherAmount = Utils.rand(0, 2 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 2 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
@@ -200,7 +192,6 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
         if (superResult) return true;
 
         if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
-            item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
         }

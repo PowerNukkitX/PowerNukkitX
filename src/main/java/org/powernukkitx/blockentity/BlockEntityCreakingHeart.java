@@ -35,7 +35,6 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
     public BlockEntityCreakingHeart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
 
     @Override

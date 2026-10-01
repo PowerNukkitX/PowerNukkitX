@@ -1,6 +1,5 @@
 package org.powernukkitx.command;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +9,6 @@ import java.util.Map;
 /**
  * @author Kanelucky
  */
-@ApiStatus.Experimental
 public class CommandContext {
 
     private final CommandSender sender;

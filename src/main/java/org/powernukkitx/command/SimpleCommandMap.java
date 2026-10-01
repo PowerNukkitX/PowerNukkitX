@@ -307,7 +307,7 @@ public class SimpleCommandMap implements CommandMap {
         boolean alreadyRegistered = this.knownCommands.containsKey(label);
         Command existingCommand = this.knownCommands.get(label);
         boolean existingCommandIsNotVanilla = alreadyRegistered && !(existingCommand instanceof VanillaCommand);
-        //basically, if we're an alias and it's already registered, or we're a vanilla command, then we can't override it
+        //basically, if we're an alias, and it's already registered, or we're a vanilla command, then we can't override it
         if ((command instanceof VanillaCommand || isAlias) && alreadyRegistered && existingCommandIsNotVanilla) {
             return false;
         }
@@ -361,41 +361,44 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     private static ArrayList<String> parseArguments(String cmdLine, boolean groupSquareBrackets) {
-        StringBuilder sb = new StringBuilder(cmdLine);
+        StringBuilder out = new StringBuilder(cmdLine.length());
         ArrayList<String> args = new ArrayList<>();
         boolean notQuoted = true;
         int curlyBraceCount = 0;
         int squareBracketCount = 0;
         int start = 0;
 
-        for (int i = 0; i < sb.length(); i++) {
-            if ((sb.charAt(i) == '{' && curlyBraceCount >= 1) || (sb.charAt(i) == '{' && sb.charAt(i - 1) == ' ' && curlyBraceCount == 0)) {
+        for (int pos = 0; pos < cmdLine.length(); pos++) {
+            char c = cmdLine.charAt(pos);
+            int i = out.length();
+            out.append(c);
+
+            if ((c == '{' && curlyBraceCount >= 1) || (c == '{' && i > 0 && out.charAt(i - 1) == ' ' && curlyBraceCount == 0)) {
                 curlyBraceCount++;
-            } else if (sb.charAt(i) == '}' && curlyBraceCount > 0) {
+            } else if (c == '}' && curlyBraceCount > 0) {
                 curlyBraceCount--;
                 if (curlyBraceCount == 0) {
-                    args.add(sb.substring(start, i + 1));
+                    args.add(out.substring(start, i + 1));
                     start = i + 1;
                 }
             }
             if (curlyBraceCount == 0) {
                 if (groupSquareBrackets && notQuoted) {
-                    if (sb.charAt(i) == '[') {
+                    if (c == '[') {
                         squareBracketCount++;
-                    } else if (sb.charAt(i) == ']' && squareBracketCount > 0) {
+                    } else if (c == ']' && squareBracketCount > 0) {
                         squareBracketCount--;
                     }
                 }
 
-                if (sb.charAt(i) == ' ' && notQuoted && squareBracketCount == 0) {
-                    String arg = sb.substring(start, i);
+                if (c == ' ' && notQuoted && squareBracketCount == 0) {
+                    String arg = out.substring(start, i);
                     if (!arg.isEmpty()) {
                         args.add(arg);
                     }
                     start = i + 1;
-                } else if (sb.charAt(i) == '"') {
-                    sb.deleteCharAt(i);
-                    --i;
+                } else if (c == '"') {
+                    out.setLength(i);
                     notQuoted = !notQuoted;
                 }
             }
@@ -405,7 +408,7 @@ public class SimpleCommandMap implements CommandMap {
             return null;
         }
 
-        String arg = sb.substring(start);
+        String arg = out.substring(start);
         if (!arg.isEmpty()) {
             args.add(arg);
         }

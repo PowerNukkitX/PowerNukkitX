@@ -56,6 +56,16 @@ public class BlockLightBlock extends BlockTransparent {
     }
 
     @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public double getHardness() {
         return 0;
     }

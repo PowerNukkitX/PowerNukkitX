@@ -131,7 +131,10 @@ public interface IParamNode<T> {
      * Flags an error in this node's {@link #fill(String)} and outputs the default error message
      */
     default void error() {
-        this.getParamList().error();
+        var list = this.getParamList();
+        if (list != null) {
+            list.error();
+        }
     }
 
     /**
