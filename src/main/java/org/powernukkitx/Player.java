@@ -513,7 +513,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInMainHand(), this);
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
-            if (!this.isBreakStillValid(pos, time, miningTimeRequired)) {
+            if (!(miningTimeRequired > 0)) {
+                this.resetBlockBreak();
+                return;
+            }
+            if (!this.isBreakStillValid(pos, miningTimeRequired)) {
                 this.onBlockBreakAbort(pos);
                 return;
             }
@@ -642,14 +646,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
-    private boolean isBreakStillValid(Vector3 pos, long now, double miningTimeRequired) {
+    private boolean isBreakStillValid(Vector3 pos, double miningTimeRequired) {
         if (!this.spawned || !this.isAlive()) {
             return false;
         }
-        if (!(miningTimeRequired > 0) || !Double.isFinite(miningTimeRequired)) {
-            return false;
-        }
-        if (miningTimeRequired > MAX_BLOCK_BREAK_SECONDS) {
+        if (!Double.isFinite(miningTimeRequired) || miningTimeRequired > MAX_BLOCK_BREAK_SECONDS) {
             return false;
         }
         if (this.breakingBlock.getLevel() != this.level) {
