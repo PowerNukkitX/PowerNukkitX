@@ -1,9 +1,14 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.entity.effect.PotionType;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 public class ItemLingeringPotion extends ProjectileItem {
+    public static final ItemDefinition DEFINITION = ProjectileItem.DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .maxStackSize(1)
+            .build();
 
     public ItemLingeringPotion() {
         this(0, 1);
@@ -14,7 +19,7 @@ public class ItemLingeringPotion extends ProjectileItem {
     }
 
     public ItemLingeringPotion(Integer meta, int count) {
-        super(LINGERING_POTION, meta, count, "Lingering Potion");
+        super(LINGERING_POTION, meta, count, "Lingering Potion", DEFINITION);
         updateName();
     }
 
@@ -31,16 +36,6 @@ public class ItemLingeringPotion extends ProjectileItem {
         } else {
             name = ItemPotion.buildName(potion, "Lingering Potion", true);
         }
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

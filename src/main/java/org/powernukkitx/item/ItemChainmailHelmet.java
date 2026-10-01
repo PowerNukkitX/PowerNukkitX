@@ -1,8 +1,17 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemChainmailHelmet extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(2)
+            .helmet(true)
+            .maxDurability(166)
+            .tier(Item.WEARABLE_TIER_CHAIN)
+            .build();
+
     public ItemChainmailHelmet() {
-        super(CHAINMAIL_HELMET);
+        super(CHAINMAIL_HELMET, DEFINITION);
     }
 
     public ItemChainmailHelmet(Integer meta) {
@@ -10,26 +19,6 @@ public class ItemChainmailHelmet extends ItemArmor {
     }
 
     public ItemChainmailHelmet(Integer meta, int count) {
-        super(CHAINMAIL_HELMET, meta, count, "Chainmail Helmet");
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_CHAIN;
-    }
-
-    @Override
-    public boolean isHelmet() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 2;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 166;
+        super(CHAINMAIL_HELMET, meta, count, "Chainmail Helmet", DEFINITION);
     }
 }

@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockCaveVines;
 import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.BlockFace;
@@ -14,6 +15,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Superice666
  */
 public class ItemGlowBerries extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .canBeActivated(true)
+            .nutrition(2)
+            .saturation(0.4f)
+            .build();
 
     public ItemGlowBerries() {
         this(0, 1);
@@ -24,12 +30,7 @@ public class ItemGlowBerries extends ItemFood {
     }
 
     public ItemGlowBerries(Integer meta, int count) {
-        super(GLOW_BERRIES, 0, count, "Glow Berries");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(GLOW_BERRIES, 0, count, "Glow Berries", DEFINITION);
     }
 
     @Override
@@ -47,15 +48,5 @@ public class ItemGlowBerries extends ItemFood {
         }
 
         return false;
-    }
-
-    @Override
-    public int getNutrition() {
-        return 2;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 0.4F;
     }
 }

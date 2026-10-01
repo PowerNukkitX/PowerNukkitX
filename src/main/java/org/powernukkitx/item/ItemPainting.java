@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityPainting;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -23,6 +24,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemPainting extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
+
     private static final int[] DIRECTION = {2, 3, 4, 5};
     private static final int[] RIGHT = {4, 5, 3, 2};
     private static final double OFFSET = 0.53125;
@@ -36,12 +41,7 @@ public class ItemPainting extends Item {
     }
 
     public ItemPainting(Integer meta, int count) {
-        super(PAINTING, 0, count, "Painting");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(PAINTING, 0, count, "Painting", DEFINITION);
     }
 
     @Override

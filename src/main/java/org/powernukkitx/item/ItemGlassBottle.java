@@ -6,6 +6,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockBeehive;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.item.EntityAreaEffectCloud;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -13,6 +14,9 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 
 public class ItemGlassBottle extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
 
     public ItemGlassBottle() {
         this(0, 1);
@@ -23,12 +27,7 @@ public class ItemGlassBottle extends Item {
     }
 
     public ItemGlassBottle(Integer meta, int count) {
-        super(GLASS_BOTTLE, meta, count, "Glass Bottle");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(GLASS_BOTTLE, meta, count, "Glass Bottle", DEFINITION);
     }
 
     @Override

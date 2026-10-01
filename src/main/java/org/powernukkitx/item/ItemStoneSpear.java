@@ -1,10 +1,17 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 /**
  * @author Buddelbubi
  * @since 2025/12/15
  */
 public class ItemStoneSpear extends ItemSpear {
+    public static final ItemDefinition DEFINITION = ItemSpear.DEFINITION.toBuilder()
+            .attackDamage(3)
+            .maxDurability(ItemTool.DURABILITY_STONE)
+            .tier(ItemTool.TIER_STONE)
+            .build();
 
     public ItemStoneSpear() {
         this(0, 1);
@@ -15,21 +22,6 @@ public class ItemStoneSpear extends ItemSpear {
     }
 
     public ItemStoneSpear(Integer meta, int count) {
-        super(STONE_SPEAR, meta, count, "Stone Spear");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_STONE;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_STONE;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 3;
+        super(STONE_SPEAR, meta, count, "Stone Spear", DEFINITION);
     }
 }

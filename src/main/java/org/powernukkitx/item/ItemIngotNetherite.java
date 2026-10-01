@@ -1,8 +1,11 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemIngotNetherite extends Item {
-
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .lavaResistant(true)
+            .build();
 
     public ItemIngotNetherite() {
         this(0, 1);
@@ -13,11 +16,6 @@ public class ItemIngotNetherite extends Item {
     }
 
     public ItemIngotNetherite(Integer meta, int count) {
-        super(NETHERITE_INGOT, 0, count, "Netherite Ingot");
-    }
-
-    @Override
-    public boolean isLavaResistant() {
-        return true;
+        super(NETHERITE_INGOT, 0, count, "Netherite Ingot", DEFINITION);
     }
 }

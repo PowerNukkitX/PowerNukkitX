@@ -1,32 +1,17 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemDiamondLeggings extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(6)
+            .leggings(true)
+            .maxDurability(496)
+            .tier(Item.WEARABLE_TIER_DIAMOND)
+            .toughness(2)
+            .build();
+
     public ItemDiamondLeggings() {
-        super(DIAMOND_LEGGINGS);
-    }
-
-    @Override
-    public boolean isLeggings() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_DIAMOND;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 6;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 496;
-    }
-
-    @Override
-    public int getToughness() {
-        return 2;
+        super(DIAMOND_LEGGINGS, DEFINITION);
     }
 }

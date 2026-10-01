@@ -1,6 +1,7 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.Vector3;
@@ -10,6 +11,11 @@ import org.powernukkitx.math.Vector3;
  * @since 2016/1/14
  */
 public class ItemFishingRod extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .maxDurability(ItemTool.DURABILITY_FISHING_ROD)
+            .noDamageOnAttack(true)
+            .noDamageOnBreak(true)
+            .build();
 
     public ItemFishingRod() {
         this(0, 1);
@@ -20,7 +26,7 @@ public class ItemFishingRod extends ItemTool {
     }
 
     public ItemFishingRod(Integer meta, int count) {
-        super(FISHING_ROD, meta, count, "Fishing Rod");
+        super(FISHING_ROD, meta, count, "Fishing Rod", DEFINITION);
     }
 
     @Override
@@ -37,21 +43,6 @@ public class ItemFishingRod extends ItemTool {
             player.startFishing(this);
             this.meta++;
         }
-        return true;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_FISHING_ROD;
-    }
-
-    @Override
-    public boolean noDamageOnAttack() {
-        return true;
-    }
-
-    @Override
-    public boolean noDamageOnBreak() {
         return true;
     }
 }

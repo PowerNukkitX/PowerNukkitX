@@ -6,6 +6,7 @@ import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.entity.projectile.EntityThrownTrident;
 import org.powernukkitx.event.entity.EntityShootBowEvent;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
@@ -18,6 +19,12 @@ import org.powernukkitx.nbt.tag.ListTag;
  * @author PetteriM1
  */
 public class ItemTrident extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(9)
+            .maxDurability(ItemTool.DURABILITY_TRIDENT)
+            .trident(true)
+            .usingTicks(72000)
+            .build();
 
     public ItemTrident() {
         this(0, 1);
@@ -28,27 +35,12 @@ public class ItemTrident extends ItemTool {
     }
 
     public ItemTrident(Integer meta, int count) {
-        super(TRIDENT, meta, count, "Trident");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_TRIDENT;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 9;
+        super(TRIDENT, meta, count, "Trident", DEFINITION);
     }
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 72000;
     }
 
     @Override

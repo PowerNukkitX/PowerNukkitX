@@ -1,6 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemIronHelmet extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(2)
+            .helmet(true)
+            .maxDurability(166)
+            .tier(Item.WEARABLE_TIER_IRON)
+            .build();
+
     public ItemIronHelmet() {
         this(0, 1);
     }
@@ -10,26 +19,6 @@ public class ItemIronHelmet extends ItemArmor {
     }
 
     public ItemIronHelmet(Integer meta, int count) {
-        super(IRON_HELMET, meta, count, "Iron Helmet");
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_IRON;
-    }
-
-    @Override
-    public boolean isHelmet() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 2;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 166;
+        super(IRON_HELMET, meta, count, "Iron Helmet", DEFINITION);
     }
 }

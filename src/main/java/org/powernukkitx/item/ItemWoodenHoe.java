@@ -1,6 +1,13 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemWoodenHoe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .hoe(true)
+            .maxDurability(ItemTool.DURABILITY_WOODEN)
+            .tier(ItemTool.TIER_WOODEN)
+            .build();
 
     public ItemWoodenHoe() {
         this(0, 1);
@@ -11,21 +18,6 @@ public class ItemWoodenHoe extends ItemTool {
     }
 
     public ItemWoodenHoe(Integer meta, int count) {
-        super(WOODEN_HOE, meta, count, "Wooden Hoe");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_WOODEN;
-    }
-
-    @Override
-    public boolean isHoe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_WOODEN;
+        super(WOODEN_HOE, meta, count, "Wooden Hoe", DEFINITION);
     }
 }

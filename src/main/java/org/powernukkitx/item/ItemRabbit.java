@@ -1,6 +1,13 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemRabbit extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .nutrition(3)
+            .saturation(1.8f)
+            .build();
+
     public ItemRabbit() {
         this(0, 1);
     }
@@ -10,16 +17,6 @@ public class ItemRabbit extends ItemFood {
     }
 
     public ItemRabbit(Integer meta, int count) {
-        super(RABBIT, meta, count, "Raw Rabbit");
-    }
-
-    @Override
-    public int getNutrition() {
-        return 3;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 1.8F;
+        super(RABBIT, meta, count, "Raw Rabbit", DEFINITION);
     }
 }

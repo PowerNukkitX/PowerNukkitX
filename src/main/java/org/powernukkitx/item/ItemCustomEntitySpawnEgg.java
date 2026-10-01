@@ -6,6 +6,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
@@ -25,6 +26,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
+
     private static final String SUFFIX = "_spawn_egg";
     private static final String PLACEHOLDER_ID = "pnx:auto_spawn_egg";
 
@@ -36,7 +41,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     private CompoundTag entityNBT;
 
     public ItemCustomEntitySpawnEgg() {
-        super(PLACEHOLDER_ID, 0, 1);
+        super(PLACEHOLDER_ID, 0, 1, DEFINITION);
         selfHealIdentifierFromNamedTag();
     }
 
@@ -72,11 +77,6 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
         root.putCompound(ROOT_PNX_EXTRA, pnxExtra);
 
         return root;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

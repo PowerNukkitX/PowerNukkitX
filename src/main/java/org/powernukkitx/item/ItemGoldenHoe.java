@@ -1,6 +1,14 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemGoldenHoe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .hoe(true)
+            .maxDurability(ItemTool.DURABILITY_GOLD)
+            .tier(ItemTool.TIER_GOLD)
+            .build();
+
     public ItemGoldenHoe() {
         this(0, 1);
     }
@@ -10,21 +18,6 @@ public class ItemGoldenHoe extends ItemTool {
     }
 
     public ItemGoldenHoe(Integer meta, int count) {
-        super(GOLDEN_HOE, meta, count, "Golden Hoe");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_GOLD;
-    }
-
-    @Override
-    public boolean isHoe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_GOLD;
+        super(GOLDEN_HOE, meta, count, "Golden Hoe", DEFINITION);
     }
 }

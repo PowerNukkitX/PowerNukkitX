@@ -1,11 +1,17 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemMushroomStew extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .maxStackSize(1)
+            .nutrition(6)
+            .saturation(7.2f)
+            .build();
 
     public ItemMushroomStew() {
         this(0, 1);
@@ -16,22 +22,7 @@ public class ItemMushroomStew extends ItemFood {
     }
 
     public ItemMushroomStew(Integer meta, int count) {
-        super(MUSHROOM_STEW, 0, count, "Mushroom Stew");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public int getNutrition() {
-        return 6;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 7.2F;
+        super(MUSHROOM_STEW, 0, count, "Mushroom Stew", DEFINITION);
     }
 
     @Override

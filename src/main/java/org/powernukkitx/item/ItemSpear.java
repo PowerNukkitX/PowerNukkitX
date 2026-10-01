@@ -6,6 +6,7 @@ import org.powernukkitx.entity.EntityLiving;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.player.PlayerSpearStabEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
@@ -21,18 +22,21 @@ import org.jetbrains.annotations.Nullable;
  * @since 16/31/2025
  */
 public abstract class ItemSpear extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .spear(true)
+            .usingTicks(72000)
+            .build();
 
     public float MINIMUM_SPEED = 0.13f;
     public int MINIMUM_LUNGE_FOOD = 6;
     public int BASE_LUNGE_EXHAUST = 4;
 
     public ItemSpear(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        this(id, meta, count, name, DEFINITION);
     }
 
-    @Override
-    public boolean isSpear() {
-        return true;
+    public ItemSpear(String id, Integer meta, int count, String name, ItemDefinition definition) {
+        super(id, meta, count, name, definition);
     }
 
     public void onSpearStab(Player player, float movementSpeed) {
@@ -150,11 +154,6 @@ public abstract class ItemSpear extends ItemTool {
             return false;
         }
         return enchantmentLevel > 0;
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 72000;
     }
 
     @Override

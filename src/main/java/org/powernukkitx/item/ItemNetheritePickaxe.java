@@ -1,6 +1,16 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemNetheritePickaxe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(6)
+            .lavaResistant(true)
+            .maxDurability(ItemTool.DURABILITY_NETHERITE)
+            .pickaxe(true)
+            .tier(ItemTool.TIER_NETHERITE)
+            .build();
+
     public ItemNetheritePickaxe() {
         this(0, 1);
     }
@@ -10,31 +20,6 @@ public class ItemNetheritePickaxe extends ItemTool {
     }
 
     public ItemNetheritePickaxe(Integer meta, int count) {
-        super(NETHERITE_PICKAXE, meta, count, "Netherite Pickaxe");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_NETHERITE;
-    }
-
-    @Override
-    public boolean isPickaxe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_NETHERITE;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 6;
-    }
-
-    @Override
-    public boolean isLavaResistant() {
-        return true;
+        super(NETHERITE_PICKAXE, meta, count, "Netherite Pickaxe", DEFINITION);
     }
 }

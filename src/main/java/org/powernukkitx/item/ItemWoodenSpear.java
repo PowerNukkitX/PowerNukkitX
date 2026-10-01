@@ -1,10 +1,17 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 /**
  * @author Buddelbubi
  * @since 2025/12/15
  */
 public class ItemWoodenSpear extends ItemSpear {
+    public static final ItemDefinition DEFINITION = ItemSpear.DEFINITION.toBuilder()
+            .attackDamage(2)
+            .maxDurability(ItemTool.DURABILITY_WOODEN)
+            .tier(ItemTool.TIER_WOODEN)
+            .build();
 
     public ItemWoodenSpear() {
         this(0, 1);
@@ -15,21 +22,6 @@ public class ItemWoodenSpear extends ItemSpear {
     }
 
     public ItemWoodenSpear(Integer meta, int count) {
-        super(WOODEN_SPEAR, meta, count, "Wooden Spear");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_WOODEN;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 2;
+        super(WOODEN_SPEAR, meta, count, "Wooden Spear", DEFINITION);
     }
 }

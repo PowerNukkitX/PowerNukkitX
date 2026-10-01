@@ -1,12 +1,13 @@
 package org.powernukkitx.item;
 
-public class ItemNetheriteHorseArmor extends Item {
-    public ItemNetheriteHorseArmor() {
-        super(NETHERITE_HORSE_ARMOR);
-    }
+import org.powernukkitx.item.definition.ItemDefinition;
 
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+public class ItemNetheriteHorseArmor extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
+
+    public ItemNetheriteHorseArmor() {
+        super(NETHERITE_HORSE_ARMOR, DEFINITION);
     }
 }

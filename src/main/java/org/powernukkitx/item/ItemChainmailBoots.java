@@ -1,8 +1,17 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemChainmailBoots extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(1)
+            .boots(true)
+            .maxDurability(196)
+            .tier(Item.WEARABLE_TIER_CHAIN)
+            .build();
+
     public ItemChainmailBoots() {
-        super(CHAINMAIL_BOOTS);
+        super(CHAINMAIL_BOOTS, DEFINITION);
     }
 
     public ItemChainmailBoots(Integer meta) {
@@ -10,26 +19,6 @@ public class ItemChainmailBoots extends ItemArmor {
     }
 
     public ItemChainmailBoots(Integer meta, int count) {
-        super(CHAINMAIL_BOOTS, meta, count, "Chainmail Boots");
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_CHAIN;
-    }
-
-    @Override
-    public boolean isBoots() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 1;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 196;
+        super(CHAINMAIL_BOOTS, meta, count, "Chainmail Boots", DEFINITION);
     }
 }
