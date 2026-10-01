@@ -250,6 +250,23 @@ public interface IChunk {
 
     long getChanges();
 
+    /**
+     * A counter that strictly increases with every content change, for consumers that need to
+     * tell whether this chunk still matches something previously derived from it - such as a
+     * cached serialised network payload.
+     * <p>
+     * {@link #getChanges()} cannot serve that purpose: {@link #setChanged(boolean)} resets it to
+     * zero when the chunk is persisted, so an earlier value can recur after later edits and a
+     * stale artifact would look current. This value is never reset, and persisting a chunk does
+     * not advance it.
+     *
+     * @return a strictly increasing change count, or {@code -1} if this implementation does not
+     * track one, in which case callers must treat the chunk as changed every time
+     */
+    default long getContentVersion() {
+        return -1;
+    }
+
     long getSectionBlockChanges(int sectionY);
 
     /**
