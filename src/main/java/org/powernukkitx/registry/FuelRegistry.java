@@ -380,7 +380,7 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
                 throw new RegisterException("This Fuel has already been registered with the key: " + key);
             }
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

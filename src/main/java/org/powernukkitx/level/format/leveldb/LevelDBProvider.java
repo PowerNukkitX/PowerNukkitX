@@ -656,7 +656,7 @@ public class LevelDBProvider implements LevelProvider {
             helper.close();
             storage.writeBatch(batch);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

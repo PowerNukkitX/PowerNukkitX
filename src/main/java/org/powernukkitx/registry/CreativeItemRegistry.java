@@ -202,7 +202,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             CUSTOM_ITEM_IDENTIFIERS.add(item.getItemDefinition().getIdentifier());
             this.register(i + 1, item.clone());
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
