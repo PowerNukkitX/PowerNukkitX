@@ -1709,7 +1709,11 @@ public class Server {
 
         if (ev.isCancelled()) {
             player.close(player.getLeaveMessage(), ev.getKickMessage());
+        }
 
+        // A handler may also kick the player itself without cancelling, so check the connection
+        // rather than the event. Putting a closed player in here would leak it for good.
+        if (!player.isConnected()) {
             this.removeOnlinePlayer(player);
             this.players.remove(socketAddress);
             this.uniquePlayers.remove(player.getUniqueId());

@@ -1196,6 +1196,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.pendingClose = reason;
     }
 
+    private boolean closeIfRequested() {
+        final String closeReason = this.pendingClose;
+        if (closeReason == null) {
+            return false;
+        }
+        this.pendingClose = null;
+        this.close(closeReason);
+        return true;
+    }
+
     /**
      * Offers a new movement task to the player, considering distance and rotation thresholds.
      * Also handles the special case where an erroneous position may be received right after teleportation.
@@ -3061,6 +3071,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param packet packet to send
      */
     public void sendPacket(BedrockPacket packet) {
+        // Deliberately the session's flag and not isConnected(): close() clears the player's own
+        // flag on entry and still sends packets while it tears the player down.
+        if (!this.session.isConnected()) {
+            return;
+        }
         if (!this.callPacketSendEvent(packet)) {
             return;
         }
@@ -3525,6 +3540,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (!this.isAlive() && this.spawned) {
             this.drainInboundPackets();
+            if (this.closeIfRequested()) {
+                return true;
+            }
             if (this.isAlive()) {
                 return true;
             }
@@ -3549,10 +3567,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 return true;
             }
 
-            if (this.pendingClose != null) {
-                final String closeReason = this.pendingClose;
-                this.pendingClose = null;
-                this.close(closeReason);
+            if (this.closeIfRequested()) {
                 return true;
             }
 
