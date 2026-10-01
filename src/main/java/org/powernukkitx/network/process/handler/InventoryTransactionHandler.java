@@ -66,12 +66,16 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
     public void handle(InventoryTransactionPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        final var transaction = packet.getTransaction();
+        if (transaction == null || !player.spawned) {
             return;
         }
 
-        final var transaction = packet.getTransaction();
-        if (transaction == null) {
+        if (!player.isAlive()) {
+            // The client may have placed a block before it learned it died, so undo its prediction
+            if (transaction instanceof ItemUseInventoryTransaction itemUse && itemUse.getActionType() == ItemUseActionType.PLACE) {
+                resyncPlace(player, itemUse);
+            }
             return;
         }
 
@@ -294,6 +298,18 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
         }
     }
 
+    private void resyncPlace(@NotNull Player player, @NotNull ItemUseInventoryTransaction transaction) {
+        player.getInventory().sendSlot(transaction.getSlot(), player);
+        BlockVector3 blockVector = BlockVector3.fromNetwork(transaction.getPosition());
+        if (blockVector.distanceSquared(player) > 10000) {
+            return;
+        }
+        Block target = player.level.getBlock(blockVector.asVector3());
+        Block block = target.getSide(BlockFace.fromIndex(transaction.getFace()));
+        player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC));
+        player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC), 1);
+    }
+
     private void handleUseItem(@NotNull PlayerHandle playerHandle, @NotNull ItemUseInventoryTransaction transaction) {
         Player player = playerHandle.player;
         BlockVector3 blockVector = BlockVector3.fromNetwork(transaction.getPosition());
@@ -329,14 +345,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                         }
                     }
                 }
-                player.getInventory().sendSlot(transaction.getSlot(), player);
-                if (blockVector.distanceSquared(player) > 10000) {
-                    return;
-                }
-                Block target = player.level.getBlock(blockVector.asVector3());
-                Block block = target.getSide(face);
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC));
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC), 1);
+                resyncPlace(player, transaction);
             }
             case USE -> {
                 Item item;
