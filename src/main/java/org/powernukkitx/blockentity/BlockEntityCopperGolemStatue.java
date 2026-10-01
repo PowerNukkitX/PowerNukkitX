@@ -9,7 +9,6 @@ import org.powernukkitx.nbt.tag.CompoundTag;
  * @see <a href="https://github.com/GeyserMC/Geyser/blob/master/core/src/main/java/org/geysermc/geyser/translator/level/block/entity/CopperBlockEntityTranslator.java#L35">NBT Info</a>
  */
 public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
-
     public BlockEntityCopperGolemStatue(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -29,9 +28,7 @@ public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
-                .putBoolean("isMovable", false)
-                .putInt("Pose", this.getNbt().getInt("Pose"));
+        return super.getSpawnCompound().putInt("Pose", this.getNbt().getInt("Pose"));
     }
 
     public void setPose(CopperPose pose) {

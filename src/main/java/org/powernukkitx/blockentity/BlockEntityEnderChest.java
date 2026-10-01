@@ -8,7 +8,6 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
 
     public BlockEntityEnderChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
 
     @Override
@@ -19,7 +18,6 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag spawnCompound = super.getSpawnCompound();
-        spawnCompound.putBoolean("isMovable", this.isMovable());
         if (this.hasName()) {
             spawnCompound.put("CustomName", this.nbt.get("CustomName"));
         }

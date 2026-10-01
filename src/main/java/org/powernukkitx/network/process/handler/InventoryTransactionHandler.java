@@ -206,7 +206,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             if (target instanceof Player && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_PLAYERS)
                     || !(target instanceof Player) && !player.getAdventureSettings().get(AdventureSettings.Type.ATTACK_MOBS))
                 return;
-            if (target.getId() == player.getId()) {
+            if (target.runtimeId() == player.runtimeId()) {
                 PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.INVALID_PVP);
                 player.getServer().getPluginManager().callEvent(event);
 
@@ -235,11 +235,8 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
             float knockBack = 0.3f;
-            if (item.applyEnchantments()) {
-                Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                if (knockBackEnchantment != null) {
-                    knockBack += knockBackEnchantment.getLevel() * 0.1f;
-                }
+            if (player.isSprinting()) {
+                knockBack += 0.09f;
             }
             EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
             entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
@@ -266,6 +263,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 if (target instanceof EntityLiving living) {
                     living.postAttack(player);
                 }
+            }
+            if (target instanceof EntityLiving && (player.isSurvival() || player.isAdventure())) {
+                player.getFoodData().exhaust(0.1);
             }
             if (item instanceof ItemMace mace) {
                 mace.onPostAttack(target, itemDamage);

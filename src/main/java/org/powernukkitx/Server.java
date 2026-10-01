@@ -1,7 +1,6 @@
 package org.powernukkitx;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.sun.management.OperatingSystemMXBean;
 import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -27,6 +26,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.powernukkitx.block.BlockComposter;
 import org.powernukkitx.block.BlockLightProperties;
 import org.powernukkitx.block.dispenser.DispenseBehaviorRegister;
@@ -39,6 +39,7 @@ import org.powernukkitx.command.SimpleCommandMap;
 import org.powernukkitx.command.defaults.WorldCommand;
 import org.powernukkitx.command.function.FunctionManager;
 import org.powernukkitx.config.ServerSettings;
+import org.powernukkitx.config.category.NetworkSettings;
 import org.powernukkitx.config.YamlSnakeYamlConfigurer;
 import org.powernukkitx.config.updater.ConfigUpdater;
 import org.powernukkitx.console.NukkitConsole;
@@ -104,6 +105,7 @@ import org.powernukkitx.plugin.service.NKServiceManager;
 import org.powernukkitx.plugin.service.ServiceManager;
 import org.powernukkitx.network.positiontracking.PositionTrackingService;
 import org.powernukkitx.recipe.Recipe;
+import org.powernukkitx.registry.CreativeGroupsRegistry;
 import org.powernukkitx.registry.RecipeRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.registry.RegistryCache;
@@ -248,6 +250,7 @@ public class Server {
     private final Set<UUID> uniquePlayers = new HashSet<>();
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
+    private final Map<UUID, Player> onlinePlayersView = Collections.unmodifiableMap(playerList);
     private QueryRegenerateEvent queryRegenerateEvent;
     private PositionTrackingService positionTrackingService;
 
@@ -432,7 +435,15 @@ public class Server {
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
 
-        this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
+        // NetherNet carries the session inside DTLS and a real client answers ServerToClientHandshake
+        // in plaintext, so Bedrock packet encryption has no place on top of it.
+        final boolean netherNet = this.settings.networkSettings().resolvedTransport()
+            == NetworkSettings.TransportType.NETHERNET;
+        if (netherNet && this.settings.networkSettings().networkEncryption()) {
+            log.warn("network-settings.networkEncryption is ignored on the NetherNet transport, "
+                + "which is already encrypted");
+        }
+        this.enabledNetworkEncryption = !netherNet && this.settings.networkSettings().networkEncryption();
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
@@ -672,6 +683,8 @@ public class Server {
 
         if (settings.gameplaySettings().enableEducation()) Education.registerCreative();
 
+        CreativeGroupsRegistry.register();
+
         if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
         }
@@ -857,6 +870,7 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+        CreativeGroupsRegistry.register();
         this.network.setState(NetworkState.STARTED);
     }
 
@@ -2360,12 +2374,15 @@ public class Server {
     }
 
     /**
-     * Get all online players Map.
+     * Returns a live, unmodifiable view of the online players keyed by UUID - not a snapshot, so joins and quits are
+     * reflected immediately. Iteration is weakly consistent and never throws {@link ConcurrentModificationException},
+     * so it is safe from any thread; copy it if you need a stable set.
      *
-     * @return a map of players uuid and a player instance object
+     * @return an unmodifiable view of the online players
      */
+    @UnmodifiableView
     public Map<UUID, Player> getOnlinePlayers() {
-        return ImmutableMap.copyOf(playerList);
+        return this.onlinePlayersView;
     }
 
     /**

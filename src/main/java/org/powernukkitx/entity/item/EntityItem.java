@@ -203,7 +203,7 @@ public class EntityItem extends Entity {
                         entity.close();
                         this.getItem().setCount(newAmount);
                         final ActorEventPacket packet = new ActorEventPacket();
-                        packet.setTargetRuntimeID(this.getId());
+                        packet.setTargetRuntimeID(this.runtimeId());
                         packet.setType(ActorEvent.UPDATE_STACK_SIZE);
                         packet.setData(newAmount);
                         Server.broadcastPacket(this.getViewers().values(), packet);
@@ -406,7 +406,7 @@ public class EntityItem extends Entity {
         final AddItemActorPacket addItemActorPacket = new AddItemActorPacket();
         addItemActorPacket.setEntityData(this.actorDataMap);
         addItemActorPacket.setTargetActorID(this.getId());
-        addItemActorPacket.setTargetRuntimeID(this.getId());
+        addItemActorPacket.setTargetRuntimeID(this.runtimeId());
         addItemActorPacket.setItem(this.getItem().toNetwork());
         addItemActorPacket.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         addItemActorPacket.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));

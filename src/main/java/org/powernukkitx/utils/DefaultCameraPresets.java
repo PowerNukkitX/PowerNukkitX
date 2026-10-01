@@ -20,12 +20,14 @@ public final class DefaultCameraPresets {
 
     public static final CameraPreset FIRST_PERSON = CameraPreset.builder()
             .name("minecraft:first_person")
+            .applyInheritedStartingRotation(false)
             .build();
 
     public static final CameraPreset FIXED_BOOM = CameraPreset.builder()
             .name("minecraft:fixed_boom")
             .viewOffset(Vector2f.ZERO)
             .entityOffset(Vector3f.from(-0.0f, 0.0f, 0.0f))
+            .applyInheritedStartingRotation(false)
             .build();
 
     public static final CameraPreset FOLLOW_ORBIT = CameraPreset.builder()
@@ -33,6 +35,7 @@ public final class DefaultCameraPresets {
             .viewOffset(Vector2f.ZERO)
             .entityOffset(Vector3f.from(-0.0f, 0.0f, 0.0f))
             .radius(10.0f)
+            .applyInheritedStartingRotation(false)
             .build();
 
     public static final CameraPreset FREE = CameraPreset.builder()
@@ -40,14 +43,17 @@ public final class DefaultCameraPresets {
             .pos(Vector3f.ZERO)
             .pitch(0f)
             .yaw(0f)
+            .applyInheritedStartingRotation(false)
             .build();
 
     public static final CameraPreset THIRD_PERSON = CameraPreset.builder()
             .name("minecraft:third_person")
+            .applyInheritedStartingRotation(false)
             .build();
 
     public static final CameraPreset THIRD_PERSON_FRONT = CameraPreset.builder()
             .name("minecraft:third_person_front")
+            .applyInheritedStartingRotation(false)
             .build();
 
     static {
