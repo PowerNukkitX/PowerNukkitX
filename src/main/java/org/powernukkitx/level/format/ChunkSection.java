@@ -139,6 +139,19 @@ public record ChunkSection(byte y,
         return blockLayer[0].isEmpty();
     }
 
+    /**
+     * Whether the section was read from storage holding block entries older than the current block
+     * state version, whose derived states were defaulted rather than stored.
+     */
+    public boolean hasLegacyStates() {
+        for (BlockPalette palette : blockLayer) {
+            if (palette != null && palette.hasLegacyStates()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setNeedReObfuscate() {
         blockLayer[0].setNeedReObfuscate();
         blockLayer[1].setNeedReObfuscate();

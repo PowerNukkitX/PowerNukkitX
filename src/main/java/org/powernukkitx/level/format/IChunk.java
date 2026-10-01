@@ -63,6 +63,21 @@ public interface IChunk {
 
     ChunkSection[] getSections();
 
+    /**
+     * Whether the chunk was read from storage holding block entries older than the current block
+     * state version. States a block derives from its surroundings were defaulted by the updater and
+     * have to be recomputed once every neighbouring chunk is loaded.
+     */
+    default boolean hasLegacyStates() {
+        return false;
+    }
+
+    /**
+     * Clears the flag returned by {@link #hasLegacyStates()}.
+     */
+    default void markStatesUpgraded() {
+    }
+
     int getX();
 
     void setX(int x);
