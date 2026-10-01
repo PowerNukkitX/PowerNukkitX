@@ -27,7 +27,7 @@ public class ActorEventHandler implements PacketHandler<ActorEventPacket> {
         }
 
         if (packet.getType().equals(ActorEvent.FEED) || packet.getType().equals(ActorEvent.DRINK_MILK)) {
-            if (packet.getTargetRuntimeID() != player.getId()) {
+            if (packet.getTargetRuntimeID() != player.runtimeId()) {
                 return;
             }
 
@@ -45,7 +45,7 @@ public class ActorEventHandler implements PacketHandler<ActorEventPacket> {
                 return;
             }
 
-            packet.setTargetRuntimeID(player.getId());
+            packet.setTargetRuntimeID(player.runtimeId());
             if (packet.getType().equals(ActorEvent.FEED)) {
                 packet.setData(predictedData);
             }

@@ -527,6 +527,16 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    public float getRainLevel() {
+        return this.levelDat.getRainLevel();
+    }
+
+    @Override
+    public void setRainLevel(float rainLevel) {
+        this.levelDat.setRainLevel(rainLevel);
+    }
+
+    @Override
     public int getRainTime() {
         return this.levelDat.getRainTime();
     }
@@ -544,6 +554,16 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void setThundering(boolean thundering) {
         this.levelDat.setThundering(thundering);
+    }
+
+    @Override
+    public float getLightningLevel() {
+        return this.levelDat.getLightningLevel();
+    }
+
+    @Override
+    public void setLightningLevel(float lightningLevel) {
+        this.levelDat.setLightningLevel(lightningLevel);
     }
 
     @Override
@@ -992,6 +1012,10 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("editorWorldType", worldData.getEditorWorldType());
         levelDat.putInt("eduOffer", worldData.getEduOffer());
         levelDat.putBoolean("educationFeaturesEnabled", worldData.isEducationFeaturesEnabled());
+        levelDat.putFloat("lightningLevel", worldData.getLightningLevel());
+        levelDat.putInt("lightningTime", worldData.getLightningTime());
+        levelDat.putFloat("rainLevel", worldData.getRainLevel());
+        levelDat.putInt("rainTime", worldData.getRainTime());
 
         levelDat.put("commandBlockOutput", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCK_OUTPUT).getTag());
         levelDat.put("commandBlocksEnabled", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCKS_ENABLED).getTag());
@@ -1025,8 +1049,10 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.put("sendCommandFeedback", worldData.getGameRules().getGameRules().get(GameRule.SEND_COMMAND_FEEDBACK).getTag());
         levelDat.put("showBorderEffect", worldData.getGameRules().getGameRules().get(GameRule.SHOW_BORDER_EFFECT).getTag());
         levelDat.put("showCoordinates", worldData.getGameRules().getGameRules().get(GameRule.SHOW_COORDINATES).getTag());
+        levelDat.put("playerWaypoints", worldData.getGameRules().getGameRules().get(GameRule.PLAYER_WAYPOINTS).getTag());
         levelDat.put("showDaysPlayed", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DAYS_PLAYED).getTag());
         levelDat.put("showDeathMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DEATH_MESSAGES).getTag());
+        levelDat.put("showRecipeMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_RECIPE_MESSAGES).getTag());
         levelDat.put("showTags", worldData.getGameRules().getGameRules().get(GameRule.SHOW_TAGS).getTag());
         levelDat.put("spawnRadius", worldData.getGameRules().getGameRules().get(GameRule.SPAWN_RADIUS).getTag());
         levelDat.put("tntExplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());

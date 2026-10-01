@@ -5,7 +5,7 @@ import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.property.enums.StructureBlockType;
 import org.powernukkitx.blockentity.BlockEntity;
-import org.powernukkitx.blockentity.BlockEntityStructBlock;
+import org.powernukkitx.blockentity.BlockEntityStructureBlock;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -29,7 +29,7 @@ public class StructureBlockUpdateHandler implements PacketHandler<StructureBlock
                             packet.getBlockPosition().getZ()
                     )
             );
-            if (blockEntity instanceof BlockEntityStructBlock structBlock) {
+            if (blockEntity instanceof BlockEntityStructureBlock structBlock) {
                 Block sBlock = structBlock.getLevelBlock();
                 sBlock.setPropertyValue(STRUCTURE_BLOCK_TYPE, StructureBlockType.valueOf(packet.getStructureData().getStructureBlockType().name()));
                 structBlock.updateSetting(packet);

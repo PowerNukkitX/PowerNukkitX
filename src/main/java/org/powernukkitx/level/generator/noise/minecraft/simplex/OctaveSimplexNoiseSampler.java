@@ -78,7 +78,7 @@ public class OctaveSimplexNoiseSampler implements NoiseSampler {
 
     public double sample(double x, double y, boolean useRandomOffset) {
         double noise = 0.0D;
-        // contribution of each octaves to the final noise, diminished by a factor of 2 (or increased by factor of 0.5)
+        // contribution of each octave to the final noise, diminished by a factor of 2 (or increased by factor of 0.5)
         double persistence = this.persistence;
         double lacunarity = this.lacunarity;
         for(SimplexNoiseSampler sampler : this.octaveSamplers) {

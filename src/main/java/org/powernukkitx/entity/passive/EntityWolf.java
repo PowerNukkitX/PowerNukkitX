@@ -126,17 +126,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.425f;
-        }
         return 0.8f;
     }
 

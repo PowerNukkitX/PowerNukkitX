@@ -31,6 +31,7 @@ public class ShapedRecipe extends CraftingRecipe {
     private final int row;
     private final int col;
     private final boolean mirror;
+    private boolean assumeSymmetry;
 
     public ShapedRecipe(Item primaryResult, int netId, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
         this(null, netId, 1, primaryResult, shape, ingredients, extraResults);
@@ -70,6 +71,7 @@ public class ShapedRecipe extends CraftingRecipe {
         super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, data.getNetId(), data.getPriority(), recipeUnlockingRequirement);
         this.uuid = data.getUuid();
         this.mirror = mirror;
+        this.assumeSymmetry = mirror;
 
         this.row = shape.length;
         Preconditions.checkArgument(this.row <= 3 && 1 <= this.row, "Shaped recipes may only have 1, 2 or 3 rows, not " + this.row);
@@ -304,6 +306,15 @@ public class ShapedRecipe extends CraftingRecipe {
         return mirror;
     }
 
+    public boolean isAssumeSymmetry() {
+        return assumeSymmetry;
+    }
+
+    public ShapedRecipe setAssumeSymmetry(boolean assumeSymmetry) {
+        this.assumeSymmetry = assumeSymmetry;
+        return this;
+    }
+
     @Override
     public RecipeType getType() {
         return RecipeType.SHAPED;
@@ -325,7 +336,7 @@ public class ShapedRecipe extends CraftingRecipe {
         payload.setUuid(this.getUUID());
         payload.setTag(this.getCraftingTag());
         payload.setPriority(this.getPriority());
-        payload.setAssumeSymmetry(this.isMirror());
+        payload.setAssumeSymmetry(this.isAssumeSymmetry());
         payload.setUnlockingRequirement(this.getRequirement());
         payload.setNetId(new RecipeNetId(this.getNetId()));
         return payload;

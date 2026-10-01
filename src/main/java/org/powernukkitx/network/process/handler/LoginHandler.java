@@ -1,8 +1,11 @@
 package org.powernukkitx.network.process.handler;
 
+import io.netty.channel.Channel;
 import io.netty.channel.EventLoop;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.netty.util.nethernet.TransportIdentityBinding;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
@@ -29,7 +32,9 @@ import org.powernukkitx.network.process.auth.ClientSkinData;
 import org.powernukkitx.utils.SkinUtils;
 
 import javax.crypto.SecretKey;
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -37,10 +42,9 @@ import java.util.function.Consumer;
 /**
  * Handles the client's {@code LoginPacket}.
  * <p>
- * Validating a login costs several milliseconds of cryptography: the identity chain, the client
- * JWT, and the encryption key exchange. RakNet pins a session to one Netty event loop that also
- * serves every other session on that loop, so doing this inline stalls unrelated players whenever
- * a batch of logins arrives.
+ * Validating a login costs several milliseconds of cryptography: the identity chain and the client
+ * JWT. A session is pinned to one Netty event loop that also serves every other session on that
+ * loop, so doing this inline stalls unrelated players whenever a batch of logins arrives.
  * <p>
  * The work therefore runs on the compute pool in two steps, with the checks that read server
  * state - the pre-login event, player count, whitelist and bans - on the event loop between them.
@@ -61,10 +65,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final int clientNetworkVersion = packet.getClientNetworkVersion();
-        final int serverNetworkVersion = NetworkConstants.CODEC.getProtocolVersion();
 
-        if (clientNetworkVersion != serverNetworkVersion) {
-            final boolean serverOutdated = clientNetworkVersion > serverNetworkVersion;
+        if (clientNetworkVersion != NetworkConstants.CODEC.getProtocolVersion()) {
+            final boolean serverOutdated = clientNetworkVersion > NetworkConstants.CODEC.getProtocolVersion();
             holder.sendPlayStatus(
                 serverOutdated ?
                     PlayStatus.LOGIN_FAILED_SERVER_OLD : PlayStatus.LOGIN_FAILED_CLIENT_OLD
@@ -79,27 +82,35 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             return;
         }
 
-        final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
-        if (xboxAuthRequired && (packet.getToken() == null || packet.getToken().isEmpty())) {
+        final boolean hasToken = packet.getToken() != null && !packet.getToken().isEmpty();
+        final List<String> chain = packet.getChain() != null ? List.copyOf(packet.getChain()) : List.of();
+        if (!hasToken && chain.isEmpty()) {
             failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
             return;
         }
 
-        final Credentials credentials = new Credentials(type, packet.getToken(), packet.getClientJwt());
+        final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
+        final Credentials credentials = new Credentials(type, packet.getToken(), chain, packet.getClientJwt());
 
         holder.setState(SessionState.AUTHENTICATING);
 
         offLoop(holder, server,
             () -> validateChain(credentials, server, xboxAuthRequired),
-            chain -> applyChain(chain, credentials, holder, server));
+            outcome -> applyChain(outcome, credentials, holder, server));
     }
 
     /**
      * Verifies the identity chain. First off-loop step, and the only one a login must pass before
      * the server decides whether it wants the player at all.
+     * <p>
+     * A client that is signed in sends a Mojang-issued token, while one that is not sends a
+     * self-signed certificate chain instead, so both forms have to be accepted here. Whether the
+     * identity ended up signed is what the xbox-auth check below reads.
      */
     private ChainOutcome validateChain(Credentials credentials, Server server, boolean xboxAuthRequired) throws Exception {
-        final ChainValidationResult result = EncryptionUtils.validateToken(credentials.authenticationType(), credentials.token());
+        final ChainValidationResult result = credentials.token() == null || credentials.token().isEmpty()
+            ? EncryptionUtils.validateChain(credentials.chain())
+            : EncryptionUtils.validateToken(credentials.authenticationType(), credentials.token());
         final boolean unsignedAllowed = server.getProxyAuthProvider() != null
             && server.getProxyAuthProvider().isUnsignedLoginAllowed();
         if (xboxAuthRequired && !result.signed() && !unsignedAllowed) {
@@ -119,6 +130,13 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
         final ChainValidationResult.IdentityClaims identityClaims = Objects.requireNonNull(
             chain.identityClaims(), "a chain outcome without a failure always carries identity claims");
+
+        final String refusal = transportIdentityRefusal(identityClaims, holder, server);
+        if (refusal != null) {
+            log.debug("Refusing a login from {}: {}", holder.getSession().getSocketAddress(), refusal);
+            failLogin(holder, server, DisconnectFailReason.NOT_AUTHENTICATED, null);
+            return;
+        }
 
         final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
         server.getPluginManager().callEvent(event);
@@ -148,6 +166,40 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         offLoop(holder, server,
             () -> validateClient(credentials, server, identityClaims),
             client -> completeLogin(client, identityClaims, chain.signed(), holder, server));
+    }
+
+    /**
+     * Ties the login chain to the identity that opened the transport.
+     * <p>
+     * On RakNet the encryption handshake did this by itself: the session key came out of an ECDH
+     * against the chain's identity key, so only its holder could read what followed. NetherNet runs
+     * inside DTLS and skips that handshake, which leaves the chain unbound, and an unbound chain is
+     * replayable: anyone who captured one elsewhere could present it over a transport of their own.
+     * The signalling assertion is what binds it, because the peer proved it holds the key the
+     * assertion names before the transport was accepted.
+     * <p>
+     * The binding is spent either way, so an admission never outlives the session it admitted.
+     *
+     * @return why the login must be refused, or null when the two agree
+     */
+    private @Nullable String transportIdentityRefusal(ChainValidationResult.IdentityClaims identityClaims,
+                                                      PlayerSessionHolder holder, Server server) {
+        final Channel channel = holder.getSession().getPeer().getChannel();
+        final var authProvider = server.getProxyAuthProvider();
+        final boolean strict = server.getSettings().baseSettings().xboxAuth()
+            && (authProvider == null || !authProvider.isUnsignedLoginAllowed());
+
+        if (!strict) {
+            // Offline mode has already given up on proving who this is, so there is no key worth
+            // comparing against.
+            return TransportIdentityBinding.acceptForwardedIdentity(channel);
+        }
+
+        try {
+            return TransportIdentityBinding.mismatch(channel, identityClaims.parsedIdentityPublicKey());
+        } catch (GeneralSecurityException e) {
+            return "the login chain carries no usable identity key";
+        }
     }
 
     /**
@@ -194,8 +246,6 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, DisconnectFailReason.EDITION_MISMATCH_EDU_TO_VANILLA, null);
             return;
         }
-
-        holder.getSession().setCodec(NetworkConstants.codecForGameVersion(clientChainData.getGameVersion()));
 
         holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
 
@@ -316,7 +366,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
      * The parts of the login packet the off-loop steps need, copied out on the network thread so
      * that nothing reads the packet once the pipeline has moved on from it.
      */
-    private record Credentials(PlayerAuthenticationType authenticationType, String token, String clientJwt) {
+    private record Credentials(PlayerAuthenticationType authenticationType, String token, List<String> chain,
+                               String clientJwt) {
     }
 
     /**

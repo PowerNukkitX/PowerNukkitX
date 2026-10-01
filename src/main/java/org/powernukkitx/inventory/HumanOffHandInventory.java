@@ -89,7 +89,7 @@ public class HumanOffHandInventory extends BaseInventory {
     private MobEquipmentPacket createMobEquipmentPacket(Item item) {
         final int slot = 1;
         final MobEquipmentPacket packet = new MobEquipmentPacket();
-        packet.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        packet.setTargetRuntimeID(this.getHolder().getEntity().runtimeId());
         packet.setItem(item.toNetwork());
         packet.setSlot(slot);
         packet.setSelectedSlot(slot);

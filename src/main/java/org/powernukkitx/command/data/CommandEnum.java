@@ -1,5 +1,6 @@
 package org.powernukkitx.command.data;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.registry.Registries;
@@ -7,6 +8,7 @@ import org.powernukkitx.utils.DefaultCameraPresets;
 import org.powernukkitx.utils.Identifier;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraPreset;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumConstraint;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumData;
@@ -82,6 +84,17 @@ public class CommandEnum {
     public static final CommandEnum ENUM_ITEM = new CommandEnum("Item", Collections.emptyList());
 
     public static final CommandEnum ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
+
+    /**
+     * Every summonable entity identifier, resolved lazily so entities registered by plugins after startup are included.
+     */
+    public static final CommandEnum ENUM_SUMMONABLE_ENTITY = new CommandEnum("EntityType", () -> Registries.ENTITY.getKnownEntities().keySet().stream()
+            .filter(id -> {
+                var definition = Registries.ENTITY.getEntityDefinition(id);
+                return definition != null && definition.isSummonable();
+            })
+            .map(id -> id.startsWith(Identifier.DEFAULT_NAMESPACE) ? id.substring(10) : id)
+            .toList());
 
     /**
      * The name of the enum, used for display and identification.
@@ -193,9 +206,9 @@ public class CommandEnum {
     public void updateSoftEnum(SoftEnumUpdateType mode, String... value) {
         if (!this.soft) return;
         final UpdateSoftEnumPacket packet = new UpdateSoftEnumPacket();
-        packet.setSoftEnum(this.toNetwork());
+        packet.setSoftEnum(value.length == 0 ? this.toNetwork() : this.toNetwork(Arrays.asList(value)));
         packet.setUpdateType(mode);
-        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), packet);
+        Server.broadcastPacket(this.recipients(), packet);
     }
 
     /**
@@ -208,7 +221,17 @@ public class CommandEnum {
         final UpdateSoftEnumPacket packet = new UpdateSoftEnumPacket();
         packet.setSoftEnum(this.toNetwork());
         packet.setUpdateType(SoftEnumUpdateType.REPLACE);
-        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), packet);
+        Server.broadcastPacket(this.recipients(), packet);
+    }
+
+    private Collection<Player> recipients() {
+        final List<Player> recipients = new ObjectArrayList<>();
+        for (Player player : Server.getInstance().getOnlinePlayers().values()) {
+            if (player.knowsSoftEnum(this.name)) {
+                recipients.add(player);
+            }
+        }
+        return recipients;
     }
 
     /**
@@ -222,13 +245,17 @@ public class CommandEnum {
     }
 
     public CommandEnumData toNetwork() {
-        final Map<String, Set<CommandEnumConstraint>> values = new Object2ObjectOpenHashMap<>();
-        for (String value : this.getValues()) {
-            values.put(value, Collections.emptySet());
+        return this.toNetwork(this.getValues());
+    }
+
+    public CommandEnumData toNetwork(Collection<String> values) {
+        final Map<String, Set<CommandEnumConstraint>> networkValues = new Object2ObjectOpenHashMap<>();
+        for (String value : values) {
+            networkValues.put(value, Collections.emptySet());
         }
         return new CommandEnumData(
                 this.name,
-                values,
+                networkValues,
                 this.soft
         );
     }

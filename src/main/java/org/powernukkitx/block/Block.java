@@ -14,6 +14,8 @@ import org.powernukkitx.event.player.PlayerInteractEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.MovingObjectPosition;
@@ -577,35 +579,45 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return whether the block can be pushed by a piston
      */
     public boolean canBePushed() {
-        return true;
+        return CustomBlockComponentBehavior.canBePushed(
+                this
+        );
     }
 
     /**
      * @return whether the block can be pulled by a piston
      */
     public boolean canBePulled() {
-        return true;
+        return CustomBlockComponentBehavior.canBePulled(
+                this
+        );
     }
 
     /**
      * @return whether the block is destroyed when moved by a piston
      */
     public boolean breaksWhenMoved() {
-        return false;
+        return CustomBlockComponentBehavior.breaksWhenMoved(
+                this
+        );
     }
 
     /**
-     * @return whether the block can stick to a sticky piston
+     * @return whether the block can stick to a sticky piston or sticky moving block
      */
     public boolean sticksToPiston() {
-        return true;
+        return this.canBePushed() &&
+                this.canBePulled() &&
+                CustomBlockComponentBehavior.sticksToPiston(this);
     }
 
     /**
-     * @return whether the block can stick other blocks when moved by a piston. e.g. slime block, honey block
+     * @return whether the block can move adjacent blocks with it, e.g. slime block, honey block
      */
     public boolean canSticksBlock() {
-        return false;
+        return CustomBlockComponentBehavior.canSticksBlock(
+                this
+        );
     }
 
     public boolean hasComparatorInputOverride() {
@@ -1564,6 +1576,28 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public boolean isFertilizable() {
         return false;
+    }
+
+    /**
+     * Check if this block type holds a block entity that provides an inventory, like a chest or a furnace.
+     * This only looks at the block type, use {@link #getContainer()} to access the actual inventory.
+     */
+    public boolean hasContainer() {
+        return this instanceof BlockEntityHolder<?> holder
+                && InventoryHolder.class.isAssignableFrom(holder.getBlockEntityClass());
+    }
+
+    /**
+     * Get the inventory of the block entity placed at this position.
+     *
+     * @return The inventory, or null if this block has no container or the block entity is missing
+     */
+    @Nullable
+    public Inventory getContainer() {
+        if (!hasContainer() || !isValid()) {
+            return null;
+        }
+        return ((BlockEntityHolder<?>) this).getBlockEntity() instanceof InventoryHolder holder ? holder.getInventory() : null;
     }
 
     /**

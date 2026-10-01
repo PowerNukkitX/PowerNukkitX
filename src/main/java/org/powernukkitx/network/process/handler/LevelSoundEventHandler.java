@@ -48,7 +48,7 @@ public class LevelSoundEventHandler implements PacketHandler<LevelSoundEventPack
         pk.setActorIdentifier(identifier);
         pk.setBaby(packet.isBaby());
         pk.setGlobal(false);
-        pk.setActorUniqueId(player.getId());
+        pk.setActorUniqueId(player.runtimeId());
 
         player.level.addChunkPacket(player.getChunkX(), player.getChunkZ(), pk);
     }

@@ -211,13 +211,11 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     public Item[] getDrops(@NotNull Item weapon) {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 2) != 0) {
-            int amount = Utils.rand(0, 2 + looting);
-            if (amount > 0) {
-                return new Item[]{
-                        Item.get(Item.BONE, 0, amount)
-                };
-            }
+        int amount = Utils.rand(0, 2 + looting);
+        if (amount > 0) {
+            return new Item[]{
+                    Item.get(Item.BONE, 0, amount)
+            };
         }
 
         return Item.EMPTY_ARRAY;

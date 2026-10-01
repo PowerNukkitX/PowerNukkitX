@@ -16,26 +16,36 @@ public class ContainerCloseHandler implements PacketHandler<ContainerClosePacket
     @Override
     public void handle(ContainerClosePacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
-        if (!player.spawned || packet.getContainerID() == ContainerId.INVENTORY && !player.isInventoryOpen()) {
+
+        if (!player.spawned) {
             this.sendClose(player, packet);
             player.setClosingWindowId(Integer.MIN_VALUE);
             return;
         }
 
-
-        if (player.getWindowIndex().containsKey(packet.getContainerID())) {
-            if (packet.getContainerID() == ContainerId.INVENTORY) {
+        if (packet.getContainerID() == player.getInventoryWindowId()) {
+            if (player.isInventoryOpen()) {
                 player.setClosingWindowId(packet.getContainerID());
                 player.getInventory().close(player);
+                player.resetInventory();
                 player.setInventoryOpen(false);
             } else {
-                player.removeWindow(player.getWindowIndex().get(packet.getContainerID()));
+                this.sendClose(player, packet);
             }
+
+            player.setInventoryWindowId(Integer.MIN_VALUE);
+            player.setClosingWindowId(Integer.MIN_VALUE);
+            return;
+        }
+
+        if (player.getWindowIndex().containsKey(packet.getContainerID())) {
+            player.removeWindow(player.getWindowIndex().get(packet.getContainerID()));
         }
 
         if (packet.getContainerID() == -1) {
             player.addWindow(player.getCraftingGrid(), (byte) ContainerId.NONE);
         }
+
         sendClose(player, packet);
         player.setClosingWindowId(Integer.MIN_VALUE);
     }

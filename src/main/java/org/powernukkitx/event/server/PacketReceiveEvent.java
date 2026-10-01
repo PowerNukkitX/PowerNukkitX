@@ -4,9 +4,12 @@ import org.powernukkitx.Player;
 import org.powernukkitx.event.Cancellable;
 import org.powernukkitx.event.HandlerList;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Called for every packet that is sent by the client once the player has been created at the end of the resource pack sequence.
+ * Called for every packet that is sent by the client, including the packets exchanged during the login and
+ * resource pack sequence. The player is only available once it has been created at the end of that sequence,
+ * so {@link #getPlayer()} returns null for the earlier packets.
  */
 public class PacketReceiveEvent extends ServerEvent implements Cancellable {
 
@@ -19,7 +22,7 @@ public class PacketReceiveEvent extends ServerEvent implements Cancellable {
     private final BedrockPacket packet;
     private final Player player;
 
-    public PacketReceiveEvent(Player player, BedrockPacket packet) {
+    public PacketReceiveEvent(@Nullable Player player, BedrockPacket packet) {
         this.packet = packet;
         this.player = player;
     }
@@ -28,6 +31,10 @@ public class PacketReceiveEvent extends ServerEvent implements Cancellable {
         return packet;
     }
 
+    /**
+     * @return the player the packet was received from, or null when it has not been created yet
+     */
+    @Nullable
     public Player getPlayer() {
         return player;
     }

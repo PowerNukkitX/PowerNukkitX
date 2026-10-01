@@ -91,6 +91,8 @@ public abstract class Item implements Cloneable, ItemID {
     protected Integer netId = null;
     protected Block block = null;
     protected boolean hasMeta = true;
+    private boolean recipeBlockDefinitionOverridden = false;
+    private Integer recipeBlockRuntimeId = null;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
     private CompoundTag cachedNBT;
     private static int STACK_NETWORK_ID_COUNTER = 1;
@@ -466,7 +468,22 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
-    public void addEnchantment(Enchantment... enchantments) {
+    /**
+     * Adds enchantments to this item's NBT.
+     * <p>
+     * An enchantment whose {@link Enchantment#getIdentifier()} is {@code null} is written to the
+     * vanilla {@code ench} list, otherwise to the {@code custom_ench} list. In both lists an entry
+     * with the same id is overwritten, so re-adding an enchantment replaces its level instead of
+     * stacking a second entry. If the item ends up holding any custom enchantment, its
+     * {@code display.Name} tag is rewritten to show the enchantment lore.
+     * <p>
+     * Both lists are created even when {@code enchantments} is empty, which gives the item an NBT
+     * compound it did not necessarily have before.
+     *
+     * @param enchantments the enchantments to add
+     * @return this item, for chaining
+     */
+    public Item addEnchantment(Enchantment... enchantments) {
         CompoundTag tag;
         if (!this.hasNbt()) {
             tag = new CompoundTag();
@@ -540,6 +557,7 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
         this.setNbt(tag);
+        return this;
     }
 
     private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
@@ -746,7 +764,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return
      */
     public Item setCustomName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.clearCustomName();
         }
 
@@ -894,7 +912,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -904,7 +922,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -1036,7 +1054,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @return the int value or defaultValue if not available.
@@ -1048,7 +1066,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
@@ -1340,8 +1358,17 @@ public abstract class Item implements Cloneable, ItemID {
         return count;
     }
 
-    public void setCount(int count) {
+    /**
+     * Sets the stack size. The value is stored as given: it is not clamped to
+     * {@link #getMaxStackSize()}, and a count of {@code 0} or less makes {@link #isNull()}
+     * return true without turning the item into air.
+     *
+     * @param count the new stack size
+     * @return this item, for chaining
+     */
+    public Item setCount(int count) {
         this.count = count;
+        return this;
     }
 
     public boolean isNull() {
@@ -1406,6 +1433,14 @@ public abstract class Item implements Cloneable, ItemID {
             this.id = block.getItemId().intern();
             this.identifier = new Identifier(id);
         }
+    }
+
+    @ApiStatus.Internal
+    public void setRecipeBlockDefinition(@Nullable BlockState blockState) {
+        this.recipeBlockDefinitionOverridden = true;
+        this.recipeBlockRuntimeId = blockState != null
+                ? blockState.blockStateHash()
+                : null;
     }
 
     public final String getId() {
@@ -1493,7 +1528,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Called before {@link #onUse},The player is right clicking use on an item
+     * Called before {@link #onUse},The player is right-clicking use on an item
      *
      * @param player          player
      * @param directionVector The direction vector of the click
@@ -2220,7 +2255,7 @@ public abstract class Item implements Cloneable, ItemID {
     /////////////////////////////
 
     /**
-     * Define if the item is a Armor
+     * Defines if the item is an Armor
      */
     public boolean isWearable() {
         return getWearableType() != ItemArmorType.NONE;
@@ -2425,7 +2460,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Define if the item is a Axe
+     * Defines if the item is an Axe
      */
     public boolean isAxe() {
         CustomItemDefinition def = getCustomDefinition();
@@ -2527,7 +2562,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Returns the digger speed based on the block Id or tags it contains, also adds efficience bonus if enabled
+     * Returns the digger speed based on the block id or tags it contains, also adds efficience bonus if enabled
      */
     @Nullable
     public Integer getDiggerSpeed(@Nullable Block block) {
@@ -2704,31 +2739,50 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toRecipeNetwork() {
+        final ItemData itemData = this.stripZeroDamageTag().toNetwork();
+
+        return itemData.toBuilder()
+                .blockDefinition(
+                        this.recipeBlockDefinitionOverridden
+                                ? this.recipeBlockRuntimeId != null
+                                        ? new RuntimeBlockDefinition(this.recipeBlockRuntimeId)
+                                        : null
+                                : this.isBlock()
+                                        ? itemData.getBlockDefinition()
+                                        : null
+                )
+                .usingNetId(false)
+                .netId(0)
+                .build();
+    }
+
+    public ItemData toCreativeNetwork() {
+        final Item item = this.stripZeroDamageTag();
+        final boolean hasNbt = item.getNbt() != null;
+        final boolean clearCreativeTag = item.isCreativeTagEmpty();
+
+        return ItemData.builder()
+                .definition(item.getItemDefinition())
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .tag(clearCreativeTag || item.getNbt() == null ? null : item.getNbt().toNetwork())
+                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanPlaceOn()))
+                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanDestroy()))
+                .blockDefinition(new RuntimeBlockDefinition(item.isCreativeBlockDefinitionEmpty() ? 0 : item.getNetworkBlockRuntimeId()))
+                .usingNetId(false)
+                .netId(0)
+                .build();
+    }
+
+    private Item stripZeroDamageTag() {
         final CompoundTag nbt = this.getNbt();
         if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
-            return this.toNetwork();
+            return this;
         }
         final Item stripped = this.clone();
         final CompoundTag strippedNbt = nbt.copy().remove("Damage");
         stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
-        return stripped.toNetwork();
-    }
-
-    public ItemData toCreativeNetwork() {
-        final boolean hasNbt = this.getNbt() != null;
-        final boolean clearCreativeTag = this.isCreativeTagEmpty();
-
-        return ItemData.builder()
-                .definition(this.getItemDefinition())
-                .damage(this.getDamage())
-                .count(this.getCount())
-                .tag(clearCreativeTag || this.getNbt() == null ? null : this.getNbt().toNetwork())
-                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
-                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : this.getNetworkBlockRuntimeId()))
-                .usingNetId(false)
-                .netId(0)
-                .build();
+        return stripped;
     }
 
     private int getNetworkBlockRuntimeId() {
@@ -2747,7 +2801,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public static Item fromNetwork(ItemData itemData) {
-        if (itemData.getDefinition() == null) {
+        if (itemData == null || itemData.isNull() || itemData.getDefinition() == null) {
             return Item.AIR;
         }
         final ItemDefinition definition = itemData.getDefinition();
