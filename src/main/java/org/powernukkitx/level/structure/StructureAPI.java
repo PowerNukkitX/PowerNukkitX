@@ -7,9 +7,9 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,7 +81,7 @@ public class StructureAPI {
             return null;
         }
 
-        try (var stream = new FileInputStream(source);
+        try (var stream = Files.newInputStream(source.toPath());
              var nbtInputStream = NbtUtils.createReaderLE(stream)) {
             NbtMap root = (NbtMap) nbtInputStream.readTag();
 
