@@ -40,6 +40,10 @@ public class BlockPickRequestHandler implements PacketHandler<BlockPickRequestPa
 
         Block block = player.level.getBlock(position.x, position.y, position.z, false);
         Item item = block.toItem();
+        // Shulker boxes write their contents onto the item in toItem(), so getPickNBT never gets a say
+        if (item.hasNbt() && item.getNbt().contains("Items")) {
+            item.setNbt(item.getNbt().remove("Items"));
+        }
 
         if (packet.isWithData() && player.isCreative()) {
             BlockEntity blockEntity = player.getLevel().getBlockEntity(position);
