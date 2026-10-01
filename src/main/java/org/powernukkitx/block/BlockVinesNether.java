@@ -52,16 +52,16 @@ public abstract class BlockVinesNether extends BlockTransparent {
     public abstract int getMaxVineAge();
 
     /**
-     * Changes the current vine age to a random new random age. 
-     * 
-     * @param pseudorandom If the the randomization should be pseudorandom.
+     * Changes the current vine age to a random new random age.
+     *
+     * @param pseudorandom If the randomization should be pseudorandom.
      */
     public void randomizeVineAge(boolean pseudorandom) {
         if (pseudorandom) {
             setVineAge(ThreadLocalRandom.current().nextInt(getMaxVineAge()));
             return;
         }
-        
+
         double chance = 1.0D;
         int age;
 
@@ -69,7 +69,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
         for(age = 0; random.nextDouble() < chance; ++age) {
             chance *= 0.826D;
         }
-        
+
         setVineAge(age);
     }
 
@@ -85,7 +85,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
         } else {
             randomizeVineAge(true);
         }
-        
+
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
@@ -138,7 +138,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
         if (ev.isCancelled()) {
             return false;
         }
-        
+
         if (level.setBlock(pos, growing)) {
             increaseRootAge();
             return true;
@@ -147,10 +147,10 @@ public abstract class BlockVinesNether extends BlockTransparent {
     }
 
     /**
-     * Grow a random amount of vines. 
+     * Grow a random amount of vines.
      * Calls {@link BlockGrowEvent} passing the positioned new state and the source block for each new vine being added
      * to the world, if one of the events gets cancelled the growth gets interrupted.
-     * @return How many vines grew 
+     * @return How many vines grew
      */
     public int growMultiple() {
         BlockFace growthDirection = getGrowthDirection();
@@ -185,7 +185,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
 
             grew++;
         }
-        
+
         if (grew > 0) {
             increaseRootAge();
         }
@@ -238,7 +238,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
                 break;
             }
         }
-        
+
         return limit == -1 ? Optional.empty() : Optional.of(result);
     }
 
@@ -247,7 +247,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
      * @return <ul>
      *     <li>{@code EMPTY} if the base could not be reached or have an invalid instance type
      *     <li>{@code TRUE} if the base was changed successfully
-     *     <li>{@code FALSE} if the base was already in the max age or the block change was refused 
+     *     <li>{@code FALSE} if the base was already in the max age or the block change was refused
      *     </ul>
      */
     @NotNull public OptionalBoolean increaseRootAge() {
@@ -263,7 +263,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
                 return OptionalBoolean.TRUE;
             }
         }
-        
+
         return OptionalBoolean.FALSE;
     }
 
@@ -279,29 +279,29 @@ public abstract class BlockVinesNether extends BlockTransparent {
         if (player != null && !player.isCreative()) {
             item.count--;
         }
-        
+
         return true;
     }
 
     @Override
     public Item[] getDrops(Item item) {
-        // They have a 33% (3/9) chance to drop a single weeping vine when broken, 
-        // increased to 55% (5/9) with Fortune I, 
-        // 77% (7/9) with Fortune II, 
-        // and 100% with Fortune III. 
-        // 
+        // They have a 33% (3/9) chance to drop a single weeping vine when broken,
+        // increased to 55% (5/9) with Fortune I,
+        // 77% (7/9) with Fortune II,
+        // and 100% with Fortune III.
+        //
         // They always drop a single weeping vine when broken with shears or a tool enchanted with Silk Touch.
 
         int enchantmentLevel;
         if (item.isShears() || (enchantmentLevel = item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING)) >= 3) {
             return new Item[]{ toItem() };
         }
-        
+
         int chance = 3 + enchantmentLevel * 2;
         if (ThreadLocalRandom.current().nextInt(9) < chance) {
             return new Item[]{ toItem() };
         }
-        
+
         return Item.EMPTY_ARRAY;
     }
 

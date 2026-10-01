@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * An public registry holding a map of various registrations as defined by {@link M}.
+ * A public registry holding a map of various registrations as defined by {@link M}.
  * The M represents the map class, which can be anything that extends {@link Map}. The
  * {@link K} and {@link V} generics are the key and value respectively.
  *

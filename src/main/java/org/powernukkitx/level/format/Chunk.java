@@ -405,8 +405,8 @@ public class Chunk implements IChunk {
 
     @Override
     public int recalculateHeightMapColumn(int x, int z) {
-        long stamp1 = heightAndBiomeLock.writeLock();
-        long stamp2 = blockLock.writeLock();
+        long stamp1 = blockLock.writeLock();
+        long stamp2 = heightAndBiomeLock.writeLock();
         try {
             UnsafeChunk unsafeChunk = new UnsafeChunk(this);
             int max = unsafeChunk.getHighestBlockAt(x, z);
@@ -421,8 +421,8 @@ public class Chunk implements IChunk {
             unsafeChunk.setHeightMap(x, z, y);
             return y;
         } finally {
-            heightAndBiomeLock.unlockWrite(stamp1);
-            blockLock.unlockWrite(stamp2);
+            heightAndBiomeLock.unlockWrite(stamp2);
+            blockLock.unlockWrite(stamp1);
         }
     }
 
@@ -522,7 +522,7 @@ public class Chunk implements IChunk {
 
     @Override
     public void addEntity(Entity entity) {
-        if (this.entities.put(entity.getId(), entity) == null) {
+        if (this.entities.put(entity.runtimeId(), entity) == null) {
             this.entityCount.incrementAndGet();
         }
         if (!(entity instanceof Player) && this.isInit) {
@@ -532,10 +532,10 @@ public class Chunk implements IChunk {
 
     @Override
     public void removeEntity(Entity entity) {
-        if (entity.getId() < 0) return;
+        if (entity.runtimeId() < 0) return;
         if (this.entities != null) {
             synchronized (this.entities) {
-                if (this.entities.remove(entity.getId()) != null) {
+                if (this.entities.remove(entity.runtimeId()) != null) {
                     this.entityCount.decrementAndGet();
                 }
                 if (!(entity instanceof Player) && this.isInit) {

@@ -1,12 +1,10 @@
 package org.powernukkitx.command;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Kanelucky
  */
-@ApiStatus.Experimental
 public class CommandResult {
 
     private static final CommandResult SUCCESS = new CommandResult(true, null);

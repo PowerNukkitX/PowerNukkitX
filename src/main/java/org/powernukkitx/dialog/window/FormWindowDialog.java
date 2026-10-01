@@ -94,7 +94,7 @@ public class FormWindowDialog implements Dialog {
     }
 
     public long getEntityId() {
-        return bindEntity.getId();
+        return bindEntity.runtimeId();
     }
 
     public Entity getBindEntity() {

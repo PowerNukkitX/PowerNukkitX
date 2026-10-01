@@ -42,7 +42,7 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
     /**
      * @param minRange          Minimum Search Range
      * @param maxRange          Maximum Search Range
-     * @param period            Senor execute period
+     * @param period            Sensor execute period
      * @param allTargetFunction Receives a Set that set the results filtered by the specified target function to the memory of the specified index, the target function accepts a parameter T and returns a Boolean
      * @param memories          Memory class type for saving results
      */
@@ -53,7 +53,7 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
         this.period = period;
         if (allTargetFunction == null) this.allTargetFunction = null;
         else {
-            if (memories.size() >= 1 && allTargetFunction.length == memories.size()) {
+            if (!memories.isEmpty() && allTargetFunction.length == memories.size()) {
                 this.allTargetFunction = allTargetFunction;
             } else
                 throw new IllegalArgumentException("All Target Function must correspond to memories one by one");

@@ -48,17 +48,11 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.95f;
-        }
         return 1.9f;
     }
 

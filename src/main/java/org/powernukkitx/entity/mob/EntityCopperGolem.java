@@ -15,6 +15,7 @@ import org.powernukkitx.block.property.enums.MinecraftCardinalDirection;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -43,8 +44,8 @@ import org.powernukkitx.inventory.EntityEquipmentInventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemHoneycomb;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemShears;
-import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.entity.condition.Condition;
@@ -70,13 +71,15 @@ import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Buddelbubi
  * @since 2025/11/18
  */
-public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
+public class EntityCopperGolem extends EntityGolem implements InventoryHolder, EntityInteractable {
 
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
             new EnumEntityProperty("minecraft:chest_interaction", new String[]{
@@ -321,6 +324,31 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     }
 
     @Override
+    public String getInteractButtonText(Player player) {
+        Item held = player.getInventory().getItemInMainHand();
+        if (held.isShears()) {
+            return hasFlower() ? "action.interact.shear" : "";
+        }
+        if (held.getId().equals(ItemID.HONEYCOMB)) {
+            return isWaxed() ? "" : "action.interact.wax_on";
+        }
+        if (held.isAxe()) {
+            if (isWaxed()) {
+                return "action.interact.wax_off";
+            }
+            if (getOxidation() != Oxidation.UNOXIDIZED) {
+                return "action.interact.scrape";
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
+    }
+
+    @Override
     public float getHeight() {
         return 0.98f;
     }
@@ -342,13 +370,19 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-        int amount = Utils.rand(1, 3 + looting);
+        List<Item> drops = new ArrayList<>();
+        drops.add(Item.get(Item.COPPER_INGOT, 0, Utils.rand(1, 3)));
 
-        return new Item[]{
-                Item.get(Item.COPPER_INGOT, 0, amount),
-                getInventory().getItemInHand()
-        };
+        if (hasFlower()) {
+            drops.add(Item.get(Block.POPPY));
+        }
+
+        Item held = getInventory().getItemInHand();
+        if (!held.isNull()) {
+            drops.add(held.clone());
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     public static void checkAndSpawnGolem(Block block) {

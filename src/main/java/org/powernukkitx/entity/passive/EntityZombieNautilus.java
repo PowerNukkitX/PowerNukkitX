@@ -3,6 +3,7 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -20,6 +21,8 @@ import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.EquippableComponent;
 import org.powernukkitx.entity.components.RideableComponent;
+import org.powernukkitx.entity.data.property.EntityProperty;
+import org.powernukkitx.entity.data.property.EnumEntityProperty;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
@@ -31,6 +34,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +48,16 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Buddelbubi
  * @since 2025/12/15
  */
-public class EntityZombieNautilus extends EntityNautilus {
+public class EntityZombieNautilus extends EntityNautilus implements EntitySmite {
+
+    private static final String[] VARIANTS = {
+        "default",
+        "coral"
+    };
+
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:variant", VARIANTS, "default", true)
+    };
 
     @Override
     @NotNull
@@ -127,6 +140,11 @@ public class EntityZombieNautilus extends EntityNautilus {
     }
 
     @Override
+    public boolean isUndead() {
+        return true;
+    }
+
+    @Override
     public @Nullable BreedableComponent getComponentBreedable() {
         return null;
     }
@@ -153,6 +171,12 @@ public class EntityZombieNautilus extends EntityNautilus {
     @Override
     public void initEntity() {
         super.initEntity();
+
+        if (this.nbt.contains("variant")) {
+            setZombieNautilusVariant(this.nbt.getString("variant"));
+        } else {
+            setZombieNautilusVariant(resolveSpawnVariant());
+        }
 
         if (this.nbt != null && this.nbt.contains(NBT_RIDEABLE_TYPE)) {
             this.jockeyType = SpawnRiderType.fromId(this.getNbt().getInt(NBT_RIDEABLE_TYPE));
@@ -242,6 +266,30 @@ public class EntityZombieNautilus extends EntityNautilus {
 
         if (isTamed()) mountEntity(player, true);
         return false;
+    }
+
+    private String resolveSpawnVariant() {
+        List<String> biomeTags = Registries.BIOME.getTags(
+                getLevel().getBiomeId((int) x, (int) y, (int) z)
+        );
+
+        if (biomeTags != null
+                && biomeTags.contains("ocean")
+                && biomeTags.contains("warm")
+                && !biomeTags.contains("deep")) {
+            return "coral";
+        }
+
+        return "default";
+    }
+
+    private void setZombieNautilusVariant(String variant) {
+        if (!"coral".equals(variant)) {
+            variant = "default";
+        }
+
+        this.nbt.putString("variant", variant);
+        setEnumEntityProperty("minecraft:variant", variant);
     }
 
     private SpawnRiderType rollInitialRideableType() {

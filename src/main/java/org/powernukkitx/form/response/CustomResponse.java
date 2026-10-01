@@ -70,7 +70,7 @@ public class CustomResponse extends Response {
     }
 
     /**
-     * Get a step sliders's response
+     * Get a step slider's response
      *
      * @param index The index of the step slider
      * @return The elementId and elementText of the step slider's response

@@ -190,7 +190,7 @@ public abstract class ItemBookWritable extends Item {
     }
 
     /**
-     * Returns an list containing all pages of this book.
+     * Returns a list containing all pages of this book.
      */
     public List<Object> getPages() {
         CompoundTag tag = this.getOrCreateNbt();

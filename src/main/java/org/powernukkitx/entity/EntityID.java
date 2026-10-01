@@ -253,6 +253,8 @@ public interface EntityID {
 
   String CREAKING = "minecraft:creaking";
 
+  String CUSHION = "minecraft:cushion";
+
   String OMINOUS_ITEM_SPAWNER = "minecraft:ominous_item_spawner";
 
   String TRADER_LLAMA = "minecraft:trader_llama";
@@ -272,4 +274,6 @@ public interface EntityID {
   String PARCHED = "minecraft:parched";
 
   String CAMEL_HUSK = "minecraft:camel_husk";
+
+  String SULFUR_CUBE = "minecraft:sulfur_cube";
 }

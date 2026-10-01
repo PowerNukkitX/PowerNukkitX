@@ -2,6 +2,7 @@ package org.powernukkitx.command.tree.node;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.command.Command;
+import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.exceptions.SelectorSyntaxException;
 import org.powernukkitx.command.selector.EntitySelectorAPI;
 import org.powernukkitx.entity.Entity;
@@ -41,16 +42,21 @@ import java.util.stream.Collectors;
  * @since PowerNukkitX 1.19.50
  */
 public class PlayersNode extends TargetNode<Player> {
-    //todo support uuid or xuid
     @Override
     public void fill(String arg) {
+        fill(arg, paramList.getParamTree().getSender());
+    }
+
+    //todo support uuid or xuid
+    @Override
+    public void fill(String arg, CommandSender sender) {
         if (arg.isBlank()) {
             this.error();
         } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
             List<Entity> entities;
             List<Player> result;
             try {
-                entities = EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), arg);
+                entities = EntitySelectorAPI.getAPI().matchEntities(sender, arg);
             } catch (SelectorSyntaxException exception) {
                 error(exception.getMessage());
                 return;
@@ -58,7 +64,7 @@ public class PlayersNode extends TargetNode<Player> {
             result = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
             this.value = result;
         } else {
-            Player player = Command.resolveTargetPlayer(paramList.getParamTree().getSender(), arg);
+            Player player = Command.resolveTargetPlayer(sender, arg);
             this.value = player != null ? Collections.singletonList(player) : Collections.emptyList();
         }
     }

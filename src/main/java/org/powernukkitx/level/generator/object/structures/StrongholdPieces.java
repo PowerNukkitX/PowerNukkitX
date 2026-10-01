@@ -61,14 +61,6 @@ public class StrongholdPieces {
     private static final BlockState LADDER_W = BlockLadder.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(4));
     private static final BlockState LADDER_S = BlockLadder.PROPERTIES.getBlockState(CommonBlockProperties.FACING_DIRECTION.createValue(3));
     private static final BlockState STONE_BRICK_STAIRS_N = BlockStoneBrickStairs.PROPERTIES.getBlockState(CommonBlockProperties.WEIRDO_DIRECTION.createValue(3));
-    private static final BlockState END_PORTAL_FRAME_N = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.NORTH));
-    private static final BlockState END_PORTAL_FRAME_E = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST));
-    private static final BlockState END_PORTAL_FRAME_S = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.SOUTH));
-    private static final BlockState END_PORTAL_FRAME_W = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.WEST));
-    private static final BlockState END_PORTAL_FRAME_N_E = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.NORTH), CommonBlockProperties.END_PORTAL_EYE_BIT.createValue(true));
-    private static final BlockState END_PORTAL_FRAME_E_E = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST), CommonBlockProperties.END_PORTAL_EYE_BIT.createValue(true));
-    private static final BlockState END_PORTAL_FRAME_S_E = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.SOUTH), CommonBlockProperties.END_PORTAL_EYE_BIT.createValue(true));
-    private static final BlockState END_PORTAL_FRAME_W_E = BlockEndPortalFrame.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.WEST), CommonBlockProperties.END_PORTAL_EYE_BIT.createValue(true));
     private static final BlockState IRON_DOOR_W_L = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.WEST));
     private static final BlockState IRON_DOOR_W_U = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.WEST), CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
 
@@ -1448,18 +1440,18 @@ public class StrongholdPieces {
                 actived &= hasEye[i];
             }
 
-            this.placeBlock(level, hasEye[0] ? END_PORTAL_FRAME_N_E : END_PORTAL_FRAME_N, 4, 3, 8, boundingBox);
-            this.placeBlock(level, hasEye[1] ? END_PORTAL_FRAME_N_E : END_PORTAL_FRAME_N, 5, 3, 8, boundingBox);
-            this.placeBlock(level, hasEye[2] ? END_PORTAL_FRAME_N_E : END_PORTAL_FRAME_N, 6, 3, 8, boundingBox);
-            this.placeBlock(level, hasEye[3] ? END_PORTAL_FRAME_S_E : END_PORTAL_FRAME_S, 4, 3, 12, boundingBox);
-            this.placeBlock(level, hasEye[4] ? END_PORTAL_FRAME_S_E : END_PORTAL_FRAME_S, 5, 3, 12, boundingBox);
-            this.placeBlock(level, hasEye[5] ? END_PORTAL_FRAME_S_E : END_PORTAL_FRAME_S, 6, 3, 12, boundingBox);
-            this.placeBlock(level, hasEye[6] ? END_PORTAL_FRAME_E_E : END_PORTAL_FRAME_E, 3, 3, 9, boundingBox);
-            this.placeBlock(level, hasEye[7] ? END_PORTAL_FRAME_E_E : END_PORTAL_FRAME_E, 3, 3, 10, boundingBox);
-            this.placeBlock(level, hasEye[8] ? END_PORTAL_FRAME_E_E : END_PORTAL_FRAME_E, 3, 3, 11, boundingBox);
-            this.placeBlock(level, hasEye[9] ? END_PORTAL_FRAME_W_E : END_PORTAL_FRAME_W, 7, 3, 9, boundingBox);
-            this.placeBlock(level, hasEye[10] ? END_PORTAL_FRAME_W_E : END_PORTAL_FRAME_W, 7, 3, 10, boundingBox);
-            this.placeBlock(level, hasEye[11] ? END_PORTAL_FRAME_W_E : END_PORTAL_FRAME_W, 7, 3, 11, boundingBox);
+            this.placePortalFrame(level, hasEye[0], 4, 3, 8, boundingBox);
+            this.placePortalFrame(level, hasEye[1], 5, 3, 8, boundingBox);
+            this.placePortalFrame(level, hasEye[2], 6, 3, 8, boundingBox);
+            this.placePortalFrame(level, hasEye[3], 4, 3, 12, boundingBox);
+            this.placePortalFrame(level, hasEye[4], 5, 3, 12, boundingBox);
+            this.placePortalFrame(level, hasEye[5], 6, 3, 12, boundingBox);
+            this.placePortalFrame(level, hasEye[6], 3, 3, 9, boundingBox);
+            this.placePortalFrame(level, hasEye[7], 3, 3, 10, boundingBox);
+            this.placePortalFrame(level, hasEye[8], 3, 3, 11, boundingBox);
+            this.placePortalFrame(level, hasEye[9], 7, 3, 9, boundingBox);
+            this.placePortalFrame(level, hasEye[10], 7, 3, 10, boundingBox);
+            this.placePortalFrame(level, hasEye[11], 7, 3, 11, boundingBox);
 
             if (actived) {
                 this.placeBlock(level, END_PORTAL, 4, 3, 9, boundingBox);
@@ -1487,6 +1479,28 @@ public class StrongholdPieces {
             }
 
             return true;
+        }
+
+        private void placePortalFrame(BlockManager level, boolean hasEye, int x, int y, int z, BoundingBox boundingBox) {
+            BlockVector3 position = new BlockVector3(this.getWorldX(x, z), this.getWorldY(y), this.getWorldZ(x, z));
+            if (!boundingBox.isInside(position)) {
+                return;
+            }
+
+            int centerX = this.getWorldX(5, 10);
+            int centerZ = this.getWorldZ(5, 10);
+            BlockFace face;
+            int distanceX = centerX - position.x;
+            int distanceZ = centerZ - position.z;
+            if (Math.abs(distanceX) > Math.abs(distanceZ)) {
+                face = distanceX > 0 ? BlockFace.EAST : BlockFace.WEST;
+            } else {
+                face = distanceZ > 0 ? BlockFace.SOUTH : BlockFace.NORTH;
+            }
+            BlockState state = BlockEndPortalFrame.PROPERTIES.getBlockState(
+                    CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.fromBlockFace(face)),
+                    CommonBlockProperties.END_PORTAL_EYE_BIT.createValue(hasEye));
+            level.setBlockStateAt(position.x, position.y, position.z, state);
         }
     }
 

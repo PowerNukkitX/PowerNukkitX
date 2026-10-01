@@ -3,6 +3,7 @@ package org.powernukkitx.registry;
 import org.powernukkitx.block.customblock.data.voxel.VoxelBox;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import org.cloudburstmc.protocol.bedrock.data.VoxelShapes;
@@ -13,18 +14,18 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.SerializableVoxelShape, VoxelShapes.SerializableVoxelShape> {
-    private static final Object2ObjectOpenHashMap<String, VoxelShapes.SerializableVoxelShape> REGISTRY = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectLinkedOpenHashMap<String, VoxelShapes.SerializableVoxelShape> REGISTRY = new Object2ObjectLinkedOpenHashMap<>();
     @Getter
     private static VoxelShapesPacket PACKET = new VoxelShapesPacket();
 
     private static VoxelShapes.SerializableVoxelShape EMPTY_SHAPE;
+    private static final List<VoxelShapes.SerializableVoxelShape> VANILLA_ANONYMOUS_SHAPES = new ArrayList<>();
+    private static int vanillaShapeCount;
 
     @Override
     public void init() {
@@ -43,6 +44,7 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
             unitCubeShapeCells.setXSize(1);
             unitCubeShapeCells.setYSize(1);
             unitCubeShapeCells.setZSize(1);
+            unitCubeShapeCells.getStorage().add(1);
             final VoxelShapes.SerializableVoxelShape unitCubeShape = new VoxelShapes.SerializableVoxelShape();
             unitCubeShape.setCells(unitCubeShapeCells);
             unitCubeShape.getXCoordinates().add(0f);
@@ -56,6 +58,8 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
             register("minecraft:unit_cube", unitCubeShape);
 
             loadVanillaShapes();
+
+            vanillaShapeCount = REGISTRY.size();
 
             rebuildPacket();
         } catch (RegisterException e) {
@@ -73,7 +77,14 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
                 for (int[][] box : shape.boxes) {
                     boxes.add(new VoxelBox(box[0], box[1]));
                 }
-                register(shape.identifier, boxes);
+
+                final VoxelShapes.SerializableVoxelShape voxelShape = convertBoxesToShape(boxes);
+
+                if (shape.identifier == null) {
+                    VANILLA_ANONYMOUS_SHAPES.add(voxelShape);
+                } else {
+                    register(shape.identifier, voxelShape);
+                }
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -94,16 +105,39 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
     public void rebuildPacket() {
         VoxelShapesPacket pk = new VoxelShapesPacket();
 
-        Map<String, VoxelShapes.RegistryHandle> nameMap = new HashMap<>();
-        for (String name : REGISTRY.keySet()) {
+        int index = 0;
+
+        for (var entry : REGISTRY.object2ObjectEntrySet()) {
+            if (index >= vanillaShapeCount) {
+                break;
+            }
+
             final VoxelShapes.RegistryHandle handle = new VoxelShapes.RegistryHandle();
-            handle.setValue(nameMap.size());
-            nameMap.put(name, handle);
+            handle.setValue(pk.getShapes().size());
+
+            pk.getShapes().add(entry.getValue());
+            pk.getNameMap().put(entry.getKey(), handle);
+
+            index++;
         }
 
-        pk.getShapes().addAll(REGISTRY.values().stream().toList());
-        pk.getNameMap().putAll(nameMap);
-        pk.setCustomShapeCount(REGISTRY.size() - 2);
+        pk.getShapes().addAll(VANILLA_ANONYMOUS_SHAPES);
+
+        index = 0;
+
+        for (var entry : REGISTRY.object2ObjectEntrySet()) {
+            if (index++ < vanillaShapeCount) {
+                continue;
+            }
+
+            final VoxelShapes.RegistryHandle handle = new VoxelShapes.RegistryHandle();
+            handle.setValue(pk.getShapes().size());
+
+            pk.getShapes().add(entry.getValue());
+            pk.getNameMap().put(entry.getKey(), handle);
+        }
+
+        pk.setCustomShapeCount(Math.max(0, REGISTRY.size() - vanillaShapeCount));
 
         PACKET = pk;
     }
@@ -127,21 +161,25 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
         for (int z = 0; z < resZ; z++) {
             for (int y = 0; y < resY; y++) {
                 for (int x = 0; x < resX; x++) {
-                    float midX = (xCoords.get(x) + xCoords.get(x + 1)) / 32.0f; // Scale to 0-1 range for check
-                    float midY = (yCoords.get(y) + yCoords.get(y + 1)) / 32.0f;
-                    float midZ = (zCoords.get(z) + zCoords.get(z + 1)) / 32.0f;
+                    float midX = (xCoords.get(x) + xCoords.get(x + 1)) / 2.0f;
+                    float midY = (yCoords.get(y) + yCoords.get(y + 1)) / 2.0f;
+                    float midZ = (zCoords.get(z) + zCoords.get(z + 1)) / 2.0f;
 
                     if (isInside(midX, midY, midZ, boxes)) {
-                        bitSet.set(x + (y * resX) + (z * resX * resY));
+                        bitSet.set(z + (y * resZ) + (x * resZ * resY));
                     }
                 }
             }
         }
 
-        // 3. Convert BitSet to a list of integers (Bedrock style)
-        List<Integer> bitmask = new ArrayList<>();
-        for (byte b : bitSet.toByteArray()) {
-            bitmask.add(b & 0xFF);
+        // 3. Convert BitSet to the complete Bedrock storage
+        int storageSize = (resX * resY * resZ + 7) / 8;
+
+        List<Integer> bitmask = new ArrayList<>(storageSize);
+        byte[] bytes = bitSet.toByteArray();
+
+        for (int i = 0; i < storageSize; i++) {
+            bitmask.add(i < bytes.length ? bytes[i] & 0xFF : 0);
         }
 
 
@@ -161,8 +199,6 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
 
     private List<Float> getAxisBoundaries(List<VoxelBox> boxes, int axis) {
         SortedSet<Float> bounds = new TreeSet<>();
-        bounds.add(0.0f);
-        bounds.add(1.0f);
         for (VoxelBox box : boxes) {
             bounds.add(box.min[axis] / 16.0f);
             bounds.add(box.max[axis] / 16.0f);
@@ -192,6 +228,8 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
     @Override
     public void reload() {
         REGISTRY.clear();
+        VANILLA_ANONYMOUS_SHAPES.clear();
+        vanillaShapeCount = 0;
     }
 
     @Override

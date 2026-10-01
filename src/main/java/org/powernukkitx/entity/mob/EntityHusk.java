@@ -91,12 +91,12 @@ public class EntityHusk extends EntityZombie {
 
     @Override
     public float getWidth() {
-        return this.isBaby() ? 0.3f : 0.6f;
+        return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        return this.isBaby() ? 0.95f : 1.9f;
+        return 1.9f;
     }
 
     @Override

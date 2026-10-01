@@ -463,13 +463,13 @@ public abstract class Command {
             for (CommandParameter commandParameter : commandParameters) {
                 if (!commandParameter.optional) {
                     if (commandParameter.enumData == null) {
-                        builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase(Locale.ENGLISH)).append(">");
+                        builder.append(" <").append(commandParameter.name).append(": ").append(commandParameter.type.name().toLowerCase(Locale.ENGLISH)).append(">");
                     } else {
                         builder.append(" <").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
                     }
                 } else {
                     if (commandParameter.enumData == null) {
-                        builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase(Locale.ENGLISH)).append("]");
+                        builder.append(" [").append(commandParameter.name).append(": ").append(commandParameter.type.name().toLowerCase(Locale.ENGLISH)).append("]");
                     } else {
                         builder.append(" [").append(commandParameter.enumData.getValues().subList(0, Math.min(commandParameter.enumData.getValues().size(), 10)).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
                     }
@@ -594,9 +594,9 @@ public abstract class Command {
     protected void buildCommandTree(RouteTree tree) {
         // Override in subclass
     }
-      
-     
-    /**  
+
+
+    /**
      * Permission that lets a command sender target players by their real login name in addition
      * to their display name. See {@link Player#VIEW_REAL_NAME_PERMISSION} for the separate
      * permission that controls seeing real names in command output.

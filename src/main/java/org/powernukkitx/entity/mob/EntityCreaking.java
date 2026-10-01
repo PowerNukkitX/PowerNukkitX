@@ -49,18 +49,20 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityCreaking extends EntityMob {
+    private final static String PROPERTY_CREAKING = "minecraft:creaking_state";
+    private final static String PROPERTY_SWAYING_TICKS = "minecraft:creaking_swaying_ticks";
+
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-            new EnumEntityProperty("minecraft:creaking_state", new String[]{
+            new EnumEntityProperty(PROPERTY_CREAKING, new String[]{
                     "neutral",
                     "hostile_observed",
                     "hostile_unobserved",
                     "twitching",
                     "crumbling"
             }, "neutral", true),
-            new IntEntityProperty("minecraft:creaking_swaying_ticks", 0, 0, 6, true)
+            new IntEntityProperty(PROPERTY_SWAYING_TICKS, 0, 0, 6, true)
     };
-    private final static String PROPERTY_CREAKING = "minecraft:creaking_state";
-    private final static String PROPERTY_SWAYING_TICKS = "minecraft:creaking_swaying_ticks";
+
 
     @Override
     @NotNull

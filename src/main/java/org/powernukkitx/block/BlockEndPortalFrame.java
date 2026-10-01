@@ -39,7 +39,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     public BlockEndPortalFrame(BlockState blockstate) {
         super(blockstate);
     }
-    
+
     @Override
     public double getResistance() {
         return 3600000;
@@ -140,6 +140,23 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         }
     }
 
+    @Override
+    public boolean onBreak(Item item) {
+        Vector3 centerSpot = this.searchCenter();
+        boolean broken = super.onBreak(item);
+        if (broken && centerSpot != null) {
+            for (int x = -1; x <= 1; x++) {
+                for (int z = -1; z <= 1; z++) {
+                    Vector3 position = centerSpot.add(x, 0, z);
+                    if (this.getLevel().getBlockIdAt(position.getFloorX(), position.getFloorY(), position.getFloorZ()).equals(Block.END_PORTAL)) {
+                        this.getLevel().setBlock(position, Block.get(Block.AIR), true, true);
+                    }
+                }
+            }
+        }
+        return broken;
+    }
+
     private Vector3 searchCenter() {
         int minX = Integer.MAX_VALUE;
         int minZ = Integer.MAX_VALUE;
@@ -177,7 +194,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockEndPortalFrame(), 0);
     }
 
     @Override

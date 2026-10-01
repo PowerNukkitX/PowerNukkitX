@@ -435,10 +435,15 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             var components = ensureComponents();
 
             var itemTags = new ListTag<StringTag>();
-            for (String t : unique) itemTags.add(new StringTag(t));
+            var minecraftTags = new ListTag<StringTag>();
+
+            for (String t : unique) {
+                itemTags.add(new StringTag(t));
+                minecraftTags.add(new StringTag(t));
+            }
 
             components.putList("item_tags", itemTags);
-            components.putCompound("minecraft:tags", new CompoundTag().putList("tags", itemTags));
+            components.putCompound("minecraft:tags", new CompoundTag().putList("tags", minecraftTags));
 
             return this;
         }
