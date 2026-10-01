@@ -2,6 +2,7 @@ package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -46,7 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class EntityCamelHusk extends EntityCamel {
+public class EntityCamelHusk extends EntityCamel implements EntitySmite {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -124,6 +125,11 @@ public class EntityCamelHusk extends EntityCamel {
     }
 
     @Override
+    public boolean isUndead() {
+        return true;
+    }
+
+    @Override
     public @Nullable BreedableComponent getComponentBreedable() {
         return null;
     }
@@ -169,11 +175,9 @@ public class EntityCamelHusk extends EntityCamel {
         ArrayList<Item> drops = new ArrayList<>();
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 2) != 0) {
-            int rottenFlesh = Utils.rand(2, 3 + looting);
-            if (rottenFlesh > 0) {
-                drops.add(Item.get(Item.ROTTEN_FLESH, 0, rottenFlesh));
-            }
+        int rottenFlesh = Utils.rand(2, 3 + looting);
+        if (rottenFlesh > 0) {
+            drops.add(Item.get(Item.ROTTEN_FLESH, 0, rottenFlesh));
         }
 
         // Drop Ride Inventory

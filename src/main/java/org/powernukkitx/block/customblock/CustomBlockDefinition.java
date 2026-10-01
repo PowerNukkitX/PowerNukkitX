@@ -36,6 +36,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.customblock.data.CraftingTable;
 import org.powernukkitx.block.customblock.data.Geometry;
 import org.powernukkitx.block.customblock.data.Materials;
+import org.powernukkitx.block.customblock.data.Movable;
 import org.powernukkitx.block.customblock.data.Permutation;
 import org.powernukkitx.block.customblock.data.Transformation;
 import org.powernukkitx.block.property.type.BlockPropertyType;
@@ -81,6 +82,7 @@ public class CustomBlockDefinition extends BlockDefinition {
     protected String identifier;
     protected CompoundTag nbt;
     protected BlockTickSettings tickSettings;
+    protected Movable movable;
 
     public CustomBlockDefinition(Builder b) {
         super(b);
@@ -88,6 +90,15 @@ public class CustomBlockDefinition extends BlockDefinition {
         this.identifier = b.identifier;
         this.nbt = b.nbt;
         this.tickSettings = b.tickSettings;
+        this.movable = resolveMovable(b.nbt);
+    }
+
+    private static Movable resolveMovable(CompoundTag nbt) {
+        CompoundTag components = nbt.getCompound("components");
+        if (components == null || !components.containsCompound("minecraft:movable")) {
+            return Movable.DEFAULT;
+        }
+        return Movable.fromCompoundTag(components.getCompound("minecraft:movable"));
     }
 
     public int getRuntimeId() {
@@ -591,6 +602,33 @@ public class CustomBlockDefinition extends BlockDefinition {
         }
 
         /**
+         * Defines how this block reacts to piston movement.
+         *
+         * Defaults to PUSH_PULL with no sticky behavior.
+         * The minecraft:movable component is omitted when those
+         * default values are selected.
+         */
+        public Builder movable(@NotNull Movable movable) {
+            CompoundTag components = this.nbt.getCompound("components");
+
+            if (movable.isDefault()) {
+                components.remove("minecraft:movable");
+                return this;
+            }
+
+            components.putCompound("minecraft:movable", movable.toCompoundTag());
+            return this;
+        }
+
+        public Builder movable(@NotNull Movable.MovementType movementType) {
+            return this.movable(new Movable(movementType));
+        }
+
+        public Builder movable(@NotNull Movable.MovementType movementType, @NotNull Movable.StickyType sticky) {
+            return this.movable(new Movable(movementType, sticky));
+        }
+
+        /**
          * @return Block Properties in NBT Tag format
          */
         @Nullable
@@ -631,9 +669,8 @@ public class CustomBlockDefinition extends BlockDefinition {
          * Custom processing of the block to be sent to the client ComponentNBT, which contains all definitions for custom block. You can modify them as much as you want, under the right conditions.
          */
         public CustomBlockDefinition customBuild(@NotNull Consumer<CompoundTag> nbt) {
-            var def = this.build();
-            nbt.accept(def.nbt);
-            return def;
+            nbt.accept(this.nbt);
+            return this.build();
         }
 
         public CustomBlockDefinition build() {
@@ -727,6 +764,15 @@ public class CustomBlockDefinition extends BlockDefinition {
 
     public CompoundTag getComponents() {
         return this.nbt.getCompound("components");
+    }
+
+    /**
+     * Gets the cached movable behavior of this block definition.
+     *
+     * @return the movable behavior
+     */
+    public Movable getMovable() {
+        return this.movable;
     }
 
     public boolean isSolidForBlock(@NotNull Block block) {

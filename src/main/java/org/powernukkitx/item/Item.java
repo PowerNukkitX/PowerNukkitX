@@ -468,7 +468,22 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
-    public void addEnchantment(Enchantment... enchantments) {
+    /**
+     * Adds enchantments to this item's NBT.
+     * <p>
+     * An enchantment whose {@link Enchantment#getIdentifier()} is {@code null} is written to the
+     * vanilla {@code ench} list, otherwise to the {@code custom_ench} list. In both lists an entry
+     * with the same id is overwritten, so re-adding an enchantment replaces its level instead of
+     * stacking a second entry. If the item ends up holding any custom enchantment, its
+     * {@code display.Name} tag is rewritten to show the enchantment lore.
+     * <p>
+     * Both lists are created even when {@code enchantments} is empty, which gives the item an NBT
+     * compound it did not necessarily have before.
+     *
+     * @param enchantments the enchantments to add
+     * @return this item, for chaining
+     */
+    public Item addEnchantment(Enchantment... enchantments) {
         CompoundTag tag;
         if (!this.hasNbt()) {
             tag = new CompoundTag();
@@ -542,6 +557,7 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
         this.setNbt(tag);
+        return this;
     }
 
     private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
@@ -1342,8 +1358,17 @@ public abstract class Item implements Cloneable, ItemID {
         return count;
     }
 
-    public void setCount(int count) {
+    /**
+     * Sets the stack size. The value is stored as given: it is not clamped to
+     * {@link #getMaxStackSize()}, and a count of {@code 0} or less makes {@link #isNull()}
+     * return true without turning the item into air.
+     *
+     * @param count the new stack size
+     * @return this item, for chaining
+     */
+    public Item setCount(int count) {
         this.count = count;
+        return this;
     }
 
     public boolean isNull() {
@@ -1613,6 +1638,11 @@ public abstract class Item implements Cloneable, ItemID {
     @Override
     public final boolean equals(Object item) {
         return item instanceof Item it && this.equals(it, true);
+    }
+
+    @Override
+    public final int hashCode() {
+        return 31 * this.getId().hashCode() + (this.hasMeta() ? this.getDamage() : 0);
     }
 
     public final boolean equals(Item item, boolean checkDamage) {
@@ -2714,17 +2744,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toRecipeNetwork() {
-        final CompoundTag nbt = this.getNbt();
-        final ItemData itemData;
-
-        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
-            itemData = this.toNetwork();
-        } else {
-            final Item stripped = this.clone();
-            final CompoundTag strippedNbt = nbt.copy().remove("Damage");
-            stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
-            itemData = stripped.toNetwork();
-        }
+        final ItemData itemData = this.stripZeroDamageTag().toNetwork();
 
         return itemData.toBuilder()
                 .blockDefinition(
@@ -2742,20 +2762,32 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toCreativeNetwork() {
-        final boolean hasNbt = this.getNbt() != null;
-        final boolean clearCreativeTag = this.isCreativeTagEmpty();
+        final Item item = this.stripZeroDamageTag();
+        final boolean hasNbt = item.getNbt() != null;
+        final boolean clearCreativeTag = item.isCreativeTagEmpty();
 
         return ItemData.builder()
-                .definition(this.getItemDefinition())
-                .damage(this.getDamage())
-                .count(this.getCount())
-                .tag(clearCreativeTag || this.getNbt() == null ? null : this.getNbt().toNetwork())
-                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanPlaceOn()))
-                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(this.getCanDestroy()))
-                .blockDefinition(new RuntimeBlockDefinition(this.isCreativeBlockDefinitionEmpty() ? 0 : this.getNetworkBlockRuntimeId()))
+                .definition(item.getItemDefinition())
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .tag(clearCreativeTag || item.getNbt() == null ? null : item.getNbt().toNetwork())
+                .canPlace(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanPlaceOn()))
+                .canBreak(!hasNbt || clearCreativeTag ? new String[0] : listTagToStringArray(item.getCanDestroy()))
+                .blockDefinition(new RuntimeBlockDefinition(item.isCreativeBlockDefinitionEmpty() ? 0 : item.getNetworkBlockRuntimeId()))
                 .usingNetId(false)
                 .netId(0)
                 .build();
+    }
+
+    private Item stripZeroDamageTag() {
+        final CompoundTag nbt = this.getNbt();
+        if (nbt == null || !nbt.contains("Damage") || nbt.getInt("Damage") != 0) {
+            return this;
+        }
+        final Item stripped = this.clone();
+        final CompoundTag strippedNbt = nbt.copy().remove("Damage");
+        stripped.setNbt(strippedNbt.isEmpty() ? null : strippedNbt);
+        return stripped;
     }
 
     private int getNetworkBlockRuntimeId() {

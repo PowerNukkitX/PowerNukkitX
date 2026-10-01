@@ -22,6 +22,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canPassThrough(false)
+            .canBePulled(false)
             .canBeActivated(true)
             .waterloggingLevel(1)
             .build();

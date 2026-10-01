@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "\"{%0}\" nutzt noch das alte Weltenformat, konvertiere zum neuen Format...",
   "nukkit.player.invalidEntity": "{%0} versuchte ein fehlerhaftes Entity anzugreifen",
   "nukkit.player.invalidMove": "{%0} bewegte sich fehlerhaft!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] hat sich mit der ID {%3} bei ({%4}, {%5}, {%6}, {%7}) angemeldet",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] hat sich mit der uniqueId {%3} bei ({%4}, {%5}, {%6}, {%7}) angemeldet",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] hat sich ausgeloggt {%3}",
   "nukkit.plugin.aliasError": "Der Alias {%0} vom Plugin {%1} konnte nicht geladen werden.",
   "nukkit.plugin.circularDependency": "Ringabhängigkeit erkannt",

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockFrogSpawn extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FROG_SPAWN);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .canBePushed(false)
+            .breaksWhenMoved(true)
             .canBePulled(false)
             .build();
 

@@ -24,6 +24,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
             .resistance(6000000)
             .canBePushed(false)
+            .canBePulled(false)
             .canBeActivated(true)
             .canHarvestWithHand(false)
             .hasComparatorInputOverride(true)

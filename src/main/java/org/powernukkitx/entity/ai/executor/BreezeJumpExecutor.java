@@ -57,7 +57,7 @@ public class BreezeJumpExecutor implements EntityControl, IBehaviorExecutor {
         entity.setMotion(motion);
         entity.setDataFlag(ActorFlags.JUMP_GOAL_JUMP, false);
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(entity.getId());
+        pk.setTargetRuntimeID(entity.runtimeId());
         pk.setType(ActorEvent.GROUND_DUST);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

@@ -12,6 +12,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -36,6 +37,7 @@ public class RouteNode {
     private IParamNode<?> paramNode;
 
     private Function<CommandContext, CommandResult> executor;
+    private Consumer<CommandContext> fallback;
 
     private SenderType senderType = SenderType.ANY;
     private String permission;
@@ -98,6 +100,16 @@ public class RouteNode {
     }
 
     /**
+     * Sets the fallback for this node. If not present, anyway the fallback of 
+     * the most deeply nested node found in the route gets executed, in case 
+     * of command syntax error.
+     */
+    public RouteNode orElse(Consumer<CommandContext> fallback) {
+        this.fallback = fallback;
+        return this;
+    }
+
+    /**
      * Restricts who can use this node. Defaults to {@link SenderType#ANY}.
      */
     public RouteNode senderType(SenderType senderType) {
@@ -154,6 +166,13 @@ public class RouteNode {
     }
 
     /**
+     * Returns true if this node has a fallback.
+     */
+    public boolean isFallbackAvailable() {
+        return fallback != null;
+    }
+
+    /**
      * Returns true if this node should be hidden from tab-complete.
      */
     public boolean isSuggestHidden() {
@@ -179,6 +198,13 @@ public class RouteNode {
             return CommandResult.fail();
         }
         return executor.apply(context);
+    }
+
+    public void executeFallback(CommandContext context) {
+        if (fallback == null) {
+            return;
+        }
+        fallback.accept(context);
     }
 
     /**

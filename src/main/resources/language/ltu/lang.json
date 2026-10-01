@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "Rastas pasenęs pasaulis pavadinimu \"{%0}\", atnaujinamas formatas",
   "nukkit.player.invalidEntity": "{%0} bandė atakuoti klaidingą būtybę",
   "nukkit.player.invalidMove": "{%0} neteisingai pajudėjo!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] prisijungė su būtybės id {%3} koordinatėse ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] prisijungė su būtybės uniqueId {%3} koordinatėse ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] atsijungė dėl {%3}",
   "nukkit.plugin.aliasError": "Neįmanoma įkelti alternatyvos {%0} įskiepiui {%1}",
   "nukkit.plugin.circularDependency": "Aptikta skritulinė priklausomybė",

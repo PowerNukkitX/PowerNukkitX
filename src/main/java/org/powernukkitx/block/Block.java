@@ -1598,6 +1598,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        return !(obj instanceof Block other) || this.layer == other.layer;
+    }
+
+    @Override
     public int hashCode() {
         return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23) ^ (layer << 31);
     }
@@ -1770,39 +1778,41 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * @return Can the block be pushed by the piston
+     * @return whether the block can be pushed by a piston
      */
     public boolean canBePushed() {
-        return definition.isCanBePushed();
+        return definition.isCanBePushed() && CustomBlockComponentBehavior.canBePushed(this);
     }
 
     /**
-     * @return Can the block be pulled by the piston
+     * @return whether the block can be pulled by a piston
      */
     public boolean canBePulled() {
-        return definition.isCanBePulled();
+        return definition.isCanBePulled() && CustomBlockComponentBehavior.canBePulled(this);
     }
 
     /**
-     * @return Will it break when moved by the piston
+     * @return whether the block is destroyed when moved by a piston
      */
     public boolean breaksWhenMoved() {
-        return definition.isBreaksWhenMoved();
+        return definition.isBreaksWhenMoved() || CustomBlockComponentBehavior.breaksWhenMoved(this);
     }
 
     /**
-     * @return Can it be stuck to a sticky piston
+     * @return whether the block can stick to a sticky piston or sticky moving block
      */
     public boolean sticksToPiston() {
-        return definition.isSticksToPiston();
+        return this.canBePushed() &&
+                this.canBePulled() &&
+                definition.isSticksToPiston() &&
+                CustomBlockComponentBehavior.sticksToPiston(this);
     }
 
     /**
-     * @return Can it stick to other blocks when moved by a piston
-     * For example, slime blocks or honey blocks.
+     * @return whether the block can move adjacent blocks with it, e.g. slime block, honey block
      */
     public boolean canSticksBlock() {
-        return definition.isCanStickBlocks();
+        return definition.isCanStickBlocks() || CustomBlockComponentBehavior.canSticksBlock(this);
     }
 
     public boolean hasComparatorInputOverride() {

@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "Znaleziono informacje o poziomie dla \"{%0}\", zmiana formatu",
   "nukkit.player.invalidEntity": "{%0} probowal zaatakowac niepoprawny byt",
   "nukkit.player.invalidMove": "{%0} poruszyl sie nieprawidlowo!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] zalogowal sie z id bytu {%3} na wspolrzednych ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] zalogowal sie z uniqueId bytu {%3} na wspolrzednych ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] rozlaczyl sie z powodu {%3}",
   "nukkit.plugin.aliasError": "Nie udalo sie wczytac aliasu {%0} dla pluginu {%1}",
   "nukkit.plugin.circularDependency": "Wykryto zapetlona zaleznosc",

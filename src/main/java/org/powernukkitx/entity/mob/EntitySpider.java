@@ -27,6 +27,7 @@ import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.components.RideableComponent;
 import org.powernukkitx.entity.passive.EntityArmadillo;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
@@ -389,23 +390,24 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
 
-        float stringChance = 0.70f + (0.10f * looting);
-        stringChance = Math.min(stringChance, 1.0f);
-
-        if (Utils.rand(0f, 1f) < stringChance) {
-            int amount = Utils.rand(1, 2 + looting);
-            drops.add(Item.get(Item.STRING, 0, amount));
+        int string = Utils.rand(0, 2 + looting);
+        if (string > 0) {
+            drops.add(Item.get(Item.STRING, 0, string));
         }
 
-        float eyeChance = 0.50f + (0.05f * looting);
-        eyeChance = Math.min(eyeChance, 1.0f);
-
-        if (Utils.rand(0f, 1f) < eyeChance) {
-            int amount = Utils.rand(1, 1 + looting);
-            drops.add(Item.get(Item.SPIDER_EYE, 0, amount));
+        if (killedByPlayer()) {
+            int eyes = Utils.rand(0, 1 + looting);
+            if (eyes > 0) {
+                drops.add(Item.get(Item.SPIDER_EYE, 0, eyes));
+            }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

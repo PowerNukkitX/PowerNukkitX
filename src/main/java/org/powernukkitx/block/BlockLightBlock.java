@@ -14,6 +14,8 @@ public class BlockLightBlock extends BlockTransparent {
             .canPassThrough(true)
             .canBeReplaced(true)
             .canHarvestWithHand(false)
+            .canBePushed(false)
+            .canBePulled(false)
             .canBeFlowedInto(true)
             .waterloggingLevel(2)
             .build();
