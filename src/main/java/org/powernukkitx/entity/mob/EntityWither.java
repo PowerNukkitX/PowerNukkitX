@@ -285,7 +285,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
     @Override
     public boolean attackTarget(Entity entity) {
-        if (entity instanceof EntityWither) return false;
+        if (entity instanceof EntityWither || entity.isUndead()) return false;
         return entity instanceof EntityIntelligent;
     }
 

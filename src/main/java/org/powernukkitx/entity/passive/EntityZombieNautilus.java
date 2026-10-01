@@ -3,6 +3,7 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -47,7 +48,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Buddelbubi
  * @since 2025/12/15
  */
-public class EntityZombieNautilus extends EntityNautilus {
+public class EntityZombieNautilus extends EntityNautilus implements EntitySmite {
 
     private static final String[] VARIANTS = {
         "default",
@@ -136,6 +137,11 @@ public class EntityZombieNautilus extends EntityNautilus {
     @Override
     public Set<String> typeFamily() {
         return Set.of("zombie_nautilus", "zombie", "undead", "mob");
+    }
+
+    @Override
+    public boolean isUndead() {
+        return true;
     }
 
     @Override

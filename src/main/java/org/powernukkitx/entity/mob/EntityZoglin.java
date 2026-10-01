@@ -3,6 +3,7 @@ package org.powernukkitx.entity.mob;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class EntityZoglin extends EntityMob implements EntityWalkable {
+public class EntityZoglin extends EntityMob implements EntityWalkable, EntitySmite {
 
     @Override
     @NotNull public String getIdentifier() {
