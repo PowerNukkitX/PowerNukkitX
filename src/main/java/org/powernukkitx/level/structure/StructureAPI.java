@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -67,6 +68,22 @@ public class StructureAPI {
             return file;
         }
         return resolvePathRoot(name);
+    }
+
+    /**
+     * Same as {@link #load(String)}, but reads the file on the compute thread pool.
+     * Completes immediately when the structure is already cached.
+     *
+     * @param name structure name, either namespaced ({@code ns:name}) or relative to the structure directory
+     * @return future completing with the structure, or with {@code null} if it is missing, unreadable
+     * or resolves outside the structure directory
+     */
+    public static CompletableFuture<Structure> loadAsync(String name) {
+        Structure cached = structureCache.get(name);
+        if (cached != null) {
+            return CompletableFuture.completedFuture(cached);
+        }
+        return CompletableFuture.supplyAsync(() -> load(name), Server.getInstance().getComputeThreadPool());
     }
 
     public static Structure load(String name) {
