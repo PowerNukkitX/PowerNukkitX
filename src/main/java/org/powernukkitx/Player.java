@@ -1196,6 +1196,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.pendingClose = reason;
     }
 
+    private boolean closeIfRequested() {
+        final String closeReason = this.pendingClose;
+        if (closeReason == null) {
+            return false;
+        }
+        this.pendingClose = null;
+        this.close(closeReason);
+        return true;
+    }
+
     /**
      * Offers a new movement task to the player, considering distance and rotation thresholds.
      * Also handles the special case where an erroneous position may be received right after teleportation.
@@ -2255,7 +2265,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public boolean canCollide() {
-        return gamemode != SPECTATOR;
+        return super.canCollide() && gamemode != SPECTATOR;
     }
 
     @Override
@@ -3046,15 +3056,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         positionTrackingService.forceRecheck(this);
     }
 
+    private boolean callPacketSendEvent(BedrockPacket packet){
+        if (PacketSendEvent.getHandlers().isEmpty()){
+            return true;
+        }
+        final PacketSendEvent event = new PacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(event);
+        return !event.isCancelled();
+    }
+
     /**
      * Sends a packet to network session
      *
      * @param packet packet to send
      */
     public void sendPacket(BedrockPacket packet) {
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
+        // Deliberately the session's flag and not isConnected(): close() clears the player's own
+        // flag on entry and still sends packets while it tears the player down.
+        if (!this.session.isConnected()) {
+            return;
+        }
+        if (!this.callPacketSendEvent(packet)) {
             return;
         }
         this.getSession().sendPacket(packet);
@@ -3293,10 +3315,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.isSpectator()) {
             this.onGround = false;
-            this.setDataFlag(ActorFlags.HAS_COLLISION, false);
-        } else {
-            this.setDataFlag(ActorFlags.HAS_COLLISION, true);
         }
+        this.setDataFlag(ActorFlags.HAS_COLLISION, this.canCollide());
 
         this.nbt.putInt("playerGameType", this.gamemode);
 
@@ -3520,6 +3540,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (!this.isAlive() && this.spawned) {
             this.drainInboundPackets();
+            if (this.closeIfRequested()) {
+                return true;
+            }
             if (this.isAlive()) {
                 return true;
             }
@@ -3544,10 +3567,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 return true;
             }
 
-            if (this.pendingClose != null) {
-                final String closeReason = this.pendingClose;
-                this.pendingClose = null;
-                this.close(closeReason);
+            if (this.closeIfRequested()) {
                 return true;
             }
 
@@ -6583,9 +6603,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isConnected()) {
             return false;
         }
-        final PacketSendEvent event = new PacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
+        if (!this.callPacketSendEvent(packet)) {
             return false;
         }
         this.getSession().sendPacketImmediately(packet);

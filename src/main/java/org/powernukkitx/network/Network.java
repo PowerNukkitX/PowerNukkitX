@@ -189,6 +189,7 @@ public class Network implements NetworkInterface, SignalingService {
                 .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[]{codec.getRaknetProtocolVersion()})
                 .option(RakChannelOption.RAK_PACKET_LIMIT, rak.packetLimit())
                 .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, parseCookieMode(rak.cookieMode()))
+                .childOption(RakChannelOption.RAK_PROTOCOL_VERSION, codec.getRaknetProtocolVersion())
                 .childOption(RakChannelOption.RAK_AUTO_FLUSH, rak.autoFlush())
                 .childOption(RakChannelOption.RAK_FLUSH_INTERVAL, rak.flushInterval())
                 .childOption(RakChannelOption.RAK_MAX_QUEUED_BYTES, rak.maxQueuedBytes())
@@ -317,17 +318,15 @@ public class Network implements NetworkInterface, SignalingService {
 
     /**
      * Resolves the configured RakNet connection-cookie mode, falling back to {@link RakServerCookieMode#ACTIVE}
-     * (the RakNet default) for unknown or invalid values.
+     * for unknown values.
      */
     private RakServerCookieMode parseCookieMode(String mode) {
         try {
-            RakServerCookieMode parsed = RakServerCookieMode.valueOf(mode.trim().toUpperCase(Locale.ROOT));
-            if (parsed != RakServerCookieMode.INVALID) {
-                return parsed;
-            }
+            return RakServerCookieMode.valueOf(mode.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ignored) {
         }
-        log.warn("Invalid network cookie-mode '{}', falling back to ACTIVE. Valid values: ACTIVE, OFFLOADED, OFFLOADED_PSK, OFF", mode);
+        log.warn("Invalid network cookie-mode '{}', falling back to ACTIVE. "
+            + "Valid values: ACTIVE, OFFLOADED, OFFLOADED_PSK, OFF, INVALID", mode);
         return RakServerCookieMode.ACTIVE;
     }
 

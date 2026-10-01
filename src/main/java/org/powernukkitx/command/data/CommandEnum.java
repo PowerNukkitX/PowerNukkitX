@@ -235,6 +235,17 @@ public class CommandEnum {
     }
 
     /**
+     * Returns whether the given object is a command enum with the same name.
+     *
+     * @param obj the object to compare with
+     * @return whether both enums share the same name
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof CommandEnum other && this.name.equals(other.name);
+    }
+
+    /**
      * Returns the hash code for this enum, based on its name.
      *
      * @return the hash code

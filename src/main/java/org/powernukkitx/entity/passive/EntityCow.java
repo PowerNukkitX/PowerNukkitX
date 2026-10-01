@@ -192,7 +192,6 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
         if (superResult) return true;
 
         if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
-            item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
         }

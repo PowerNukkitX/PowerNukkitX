@@ -1867,6 +1867,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        return !(obj instanceof Block other) || this.layer == other.layer;
+    }
+
+    @Override
     public int hashCode() {
         return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23) ^ (layer << 31);
     }
