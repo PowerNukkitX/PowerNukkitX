@@ -66,14 +66,27 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
     public void handle(InventoryTransactionPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
-        if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_USE)) {
-            handleUseItem(playerHandle, (ItemUseInventoryTransaction) packet.getTransaction());
-        } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_USE_ON_ACTOR)) {
-            handleUseItemOnEntity(playerHandle, (ItemUseOnActorInventoryTransaction) packet.getTransaction());
-        } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.ITEM_RELEASE)) {
+        final var transaction = packet.getTransaction();
+        if (transaction == null || !player.spawned) {
+            return;
+        }
+
+        if (!player.isAlive()) {
+            // The client may have placed a block before it learned it died, so undo its prediction
+            if (transaction instanceof ItemUseInventoryTransaction itemUse && itemUse.getActionType() == ItemUseActionType.PLACE) {
+                resyncPlace(player, itemUse);
+            }
+            return;
+        }
+
+        if (transaction.getType().equals(InventoryTransactionDataType.ITEM_USE)) {
+            handleUseItem(playerHandle, (ItemUseInventoryTransaction) transaction);
+        } else if (transaction.getType().equals(InventoryTransactionDataType.ITEM_USE_ON_ACTOR)) {
+            handleUseItemOnEntity(playerHandle, (ItemUseOnActorInventoryTransaction) transaction);
+        } else if (transaction.getType().equals(InventoryTransactionDataType.ITEM_RELEASE)) {
             try {
                 final ItemReleaseInventoryTransaction releaseInventoryTransaction =
-                        (ItemReleaseInventoryTransaction) packet.getTransaction();
+                        (ItemReleaseInventoryTransaction) transaction;
                 ItemReleaseActionType type = releaseInventoryTransaction.getActionType();
                 final Item itemFromNetwork = Item.fromNetwork(releaseInventoryTransaction.getItem());
                 if (type.equals(ItemReleaseActionType.RELEASE)) {
@@ -100,17 +113,17 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             } finally {
                 player.clearLastUsedItem();
             }
-        } else if (packet.getTransaction().getType().equals(InventoryTransactionDataType.NORMAL)) {
+        } else if (transaction.getType().equals(InventoryTransactionDataType.NORMAL)) {
             // looks like an action index swap for u3
-            if (packet.getTransaction().getActions().getActions().size() == 2 &&
-                    packet.getTransaction().getActions().getActions().get(1).getSource().getSourceType().equals(InventorySourceType.WORLD_INTERACTION) &&
-                    (packet.getTransaction().getActions().getActions().get(1).getSource().getBitFlags() == null ||
-                            packet.getTransaction().getActions().getActions().get(1).getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG)) &&
-                    packet.getTransaction().getActions().getActions().getFirst().getSource().getSourceType().equals(InventorySourceType.CONTAINER_INVENTORY) &&
-                    (packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags() == null ||
-                            packet.getTransaction().getActions().getActions().getFirst().getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG))) { //handle throw hotbar item for player
-                final int slot = packet.getTransaction().getActions().getActions().getFirst().getSlot();
-                final int count = Math.min(packet.getTransaction().getActions().getActions().get(1).getToItem().getCount(), player.getInventory().getItem(slot).getCount());
+            if (transaction.getActions().getActions().size() == 2 &&
+                    transaction.getActions().getActions().get(1).getSource().getSourceType().equals(InventorySourceType.WORLD_INTERACTION) &&
+                    (transaction.getActions().getActions().get(1).getSource().getBitFlags() == null ||
+                            transaction.getActions().getActions().get(1).getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG)) &&
+                    transaction.getActions().getActions().getFirst().getSource().getSourceType().equals(InventorySourceType.CONTAINER_INVENTORY) &&
+                    (transaction.getActions().getActions().getFirst().getSource().getBitFlags() == null ||
+                            transaction.getActions().getActions().getFirst().getSource().getBitFlags().equals(InventorySourceFlags.NO_FLAG))) { //handle throw hotbar item for player
+                final int slot = transaction.getActions().getActions().getFirst().getSlot();
+                final int count = Math.min(transaction.getActions().getActions().get(1).getToItem().getCount(), player.getInventory().getItem(slot).getCount());
                 dropHotBarItemForPlayer(slot, count, player);
             }
         }
@@ -285,6 +298,18 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
         }
     }
 
+    private void resyncPlace(@NotNull Player player, @NotNull ItemUseInventoryTransaction transaction) {
+        player.getInventory().sendSlot(transaction.getSlot(), player);
+        BlockVector3 blockVector = BlockVector3.fromNetwork(transaction.getPosition());
+        if (blockVector.distanceSquared(player) > 10000) {
+            return;
+        }
+        Block target = player.level.getBlock(blockVector.asVector3());
+        Block block = target.getSide(BlockFace.fromIndex(transaction.getFace()));
+        player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC));
+        player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC), 1);
+    }
+
     private void handleUseItem(@NotNull PlayerHandle playerHandle, @NotNull ItemUseInventoryTransaction transaction) {
         Player player = playerHandle.player;
         BlockVector3 blockVector = BlockVector3.fromNetwork(transaction.getPosition());
@@ -320,14 +345,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                         }
                     }
                 }
-                player.getInventory().sendSlot(transaction.getSlot(), player);
-                if (blockVector.distanceSquared(player) > 10000) {
-                    return;
-                }
-                Block target = player.level.getBlock(blockVector.asVector3());
-                Block block = target.getSide(face);
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC));
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC), 1);
+                resyncPlace(player, transaction);
             }
             case USE -> {
                 Item item;
@@ -394,7 +412,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
             }
             case DESTROY -> {
                 //Creative mode use PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK
-                if (!player.spawned || !player.isAlive() || player.isCreative()) {
+                if (player.isCreative()) {
                     return;
                 }
                 player.resetInventory();
