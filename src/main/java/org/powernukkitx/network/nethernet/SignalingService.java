@@ -1,6 +1,6 @@
 package org.powernukkitx.network.nethernet;
 
-import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetServerSignaling.PongData;
+import org.cloudburstmc.netty.channel.nethernet.signaling.PongData;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;

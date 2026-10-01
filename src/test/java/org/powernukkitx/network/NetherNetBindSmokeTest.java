@@ -5,8 +5,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.cloudburstmc.netty.channel.nethernet.NetherNetChannelFactory;
-import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetHTTPSignaling;
-import org.cloudburstmc.netty.util.nethernet.ServerIdentity;
+import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetHTTPServerSignaling;
+import org.cloudburstmc.netty.util.nethernet.OperatorIdentity;
 import org.junit.jupiter.api.Test;
 import tel.schich.libdatachannel.LibDataChannelArchDetect;
 
@@ -24,8 +24,8 @@ class NetherNetBindSmokeTest {
     void bindsSignalling() throws Exception {
         LibDataChannelArchDetect.initialize();
 
-        ServerIdentity identity = ServerIdentity.generate("PowerNukkitX Test");
-        NetherNetHTTPSignaling signaling = new NetherNetHTTPSignaling.Builder()
+        OperatorIdentity identity = OperatorIdentity.generate("PowerNukkitX Test");
+        NetherNetHTTPServerSignaling signaling = new NetherNetHTTPServerSignaling.Builder()
             .setIdentity(identity)
             .setServeHttp(true)
             .build();
