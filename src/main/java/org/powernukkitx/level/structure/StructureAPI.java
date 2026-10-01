@@ -5,14 +5,13 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,9 +54,17 @@ public class StructureAPI {
         }
     }
 
-    public static CompletableFuture<Structure> loadAsync(String name){
+    /**
+     * Same as {@link #load(String)}, but reads the file on the compute thread pool.
+     * Completes immediately when the structure is already cached.
+     *
+     * @param name structure name, either namespaced ({@code ns:name}) or relative to the structure directory
+     * @return future completing with the structure, or with {@code null} if it is missing, unreadable
+     * or resolves outside the structure directory
+     */
+    public static CompletableFuture<Structure> loadAsync(String name) {
         Structure cached = structureCache.get(name);
-        if (cached != null){
+        if (cached != null) {
             return CompletableFuture.completedFuture(cached);
         }
         return CompletableFuture.supplyAsync(() -> load(name), Server.getInstance().getComputeThreadPool());
@@ -70,7 +77,7 @@ public class StructureAPI {
         }
 
         File file = resolvePathWithFallback(name);
-        if (file == null){
+        if (file == null) {
             return null;
         }
 
@@ -94,7 +101,7 @@ public class StructureAPI {
     public static void save(Structure structure, String name) {
         try {
             File file = resolvePathNamespaced(name); // always save in namespace path
-            if (file == null){
+            if (file == null) {
                 return;
             }
             file.getParentFile().mkdirs();
@@ -121,7 +128,7 @@ public class StructureAPI {
         structureCache.remove(name);
 
         File file = resolvePathWithFallback(name);
-        if (file == null){
+        if (file == null) {
             return false;
         }
 

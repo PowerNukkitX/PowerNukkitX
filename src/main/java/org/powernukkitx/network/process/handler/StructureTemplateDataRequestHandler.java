@@ -32,6 +32,7 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
 
         final long playerId = player.getId();
         if (!PENDING_REQUESTS.add(playerId)) {
+            player.sendPacket(createResponse(packet, null));
             return;
         }
 
@@ -40,13 +41,15 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
             .thenApply(structure -> createResponse(packet, structure))
             .whenComplete((responsePacket, error) -> server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
                 PENDING_REQUESTS.remove(playerId);
-                if (error != null) {
-                    log.debug("Failed to load structure {} for {}", structureName, player.getName(), error);
+                if (!player.isOnline()) {
                     return;
                 }
-                if (player.isOnline()) {
-                    player.sendPacket(responsePacket);
+                if (error != null) {
+                    log.debug("Failed to load structure {} for {}", structureName, player.getName(), error);
+                    player.sendPacket(createResponse(packet, null));
+                    return;
                 }
+                player.sendPacket(responsePacket);
             }));
     }
 
