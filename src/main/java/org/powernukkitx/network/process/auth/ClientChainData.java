@@ -11,8 +11,6 @@ import org.cloudburstmc.protocol.bedrock.data.PlatformType;
 import org.cloudburstmc.protocol.bedrock.data.UserInterfaceProfile;
 import org.jose4j.jwt.JwtClaims;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -133,10 +131,16 @@ public class ClientChainData {
             return null;
         }
         UUID selfSignedId;
-        try {
-            selfSignedId = UUID.fromString(selfSignedIdStr);
-        } catch (Exception e) {
-            return null;
+        if (selfSignedIdStr.isEmpty()) {
+            // some clients (e.g. connecting through a proxy) send an empty SelfSignedId - it is only
+            // stored, never trusted, so fall back to a nil UUID instead of rejecting the login
+            selfSignedId = new UUID(0L, 0L);
+        } else {
+            try {
+                selfSignedId = UUID.fromString(selfSignedIdStr);
+            } catch (Exception e) {
+                return null;
+            }
         }
         if (!map.containsKey("ClientEditorConnectionIntent")) {
             return null;

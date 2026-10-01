@@ -2,9 +2,11 @@ package org.powernukkitx.recipe;
 
 import org.powernukkitx.item.Item;
 import org.powernukkitx.recipe.descriptor.DefaultDescriptor;
+import org.powernukkitx.recipe.descriptor.ItemDescriptor;
 import org.powernukkitx.registry.RecipeRegistry;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class CampfireRecipe extends SmeltingRecipe {
@@ -18,6 +20,12 @@ public class CampfireRecipe extends SmeltingRecipe {
                 recipeId);
         this.results.add(result);
         this.ingredients.add(new DefaultDescriptor(ingredient));
+    }
+
+    public CampfireRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, ItemDescriptor ingredient) {
+        super(recipeId, uuid, netId, priority);
+        this.results.add(result.clone());
+        this.ingredients.add(ingredient);
     }
 
     @Override

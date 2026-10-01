@@ -50,6 +50,9 @@ public class Attribute implements Cloneable {
     public static final int HORSE_JUMP_STRENGTH = 12;
     public static final int UNDER_WATER_MOVEMENT_SPEED = 13;
     public static final int LAVA_MOVEMENT_SPEED = 14;
+    public static final int FRICTION_MODIFIER = 15;
+    public static final int BOUNCINESS = 16;
+    public static final int AIR_DRAG_MODIFIER = 17;
 
     protected static Map<Integer, Attribute> attributes = new HashMap<>();
     private final int id;
@@ -75,9 +78,9 @@ public class Attribute implements Cloneable {
     }
 
     public static void init() {
-        addAttribute(ABSORPTION, "minecraft:absorption", 0.00f, 340282346638528859811704183484516925440.00f, 0.00f);
+        addAttribute(ABSORPTION, "minecraft:absorption", 0.00f, 16.00f, 0.00f);
         addAttribute(SATURATION, "minecraft:player.saturation", 0.00f, 20.00f, 5.00f);
-        addAttribute(EXHAUSTION, "minecraft:player.exhaustion", 0.00f, 5.00f, 0.41f);
+        addAttribute(EXHAUSTION, "minecraft:player.exhaustion", 0.00f, 20.00f, 0.00f);
         addAttribute(KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00f, 1.00f, 0.00f);
         addAttribute(HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
         addAttribute(MOVEMENT_SPEED, "minecraft:movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.10f);
@@ -88,7 +91,10 @@ public class Attribute implements Cloneable {
         addAttribute(ATTACK_DAMAGE, "minecraft:attack_damage", 0.00f, 340282346638528859811704183484516925440.00f, 1.00f, false);
         addAttribute(EXPERIENCE_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f);
         addAttribute(EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f);
-        addAttribute(LUCK, "minecraft:luck", -1024, 1024, 0);
+        addAttribute(LUCK, "minecraft:luck", -1024.00f, 1024.00f, 0.00f);
+        addAttribute(FRICTION_MODIFIER, "minecraft:friction_modifier", 0.00f, 256.00f, 1.00f);
+        addAttribute(BOUNCINESS, "minecraft:bounciness", 0.00f, 1.00f, 0.00f);
+        addAttribute(AIR_DRAG_MODIFIER, "minecraft:air_drag_modifier", 0.00f, 256.00f, 1.00f);
         addAttribute(HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0, 0.7101778f, 0.7101778f);
     }
 

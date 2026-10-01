@@ -31,7 +31,11 @@ public class NKServiceManager implements ServiceManager {
 
             RegisteredServiceProvider<T> registered = new RegisteredServiceProvider<>(service, instance, priority, plugin);
 
-            int position = Collections.binarySearch(list, registered);
+            int position = Collections.binarySearch(
+                    list,
+                    registered,
+                    (a, b) -> b.getPriority().ordinal() - a.getPriority().ordinal()
+            );
 
             if (position > -1) return false;
 

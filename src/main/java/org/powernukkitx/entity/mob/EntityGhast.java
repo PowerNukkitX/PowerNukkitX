@@ -1,5 +1,6 @@
 package org.powernukkitx.entity.mob;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
@@ -20,6 +21,8 @@ import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.projectile.EntityFireball;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
+import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
@@ -113,18 +116,20 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
 
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 1) == 1) {
-            int amount = Utils.rand(0, 1 + looting);
-            if (amount > 0) {
-                drops.add(Item.get(Item.GHAST_TEAR, 0, amount));
-            }
+        int tears = Utils.rand(0, 1 + looting);
+        if (tears > 0) {
+            drops.add(Item.get(Item.GHAST_TEAR, 0, tears));
         }
 
-        if (Utils.rand(0, 2) != 0) {
-            int amount = Utils.rand(0, 2 + looting);
-            if (amount > 0) {
-                drops.add(Item.get(Item.GUNPOWDER, 0, amount));
-            }
+        int gunpowder = Utils.rand(0, 2 + looting);
+        if (gunpowder > 0) {
+            drops.add(Item.get(Item.GUNPOWDER, 0, gunpowder));
+        }
+
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
+                && event.getDamager() instanceof Player) {
+            drops.add(Item.get(Item.MUSIC_DISC_TEARS));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);

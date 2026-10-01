@@ -9,7 +9,6 @@ public class ItemCopperBoots extends ItemArmor {
             .boots(true)
             .maxDurability(143)
             .tier(WEARABLE_TIER_COPPER)
-            .toughness(2)
             .build();
 
     public ItemCopperBoots() {

@@ -70,6 +70,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
+    private static final int MAX_ARMOR_POINTS = 30;
+    private static final int MAX_TOUGHNESS_POINTS = 20;
+    private static final double MAX_EFFECTIVE_ARMOR_POINTS = 20.0;
+    private static final double ARMOR_REDUCTION_DIVISOR = 25.0;
     private static final int SHIELD_TRANSITION_TICKS = 2;
     private static final int SHIELD_ATTACK_REENABLE_DELAY_TICKS = 6;
 
@@ -81,6 +85,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    protected static float calculateDamageReduction(float damage, int armorPoints, int toughnessPoints) {
+        int cappedArmorPoints = Math.max(0, Math.min(armorPoints, MAX_ARMOR_POINTS));
+        int cappedToughnessPoints = Math.max(0, Math.min(toughnessPoints, MAX_TOUGHNESS_POINTS));
+
+        double effectiveArmorPoints = Math.min(
+                MAX_EFFECTIVE_ARMOR_POINTS,
+                Math.max(
+                        cappedArmorPoints / 5.0,
+                        cappedArmorPoints - damage / (2.0 + cappedToughnessPoints / 4.0)
+                )
+        );
+
+        return (float) (damage * effectiveArmorPoints / ARMOR_REDUCTION_DIVISOR);
     }
 
     @Override
@@ -313,7 +332,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         super.setHealthCurrent(health);
         if (this.isAlive() && !wasAlive) {
             final ActorEventPacket pk = new ActorEventPacket();
-            pk.setTargetRuntimeID(this.getId());
+            pk.setTargetRuntimeID(this.runtimeId());
             pk.setType(ActorEvent.SPAWN_ALIVE);
             Server.broadcastPacket(this.hasSpawned.values(), pk);
         }
@@ -450,7 +469,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
                 if (event.isCriticalHit()) {
                     final AnimatePacket animatePacket = new AnimatePacket();
-                    animatePacket.setTargetRuntimeID(this.getId());
+                    animatePacket.setTargetRuntimeID(this.runtimeId());
                     animatePacket.setAction(AnimatePacket.Action.CRITICAL_HIT);
                     animatePacket.setData(55f);
 
@@ -466,7 +485,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     }
                     if (enchantmentBonus > 0) {
                         final AnimatePacket magicCritPacket = new AnimatePacket();
-                        magicCritPacket.setTargetRuntimeID(this.getId());
+                        magicCritPacket.setTargetRuntimeID(this.runtimeId());
                         magicCritPacket.setAction(AnimatePacket.Action.MAGIC_CRITICAL_HIT);
                         magicCritPacket.setData(55f);
 
@@ -484,7 +503,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
 
             final ActorEventPacket actorEventPacket = new ActorEventPacket();
-            actorEventPacket.setTargetRuntimeID(this.getId());
+            actorEventPacket.setTargetRuntimeID(this.runtimeId());
             actorEventPacket.setType(this.getHealthCurrent() <= 0 ? ActorEvent.DEATH : ActorEvent.HURT);
             Server.broadcastPacket(this.hasSpawned.values(), actorEventPacket);
 
@@ -1286,7 +1305,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public void sendBreedingAnimation(Item item) {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setType(ActorEvent.FEED);
         pk.setData(item.getFullId());
         Server.broadcastPacket(this.getViewers().values(), pk);
@@ -1294,7 +1313,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public void sendLoveParticles() {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(this.getId());
+        pk.setTargetRuntimeID(this.runtimeId());
         pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
@@ -1338,7 +1357,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
 
-    // Try heal entity by using item / food
+    // Try to heal entity by using item / food
     protected boolean tryHeal(Player player, Item item) {
         HealableComponent healable = getComponentHealable();
         if (healable == null || healable.isEmpty()) return false;

@@ -279,7 +279,7 @@ public class Palette<V> {
             if (storedVersion != 0) {
                 version = storedVersion;
             } else {
-                SemVersion semVersion = SemVersion.fromString(NetworkConstants.CODEC.getMinecraftVersion());
+                SemVersion semVersion = SemVersion.fromString(NetworkConstants.DATA_FORMAT_VERSION);
                 version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
             }
 

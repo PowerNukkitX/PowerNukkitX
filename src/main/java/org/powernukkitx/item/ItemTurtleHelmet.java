@@ -8,7 +8,6 @@ public class ItemTurtleHelmet extends ItemArmor {
             .helmet(true)
             .maxDurability(276)
             .tier(Item.WEARABLE_TIER_OTHER)
-            .toughness(2)
             .build();
 
     public ItemTurtleHelmet() {

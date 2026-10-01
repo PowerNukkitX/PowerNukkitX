@@ -33,7 +33,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         }
 
         for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
+            this.inventory.setItemInternal(i, this.getItem(i));
         }
     }
 
@@ -117,7 +117,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.nbt.remove("CustomName");
             return;
         }

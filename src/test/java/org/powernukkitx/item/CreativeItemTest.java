@@ -1,6 +1,7 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.registry.BlockRegistry;
 import org.powernukkitx.registry.CreativeItemRegistry;
 import org.powernukkitx.registry.Registries;
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ public class CreativeItemTest {
                     int damage = ((Number) tag.getOrDefault("damage", 0)).intValue();
                     var nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
                     String name = tag.get("id").toString();
+                    if (BlockRegistry.shouldSkip(name)) continue; // blocks that have no implementation yet
                     Item item = Item.get(name, damage, 1, nbt, false);
                     if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                         throw new IllegalArgumentException("creative index " + i + " " + name);

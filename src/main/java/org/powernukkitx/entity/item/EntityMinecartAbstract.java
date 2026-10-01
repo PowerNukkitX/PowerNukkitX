@@ -140,6 +140,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         if (isAlive()) {
             super.onUpdate(currentTick);
 
+            if (this.closed) {
+                return false;
+            }
+
             // The damage token
             if (getHealthCurrent() < 20) {
                 setHealthCurrent(getHealthCurrent() + 1);
@@ -207,12 +211,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
             setRotation(yawToChange, pitch);
 
-            Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-            Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+            boolean fireMoveEvent = !VehicleMoveEvent.getHandlers().isEmpty();
+            Location from = fireMoveEvent ? new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level) : null;
+            Location to = fireMoveEvent ? new Location(this.x, this.y, this.z, this.yaw, this.pitch, level) : null;
 
-            this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+            if (!VehicleUpdateEvent.getHandlers().isEmpty()) {
+                this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+            }
 
-            if (!from.equals(to)) {
+            if (fireMoveEvent && !from.equals(to)) {
                 this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
             }
 
@@ -782,7 +789,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     /**
      * Set the minecart display block
      *
-     * @param block The block that will changed. Set {@code null} for BlockAir
+     * @param block The block that will be changed. Set {@code null} for BlockAir
      * @return {@code true} if the block is normal block
      */
     public boolean setDisplayBlock(Block block) {
@@ -792,7 +799,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     /**
      * Set the minecart display block
      *
-     * @param block  The block that will changed. Set {@code null} for BlockAir
+     * @param block  The block that will be changed. Set {@code null} for BlockAir
      * @param update Do update for the block. (This state changes if you want to show the block)
      * @return {@code true} if the block is normal block
      */

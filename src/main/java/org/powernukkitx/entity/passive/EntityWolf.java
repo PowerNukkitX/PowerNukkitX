@@ -126,17 +126,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.425f;
-        }
         return 0.8f;
     }
 
@@ -298,7 +292,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
+            Long ownerEid = getDataProperty(ActorDataTypes.OWNER);
+            if (owner != null && !Long.valueOf(owner.getId()).equals(ownerEid)) {
                 this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
             }
         }
@@ -574,10 +569,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                         ),
                         new Behavior(
                                 new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
-                                all(
-                                        e -> !this.isSitting(),
-                                        new ProbabilityEvaluator(5, 10)
-                                ),
+                                e -> !this.isSitting(),
                                 1, 1, 50
                         )
                 )

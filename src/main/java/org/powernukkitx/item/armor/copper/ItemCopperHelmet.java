@@ -9,7 +9,6 @@ public class ItemCopperHelmet extends ItemArmor {
             .helmet(true)
             .maxDurability(122)
             .tier(WEARABLE_TIER_COPPER)
-            .toughness(2)
             .build();
 
     public ItemCopperHelmet() {

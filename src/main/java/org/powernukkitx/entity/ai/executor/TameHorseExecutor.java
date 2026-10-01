@@ -94,7 +94,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                 var horse = (EntityHorse) entity;
                 horse.setOwnerName(horse.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME));
                 final ActorEventPacket packet = new ActorEventPacket();
-                packet.setTargetRuntimeID(horse.getId());
+                packet.setTargetRuntimeID(horse.runtimeId());
                 packet.setType(ActorEvent.TAMING_SUCCEEDED);
                 Player player = (Player) horse.getRider();
                 if (player == null) {
@@ -104,7 +104,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
             } else {
                 var horse = (EntityHorse) entity;
                 final ActorEventPacket packet = new ActorEventPacket();
-                packet.setTargetRuntimeID(horse.getId());
+                packet.setTargetRuntimeID(horse.runtimeId());
                 packet.setType(ActorEvent.TAMING_FAILED);
                 Player player = (Player) horse.getRider();
                 if (player == null) {

@@ -3,6 +3,7 @@ package org.powernukkitx.entity.mob;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class EntityZoglin extends EntityMob implements EntityWalkable {
+public class EntityZoglin extends EntityMob implements EntityWalkable, EntitySmite {
 
     @Override
     @NotNull public String getIdentifier() {
@@ -68,18 +69,18 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public float getBabyScale() {
+        // baby zoglin is 0.85 wide against the adult's 1.4
+        return 0.6071f;
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 

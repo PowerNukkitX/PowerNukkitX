@@ -10,6 +10,7 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandParamData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -173,6 +174,26 @@ public class NukkitCommandData implements Cloneable {
         }
     }
 
+    private static List<CommandParameter[]> expandOptionalRestOfLine(CommandParameter[] parameters) {
+        int greedy = -1;
+        for (int i = 0; i < parameters.length; i++) {
+            if (parameters[i] != null && parameters[i].optional && parameters[i].isRestOfLine()) {
+                greedy = i;
+                break;
+            }
+        }
+        if (greedy < 0) {
+            return List.<CommandParameter[]>of(parameters);
+        }
+
+        final CommandParameter[] without = Arrays.copyOfRange(parameters, 0, greedy);
+        final CommandParameter[] with = new CommandParameter[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            with[i] = i <= greedy ? parameters[i].asRequired() : parameters[i];
+        }
+        return List.of(without, with);
+    }
+
     public CommandData toNetwork() {
         final Set<CommandData.Flag> flags = new ObjectOpenHashSet<>();
         for (Flag flag : this.flags) {
@@ -185,16 +206,18 @@ public class NukkitCommandData implements Cloneable {
         final List<CommandOverloadData> overloadDataList = new ObjectArrayList<>();
         for (Map.Entry<String, CommandOverload> entry : this.overloads.entrySet()) {
             final CommandOverload value = entry.getValue();
-            final List<CommandParamData> params = new ObjectArrayList<>();
-            for (CommandParameter parameter : value.input.parameters) {
-                params.add(parameter.toNetwork());
+            for (CommandParameter[] parameters : expandOptionalRestOfLine(value.input.parameters)) {
+                final List<CommandParamData> params = new ObjectArrayList<>();
+                for (CommandParameter parameter : parameters) {
+                    params.add(parameter.toNetwork());
+                }
+                overloadDataList.add(
+                        new CommandOverloadData(
+                                value.chaining,
+                                params.toArray(CommandParamData[]::new)
+                        )
+                );
             }
-            overloadDataList.add(
-                    new CommandOverloadData(
-                            value.chaining,
-                            params.toArray(CommandParamData[]::new)
-                    )
-            );
         }
         return new CommandData(
                 this.name,

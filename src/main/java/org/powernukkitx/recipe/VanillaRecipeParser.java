@@ -172,7 +172,8 @@ public class VanillaRecipeParser {
                 case FURNACE_TAG -> new FurnaceRecipe(description(recipeData), output, input);
                 case SMOKER_TAG -> new SmokerRecipe(description(recipeData), output, input);
                 case BLAST_FURNACE_TAG -> new BlastFurnaceRecipe(description(recipeData), output, input);
-                case CAMPFIRE_TAG, SOUL_CAMPFIRE_TAG -> new CampfireRecipe(description(recipeData), output, input);
+                case CAMPFIRE_TAG -> new CampfireRecipe(description(recipeData), output, input);
+                case SOUL_CAMPFIRE_TAG -> new SoulCampfireRecipe(description(recipeData), output, input);
                 default -> throw new IllegalArgumentException(tag);
             };
             Registries.RECIPE.register(recipe);

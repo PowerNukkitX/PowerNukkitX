@@ -63,14 +63,16 @@ public class ItemShield extends ItemTool {
             this.clearNamedTag();
             return;
         }
-        CompoundTag tag;
-        if (!hasBannerPattern()) {
-            tag = new CompoundTag();
-        } else {
-            tag = this.getNbt();
-        }
-        for (var e : banner.getNbt().getEntrySet()) {
-            tag.put(e.getKey(), e.getValue());
+        CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
+        tag.remove("Type", "Patterns");
+        CompoundTag bannerNbt = banner.getNbt();
+        if (bannerNbt != null) {
+            if (bannerNbt.contains("Type")) {
+                tag.put("Type", bannerNbt.get("Type").copy());
+            }
+            if (bannerNbt.contains("Patterns")) {
+                tag.put("Patterns", bannerNbt.get("Patterns").copy());
+            }
         }
         tag.putInt("Base", banner.getBaseColor());
         this.setNbt(tag);

@@ -45,12 +45,20 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         final CompoundTag nbtMap = getNbt();
         for (int i = 1; i <= burnTime.length; i++) {
             burnTime[i - 1] = nbtMap.getInt("ItemTime" + i);
-            keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + 1);
+            keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + i);
 
             if (this.nbt.contains("Item" + i) && this.nbt.get("Item" + i) instanceof CompoundTag itemNBT) {
-                inventory.setItem(i - 1, ItemHelper.read(itemNBT));
+                inventory.setItemInternal(i - 1, ItemHelper.read(itemNBT));
             }
         }
+    }
+
+    protected CampfireRecipe findRecipe(Item item) {
+        if (getBlock().getId().equals(BlockID.SOUL_CAMPFIRE)) {
+            return this.server.getRecipeRegistry().findSoulCampfireRecipe(item);
+        }
+
+        return this.server.getRecipeRegistry().findCampfireRecipe(item);
     }
 
     @Override
@@ -66,7 +74,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
             } else if (!keepItem[slot]) {
                 CampfireRecipe recipe = recipes[slot];
                 if (recipe == null) {
-                    recipe = this.server.getRecipeRegistry().findCampfireRecipe(item);
+                    recipe = findRecipe(item);
                     if (recipe == null) {
                         inventory.setItem(slot, Item.AIR);
                         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -126,7 +134,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         super.saveNBT();
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
-            if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
+            if (item.isNull()) {
                 this.nbt.remove("Item" + i);
                 this.nbt.remove("KeepItem" + i);
                 this.nbt.putInt("ItemTime" + i, 0);
@@ -196,7 +204,9 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public boolean isBlockEntityValid() {
-        return getBlock().getId() == BlockID.CAMPFIRE;
+        final String blockId = getBlock().getId();
+        return blockId.equals(BlockID.CAMPFIRE)
+                || blockId.equals(BlockID.SOUL_CAMPFIRE);
     }
 
     public int getSize() {

@@ -1,5 +1,6 @@
 package org.powernukkitx;
 
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.PlayerChunkManager;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.GameLoop;
@@ -45,11 +46,18 @@ public class TestUtils {
         return loop;
     }
 
+    /**
+     * Puts the shared fixture player back at spawn with a clean chunk pipeline. The chunk
+     * manager is replaced rather than cleared because its pending-load futures and send queues
+     * would otherwise leak between tests.
+     */
     public static void resetPlayerStatus(TestPlayer player) {
-//        player.level = GameMockExtension.level;
+        player.setLevel(ServerMockFixture.level);
         player.setPosition(new Vector3(0, 100, 0));
-        player.getPlayerChunkManager().getUsedChunks().clear();
-        player.getPlayerChunkManager().getInRadiusChunks().clear();
-        TestUtils.setField(PlayerChunkManager.class, player.getPlayerChunkManager(), "lastLoaderChunkPosHashed", Long.MAX_VALUE);
+        for (long hash : player.getPlayerChunkManager().getUsedChunks()) {
+            player.getLevel().unregisterChunkLoader(player, Level.getHashX(hash), Level.getHashZ(hash));
+        }
+        setField(Player.class, player, "playerChunkManager", new PlayerChunkManager(player));
+        player.getLevel().unloadChunks(true);
     }
 }

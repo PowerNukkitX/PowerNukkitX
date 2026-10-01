@@ -174,9 +174,9 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * Returns the item currently held in the player's off hand.
+     * Returns the item currently held in the player's offhand.
      *
-     * @return the item in the off hand
+     * @return the item in the offhand
      */
     public Item getItemInOffhand() {
         return this.getHolder().getOffhandInventory().getItem(0);
@@ -218,7 +218,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * Sets the item in the player's off hand.
+     * Sets the item in the player's offhand.
      * <p>
      * Convenience wrapper for {@code getOffhandInventory().setItem(0, item)}.
      * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
@@ -231,7 +231,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * Sets the item in the player's off hand.
+     * Sets the item in the player's offhand.
      * <p>
      * Convenience wrapper for {@code getOffhandInventory().setItem(0, item, bool)}.
      * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
@@ -267,9 +267,9 @@ public class HumanInventory extends BaseInventory {
         pk.setSelectedSlot(this.getHeldItemIndex());
 
         for (Player player : players) {
-            pk.setTargetRuntimeID(this.getHolder().getEntity().getId());
+            pk.setTargetRuntimeID(this.getHolder().getEntity().runtimeId());
             if (player.equals(this.getHolder())) {
-                pk.setTargetRuntimeID(player.getId());
+                pk.setTargetRuntimeID(player.runtimeId());
                 this.sendSlot(this.getHeldItemIndex(), player);
             }
 
@@ -574,7 +574,17 @@ public class HumanInventory extends BaseInventory {
      * @param player the player
      */
     public void sendArmorContents(Player player) {
-        this.sendArmorContents(new Player[]{player});
+        this.sendArmorContents(player, true);
+    }
+
+    /**
+     * Sends armor contents to a player.
+     *
+     * @param player the player
+     * @param sendArmorDamage whether to send the armor durability packet
+     */
+    public void sendArmorContents(Player player, boolean sendArmorDamage) {
+        this.sendArmorContents(new Player[]{player}, sendArmorDamage);
     }
 
     /**
@@ -583,10 +593,14 @@ public class HumanInventory extends BaseInventory {
      * @param players the players
      */
     public void sendArmorContents(Player[] players) {
+        this.sendArmorContents(players, true);
+    }
+
+    private void sendArmorContents(Player[] players, boolean sendArmorDamage) {
         Item[] armor = this.getArmorContents();
 
         final MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-        pk.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        pk.setTargetRuntimeID(this.getHolder().getEntity().runtimeId());
         pk.setHead(this.getArmorContents()[0].toNetwork());
         pk.setTorso(this.getArmorContents()[1].toNetwork());
         pk.setLegs(this.getArmorContents()[2].toNetwork());
@@ -607,13 +621,15 @@ public class HumanInventory extends BaseInventory {
                 );
                 player.sendPacket(inventoryContentPacket);
 
-                final PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
-                for (int i = 0; i < 4; ++i) {
-                    Item item = armor[i];
-                    short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
-                    pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(i), dmg));
+                if (sendArmorDamage) {
+                    final PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
+                    for (int i = 0; i < 4; ++i) {
+                        Item item = armor[i];
+                        short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
+                        pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(i), dmg));
+                    }
+                    player.sendPacket(pk2);
                 }
-                player.sendPacket(pk2);
             } else {
                 player.sendPacket(pk);
             }
@@ -674,7 +690,7 @@ public class HumanInventory extends BaseInventory {
         Item[] armor = this.getArmorContents();
 
         final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-        mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getEntity().runtimeId());
         mobArmorEquipmentPacket.setHead(armor[0].toNetwork());
         mobArmorEquipmentPacket.setTorso(armor[1].toNetwork());
         mobArmorEquipmentPacket.setLegs(armor[2].toNetwork());
@@ -715,6 +731,54 @@ public class HumanInventory extends BaseInventory {
     @Override
     public void sendContents(Collection<Player> players) {
         this.sendContents(players.toArray(Player.EMPTY_ARRAY));
+    }
+
+    /**
+     * Sends the player's main inventory during the initial login sequence.
+     * <p>
+     * This bypasses the normal spawned-state requirement and leaves the
+     * InventoryContentPacket container metadata at its protocol defaults,
+     * matching the vanilla initial inventory synchronization.
+     * </p>
+     *
+     * @param player the player receiving the initial inventory contents
+     */
+    public void sendInitialContents(Player player) {
+        final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.setContainerId(ContainerId.INVENTORY);
+
+        for (int i = 0; i < ARMORS_INDEX; ++i) {
+            final Item item = this.getUnclonedItem(i);
+            inventoryContentPacket.getSlots().add(item.isNull() ? ItemData.AIR : item.toNetwork()
+            );
+        }
+
+        player.sendPacketImmediately(inventoryContentPacket);
+    }
+
+    /**
+     * Sends the player's armor contents during the initial login sequence.
+     * <p>
+     * Initializes the armor container with five equipment slots:
+     * head, torso, legs, feet and body. PowerNukkitX currently stores the
+     * first four slots, so the body slot is initialized as air.
+     * </p>
+     *
+     * @param player the player receiving the initial armor contents
+     */
+    public void sendInitialArmorContents(Player player) {
+        final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+        inventoryContentPacket.setContainerId(ContainerId.ARMOR);
+
+        for (final Item item : this.getArmorContents()) {
+            inventoryContentPacket.getSlots().add(
+                    item.isNull() ? ItemData.AIR : item.toNetwork()
+            );
+        }
+
+        inventoryContentPacket.getSlots().add(ItemData.AIR);
+
+        player.sendPacketImmediately(inventoryContentPacket);
     }
 
     @Override
@@ -797,10 +861,17 @@ public class HumanInventory extends BaseInventory {
         super.onOpen(who);
         if (who.spawned) {
             final ContainerOpenPacket pk = new ContainerOpenPacket();
-            pk.setContainerID((byte) who.getWindowId(this));
+
+            if (who == this.getHolder()) {
+                pk.setContainerID((byte) who.allocateInventoryWindowId());
+                pk.setTargetActorID(-1);
+            } else {
+                pk.setContainerID((byte) who.getWindowId(this));
+                pk.setTargetActorID(this.getHolder().getEntity().getId());
+            }
+
             pk.setContainerType(this.getType());
             pk.setPosition(Vector3i.from(who.getFloorX(), who.getFloorY(), who.getFloorZ()));
-            pk.setTargetActorID(who.getId());
             who.sendPacket(pk);
         }
     }
@@ -808,10 +879,23 @@ public class HumanInventory extends BaseInventory {
     @Override
     public void onClose(Player who) {
         final ContainerClosePacket pk = new ContainerClosePacket();
-        pk.setContainerID((byte) who.getWindowId(this));
-        pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
-        pk.setContainerType(this.getType());
+
+        if (who == this.getHolder()) {
+            if (who.getInventoryWindowId() == Integer.MIN_VALUE) {
+                return;
+            }
+
+            pk.setContainerID((byte) who.getInventoryWindowId());
+        } else {
+            pk.setContainerID((byte) who.getWindowId(this));
+        }
+
+        final boolean serverInitiatedClose = who.getClosingWindowId() != pk.getContainerID();
+
+        pk.setServerInitiatedClose(serverInitiatedClose);
+        pk.setContainerType(serverInitiatedClose ? this.getType() : ContainerType.NONE);
         who.sendPacket(pk);
+
         // player can never stop viewing their own inventory
         if (who != holder) {
             super.onClose(who);

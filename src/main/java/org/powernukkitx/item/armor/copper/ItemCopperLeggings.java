@@ -9,7 +9,6 @@ public class ItemCopperLeggings extends ItemArmor {
             .leggings(true)
             .maxDurability(166)
             .tier(WEARABLE_TIER_COPPER)
-            .toughness(2)
             .build();
 
     public ItemCopperLeggings() {

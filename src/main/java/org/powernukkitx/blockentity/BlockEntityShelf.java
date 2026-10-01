@@ -31,7 +31,8 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
         ListTag<CompoundTag> itemsTag = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < itemsTag.size(); i++) {
-            this.inventory.setItem(i, ItemHelper.read(itemsTag.get(i)));
+            if (i >= this.getSize()) break;
+            this.inventory.setItemInternal(i, ItemHelper.read(itemsTag.get(i)));
         }
         this.scheduleComparatorOutputUpdate();
     }

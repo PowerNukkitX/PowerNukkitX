@@ -3,7 +3,7 @@ package org.powernukkitx.item;
 import org.powernukkitx.Server;
 import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.positiontracking.NamedPosition;
+import org.powernukkitx.network.positiontracking.NamedPosition;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

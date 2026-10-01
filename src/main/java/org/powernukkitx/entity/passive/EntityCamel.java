@@ -73,18 +73,11 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.85f;
-        }
         return 1.7f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            if (isSitting()) return 0.472f;
-            return 1.1875f;
-        }
         if (isSitting()) return 0.945f;
         return 2.375f;
     }
@@ -317,14 +310,12 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        ArrayList<Item> drops = new ArrayList<>();
-
         // Drop Ride Inventory
         ensureInventories();
-        drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
+        ArrayList<Item> drops = new ArrayList<>(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

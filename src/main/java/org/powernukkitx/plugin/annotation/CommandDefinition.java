@@ -59,7 +59,7 @@ public @interface CommandDefinition {
     String permission() default "";
 
     /**
-     * A human readable description. Optional.
+     * A human-readable description. Optional.
      */
     String description() default "";
 

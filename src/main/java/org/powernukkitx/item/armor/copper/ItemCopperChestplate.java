@@ -9,7 +9,6 @@ public class ItemCopperChestplate extends ItemArmor {
             .chestplate(true)
             .maxDurability(177)
             .tier(WEARABLE_TIER_COPPER)
-            .toughness(2)
             .build();
 
     public ItemCopperChestplate() {

@@ -1,5 +1,6 @@
 package org.powernukkitx.level;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockTnt;
@@ -8,6 +9,7 @@ import org.powernukkitx.blockentity.BlockEntityShulkerBox;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityExplosive;
 import org.powernukkitx.entity.item.EntityItem;
+import org.powernukkitx.entity.item.EntityTnt;
 import org.powernukkitx.entity.item.EntityXpOrb;
 import org.powernukkitx.event.block.BlockExplodeEvent;
 import org.powernukkitx.event.block.BlockUpdateEvent;
@@ -19,6 +21,7 @@ import org.powernukkitx.event.entity.EntityExplodeEvent;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
+import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.NukkitMath;
@@ -53,8 +56,6 @@ public class Explosion {
 
     private Set<Block> affectedBlocks;
     private Set<Block> fireIgnitions;
-    private boolean doesDamage = true;
-
     private final Object what;
 
     public Explosion(Position center, double size, Entity what) {
@@ -125,7 +126,6 @@ public class Explosion {
                     || BlockID.FLOWING_WATER.equals(blockLayer1.getId())
                     || BlockID.WATER.equals(blockLayer1.getId())
             ) {
-                this.doesDamage = false;
                 return true;
             }
         }
@@ -213,8 +213,10 @@ public class Explosion {
         LongArraySet updateBlocks = new LongArraySet();
         List<Vector3> send = new ArrayList<>();
 
-        Vector3 source = (new Vector3(this.source.x, this.source.y, this.source.z)).floor();
-        double yield = (1d / this.size) * 100d;
+        Vector3 source = new Vector3(this.source.x, this.source.y, this.source.z);
+        double yield = this.what instanceof EntityTnt
+                && !this.level.getGameRules().getBoolean(GameRule.TNT_EXPLOSION_DROP_DECAY)
+                ? 100d : (1d / this.size) * 100d;
 
         if (affectedBlocks == null) {
             affectedBlocks = new LinkedHashSet<>();
@@ -256,11 +258,16 @@ public class Explosion {
                 Vector3 motion = entity.subtract(this.source).normalize();
 
                 float blockDensity = level.getBlockDensity(this.source, entity.boundingBox);
-                double force = this.size * 2.0F;
-                double d = entity.distance(source) / force;
-                double impact = (1.0D - d) * blockDensity;
-                float entityDamageAmount = (float) ((float) (impact * impact + impact) / 2.0D * 7.0D * force + 1.0D);
-                float damage = this.doesDamage ? entityDamageAmount : 0f;
+                double impact = (1.0D - distance) * blockDensity;
+                float damage = calculateEntityDamage(explosionSize, impact);
+                if (entity instanceof Player) {
+                    damage = switch (this.level.getServer().getDifficulty()) {
+                        case 0 -> 0;
+                        case 1 -> Math.min(damage / 2 + 1, damage);
+                        case 3 -> damage * 1.5f;
+                        default -> damage;
+                    };
+                }
 
                 if (this.what instanceof Entity) {
                     entity.attack(new EntityDamageByEntityEvent((Entity) this.what, entity, DamageCause.ENTITY_EXPLOSION, damage));
@@ -300,7 +307,11 @@ public class Explosion {
                     inventoryHolder.getInventory().clearAll();
                 }
             } else if (random.nextDouble() * 100 < yield) {
-                for (Item drop : block.getDrops(air)) {
+                Item tool = air;
+                if (this.what instanceof EntityTnt && block.getToolType() != ItemTool.TYPE_SHEARS) {
+                    tool = ItemTool.getBestTool(block.getToolType());
+                }
+                for (Item drop : block.getDrops(tool)) {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
                 }
             }
@@ -367,6 +378,10 @@ public class Explosion {
         this.level.addLevelEvent(this.source, LevelEvent.PARTICLE_EXPLOSION, Math.round((float) this.size));
         this.level.addLevelEvent(this.source, LevelEvent.PARTICLE_BLOCK_EXPLOSION, data);
         return true;
+    }
+
+    static float calculateEntityDamage(double doubleRadius, double impact) {
+        return (float) ((impact * impact + impact) / 2.0D * 7.0D * doubleRadius + 1.0D);
     }
 
     private @NotNull AxisAlignedBB getAxisAlignedBB(double explosionSize) {

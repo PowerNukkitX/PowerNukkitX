@@ -73,8 +73,8 @@ public class EntityBoat extends EntityVehicle {
     public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
-        this.setHealthMax(40);
-        this.setHealthCurrent(40);
+        this.setHealthMax(4);
+        this.setHealthCurrent(4);
     }
 
     @Override
@@ -135,8 +135,6 @@ public class EntityBoat extends EntityVehicle {
         if (invulnerable) {
             return false;
         } else {
-            source.setDamage(source.getDamage() * 2);
-
             boolean attack = super.attack(source);
 
             if (isAlive()) {
@@ -151,7 +149,7 @@ public class EntityBoat extends EntityVehicle {
     protected BedrockPacket createAddEntityPacket() {
         final AddActorPacket packet = new AddActorPacket();
         packet.setTargetActorID(this.getId());
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorType("minecraft:boat");
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         packet.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
@@ -190,6 +188,10 @@ public class EntityBoat extends EntityVehicle {
 
         if (this.isAlive()) {
             hasUpdate = this.updateBoat(tickDiff) || hasUpdate;
+        }
+
+        if (this.isAlive() && this.health < this.getMaxHealth()) {
+            this.health = Math.min(this.getMaxHealth(), this.health + 0.1f);
         }
 
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
@@ -244,14 +246,8 @@ public class EntityBoat extends EntityVehicle {
             setRollingAmplitude(getRollingAmplitude() - 1);
         }
 
-        // A killer task
-        if (this.level != null) {
-            if (y < this.level.getMinHeight() - 16) {
-                kill();
-                return false;
-            }
-        } else if (y < -16) {
-            kill();
+        if (y < (this.level == null ? -16 : this.level.getMinHeight() - 16)) {
+            this.close();
             return false;
         }
 
@@ -302,7 +298,9 @@ public class EntityBoat extends EntityVehicle {
                 }
             }
         }
-        this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+        if (!VehicleUpdateEvent.getHandlers().isEmpty()) {
+            this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+        }
 
         return hasUpdated;
     }
@@ -341,16 +339,19 @@ public class EntityBoat extends EntityVehicle {
     private void moveBoat() {
         checkObstruction(this.x, this.y, this.z);
 
-        Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
+        boolean fireMoveEvent = !VehicleMoveEvent.getHandlers().isEmpty();
+        Location from = fireMoveEvent ? new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level) : null;
 
         if(passengers.isEmpty()) {
             move(this.motionX, this.motionY, this.motionZ);
         }
 
-        Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+        if (fireMoveEvent) {
+            Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
 
-        if (!from.equals(to)) {
-            this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
+            if (!from.equals(to)) {
+                this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
+            }
         }
     }
 
