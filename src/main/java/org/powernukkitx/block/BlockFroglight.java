@@ -1,18 +1,20 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 public abstract class BlockFroglight extends BlockSolid {
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .resistance(0.3)
+            .lightEmission(15)
+            .build();
 
     public BlockFroglight(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public int getLightLevel() {
-        return 15;
+    public BlockFroglight(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
-    @Override
-    public double getResistance() {
-        return 0.3;
+    
     }
-}

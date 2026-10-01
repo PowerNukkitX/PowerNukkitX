@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -30,6 +32,13 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
             CommonBlockProperties.DIRECTION,
             CommonBlockProperties.OPEN_BIT,
             CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3)
+            .resistance(15)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
 
     private static final double THICKNESS = 0.1875;
 
@@ -44,7 +53,11 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
     }
 
     public BlockTrapdoor(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockTrapdoor(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -58,31 +71,7 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return "Oak Trapdoor";
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public double getMinX() {
         return this.x + getRelativeBoundingBox().getMinX();

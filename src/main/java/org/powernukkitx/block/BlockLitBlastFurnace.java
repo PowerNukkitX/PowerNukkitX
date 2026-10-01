@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityBlastFurnace;
@@ -21,6 +23,10 @@ public class BlockLitBlastFurnace extends BlockLitFurnace {
 
     public BlockLitBlastFurnace(BlockState blockstate) {
         super(blockstate);
+    }
+
+    public BlockLitBlastFurnace(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override

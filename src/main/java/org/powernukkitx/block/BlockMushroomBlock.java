@@ -1,30 +1,22 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 
 public abstract class BlockMushroomBlock extends BlockSolid {
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.2)
+            .resistance(0.2)
+            .toolType(ItemTool.TYPE_AXE)
+            .build();
 
     public BlockMushroomBlock(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
+    public BlockMushroomBlock(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
-    @Override
-    public double getHardness() {
-        return 0.2;
     }
-
-    @Override
-    public double getResistance() {
-        return 0.2;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-}

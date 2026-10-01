@@ -1,6 +1,8 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.block.property.CommonBlockProperties;
+
 import org.powernukkitx.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +13,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockGlassPane extends BlockThin {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.3)
+            .resistance(1.5)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,7 +29,11 @@ public class BlockGlassPane extends BlockThin {
     }
 
     public BlockGlassPane(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockGlassPane(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -31,27 +42,8 @@ public class BlockGlassPane extends BlockThin {
     }
 
     @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.3;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

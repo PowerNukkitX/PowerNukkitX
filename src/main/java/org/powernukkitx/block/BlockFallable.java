@@ -9,15 +9,22 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.block.definition.BlockDefinition;
 
 
 /**
  * @author rcsuperman (Nukkit Project)
  */
 public abstract class BlockFallable extends BlockSolid {
+    public static final BlockDefinition FALLABLE = SOLID.toBuilder()
+            .build();
 
     public BlockFallable(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, FALLABLE);
+    }
+
+    public BlockFallable(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override

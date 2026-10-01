@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.block.BlockGrowEvent;
@@ -17,6 +19,11 @@ import static org.powernukkitx.block.property.CommonBlockProperties.KELP_AGE;
 
 public class BlockKelp extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(KELP, KELP_AGE);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -28,7 +35,7 @@ public class BlockKelp extends BlockFlowable {
     }
 
     public BlockKelp(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -165,18 +172,4 @@ public class BlockKelp extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
     }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-}

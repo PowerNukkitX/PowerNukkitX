@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -18,6 +20,18 @@ import static org.powernukkitx.block.property.CommonBlockProperties.ACTIVE;
 public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHolder<BlockEntitySculkShrieker> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SHRIEKER, CommonBlockProperties.ACTIVE, CommonBlockProperties.CAN_SUMMON);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(3.0)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_HOE)
+            .canPassThrough(false)
+            .canBePushed(false)
+            .canBePulled(false)
+            .breaksWhenMoved(false)
+            .canBeFlowedInto(false)
+            .dropExp(5)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -29,37 +43,12 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
     }
 
     public BlockSculkShrieker(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Sculk Shrieker";
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.0;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
     }
 
     @Override
@@ -70,11 +59,7 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public int getDropExp() {
-        return 5;
-    }
-
+    
     @Override
     @NotNull public Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
         return BlockEntitySculkShrieker.class;
@@ -85,11 +70,7 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
         return BlockEntity.SCULK_SHRIEKER;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     @Override
     public void onEntityStepOn(Entity entity) {
         if (entity instanceof Player player) {
@@ -109,22 +90,8 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
         }
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

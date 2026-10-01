@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
@@ -8,9 +10,16 @@ import org.powernukkitx.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BlockHanging extends BlockFlowable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .burnChance(5)
+            .build();
 
     public BlockHanging(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockHanging(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -34,8 +43,4 @@ public abstract class BlockHanging extends BlockFlowable {
         };
     }
 
-    @Override
-    public int getBurnChance() {
-        return 5;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -16,10 +18,27 @@ import java.util.stream.Stream;
 
 
 public abstract class BlockLichen extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .resistance(1)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canPassThrough(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeReplaced(true)
+            .isSolid(false)
+            .canBeFlowedInto(true)
+            .waterloggingLevel(1)
+            .build();
     public static final NukkitRandom RANDOM = new NukkitRandom();
 
     public BlockLichen(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockLichen(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     public BlockFace[] getGrowthSides() {
@@ -88,74 +107,10 @@ public abstract class BlockLichen extends BlockTransparent {
         return super.onUpdate(type);
     }
 
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public boolean canHarvest(Item item) {
         return item.isAxe() || item.isShears();
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

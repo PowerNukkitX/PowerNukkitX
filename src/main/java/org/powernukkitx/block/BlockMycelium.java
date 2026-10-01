@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.block.BlockFadeEvent;
@@ -22,6 +24,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockMycelium extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
+    public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
+            .hardness(0.6)
+            .resistance(2.5)
+            .toolType(ItemTool.TYPE_SHOVEL)
+            .canBeActivated(true)
+            .build();
 
     public static final int MINIMUM_SPREAD_LIGHT_LEVEL = 4;
     public static final int MAXIMUM_SPREAD_LIGHT_FILTER = 2;
@@ -36,27 +44,12 @@ public class BlockMycelium extends BlockDirt {
     }
 
     public BlockMycelium(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Mycelium";
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2.5;
     }
 
     @Override
@@ -95,16 +88,6 @@ public class BlockMycelium extends BlockDirt {
             return type;
         }
         return 0;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

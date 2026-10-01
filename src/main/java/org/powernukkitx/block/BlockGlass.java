@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockGlass extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLASS);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.3)
+            .resistance(0.3)
+            .canSilkTouch(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -19,7 +26,11 @@ public class BlockGlass extends BlockTransparent {
     }
 
     public BlockGlass(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockGlass(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -28,23 +39,9 @@ public class BlockGlass extends BlockTransparent {
     }
 
     @Override
-    public double getResistance() {
-        return 0.3;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.3;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
 }

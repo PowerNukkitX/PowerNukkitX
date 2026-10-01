@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityEndGateway;
@@ -18,6 +20,14 @@ import javax.annotation.Nullable;
  */
 public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<BlockEntityEndGateway> {
     public static final BlockProperties PROPERTIES = new BlockProperties(END_GATEWAY);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(3600000)
+            .lightEmission(15)
+            .canBePushed(false)
+            .canBePulled(false)
+            .hasEntityCollision(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -29,7 +39,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     public BlockEndGateway(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -70,41 +80,12 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
         return false;
     }
 
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3600000;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
     }
-    
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-    
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-    
+
     @Override
     public void onEntityCollide(Entity entity) {
         if (this.getLevel() == null) {

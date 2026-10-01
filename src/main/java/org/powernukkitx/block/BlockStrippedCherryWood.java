@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.WoodType;
@@ -9,6 +11,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockStrippedCherryWood extends BlockWoodStripped {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRIPPED_CHERRY_WOOD, CommonBlockProperties.PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = BlockWoodStripped.DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(10)
+            .burnChance(5)
+            .burnAbility(5)
+            .canBeActivated(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,7 +29,7 @@ public class BlockStrippedCherryWood extends BlockWoodStripped {
     }
 
     public BlockStrippedCherryWood(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -29,35 +38,11 @@ public class BlockStrippedCherryWood extends BlockWoodStripped {
     }
 
     @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 10;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 5;
-    }
-
-    @Override
     public BlockState getStrippedState() {
         return getBlockState();
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return false;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         return false;

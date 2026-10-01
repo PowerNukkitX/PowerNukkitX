@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.WoodType;
 import org.powernukkitx.event.level.StructureGrowEvent;
@@ -23,6 +25,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.AGE_BIT;
 public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.FlowerPotBlock {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CHERRY_SAPLING, AGE_BIT);
+    public static final BlockDefinition DEFINITION = BlockSapling.DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -34,7 +40,7 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
     }
 
     public BlockCherrySapling(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -107,11 +113,7 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
         return true;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal and so on
@@ -149,8 +151,4 @@ public class BlockCherrySapling extends BlockSapling implements BlockFlowerPot.F
         return new ItemBlock(new BlockCherrySapling());
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

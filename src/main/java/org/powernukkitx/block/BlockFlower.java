@@ -6,6 +6,8 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.level.particle.BoneMealParticle;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.block.definition.BlockDefinition;
+import org.powernukkitx.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,8 +16,16 @@ import java.util.concurrent.ThreadLocalRandom;
  * The default is red flower, but there are other flower variants
  */
 public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural, Supportable, Pollinable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .build();
+
     public BlockFlower(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockFlower(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public boolean canPlantOn(Block block) {
@@ -44,11 +54,6 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
         }
 
         return 0;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

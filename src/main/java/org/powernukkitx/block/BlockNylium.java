@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -15,15 +17,24 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockNylium extends BlockSolid implements Natural {
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.4)
+            .resistance(0.4)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .burnChance(0)
+            .burnAbility(0)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
     public BlockNylium(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+    public BlockNylium(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM && !up().isTransparent()) {
@@ -33,11 +44,7 @@ public abstract class BlockNylium extends BlockSolid implements Natural {
         return 0;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         Block up = up();
@@ -64,26 +71,6 @@ public abstract class BlockNylium extends BlockSolid implements Natural {
     }
 
     @Override
-    public double getResistance() {
-        return 0.4;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.4;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{Item.get(NETHERRACK)};
@@ -91,18 +78,4 @@ public abstract class BlockNylium extends BlockSolid implements Natural {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
@@ -16,6 +18,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FERN);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .toolType(ItemTool.TYPE_SHEARS)
+            .burnChance(60)
+            .burnAbility(100)
+            .canBeReplaced(true)
+            .isFertilizable(true)
+            .build();
 
     @Override
     @NotNull
@@ -28,32 +37,13 @@ public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPot
     }
 
     public BlockFern(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 60;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 100;
-    }
-
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
 
     @Override
@@ -122,8 +112,4 @@ public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPot
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block.shelf;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -28,19 +30,19 @@ import static org.powernukkitx.block.property.CommonBlockProperties.POWERED_SHEL
  * @since 2025/11/12
  */
 public abstract class AbstractBlockShelf extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityShelf> {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .build();
 
     public AbstractBlockShelf(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
+    public AbstractBlockShelf(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -52,11 +54,7 @@ public abstract class AbstractBlockShelf extends BlockTransparent implements Fac
         return true;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(player != null && !player.isSneaking() && blockFace == getBlockFace() && fy > 0.25f && fy < 0.75f) {
@@ -111,11 +109,7 @@ public abstract class AbstractBlockShelf extends BlockTransparent implements Fac
         return BlockEntityID.SHELF;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         Map<Integer, Item> items = this.getOrCreateBlockEntity().getInventory().getContents();

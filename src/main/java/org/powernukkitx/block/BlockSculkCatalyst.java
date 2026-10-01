@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySculkCatalyst;
@@ -8,6 +10,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<BlockEntitySculkCatalyst> {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_CATALYST, CommonBlockProperties.BLOOM);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3.0)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_HOE)
+            .lightEmission(6)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -19,42 +29,12 @@ public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<
     }
 
     public BlockSculkCatalyst(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Sculk Catalyst";
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.0;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
     }
 
     @Override

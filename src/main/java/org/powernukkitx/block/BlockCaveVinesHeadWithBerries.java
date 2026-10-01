@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +11,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.GROWING_PLAN
 
 public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAVE_VINES_HEAD_WITH_BERRIES, GROWING_PLANT_AGE);
+    public static final BlockDefinition DEFINITION = BlockCaveVines.DEFINITION.toBuilder()
+            .lightEmission(14)
+            .isTransparent(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,22 +26,12 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
     }
 
     public BlockCaveVinesHeadWithBerries(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Cave Vines Head With Berries";
-    }
-
-    @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 14;
     }
 
     @Override

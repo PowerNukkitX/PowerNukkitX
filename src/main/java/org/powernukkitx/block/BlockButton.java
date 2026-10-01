@@ -12,6 +12,7 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.utils.Faceable;
 import org.powernukkitx.utils.RedstoneComponent;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -22,28 +23,21 @@ import javax.annotation.Nullable;
  */
 
 public abstract class BlockButton extends BlockFlowable implements RedstoneComponent, Faceable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .resistance(2.5)
+            .hardness(0.5)
+            .canBeFlowedInto(false)
+            .canBeActivated(true)
+            .isPowerSource(true)
+            .waterloggingLevel(1)
+            .build();
+
     public BlockButton(BlockState meta) {
         super(meta);
     }
 
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
+    public BlockButton(BlockState meta, BlockDefinition definition) {
+        super(meta, definition);
     }
 
     @Override
@@ -54,11 +48,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
         return true;
     }
 
@@ -134,11 +123,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         } else {
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
         }
-    }
-
-    @Override
-    public boolean isPowerSource() {
-        return true;
     }
 
     @Override

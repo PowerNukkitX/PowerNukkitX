@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemGlowstoneDust;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -14,6 +16,14 @@ import java.util.Random;
  */
 public class BlockGlowstone extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOWSTONE);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.3)
+            .resistance(1.5)
+            .burnChance(0)
+            .burnAbility(0)
+            .lightEmission(15)
+            .canSilkTouch(true)
+            .build();
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
@@ -24,37 +34,12 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     public BlockGlowstone(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Glowstone";
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.3;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 15;
     }
 
     @Override
@@ -72,8 +57,4 @@ public class BlockGlowstone extends BlockTransparent {
         };
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

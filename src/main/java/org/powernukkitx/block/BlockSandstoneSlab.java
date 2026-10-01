@@ -1,14 +1,21 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSandstoneSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(SANDSTONE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     public BlockSandstoneSlab(BlockState blockState) {
-        super(blockState, SANDSTONE_DOUBLE_SLAB);
+        super(blockState, SANDSTONE_DOUBLE_SLAB, DEFINITION);
     }
 
     @Override
@@ -20,21 +27,6 @@ public class BlockSandstoneSlab extends BlockSlab {
     @Override
     public String getSlabName() {
         return "Sandstone";
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override

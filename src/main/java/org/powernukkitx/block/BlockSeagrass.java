@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.SeaGrassType;
 import org.powernukkitx.item.Item;
@@ -15,6 +17,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.SEA_GRASS_TY
 
 public class BlockSeagrass extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SEAGRASS, SEA_GRASS_TYPE);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .toolType(ItemTool.TYPE_SHEARS)
+            .canBeReplaced(true)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -26,7 +35,7 @@ public class BlockSeagrass extends BlockFlowable {
     }
 
     public BlockSeagrass(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -86,11 +95,7 @@ public class BlockSeagrass extends BlockFlowable {
         return 0;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(SEA_GRASS_TYPE) == SeaGrassType.DEFAULT && item.isFertilizer()) {
@@ -122,27 +127,8 @@ public class BlockSeagrass extends BlockFlowable {
     }
 
     @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
-    }
-
-    @Override
     public Item toItem() {
         return new ItemBlock(new BlockSeagrass(), 0);
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -11,6 +13,14 @@ import static org.powernukkitx.block.property.CommonBlockProperties.PILLAR_AXIS;
 public class BlockDeepslate extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE, PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canSilkTouch(true)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,7 +32,7 @@ public class BlockDeepslate extends BlockSolid {
     }
 
     public BlockDeepslate(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -30,31 +40,7 @@ public class BlockDeepslate extends BlockSolid {
         return "Deepslate";
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);
     }
@@ -79,8 +65,4 @@ public class BlockDeepslate extends BlockSolid {
         return new Item[]{Item.get(BlockID.COBBLED_DEEPSLATE)};
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
     }
-}

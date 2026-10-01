@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.block.BlockGrowEvent;
@@ -17,10 +19,18 @@ import static org.powernukkitx.block.property.CommonBlockProperties.GROWTH;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockCrops extends BlockFlowable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
     public static final int MINIMUM_LIGHT_LEVEL = 9;
 
     public BlockCrops(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockCrops(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     public int getMinimumLightLevel() {
@@ -43,11 +53,7 @@ public abstract class BlockCrops extends BlockFlowable {
         return getGrowth() >= getMaxGrowth();
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (block.down().getId().equals(FARMLAND)) {
@@ -118,9 +124,5 @@ public abstract class BlockCrops extends BlockFlowable {
         return 0;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-
+    
 }

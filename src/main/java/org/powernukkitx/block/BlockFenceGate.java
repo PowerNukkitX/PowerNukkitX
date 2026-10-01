@@ -15,6 +15,7 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.utils.Faceable;
 import org.powernukkitx.utils.RedstoneComponent;
+import org.powernukkitx.block.definition.BlockDefinition;
 import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,16 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OPEN_BIT;
  */
 public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, IN_WALL_BIT, MINECRAFT_CARDINAL_DIRECTION, OPEN_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(15)
+            .canBeActivated(true)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(5)
+            .burnAbility(20)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -48,37 +59,16 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     public BlockFenceGate(BlockState blockState) {
-        super(blockState);
+        this(blockState, DEFINITION);
+    }
+
+    public BlockFenceGate(BlockState blockState, BlockDefinition blockDefinition) {
+        super(blockState, blockDefinition);
     }
 
     @Override
     public String getName() {
         return "Oak Fence Gate";
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     private static final double[] offMinX = new double[2];
@@ -314,15 +304,5 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.VALUES[face.getHorizontalIndex()]);
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
     }
 }

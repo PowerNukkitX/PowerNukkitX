@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.math.BlockFace;
@@ -10,23 +12,20 @@ import javax.annotation.Nullable;
 
 public class BlockDeny extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DENY);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canHarvestWithHand(false)
+            .build();
 
     public BlockDeny() {
         super(PROPERTIES.getDefaultState());
     }
 
     public BlockDeny(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -39,21 +38,7 @@ public class BlockDeny extends BlockSolid {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public  boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.event.block.BlockFadeEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -12,8 +14,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public abstract class BlockCoralBlock extends BlockSolid {
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(6.0)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
     public BlockCoralBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCoralBlock(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public boolean isDead() {
@@ -22,26 +33,6 @@ public abstract class BlockCoralBlock extends BlockSolid {
 
     public BlockCoralBlock toDead() {
         return this;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6.0;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
