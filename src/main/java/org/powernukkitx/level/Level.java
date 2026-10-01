@@ -788,7 +788,6 @@ public class Level implements Metadatable {
 
     private void remove() {
         this.subTickGameLoop.stop();
-        BlockManager.clearPendingHooks(this.levelId);
         this.scheduler.cancelAllTasks();
         this.scheduler.mainThreadHeartbeat(this.getTick() + 10000);
         this.server.getLevels().remove(this.levelId);
@@ -801,6 +800,7 @@ public class Level implements Metadatable {
             levelProvider.close();
         }
         this.provider.set(null);
+        BlockManager.clearPendingHooks(this.levelId);
         this.blockMetadata = null;
     }
 

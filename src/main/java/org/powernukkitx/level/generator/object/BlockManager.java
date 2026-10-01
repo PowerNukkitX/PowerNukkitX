@@ -164,6 +164,11 @@ public class BlockManager {
     private void deferHooks(long chunkHash, List<Runnable> runnables) {
         PendingHookKey key = new PendingHookKey(this.level.getId(), chunkHash);
         synchronized (PENDING_HOOKS) {
+            // Generation isn't cancelled on unload, so a populator still in flight can get here after
+            // clearPendingHooks already ran. Nothing would ever take these back out.
+            if (this.level.getProvider() == null) {
+                return;
+            }
             PENDING_HOOKS.computeIfAbsent(key, k -> new ObjectArrayList<>()).addAll(runnables);
         }
     }
@@ -572,8 +577,9 @@ public class BlockManager {
     /**
      * Drops every hook still waiting on a chunk of the given level.
      * <p>
-     * Called when a level is unloaded: those hooks can no longer run, and a level id is reused, so
-     * keeping them would eventually fire the work of an unloaded world against a different one.
+     * Called once a level is unloaded and its provider is gone. Its chunks will never be generated
+     * again, so those hooks could only keep the unloaded level reachable until evicted. Hooks that
+     * a generation still in flight tries to defer afterwards are dropped as well.
      *
      * @param levelId the id of the level being unloaded, as {@link Level#getId()}
      */
