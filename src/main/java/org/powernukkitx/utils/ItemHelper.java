@@ -5,11 +5,13 @@ import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemUnknown;
+import org.powernukkitx.item.customitem.CustomItem;
 import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.level.updater.item.ItemUpdaters;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.NetworkConstants;
+import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.nbt.NbtMap;
@@ -124,8 +126,14 @@ public class ItemHelper {
         if (item instanceof CustomItem) {
             return;
         }
+        NbtMap components = ItemRegistry.getItemComponents()
+            .getCompound(item.getId(), NbtMap.EMPTY)
+            .getCompound("components", NbtMap.EMPTY);
+        if (components.isEmpty()) {
+            return;
+        }
         String[] leaked = tag.getTags().keySet().stream()
-            .filter(key -> key.startsWith("minecraft:"))
+            .filter(components::containsKey)
             .toArray(String[]::new);
         if (leaked.length > 0) {
             tag.remove(leaked);
