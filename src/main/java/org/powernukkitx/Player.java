@@ -1210,8 +1210,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         while ((packet = this.inboundPackets.poll()) != null) {
             try {
                 processor.accept(packet);
-            } catch (IllegalArgumentException | IllegalStateException | IndexOutOfBoundsException e) {
-                log.debug("Rejected inbound packet {} for player {}: {}", packet.getClass().getSimpleName(), this.getName(), e.getMessage());
             } catch (Exception e) {
                 log.error("Error handling inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName(), e);
             }
