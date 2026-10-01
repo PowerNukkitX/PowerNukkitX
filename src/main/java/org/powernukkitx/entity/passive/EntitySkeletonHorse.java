@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behavior.Behavior;
@@ -57,7 +58,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author PikyCZ
  */
-public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable {
+public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable, EntitySmite {
     @Override
     @NotNull
     public String getIdentifier() {

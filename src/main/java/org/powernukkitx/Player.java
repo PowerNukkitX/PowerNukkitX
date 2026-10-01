@@ -8,6 +8,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.Pair;
@@ -22,6 +23,7 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.netty.channel.nethernet.NetherNetChannel;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
@@ -235,6 +237,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
     private static final byte PLAYER_FLAG_SLEEP = 0x2;
+    private static final double CREATIVE_BLOCK_REACH = 13;
+    private static final double SURVIVAL_BLOCK_REACH = 7;
     private static final long POST_TELEPORT_GRACE_MS = 1000L;
     /// static fields
     public boolean playedBefore;
@@ -260,6 +264,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected long breakingBlockTime = 0;
     protected double blockBreakProgress = 0;
     protected int lastSentBreakTick = 0;
+    private static final double MAX_BLOCK_BREAK_SECONDS = 300.0;
     protected final BedrockServerSession session;
     protected final InetSocketAddress rawSocketAddress;
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
@@ -510,6 +515,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInMainHand(), this);
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
+            if (!(miningTimeRequired > 0)) {
+                this.resetBlockBreak();
+                return;
+            }
+            if (!this.isBreakStillValid(pos, miningTimeRequired)) {
+                this.onBlockBreakAbort(pos);
+                return;
+            }
+
             if (miningTimeRequired > 0) {
                 int breakTick = Math.max(1, (int) Math.ceil(miningTimeRequired * 20));
 
@@ -561,6 +575,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
+        if (!this.canInteract(pos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7)) {
+            return;
+        }
 
         Block target = this.level.getBlock(pos);
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInMainHand(), target, face,
@@ -631,6 +648,23 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
+    private boolean isBreakStillValid(Vector3 pos, double miningTimeRequired) {
+        if (!this.spawned || !this.isAlive()) {
+            return false;
+        }
+        if (!Double.isFinite(miningTimeRequired) || miningTimeRequired > MAX_BLOCK_BREAK_SECONDS) {
+            return false;
+        }
+        if (this.breakingBlock.getLevel() != this.level) {
+            return false;
+        }
+        if (!this.canInteract(pos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7)) {
+            return false;
+        }
+        Block current = this.level.getBlock(this.breakingBlock, false);
+        return current.getId().equals(this.breakingBlock.getId());
+    }
+
     protected void resetBlockBreak() {
         this.blockBreakProgress = 0;
         this.breakingBlock = null;
@@ -656,7 +690,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Item handItem = this.getInventory().getItemInMainHand();
         Item clone = handItem.clone();
 
-        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
+        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5));
         if (canInteract) {
             handItem = this.level.useBreakOn(blockPos.asVector3(), face, handItem, this, true);
             if (handItem != null && this.isSurvival()) {
@@ -1192,6 +1226,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void requestClose(String reason) {
         this.pendingClose = reason;
+    }
+
+    private boolean closeIfRequested() {
+        final String closeReason = this.pendingClose;
+        if (closeReason == null) {
+            return false;
+        }
+        this.pendingClose = null;
+        this.close(closeReason);
+        return true;
     }
 
     /**
@@ -2256,7 +2300,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public boolean canCollide() {
-        return gamemode != SPECTATOR;
+        return super.canCollide() && gamemode != SPECTATOR;
     }
 
     @Override
@@ -3047,21 +3091,28 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         positionTrackingService.forceRecheck(this);
     }
 
+    private boolean callPacketSendEvent(BedrockPacket packet){
+        if (PacketSendEvent.getHandlers().isEmpty()){
+            return true;
+        }
+        final PacketSendEvent event = new PacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(event);
+        return !event.isCancelled();
+    }
+
     /**
      * Sends a packet to network session
      *
      * @param packet packet to send
      */
     public void sendPacket(BedrockPacket packet) {
-        // Guarded the same way the receive side already guards PacketReceiveEvent. Without it every
-        // packet to every player allocated an event and walked the dispatch even with no listener,
-        // and outbound packets are the higher-volume direction by a wide margin.
-        if (!PacketSendEvent.getHandlers().isEmpty()) {
-            final PacketSendEvent event = new PacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            }
+        // Deliberately the session's flag and not isConnected(): close() clears the player's own
+        // flag on entry and still sends packets while it tears the player down.
+        if (!this.session.isConnected()) {
+            return;
+        }
+        if (!this.callPacketSendEvent(packet)) {
+            return;
         }
         this.getSession().sendPacket(packet);
     }
@@ -3109,7 +3160,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the latency in milliseconds, or -1 if the connection can no longer be measured
      */
     public long getPing() {
-        var rakServerChannel = (RakServerChannel) this.session.getPeer().getChannel().parent();
+        final Channel channel = this.session.getPeer().getChannel();
+        if (channel instanceof NetherNetChannel netherNet) {
+            return netherNet.getPing();
+        }
+        if (!(channel.parent() instanceof RakServerChannel rakServerChannel)) {
+            return -1;
+        }
         var childChannel = rakServerChannel.getChildChannel(getSocketAddress());
         if (childChannel == null) {
             return -1;
@@ -3142,7 +3199,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.from((int) pos.x, (int) pos.y, (int) pos.z));
         this.setPlayerSleepFlag(true);
 
-        this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
+        Block sleepingBlock = this.level.getBlock(pos);
+        if (!(sleepingBlock instanceof BlockBed bed) || bed.setsRespawnPoint()) {
+            this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
+        }
         this.level.sleepTicks = 75;
         this.timeSinceRest = 0;
 
@@ -3161,11 +3221,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
+        Block sleepingBlock = this.level.getBlock(this.sleeping);
+        this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, sleepingBlock));
 
         this.sleeping = null;
         this.setDataProperty(ActorDataTypes.BED_POSITION, Vector3i.ZERO);
         this.setPlayerSleepFlag(false);
+
+        if (sleepingBlock instanceof BlockBed bed) {
+            bed.onSleepEnd(this);
+        }
 
         this.level.sleepTicks = 0;
 
@@ -3285,10 +3350,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.isSpectator()) {
             this.onGround = false;
-            this.setDataFlag(ActorFlags.HAS_COLLISION, false);
-        } else {
-            this.setDataFlag(ActorFlags.HAS_COLLISION, true);
         }
+        this.setDataFlag(ActorFlags.HAS_COLLISION, this.canCollide());
 
         this.nbt.putInt("playerGameType", this.gamemode);
 
@@ -3512,6 +3575,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (!this.isAlive() && this.spawned) {
             this.drainInboundPackets();
+            if (this.closeIfRequested()) {
+                return true;
+            }
             if (this.isAlive()) {
                 return true;
             }
@@ -3536,10 +3602,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 return true;
             }
 
-            if (this.pendingClose != null) {
-                final String closeReason = this.pendingClose;
-                this.pendingClose = null;
-                this.close(closeReason);
+            if (this.closeIfRequested()) {
                 return true;
             }
 
@@ -3751,6 +3814,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
             this.doFirstSpawn();
         }
+    }
+
+    /**
+     * Same as {@link #canInteract(Vector3, double)} with the reach a player is allowed for block
+     * interactions, which is longer in creative mode.
+     *
+     * @param pos the position the client claims to be acting on
+     * @return whether this player is close enough to it, and facing it
+     */
+    public boolean canInteract(Vector3 pos) {
+        return this.canInteract(pos, this.isCreative() ? CREATIVE_BLOCK_REACH : SURVIVAL_BLOCK_REACH);
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance) {
@@ -6575,12 +6649,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isConnected()) {
             return false;
         }
-        if (!PacketSendEvent.getHandlers().isEmpty()) {
-            final PacketSendEvent event = new PacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return false;
-            }
+        if (!this.callPacketSendEvent(packet)) {
+            return false;
         }
         this.getSession().sendPacketImmediately(packet);
         return true;

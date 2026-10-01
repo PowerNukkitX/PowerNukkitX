@@ -12,6 +12,11 @@ public class EffectRegeneration extends Effect {
     }
 
     @Override
+    public boolean canBeApplied(Entity entity) {
+        return !entity.isUndead();
+    }
+
+    @Override
     public int getInterval() {
         return 50 >> Math.min(5, this.getAmplifier());
     }

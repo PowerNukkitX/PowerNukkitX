@@ -293,6 +293,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         bossEventPacket.setTargetActorID(this.getId());
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.getName());
+        bossEventPacket.setFilteredName(this.getName());
         bossEventPacket.setHealthPercent(health / getHealthMax());
         bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
         bossEventPacket.setColor(BossBarColor.PURPLE);

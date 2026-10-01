@@ -87,6 +87,11 @@ public class ItemBoat extends Item {
                 name = "Pale Oak Boat";
                 this.id = ItemID.PALE_OAK_BOAT;
                 this.identifier = new Identifier(ItemID.PALE_OAK_BOAT);
+                return;
+            case 10:
+                name = "Poplar Boat";
+                this.id = ItemID.POPLAR_BOAT;
+                this.identifier = new Identifier(ItemID.POPLAR_BOAT);
         }
         this.meta = 0;
     }
