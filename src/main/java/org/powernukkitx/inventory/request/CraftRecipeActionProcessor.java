@@ -53,7 +53,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
     public static final String GRID_CONSUMED_KEY = "grid_consumed";
-    public static final String MULTI_RESULT_KEY = "multi_result";
+    static final String MULTI_RESULT_KEY = "multi_result";
 
     private Item computeMultiRecipeResult(Item[][] data) {
         ItemShield shield = null;
