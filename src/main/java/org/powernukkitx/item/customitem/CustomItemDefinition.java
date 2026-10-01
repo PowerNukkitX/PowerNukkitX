@@ -37,6 +37,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import static org.powernukkitx.block.BlockID.*;
+
 /**
  * CustomItemDefinition defines custom items from behavior packs. <p>
  *
@@ -50,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @EqualsAndHashCode(callSuper = false)
 @ToString
-public final class CustomItemDefinition extends ItemDefinition implements BlockID {
+public final class CustomItemDefinition extends ItemDefinition {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
     public record BlockPlacerData(String blockId, List<String> useOn) {}
