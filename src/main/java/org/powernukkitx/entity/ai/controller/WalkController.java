@@ -39,7 +39,7 @@ public class WalkController implements IController {
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             // Clone prevents NPE caused by asynchronous
             Vector3 direction = entity.getMoveDirectionEnd().clone();
-            var speed = entity.getMovementSpeed();
+            var speed = entity.getMovementSpeed() * entity.getMovementSpeedFactor();
 
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 entity.setDataFlag(ActorFlags.MOVING, false);
