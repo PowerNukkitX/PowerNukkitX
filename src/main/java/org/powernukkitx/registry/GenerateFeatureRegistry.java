@@ -67,6 +67,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(JungleEdgeTreeFeature.NAME, JungleEdgeTreeFeature.class);
             this.register(SavannaTreeFeature.NAME, SavannaTreeFeature.class);
             this.register(ForestTreeFeature.NAME, ForestTreeFeature.class);
+            this.register(ExtremeHillsPlusTreeFeature.NAME, ExtremeHillsPlusTreeFeature.class);
             this.register(FlowerForestTreeFeature.NAME, FlowerForestTreeFeature.class);
             this.register(JungleMelonGenerateFeature.NAME, JungleMelonGenerateFeature.class);
             this.register(MangroveTreeFeature.NAME, MangroveTreeFeature.class);
@@ -82,7 +83,6 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(MushroomIslandMushroomFeature.NAME, MushroomIslandMushroomFeature.class);
             this.register(ReedsFeature.NAME, ReedsFeature.class);
             this.register(PlainsTreeFeature.NAME, PlainsTreeFeature.class);
-            this.register(RoofedForestTreeFeature.NAME, RoofedForestTreeFeature.class);
             this.register(DesertCactusFeature.NAME, DesertCactusFeature.class);
             this.register(DeadBushFeature.NAME, DeadBushFeature.class);
             this.register(TallGrassGenerateFeature.NAME, TallGrassGenerateFeature.class);
@@ -94,7 +94,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(IcePatchFeature.NAME, IcePatchFeature.class);
             this.register(IcebergFeature.NAME, IcebergFeature.class);
             this.register(MegaTaigaTreeFeature.NAME, MegaTaigaTreeFeature.class);
-            this.register(MegaTaigaTreeFeature.ALIAS, MegaTaigaTreeFeature.class);
+            this.register(RedwoodTaigaMutatedTreeFeature.NAME, RedwoodTaigaMutatedTreeFeature.class);
             this.register(CherryTreeFeature.NAME, CherryTreeFeature.class);
             this.register(BirchForestTreeFeature.NAME, BirchForestTreeFeature.class);
             this.register(ForestFoliageFeature.NAME, ForestFoliageFeature.class);
@@ -133,8 +133,6 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(KelpFeature.NAME, KelpFeature.class);
             this.register(WarmOceanSeagrassFeature.NAME, WarmOceanSeagrassFeature.class);
             this.register(MesaPlateauStoneTreeFeature.NAME, MesaPlateauStoneTreeFeature.class);
-            this.register(MesaTreeFeature.NAME, MesaTreeFeature.class);
-            this.register(MesaFoliageFeature.NAME, MesaFoliageFeature.class);
             this.register(TaigaTreeFeature.NAME, TaigaTreeFeature.class);
             this.register(ScatterSweetBerryBushFeature.NAME, ScatterSweetBerryBushFeature.class);
             this.register(FireflyBushWaterClusterFeature.NAME, FireflyBushWaterClusterFeature.class);

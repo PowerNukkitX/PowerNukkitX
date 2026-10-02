@@ -6,6 +6,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.form.window.Form;
 import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.math.BlockFace;
@@ -15,13 +16,13 @@ import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.network.security.PacketRateLimiter;
 import org.powernukkitx.scheduler.AsyncTask;
 import org.powernukkitx.utils.DummyBossBar;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.google.common.collect.BiMap;
-import lombok.Getter;
-import lombok.Setter;
+
 import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+
 import org.jetbrains.annotations.NotNull;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.google.common.collect.BiMap;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -31,7 +32,6 @@ import java.util.UUID;
 /**
  * A PlayerHandle is used to access a player's protected data.
  */
-
 public final class PlayerHandle {
     public final @NotNull Player player;
     public final @NotNull PacketRateLimiter packetRateLimiter;
@@ -75,8 +75,21 @@ public final class PlayerHandle {
         return player.hiddenPlayers;
     }
 
+    /**
+     * Returns the current unrestricted base budget of the adaptive chunk publisher.
+     * <p>
+     * This is no longer a fixed per-player chunks-per-tick limit. Actual publication
+     * grants are calculated dynamically by the server-global chunk publisher using
+     * network capacity, active-streamer fairness, transport pressure, recent chunk
+     * payload cost, available byte tokens, and runtime resource pressure.
+     *
+     * @return current unrestricted global chunk publication base
+     * @deprecated LevelChunk publication no longer uses a fixed per-player chunks-per-tick
+     * limit. Use the adaptive chunk publisher architecture instead.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public int getChunksPerTick() {
-        return player.chunksPerTick;
+        return player.getChunkSendCountPerTick();
     }
 
     public int getSpawnThreshold() {
@@ -157,6 +170,24 @@ public final class PlayerHandle {
 
     public void setSpawnPosition(Position spawnPosition) {
         player.spawnPoint = spawnPosition;
+    }
+
+    /**
+     * Returns the pending End portal destination.
+     *
+     * @return pending destination, or {@code null} when none is pending
+     */
+    public Level getPendingEndPortalDestination() {
+        return player.pendingEndPortalDestination;
+    }
+
+    /**
+     * Sets the pending End portal destination.
+     *
+     * @param destination pending destination, or {@code null} to clear it
+     */
+    public void setPendingEndPortalDestination(Level destination) {
+        player.pendingEndPortalDestination = destination;
     }
 
     public void setInAirTicks(int inAirTicks) {

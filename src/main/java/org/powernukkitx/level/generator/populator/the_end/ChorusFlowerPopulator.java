@@ -41,7 +41,7 @@ public class ChorusFlowerPopulator extends Populator {
             for (int i = 0; i < random.nextBoundedInt(5); i++) {
                 int x = (chunkX << 4) + random.nextBoundedInt(16);
                 int z = (chunkZ << 4) + random.nextBoundedInt(16);
-                int y = level.getHeightMap(x, z);
+                int y = level.getHeightMap(x, z) - 1;
                 if (y > 0) {
                     if (level.getBlockStateAt(x, y + 1, z).equals(BlockAir.STATE) && level.getBlockStateAt(x, y, z).equals(END_STONE)) {
                         BlockManager object = new BlockManager(level);

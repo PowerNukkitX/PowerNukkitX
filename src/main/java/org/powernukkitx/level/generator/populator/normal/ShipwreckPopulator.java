@@ -3,6 +3,7 @@ package org.powernukkitx.level.generator.populator.normal;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockChest;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockStructureBlock;
 import org.powernukkitx.block.BlockWater;
@@ -14,8 +15,11 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
+import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
@@ -29,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.powernukkitx.block.property.CommonBlockProperties.HEIGHT;
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class ShipwreckPopulator extends Populator implements PopulatorStructure {
@@ -164,14 +169,15 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
         return Registries.BLOCK.getBlockProperties(target).getBlockState(values.toArray(BlockPropertyType.BlockPropertyValue[]::new));
     }
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+    public static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
             .salt(165745295L)
             .minDistance(4)
             .maxDistance(24)
+            .biomeSampleOffset(5)
             .isBiomeValid(biome -> {
                 return Registries.BIOME.getTags(biome).contains(BiomeTags.OCEAN) || Registries.BIOME.getTags(biome).contains(BiomeTags.BEACH);
             })
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.LINEAR);
 
 
     @Override
@@ -205,9 +211,9 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
                 for (int z = 0; z < size.getZ() && z < 16; z++) {
                     int y = chunk.getHeightMap(x, z);
 
-                    Block b = chunk.getBlockState(x, y, z).toBlock();
-                    while (b.canBeReplaced() && y > level.getMinHeight()) {
-                        b = chunk.getBlockState(x, --y, z).toBlock();
+                    BlockState state = chunk.getBlockState(x, y, z);
+                    while (isReplaceableSurface(chunk, x, y, z, state) && y > level.getMinHeight()) {
+                        state = chunk.getBlockState(x, --y, z);
                     }
 
                     sumY += y;
@@ -235,6 +241,20 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
 
             BlockManager manager = new BlockManager(level);
             this.placeInLevel(manager, chunkX, chunkZ, template, y);
+            int structureX = chunkX << 4;
+            int structureZ = chunkZ << 4;
+            StructureAabbVolumes.addDynamic(
+                    level,
+                    "minecraft:shipwreck",
+                    List.of(new BoundingBox(
+                            structureX,
+                            y,
+                            structureZ,
+                            structureX + size.getX() - 1,
+                            y + size.getY() - 1,
+                            structureZ + size.getZ() - 1
+                    ))
+            );
             for(Block block : manager.getBlocks()) {
                 if(block instanceof BlockAir) manager.unsetBlockStateAt(block);
                 if(block instanceof BlockStructureBlock) manager.unsetBlockStateAt(block);
@@ -255,6 +275,14 @@ public class ShipwreckPopulator extends Populator implements PopulatorStructure 
             }
             queueObject(chunk, manager);
         }
+    }
+
+    private static boolean isReplaceableSurface(IChunk chunk, int x, int y, int z, BlockState state) {
+        if (BlockID.SNOW_LAYER.equals(state.getIdentifier())) {
+            return state.getPropertyValue(HEIGHT) < HEIGHT.getMax() && chunk.getBlockState(x, y, z, 1).equals(BlockAir.STATE);
+        }
+
+        return state.toBlock().canBeReplaced();
     }
 
     protected void placeInLevel(BlockManager manager, int chunkX, int chunkZ, PNXStructure template, int y) {

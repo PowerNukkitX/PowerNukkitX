@@ -14,6 +14,7 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
@@ -70,6 +71,11 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(100);
+    }
+
+    @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(12f);
     }
 
     @Override

@@ -1,44 +1,27 @@
 package org.powernukkitx.level.generator.feature.tree;
 
-import org.powernukkitx.block.property.enums.WoodType;
-import org.powernukkitx.level.generator.feature.LegacyTreeGeneratorFeature;
-import org.powernukkitx.level.generator.object.ObjectFallenTree;
-import org.powernukkitx.level.generator.object.TreeGenerator;
-import org.powernukkitx.level.generator.object.legacytree.LegacyBirchTree;
-import org.powernukkitx.level.generator.object.legacytree.LegacyOakTree;
-import org.powernukkitx.tags.BiomeTags;
-import org.powernukkitx.utils.random.RandomSourceProvider;
-
-public class ForestTreeFeature extends LegacyTreeGeneratorFeature {
-
+public class ForestTreeFeature extends TreeRuleFeature {
     public static final String NAME = "minecraft:forest_surface_trees_feature";
 
-    @Override
-    public TreeGenerator getGenerator(RandomSourceProvider random) {
-        boolean fallen = random.nextInt(100) == 0;
-        if(random.nextInt(10) < 6) {
-            return fallen ? new ObjectFallenTree() : new LegacyOakTree();
-        } else return fallen ? new ObjectFallenTree(WoodType.BIRCH) : new LegacyBirchTree();
-    }
+    private static final TreeFeatureSelector SELECTOR = random -> {
+        if (random.nextExclusiveInt(5) == 0) {
+            return TreePlacementFeatures.birchWithLeafLitter();
+        }
+        if (random.nextExclusiveInt(10) == 0) {
+            return TreePlacementFeatures.fancyOakWithLeafLitterAndOptionalBeehive();
+        }
+        return TreePlacementFeatures.oakWithLeafLitter();
+    };
+
+    private static final TreeFeaturePlan PLAN = TreeFeaturePlan.legacy(
+            10.0f,
+            TreePlacementFeatures::isNormalForestCandidate,
+            SELECTOR
+    );
 
     @Override
-    public int getMin() {
-        return 7;
-    }
-
-    @Override
-    public int getMax() {
-        return 8;
-    }
-
-    @Override
-    public String getRequiredTag() {
-        return BiomeTags.FOREST;
-    }
-
-    @Override
-    protected float getBeeNestChance() {
-        return 0.00035F;
+    protected TreeFeaturePlan treePlan() {
+        return PLAN;
     }
 
     @Override

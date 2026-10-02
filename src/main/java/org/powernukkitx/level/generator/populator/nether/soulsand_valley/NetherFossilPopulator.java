@@ -28,6 +28,8 @@ public class NetherFossilPopulator extends Populator implements PopulatorStructu
     public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
             .minDistance(2)
             .maxDistance(32)
+            .biomeSampleOffset(3)
+            .biomeSampleY(LAVA_LEVEL)
             .isBiomeValid(biome -> biome == BiomeID.SOULSAND_VALLEY)
             .build());
 

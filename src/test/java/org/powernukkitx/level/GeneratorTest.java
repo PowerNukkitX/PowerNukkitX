@@ -1,9 +1,11 @@
 package org.powernukkitx.level;
 
 import org.powernukkitx.GameMockExtension;
+import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.generator.Flat;
+import org.powernukkitx.level.lighting.InitialLightingManager;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.GameLoop;
 import org.junit.jupiter.api.Assertions;
@@ -47,6 +49,10 @@ public class GeneratorTest {
         int z = 10000;
         IChunk chunk = levelProvider.getChunk(x >> 4, z >> 4, true);
         flat.syncGenerate(chunk);
+
+        Chunk generatedChunk = Assertions.assertInstanceOf(Chunk.class, chunk);
+        Assertions.assertTrue(new InitialLightingManager(level).process(generatedChunk));
+
         int blockLightAt = level.getBlockLightAt(x, 5, z);
         int blockSkyLightAt = level.getBlockSkyLightAt(x, 5, z);
         int fullLight = level.getFullLight(new Vector3(x, 5, z));

@@ -1,13 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySculkSensor;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
+import org.powernukkitx.level.vibration.VibrationListenerStorage;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.SCULK_SENSOR_PHASE;
 
@@ -46,6 +51,16 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     }
 
     @Override
+    @NotNull public BlockEntitySculkSensor createBlockEntity() {
+        return createBlockEntity(VibrationListenerStorage.createInitialData());
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, VibrationListenerStorage.createInitialData()) != null;
+    }
+
+    @Override
     public boolean isPowerSource() {
         return true;
     }
@@ -65,14 +80,27 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
         }
     }
 
+    /**
+     * Returns whether the sensor is in its inactive phase.
+     *
+     * @return whether the sensor is inactive
+     */
+    public boolean isInactive() {
+        return getPropertyValue(SCULK_SENSOR_PHASE) == 0;
+    }
+
     @Override
     public int onUpdate(int type) {
-        getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (level.getServer().getSettings().gameplaySettings().enableRedstone()) {
-                this.getBlockEntity().calPower();
-                this.setPhase(0);
-                updateAroundRedstone();
+                if (getPropertyValue(SCULK_SENSOR_PHASE) == 1) {
+                    this.getBlockEntity().clearPower();
+                    this.setPhase(2);
+                    updateAroundRedstone();
+                    level.scheduleUpdate(this, 10);
+                } else if (getPropertyValue(SCULK_SENSOR_PHASE) == 2) {
+                    this.setPhase(0);
+                }
             }
             return type;
         }
@@ -80,8 +108,9 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     }
 
     public void setPhase(int phase) {
+        int oldPhase = getPropertyValue(SCULK_SENSOR_PHASE);
         if (phase == 1) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
-        else this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
+        else if (phase == 0 && oldPhase != 0) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setPropertyValue(SCULK_SENSOR_PHASE, phase);
         this.level.setBlock(this, this, true, false);
     }

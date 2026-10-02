@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author xtypr
@@ -29,9 +30,11 @@ public class EntityXpOrb extends Entity {
      * Split sizes used for dropping experience orbs.
      */
     public static final int[] ORB_SPLIT_SIZES = {2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1}; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
+    private static final int VANILLA_DESPAWN_AGE = 6000;
+    private static final int VANILLA_MERGE_INTERVAL = 20;
+    private static final int VANILLA_PICKUP_RANDOM_BOUND = 6;
+
     public Player closestPlayer = null;
-    private int age;
-    private int pickupDelay;
     private int exp;
 
     public EntityXpOrb(IChunk chunk, CompoundTag nbt) {
@@ -117,18 +120,9 @@ public class EntityXpOrb extends Entity {
         setHealthCurrent(5);
 
         final CompoundTag nbtMap = this.getNbt();
-        if (nbtMap.contains("Health")) {
-            this.setHealthCurrent(nbtMap.getShort("Health"));
-        }
-        if (nbtMap.contains("Age")) {
-            this.age = nbtMap.getShort("Age");
-        }
-        if (nbtMap.contains("PickupDelay")) {
-            this.pickupDelay = nbtMap.getShort("PickupDelay");
-        }
-        if (nbtMap.contains("Value")) {
-            this.exp = nbtMap.getShort("Value");
-        }
+
+        this.age = nbtMap.getShort("Age");
+        this.exp = nbtMap.getInt("experience value"); // Yes, BDS keep the field name with a space. We must keep to BDS map compatibility.
 
         if (this.exp <= 0) {
             this.exp = 1;
@@ -163,20 +157,19 @@ public class EntityXpOrb extends Entity {
         boolean hasUpdate = entityBaseTick(tickDiff);
         if (this.isAlive()) {
 
-            if (this.pickupDelay > 0 && this.pickupDelay < 32767) { //Infinite delay
-                this.pickupDelay -= tickDiff;
-                if (this.pickupDelay < 0) {
-                    this.pickupDelay = 0;
+            if (this.age % VANILLA_MERGE_INTERVAL == 0) {
+                for (Entity entity : this.level.getNearbyEntities(this.getBoundingBox().grow(0.5, 0.5, 0.5), this)) {
+                    if (!(entity instanceof EntityXpOrb orb) || !orb.isAlive()) continue;
+
+                    long mergedExp = (long) this.exp + orb.exp;
+                    if (mergedExp > Integer.MAX_VALUE) continue;
+
+                    this.age = Math.min(this.age, orb.age);
+                    this.setExp((int) mergedExp);
+
+                    orb.close();
                 }
-            }/* else { // Done in Player#checkNearEntities
-                for (Entity entity : this.level.getCollidingEntities(this.boundingBox, this)) {
-                    if (entity instanceof Player) {
-                        if (((Player) entity).pickupEntity(this, false)) {
-                            return true;
-                        }
-                    }
-                }
-            }*/
+            }
 
             this.motionY -= this.getGravity();
 
@@ -235,7 +228,7 @@ public class EntityXpOrb extends Entity {
 
             this.updateMovement();
 
-            if (this.age > 6000) {
+            if (this.age >= VANILLA_DESPAWN_AGE) {
                 this.kill();
                 hasUpdate = true;
             }
@@ -248,10 +241,7 @@ public class EntityXpOrb extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putShort("Health", (short) getHealthCurrent())
-                .putShort("Age", (short) age)
-                .putShort("PickupDelay", (short) pickupDelay)
-                .putShort("Value", (short) exp);
+        this.nbt.putShort("Age", (short) this.age).putInt("experience value", this.exp); // Yes, BDS keep the field name with a space. We must keep to BDS map compatibility.
     }
 
     public int getExp() {
@@ -262,7 +252,9 @@ public class EntityXpOrb extends Entity {
         if (exp <= 0) {
             throw new IllegalArgumentException("XP amount must be greater than 0, got " + exp);
         }
+
         this.exp = exp;
+        this.setDataProperty(ActorDataTypes.VALUE, this.exp);
     }
 
     @Override
@@ -270,12 +262,13 @@ public class EntityXpOrb extends Entity {
         return false;
     }
 
-    public int getPickupDelay() {
-        return pickupDelay;
-    }
-
-    public void setPickupDelay(int pickupDelay) {
-        this.pickupDelay = pickupDelay;
+    /**
+     * Returns whether this experience orb should attempt pickup on the current check.
+     *
+     * @return whether pickup should be attempted
+     */
+    public boolean shouldPickup() {
+        return ThreadLocalRandom.current().nextInt(VANILLA_PICKUP_RANDOM_BOUND) == 0;
     }
 
     @Override

@@ -27,7 +27,7 @@ public class DesertWellPopulator extends Populator implements PopulatorStructure
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int x = (chunkX << 4) + random.nextBoundedInt(15);
         int z = (chunkZ << 4) + random.nextBoundedInt(15);
-        int y = level.getHeightMap(x, z);
+        int y = level.getHeightMap(x, z) - 1;
 
         if(WELL.canGenerateAt(new Location(x, y, z, level))) {
             BlockManager manager = new BlockManager(level);

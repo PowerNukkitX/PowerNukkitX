@@ -22,6 +22,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CA
  * @since 26.12.2015
  */
 public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
+    public BlockEndPortalFrame(BlockState blockstate) {
+        super(blockstate);
+    }
 
     public static final BlockProperties PROPERTIES = new BlockProperties(END_PORTAL_FRAME,
             MINECRAFT_CARDINAL_DIRECTION,
@@ -34,10 +37,6 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
 
     public BlockEndPortalFrame() {
         this(PROPERTIES.getDefaultState());
-    }
-
-    public BlockEndPortalFrame(BlockState blockstate) {
-        super(blockstate);
     }
 
     @Override
@@ -134,6 +133,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
                         this.getLevel().useBreakOn(vector3);
                     }
                     this.getLevel().setBlock(vector3, Block.get(Block.END_PORTAL));
+                    ((BlockEndPortal) this.getLevel().getBlock(vector3)).getOrCreateBlockEntity();
                     this.getLevel().addSound(this, Sound.BLOCK_END_PORTAL_SPAWN);
                 }
             }

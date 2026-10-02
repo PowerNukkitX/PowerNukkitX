@@ -6,7 +6,6 @@ import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -27,14 +26,14 @@ public abstract class ProjectileItem extends Item {
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(player.x))
-                        .add(new DoubleTag(player.y + player.getEyeHeight() - 0.30000000149011612))
-                        .add(new DoubleTag(player.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(directionVector.x))
-                        .add(new DoubleTag(directionVector.y))
-                        .add(new DoubleTag(directionVector.z)))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(player.x))
+                        .add(new FloatTag(player.y + player.getEyeHeight() - 0.30000000149011612))
+                        .add(new FloatTag(player.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(directionVector.x))
+                        .add(new FloatTag(directionVector.y))
+                        .add(new FloatTag(directionVector.z)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((float) player.yaw))
                         .add(new FloatTag((float) player.pitch)));

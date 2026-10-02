@@ -9,7 +9,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class CherryTreeFeature extends ObjectGeneratorFeature {
-
     public static final String NAME = "minecraft:cherry_grove_after_surface_cherry_tree_feature_rules";
 
     @Override
