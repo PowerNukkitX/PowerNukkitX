@@ -3,32 +3,25 @@ package org.powernukkitx.scheduler;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.BlockUpdateEntry;
-import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Schedules random block updates and dispatches due entries in tick order.
  *
  * @author Curse
  */
-@Slf4j
 public class RandomBlockUpdateScheduler {
-    private final IChunk chunk;
-    private long lastTick;
-    private final Long2ObjectNonBlockingMap<Set<BlockUpdateEntry>> queuedUpdates;
-    private final Map<BlockUpdateEntry, Long> entryToTick = new ConcurrentHashMap<>();
+    private static final int MAX_UPDATES_PER_TICK = 100;
+    private static final int LIVE_AVAILABILITY_RADIUS = 8;
 
-    private Set<BlockUpdateEntry> pendingUpdates;
+    private final IChunk chunk;
+    private final ScheduledBlockUpdateQueue updates = new ScheduledBlockUpdateQueue();
+    private volatile long lastTick;
 
     /**
      * Creates a new RandomBlockUpdateScheduler instance.
@@ -37,7 +30,6 @@ public class RandomBlockUpdateScheduler {
      * @param currentTick value for this API
      */
     public RandomBlockUpdateScheduler(IChunk chunk, long currentTick) {
-        this.queuedUpdates = new Long2ObjectNonBlockingMap<>();
         this.lastTick = currentTick;
         this.chunk = chunk;
     }
@@ -48,67 +40,72 @@ public class RandomBlockUpdateScheduler {
      * @param currentTick value for this API
      */
     public void tick(long currentTick) {
-        if (entryToTick.isEmpty()) {
-            lastTick = currentTick;
+        lastTick = currentTick;
+
+        if (updates.isEmpty()) {
             return;
         }
 
-        if (currentTick - lastTick < Short.MAX_VALUE) {
-            for (long tick = lastTick + 1; tick <= currentTick; tick++) {
-                perform(tick);
-            }
-        } else {
-            ArrayList<Long> times = new ArrayList<>(queuedUpdates.keySet());
-            Collections.sort(times);
-
-            for (long tick : times) {
-                if (tick <= currentTick) {
-                    perform(tick);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        lastTick = currentTick;
-    }
-
-    private void perform(long tick) {
+        List<ScheduledBlockUpdate> batch = updates.beginDue(currentTick, MAX_UPDATES_PER_TICK);
         try {
-            lastTick = tick;
-            Set<BlockUpdateEntry> updates = pendingUpdates = queuedUpdates.remove(tick);
-
-            if (updates == null) return;
-
-            Iterator<BlockUpdateEntry> updateIterator = updates.iterator();
-
-            while (updateIterator.hasNext()) {
-                BlockUpdateEntry entry = updateIterator.next();
-
-                Vector3 pos = entry.pos;
-
-                updateIterator.remove();
-                entryToTick.remove(entry, tick);
-                chunk.setChanged(true);
-
-                if (pos.getChunkX() != chunk.getX() || pos.getChunkZ() != chunk.getZ()) {
-                    log.warn("Random scheduled block {} is outside chunk {}, {}", entry.block.getId(), chunk.getX(), chunk.getZ());
-                    continue;
-                }
-
-                Level level = chunk.getLevel();
-                Block block = level.getBlock(entry.pos, entry.block.layer);
-                if (block.isTickingDisabled()) continue;
-
-                block.onUpdate(Level.BLOCK_UPDATE_RANDOM);
+            for (ScheduledBlockUpdate update : batch) {
+                perform(update);
             }
         } finally {
-            pendingUpdates = null;
+            updates.finishCurrent();
         }
     }
 
-    private long getMinTime(BlockUpdateEntry entry) {
-        return Math.max(entry.delay, lastTick + 1);
+    private void perform(ScheduledBlockUpdate update) {
+        chunk.setChanged(true);
+
+        Level level = chunk.getLevel();
+
+        if (!isLiveAreaAvailable(level, update.x, update.z, LIVE_AVAILABILITY_RADIUS)) {
+            if (isLiveChunkAvailable(level, update.x >> 4, update.z >> 4)) {
+                updates.requeue(update, lastTick);
+            }
+            return;
+        }
+
+        Block block = level.getBlock(update.x, update.y, update.z, update.layer);
+        if (!update.blockState.getIdentifier().equals(block.getId())) {
+            return;
+        }
+        if (!block.isTickingDisabled()) {
+            block.onUpdate(Level.BLOCK_UPDATE_RANDOM);
+        }
+    }
+
+    private static boolean isLiveAreaAvailable(Level level, int x, int z, int radius) {
+        int minChunkX = (x - radius) >> 4;
+        int maxChunkX = (x + radius) >> 4;
+        int minChunkZ = (z - radius) >> 4;
+        int maxChunkZ = (z + radius) >> 4;
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                if (!isLiveChunkAvailable(level, chunkX, chunkZ)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isLiveChunkAvailable(Level level, int chunkX, int chunkZ) {
+        IChunk target = level.getPhysicalChunkIfLoaded(chunkX, chunkZ);
+        return target != null && target.getGenerationState() == ChunkGenerationState.COMPLETE;
+    }
+
+    /**
+     * Adds one persisted random update.
+     */
+    public void add(Block block, Vector3 pos, long targetTick, int order, boolean checkBlockWhenUpdate) {
+        long time = Math.max(targetTick, lastTick + 1);
+        updates.add(ScheduledBlockUpdate.from(block, pos, time, order, checkBlockWhenUpdate));
+        chunk.setChanged(true);
     }
 
     /**
@@ -117,17 +114,33 @@ public class RandomBlockUpdateScheduler {
      * @param entry value for this API
      */
     public void add(BlockUpdateEntry entry) {
-        long time = getMinTime(entry);
-        Set<BlockUpdateEntry> updateSet = queuedUpdates.get(time);
-
-        if (updateSet == null) {
-            Set<BlockUpdateEntry> existing = queuedUpdates.putIfAbsent(time, updateSet = ConcurrentHashMap.newKeySet());
-            if (existing != null) updateSet = existing;
-        }
-
-        updateSet.add(entry);
-        entryToTick.put(entry, time);
+        long time = Math.max(entry.delay, lastTick + 1);
+        updates.add(ScheduledBlockUpdate.from(entry, time));
         chunk.setChanged(true);
+    }
+
+    /**
+     * Restores one persisted random update without marking the queue dirty.
+     */
+    public void addLoaded(
+            Block block,
+            int x,
+            int y,
+            int z,
+            long targetTick,
+            int order,
+            boolean checkBlockWhenUpdate
+    ) {
+        updates.addLoaded(new ScheduledBlockUpdate(
+                x, y, z, block.layer, order, targetTick, block.getBlockState(), checkBlockWhenUpdate
+        ));
+    }
+
+    /**
+     * Returns whether a matching pending update exists.
+     */
+    public boolean contains(Vector3 pos, Block block) {
+        return updates.contains(pos, block);
     }
 
     /**
@@ -137,7 +150,18 @@ public class RandomBlockUpdateScheduler {
      * @return the requested value
      */
     public boolean contains(BlockUpdateEntry entry) {
-        return entryToTick.containsKey(entry);
+        return contains(entry.pos, entry.block);
+    }
+
+    /**
+     * Removes one matching pending update.
+     */
+    public boolean remove(Vector3 pos, Block block) {
+        boolean removed = updates.remove(pos, block);
+        if (removed) {
+            chunk.setChanged(true);
+        }
+        return removed;
     }
 
     /**
@@ -147,14 +171,7 @@ public class RandomBlockUpdateScheduler {
      * @return the requested value
      */
     public boolean remove(BlockUpdateEntry entry) {
-        Long tick = entryToTick.remove(entry);
-        if (tick == null) return false;
-
-        Set<BlockUpdateEntry> tickUpdateSet = queuedUpdates.get((long) tick);
-        boolean removed = tickUpdateSet != null && tickUpdateSet.remove(entry);
-        if (removed) chunk.setChanged(true);
-
-        return removed;
+        return remove(entry.pos, entry.block);
     }
 
     /**
@@ -165,14 +182,12 @@ public class RandomBlockUpdateScheduler {
      * @return the requested value
      */
     public boolean isBlockTickPending(Vector3 pos, Block block) {
-        Set<BlockUpdateEntry> updates = pendingUpdates;
-        if (updates == null || updates.isEmpty()) return false;
-
-        return updates.contains(new BlockUpdateEntry(pos, block));
+        return updates.isCurrent(pos, block);
     }
 
     /**
      * Returns the last processed tick.
+     *
      * @return the requested value
      */
     public long getLastTick() {
@@ -190,9 +205,38 @@ public class RandomBlockUpdateScheduler {
 
     /**
      * Returns pending block updates with due ticks.
+     *
      * @return the requested value
      */
     public Map<BlockUpdateEntry, Long> getPendingBlockUpdatesWithTime() {
-        return new HashMap<>(this.entryToTick);
+        return updates.snapshotWithTime(chunk.getLevel());
+    }
+
+    /**
+     * Visits persisted pending/deferred records directly.
+     */
+    public int forEachPending(ScheduledBlockUpdateVisitor visitor) {
+        return updates.forEachPending(visitor);
+    }
+
+    /**
+     * Returns whether this queue component changed since successful persistence.
+     */
+    public boolean hasStorageChanges() {
+        return updates.hasStorageChanges();
+    }
+
+    /**
+     * Returns the current queue persistence change version.
+     */
+    public long getStorageChangeVersion() {
+        return updates.getStorageChangeVersion();
+    }
+
+    /**
+     * Marks one successfully persisted queue version.
+     */
+    public void markStorageSaved(long version) {
+        updates.markStorageSaved(version);
     }
 }

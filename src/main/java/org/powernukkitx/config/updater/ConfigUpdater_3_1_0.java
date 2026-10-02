@@ -21,6 +21,7 @@ public class ConfigUpdater_3_1_0 implements ConfigUpdater.Updater {
         for (String key : new String[]{
                 "chunk-settings.perTickSend",
                 "chunk-settings.convertBDSChunks",
+                "chunk-settings.lightUpdates",
                 "level-settings.fieldOfView"
         }) {
             if (view.exists(key)) {

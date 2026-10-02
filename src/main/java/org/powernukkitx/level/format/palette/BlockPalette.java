@@ -76,6 +76,21 @@ public class BlockPalette extends Palette<BlockState> {
         return -1;
     }
 
+    /**
+     * Returns whether this palette contains a state with the requested block identifier.
+     *
+     * @param identifier block identifier
+     * @return whether the identifier is present
+     */
+    public boolean containsIdentifier(String identifier) {
+        for (int i = 0, size = this.palette.size(); i < size; i++) {
+            if (identifier.equals(this.palette.get(i).getIdentifier())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void set(int index, BlockState value) {
         if (nonAirCount >= 0) {

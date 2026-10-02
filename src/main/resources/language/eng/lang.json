@@ -153,7 +153,6 @@
   "pnx.settings.chunk.spawnthreshold": "Number of chunks a player needs to receive upon first spawn",
   "pnx.settings.chunk.chunksperticks": "Tick cycle of chunks",
   "pnx.settings.chunk.tickRadius": "Tick radius of chunks",
-  "pnx.settings.chunk.lightupdates": "Whether chunks perform light updates",
   "pnx.settings.chunk.clearticklist": "Whether to clear the tick list at the end of each tick",
   "pnx.settings.chunk.generationqueuesize": "Maximum number of terrain generation tasks executed simultaneously. Set to -1 or 0 to disable this limit and use dynamic generation scheduling.",
   "pnx.settings.chunk.spawnlimit": "Limits how many entities can spawn naturally in a chunk. ",

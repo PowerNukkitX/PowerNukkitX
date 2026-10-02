@@ -24,10 +24,24 @@ public abstract class PopulatorStage extends GenerateStage {
                 log.error("Error while applying populator {}", name, e);
             }
         }
+        beforeApplyBlocks(context, root);
         if (!root.getBlocks().isEmpty()) {
             root.applySubChunkUpdate();
             root.getBlocks().forEach(block -> block.getChunk().setChanged());
         }
+        afterApplyBlocks(context, root);
+    }
+
+    /**
+     * Runs after populators finish and before queued generated blocks are committed.
+     */
+    protected void beforeApplyBlocks(ChunkGenerateContext context, BlockManager root) {
+    }
+
+    /**
+     * Runs after queued generated blocks are committed.
+     */
+    protected void afterApplyBlocks(ChunkGenerateContext context, BlockManager root) {
     }
 
     public abstract ObjectArraySet<String> populators();

@@ -7,6 +7,7 @@ import org.powernukkitx.plugin.Plugin;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import com.google.common.base.Preconditions;
 
 /**
  * Describes an offline player.
@@ -20,7 +21,9 @@ public class OfflinePlayer implements IPlayer {
     private final Server server;
     private final UUID uuid;
     private final String name;
-    private final CompoundTag pnxExtraTag;
+    private CompoundTag nbtTag;
+    private CompoundTag nbtExtraTag;
+    private CompoundTag nbtCustomTag;
     private final boolean playedBefore;
 
     /**
@@ -49,10 +52,12 @@ public class OfflinePlayer implements IPlayer {
         Server.PlayerDataRecord record = resolvedUuid != null ? this.server.getOfflinePlayerDataRecord(resolvedUuid, false) : null;
 
         this.uuid = resolvedUuid;
-        this.pnxExtraTag = record != null ? record.pnxExtra() : new CompoundTag();
+        this.nbtTag = record != null ? record.nbt() : new CompoundTag();
+        this.nbtExtraTag = record != null ? record.pnxExtra() : new CompoundTag();
+        this.nbtCustomTag = record != null ? record.custom() : new CompoundTag();
         this.playedBefore = record != null;
 
-        String storedName = this.pnxExtraTag.getString("NameTag");
+        String storedName = this.nbtExtraTag.getString("NameTag");
         this.name = name != null ? name : storedName.isBlank() ? null : storedName;
     }
 
@@ -74,6 +79,75 @@ public class OfflinePlayer implements IPlayer {
     @Override
     public Server getServer() {
         return server;
+    }
+
+    @Override
+    public CompoundTag getNbt() {
+        Player player = this.getPlayer();
+        return player != null ? player.getNbt() : this.nbtTag;
+    }
+
+    @Override
+    public void setNbt(CompoundTag nbt) {
+        Player player = this.getPlayer();
+        if (player != null) {
+            player.setNbt(nbt);
+            return;
+        }
+
+        this.nbtTag = Preconditions.checkNotNull(nbt, "nbt");
+    }
+
+    @Override
+    public CompoundTag getNbtExtra() {
+        Player player = this.getPlayer();
+        return player != null ? player.getNbtExtra() : this.nbtExtraTag;
+    }
+
+    @Override
+    public void setNbtExtra(CompoundTag nbtExtra) {
+        Player player = this.getPlayer();
+        if (player != null) {
+            player.setNbtExtra(nbtExtra);
+            return;
+        }
+
+        this.nbtExtraTag = Preconditions.checkNotNull(nbtExtra, "nbtExtra");
+    }
+
+    @Override
+    public CompoundTag getNbtCustom() {
+        Player player = this.getPlayer();
+        return player != null ? player.getNbtCustom() : this.nbtCustomTag;
+    }
+
+    @Override
+    public void setNbtCustom(CompoundTag nbtCustom) {
+        Player player = this.getPlayer();
+        if (player != null) {
+            player.setNbtCustom(nbtCustom);
+            return;
+        }
+
+        this.nbtCustomTag = Preconditions.checkNotNull(nbtCustom, "nbtCustom");
+    }
+
+    @Override
+    public void save() {
+        Player player = this.getPlayer();
+        if (player != null) {
+            player.save();
+            return;
+        }
+
+        Preconditions.checkState(this.uuid != null, "Cannot save player NBT data without a UUID");
+        this.server.saveOfflinePlayerData(
+            this.uuid,
+            this.nbtTag.copy(),
+            this.nbtExtraTag.copy(),
+            this.nbtCustomTag.copy(),
+            false
+        );
     }
 
     @Override
@@ -134,12 +208,12 @@ public class OfflinePlayer implements IPlayer {
 
     @Override
     public Long getFirstPlayed() {
-        return this.playedBefore ? this.pnxExtraTag.getLong("firstPlayed") : null;
+        return this.playedBefore ? this.getNbtExtra().getLong("firstPlayed") : null;
     }
 
     @Override
     public Long getLastPlayed() {
-        return this.playedBefore ? this.pnxExtraTag.getLong("lastPlayed") : null;
+        return this.playedBefore ? this.getNbtExtra().getLong("lastPlayed") : null;
     }
 
     @Override

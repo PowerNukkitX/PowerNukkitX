@@ -16,7 +16,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class GroveTreeFeature extends GriddedFeature {
-
     protected final static BlockState SNOW_LAYER = BlockSnowLayer.PROPERTIES.getDefaultState();
 
     public static final String NAME = "minecraft:grove_spruce_tree_feature";

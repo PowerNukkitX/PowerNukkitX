@@ -182,6 +182,7 @@ public final class LevelDBStorage {
         builder.levelChunkMetaData(readChunkMetaData(x, z, dimensionData));
 
         Chunk chunk = builder.build();
+        LevelDBChunkSerializer.INSTANCE.deserializeBlockTicks(this.db, chunk);
         Preconditions.checkState(
                 chunk.compareAndSetGenerationState(
                         ChunkGenerationState.NEEDS_GENERATION,
@@ -251,6 +252,12 @@ public final class LevelDBStorage {
         BiomeState biomeState = chunk.getBiomeState();
         long biomeStateVersion = biomeState.hasStorageChanges() ? biomeState.getStorageChangeVersion() : -1;
 
+        var scheduled = chunk.getBlockUpdateScheduler();
+        long scheduledTickVersion = scheduled.hasStorageChanges() ? scheduled.getStorageChangeVersion() : -1;
+
+        var random = chunk.getRandomBlockUpdateScheduler();
+        long randomTickVersion = random.hasStorageChanges() ? random.getStorageChangeVersion() : -1;
+
         try (WriteBatch writeBatch = createBatch()) {
             LevelDBChunkSerializer.INSTANCE.serialize(writeBatch, chunk);
             writePendingActorDeletions(writeBatch);
@@ -262,6 +269,12 @@ public final class LevelDBStorage {
 
         if (biomeStateVersion >= 0) {
             biomeState.markStorageSaved(biomeStateVersion);
+        }
+        if (scheduledTickVersion >= 0) {
+            scheduled.markStorageSaved(scheduledTickVersion);
+        }
+        if (randomTickVersion >= 0) {
+            random.markStorageSaved(randomTickVersion);
         }
         if (persistedMetaData != null) {
             chunk.setLevelChunkMetaData(persistedMetaData);

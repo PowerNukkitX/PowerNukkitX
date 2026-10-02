@@ -1,7 +1,8 @@
 package org.powernukkitx.level.generator.stages;
 
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeConsolidatedFeatureData;
-import org.powernukkitx.registry.Registries;
+import org.powernukkitx.level.generator.feature.FeaturePlacementPass;
+
+import java.util.List;
 
 /**
  * Runs pregeneration-pass biome features before structure post-processing.
@@ -18,8 +19,8 @@ public class NormalPregenerationFeatureStage extends NormalChunkFeatureStage {
     }
 
     @Override
-    protected boolean shouldApplyFeature(BiomeConsolidatedFeatureData feature) {
-        return PREGENERATION_PASS.equals(Registries.BIOME.getFromBiomeStringList(feature.getPass()));
+    protected List<FeaturePlacementPass> placementPasses() {
+        return List.of(FeaturePlacementPass.PREGENERATION);
     }
 
     @Override

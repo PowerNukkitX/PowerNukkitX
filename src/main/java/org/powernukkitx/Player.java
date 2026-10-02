@@ -313,6 +313,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected CompoundTag customNbt = new CompoundTag();
     protected boolean pnxExtraDirty;
     protected boolean customDirty;
+    private boolean pnxExtraNbtExposed;
+    private boolean customNbtExposed;
     protected final PlayerCamera camera = new PlayerCamera(this);
     protected boolean checkMovement = true;
     protected PlayerFood foodData = null;
@@ -4912,7 +4914,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     protected @Nullable CompoundTag takePnxExtraSaveSnapshot() {
-        if (!this.pnxExtraDirty) return null;
+        if (!this.pnxExtraDirty && !this.pnxExtraNbtExposed) return null;
 
         CompoundTag snapshot = this.pnxExtraNbt.copy();
         this.pnxExtraDirty = false;
@@ -4920,11 +4922,49 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     protected @Nullable CompoundTag takeCustomSaveSnapshot() {
-        if (!this.customDirty) return null;
+        if (!this.customDirty && !this.customNbtExposed) return null;
 
         CompoundTag snapshot = this.customNbt.copy();
         this.customDirty = false;
         return snapshot;
+    }
+
+    /**
+     * Returns the live PNX-specific player NBT sidecar.
+     */
+    @Override
+    public CompoundTag getNbtExtra() {
+        this.pnxExtraNbtExposed = true;
+        return this.pnxExtraNbt;
+    }
+
+    /**
+     * Replaces the live PNX-specific player NBT sidecar.
+     */
+    @Override
+    public void setNbtExtra(CompoundTag nbtExtra) {
+        this.pnxExtraNbt = Preconditions.checkNotNull(nbtExtra, "nbtExtra");
+        this.pnxExtraNbtExposed = true;
+        this.pnxExtraDirty = true;
+    }
+
+    /**
+     * Returns the live custom player NBT sidecar.
+     */
+    @Override
+    public CompoundTag getNbtCustom() {
+        this.customNbtExposed = true;
+        return this.customNbt;
+    }
+
+    /**
+     * Replaces the live custom player NBT sidecar.
+     */
+    @Override
+    public void setNbtCustom(CompoundTag nbtCustom) {
+        this.customNbt = Preconditions.checkNotNull(nbtCustom, "nbtCustom");
+        this.customNbtExposed = true;
+        this.customDirty = true;
     }
 
     /**

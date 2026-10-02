@@ -139,7 +139,6 @@ public abstract class LakeFeature extends GenerateFeature {
     }
 
     private void carveLake(BlockManager manager, boolean[] grid, int originX, int originY, int originZ, BlockState fluid) {
-        Level level = manager.getLevel();
         for (int xx = 0; xx < 16; xx++) {
             for (int zz = 0; zz < 16; zz++) {
                 for (int yy = 0; yy < 8; yy++) {
@@ -154,13 +153,7 @@ public abstract class LakeFeature extends GenerateFeature {
                         continue;
                     }
 
-                    BlockState state = yy >= 4 ? AIR : fluid;
-                    manager.setBlockStateAt(x, y, z, state);
-                    if (state == AIR) {
-                        manager.addHook(() -> level.scheduleUpdate(level.getBlock(x, y, z), 0));
-                    } else if (state.toBlock() instanceof BlockLiquid) {
-                        manager.addHook(() -> level.scheduleUpdate(level.getBlock(x, y, z), 1));
-                    }
+                    manager.setBlockStateAt(x, y, z, yy >= 4 ? AIR : fluid);
                 }
             }
         }

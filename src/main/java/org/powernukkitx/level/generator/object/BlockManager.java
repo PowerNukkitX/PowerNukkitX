@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class BlockManager {
@@ -157,6 +158,43 @@ public class BlockManager {
         return getBlockIfCachedOrLoaded(x, y, z, BlockAir.STATE);
     }
 
+    /**
+     * Returns a queued block when present, otherwise reads the current loaded chunk state without using the block cache.
+     */
+    public Block getBlockIfQueuedOrLoaded(int x, int y, int z) {
+        return getBlockIfQueuedOrLoaded(x, y, z, 0);
+    }
+
+    /**
+     * Returns a queued block for the requested layer, otherwise reads the current loaded chunk state without using the
+     * block cache.
+     */
+    public Block getBlockIfQueuedOrLoaded(int x, int y, int z, int layer) {
+        long hash = hashXYZ(x, y, z, layer);
+        Block queued = this.places.get(hash);
+        if (queued != null) {
+            return queued;
+        }
+
+        if (y < level.getMinHeight() || y >= level.getMaxHeight()) {
+            return Block.get(BlockAir.STATE, level, x, y, z, layer);
+        }
+
+        IChunk chunk = getStateChunkIfLoaded(x >> 4, z >> 4);
+        if (chunk == null) {
+            return Block.get(BlockAir.STATE, level, x, y, z, layer);
+        }
+
+        return Block.get(
+                chunk.getBlockState(x & 0x0f, y, z & 0x0f, layer),
+                level,
+                x,
+                y,
+                z,
+                layer
+        );
+    }
+
     public Block getBlockAt(Vector3 vector3) {
         return getBlockAt(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
     }
@@ -195,6 +233,13 @@ public class BlockManager {
     }
 
     public void setBlockStateAt(int x, int y, int z, BlockState state) {
+        this.setBlockStateAtUnchecked(x, y, z, state);
+    }
+
+    /**
+     * Queues a block state without applying GeneratorRoot replacement filtering.
+     */
+    public final void setBlockStateAtUnchecked(int x, int y, int z, BlockState state) {
         long hashXYZ = hashXYZ(x, y, z, 0);
         Block block = Block.get(state, level, x, y, z, 0);
         places.put(hashXYZ, block);
@@ -318,6 +363,15 @@ public class BlockManager {
 
     public List<Block> getBlocks() {
         return new ArrayList<>(this.places.values());
+    }
+
+    /**
+     * Visits queued generated blocks without materializing a snapshot list.
+     *
+     * @param consumer block visitor
+     */
+    public void forEachBlock(Consumer<Block> consumer) {
+        this.places.values().forEach(consumer);
     }
 
     public AxisAlignedBB getBounds() {

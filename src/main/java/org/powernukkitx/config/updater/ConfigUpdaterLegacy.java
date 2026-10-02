@@ -82,7 +82,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
         chunk.spawnThreshold(chunkOld.spawnThreshold())
                 .chunksPerTicks(chunkOld.chunksPerTicks())
                 .tickRadius(chunkOld.tickRadius())
-                .lightUpdates(chunkOld.lightUpdates())
                 .clearTickList(chunkOld.clearTickList())
                 .generationQueueSize(chunkOld.generationQueueSize());
         DebugSettings debug = settings.debugSettings();

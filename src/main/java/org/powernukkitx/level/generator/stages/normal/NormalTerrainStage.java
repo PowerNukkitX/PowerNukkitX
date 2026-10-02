@@ -6,7 +6,6 @@ import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockStone;
 import org.powernukkitx.level.Level;
-import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.UnsafeChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
@@ -206,7 +205,9 @@ public class NormalTerrainStage extends GenerateStage {
                         }
                         unsafeChunk.setBlockState(x, y, z, generatedState, 0);
                         if (aquifer.shouldScheduleFluidUpdate()) {
-                            level.scheduleUpdate(generatedState.toBlock(new Position(worldX, y, worldZ, level)), 10);
+                            unsafeChunk.getChunk().getGenerationBlockUpdateQueue().add(
+                                    generatedState, worldX, y, worldZ, level.getCurrentTick() + 1, 0
+                            );
                         }
                         if (generatedState != BlockAir.STATE) {
                             hasNonAir = true;

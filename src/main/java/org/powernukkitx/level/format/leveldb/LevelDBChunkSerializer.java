@@ -6,6 +6,7 @@ import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.level.DimensionData;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.level.format.BiomeState;
 import org.powernukkitx.level.format.Chunk;
@@ -18,11 +19,12 @@ import org.powernukkitx.level.format.bitarray.BitArrayVersion;
 import org.powernukkitx.level.format.palette.BlockPalette;
 import org.powernukkitx.level.format.palette.Palette;
 import org.powernukkitx.level.util.LevelDBKeyUtil;
+import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.migration.leveldb.LevelDBMigrationVersionStore;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
-import org.powernukkitx.utils.BlockUpdateEntry;
+import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 
 import io.netty.buffer.ByteBuf;
@@ -136,7 +138,6 @@ public class LevelDBChunkSerializer {
         deserializeBlock(db, builder);
         deserializeBorderBlocks(db, builder);
         deserializeTileAndEntity(db, builder, pnxExtraData);
-        deserializeBlockTicks(db, pnxExtraData, builder);
         deserializeAabbVolumes(db, builder);
 
         return true;
@@ -555,183 +556,138 @@ public class LevelDBChunkSerializer {
 
     private void serializeBlockTicks(WriteBatch writeBatch, UnsafeChunk unsafe) {
         Chunk chunk = unsafe.getChunk();
-        Map<BlockUpdateEntry, Long> pending = chunk.getBlockUpdateScheduler().getPendingBlockUpdatesWithTime();
-        byte[] pendingTicksKey = LevelDBKeyUtil.PENDING_TICKS.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
+        var scheduled = chunk.getBlockUpdateScheduler();
 
-        if (pending.isEmpty()) {
-            writeBatch.delete(pendingTicksKey);
-        } else {
+        if (scheduled.hasStorageChanges()) {
+            byte[] key = LevelDBKeyUtil.PENDING_TICKS.getKey(
+                    chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()
+            );
             ListTag<CompoundTag> tickList = new ListTag<>();
 
-            for (Map.Entry<BlockUpdateEntry, Long> pendingEntry : pending.entrySet()) {
-                BlockUpdateEntry blockUpdateEntry = pendingEntry.getKey();
-                Block block = blockUpdateEntry.block;
-                CompoundTag blockState = CompoundTag.fromNetwork(block.getBlockState().getBlockStateTag());
+            int count = scheduled.forEachPending((x, y, z, blockState, targetTick) -> {
+                CompoundTag persistedState = CompoundTag.fromNetwork(blockState.getBlockStateTag());
+                tickList.add(new CompoundTag()
+                        .putCompound("blockState", persistedState)
+                        .putLong("time", targetTick)
+                        .putInt("x", x)
+                        .putInt("y", y)
+                        .putInt("z", z));
+            });
 
-                CompoundTag tick = new CompoundTag()
-                        .putCompound("blockState", blockState)
-                        .putLong("time", Math.max(pendingEntry.getValue(), chunk.getBlockUpdateScheduler().getLastTick() + 1))
-                        .putInt("x", blockUpdateEntry.pos.getFloorX())
-                        .putInt("y", blockUpdateEntry.pos.getFloorY())
-                        .putInt("z", blockUpdateEntry.pos.getFloorZ());
+            if (count == 0) {
+                writeBatch.delete(key);
+            } else {
+                CompoundTag pendingTicks = new CompoundTag()
+                        .putInt("currentTick", (int) scheduled.getLastTick())
+                        .putList("tickList", tickList);
 
-                tickList.add(tick);
+                writeBatch.put(key, writeLittleEndianCompound(pendingTicks));
             }
-
-            long currentTick = chunk.getBlockUpdateScheduler().getLastTick();
-
-            CompoundTag pendingTicks = new CompoundTag()
-                    .putInt("currentTick", (int) currentTick)
-                    .putList("tickList", tickList);
-
-            writeBatch.put(pendingTicksKey, writeLittleEndianCompound(pendingTicks));
         }
 
-        Map<BlockUpdateEntry, Long> randomPending = chunk.getRandomBlockUpdateScheduler().getPendingBlockUpdatesWithTime();
-        byte[] randomTicksKey = LevelDBKeyUtil.RANDOM_TICKS.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
+        var random = chunk.getRandomBlockUpdateScheduler();
 
-        if (randomPending.isEmpty()) {
-            writeBatch.delete(randomTicksKey);
-        } else {
+        if (random.hasStorageChanges()) {
+            byte[] key = LevelDBKeyUtil.RANDOM_TICKS.getKey(
+                    chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData()
+            );
             ListTag<CompoundTag> tickList = new ListTag<>();
 
-            for (Map.Entry<BlockUpdateEntry, Long> pendingEntry : randomPending.entrySet()) {
-                BlockUpdateEntry blockUpdateEntry = pendingEntry.getKey();
-                Block block = blockUpdateEntry.block;
-                CompoundTag blockState = CompoundTag.fromNetwork(block.getBlockState().getBlockStateTag());
+            int count = random.forEachPending((x, y, z, blockState, targetTick) -> {
+                CompoundTag persistedState = CompoundTag.fromNetwork(blockState.getBlockStateTag());
+                tickList.add(new CompoundTag()
+                        .putCompound("blockState", persistedState)
+                        .putLong("time", targetTick)
+                        .putInt("x", x)
+                        .putInt("y", y)
+                        .putInt("z", z));
+            });
 
-                CompoundTag tick = new CompoundTag()
-                        .putCompound("blockState", blockState)
-                        .putLong("time", Math.max(pendingEntry.getValue(), chunk.getRandomBlockUpdateScheduler().getLastTick() + 1))
-                        .putInt("x", blockUpdateEntry.pos.getFloorX())
-                        .putInt("y", blockUpdateEntry.pos.getFloorY())
-                        .putInt("z", blockUpdateEntry.pos.getFloorZ());
+            if (count == 0) {
+                writeBatch.delete(key);
+            } else {
+                CompoundTag randomTicks = new CompoundTag()
+                        .putInt("currentTick", (int) random.getLastTick())
+                        .putList("tickList", tickList);
 
-                tickList.add(tick);
+                writeBatch.put(key, writeLittleEndianCompound(randomTicks));
             }
-
-            long currentTick = chunk.getRandomBlockUpdateScheduler().getLastTick();
-
-            CompoundTag randomTicks = new CompoundTag()
-                    .putInt("currentTick", (int) currentTick)
-                    .putList("tickList", tickList);
-
-            writeBatch.put(randomTicksKey, writeLittleEndianCompound(randomTicks));
         }
-    }
-
-    public static class ScheduledTickInfo {
-        public int x, y, z;
-        public long delay;
-        public CompoundTag blockState;
-    }
-
-    public static class RandomTickInfo {
-        public int x, y, z;
-        public long time;
-        public CompoundTag blockState;
-    }
-
-    public static class RandomTickData {
-        public long currentTick;
-        public List<RandomTickInfo> ticks = new ArrayList<>();
-    }
-
-    public static class NormalTickInfo {
-        public int x, y, z, layer, neighbor = -1;
-        public String id;
     }
 
     /**
-     * Deserializes persisted scheduled, random and normal block ticks for a chunk.
+     * Restores persisted scheduled and random block ticks directly into a loaded chunk.
      *
      * @param db source LevelDB
-     * @param extraData PNX chunk extra data
-     * @param builder target chunk builder
+     * @param chunk loaded chunk
      */
-    public static void deserializeBlockTicks(DB db, CompoundTag extraData, IChunkBuilder builder) {
-        long chunkKey = ((long) builder.getChunkX() & 0xffffffffL) << 32 | ((long) builder.getChunkZ() & 0xffffffffL);
-        LevelDBProvider provider = null;
+    void deserializeBlockTicks(DB db, IChunk chunk) {
+        Level level = chunk.getLevel();
+        int chunkX = chunk.getX();
+        int chunkZ = chunk.getZ();
+        DimensionData dimensionData = chunk.getDimensionData();
 
-        if (builder.getLevelProvider() instanceof LevelDBProvider p) {
-            provider = p;
-        }
-
-        if (provider == null) return;
-
-        byte[] pendingTicksBytes = db.get(LevelDBKeyUtil.PENDING_TICKS.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
-
+        byte[] pendingTicksBytes = db.get(LevelDBKeyUtil.PENDING_TICKS.getKey(chunkX, chunkZ, dimensionData));
         if (pendingTicksBytes != null) {
             CompoundTag pendingTicks = readLittleEndianCompound(pendingTicksBytes);
-            int currentTick = pendingTicks.getInt("currentTick");
+            long persistedCurrentTick = pendingTicks.getInt("currentTick");
             ListTag<CompoundTag> tickList = pendingTicks.getList("tickList", CompoundTag.class);
-            List<ScheduledTickInfo> scheduledList = new ArrayList<>();
+            var scheduler = chunk.getBlockUpdateScheduler();
 
             for (CompoundTag tag : tickList.getAll()) {
-                ScheduledTickInfo info = new ScheduledTickInfo();
-                info.x = tag.getInt("x");
-                info.y = tag.getInt("y");
-                info.z = tag.getInt("z");
-                info.blockState = tag.getCompound("blockState");
-                long scheduledTime = tag.getLong("time");
-                info.delay = Math.max(1L, scheduledTime - currentTick);
-                scheduledList.add(info);
-            }
-
-            if (!scheduledList.isEmpty()) {
-                provider.getScheduledTicksMap().put(chunkKey, scheduledList);
-            }
-        }
-
-        byte[] randomTicksBytes = db.get(LevelDBKeyUtil.RANDOM_TICKS.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
-
-        if (randomTicksBytes != null) {
-            CompoundTag randomTicks = readLittleEndianCompound(randomTicksBytes);
-            RandomTickData randomTickData = new RandomTickData();
-            randomTickData.currentTick = randomTicks.getInt("currentTick");
-            ListTag<CompoundTag> tickList = randomTicks.getList("tickList", CompoundTag.class);
-
-            for (CompoundTag tag : tickList.getAll()) {
-                RandomTickInfo info = new RandomTickInfo();
-
-                info.x = tag.getInt("x");
-                info.y = tag.getInt("y");
-                info.z = tag.getInt("z");
-                info.time = tag.getLong("time");
-                info.blockState = tag.getCompound("blockState");
-
-                randomTickData.ticks.add(info);
-            }
-
-            provider.getRandomTicksMap().put(chunkKey, randomTickData);
-        }
-
-        if (extraData == null) return;
-
-        if (extraData.contains("pendingNormalTickBlocks")) {
-            ListTag<CompoundTag> normalTicks = extraData.getList("pendingNormalTickBlocks", CompoundTag.class);
-            List<NormalTickInfo> normalList = new ArrayList<>();
-
-            for (CompoundTag tag : normalTicks.getAll()) {
-                NormalTickInfo info = new NormalTickInfo();
-
-                info.x = tag.getInt("x");
-                info.y = tag.getInt("y");
-                info.z = tag.getInt("z");
-                info.id = tag.getString("id");
-                info.layer = tag.getInt("layer");
-
-                if (tag.contains("neighbor")) {
-                    info.neighbor = tag.getInt("neighbor");
+                BlockState blockState = resolveScheduledBlockState(tag.getCompound("blockState"));
+                if (blockState == null) {
+                    continue;
                 }
 
-                normalList.add(info);
-            }
-
-            if (!normalList.isEmpty()) {
-                provider.getNormalTicksMap().put(chunkKey, normalList);
+                int x = tag.getInt("x");
+                int y = tag.getInt("y");
+                int z = tag.getInt("z");
+                long delay = Math.max(1L, tag.getLong("time") - persistedCurrentTick);
+                Block block = Block.get(blockState, level, x, y, z, 0);
+                scheduler.addLoaded(block, x, y, z, level.getCurrentTick() + delay, 0, true);
             }
         }
+
+        byte[] randomTicksBytes = db.get(LevelDBKeyUtil.RANDOM_TICKS.getKey(chunkX, chunkZ, dimensionData));
+        if (randomTicksBytes != null) {
+            CompoundTag randomTicks = readLittleEndianCompound(randomTicksBytes);
+            long persistedCurrentTick = randomTicks.getInt("currentTick");
+            ListTag<CompoundTag> tickList = randomTicks.getList("tickList", CompoundTag.class);
+            var scheduler = chunk.getRandomBlockUpdateScheduler();
+            scheduler.setLastTick(persistedCurrentTick);
+
+            for (CompoundTag tag : tickList.getAll()) {
+                BlockState blockState = resolveScheduledBlockState(tag.getCompound("blockState"));
+                if (blockState == null) {
+                    continue;
+                }
+
+                int x = tag.getInt("x");
+                int y = tag.getInt("y");
+                int z = tag.getInt("z");
+                Block block = Block.get(blockState, level, x, y, z, 0);
+                scheduler.addLoaded(
+                        block,
+                        x,
+                        y,
+                        z,
+                        Math.max(tag.getLong("time"), persistedCurrentTick + 1),
+                        0,
+                        true
+                );
+            }
+        }
+    }
+
+    private static BlockState resolveScheduledBlockState(CompoundTag tag) {
+        BlockState blockState = ItemHelper.getBlockStateHelper(tag);
+        if (blockState != null || !tag.contains("version")) {
+            return blockState;
+        }
+
+        NbtMap updated = BlockStateUpdaters.updateBlockState(tag.toNetwork(), tag.getInt("version"));
+        return ItemHelper.getBlockStateHelper(updated);
     }
 
     private CompoundTag read(ByteBuf buffer) {

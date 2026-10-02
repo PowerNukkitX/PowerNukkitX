@@ -4,7 +4,6 @@ import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.api.UsedByReflection;
 import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockState;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
@@ -23,15 +22,13 @@ import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.UnsafeChunk;
 import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.level.tickingarea.TickingArea;
-import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.migration.leveldb.LevelDBMigrationVersionStore;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.utils.BlockUpdateEntry;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.ChunkException;
-import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.SemVersion;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
 
@@ -82,9 +79,6 @@ public class LevelDBProvider implements LevelProvider {
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
     private final ConcurrentHashMap<Long, CompletableFuture<IChunk>> loadingChunks = new ConcurrentHashMap<>();
-    private final Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> scheduledTicksMap = new ConcurrentHashMap<>();
-    private final Map<Long, LevelDBChunkSerializer.RandomTickData> randomTicksMap = new ConcurrentHashMap<>();
-    private final Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> normalTicksMap = new ConcurrentHashMap<>();
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
     protected final Level level;
@@ -214,7 +208,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void onChunkInitialized(IChunk chunk) {
-        restoreBlockTicks(this.level, chunk);
+        restoreNormalTicks(this.level, chunk.getExtraData());
 
         if (LevelDBLimboEntities.supportsDimension(getDimensionData())) {
             this.storage.consumeLimboEntities(chunk);
@@ -522,92 +516,25 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
-    public Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> getScheduledTicksMap() {
-        return scheduledTicksMap;
-    }
-
-    /**
-     * Returns the pending random block ticks loaded from LevelDB.
-     *
-     * @return random ticks indexed by chunk hash
-     */
-    public Map<Long, LevelDBChunkSerializer.RandomTickData> getRandomTicksMap() {
-        return randomTicksMap;
-    }
-
-    public Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> getNormalTicksMap() {
-        return normalTicksMap;
-    }
-
-    public void restoreBlockTicks(Level level, IChunk chunk) {
-        long chunkKey = Level.chunkHash(chunk.getX(), chunk.getZ());
-        List<LevelDBChunkSerializer.ScheduledTickInfo> scheduledList = this.scheduledTicksMap.remove(chunkKey);
-        LevelDBChunkSerializer.RandomTickData randomTickData = this.randomTicksMap.remove(chunkKey);
-        List<LevelDBChunkSerializer.NormalTickInfo> normalList = this.normalTicksMap.remove(chunkKey);
-
-        restoreScheduledTicks(level, chunk, scheduledList);
-        restoreRandomTicks(level, chunk, randomTickData);
-        restoreNormalTicks(level, normalList);
-    }
-
-    private static void restoreRandomTicks(Level level, IChunk chunk, LevelDBChunkSerializer.RandomTickData randomTickData) {
-        if (randomTickData == null) return;
-
-        chunk.getRandomBlockUpdateScheduler().setLastTick(
-                randomTickData.currentTick
-        );
-
-        for (LevelDBChunkSerializer.RandomTickInfo info : randomTickData.ticks) {
-            Block block = level.getBlock(info.x, info.y, info.z, 0);
-            CompoundTag currentBlockState = CompoundTag.fromNetwork(block.getBlockState().getBlockStateTag());
-
-            if (!currentBlockState.equals(info.blockState)) continue;
-
-            chunk.getRandomBlockUpdateScheduler().add(
-                    new BlockUpdateEntry(
-                            new Vector3(info.x, info.y, info.z),
-                            block, Math.max(info.time, randomTickData.currentTick + 1), 0, true));
-        }
-    }
-
-    private static void restoreScheduledTicks(Level level, IChunk chunk, List<LevelDBChunkSerializer.ScheduledTickInfo> scheduledList) {
-        if (scheduledList == null || scheduledList.isEmpty()) return;
-
-        for (LevelDBChunkSerializer.ScheduledTickInfo info : scheduledList) {
-            BlockState blockState = resolveScheduledBlockState(info.blockState);
-            if (blockState == null) continue;
-
-            Block block = Block.get(blockState, level, info.x, info.y, info.z, 0);
-            chunk.getBlockUpdateScheduler().add(new BlockUpdateEntry(
-                    new Vector3(info.x, info.y, info.z),
-                    block,
-                    level.getCurrentTick() + Math.max(info.delay, 1),
-                    0,
-                    true
-            ));
-        }
-    }
-
-    @Nullable
-    private static BlockState resolveScheduledBlockState(CompoundTag tag) {
-        BlockState blockState = ItemHelper.getBlockStateHelper(tag);
-        if (blockState != null || !tag.contains("version")) {
-            return blockState;
+    private static void restoreNormalTicks(Level level, CompoundTag extraData) {
+        if (extraData == null || !extraData.contains("pendingNormalTickBlocks")) {
+            return;
         }
 
-        NbtMap updated = BlockStateUpdaters.updateBlockState(tag.toNetwork(), tag.getInt("version"));
-        return ItemHelper.getBlockStateHelper(updated);
-    }
+        ListTag<CompoundTag> normalTicks = extraData.getList("pendingNormalTickBlocks", CompoundTag.class);
+        for (CompoundTag tag : normalTicks.getAll()) {
+            int x = tag.getInt("x");
+            int y = tag.getInt("y");
+            int z = tag.getInt("z");
+            int layer = tag.getInt("layer");
+            Block block = level.getBlock(x, y, z, layer);
 
-    private static void restoreNormalTicks(Level level, List<LevelDBChunkSerializer.NormalTickInfo> normalList) {
-        if (normalList == null || normalList.isEmpty()) return;
+            if (!block.getId().equals(tag.getString("id"))) {
+                continue;
+            }
 
-        for (LevelDBChunkSerializer.NormalTickInfo info : normalList) {
-            Block block = level.getBlock(info.x, info.y, info.z, info.layer);
-
-            if (!block.getId().equals(info.id)) continue;
-
-            BlockFace neighbor = info.neighbor >= 0 ? BlockFace.fromIndex(info.neighbor) : null;
+            int neighborIndex = tag.contains("neighbor") ? tag.getInt("neighbor") : -1;
+            BlockFace neighbor = neighborIndex >= 0 ? BlockFace.fromIndex(neighborIndex) : null;
             level.getNormalUpdateQueue().add(new Level.QueuedUpdate(block, neighbor));
         }
     }
@@ -1028,6 +955,8 @@ public class LevelDBProvider implements LevelProvider {
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
             Map<IChunk, Long> biomeStateVersions = new ConcurrentHashMap<>();
+            Map<IChunk, Long> scheduledTickVersions = new ConcurrentHashMap<>();
+            Map<IChunk, Long> randomTickVersions = new ConcurrentHashMap<>();
 
             CompletableFuture.runAsync(() -> changedChunks.parallelStream().forEach(chunk -> {
                 BiomeState biomeState = chunk.getBiomeState();
@@ -1039,6 +968,17 @@ public class LevelDBProvider implements LevelProvider {
                 // mid-save (e.g. taking an item from a chest) re-marks the chunk
                 // dirty and gets persisted on the next save instead of being lost.
                 chunk.setChanged(false);
+
+                var scheduled = chunk.getBlockUpdateScheduler();
+                if (scheduled.hasStorageChanges()) {
+                    scheduledTickVersions.put(chunk, scheduled.getStorageChangeVersion());
+                }
+
+                var random = chunk.getRandomBlockUpdateScheduler();
+                if (random.hasStorageChanges()) {
+                    randomTickVersions.put(chunk, random.getStorageChangeVersion());
+                }
+
                 LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
             }), Server.getInstance().getComputeThreadPool()).join();
 
@@ -1056,6 +996,14 @@ public class LevelDBProvider implements LevelProvider {
 
             for (var entry : biomeStateVersions.entrySet()) {
                 entry.getKey().getBiomeState().markStorageSaved(entry.getValue());
+            }
+
+            for (var entry : scheduledTickVersions.entrySet()) {
+                entry.getKey().getBlockUpdateScheduler().markStorageSaved(entry.getValue());
+            }
+
+            for (var entry : randomTickVersions.entrySet()) {
+                entry.getKey().getRandomBlockUpdateScheduler().markStorageSaved(entry.getValue());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

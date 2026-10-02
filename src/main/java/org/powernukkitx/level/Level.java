@@ -93,6 +93,8 @@ import org.powernukkitx.network.process.cache.ClientBlobCacheManager;
 import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.plugin.Plugin;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.scheduler.BlockUpdateScheduler;
+import org.powernukkitx.scheduler.RandomBlockUpdateScheduler;
 import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.utils.*;
 import org.powernukkitx.utils.collection.nb.Int2ObjectNonBlockingMap;
@@ -166,7 +168,7 @@ import static org.powernukkitx.utils.Utils.dynamic;
  * @author MagicDroidX (Nukkit Project)
  */
 @Slf4j
-public class Level implements Metadatable {
+public class Level implements Metadatable, LiquidUpdateAccess {
     // region finals - number finals
     public static final Level[] EMPTY_ARRAY = new Level[0];
     public static final int BLOCK_UPDATE_NORMAL = 1;
@@ -489,8 +491,6 @@ public class Level implements Metadatable {
     /// antiXray system
     private AntiXraySystem antiXraySystem;
     private GameplaySettings gameplaySettings;
-    /** Cached {@code chunk-settings.lightUpdates}: gates all block/skylight work (boot-time only). */
-    private boolean lightUpdatesEnabled;
     /** Chunk hashes covered by ticking areas of this level; rebuilt when the ticking-area version changes. */
     private LongOpenHashSet tickingAreaChunkHashes;
     /** Resolved chunk set for tick-all mode ({@code chunksPerTicks < 0}); see tickAllChunksCached. */
@@ -557,7 +557,6 @@ public class Level implements Metadatable {
         this.initialLightingManager = new InitialLightingManager(this);
         this.runtimeLightingManager = new RuntimeLightingManager(this);
         this.gameplaySettings = server.getSettings().gameplaySettings();
-        this.lightUpdatesEnabled = server.getSettings().chunkSettings().lightUpdates();
         this.autoSave = server.getAutoSave();
         this.generatorClass = Registries.GENERATOR.get(generatorConfig.name());
         if (generatorClass == null) {
@@ -3070,10 +3069,10 @@ public class Level implements Metadatable {
         IChunk chunk = this.getChunk(chunkX, chunkZ, false);
         if (chunk == null) return;
         long tick = chunk.getRandomBlockUpdateScheduler().getLastTick() + Math.max(delay, 1);
-        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, tick, priority, true);
+        RandomBlockUpdateScheduler scheduler = chunk.getRandomBlockUpdateScheduler();
 
-        if (!chunk.getRandomBlockUpdateScheduler().contains(entry)) {
-            chunk.getRandomBlockUpdateScheduler().add(entry);
+        if (!scheduler.contains(pos, block)) {
+            scheduler.add(block, pos, tick, priority, true);
         }
     }
 
@@ -3110,28 +3109,27 @@ public class Level implements Metadatable {
         }
 
         long tick = delay + getCurrentTick();
-        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, tick, priority, checkBlockWhenUpdate);
+        BlockUpdateScheduler scheduler = chunk.getBlockUpdateScheduler();
 
         boolean isRedstoneDiode = block instanceof BlockRedstoneDiode;
         if (isRedstoneDiode) {
-            if (!this.isConcurrentSchedule(pos.floor(), block, tick, delay) && !this.isBlockTickPending(pos.floor(), block)) {
-                chunk.getBlockUpdateScheduler().add(entry);
+            Vector3 floor = pos.floor();
+            if (!this.isConcurrentSchedule(floor, block, tick, delay) && !this.isBlockTickPending(floor, block)) {
+                scheduler.add(block, pos, tick, priority, checkBlockWhenUpdate);
             }
         } else {
-            if (!chunk.getBlockUpdateScheduler().contains(entry)) {
-                chunk.getBlockUpdateScheduler().add(entry);
-            }
+            scheduler.add(block, pos, tick, priority, checkBlockWhenUpdate);
         }
     }
 
     public boolean cancelScheduledUpdate(Vector3 pos, Block block) {
         IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
-        return chunk != null && chunk.getBlockUpdateScheduler().remove(new BlockUpdateEntry(pos, block));
+        return chunk != null && chunk.getBlockUpdateScheduler().remove(pos, block);
     }
 
     public boolean isUpdateScheduled(Vector3 pos, Block block) {
         IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
-        return chunk != null && chunk.getBlockUpdateScheduler().contains(new BlockUpdateEntry(pos, block));
+        return chunk != null && chunk.getBlockUpdateScheduler().contains(pos, block);
     }
 
     public boolean isConcurrentSchedule(Vector3 pos, Block block, long targetTick, int delay) {
@@ -3926,12 +3924,6 @@ public class Level implements Metadatable {
         if (this.blockLightQueue.isEmpty()) {
             return;
         }
-        if (!lightUpdatesEnabled) {
-            synchronized (this.blockLightQueue) {
-                this.blockLightQueue.clear();
-            }
-            return;
-        }
         Long2ObjectMap<IntOpenHashSet> pendingBlockLight = new Long2ObjectOpenHashMap<>(8);
         synchronized (this.blockLightQueue) {
             pendingBlockLight.putAll(this.blockLightQueue);
@@ -4162,9 +4154,7 @@ public class Level implements Metadatable {
         }
 
         if (update) {
-            if (lightUpdatesEnabled) {
-                queueRuntimeLightingUpdate(chunk, x, y, z, layer, statePrevious, state, oldSkyStart);
-            }
+            queueRuntimeLightingUpdate(chunk, x, y, z, layer, statePrevious, state, oldSkyStart);
 
             BlockUpdateEvent ev = null;
             if (!BlockUpdateEvent.getHandlers().isEmpty()) {
@@ -5487,9 +5477,7 @@ public class Level implements Metadatable {
 
         temporalVector.setComponents(x, y, z);
 
-        if (lightUpdatesEnabled) {
-            queueRuntimeLightingUpdate(chunk, x, blockY, z, layer, statePrevious, state, oldSkyStart);
-        }
+        queueRuntimeLightingUpdate(chunk, x, blockY, z, layer, statePrevious, state, oldSkyStart);
     }
 
     /**

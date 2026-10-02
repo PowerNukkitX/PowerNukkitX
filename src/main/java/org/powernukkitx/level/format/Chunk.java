@@ -31,6 +31,7 @@ import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.BlockUpdateScheduler;
+import org.powernukkitx.scheduler.GenerationBlockUpdateQueue;
 import org.powernukkitx.scheduler.RandomBlockUpdateScheduler;
 import org.powernukkitx.utils.Utils;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
@@ -87,6 +88,7 @@ public class Chunk implements IChunk {
     private static final int SNOW_RANDOM_ADDEND = 1013904223;
 
     protected final BlockUpdateScheduler blockUpdateScheduler;
+    protected final GenerationBlockUpdateQueue generationBlockUpdateQueue;
     protected final RandomBlockUpdateScheduler randomBlockUpdateScheduler;
     private final AtomicInteger snowRandomValue = new AtomicInteger(SNOW_RANDOM_INITIAL);
     //delay load block entity and entity
@@ -137,6 +139,7 @@ public class Chunk implements IChunk {
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
         this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getCurrentTick());
+        this.generationBlockUpdateQueue = new GenerationBlockUpdateQueue(this);
         this.randomBlockUpdateScheduler = new RandomBlockUpdateScheduler(this, 0);
         this.entityNBT = new ArrayList<>();
         this.blockEntityNBT = new ArrayList<>();
@@ -182,6 +185,7 @@ public class Chunk implements IChunk {
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
         this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getCurrentTick());
+        this.generationBlockUpdateQueue = new GenerationBlockUpdateQueue(this);
         this.randomBlockUpdateScheduler = new RandomBlockUpdateScheduler(this, 0);
         this.entityNBT = entityNBT;
         this.blockEntityNBT = blockEntityNBT;
@@ -361,6 +365,19 @@ public class Chunk implements IChunk {
             this.biomeState = source.biomeState;
             this.levelChunkMetaData = source.levelChunkMetaData;
             this.densityChunkCache = null;
+
+            Level level = this.getLevel();
+            source.blockUpdateScheduler.forEachPending((x, y, z, blockState, targetTick) -> {
+                Block block = Block.get(blockState, level, x, y, z, 0);
+                this.blockUpdateScheduler.addLoaded(block, x, y, z, targetTick, 0, true);
+            });
+
+            this.randomBlockUpdateScheduler.setLastTick(source.randomBlockUpdateScheduler.getLastTick());
+            source.randomBlockUpdateScheduler.forEachPending((x, y, z, blockState, targetTick) -> {
+                Block block = Block.get(blockState, level, x, y, z, 0);
+                this.randomBlockUpdateScheduler.addLoaded(block, x, y, z, targetTick, 0, true);
+            });
+
             this.changes.set(0);
             this.storageResolved = true;
         } finally {
@@ -1300,6 +1317,11 @@ public class Chunk implements IChunk {
     @Override
     public BlockUpdateScheduler getBlockUpdateScheduler() {
         return blockUpdateScheduler;
+    }
+
+    @Override
+    public GenerationBlockUpdateQueue getGenerationBlockUpdateQueue() {
+        return generationBlockUpdateQueue;
     }
 
     @Override

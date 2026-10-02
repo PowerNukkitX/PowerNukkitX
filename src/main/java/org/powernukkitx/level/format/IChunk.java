@@ -12,6 +12,7 @@ import org.powernukkitx.level.structure.AabbVolumes;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.scheduler.BlockUpdateScheduler;
+import org.powernukkitx.scheduler.GenerationBlockUpdateQueue;
 import org.powernukkitx.scheduler.RandomBlockUpdateScheduler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
@@ -322,6 +323,13 @@ public interface IChunk {
     void doMobSpawning();
 
     BlockUpdateScheduler getBlockUpdateScheduler();
+
+    /**
+     * Returns the queue for generation-owned scheduled block updates.
+     *
+     * @return generation block update queue
+     */
+    GenerationBlockUpdateQueue getGenerationBlockUpdateQueue();
 
     /**
      * Returns the scheduler for persisted random block updates.

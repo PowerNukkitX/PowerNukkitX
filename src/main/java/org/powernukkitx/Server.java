@@ -2222,6 +2222,30 @@ public class Server {
     }
 
     /**
+     * Gets a player instance from the specified Bedrock ActorUniqueID, either online or offline.
+     *
+     * @param uniqueId Bedrock ActorUniqueID
+     * @return matching player, or {@code null} when the ActorUniqueID is not registered to a player
+     */
+    public @Nullable IPlayer getOfflinePlayer(long uniqueId) {
+        return this.getPlayerUuidByUniqueId(uniqueId)
+            .map(this::getOfflinePlayer)
+            .orElse(null);
+    }
+
+    /**
+     * Gets a player instance from the specified Xbox User ID, either online or offline.
+     *
+     * @param xuid Xbox User ID
+     * @return player
+     */
+    public IPlayer getOfflinePlayerByXUID(String xuid) {
+        Preconditions.checkNotNull(xuid, "xuid");
+        Preconditions.checkArgument(!xuid.isBlank(), "xuid cannot be blank");
+        return this.getOfflinePlayer(uuidFromXUID(xuid));
+    }
+
+    /**
      * create is false
      *
      * @see #getOfflinePlayerData(UUID, boolean)

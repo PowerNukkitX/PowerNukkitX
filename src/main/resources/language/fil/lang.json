@@ -59,7 +59,6 @@
   "pnx.settings.chunk.spawnthreshold": "Bilang ng mga chunks na kailangang matanggap ng isang manlalaro sa unang spawn",
   "pnx.settings.chunk.chunksperticks": "Lagyan ng tsek ang cycle ng mga chunks",
   "pnx.settings.chunk.tickRadius": "Lagyan ng tsek ang radius ng mga chunks",
-  "pnx.settings.chunk.lightupdates": "Kung ang mga chunks ay nagsasagawa ng mga light update",
   "pnx.settings.chunk.clearticklist": "Kung tatanggalin ba ang listahan ng mga tsek sa dulo ng bawat tsek",
   "pnx.settings.chunk.generationqueuesize": "Pinakamataas na bilang ng mga gawain sa pagbuo ng lupain na sabay-sabay na isinasagawa",
   "pnx.settings.chunk.spawnlimit": "Nililimitahan kung gaano karaming entity ang maaaring natural na mag-spawn sa isang chunk.",
