@@ -6,6 +6,8 @@ import org.powernukkitx.event.server.PacketHandleEvent;
 import org.powernukkitx.event.server.PacketReceiveEvent;
 import org.powernukkitx.network.process.cache.ClientBlobCacheManager;
 
+import org.powernukkitx.network.security.BotnetDetector;
+import java.net.InetSocketAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
@@ -27,12 +29,18 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
 
     @Override
     public PacketSignal handlePacket(BedrockPacket packet) {
-        if (!this.session.checkRateLimits()) {
+        this.recordForBotnetDetection(packet);
+
+        if (this.session.isDisconnected() || !this.session.checkRateLimits()) {
             return PacketSignal.HANDLED;
         }
 
         final Player player = this.session.getPlayer();
         final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
+
+        if (packetHandler != null && packetHandler.requiresPlayer() && player == null) {
+            return PacketSignal.HANDLED;
+        }
 
         if (packetHandler != null && !packetHandler.runsOnNetworkThread() && player != null && player.spawned) {
             if (packet instanceof SubChunkRequestPacket || packet instanceof SetLocalPlayerAsInitializedPacket) {
@@ -71,6 +79,16 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
             return;
         }
         packetHandler.handle(packet, this.session, this.server);
+    }
+
+    private void recordForBotnetDetection(BedrockPacket packet) {
+        final BotnetDetector detector = this.server.getNetwork().getBotnetDetector();
+        if (detector == null) {
+            return;
+        }
+        if (this.session.getSession().getSocketAddress() instanceof InetSocketAddress address) {
+            detector.recordPacket(address, packet.getClass().hashCode());
+        }
     }
 
     private boolean firePacketReceive(@Nullable Player player, BedrockPacket packet) {

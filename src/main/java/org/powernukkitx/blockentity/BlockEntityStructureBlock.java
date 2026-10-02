@@ -306,4 +306,9 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
 
         StructureAPI.save(structure, structureName);
     }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return player.isOp() ? this.getCleanedNBT() : null;
+    }
 }

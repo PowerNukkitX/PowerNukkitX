@@ -317,4 +317,9 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 .putString(TAG_TEXT_BLOB, "")
                 .putString(TAG_TEXT_OWNER, "");
     }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
+    }
 }

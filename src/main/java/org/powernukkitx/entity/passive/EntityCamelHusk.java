@@ -2,6 +2,7 @@ package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -47,7 +48,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class EntityCamelHusk extends EntityCamel {
+public class EntityCamelHusk extends EntityCamel implements EntitySmite {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -122,6 +123,11 @@ public class EntityCamelHusk extends EntityCamel {
     @Override
     public Set<String> typeFamily() {
         return Set.of("camelhusk", "undead", "mob");
+    }
+
+    @Override
+    public boolean isUndead() {
+        return true;
     }
 
     @Override

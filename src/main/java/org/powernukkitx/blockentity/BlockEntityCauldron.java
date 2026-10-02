@@ -220,6 +220,11 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         return compoundTag;
     }
 
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
+    }
+
     @RequiredArgsConstructor
     public enum PotionType {
         EMPTY(-1),

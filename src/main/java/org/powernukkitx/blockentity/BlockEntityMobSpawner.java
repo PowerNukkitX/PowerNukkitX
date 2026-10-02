@@ -340,4 +340,9 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
     public void setMaxNearbyEntities(int count) {
         this.maxNearbyEntities = count;
     }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
+    }
 }

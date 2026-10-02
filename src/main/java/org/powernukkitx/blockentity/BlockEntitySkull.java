@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockHead;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.NukkitMath;
@@ -103,5 +104,10 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
                 .putFloat("Rotation", this.rotation)
                 .putBoolean("DoingAnimation", this.mouthMoving)
                 .putInt("MouthTickCount", this.mouthTickCount);
+    }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
     }
 }
