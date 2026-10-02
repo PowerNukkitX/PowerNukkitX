@@ -142,7 +142,7 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
             for(Block block1 : manager.getBlocks()) {
                 if(block1.isAir()) manager.unsetBlockStateAt(block1);
                 if(block1 instanceof BlockChest chest) {
-                    manager.addHook(() -> {
+                    manager.addHook(block1, () -> {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
@@ -150,7 +150,7 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
                     manager.unsetBlockStateAt(block1);
                 }
                 if(block1 instanceof BlockWallBanner banner) {
-                    manager.addHook(() -> {
+                    manager.addHook(block1, () -> {
                         BlockEntityBanner be = banner.getOrCreateBlockEntity();
                         be.setType(1);
                         be.spawnToAll();
@@ -205,23 +205,23 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
 
         Position base = new Position((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z, manager.getLevel());
         template.preparePlace(base, manager);
-        chunk.getLevel().getScheduler().scheduleDelayedTask(() -> {
-            switch (template.getName()) {
-                case "pillager_outpost/feature_cage1",
-                     "pillager_outpost/feature_cage2" -> {
-                    manager.addHook(() -> {
-                        Entity entity = Entity.createEntity(Entity.IRON_GOLEM, base.add(3.5,1,3.5));
-                        entity.spawnToAll();
-                    });
-                }
-                case "pillager_outpost/feature_cage_with_allays" ->{
-                    manager.addHook(() -> {
-                        Entity entity = Entity.createEntity(Entity.ALLAY, base.add(4.5,2,4.5));
-                        entity.spawnToAll();
-                    });
-                }
+        int baseChunkX = base.getFloorX() >> 4;
+        int baseChunkZ = base.getFloorZ() >> 4;
+        switch (template.getName()) {
+            case "pillager_outpost/feature_cage1",
+                 "pillager_outpost/feature_cage2" -> {
+                manager.addHook(baseChunkX, baseChunkZ, () -> {
+                    Entity entity = Entity.createEntity(Entity.IRON_GOLEM, base.add(3.5,1,3.5));
+                    entity.spawnToAll();
+                });
             }
-        }, 10);
+            case "pillager_outpost/feature_cage_with_allays" ->{
+                manager.addHook(baseChunkX, baseChunkZ, () -> {
+                    Entity entity = Entity.createEntity(Entity.ALLAY, base.add(4.5,2,4.5));
+                    entity.spawnToAll();
+                });
+            }
+        }
         fillBase(chunk, y, x, z, size.getX(), size.getZ());
     }
 

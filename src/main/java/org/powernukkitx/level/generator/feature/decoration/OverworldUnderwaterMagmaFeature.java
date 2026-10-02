@@ -99,7 +99,7 @@ public class OverworldUnderwaterMagmaFeature extends GenerateFeature {
                     int worldY = y;
                     int worldZ = (chunk.getZ() << 4) + z;
                     manager.setBlockStateAt(worldX, worldY, worldZ, MAGMA);
-                    manager.addHook(() -> level.scheduleUpdate(level.getBlock(worldX, worldY, worldZ), 1));
+                    manager.addHook(worldX >> 4, worldZ >> 4, () -> level.scheduleUpdate(level.getBlock(worldX, worldY, worldZ), 1));
                 }
             }
         }

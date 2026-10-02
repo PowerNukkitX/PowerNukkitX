@@ -3,10 +3,12 @@ package org.powernukkitx.level.generator.object;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.WoodType;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,13 +55,19 @@ public class ObjectFallenTree extends TreeGenerator {
             this.decorateFallenLog(level, rand, fallenLog);
         }
 
-        level.addHook(() -> {
-            for(Block block : level.getBlocks()) {
-                if(block.up() instanceof BlockFlower flower && !flower.canPlantOn(block)) {
-                    level.getLevel().setBlock(block.up(), BlockAir.STATE.toBlock());
+        Long2ObjectOpenHashMap<List<Block>> placedByChunk = new Long2ObjectOpenHashMap<>();
+        for (Block block : level.getBlocks()) {
+            placedByChunk.computeIfAbsent(Level.chunkHash(block.getChunkX(), block.getChunkZ()), k -> new ArrayList<>()).add(block);
+        }
+        for (List<Block> placed : placedByChunk.values()) {
+            level.addHook(placed.getFirst(), () -> {
+                for(Block block : placed) {
+                    if(block.up() instanceof BlockFlower flower && !flower.canPlantOn(block)) {
+                        level.getLevel().setBlock(block.up(), BlockAir.STATE.toBlock());
+                    }
                 }
-            }
-        });
+            });
+        }
         return true;
     }
 

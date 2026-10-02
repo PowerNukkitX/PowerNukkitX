@@ -26,10 +26,7 @@ public abstract class PopulatorStage extends GenerateStage {
                 log.error("Error while applying populator {}", name, e);
             }
         }
-        if (!root.getBlocks().isEmpty()) {
-            root.applySubChunkUpdate();
-            root.getBlocks().forEach(block -> block.getChunk().setChanged());
-        }
+        root.applySubChunkUpdate();
     }
 
     public abstract ObjectArraySet<String> populators();

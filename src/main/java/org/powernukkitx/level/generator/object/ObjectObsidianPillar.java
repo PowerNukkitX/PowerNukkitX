@@ -76,7 +76,7 @@ public class ObjectObsidianPillar extends ObjectGenerator {
 
         level.setBlockStateAt(x, height, z, BlockBedrock.PROPERTIES.getBlockState(INFINIBURN_BIT.createValue(true)));
         level.setBlockStateAt(x, height + 1, z, BlockFire.PROPERTIES.getDefaultState());
-        level.addHook(() -> {
+        level.addHook(x >> 4, z >> 4, () -> {
             CompoundTag nbt = new CompoundTag()
                     .putList("Pos", new ListTag<DoubleTag>()
                             .add(new DoubleTag(x + 0.5))

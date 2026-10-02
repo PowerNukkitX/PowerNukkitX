@@ -604,7 +604,7 @@ public abstract class JigsawStructure {
                 block.getFloorZ() - origin.getZ(),
                 block.getBlockState()
         ));
-        targetHelper.getHooks().addAll(absoluteBlocks.getHooks());
+        targetHelper.mergeHooks(absoluteBlocks);
     }
 
     private record Connection(Rotation childRotation, BlockVector3 childStructurePos, BlockVector3 childJigsawWorldPos,

@@ -228,7 +228,7 @@ public class ObjectDesertPyramid extends ObjectGenerator {
 
     private void populateChestAt(StructureHelper builder, int x, int y, int z, Xoroshiro128 random) {
         var block = builder.getBlockAt(x, y, z);
-        builder.addHook(() -> {
+        builder.addHook(block, () -> {
             if (block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntityChest chest) {
                 CHEST_POPULATOR.create(chest.getInventory(), random);
             }

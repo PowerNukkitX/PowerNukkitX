@@ -157,9 +157,9 @@ public abstract class LakeFeature extends GenerateFeature {
                     BlockState state = yy >= 4 ? AIR : fluid;
                     manager.setBlockStateAt(x, y, z, state);
                     if (state == AIR) {
-                        manager.addHook(() -> level.scheduleUpdate(level.getBlock(x, y, z), 0));
+                        manager.addHook(x >> 4, z >> 4, () -> level.scheduleUpdate(level.getBlock(x, y, z), 0));
                     } else if (state.toBlock() instanceof BlockLiquid) {
-                        manager.addHook(() -> level.scheduleUpdate(level.getBlock(x, y, z), 1));
+                        manager.addHook(x >> 4, z >> 4, () -> level.scheduleUpdate(level.getBlock(x, y, z), 1));
                     }
                 }
             }

@@ -61,6 +61,7 @@ import org.powernukkitx.level.generator.BiomedGenerator;
 import org.powernukkitx.level.generator.Generator;
 import org.powernukkitx.level.generator.biome.BiomePicker;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
+import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.level.particle.Particle;
 import org.powernukkitx.level.redstone.circuit.CircuitSystem;
@@ -799,6 +800,7 @@ public class Level implements Metadatable {
             levelProvider.close();
         }
         this.provider.set(null);
+        BlockManager.clearPendingHooks(this.levelId);
         this.blockMetadata = null;
     }
 

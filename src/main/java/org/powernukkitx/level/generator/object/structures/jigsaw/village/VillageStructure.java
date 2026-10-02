@@ -75,9 +75,12 @@ public abstract class VillageStructure extends JigsawStructure {
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
         Level level = helper.getLevel();
-        helper.addHook(() -> {
-            populatePendingChestLoot(level);
-        });
+        for (Map.Entry<BlockVector3, RandomizableContainer> entry : pendingChestLoot.entrySet()) {
+            BlockVector3 pos = entry.getKey();
+            RandomizableContainer loot = entry.getValue();
+            helper.addHook(pos, () -> populateChestLoot(level, pos, loot));
+        }
+        pendingChestLoot.clear();
         helper.applySubChunkUpdate();
 
         placedBlocks.stream()
@@ -206,19 +209,22 @@ public abstract class VillageStructure extends JigsawStructure {
             || structureName.contains("/houses/" + biome + "_big_house_");
     }
 
-    protected void populatePendingChestLoot(Level level) {
-        for (Map.Entry<BlockVector3, RandomizableContainer> entry : pendingChestLoot.entrySet()) {
-            BlockVector3 pos = entry.getKey();
-            Block block = level.getBlock(pos.getX(), pos.getY(), pos.getZ());
-            if (!(block instanceof BlockChest chest)) {
-                continue;
-            }
-            BlockEntityChest blockEntity = chest.getOrCreateBlockEntity();
-            Inventory inventory = blockEntity.getInventory();
-            inventory.clearAll();
-            entry.getValue().create(inventory, createVillageLootRandom(level, pos));
+    /**
+     * Fills the chest the structure placed at the given position, replacing whatever it holds.
+     *
+     * @param level the level the chest is in
+     * @param pos   the position of the chest
+     * @param loot  the loot table to fill it from
+     */
+    protected void populateChestLoot(Level level, BlockVector3 pos, RandomizableContainer loot) {
+        Block block = level.getBlock(pos.getX(), pos.getY(), pos.getZ());
+        if (!(block instanceof BlockChest chest)) {
+            return;
         }
-        pendingChestLoot.clear();
+        BlockEntityChest blockEntity = chest.getOrCreateBlockEntity();
+        Inventory inventory = blockEntity.getInventory();
+        inventory.clearAll();
+        loot.create(inventory, createVillageLootRandom(level, pos));
     }
 
     protected RandomSourceProvider createVillageLootRandom(Level level, BlockVector3 pos) {

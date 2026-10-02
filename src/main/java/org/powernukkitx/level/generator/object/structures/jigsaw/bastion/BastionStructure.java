@@ -72,7 +72,7 @@ public class BastionStructure extends JigsawStructure {
                 continue;
             }
             Level level = blockManager.getLevel();
-            blockManager.addHook(() -> container.create(chest.getOrCreateBlockEntity().getInventory(), createRandom(level, chest.asBlockVector3())));
+            blockManager.addHook(block, () -> container.create(chest.getOrCreateBlockEntity().getInventory(), createRandom(level, chest.asBlockVector3())));
         }
     }
 
@@ -83,7 +83,7 @@ public class BastionStructure extends JigsawStructure {
             if (!(block instanceof BlockEntityHolder<?> holder) || !(holder.getOrCreateBlockEntity() instanceof BlockEntityMobSpawner spawner)) {
                 continue;
             }
-            blockManager.addHook(() -> spawner.setSpawnEntityType(magmaCubeEntityId));
+            blockManager.addHook(block, () -> spawner.setSpawnEntityType(magmaCubeEntityId));
         }
     }
 
@@ -97,7 +97,7 @@ public class BastionStructure extends JigsawStructure {
             return;
         }
         Level level = blockManager.getLevel();
-        blockManager.addHook(() -> spawnEntity(level, anchor, entityId));
+        blockManager.addHook(anchor, () -> spawnEntity(level, anchor, entityId));
     }
 
     private String getBastionEntityId(String structureName) {
