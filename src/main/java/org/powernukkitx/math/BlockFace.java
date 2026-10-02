@@ -2,6 +2,7 @@ package org.powernukkitx.math;
 
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import com.google.common.collect.Iterators;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -98,6 +99,21 @@ public enum BlockFace {
 
     public static BlockFace[] getHorizontals() {
         return HORIZONTALS.clone();
+    }
+
+    /**
+     * The shared array of all faces, in D-U-N-S-W-E order.
+     * <p>
+     * {@link #values()} has to clone its backing array on every call so callers cannot mutate the
+     * enum constants. On paths that iterate the faces of every block they touch - redstone
+     * propagation above all - that clone is pure garbage. This returns the array itself instead.
+     * <p>
+     * <b>Callers must not modify the returned array.</b> Use {@link #values()} if the array will
+     * escape or be written to.
+     */
+    @ApiStatus.Internal
+    public static BlockFace[] getValues() {
+        return VALUES;
     }
 
     /**

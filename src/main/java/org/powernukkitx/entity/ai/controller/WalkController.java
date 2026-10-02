@@ -46,23 +46,20 @@ public class WalkController implements IController {
                 return false;
             }
 
-            var relativeVector = direction.clone().setComponents(
-                    direction.x - entity.x,
-                    direction.y - entity.y,
-                    direction.z - entity.z
-            );
+            var relativeX = direction.x - entity.x;
+            var relativeZ = direction.z - entity.z;
 
-            var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
+            var xzLengthSquared = relativeX * relativeX + relativeZ * relativeZ;
             if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
                 entity.setDataFlag(ActorFlags.MOVING, false);
                 return false;
             }
 
-            var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
+            var xzLength = Math.sqrt(xzLengthSquared);
             var k = speed / xzLength * 0.33;
 
-            var dx = relativeVector.x * k;
-            var dz = relativeVector.z * k;
+            var dx = relativeX * k;
+            var dz = relativeZ * k;
             var dy = 0.0d;
 
             Block under = entity.getLevel().getBlock(entity.getFloorX(), entity.getFloorY() - 1, entity.getFloorZ());

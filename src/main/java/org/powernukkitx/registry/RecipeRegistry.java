@@ -131,9 +131,25 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return result;
     }
 
+    /**
+     * Walks the registered shaped recipes directly rather than through
+     * {@link #getShapedRecipeMap()}, which copies every shaped recipe into a fresh {@code HashSet}
+     * on each call - tens of kilobytes per lookup, on a path a crafter runs while it is active.
+     */
     public ShapedRecipe findShapedRecipe(Input input) {
-        Optional<ShapedRecipe> recipe = getShapedRecipeMap().stream().filter(r -> r.match(input)).findFirst();
-        return recipe.orElse(null);
+        Int2ObjectArrayMap<Set<Recipe>> shaped = recipeMaps.get(RecipeType.SHAPED);
+        if (shaped == null) {
+            return null;
+        }
+        for (Set<Recipe> bucket : shaped.values()) {
+            for (Recipe recipe : bucket) {
+                ShapedRecipe shapedRecipe = (ShapedRecipe) recipe;
+                if (shapedRecipe.match(input)) {
+                    return shapedRecipe;
+                }
+            }
+        }
+        return null;
     }
 
     public Set<FurnaceRecipe> getFurnaceRecipeMap() {

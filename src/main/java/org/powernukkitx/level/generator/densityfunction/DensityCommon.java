@@ -7,7 +7,7 @@ import org.powernukkitx.math.NukkitMath;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.Arrays;
-import java.util.IdentityHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -76,15 +76,33 @@ public final class DensityCommon {
     }
 
     public static final class ChunkCache {
-        private final Map<Marker, Object> states = new IdentityHashMap<>();
+        /**
+         * Indexed by {@link Marker#cacheSlot}. This is read once per marker per block - roughly a
+         * million times per generated chunk - so it is an array rather than an identity map: the
+         * hash probe was paid on every lookup even though the contents never change after the first
+         * pass over a chunk.
+         */
+        private Object[] states = new Object[Math.max(16, Marker.cacheSlotCount())];
 
         @SuppressWarnings("unchecked")
         private <T> T getOrCreate(Marker marker, Supplier<T> supplier) {
-            return (T) states.computeIfAbsent(marker, ignored -> supplier.get());
+            int slot = marker.cacheSlot;
+            Object[] current = this.states;
+            if (slot >= current.length) {
+                // A generator built after this cache was created can push the slot count up.
+                current = Arrays.copyOf(current, Math.max(slot + 1, Marker.cacheSlotCount()));
+                this.states = current;
+            }
+            Object state = current[slot];
+            if (state == null) {
+                state = supplier.get();
+                current[slot] = state;
+            }
+            return (T) state;
         }
 
         public void clear() {
-            states.clear();
+            Arrays.fill(this.states, null);
         }
     }
 
@@ -619,12 +637,24 @@ public final class DensityCommon {
             CACHE_ALL_IN_CELL
         }
 
+        /**
+         * Hands every marker a dense slot in {@link ChunkCache}. Markers are created once when a
+         * generator builds its density function graph, so the counter is only touched at setup.
+         */
+        private static final AtomicInteger CACHE_SLOTS = new AtomicInteger();
+
         protected final DensityFunction wrapped;
         private final Type type;
+        final int cacheSlot;
 
         protected Marker(Type type, DensityFunction wrapped) {
             this.type = type;
             this.wrapped = wrapped;
+            this.cacheSlot = CACHE_SLOTS.getAndIncrement();
+        }
+
+        static int cacheSlotCount() {
+            return CACHE_SLOTS.get();
         }
 
         public static DensityFunction create(Type type, DensityFunction wrapped) {

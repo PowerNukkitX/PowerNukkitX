@@ -45,6 +45,7 @@ public final class PlayerChunkManager {
     private double comparatorDirZ;
     private int comparatorFieldOfView = -1;
     private double comparatorCosFov;
+    private double comparatorCosFovSquared;
 
     private final LongComparator chunkDistanceAndFovComparator = new LongComparator() {
         @Override
@@ -74,14 +75,17 @@ public final class PlayerChunkManager {
         private boolean isInPlayerFov(int dx, int dz, long squaredDistance) {
             if (squaredDistance < MIN_FOV_CHECK_DISTANCE_SQUARED) return true;
 
-            double len = Math.sqrt(squaredDistance);
+            //(dir . offset) / |offset| >= cos(fov), squared to avoid the sqrt. Squaring loses the
+            //sign, so it has to be handled explicitly.
+            double raw = comparatorDirX * dx + comparatorDirZ * dz;
 
-            double toChunkX = dx / len;
-            double toChunkZ = dz / len;
-
-            double dot = comparatorDirX * toChunkX + comparatorDirZ * toChunkZ;
-
-            return dot >= comparatorCosFov;
+            if (comparatorCosFov >= 0) {
+                if (raw < 0) return false;
+                return raw * raw >= comparatorCosFovSquared * squaredDistance;
+            }
+            //cone wider than a hemisphere
+            if (raw >= 0) return true;
+            return raw * raw <= comparatorCosFovSquared * squaredDistance;
         }
     };
 
@@ -344,6 +348,7 @@ public final class PlayerChunkManager {
         if (fieldOfView != this.comparatorFieldOfView) {
             this.comparatorFieldOfView = fieldOfView;
             this.comparatorCosFov = Math.cos(Math.toRadians(fieldOfView));
+            this.comparatorCosFovSquared = this.comparatorCosFov * this.comparatorCosFov;
         }
     }
 
