@@ -45,11 +45,6 @@ public class EntityScorer implements IScorer {
     }
 
     @Override
-    public int hashCode() {
-        return entityUuid.hashCode();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof EntityScorer entityScorer) {
             return this.uniqueId == entityScorer.uniqueId;

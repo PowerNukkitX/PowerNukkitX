@@ -42,8 +42,16 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
             return PacketSignal.HANDLED;
         }
 
+        if (packetHandler != null
+                && !packetHandler.runsOnNetworkThread()
+                && player != null
+                && packet instanceof SubChunkRequestPacket) {
+            this.server.getScheduler().scheduleTask(() -> processInbound(packet));
+            return PacketSignal.HANDLED;
+        }
+
         if (packetHandler != null && !packetHandler.runsOnNetworkThread() && player != null && player.spawned) {
-            if (packet instanceof SubChunkRequestPacket || packet instanceof SetLocalPlayerAsInitializedPacket) {
+            if (packet instanceof SetLocalPlayerAsInitializedPacket) {
                 this.server.getScheduler().scheduleTask(() -> processInbound(packet));
                 return PacketSignal.HANDLED;
             }

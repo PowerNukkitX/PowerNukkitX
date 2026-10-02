@@ -68,7 +68,7 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
         final boolean cacheSupported = ClientBlobCacheManager.isEnabled(player.getSession());
 
         if (cacheSupported) {
-            cacheTransfer = ClientBlobCacheManager.startTransfer(player.getSession());
+            cacheTransfer = ClientBlobCacheManager.tryStartTransfer(player.getSession());
         }
 
         final boolean cacheEnabled = cacheTransfer != null;
@@ -81,6 +81,12 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
 
                 if (subChunkY < dimensionData.getMinSectionY() || subChunkY > dimensionData.getMaxSectionY()) {
                     responsePacket.getSubChunkData().add(createFailureData(offsetPos, SubChunkRequestResult.INDEX_OUT_OF_BOUNDS));
+                    continue;
+                }
+
+                final long chunkHash = Level.chunkHash(subChunkPos.getX(), subChunkPos.getZ());
+                if (!player.getPlayerChunkManager().isSentChunk(chunkHash)) {
+                    responsePacket.getSubChunkData().add(createFailureData(offsetPos, SubChunkRequestResult.LEVEL_CHUNK_DOESNT_EXIST));
                     continue;
                 }
 
