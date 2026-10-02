@@ -1599,7 +1599,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
