@@ -139,7 +139,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public Entity riding = null;
     private int passengerCount = 0;
     private final Map<Long, Integer> persistedActorLinkIds = new HashMap<>();
-    private boolean actorLinksDirty = false;
+    private boolean actorLinksDirty;
     protected Vector3f seatRawOffset;
 
     /**
@@ -204,7 +204,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public int lastUpdate;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
-    protected int portalCooldown = 0;
+    protected int portalCooldown;
     protected int portalCooldownDuration = 300;
     public int freezingTicks = 0;//0 - 140
     public float scale = 1;
