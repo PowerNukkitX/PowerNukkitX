@@ -47,7 +47,7 @@ public class SetupWizard implements AutoCloseable {
     public SetupWizard() throws IOException {
         this.interactive = System.console() != null && !SetupWizardSupport.isAutomatedEnvironment();
         this.unicodeOutput = supportsUnicodeOutput();
-        // log4j's console appender already grabbed the system terminal and jline 4 won't hand out a second one
+
         Terminal sharedTerminal = TerminalConsoleAppender.getTerminal();
         this.ownsTerminal = sharedTerminal == null;
         this.terminal = sharedTerminal != null ? sharedTerminal : TerminalBuilder.builder()
