@@ -105,7 +105,6 @@ public final class ServerMockFixture {
             throw new IllegalStateException(e);
         }
 
-        // Parallel forks sharing one file would read each other's half written defaults.
         final File settingsFile = new File("nukkit_fixture_" + ProcessHandle.current().pid() + ".yml");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(settingsFile)));
         final ServerSettings serverSettings = ConfigManager.create(ServerSettings.class, it -> {
