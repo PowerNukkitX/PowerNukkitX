@@ -2077,7 +2077,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (data == null) return;
 
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(this.getActorDataMap());
+        packet.setActorData(this.snapshotActorData());
         packet.setTargetRuntimeID(this.runtimeId());
         packet.setSyncedProperties(data);
 

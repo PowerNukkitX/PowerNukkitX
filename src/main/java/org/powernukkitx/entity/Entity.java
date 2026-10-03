@@ -858,10 +858,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void setSneaking(boolean value) {
         boolean changed;
+        EnumSet<ActorFlags> flags = null;
         synchronized (this.actorDataMap) {
             changed = this.actorDataMap.getOrCreateFlags().contains(ActorFlags.SNEAKING) ^ value;
             if (changed) {
                 this.actorDataMap.setFlag(ActorFlags.SNEAKING, value);
+                flags = EnumSet.copyOf(this.actorDataMap.getFlags());
             }
         }
 
@@ -870,9 +872,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (changed) {
             ActorDataMap delta = new ActorDataMap();
-            synchronized (this.actorDataMap) {
-                delta.put(ActorDataTypes.FLAGS, this.actorDataMap.getFlags());
-            }
+            delta.put(ActorDataTypes.FLAGS, flags);
             delta.putType(ActorDataTypes.HEIGHT, newHeight);
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
         } else {
@@ -1408,6 +1408,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         final ActorDataMap copy = new ActorDataMap();
         synchronized (this.actorDataMap) {
             copy.putAll(this.actorDataMap);
+            copy.put(ActorDataTypes.FLAGS, EnumSet.copyOf(this.actorDataMap.getFlags()));
         }
         return copy;
     }
