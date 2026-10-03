@@ -110,8 +110,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         this.equipmentInventory = new EntityEquipmentInventory(this);
         this.armorInventory = new EntityArmorInventory(this);
-        this.actorDataMap.putIfAbsent(ActorDataTypes.HURT, 0);
-        this.actorDataMap.putIfAbsent(ActorDataTypes.POSE_INDEX, 0);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.putIfAbsent(ActorDataTypes.HURT, 0);
+            this.actorDataMap.putIfAbsent(ActorDataTypes.POSE_INDEX, 0);
+        }
 
         final CompoundTag nbtMap = this.getNbt();
         if (nbtMap.contains(TAG_MAINHAND)) {
@@ -311,7 +313,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     private int getPose() {
-        Integer pose = this.actorDataMap.get(ActorDataTypes.POSE_INDEX);
+        Integer pose;
+        synchronized (this.actorDataMap) {
+            pose = this.actorDataMap.get(ActorDataTypes.POSE_INDEX);
+        }
         return pose == null ? 0 : pose;
     }
 
@@ -321,10 +326,12 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     private void setPose(int pose) {
-        this.actorDataMap.put(ActorDataTypes.POSE_INDEX, pose);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.POSE_INDEX, pose);
+        }
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setTargetRuntimeID(this.runtimeId());
-        packet.setActorData(this.getActorDataMap());
+        packet.setActorData(this.snapshotActorData());
         Server.getInstance().getOnlinePlayers().values().forEach(all -> all.sendPacket(packet));
     }
 

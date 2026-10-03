@@ -115,7 +115,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         pk.getAttributesList().add(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(200).setValue(200).toNetwork()
         );
-        pk.setActorData(this.getActorDataMap());
+        pk.setActorData(this.snapshotActorData());
         pk.setTargetActorID(this.getId());
         pk.setTargetRuntimeID(this.runtimeId());
         pk.setActorType("minecraft:ender_dragon");
@@ -357,4 +357,3 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         }
     }
 }
-

@@ -942,27 +942,20 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     private void setBlockingFlags(boolean blocking, boolean transitionBlocking) {
-        EnumSet<ActorFlags> ext = this.getActorDataMap().getOrCreateFlags();
-
-        boolean changed = false;
-
-        if (blocking) {
-            changed |= ext.add(ActorFlags.BLOCKING);
-        } else {
-            changed |= ext.remove(ActorFlags.BLOCKING);
-        }
-
-        if (transitionBlocking) {
-            changed |= ext.add(ActorFlags.TRANSITION_BLOCKING);
-        } else {
-            changed |= ext.remove(ActorFlags.TRANSITION_BLOCKING);
+        boolean changed;
+        synchronized (this.actorDataMap) {
+            EnumSet<ActorFlags> flags = this.actorDataMap.getOrCreateFlags();
+            changed = blocking
+                    ? flags.add(ActorFlags.BLOCKING)
+                    : flags.remove(ActorFlags.BLOCKING);
+            changed |= transitionBlocking
+                    ? flags.add(ActorFlags.TRANSITION_BLOCKING)
+                    : flags.remove(ActorFlags.TRANSITION_BLOCKING);
         }
 
         if (!changed) return;
 
-        this.setDataFlags(ext);
-
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.actorDataMap);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
     }
 
     private void tickShieldBlockingState(int tickDiff) {
