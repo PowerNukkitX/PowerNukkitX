@@ -3,6 +3,7 @@ package org.powernukkitx.wizard;
 import org.powernukkitx.lang.BaseLang;
 import org.powernukkitx.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
+import net.minecrell.terminalconsole.TerminalConsoleAppender;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -31,6 +32,7 @@ import java.util.function.Consumer;
 @Slf4j
 public class SetupWizard implements AutoCloseable {
     private final Terminal terminal;
+    private final boolean ownsTerminal;
     private final LineReader reader;
     private final Map<String, String> availableLanguages;
     private final WizardConfig wizardConfig = new WizardConfig();
@@ -45,7 +47,10 @@ public class SetupWizard implements AutoCloseable {
     public SetupWizard() throws IOException {
         this.interactive = System.console() != null && !SetupWizardSupport.isAutomatedEnvironment();
         this.unicodeOutput = supportsUnicodeOutput();
-        this.terminal = TerminalBuilder.builder()
+
+        Terminal sharedTerminal = TerminalConsoleAppender.getTerminal();
+        this.ownsTerminal = sharedTerminal == null;
+        this.terminal = sharedTerminal != null ? sharedTerminal : TerminalBuilder.builder()
                 .system(true)
                 .jna(false)
                 .dumb(isDumbTerminal())
@@ -670,7 +675,7 @@ public class SetupWizard implements AutoCloseable {
     @Override
     public void close() {
         try {
-            if (terminal != null) {
+            if (terminal != null && ownsTerminal) {
                 terminal.close();
             }
         } catch (IOException e) {
