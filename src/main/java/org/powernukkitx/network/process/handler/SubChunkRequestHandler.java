@@ -46,9 +46,31 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
         if (player == null || holder.getState() != SessionState.CHUNKS) return;
 
         final Level level = player.getLevel();
+
+        if (server.isLevelThreadMode()) {
+            level.getScheduler().scheduleTask(() -> handleOnLevelOwner(packet, holder, player, level));
+            return;
+        }
+
+        handleOnLevelOwner(packet, holder, player, level);
+    }
+
+    private void handleOnLevelOwner(
+            SubChunkRequestPacket packet,
+            PlayerSessionHolder holder,
+            Player player,
+            Level level
+    ) {
+        if (holder.isDisconnected()
+                || holder.getState() != SessionState.CHUNKS
+                || holder.getPlayer() != player
+                || !player.isConnected()
+                || player.getLevel() != level) {
+            return;
+        }
+
         final DimensionType dimensionType = packet.getDimensionType();
         final Vector3i centerPos = packet.getCenterPos();
-
         ClientBlobCacheManager.TransferBuilder cacheTransfer = null;
 
         final SubChunkPacket responsePacket = new SubChunkPacket();
