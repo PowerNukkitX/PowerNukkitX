@@ -32,24 +32,21 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
     @Override
     public ActionResponse handle(CraftResultsDeprecatedAction action, Player player, ItemStackRequestContext context) {
         if (context.has(RECIPE_DATA_KEY) && ((Recipe) context.get(RECIPE_DATA_KEY)).getType() == RecipeType.MULTI) {
-            if (action.getResultItemsDeprecated() == null || action.getResultItemsDeprecated().length == 0) {
-                Item computed = context.has(MULTI_RESULT_KEY) ? ((Item) context.get(MULTI_RESULT_KEY)) : null;
-                if (computed == null || computed.isNull()) {
+            Item resultItem = context.get(MULTI_RESULT_KEY);
+            if (resultItem == null || resultItem.isNull()) {
+                var resultItems = action.getResultItemsDeprecated();
+                if (resultItems == null || resultItems.length == 0) {
                     log.warn("Multi recipe result is missing!");
                     return context.error();
                 }
-                var createdOutput = player.getCreativeOutputInventory();
-                computed.autoAssignStackNetworkId();
-                createdOutput.setItem(0, computed, false);
-                return null;
-            }
-            Item resultItem = Item.fromNetwork(action.getResultItemsDeprecated()[0]);
-            if (resultItem.isNull() || resultItem.getCount() <= 0 || resultItem.getCount() > resultItem.getMaxStackSize()) {
-                log.warn("Invalid multi recipe result {}!", resultItem);
-                return context.error();
-            }
-            if (!validateResultAgainstInput(player, resultItem)) {
-                return context.error();
+                resultItem = Item.fromNetwork(resultItems[0]);
+                if (resultItem.isNull() || resultItem.getCount() <= 0 || resultItem.getCount() > resultItem.getMaxStackSize()) {
+                    log.warn("Invalid multi recipe result {}!", resultItem);
+                    return context.error();
+                }
+                if (!validateResultAgainstInput(player, resultItem)) {
+                    return context.error();
+                }
             }
             var createdOutput = player.getCreativeOutputInventory();
             resultItem.autoAssignStackNetworkId();
