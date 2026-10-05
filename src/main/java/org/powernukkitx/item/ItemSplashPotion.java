@@ -2,7 +2,6 @@ package org.powernukkitx.item;
 
 import org.powernukkitx.entity.effect.PotionType;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
 
 public class ItemSplashPotion extends ProjectileItem {
     public ItemSplashPotion() {
@@ -56,17 +55,5 @@ public class ItemSplashPotion extends ProjectileItem {
     @Override
     protected void correctNBT(CompoundTag nbt) {
         nbt.putInt("PotionId", this.meta);
-    }
-
-    /**
-     * Creates a splash potion item containing the specified potion type.
-     *
-     * @param potion the potion type stored in the new item
-     * @return a new splash potion item with a count of one
-     * @throws NullPointerException if {@code potion} is {@code null}
-     */
-    @NotNull
-    public static ItemSplashPotion fromPotion(@NotNull PotionType potion) {
-        return new ItemSplashPotion(potion.id());
     }
 }
