@@ -142,6 +142,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected UUID leashHolderUuid = null;
     protected Vector3 leashKnotPos = null;
     private Vector3 leashFollowTarget = null;
+    private static final double LEASH_BREAK_DISTANCE = 10.0;
 
     /**
      * The entity is this targeting to
@@ -5085,7 +5086,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void setLeashedTo(@Nullable Entity holder) {
         final Entity previous = this.leashedTo;
         this.leashedTo = holder;
-        this.leashHolderUuid = holder instanceof Player ? holder.getUniqueId() : null;
+        this.leashHolderUuid = holder != null && !(holder instanceof EntityLeashKnot)
+                ? holder.getUniqueId()
+                : null;
         if (holder instanceof EntityLeashKnot knot) {
             final Block fence = knot.getAttachedBlock();
             this.leashKnotPos = new Vector3(fence.getFloorX(), fence.getFloorY(), fence.getFloorZ());
@@ -5096,6 +5099,35 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (previous instanceof EntityLeashKnot oldKnot && previous != holder) {
             oldKnot.removeIfEmpty();
         }
+    }
+
+    /**
+     * Transfers entities held by the player to this entity.
+     *
+     * @return {@code true} when at least one leash was transferred
+     */
+    public boolean leashEntitiesHeldBy(@Nullable Player player) {
+        if (player == null || this.level == null || !this.canBeLeashed() || this.isBaby()) {
+            return false;
+        }
+
+        boolean transferred = false;
+        final AxisAlignedBB search = this.boundingBox.grow(
+                LEASH_BREAK_DISTANCE, LEASH_BREAK_DISTANCE, LEASH_BREAK_DISTANCE);
+        for (Entity entity : this.level.getNearbyEntities(search, this)) {
+            if (entity.getLeashedTo() != player || entity.distance(this) > LEASH_BREAK_DISTANCE) {
+                continue;
+            }
+            entity.setLeashedTo(this);
+            entity.setPersistent(true);
+            transferred = true;
+        }
+
+        if (transferred) {
+            this.setPersistent(true);
+            this.level.addSound(this, Sound.LEASHKNOT_PLACE);
+        }
+        return transferred;
     }
 
     public void unleash(boolean dropItem) {
@@ -5159,7 +5191,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.leashedTo == null || this.leashedTo.closed) {
             this.leashedTo = null;
             if (this.leashHolderUuid != null) {
-                final Player holder = this.getServer().getPlayer(this.leashHolderUuid).orElse(null);
+                Entity holder = this.getServer().getPlayer(this.leashHolderUuid).orElse(null);
+                if (holder == null && this.level != null) {
+                    final AxisAlignedBB search = this.boundingBox.grow(
+                            LEASH_BREAK_DISTANCE, LEASH_BREAK_DISTANCE, LEASH_BREAK_DISTANCE);
+                    for (Entity candidate : this.level.getNearbyEntities(search, this)) {
+                        if (this.leashHolderUuid.equals(candidate.getUniqueId())) {
+                            holder = candidate;
+                            break;
+                        }
+                    }
+                }
                 if (holder == null || !holder.isAlive() || holder.getLevel() != this.level) {
                     return;
                 }
@@ -5191,7 +5233,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return;
         }
         final double distance = this.distance(this.leashedTo);
-        if (distance > 10.0) {
+        if (distance > LEASH_BREAK_DISTANCE) {
             this.unleash(true);
             return;
         }

@@ -1112,6 +1112,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item != null && Item.LEAD.equals(item.getId()) && this.canBeLeashed()) {
+            if (player.isSneaking() && this.leashEntitiesHeldBy(player)) {
+                return true;
+            }
             return this.useLeadOn(player);
         }
 
