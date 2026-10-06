@@ -10,7 +10,6 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -67,7 +66,7 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
         for (var each : Objects.requireNonNull(rootDir.listFiles())) {
             var jsonFile = new File(each, "tickingarea.json");
             if (jsonFile.exists()) {
-                try (var fr = new FileReader(jsonFile)) {
+                try (var fr = Files.newBufferedReader(jsonFile.toPath())) {
                     Set<TickingArea> areas = JSONUtils.from(fr, type);
                     for (var area : areas) {
                         areaMap.put(area.getLevelName(), area.getName(), area);

@@ -692,7 +692,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
             return item;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

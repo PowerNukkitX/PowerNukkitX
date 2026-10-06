@@ -221,7 +221,7 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
                 try {
                     this.register(biomeId, Pair.of(pair.key(), pair.value()));
                 } catch (RegisterException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }
         }
