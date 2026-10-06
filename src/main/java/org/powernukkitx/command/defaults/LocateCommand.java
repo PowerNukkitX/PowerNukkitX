@@ -189,7 +189,7 @@ public class LocateCommand extends VanillaCommand {
             if(result instanceof OverworldBiomeResult biomeResult) {
                 int height = SEA_LEVEL;
                 while (height > pos.level.getMinHeight()) {
-                    biomeResult.correct(height - SEA_LEVEL); //We dont know the actual height before generating.
+                    biomeResult.correct(height - SEA_LEVEL); //We don't know the actual height before generating.
                     if (pos.getLevel().pickBiome(check.getFloorX(), height, check.getFloorZ()) == biomeId) {
                         return check;
                     }

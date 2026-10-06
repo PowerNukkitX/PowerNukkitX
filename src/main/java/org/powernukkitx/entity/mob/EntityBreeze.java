@@ -1,5 +1,6 @@
 package org.powernukkitx.entity.mob;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -20,6 +21,7 @@ import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -90,6 +92,10 @@ public class EntityBreeze extends EntityMob {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
+        if (!killedByPlayer()) {
+            return Item.EMPTY_ARRAY;
+        }
+
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
         int min = 1 + looting;
@@ -100,6 +106,11 @@ public class EntityBreeze extends EntityMob {
         return new Item[]{
                 Item.get(Item.BREEZE_ROD, 0, amount)
         };
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

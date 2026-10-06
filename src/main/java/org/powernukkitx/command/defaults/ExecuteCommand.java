@@ -539,7 +539,7 @@ public class ExecuteCommand extends VanillaCommand {
                     log.addError("commands.scoreboard.objectiveNotFound", sourceObjectiveName).output();
                     return 0;
                 }
-                var sourceScoreboard = manager.getScoreboards().get(targetObjectiveName);
+                var sourceScoreboard = manager.getScoreboards().get(sourceObjectiveName);
 
                 if (!sourceScoreboard.getLines().containsKey(sourceScorer)) {
                     log.addError("commands.scoreboard.players.operation.notFound", sourceObjectiveName, sourceScorer.getName()).output();

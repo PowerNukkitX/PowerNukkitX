@@ -322,7 +322,7 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
         drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

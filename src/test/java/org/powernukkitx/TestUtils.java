@@ -27,7 +27,7 @@ public class TestUtils {
             infoF.setAccessible(true);
             infoF.set(target, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

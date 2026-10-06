@@ -46,9 +46,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.ref.WeakReference;
@@ -168,7 +166,7 @@ public class LevelDBProvider implements LevelProvider {
             levelDatName = "level_Dim%s.dat".formatted(dimensionData.getDimensionId());
         }
         var levelDatNow = path.resolve(levelDatName).toFile();
-        try (var output = new FileOutputStream(levelDatNow);
+        try (var output = Files.newOutputStream(levelDatNow.toPath());
              var nbtOutputStream = NbtUtils.createWriterLE(output)) {
             if (levelDatNow.exists()) {
                 Files.copy(path.resolve(levelDatName), path.resolve(levelDatName + "_old"), StandardCopyOption.REPLACE_EXISTING);
@@ -527,6 +525,16 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
+    public float getRainLevel() {
+        return this.levelDat.getRainLevel();
+    }
+
+    @Override
+    public void setRainLevel(float rainLevel) {
+        this.levelDat.setRainLevel(rainLevel);
+    }
+
+    @Override
     public int getRainTime() {
         return this.levelDat.getRainTime();
     }
@@ -544,6 +552,16 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void setThundering(boolean thundering) {
         this.levelDat.setThundering(thundering);
+    }
+
+    @Override
+    public float getLightningLevel() {
+        return this.levelDat.getLightningLevel();
+    }
+
+    @Override
+    public void setLightningLevel(float lightningLevel) {
+        this.levelDat.setLightningLevel(lightningLevel);
     }
 
     @Override
@@ -636,7 +654,7 @@ public class LevelDBProvider implements LevelProvider {
             helper.close();
             storage.writeBatch(batch);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -810,7 +828,7 @@ public class LevelDBProvider implements LevelProvider {
     public synchronized LevelDat readLevelDat() throws IOException {
         File levelDat = Path.of(path).resolve("level.dat").toFile();
         if (!levelDat.exists()) return null;
-        try (var input = new FileInputStream(levelDat)) {
+        try (var input = Files.newInputStream(levelDat.toPath())) {
             //The first 8 bytes are magic number
             input.skip(8);
             final NbtMap d;
@@ -992,6 +1010,10 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("editorWorldType", worldData.getEditorWorldType());
         levelDat.putInt("eduOffer", worldData.getEduOffer());
         levelDat.putBoolean("educationFeaturesEnabled", worldData.isEducationFeaturesEnabled());
+        levelDat.putFloat("lightningLevel", worldData.getLightningLevel());
+        levelDat.putInt("lightningTime", worldData.getLightningTime());
+        levelDat.putFloat("rainLevel", worldData.getRainLevel());
+        levelDat.putInt("rainTime", worldData.getRainTime());
 
         levelDat.put("commandBlockOutput", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCK_OUTPUT).getTag());
         levelDat.put("commandBlocksEnabled", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCKS_ENABLED).getTag());

@@ -703,7 +703,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             if (controlItemIdentifier == null) return this;
             String v = controlItemIdentifier.trim();
             if (v.isEmpty()) return this;
-            
+
 
             return withObject(CustomEntityComponents.ITEM_CONTROLLABLE, new Meta.ItemControllable(v));
         }
@@ -1346,7 +1346,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * Movement multipliers should be implemented in behavior executors.
          * This method is kept for backward compatibility only.
          * Bedrock entity definitions do not store generic movement multipliers;
-         * speed scaling is controlled by runtime behaviors such as
+         * speed scaling is controlled by runtime behaviors such as:
          * follow, tempt, boost, sprint, or rider input.
          * </p>
          *

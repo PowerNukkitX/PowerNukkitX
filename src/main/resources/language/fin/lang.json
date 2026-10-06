@@ -1109,7 +1109,7 @@
   "nukkit.level.updating": "Vanhat maailman tiedot löytyivät maailmalle \"{%0}\", muutetaan formaattia",
   "nukkit.player.invalidEntity": "{%0} koitti vahingoittaa virheellistä oliota",
   "nukkit.player.invalidMove": "{%0} liikkui väärin!",
-  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] kirjautui sisään (olion tunnus {%3}) sijainnissa ({%4}, {%5}, {%6}, {%7})",
+  "nukkit.player.logIn": "{%0}[/{%1}:{%2}] kirjautui sisään (uniqueId {%3}) sijainnissa ({%4}, {%5}, {%6}, {%7})",
   "nukkit.player.logOut": "{%0}[/{%1}:{%2}] logged out due to {%3}",
   "nukkit.plugin.aliasError": "Ei voitu ladata aliasta {%0} lisäosalle {%1}",
   "nukkit.plugin.circularDependency": "Pyöreä riippuvuus havaittu",

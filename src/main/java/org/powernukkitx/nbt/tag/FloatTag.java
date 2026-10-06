@@ -53,13 +53,4 @@ public class FloatTag extends NumberTag<Float> {
     public Tag copy() {
         return new FloatTag(data);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            FloatTag o = (FloatTag) obj;
-            return data == o.data;
-        }
-        return false;
-    }
 }

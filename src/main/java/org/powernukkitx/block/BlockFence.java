@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityLeashKnot;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
@@ -56,12 +57,12 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
         double w = west ? 0 : 0.375;
         double e = east ? 1 : 0.625;
         return new SimpleAxisAlignedBB(
-                this.x + w,
-                this.y,
-                this.z + n,
-                this.x + e,
-                this.y + 1.5,
-                this.z + s
+            this.x + w,
+            this.y,
+            this.z + n,
+            this.x + e,
+            this.y + 1.5,
+            this.z + s
         );
     }
 
@@ -120,4 +121,25 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
         return block instanceof BlockFenceGate || block.isSolid() && !block.isTransparent();
     }
 
+
+    public boolean autoConfigureState() {
+        return HorizontalConnections.configure(this);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (autoConfigureState()) {
+                level.setBlock(this, this, true);
+            }
+            return type;
+        }
+        return super.onUpdate(type);
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        autoConfigureState();
+        return super.place(item, block, target, face, fx, fy, fz, player);
+    }
 }

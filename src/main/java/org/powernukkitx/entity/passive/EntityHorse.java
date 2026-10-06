@@ -344,11 +344,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         ArrayList<Item> drops = new ArrayList<>();
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 2) != 0) {
-            int leatherAmount = Utils.rand(0, 2 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 2 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         // Drop Ride Inventory
@@ -356,7 +354,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

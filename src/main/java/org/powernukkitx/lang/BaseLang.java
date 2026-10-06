@@ -7,13 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  *
  * <h2>Thread Safety:</h2>
  * <p>
- * This class is not thread-safe. If used in a multi-threaded context, external synchronization is required.
+ * This class is not thread-safe. If used in a multithreaded context, external synchronization is required.
  * </p>
  *
  * @author MagicDroidX (Nukkit Project)
@@ -177,7 +177,7 @@ public class BaseLang {
             if (!file.exists() || file.isDirectory()) {
                 throw new FileNotFoundException();
             }
-            try (FileInputStream stream = new FileInputStream(file)) {
+            try (InputStream stream = Files.newInputStream(file.toPath())) {
                 return parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
             }
         } catch (IOException e) {

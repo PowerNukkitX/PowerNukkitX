@@ -149,7 +149,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
     // No-Match-Old - putIfMatch does updates only if it matches the old value,
     // and NO_MATCH_OLD basically counts as a wildcard match.
     private static final Object NO_MATCH_OLD = new Object(); // Sentinel
-    // Match-Any-not-null - putIfMatch does updates only if it find a real old
+    // Match-Any-not-null - putIfMatch does update only if it finds a real old
     // value.
     private static final Object MATCH_ANY = new Object(); // Sentinel
     // This K/V pair has been deleted (but the Key slot is forever claimed).
@@ -672,7 +672,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
                     // if you fail you have a *witness* - the value which caused the CAS
                     // to fail.  The Java API turns this into a boolean destroying the
                     // witness.  Re-reading does not recover the witness because another
-                    // thread can write over the memory after the CAS.  Hence we can be in
+                    // thread can write over the memory after the CAS. Hence, we can be in
                     // the unfortunate situation of having a CAS fail *for cause* but
                     // having that cause removed by a later store.  This turns a
                     // non-spurious-failure CAS (such as Azul has) into one that can
@@ -704,7 +704,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
                 // ---
                 // Found the proper Key slot, now update the matching Value slot.  We
                 // never put a null, so Value slots monotonically move from null to
-                // not-null (deleted Values use Tombstone).  Thus if 'V' is null we
+                // not-null (deleted Values use Tombstone). Thus, if 'V' is null we
                 // fail this fast cutout and fall into the check for table-full.
                 if (putval == V) return V; // Fast cutout for no-change
 
@@ -751,7 +751,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
                 V = _vals[idx];         // Get new value
 
                 // If a Prime'd value got installed, we need to re-run the put on the
-                // new table.  Otherwise we lost the CAS to another racing put.
+                // new table. Otherwise, we lost the CAS to another racing put.
                 // Simply retry from the start.
                 if (V instanceof Prime)
                     return copy_slot_and_check(idx, expVal).putIfMatch(key, putval, expVal);
@@ -779,7 +779,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
         // Heuristic to decide if this table is too full, and we should start a
         // new table.  Note that if a 'get' call has reprobed too many times and
         // decided the table must be full, then always the estimate_sum must be
-        // high and we must report the table is full.  If we do not, then we might
+        // high, and we must report the table is full.  If we do not, then we might
         // end up deciding that the table is not full and inserting into the
         // current table, while a 'get' has decided the same key cannot be in this
         // table because of too many reprobes.  The invariant is:
@@ -810,7 +810,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
             int sz = size();          // Get current table count of active K,V pairs
             int newsz = sz;           // First size estimate
 
-            // Heuristic to determine new size.  We expect plenty of dead-slots-with-keys
+            // Heuristic to determine new size.  We expect plenty of dead-slots-with-keys,
             // and we need some decent padding to avoid endless reprobing.
             if (_nbhml._opt_for_space) {
                 // This heuristic leads to a much denser table with a higher reprobe rate
@@ -865,9 +865,9 @@ public class Long2ObjectNonBlockingMap<TypeV>
                 newchm = _newchm;        // Between dorking around, another thread did it
                 if (newchm != null)     // See if resize is already in progress
                     return newchm;         // Use the new table already
-                // We could use a wait with timeout, so we'll wakeup as soon as the new table
+                // We could use a wait with timeout, so we'll wake up as soon as the new table
                 // is ready, or after the timeout in any case.
-                //synchronized( this ) { wait(8*megs); }         // Timeout - we always wakeup
+                //synchronized( this ) { wait(8*megs); }         // Timeout - we always wake up
                 // For now, sleep a tad and see if the 2 guys already trying to make
                 // the table actually get around to making it happen.
                 try {
@@ -961,7 +961,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
 
                 copyidx += MIN_COPY_WORK;
                 // Uncomment these next 2 lines to turn on incremental table-copy.
-                // Otherwise this thread continues to copy until it is all done.
+                // Otherwise, this thread continues to copy until it is all done.
                 if (!copy_all && panic_start == -1) // No panic?
                     return;               // Then done copying after doing MIN_COPY_WORK
             }
@@ -1188,7 +1188,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Returns a {@link Collection} view of the values contained in this map.
      * The collection is backed by the map, so changes to the map are reflected
-     * in the collection, and vice-versa.  The collection supports element
+     * in the collection, and vice versa.  The collection supports element
      * removal, which removes the corresponding mapping from this map, via the
      * <tt>Iterator.remove</tt>, <tt>Collection.remove</tt>,
      * <tt>removeAll</tt>, <tt>retainAll</tt>, and <tt>clear</tt> operations.
@@ -1285,7 +1285,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * Returns a {@link Set} view of the keys contained in this map; with care
      * the keys may be iterated over <strong>without auto-boxing</strong>.  The
      * set is backed by the map, so changes to the map are reflected in the
-     * set, and vice-versa.  The set supports element removal, which removes
+     * set, and vice versa.  The set supports element removal, which removes
      * the corresponding mapping from this map, via the
      * <tt>Iterator.remove</tt>, <tt>Set.remove</tt>, <tt>removeAll</tt>,
      * <tt>retainAll</tt>, and <tt>clear</tt> operations.  It does not support
@@ -1416,7 +1416,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Returns a {@link Set} view of the mappings contained in this map.  The
      * set is backed by the map, so changes to the map are reflected in the
-     * set, and vice-versa.  The set supports element removal, which removes
+     * set, and vice versa.  The set supports element removal, which removes
      * the corresponding mapping from the map, via the
      * <tt>Iterator.remove</tt>, <tt>Set.remove</tt>, <tt>removeAll</tt>,
      * <tt>retainAll</tt>, and <tt>clear</tt> operations.  It does not support

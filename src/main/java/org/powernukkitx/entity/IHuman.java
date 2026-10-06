@@ -167,7 +167,7 @@ public interface IHuman extends InventoryHolder {
             if (this.getSkin() == null) {
                 this.setSkin(new Skin(org.cloudburstmc.protocol.bedrock.data.skin.Skin.builder().skinData(ImageData.EMPTY).build()));
             }
-            this.setUniqueId(Utils.dataToUUID(String.valueOf(human.getId()).getBytes(StandardCharsets.UTF_8),
+            this.setUniqueId(Utils.dataToUUID(String.valueOf(human.runtimeId()).getBytes(StandardCharsets.UTF_8),
                 this.getSkin().getSkin().getSkinData().getImage(), human.getNameTag().getBytes(StandardCharsets.UTF_8)));
         }
 

@@ -105,9 +105,11 @@ public final class ServerMockFixture {
             throw new IllegalStateException(e);
         }
 
+        final File settingsFile = new File("nukkit_fixture_" + ProcessHandle.current().pid() + ".yml");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(settingsFile)));
         final ServerSettings serverSettings = ConfigManager.create(ServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer());
-            it.withBindFile("nukkit.yml");
+            it.withBindFile(settingsFile);
             it.withRemoveOrphans(true);
             it.saveDefaults();
             it.load(true);
@@ -142,7 +144,7 @@ public final class ServerMockFixture {
         doReturn(100).when(server).getMaxPlayers();
         doReturn(false).when(server).hasWhitelist();
         // Port 0 lets the OS hand each test JVM its own free UDP port. A fixed port would
-        // clash when Gradle runs the fork pool in parallel and the RakNet bind aborts startup.
+        // clash when Gradle runs the fork pool in parallel and the listener bind aborts startup.
         doReturn(0).when(server).getPort();
         doReturn("127.0.0.1").when(server).getIp();
 

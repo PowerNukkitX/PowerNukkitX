@@ -35,7 +35,7 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
             return;
         }
 
-        packet.setPlayerRuntimeID(player.getId());
+        packet.setPlayerRuntimeID(player.runtimeId());
         Vector3 pos = Vector3.fromNetwork(packet.getBlockPosition().toFloat());
         BlockFace face = BlockFace.fromIndex(packet.getFace());
 
@@ -43,6 +43,9 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
             case PlayerActionType.CREATIVE_DESTROY_BLOCK -> {
                 // Used by client to get book from lecterns and items from item frame in creative mode since 1.20.70
                 if (!player.isCreative()) return;
+                if (!player.canInteract(pos.add(0.5, 0.5, 0.5), 13)) {
+                    return;
+                }
                 Block blockLectern = playerHandle.player.getLevel().getBlock(pos);
                 if (blockLectern instanceof BlockLectern blockLecternI && blockLectern.distance(playerHandle.player) <= 6) {
                     blockLecternI.dropBook(playerHandle.player);
