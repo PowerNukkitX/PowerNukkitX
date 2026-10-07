@@ -21,6 +21,27 @@ public class TestUtils {
         }
     }
 
+    /** Runs one {@code Server#checkTickUpdates}: player ticks plus, in shared tick mode, the level ticks. */
+    public static void checkTickUpdates(Server server, int currentTick) {
+        try {
+            Method method = Server.class.getDeclaredMethod("checkTickUpdates", int.class);
+            method.setAccessible(true);
+            method.invoke(server, currentTick);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static Object getField(Class<?> clazz, Object target, String fieldName) {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(target);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public static void setField(Class<?> clazz, Object target, String fieldName, Object value) {
         try {
             Field infoF = clazz.getDeclaredField(fieldName);

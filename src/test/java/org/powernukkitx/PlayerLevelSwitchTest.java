@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ class PlayerLevelSwitchTest {
     }
 
     @AfterEach
-    void tearDown() throws Exception {
+    void tearDown() {
         setLastTickLevel(null);
         this.player.level = this.level;
         this.player.setInboundProcessor(null);
@@ -76,7 +75,7 @@ class PlayerLevelSwitchTest {
         this.player.loggedIn = true;
         this.player.spawned = true;
         Location queuedMove = new Location(1, 100, 1, this.level);
-        this.player.clientMovements.offer(queuedMove);
+        assertTrue(this.player.clientMovements.offer(queuedMove));
         this.player.handlePacket(new TextPacket());
 
         boolean keepTicking = this.player.onUpdate(this.player.lastUpdate + 1);
@@ -88,7 +87,7 @@ class PlayerLevelSwitchTest {
     }
 
     @Test
-    void newLevelWaitsUntilThePreviousLevelHasFinishedItsTick() throws Exception {
+    void newLevelWaitsUntilThePreviousLevelHasFinishedItsTick() {
         this.player.loggedIn = true;
         this.player.spawned = true;
         this.player.handlePacket(new TextPacket());
@@ -108,27 +107,23 @@ class PlayerLevelSwitchTest {
     }
 
     @Test
-    void levelReportsOnlyTicksRunningOnOtherThreads() throws Exception {
-        Field field = Level.class.getDeclaredField("tickingThread");
-        field.setAccessible(true);
+    void levelReportsOnlyTicksRunningOnOtherThreads() {
         try {
-            field.set(this.level, Thread.currentThread());
+            TestUtils.setField(Level.class, this.level, "tickingThread", Thread.currentThread());
             assertFalse(this.level.isTickedByAnotherThread());
-            field.set(this.level, new Thread(() -> {
+            TestUtils.setField(Level.class, this.level, "tickingThread", new Thread(() -> {
             }));
             assertTrue(this.level.isTickedByAnotherThread());
         } finally {
-            field.set(this.level, null);
+            TestUtils.setField(Level.class, this.level, "tickingThread", null);
         }
 
         this.level.doTick(this.level.getTick() + 1);
         assertFalse(this.level.isTickedByAnotherThread());
-        assertNull(field.get(this.level));
+        assertNull(TestUtils.getField(Level.class, this.level, "tickingThread"));
     }
 
-    private void setLastTickLevel(Level level) throws Exception {
-        Field field = Player.class.getDeclaredField("lastTickLevel");
-        field.setAccessible(true);
-        field.set(this.player, level);
+    private void setLastTickLevel(Level level) {
+        TestUtils.setField(Player.class, this.player, "lastTickLevel", level);
     }
 }

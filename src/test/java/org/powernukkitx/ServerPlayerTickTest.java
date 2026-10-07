@@ -11,8 +11,6 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.GameLoop;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +53,7 @@ class ServerPlayerTickTest {
     private boolean savedAlwaysTickPlayers;
 
     @BeforeEach
-    void setUp(Server server, Level level) throws Exception {
+    void setUp(Server server, Level level) {
         this.server = server;
         this.level = level;
         this.levelSettings = server.getSettings().levelSettings();
@@ -103,7 +101,7 @@ class ServerPlayerTickTest {
     }
 
     @Test
-    void sharedModeTicksPlayersOfThrottledLevelOncePerServerTick() throws Exception {
+    void sharedModeTicksPlayersOfThrottledLevelOncePerServerTick() {
         useSharedMode(false);
         throttleLevel();
 
@@ -120,7 +118,7 @@ class ServerPlayerTickTest {
     }
 
     @Test
-    void sharedModeAlwaysTickPlayersDoesNotDoubleTickOnSkippedLevelTick() throws Exception {
+    void sharedModeAlwaysTickPlayersDoesNotDoubleTickOnSkippedLevelTick() {
         useSharedMode(true);
         throttleLevel();
 
@@ -130,7 +128,7 @@ class ServerPlayerTickTest {
     }
 
     @Test
-    void sharedModeOnlyChecksNetworkOfUnspawnedPlayersOfThrottledLevel() throws Exception {
+    void sharedModeOnlyChecksNetworkOfUnspawnedPlayersOfThrottledLevel() {
         useSharedMode(false);
         throttleLevel();
         this.player.spawned = false;
@@ -142,7 +140,7 @@ class ServerPlayerTickTest {
     }
 
     @Test
-    void sharedModeReleasesTickCacheOfThrottledLevel() throws Exception {
+    void sharedModeReleasesTickCacheOfThrottledLevel() {
         useSharedMode(false);
         throttleLevel();
         Vector3 pos = new Vector3(3, 90, 3);
@@ -158,7 +156,7 @@ class ServerPlayerTickTest {
     }
 
     @Test
-    void levelThreadModeOnlyTheLevelThreadTicksPlayers() throws Exception {
+    void levelThreadModeOnlyTheLevelThreadTicksPlayers() throws InterruptedException {
         this.levelSettings.alwaysTickPlayers(true);
         // tickRate only scales the daylight cycle in this mode, the level loop never skips
         throttleLevel();
@@ -172,7 +170,7 @@ class ServerPlayerTickTest {
     }
 
     @Test
-    void levelThreadModeOnlyTheLevelThreadChecksNetworkOfJoiningPlayers() throws Exception {
+    void levelThreadModeOnlyTheLevelThreadChecksNetworkOfJoiningPlayers() throws InterruptedException {
         this.player.spawned = false;
 
         Thread levelThread = runLevelThreadAlongsideServerLoop(LEVEL_THREAD_TICKS);
@@ -199,7 +197,7 @@ class ServerPlayerTickTest {
      * Drives the real level loop on its own thread, as level thread mode does, while this thread keeps
      * running the server loop until the level thread is done.
      */
-    private Thread runLevelThreadAlongsideServerLoop(int levelTicks) throws Exception {
+    private Thread runLevelThreadAlongsideServerLoop(int levelTicks) throws InterruptedException {
         TestUtils.setField(Server.class, this.server, "levelThreadMode", true);
         doReturn(true).when(this.server).isLevelThreadMode();
         GameLoop loop = this.level.getBaseTickGameLoop();
@@ -240,15 +238,11 @@ class ServerPlayerTickTest {
         this.level.tickRateCounter = THROTTLED_TICK_RATE;
     }
 
-    private Object readField(String name) throws Exception {
-        Field field = Server.class.getDeclaredField(name);
-        field.setAccessible(true);
-        return field.get(this.server);
+    private Object readField(String name) {
+        return TestUtils.getField(Server.class, this.server, name);
     }
 
-    private void checkTickUpdates(int currentTick) throws Exception {
-        Method method = Server.class.getDeclaredMethod("checkTickUpdates", int.class);
-        method.setAccessible(true);
-        method.invoke(this.server, currentTick);
+    private void checkTickUpdates(int currentTick) {
+        TestUtils.checkTickUpdates(this.server, currentTick);
     }
 }
