@@ -297,7 +297,6 @@ public final class VillageManager {
     }
 
     private void gainRaidOmen(Village village) {
-        BlockVector3 center = village.center();
         for (Player player : level.getPlayers().values()) {
             if (player.getEffect(EffectType.BAD_OMEN) == null
                     || player.getEffect(EffectType.RAID_OMEN) != null
@@ -493,11 +492,6 @@ public final class VillageManager {
                 ? raid.withTicks(ticks)
                 : raid.withStatus(VillageRaid.STATUS_VICTORY);
     }
-
-    /**
-     * Hands the reward of the last won raid to whoever stands in the village, until the three days it
-     * lasts are over. The effect is short lived and kept alive from here, so walking away drops it.
-     */
 
     private boolean hasPlayerInRaidBounds(Village village) {
         for (Player player : level.getPlayers().values()) {
