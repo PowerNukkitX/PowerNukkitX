@@ -37,7 +37,7 @@ public class EndGatewayPopulator extends Populator {
             if (random.nextBoundedInt(700) == 0) {
                 int x = (chunkX << 4) + random.nextBoundedInt(16);
                 int z = (chunkZ << 4) + random.nextBoundedInt(16);
-                int y = level.getHeightMap(x, z) + random.nextBoundedInt(7) + 3;
+                int y = level.getHeightMap(x, z) + random.nextBoundedInt(7) + 2;
 
                 if (y > 1 && y < 254) {
                     BlockManager object = new BlockManager(level);

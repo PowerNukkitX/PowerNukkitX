@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.player.PlayerTeleportEvent;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -21,10 +22,15 @@ public class ShowCreditsHandler implements PacketHandler<ShowCreditsPacket> {
             PlayerHandle playerHandle = holder.getPlayerHandle();
             if (playerHandle.getShowingCredits()) {
                 playerHandle.player.setShowingCredits(false);
+                playerHandle.player.setHasSeenCredits(true);
                 Position spawn;
                 if (playerHandle.player.getSpawn().right() == Player.SpawnPointType.WORLD) {
-                    spawn = PortalHelper.convertPosBetweenEndAndOverworld(playerHandle.player.getLocation());
+                    Level pendingDestination = playerHandle.getPendingEndPortalDestination();
+                    spawn = pendingDestination != null
+                            ? PortalHelper.convertPosBetweenEndAndOverworld(playerHandle.player.getLocation(), pendingDestination)
+                            : PortalHelper.convertPosBetweenEndAndOverworld(playerHandle.player.getLocation());
                 } else spawn = playerHandle.player.getSpawn().left();
+                playerHandle.setPendingEndPortalDestination(null);
                 if (spawn != null) {
                     playerHandle.player.teleport(spawn, PlayerTeleportEvent.TeleportCause.END_PORTAL);
                 }

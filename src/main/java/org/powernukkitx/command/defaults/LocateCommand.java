@@ -5,8 +5,10 @@ import org.powernukkitx.command.data.CommandEnum;
 import org.powernukkitx.command.data.CommandParameter;
 import org.powernukkitx.command.tree.ParamList;
 import org.powernukkitx.command.utils.CommandLogger;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.generator.biome.OverworldBiomePicker;
 import org.powernukkitx.level.generator.biome.result.BiomeResult;
 import org.powernukkitx.level.generator.biome.result.OverworldBiomeResult;
 import org.powernukkitx.level.generator.populator.generic.PopulatorRuinedPortal;
@@ -30,6 +32,10 @@ import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.
 public class LocateCommand extends VanillaCommand {
     private static final int SEARCH_SPIRAL = 0;
     private static final int SEARCH_X_AXIS = 1;
+    private static final int BIOME_SAMPLE_STEP = 16;
+    private static final int CAVE_BIOME_DEPTH = 26;
+    private static final int DEEP_DARK_BIOME_DEPTH = 127;
+
     public LocateCommand(String name) {
         super(name, "commands.locate.description");
         this.setPermission("nukkit.command.locate");
@@ -66,25 +72,28 @@ public class LocateCommand extends VanillaCommand {
                     maxRadius = list.getResult(3);
                 }
 
+                int dimension = pos.getLevel().getDimension();
+                boolean overworld = dimension == Level.DIMENSION_OVERWORLD;
+                boolean nether = dimension == Level.DIMENSION_NETHER;
                 StructurePlacement placement = switch (structure) {
-                    case "woodland_mansion" -> WoodlandMansionPopulator.PLACEMENT;
-                    case "desert_pyramid" -> DesertPyramidPopulator.PLACEMENT;
-                    case "igloo" -> IglooPopulator.PLACEMENT;
-                    case "jungle_temple" -> JungleTemplePopulator.PLACEMENT;
-                    case "ocean_monument" -> OceanMonumentPopulator.PLACEMENT;
-                    case "ocean_ruin" -> OceanRuinPopulator.PLACEMENT;
-                    case "pillager_outpost" -> PillagerOutpostPopulator.PLACEMENT;
-                    case "shipwreck" -> ShipwreckPopulator.PLACEMENT;
-                    case "stronghold" -> StrongholdPopulator.PLACEMENT;
-                    case "swamp_hut" -> SwampHutPopulator.PLACEMENT;
-                    case "trail_ruins" -> TrailRuinsPopulator.PLACEMENT;
-                    case "trial_chambers" -> TrialChambersPopulator.PLACEMENT;
-                    case "village" -> VillagePopulator.PLACEMENT;
-                    case "ruined_portal" -> PopulatorRuinedPortal.PLACEMENT;
-                    case "bastion_remnant" -> BastionRemnantPopulator.PLACEMENT;
-                    case "nether_fortress" -> NetherFortressPopulator.PLACEMENT;
-                    case "nether_fossil" -> NetherFossilPopulator.PLACEMENT;
-                    case "ancient_city" -> AncientCityPopulator.PLACEMENT;
+                    case "woodland_mansion" -> overworld ? WoodlandMansionPopulator.PLACEMENT : null;
+                    case "desert_pyramid" -> overworld ? DesertPyramidPopulator.PLACEMENT : null;
+                    case "igloo" -> overworld ? IglooPopulator.PLACEMENT : null;
+                    case "jungle_temple" -> overworld ? JungleTemplePopulator.PLACEMENT : null;
+                    case "ocean_monument" -> overworld ? OceanMonumentPopulator.PLACEMENT : null;
+                    case "ocean_ruin" -> overworld ? OceanRuinPopulator.PLACEMENT : null;
+                    case "pillager_outpost" -> overworld ? PillagerOutpostPopulator.PLACEMENT : null;
+                    case "shipwreck" -> overworld ? ShipwreckPopulator.PLACEMENT : null;
+                    case "stronghold" -> overworld ? StrongholdPopulator.PLACEMENT : null;
+                    case "swamp_hut" -> overworld ? SwampHutPopulator.PLACEMENT : null;
+                    case "trail_ruins" -> overworld ? TrailRuinsPopulator.PLACEMENT : null;
+                    case "trial_chambers" -> overworld ? TrialChambersPopulator.PLACEMENT : null;
+                    case "village" -> overworld ? VillagePopulator.PLACEMENT : null;
+                    case "ancient_city" -> overworld ? AncientCityPopulator.PLACEMENT : null;
+                    case "ruined_portal" -> PopulatorRuinedPortal.getPlacement(dimension);
+                    case "bastion_remnant" -> nether ? BastionRemnantPopulator.PLACEMENT : null;
+                    case "nether_fortress" -> nether ? NetherFortressPopulator.PLACEMENT : null;
+                    case "nether_fossil" -> nether ? NetherFossilPopulator.PLACEMENT : null;
                     default -> null;
                 };
                 if (placement == null) {
@@ -129,7 +138,6 @@ public class LocateCommand extends VanillaCommand {
                 }
 
                 if (found != null) {
-                    found.setY(pos.getLevel().getHeightMap(pos.getFloorX(), pos.getFloorZ()) + 16);
                     String _x = String.valueOf(found.getFloorX());
                     String _y = String.valueOf(found.getFloorY());
                     String _z = String.valueOf(found.getFloorZ());
@@ -149,7 +157,7 @@ public class LocateCommand extends VanillaCommand {
     }
 
     private Vector3 findStructure(Position pos, StructurePlacement placement, int maxRadiusBlocks) {
-        int maxRadiusChunks = Math.max(1, maxRadiusBlocks >> 4);
+        int maxRadiusChunks = (int) (((long) Math.max(0, maxRadiusBlocks) + 15L) >> 4);
         RandomSourceProvider random = new Xoroshiro128(pos.getLevel().getSeed());
         ChunkVector2 center = new ChunkVector2(pos.getFloorX() >> 4, pos.getFloorZ() >> 4);
         ChunkVector2 found = placement.findNearestGenerationChunk(center, random, pos.getLevel().getBiomePicker(), maxRadiusChunks);
@@ -172,60 +180,116 @@ public class LocateCommand extends VanillaCommand {
                 : SEARCH_SPIRAL;
     }
 
-    private Vector3 findBiomeSpiral(Position pos, int biomeId, int maxRadius) {
+    private Vector3 findBiomeSpiral(Position pos, int biomeId, int maxRadiusBlocks) {
+        int radius = Math.max(0, maxRadiusBlocks);
+        int sampleRadius = (int) (((long) radius + BIOME_SAMPLE_STEP - 1L) / BIOME_SAMPLE_STEP);
+        int centerX = pos.getFloorX();
+        int centerZ = pos.getFloorZ();
+        long maxDistanceSq = (long) radius * radius;
+        long nearestDistanceSq = Long.MAX_VALUE;
+        int nearestX = 0;
+        int nearestZ = 0;
+        boolean found = false;
+
+        for (int dx = -sampleRadius; dx <= sampleRadius; dx++) {
+            int x = centerX + dx * BIOME_SAMPLE_STEP;
+            long blockDx = (long) x - centerX;
+
+            for (int dz = -sampleRadius; dz <= sampleRadius; dz++) {
+                int z = centerZ + dz * BIOME_SAMPLE_STEP;
+                long blockDz = (long) z - centerZ;
+                long distanceSq = blockDx * blockDx + blockDz * blockDz;
+
+                if (distanceSq > maxDistanceSq || distanceSq > nearestDistanceSq) {
+                    continue;
+                }
+                if (!columnCanContainBiome(pos, biomeId, x, z)) {
+                    continue;
+                }
+                if (!found || distanceSq < nearestDistanceSq
+                        || (distanceSq == nearestDistanceSq && (x < nearestX || (x == nearestX && z < nearestZ)))) {
+                    found = true;
+                    nearestDistanceSq = distanceSq;
+                    nearestX = x;
+                    nearestZ = z;
+                }
+            }
+        }
+
+        return found ? resolveBiomePosition(pos, biomeId, nearestX, nearestZ) : null;
+    }
+
+    private Vector3 findBiomePosition(Position pos, int maxRadiusBlocks, int biomeId) {
+        int radius = Math.max(0, maxRadiusBlocks);
         int centerX = pos.getFloorX();
         int centerZ = pos.getFloorZ();
 
-        int x = 0, z = 0;
-        int dx = 0, dz = -1;
-
-        int diameter = maxRadius * 2 + 1;
-        int maxSteps = diameter * diameter;
-
-        for (int step = 0; step < maxSteps; step++) {
-            Vector3 check = new Vector3(centerX + (x << 4), pos.y, centerZ + (z << 4));
-
-            BiomeResult result = pos.getLevel().getBiomePicker().pick(check.getFloorX(), SEA_LEVEL, check.getFloorZ());
-            if(result instanceof OverworldBiomeResult biomeResult) {
-                int height = SEA_LEVEL;
-                while (height > pos.level.getMinHeight()) {
-                    biomeResult.correct(height - SEA_LEVEL); //We don't know the actual height before generating.
-                    if (pos.getLevel().pickBiome(check.getFloorX(), height, check.getFloorZ()) == biomeId) {
-                        return check;
-                    }
-                    height -= 8;
-                }
-            } else if(result.getBiomeId() == biomeId) return check;
-
-
-            if (x == z || (x < 0 && x == -z) || (x > 0 && x == 1 - z)) {
-                int tmp = dx;
-                dx = -dz;
-                dz = tmp;
+        for (int offset = 0; offset <= radius; offset += BIOME_SAMPLE_STEP) {
+            int x = centerX + offset;
+            if (columnCanContainBiome(pos, biomeId, x, centerZ)) {
+                return resolveBiomePosition(pos, biomeId, x, centerZ);
             }
 
-            x += dx;
-            z += dz;
+            if (offset != 0) {
+                x = centerX - offset;
+                if (columnCanContainBiome(pos, biomeId, x, centerZ)) {
+                    return resolveBiomePosition(pos, biomeId, x, centerZ);
+                }
+            }
         }
 
         return null;
     }
 
-
-    private Vector3 findBiomePosition(Position pos, int maxRadius, int biomeId) {
-        for (int x = 0; x <= maxRadius; x++) {
-            int offset = x << 4;
-
-            for (int i = 0; i < 2; i++) {
-                int dx = (i == 0) ? offset : -offset;
-
-                Vector3 check = new Vector3(pos.getFloorX() + dx, pos.y, pos.getFloorZ());
-
-                if (pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
-                    return check;
-                }
-            }
+    private boolean columnCanContainBiome(Position pos, int biomeId, int x, int z) {
+        var biomePicker = pos.getLevel().getBiomePicker();
+        if (!(biomePicker instanceof OverworldBiomePicker overworldBiomePicker)) {
+            return biomePicker.pick(x, SEA_LEVEL, z).getBiomeId() == biomeId;
         }
+
+        OverworldBiomeResult result = overworldBiomePicker.pickRaw(x, SEA_LEVEL, z);
+        if (result.getBiomeId() == biomeId) {
+            return true;
+        }
+
+        result.correct(-CAVE_BIOME_DEPTH);
+        if (result.getBiomeId() == biomeId) {
+            return true;
+        }
+
+        result.reset();
+        result.correct(-DEEP_DARK_BIOME_DEPTH);
+        if (result.getBiomeId() != biomeId) {
+            return false;
+        }
+
+        return overworldBiomePicker.predictSurfaceHeight(x, z) - DEEP_DARK_BIOME_DEPTH >= pos.getLevel().getMinHeight();
+    }
+
+    private Vector3 resolveBiomePosition(Position pos, int biomeId, int x, int z) {
+        var biomePicker = pos.getLevel().getBiomePicker();
+        if (!(biomePicker instanceof OverworldBiomePicker overworldBiomePicker)) {
+            return new Vector3(x, SEA_LEVEL, z);
+        }
+
+        int surfaceY = overworldBiomePicker.predictSurfaceHeight(x, z);
+        OverworldBiomeResult result = overworldBiomePicker.pickRaw(x, SEA_LEVEL, z);
+        if (result.getBiomeId() == biomeId) {
+            return new Vector3(x, surfaceY, z);
+        }
+
+        result.correct(-CAVE_BIOME_DEPTH);
+        if (result.getBiomeId() == biomeId) {
+            return new Vector3(x, surfaceY - CAVE_BIOME_DEPTH, z);
+        }
+
+        result.reset();
+        result.correct(-DEEP_DARK_BIOME_DEPTH);
+        int deepY = surfaceY - DEEP_DARK_BIOME_DEPTH;
+        if (result.getBiomeId() == biomeId && deepY >= pos.getLevel().getMinHeight()) {
+            return new Vector3(x, deepY, z);
+        }
+
         return null;
     }
 }

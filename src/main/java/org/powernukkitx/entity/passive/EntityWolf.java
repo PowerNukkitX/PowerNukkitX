@@ -17,7 +17,6 @@ import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.ConditionalProbabilityEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import org.powernukkitx.entity.ai.evaluator.ProbabilityEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.AnimalGrowExecutor;
 import org.powernukkitx.entity.ai.executor.BegExecutor;
@@ -279,10 +278,10 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         }
         this.armorInventory = new EntityArmorInventory(this);
 
-        if (this.nbt.contains(TAG_ARMOR)) {
+        if (this.nbt.containsList(TAG_ARMOR, Tag.TAG_Compound)) {
             ListTag<CompoundTag> armorList = this.getNbt().getList(TAG_ARMOR, CompoundTag.class);
-            for (CompoundTag armorTag : armorList.getAll()) {
-                this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
+            for (int slot = 0; slot < Math.min(armorList.size(), 5); slot++) {
+                this.armorInventory.setItem(slot, ItemHelper.read(armorList.get(slot)));
             }
         }
     }
@@ -293,8 +292,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         if (hasOwner()) {
             Player owner = getOwner();
             Long ownerEid = getDataProperty(ActorDataTypes.OWNER);
-            if (owner != null && !Long.valueOf(owner.getId()).equals(ownerEid)) {
-                this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
+            if (owner != null && !Long.valueOf(owner.uniqueIdLong()).equals(ownerEid)) {
+                this.setDataProperty(ActorDataTypes.OWNER, owner.uniqueIdLong());
             }
         }
         return super.onUpdate(currentTick);
@@ -328,8 +327,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         super.saveNBT();
         if (this.armorInventory != null) {
             final ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
-            for (int i = 0; i < 4; i++) {
-                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
+            for (int i = 0; i < 5; i++) {
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i)));
             }
             this.nbt.putList(TAG_ARMOR, armorTag);
         }

@@ -7,8 +7,6 @@ import org.powernukkitx.math.Vector3;
 /**
  * A vibration listener
  */
-
-
 public interface VibrationListener {
 
     /**
@@ -41,6 +39,15 @@ public interface VibrationListener {
      * @return double
      */
     double getListenRange();
+
+    /**
+     * Returns whether this listener requires adjacent chunks to be ticking before receiving vibrations.
+     *
+     * @return whether adjacent ticking chunks are required
+     */
+    default boolean canReceiveOnlyIfAdjacentChunksAreTicking() {
+        return false;
+    }
 
     /**
      * Whether it is an entity

@@ -14,6 +14,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.ItemHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
@@ -35,8 +36,17 @@ public class EntityItem extends Entity {
         return ITEM;
     }
 
-    protected String owner;
-    protected String thrower;
+    private static final int VANILLA_DESPAWN_AGE = 6000;
+    private static final int VANILLA_MERGE_INTERVAL = 25;
+    private static final int INFINITE_PICKUP_DELAY = 65535;
+    private static final String PNX_SHOULD_DESPAWN = "ShouldDespawn";
+    private static final String PNX_DISPLAY_ONLY = "DisplayOnly";
+    private static final String PNX_MERGEABLE = "Mergeable";
+    private static final String PNX_OWNER_NAME = "OwnerName";
+    private static final String PNX_PICKUP_DELAY = "PickupDelay";
+
+    protected long ownerId;
+    protected String ownerName;
     protected Item item;
     protected int pickupDelay;
     private boolean mergeItems;
@@ -102,41 +112,49 @@ public class EntityItem extends Entity {
 
         final CompoundTag nbtMap = this.getNbt();
         this.setHealthCurrent(nbtMap.getShort("Health"));
+        this.age = nbtMap.getShort("Age");
+        this.ownerId = nbtMap.getLong("OwnerID");
 
-        if (nbtMap.contains("Age")) {
-            this.age = nbtMap.getShort("Age");
+        this.shouldDespawn = true;
+        this.isDisplayOnly = false;
+        this.mergeItems = true;
+        this.pickupDelay = 0;
+
+        CompoundTag customData = nbtMap.containsCompound(NBT_PNX_CUSTOM)
+                ? nbtMap.getCompound(NBT_PNX_CUSTOM)
+                : new CompoundTag();
+
+        if (customData.containsNumber(PNX_SHOULD_DESPAWN)) {
+            this.shouldDespawn = customData.getBoolean(PNX_SHOULD_DESPAWN);
         }
 
-        if (nbtMap.contains("ShouldDespawn")) {
-            this.shouldDespawn = nbtMap.getBoolean("ShouldDespawn");
-        } else shouldDespawn = true;
-
-        if (nbtMap.contains("DisplayOnly")) {
-            this.isDisplayOnly = nbtMap.getBoolean("DisplayOnly");
-        } else isDisplayOnly = false;
-
-        if (nbtMap.contains("PickupDelay")) {
-            this.pickupDelay =nbtMap.getShort("PickupDelay");
+        if (customData.containsNumber(PNX_DISPLAY_ONLY)) {
+            this.isDisplayOnly = customData.getBoolean(PNX_DISPLAY_ONLY);
         }
 
-        if (nbtMap.contains("Owner")) {
-            this.owner = nbtMap.getString("Owner");
+        if (customData.containsNumber(PNX_MERGEABLE)) {
+            this.mergeItems = customData.getBoolean(PNX_MERGEABLE);
         }
 
-        if (nbtMap.contains("Thrower")) {
-            this.thrower =nbtMap.getString("Thrower");
+        if (customData.containsString(PNX_OWNER_NAME)) {
+            this.ownerName = customData.getString(PNX_OWNER_NAME);
         }
 
-        if (!nbtMap.contains("Item")) {
+        if (customData.containsNumber(PNX_PICKUP_DELAY)) {
+            this.pickupDelay = customData.getInt(PNX_PICKUP_DELAY);
+        }
+
+        if (this.isDisplayOnly) {
+            this.pickupDelay = INFINITE_PICKUP_DELAY;
+        }
+
+        if (!nbtMap.containsCompound("Item")) {
             this.close();
             return;
         }
 
-        if (nbtMap.contains("Mergeable")) {
-            this.mergeItems = nbtMap.getBoolean("Mergeable");
-        } else mergeItems = true;
-
         this.item = ItemHelper.read(nbtMap.getCompound("Item"));
+        this.actorDataMap.put(ActorDataTypes.OWNER, this.ownerId);
         this.setDataFlag(ActorFlags.HAS_GRAVITY, true);
 
         if (this.item.isLavaResistant()) {
@@ -181,14 +199,14 @@ public class EntityItem extends Entity {
 
         this.lastUpdate = currentTick;
 
-        if (this.mergeItems && this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
+        if (this.canMergeItems() && this.age % VANILLA_MERGE_INTERVAL == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
             if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
                 for (EntityItem entity : this.getLevel().getCollidingItemEntities(getBoundingBox().grow(1, 1, 1))) {
                     if (entity != this) {
                         if (!entity.isAlive()) {
                             continue;
                         }
-                        if (!entity.mergeItems) continue;
+                        if (!entity.canMergeItems()) continue;
                         Item closeItem = entity.getItem();
                         if (!closeItem.equals(getItem(), true, true)) {
                             continue;
@@ -200,9 +218,15 @@ public class EntityItem extends Entity {
                         if (newAmount > this.getItem().getMaxStackSize()) {
                             continue;
                         }
+
+                        this.pickupDelay = Math.max(this.pickupDelay, entity.pickupDelay);
+                        this.age = Math.min(this.age, entity.age);
+
                         entity.close();
                         this.getItem().setCount(newAmount);
+
                         final ActorEventPacket packet = new ActorEventPacket();
+                        packet.setTargetRuntimeID(this.runtimeId());
                         packet.setTargetRuntimeID(this.runtimeId());
                         packet.setType(ActorEvent.UPDATE_STACK_SIZE);
                         packet.setData(newAmount);
@@ -221,7 +245,7 @@ public class EntityItem extends Entity {
         }
 
         if (this.isAlive()) {
-            if (this.pickupDelay > 0 && this.pickupDelay < 32767) {
+            if (this.pickupDelay > 0 && this.pickupDelay != INFINITE_PICKUP_DELAY) {
                 this.pickupDelay -= tickDiff;
                 if (this.pickupDelay < 0) {
                     this.pickupDelay = 0;
@@ -283,20 +307,20 @@ public class EntityItem extends Entity {
 
             this.updateMovement();
 
-            if (!this.shouldDespawn) {
-                if (this.age > 0) this.age--;
-            } else if (this.isDisplayOnly && this.age > 5980) {
-                this.age = 0;
-                respawnToAll();
-            } else if (this.age > 6000) {
-                ItemDespawnEvent ev = new ItemDespawnEvent(this);
-                this.server.getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+            if (this.age >= VANILLA_DESPAWN_AGE) {
+                if (!this.shouldDespawn || this.isDisplayOnly) {
                     this.age = 0;
                     respawnToAll();
                 } else {
-                    this.kill();
-                    hasUpdate = true;
+                    ItemDespawnEvent ev = new ItemDespawnEvent(this);
+                    this.server.getPluginManager().callEvent(ev);
+                    if (ev.isCancelled()) {
+                        this.age = 0;
+                        respawnToAll();
+                    } else {
+                        this.kill();
+                        hasUpdate = true;
+                    }
                 }
             }
         }
@@ -317,23 +341,58 @@ public class EntityItem extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        if (this.item != null) { // Yes, an item can be null... I don't know what causes this, but it can happen.
-            this.nbt.putCompound("Item", ItemHelper.write(this.item, -1))
-                    .putShort("Health", (short) this.getHealthCurrent())
-                    .putShort("Age", (short) this.age)
-                    .putShort("PickupDelay", (short) this.pickupDelay)
-                    .putBoolean("ShouldDespawn", this.shouldDespawn)
-                    .putBoolean("DisplayOnly", this.isDisplayOnly);
 
-            if (this.owner != null) {
-                this.nbt.putString("Owner", this.owner);
-            }
+        if (this.item == null) {
+            return;
+        }
 
-            if (this.thrower != null) {
-                this.nbt.putString("Thrower", this.thrower);
-            }
+        CompoundTag previousItem = this.nbt.containsCompound("Item")
+                ? this.nbt.getCompound("Item")
+                : null;
 
-            this.nbt.putBoolean("Mergeable", this.mergeItems);
+        this.nbt.putCompound("Item", ItemHelper.write(this.item, previousItem))
+                .putShort("Health", (short) this.getHealthCurrent())
+                .putShort("Age", (short) this.age)
+                .putLong("OwnerID", this.ownerId);
+
+        CompoundTag customData = this.nbt.containsCompound(NBT_PNX_CUSTOM)
+                ? this.nbt.getCompound(NBT_PNX_CUSTOM).copy()
+                : new CompoundTag();
+
+        if (this.shouldDespawn) {
+            customData.remove(PNX_SHOULD_DESPAWN);
+        } else {
+            customData.putBoolean(PNX_SHOULD_DESPAWN, false);
+        }
+
+        if (this.isDisplayOnly) {
+            customData.putBoolean(PNX_DISPLAY_ONLY, true);
+        } else {
+            customData.remove(PNX_DISPLAY_ONLY);
+        }
+
+        if (this.mergeItems) {
+            customData.remove(PNX_MERGEABLE);
+        } else {
+            customData.putBoolean(PNX_MERGEABLE, false);
+        }
+
+        if (this.ownerName == null || this.ownerName.isBlank()) {
+            customData.remove(PNX_OWNER_NAME);
+        } else {
+            customData.putString(PNX_OWNER_NAME, this.ownerName);
+        }
+
+        if (!this.isDisplayOnly && this.pickupDelay != 0) {
+            customData.putInt(PNX_PICKUP_DELAY, this.pickupDelay);
+        } else {
+            customData.remove(PNX_PICKUP_DELAY);
+        }
+
+        if (customData.isEmpty()) {
+            this.nbt.remove(NBT_PNX_CUSTOM);
+        } else {
+            this.nbt.putCompound(NBT_PNX_CUSTOM, customData);
         }
     }
 
@@ -373,39 +432,129 @@ public class EntityItem extends Entity {
     }
 
     public void setPickupDelay(int pickupDelay) {
-        this.pickupDelay = pickupDelay;
+        this.pickupDelay = this.isDisplayOnly
+                ? INFINITE_PICKUP_DELAY
+                : Math.max(0, pickupDelay);
     }
 
     public void setDisplayOnly(boolean isDisplayOnly) {
         this.isDisplayOnly = isDisplayOnly;
+
+        if (isDisplayOnly) {
+            this.pickupDelay = INFINITE_PICKUP_DELAY;
+        } else if (this.pickupDelay == INFINITE_PICKUP_DELAY) {
+            this.pickupDelay = 0;
+        }
     }
 
     public boolean isDisplayOnly() {
         return isDisplayOnly;
     }
 
+    /**
+     * Returns whether this item entity may merge with compatible item entities.
+     *
+     * @return whether merging is enabled
+     */
+    public boolean isMergeable() {
+        return this.mergeItems;
+    }
+
+    /**
+     * Sets whether this item entity may merge with compatible item entities.
+     *
+     * @param mergeItems whether merging is enabled
+     */
+    public void setMergeable(boolean mergeItems) {
+        this.mergeItems = mergeItems;
+    }
+
+    /**
+     * Returns whether this item should despawn when its age limit is reached.
+     *
+     * @return whether the item should despawn
+     */
+    public boolean shouldDespawn() {
+        return this.shouldDespawn;
+    }
+
+    /**
+     * Sets whether this item should despawn when its age limit is reached.
+     *
+     * @param shouldDespawn whether the item should despawn
+     */
+    public void setShouldDespawn(boolean shouldDespawn) {
+        this.shouldDespawn = shouldDespawn;
+    }
+
+    /**
+     * Returns the persistent ActorUniqueID of this item's owner.
+     *
+     * @return owner ActorUniqueID
+     */
+    public long getOwnerId() {
+        return this.ownerId;
+    }
+
+    /**
+     * Sets the persistent ActorUniqueID of this item's owner.
+     *
+     * @param ownerId owner ActorUniqueID
+     */
+    public void setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
+        this.setDataProperty(ActorDataTypes.OWNER, ownerId);
+    }
+
     @Override
     public String getOwnerName() {
-        return owner;
+        return this.ownerName;
     }
 
+    /**
+     * Sets the PNX owner name associated with this item entity.
+     *
+     * @param ownerName owner name
+     */
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    /**
+     * @deprecated Use {@link #setOwnerName(String)}.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void setOwner(String owner) {
-        this.owner = owner;
+        this.setOwnerName(owner);
     }
 
+    /**
+     * @deprecated Use {@link #getOwnerName()}.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public String getThrower() {
-        return thrower;
+        return this.getOwnerName();
     }
 
+    /**
+     * @deprecated Use {@link #setOwnerName(String)}.
+     */
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void setThrower(String thrower) {
-        this.thrower = thrower;
+        this.setOwnerName(thrower);
+    }
+
+    private boolean canMergeItems() {
+        return this.mergeItems &&
+                this.shouldDespawn &&
+                !this.isDisplayOnly;
     }
 
     @Override
     public BedrockPacket createAddEntityPacket() {
         final AddItemActorPacket addItemActorPacket = new AddItemActorPacket();
         addItemActorPacket.setEntityData(this.actorDataMap);
-        addItemActorPacket.setTargetActorID(this.getId());
+        addItemActorPacket.setTargetActorID(this.uniqueIdLong());
         addItemActorPacket.setTargetRuntimeID(this.runtimeId());
         addItemActorPacket.setItem(this.getItem().toNetwork());
         addItemActorPacket.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));

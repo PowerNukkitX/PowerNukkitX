@@ -9,7 +9,6 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.DyeColor;
@@ -108,14 +107,14 @@ public class ItemFireworkRocket extends Item {
 
     private void spawnFirework(Level level, Vector3 pos) {
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(pos.x + 0.5))
-                        .add(new DoubleTag(pos.y + 0.5))
-                        .add(new DoubleTag(pos.z + 0.5)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(pos.x + 0.5))
+                        .add(new FloatTag(pos.y + 0.5))
+                        .add(new FloatTag(pos.z + 0.5)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))
@@ -129,14 +128,14 @@ public class ItemFireworkRocket extends Item {
 
     private void spawnElytraFirework(Vector3 pos, Player player) {
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(pos.x + 0.5))
-                        .add(new DoubleTag(pos.y + 0.5))
-                        .add(new DoubleTag(pos.z + 0.5)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(pos.x + 0.5))
+                        .add(new FloatTag(pos.y + 0.5))
+                        .add(new FloatTag(pos.z + 0.5)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))

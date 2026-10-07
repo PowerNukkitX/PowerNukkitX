@@ -208,7 +208,7 @@ public class DummyBossBar {
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
         packet.setDarkenScreen(0);
-        packet.setPlayerID(this.player.getId());
+        packet.setPlayerID(this.player.uniqueIdLong());
         player.sendPacket(packet);
     }
 
@@ -222,7 +222,7 @@ public class DummyBossBar {
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
         packet.setDarkenScreen(0);
-        packet.setPlayerID(this.player.getId());
+        packet.setPlayerID(this.player.uniqueIdLong());
         player.sendPacket(packet);
     }
 
@@ -236,7 +236,7 @@ public class DummyBossBar {
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
         packet.setDarkenScreen(0);
-        packet.setPlayerID(this.player.getId());
+        packet.setPlayerID(this.player.uniqueIdLong());
         player.sendPacket(packet);
     }
 
@@ -250,7 +250,7 @@ public class DummyBossBar {
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
         packet.setDarkenScreen(0);
-        packet.setPlayerID(this.player.getId());
+        packet.setPlayerID(this.player.uniqueIdLong());
         player.sendPacket(packet);
     }
 
@@ -264,7 +264,7 @@ public class DummyBossBar {
         packet.setOverlay(DEFAULT_OVERLAY);
         packet.setColor(networkColor());
         packet.setDarkenScreen(0);
-        packet.setPlayerID(this.player.getId());
+        packet.setPlayerID(this.player.uniqueIdLong());
         player.sendPacket(packet);
     }
 
