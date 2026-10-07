@@ -6174,6 +6174,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
             }
             updateTrackingPositions(true);
+            this.scheduleUpdate();
             return true;
         }
 

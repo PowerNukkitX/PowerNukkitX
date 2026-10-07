@@ -1077,8 +1077,8 @@ public class Server {
     }
 
     private void checkTickUpdates(int currentTick) {
-        boolean tickPlayers = getSettings().levelSettings().alwaysTickPlayers();
-        for (Player player : new ArrayList<>(this.players.values())) {
+        boolean tickPlayers = !this.levelThreadMode && getSettings().levelSettings().alwaysTickPlayers();
+        for (Player player : this.players.values()) {
             if (tickPlayers) player.onUpdate(currentTick);
             if (!player.spawned) player.checkNetwork();
         }
@@ -1088,6 +1088,18 @@ public class Server {
         if (!this.levelThreadMode) {
             for (Level level : this.levelArray) {
                 if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
+                    try {
+                        if (!tickPlayers) {
+                            for (Player player : level.getPlayers().values()) {
+                                if (player.spawned) player.onUpdate(currentTick);
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error(this.getLanguage().tr("nukkit.level.tickError",
+                            level.getFolderPath(), Utils.getExceptionMessage(e)), e);
+                    } finally {
+                        level.releaseTickCachedBlocks();
+                    }
                     continue;
                 }
 

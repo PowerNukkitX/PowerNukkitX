@@ -1,0 +1,200 @@
+package org.powernukkitx;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.config.category.LevelSettings;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.Vector3;
+import org.powernukkitx.utils.GameLoop;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
+/**
+ * Who ticks a spawned player, on which thread and how often, driven through the real
+ * {@code Server#checkTickUpdates} and the real fixture {@link Level}.
+ */
+@ExtendWith(GameMockExtension.class)
+class ServerPlayerTickTest {
+    private static final long RUNTIME_ID = 0x7E57_0001L;
+    private static final int THROTTLED_TICK_RATE = 5;
+
+    private record Call(Thread thread, int tick) {
+    }
+
+    private final List<Call> calls = new CopyOnWriteArrayList<>();
+
+    private Server server;
+    private Level level;
+    private LevelSettings levelSettings;
+    private Player player;
+
+    private Object savedPlayers;
+    private Object savedLevelArray;
+    private Object savedLevelThreadMode;
+    private boolean savedAlwaysTickPlayers;
+
+    @BeforeEach
+    void setUp(Server server, Level level) throws Exception {
+        this.server = server;
+        this.level = level;
+        this.levelSettings = server.getSettings().levelSettings();
+
+        this.savedPlayers = readField("players");
+        this.savedLevelArray = readField("levelArray");
+        this.savedLevelThreadMode = readField("levelThreadMode");
+        this.savedAlwaysTickPlayers = this.levelSettings.alwaysTickPlayers();
+
+        this.player = mock(Player.class);
+        this.player.spawned = true;
+        doReturn(level).when(this.player).getLevel();
+        doReturn(RUNTIME_ID).when(this.player).runtimeId();
+        doAnswer(invocation -> {
+            this.calls.add(new Call(Thread.currentThread(), invocation.getArgument(0)));
+            return true;
+        }).when(this.player).onUpdate(anyInt());
+        level.addEntity(this.player);
+        level.updateEntities.put(RUNTIME_ID, this.player);
+
+        Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
+        players.put(new InetSocketAddress("127.0.0.1", 19132), this.player);
+        TestUtils.setField(Server.class, server, "players", players);
+        TestUtils.setField(Server.class, server, "levelArray", new Level[]{level});
+    }
+
+    @AfterEach
+    void tearDown() {
+        this.level.removeEntity(this.player);
+        this.level.setTickRate(1);
+        this.level.tickRateCounter = 0;
+        this.level.getBaseTickGameLoop().setRunning(false);
+        this.levelSettings.alwaysTickPlayers(this.savedAlwaysTickPlayers);
+        doReturn(false).when(this.server).isLevelThreadMode();
+        TestUtils.setField(Server.class, this.server, "players", this.savedPlayers);
+        TestUtils.setField(Server.class, this.server, "levelArray", this.savedLevelArray);
+        TestUtils.setField(Server.class, this.server, "levelThreadMode", this.savedLevelThreadMode);
+    }
+
+    @Test
+    void sharedModeTicksPlayersOfThrottledLevelOncePerServerTick() throws Exception {
+        useSharedMode(false);
+        throttleLevel();
+
+        // tickRateCounter 5 -> 4..1 are skipped, the fifth server tick runs Level#doTick
+        int firstTick = 10_000;
+        for (int tick = firstTick; tick < firstTick + THROTTLED_TICK_RATE; tick++) {
+            checkTickUpdates(tick);
+        }
+
+        assertEquals(List.of(firstTick, firstTick + 1, firstTick + 2, firstTick + 3, firstTick + 4),
+            this.calls.stream().map(Call::tick).toList());
+        assertTrue(this.calls.stream().allMatch(call -> call.thread() == Thread.currentThread()));
+    }
+
+    @Test
+    void sharedModeAlwaysTickPlayersDoesNotDoubleTickOnSkippedLevelTick() throws Exception {
+        useSharedMode(true);
+        throttleLevel();
+
+        checkTickUpdates(20_000);
+
+        assertEquals(List.of(20_000), this.calls.stream().map(Call::tick).toList());
+    }
+
+    @Test
+    void sharedModeLeavesUnspawnedPlayersOfThrottledLevelAlone() throws Exception {
+        useSharedMode(false);
+        throttleLevel();
+        this.player.spawned = false;
+
+        checkTickUpdates(30_000);
+
+        assertTrue(this.calls.isEmpty());
+    }
+
+    @Test
+    void sharedModeReleasesTickCacheOfThrottledLevel() throws Exception {
+        useSharedMode(false);
+        throttleLevel();
+        Vector3 pos = new Vector3(3, 90, 3);
+        this.level.setBlock(pos, Block.get(BlockID.AIR));
+        assertEquals(BlockID.AIR, this.level.getTickCachedBlock(pos).getId());
+
+        // A player action between level ticks changes the world
+        this.level.setBlock(pos, Block.get(BlockID.STONE));
+        checkTickUpdates(40_000);
+
+        assertEquals(BlockID.STONE, this.level.getTickCachedBlock(pos).getId());
+        this.level.setBlock(pos, Block.get(BlockID.AIR));
+    }
+
+    @Test
+    void levelThreadModeOnlyTheLevelThreadTicksPlayers() throws Exception {
+        TestUtils.setField(Server.class, this.server, "levelThreadMode", true);
+        doReturn(true).when(this.server).isLevelThreadMode();
+        this.levelSettings.alwaysTickPlayers(true);
+        // tickRate only scales the daylight cycle in this mode, the level loop never skips
+        throttleLevel();
+
+        GameLoop loop = this.level.getBaseTickGameLoop();
+        loop.setRunning(true);
+        int levelTicks = 50;
+        AtomicBoolean levelThreadDone = new AtomicBoolean();
+        Thread levelThread = new Thread(() -> {
+            for (int i = 0; i < levelTicks; i++) {
+                loop.tick();
+            }
+            levelThreadDone.set(true);
+        }, "Level Thread - test");
+        levelThread.start();
+
+        int serverTick = 50_000;
+        while (!levelThreadDone.get()) {
+            checkTickUpdates(serverTick++);
+        }
+        levelThread.join();
+
+        assertTrue(serverTick > 50_000, "server loop must run concurrently with the level thread");
+        assertEquals(levelTicks, this.calls.size());
+        assertTrue(this.calls.stream().allMatch(call -> call.thread() == levelThread));
+    }
+
+    private void useSharedMode(boolean alwaysTickPlayers) {
+        TestUtils.setField(Server.class, this.server, "levelThreadMode", false);
+        this.levelSettings.alwaysTickPlayers(alwaysTickPlayers);
+    }
+
+    private void throttleLevel() {
+        this.level.setTickRate(THROTTLED_TICK_RATE);
+        this.level.tickRateCounter = THROTTLED_TICK_RATE;
+    }
+
+    private Object readField(String name) throws Exception {
+        Field field = Server.class.getDeclaredField(name);
+        field.setAccessible(true);
+        return field.get(this.server);
+    }
+
+    private void checkTickUpdates(int currentTick) throws Exception {
+        Method method = Server.class.getDeclaredMethod("checkTickUpdates", int.class);
+        method.setAccessible(true);
+        method.invoke(this.server, currentTick);
+    }
+}
