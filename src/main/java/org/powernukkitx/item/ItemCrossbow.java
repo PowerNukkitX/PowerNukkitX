@@ -12,7 +12,6 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.Utils;
@@ -114,14 +113,14 @@ public class ItemCrossbow extends ItemTool {
             double mY;
             double mZ;
             final CompoundTag nbt = new CompoundTag()
-                    .putList("Pos", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(player.x))
-                            .add(new DoubleTag(player.y + (double) player.getEyeHeight()))
-                            .add(new DoubleTag(player.z)))
-                    .putList("Motion", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))
-                            .add(new DoubleTag(mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D)))
-                            .add(new DoubleTag(mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))))
+                    .putList("Pos", new ListTag<FloatTag>()
+                            .add(new FloatTag(player.x))
+                            .add(new FloatTag(player.y + (double) player.getEyeHeight()))
+                            .add(new FloatTag(player.z)))
+                    .putList("Motion", new ListTag<FloatTag>()
+                            .add(new FloatTag(mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))
+                            .add(new FloatTag(mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D)))
+                            .add(new FloatTag(mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))))
                     .putList("Rotation", new ListTag<FloatTag>()
                             .add(new FloatTag((float) (player.yaw > 180.0D ? 360 : 0) - (float) player.yaw))
                             .add(new FloatTag((float) (-player.pitch))));

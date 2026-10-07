@@ -14,23 +14,58 @@ import java.util.UUID;
 @Getter
 public class PlayerScorer implements IScorer {
 
-    private UUID uuid;
+    private final long uniqueId;
 
-    public PlayerScorer(UUID uuid) {
-        this.uuid = uuid;
+    public PlayerScorer(long uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
-    public PlayerScorer(String uuid) {
-        this.uuid = UUID.fromString(uuid);
+    /**
+     * Returns the player ActorUniqueID as its persisted string representation.
+     *
+     * @return ActorUniqueID string
+     */
+    public String uniqueId() {
+        return Long.toString(this.uniqueId);
+    }
+
+    /**
+     * Returns the player ActorUniqueID.
+     *
+     * @return ActorUniqueID
+     */
+    public long uniqueIdLong() {
+        return this.uniqueId;
+    }
+
+    @Deprecated
+    public PlayerScorer(UUID uuid) {
+        this.uniqueId = Server.getInstance().resolvePlayerUniqueId(uuid);
+    }
+
+    public PlayerScorer(String identity) {
+        long uniqueId;
+
+        try {
+            uniqueId = Long.parseLong(identity);
+        } catch (NumberFormatException e) {
+            uniqueId = Server.getInstance().resolvePlayerUniqueId(UUID.fromString(identity));
+        }
+
+        this.uniqueId = uniqueId;
     }
 
     public PlayerScorer(Player player) {
-        this.uuid = player.getUniqueId();
+        this.uniqueId = player.uniqueIdLong();
+    }
+
+    @Deprecated
+    public UUID getUuid() {
+        return Server.getInstance().getPlayerUuidByUniqueId(this.uniqueId).orElse(null);
     }
 
     public Player getPlayer() {
-        if (uuid == null) return null;
-        return Server.getInstance().getPlayer(uuid).isPresent() ? Server.getInstance().getPlayer(uuid).get() : null;
+        return Server.getInstance().getPlayerByUniqueId(this.uniqueId).orElse(null);
     }
 
     public boolean isOnline() {
@@ -44,34 +79,40 @@ public class PlayerScorer implements IScorer {
 
     @Override
     public int hashCode() {
-        return uuid != null ? uuid.hashCode() : 0;
+        return Long.hashCode(this.uniqueId);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof PlayerScorer playerScorer) {
-            return uuid.equals(playerScorer.uuid);
+            return this.uniqueId == playerScorer.uniqueId;
         }
         return false;
     }
 
     @Override
     public String getName() {
-        return Server.getInstance().getOnlinePlayers().get(uuid) == null ? String.valueOf(uuid.getMostSignificantBits()) : Server.getInstance().getOnlinePlayers().get(uuid).getName();
+        Player player = getPlayer();
+
+        if (player != null) {
+            return player.getName();
+        }
+
+        UUID uuid = getUuid();
+        return uuid != null ? String.valueOf(uuid.getMostSignificantBits()) : String.valueOf(this.uniqueId);
     }
 
     @Override
     public ChangePlayerScore toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        if (uuid == null) return null;
-        if (Server.getInstance().getPlayer(uuid).isPresent()) {
-            final ChangePlayerScore score = new ChangePlayerScore();
-            score.setScoreboardId(line.getLineId());
-            score.setObjectiveName(scoreboard.getObjectiveName());
-            score.setScoreValue(line.getScore());
-            score.setPlayerUniqueId(Server.getInstance().getPlayer(uuid).get().getId());
-            return score;
-        } else {
+        if (!isOnline()) {
             return null;
         }
+
+        final ChangePlayerScore score = new ChangePlayerScore();
+        score.setScoreboardId(line.getLineId());
+        score.setObjectiveName(scoreboard.getObjectiveName());
+        score.setScoreValue(line.getScore());
+        score.setPlayerUniqueId(this.uniqueIdLong());
+        return score;
     }
 }

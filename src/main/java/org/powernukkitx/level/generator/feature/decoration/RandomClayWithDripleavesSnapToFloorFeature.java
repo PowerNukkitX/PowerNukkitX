@@ -50,7 +50,7 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
                     for(int y : getHighestWorkableBlocks(chunk, x, z)) {
                         int depth = (int) NukkitMath.clamp(NukkitMath.remapFromNormalized(noise.noise3D(baseX, y, baseZ, true), 3, 5), 3, 4);
                         for(int i = 0; i < depth; i++) {
-                            if(chunk.getSection(i >> 4).getBiomeId(x, i & 0x0f, z) == BiomeID.LUSH_CAVES) {
+                            if(chunk.getBiomeId(x, y - i, z) == BiomeID.LUSH_CAVES) {
                                 manager.setBlockStateAt(baseX, y - i, baseZ, CLAY);
                             }
                         }
@@ -117,7 +117,7 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
         int y;
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = chunk.getHeightMap(x, z); y > chunk.getLevel().getMinHeight(); --y) {
-            if (chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
+            if (chunk.getBiomeId(x, y, z) == BiomeID.LUSH_CAVES) {
                 String b = chunk.getBlockState(x, y, z).getIdentifier();
                 if ((b == STONE || b == DEEPSLATE || b == BlockID.CLAY) && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
                     blockYs.add(y);

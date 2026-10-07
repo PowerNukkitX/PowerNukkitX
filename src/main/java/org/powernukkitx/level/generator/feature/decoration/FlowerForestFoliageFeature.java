@@ -39,7 +39,14 @@ public class FlowerForestFoliageFeature extends CountGenerateFeature implements 
                         int height = level.getHeightMap(x, z);
                         BlockState topBlockState = level.getBlockStateAt(x, height, z);
                         while (topBlockState.toBlock() instanceof BlockLeaves || topBlockState == BlockAir.STATE) {
+                            if (height - depth <= level.getMinHeight()) {
+                                topBlockState = null;
+                                break;
+                            }
                             topBlockState = level.getBlockStateAt(x, height - (++depth), z);
+                        }
+                        if (topBlockState == null) {
+                            continue;
                         }
                         if(isSupportValid(topBlockState.toBlock())) {
                             populateFlower(flower, object, x, (height - depth) + 1, z, random);

@@ -8,6 +8,7 @@ import org.powernukkitx.item.ItemLeatherHelmet;
 import org.powernukkitx.item.ItemLeatherLeggings;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.TradeRecipeBuildUtils;
@@ -17,7 +18,7 @@ import java.util.Random;
 public class ProfessionLeather extends Profession {
 
     public ProfessionLeather() {
-        super(12, BlockID.CAULDRON, "entity.villager.leather", Sound.BUCKET_FILL_WATER);
+        super(12, BlockID.CAULDRON, "entity.villager.leather", Sound.BUCKET_FILL_WATER, SoundEvent.BUCKET_FILL_WATER);
     }
 
     @Override

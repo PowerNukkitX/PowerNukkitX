@@ -4,12 +4,16 @@ import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.server.PacketHandleEvent;
 import org.powernukkitx.event.server.PacketReceiveEvent;
+import org.powernukkitx.network.process.cache.ClientBlobCacheManager;
+
 import org.powernukkitx.network.security.BotnetDetector;
 import java.net.InetSocketAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
+import org.cloudburstmc.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SubChunkRequestPacket;
 import org.cloudburstmc.protocol.common.PacketSignal;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +42,20 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
             return PacketSignal.HANDLED;
         }
 
+        if (packetHandler != null
+                && !packetHandler.runsOnNetworkThread()
+                && player != null
+                && packet instanceof SubChunkRequestPacket) {
+            this.server.getScheduler().scheduleTask(() -> processInbound(packet));
+            return PacketSignal.HANDLED;
+        }
+
         if (packetHandler != null && !packetHandler.runsOnNetworkThread() && player != null && player.spawned) {
+            if (packet instanceof SetLocalPlayerAsInitializedPacket) {
+                this.server.getScheduler().scheduleTask(() -> processInbound(packet));
+                return PacketSignal.HANDLED;
+            }
+
             this.session.getPlayerHandle().handlePacket(packet);
             return PacketSignal.HANDLED;
         }
@@ -103,6 +120,8 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
     // client closes the connection
     @Override
     public void onDisconnect(String reason) {
+        ClientBlobCacheManager.removeSession(this.session.getSession());
+
         final Player player = this.session.getPlayer();
         if (player != null) {
             if (player.spawned) {

@@ -3,6 +3,7 @@ package org.powernukkitx.level.format.palette;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.BlockStateImpl;
 import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.bitarray.BitArrayVersion;
 import org.powernukkitx.registry.Registries;
@@ -12,15 +13,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
-
 /**
- * Correctness guard for the H1 change: {@code Palette} now keeps an {@code Object2IntOpenHashMap} (value -> first index)
- * in sync with the backing list instead of calling {@code List.indexOf} on every {@code paletteIndexFor}. A desync would
- * silently corrupt chunk data, so this test verifies that get/set, resize, {@code copyTo} and a storage round-trip all
- * stay consistent, and that the index map exactly matches {@code List.indexOf} for every value.
- *
- * <p>Placed in the palette package so it can read the protected {@code palette} / {@code paletteIndex} fields directly.</p>
+ * Verifies block palette identity lookup, resizing, copying and storage round-trips remain consistent.
  */
 public class PaletteConsistencyTest {
 
@@ -45,21 +39,8 @@ public class PaletteConsistencyTest {
         }
     }
 
-    /**
-     * When the index map is present (large palettes), it must agree with a fresh List.indexOf for every value.
-     * Small palettes keep paletteIndex == null and rely on linear indexOf, which is trivially correct.
-     */
-    private static <V> void assertIndexConsistent(Palette<V> palette) {
-        if (palette.paletteIndex == null) {
-            return;
-        }
-        for (V value : palette.palette) {
-            Assertions.assertEquals(palette.palette.indexOf(value), palette.paletteIndex.getInt(value),
-                    "paletteIndex disagrees with List.indexOf for value " + value);
-        }
-        // No stale entries: index size must not exceed distinct palette size.
-        Assertions.assertTrue(palette.paletteIndex.size() <= palette.palette.size(),
-                "paletteIndex has more entries than the palette");
+    private static void assertIndexConsistent(BlockPalette palette) {
+        Assertions.assertNull(palette.paletteIndex, "BlockPalette must not use the equality-keyed palette index");
     }
 
     @Test
@@ -88,6 +69,40 @@ public class PaletteConsistencyTest {
             Assertions.assertEquals(expected[i], palette.get(i), "get(" + i + ") mismatch after overwrite");
         }
         assertIndexConsistent(palette);
+    }
+
+    @Test
+    void blockPaletteUsesReferenceIdentityPastGenericIndexThreshold() {
+        BlockStateImpl original = (BlockStateImpl) states[0];
+        BlockStateImpl equalButDistinct = new BlockStateImpl(
+                original.identifier(),
+                original.blockhash(),
+                original.specialValue(),
+                original.blockPropertyValues(),
+                original.blockStateTag()
+        );
+
+        Assertions.assertNotSame(original, equalButDistinct);
+        Assertions.assertEquals(original, equalButDistinct);
+
+        BlockPalette palette = new BlockPalette(states[0]);
+        for (int i = 1; i < states.length; i++) {
+            palette.set(i, states[i]);
+        }
+
+        Assertions.assertTrue(palette.palette.size() > 16);
+        assertIndexConsistent(palette);
+
+        int previousSize = palette.palette.size();
+        palette.set(128, equalButDistinct);
+
+        Assertions.assertEquals(previousSize + 1, palette.palette.size());
+        Assertions.assertSame(equalButDistinct, palette.get(128));
+
+        palette.set(129, equalButDistinct);
+
+        Assertions.assertEquals(previousSize + 1, palette.palette.size());
+        Assertions.assertSame(equalButDistinct, palette.get(129));
     }
 
     @Test

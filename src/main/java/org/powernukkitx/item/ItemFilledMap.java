@@ -7,7 +7,6 @@ import org.powernukkitx.Server;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.utils.Utils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class ItemFilledMap extends Item {

@@ -165,18 +165,14 @@ class ServerPlayerTickTest {
 
         assertEquals(LEVEL_THREAD_TICKS, this.calls.size());
         assertTrue(this.calls.stream().allMatch(call -> call.thread() == levelThread));
-        assertEquals(LEVEL_THREAD_TICKS, this.networkChecks.size());
-        assertTrue(this.networkChecks.stream().allMatch(thread -> thread == levelThread));
     }
 
     @Test
-    void levelThreadModeOnlyTheLevelThreadChecksNetworkOfJoiningPlayers() throws InterruptedException {
-        this.player.spawned = false;
+    void levelThreadModeOnlyTheServerLoopChecksNetwork() throws InterruptedException {
+        runLevelThreadAlongsideServerLoop(LEVEL_THREAD_TICKS);
 
-        Thread levelThread = runLevelThreadAlongsideServerLoop(LEVEL_THREAD_TICKS);
-
-        assertEquals(LEVEL_THREAD_TICKS, this.networkChecks.size());
-        assertTrue(this.networkChecks.stream().allMatch(thread -> thread == levelThread));
+        assertTrue(!this.networkChecks.isEmpty());
+        assertTrue(this.networkChecks.stream().allMatch(thread -> thread == Thread.currentThread()));
     }
 
     @Test

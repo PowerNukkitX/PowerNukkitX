@@ -59,7 +59,7 @@ public class BlockWater extends BlockFlowingWater {
 
             if (canFreeze(chunk.getBiomeId(x & 0x0f, y, z & 0x0f))
                     && chunk.getBlockLight(x & 0x0f, y, z & 0x0f) < 10
-                    && chunk.getHeightMap(x & 0x0f, z & 0x0f) == y
+                    && chunk.getHeightMap(x & 0x0f, z & 0x0f) == y + 1
                     && hasFreezingEdge()) {
                 WaterFrostEvent ev = new WaterFrostEvent(this, null);
                 level.getServer().getPluginManager().callEvent(ev);

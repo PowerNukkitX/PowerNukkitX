@@ -1,6 +1,5 @@
 package org.powernukkitx.utils.random;
 
-import org.apache.commons.rng.RestorableUniformRandomProvider;
 import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
 import org.apache.commons.rng.sampling.distribution.GaussianSampler;
 import org.apache.commons.rng.sampling.distribution.ZigguratSampler;
@@ -13,7 +12,7 @@ import org.apache.commons.rng.simple.RandomSource;
 public class NukkitRandom implements RandomSourceProvider {
 
     long seeds;
-    RestorableUniformRandomProvider provider;
+    ReseedableMersenneTwister provider;
     final ContinuousSampler sampler;
 
     public NukkitRandom() {
@@ -29,7 +28,11 @@ public class NukkitRandom implements RandomSourceProvider {
     @Override
     public NukkitRandom setSeed(long seed) {
         this.seeds = seed;
-        provider = RandomSource.MT.create(seeds);
+        if (provider == null) {
+            provider = new ReseedableMersenneTwister(seed);
+        } else {
+            provider.reseed(seed);
+        }
         return this;
     }
 
@@ -49,6 +52,11 @@ public class NukkitRandom implements RandomSourceProvider {
 
     public int nextBoundedInt(int bound) {
         return nextInt(bound);
+    }
+
+    @Override
+    public int nextExclusiveInt(int bound) {
+        return provider.nextInt(bound);
     }
 
     @Override

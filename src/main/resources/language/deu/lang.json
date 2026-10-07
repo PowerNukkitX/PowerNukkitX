@@ -90,7 +90,6 @@
   "pnx.settings.chunk.spawnThreshold": "Die Anzahl der Chunks, die ein Spieler beim ersten Spawnen erhalten muss",
   "pnx.settings.chunk.chunksPerTicks": "Tickzyklus der Chunks",
   "pnx.settings.chunk.tickRadius": "Tickradius der Chunks",
-  "pnx.settings.chunk.lightUpdates": "Ob Chunks Licht-Updates durchführen",
   "pnx.settings.chunk.clearTickList": "Ob die Tick-Liste am Ende jedes Ticks geleert werden soll",
   "pnx.settings.chunk.generationQueueSize": "Maximale Anzahl gleichzeitig ausgeführter Terraingenerierungsaufgaben",
   "pnx.settings.freezearray": "Konfiguration des Server-Freeze-Arrays",

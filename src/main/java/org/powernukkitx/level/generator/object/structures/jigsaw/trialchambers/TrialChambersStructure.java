@@ -114,6 +114,38 @@ public class TrialChambersStructure extends JigsawStructure {
         return 20;
     }
 
+    @Override
+    protected int getMaxDistanceFromCenter() {
+        return 116;
+    }
+
+    @Override
+    protected Map<String, String> createPoolAliases(RandomSourceProvider random) {
+        Map<String, String> aliases = new Object2ObjectArrayMap<>();
+
+        String rangedFamily = switch (random.nextExclusiveInt(3)) {
+            case 0 -> "skeleton";
+            case 1 -> "stray";
+            default -> "poison_skeleton";
+        };
+        aliases.put("trial_chambers/spawner/contents/ranged", "trial_chambers/spawner/ranged/" + rangedFamily);
+        aliases.put("trial_chambers/spawner/contents/slow_ranged", "trial_chambers/spawner/slow_ranged/" + rangedFamily);
+
+        aliases.put("trial_chambers/spawner/contents/melee", switch (random.nextExclusiveInt(3)) {
+            case 0 -> "trial_chambers/spawner/melee/zombie";
+            case 1 -> "trial_chambers/spawner/melee/husk";
+            default -> "trial_chambers/spawner/melee/spider";
+        });
+        aliases.put("trial_chambers/spawner/contents/small_melee", switch (random.nextExclusiveInt(4)) {
+            case 0 -> "trial_chambers/spawner/small_melee/slime";
+            case 1 -> "trial_chambers/spawner/small_melee/cave_spider";
+            case 2 -> "trial_chambers/spawner/small_melee/silverfish";
+            default -> "trial_chambers/spawner/small_melee/baby_zombie";
+        });
+
+        return aliases;
+    }
+
     protected RandomizableContainer getChestLootContainer(String structureName) {
         for (Map.Entry<String, RandomizableContainer> entry : CHEST_LOOT_CATEGORY_LOOKUP.object2ObjectEntrySet()) {
             if (structureName.contains(entry.getKey())) {
@@ -537,36 +569,6 @@ public class TrialChambersStructure extends JigsawStructure {
                 entry("trial_chambers/dispensers/chamber", 1),
                 entry("trial_chambers/dispensers/wall_dispenser", 1),
                 entry("trial_chambers/dispensers/floor_dispenser", 1)
-        ));
-
-        // Approximation of Mojang's pool alias bindings.
-        COLLECTION.put("trial_chambers/spawner/contents/ranged", pool(
-                "trial_chambers/spawner/contents/ranged",
-                entry("trial_chambers/spawner/ranged/skeleton", 1),
-                entry("trial_chambers/spawner/ranged/stray", 1),
-                entry("trial_chambers/spawner/ranged/poison_skeleton", 1)
-        ));
-
-        COLLECTION.put("trial_chambers/spawner/contents/slow_ranged", pool(
-                "trial_chambers/spawner/contents/slow_ranged",
-                entry("trial_chambers/spawner/slow_ranged/skeleton", 1),
-                entry("trial_chambers/spawner/slow_ranged/stray", 1),
-                entry("trial_chambers/spawner/slow_ranged/poison_skeleton", 1)
-        ));
-
-        COLLECTION.put("trial_chambers/spawner/contents/melee", pool(
-                "trial_chambers/spawner/contents/melee",
-                entry("trial_chambers/spawner/melee/zombie", 1),
-                entry("trial_chambers/spawner/melee/husk", 1),
-                entry("trial_chambers/spawner/melee/spider", 1)
-        ));
-
-        COLLECTION.put("trial_chambers/spawner/contents/small_melee", pool(
-                "trial_chambers/spawner/contents/small_melee",
-                entry("trial_chambers/spawner/small_melee/slime", 1),
-                entry("trial_chambers/spawner/small_melee/cave_spider", 1),
-                entry("trial_chambers/spawner/small_melee/silverfish", 1),
-                entry("trial_chambers/spawner/small_melee/baby_zombie", 1)
         ));
 
         putSingleStructurePool("trial_chambers/spawner/ranged/skeleton");
