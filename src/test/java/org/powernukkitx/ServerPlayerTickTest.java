@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,11 +36,13 @@ import static org.mockito.Mockito.mock;
 class ServerPlayerTickTest {
     private static final long RUNTIME_ID = 0x7E57_0001L;
     private static final int THROTTLED_TICK_RATE = 5;
+    private static final int LEVEL_THREAD_TICKS = 50;
 
     private record Call(Thread thread, int tick) {
     }
 
     private final List<Call> calls = new CopyOnWriteArrayList<>();
+    private final List<Thread> networkChecks = new CopyOnWriteArrayList<>();
 
     private Server server;
     private Level level;
@@ -70,6 +73,10 @@ class ServerPlayerTickTest {
             this.calls.add(new Call(Thread.currentThread(), invocation.getArgument(0)));
             return true;
         }).when(this.player).onUpdate(anyInt());
+        doAnswer(invocation -> {
+            this.networkChecks.add(Thread.currentThread());
+            return null;
+        }).when(this.player).checkNetwork();
         level.addEntity(this.player);
         level.updateEntities.put(RUNTIME_ID, this.player);
 
@@ -85,6 +92,9 @@ class ServerPlayerTickTest {
         this.level.setTickRate(1);
         this.level.tickRateCounter = 0;
         this.level.getBaseTickGameLoop().setRunning(false);
+        this.level.tickRateTime = 0;
+        this.level.tickRateTimeNanos = 0;
+        doReturn(0L).when(this.server).getNanosPerTick();
         this.levelSettings.alwaysTickPlayers(this.savedAlwaysTickPlayers);
         doReturn(false).when(this.server).isLevelThreadMode();
         TestUtils.setField(Server.class, this.server, "players", this.savedPlayers);
@@ -106,6 +116,7 @@ class ServerPlayerTickTest {
         assertEquals(List.of(firstTick, firstTick + 1, firstTick + 2, firstTick + 3, firstTick + 4),
             this.calls.stream().map(Call::tick).toList());
         assertTrue(this.calls.stream().allMatch(call -> call.thread() == Thread.currentThread()));
+        assertEquals(THROTTLED_TICK_RATE, this.networkChecks.size());
     }
 
     @Test
@@ -119,7 +130,7 @@ class ServerPlayerTickTest {
     }
 
     @Test
-    void sharedModeLeavesUnspawnedPlayersOfThrottledLevelAlone() throws Exception {
+    void sharedModeOnlyChecksNetworkOfUnspawnedPlayersOfThrottledLevel() throws Exception {
         useSharedMode(false);
         throttleLevel();
         this.player.spawned = false;
@@ -127,6 +138,7 @@ class ServerPlayerTickTest {
         checkTickUpdates(30_000);
 
         assertTrue(this.calls.isEmpty());
+        assertEquals(1, this.networkChecks.size());
     }
 
     @Test
@@ -147,17 +159,60 @@ class ServerPlayerTickTest {
 
     @Test
     void levelThreadModeOnlyTheLevelThreadTicksPlayers() throws Exception {
-        TestUtils.setField(Server.class, this.server, "levelThreadMode", true);
-        doReturn(true).when(this.server).isLevelThreadMode();
         this.levelSettings.alwaysTickPlayers(true);
         // tickRate only scales the daylight cycle in this mode, the level loop never skips
         throttleLevel();
 
+        Thread levelThread = runLevelThreadAlongsideServerLoop(LEVEL_THREAD_TICKS);
+
+        assertEquals(LEVEL_THREAD_TICKS, this.calls.size());
+        assertTrue(this.calls.stream().allMatch(call -> call.thread() == levelThread));
+        assertEquals(LEVEL_THREAD_TICKS, this.networkChecks.size());
+        assertTrue(this.networkChecks.stream().allMatch(thread -> thread == levelThread));
+    }
+
+    @Test
+    void levelThreadModeOnlyTheLevelThreadChecksNetworkOfJoiningPlayers() throws Exception {
+        this.player.spawned = false;
+
+        Thread levelThread = runLevelThreadAlongsideServerLoop(LEVEL_THREAD_TICKS);
+
+        assertEquals(LEVEL_THREAD_TICKS, this.networkChecks.size());
+        assertTrue(this.networkChecks.stream().allMatch(thread -> thread == levelThread));
+    }
+
+    @Test
+    void levelThreadModeMeasuresTicksAgainstServerBudget() {
+        TestUtils.setField(Server.class, this.server, "levelThreadMode", true);
+        doReturn(true).when(this.server).isLevelThreadMode();
+        doReturn(1L).when(this.server).getNanosPerTick();
         GameLoop loop = this.level.getBaseTickGameLoop();
         loop.setRunning(true);
-        int levelTicks = 50;
+
+        loop.tick();
+
+        assertTrue(this.level.tickRateTimeNanos > 0);
+        assertTrue(this.level.getTickRate() > 1, "a tick over budget must throttle the level");
+    }
+
+    /**
+     * Drives the real level loop on its own thread, as level thread mode does, while this thread keeps
+     * running the server loop until the level thread is done.
+     */
+    private Thread runLevelThreadAlongsideServerLoop(int levelTicks) throws Exception {
+        TestUtils.setField(Server.class, this.server, "levelThreadMode", true);
+        doReturn(true).when(this.server).isLevelThreadMode();
+        GameLoop loop = this.level.getBaseTickGameLoop();
+        loop.setRunning(true);
+        CountDownLatch serverLoopRunning = new CountDownLatch(1);
         AtomicBoolean levelThreadDone = new AtomicBoolean();
         Thread levelThread = new Thread(() -> {
+            try {
+                serverLoopRunning.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
             for (int i = 0; i < levelTicks; i++) {
                 loop.tick();
             }
@@ -165,15 +220,14 @@ class ServerPlayerTickTest {
         }, "Level Thread - test");
         levelThread.start();
 
+        // The level thread only starts ticking once the server loop has, so the two always overlap
         int serverTick = 50_000;
-        while (!levelThreadDone.get()) {
+        do {
             checkTickUpdates(serverTick++);
-        }
+            serverLoopRunning.countDown();
+        } while (!levelThreadDone.get() && levelThread.isAlive());
         levelThread.join();
-
-        assertTrue(serverTick > 50_000, "server loop must run concurrently with the level thread");
-        assertEquals(levelTicks, this.calls.size());
-        assertTrue(this.calls.stream().allMatch(call -> call.thread() == levelThread));
+        return levelThread;
     }
 
     private void useSharedMode(boolean alwaysTickPlayers) {

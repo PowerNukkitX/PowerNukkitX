@@ -385,6 +385,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Getter
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
+    /**
+     * The level whose tick last updated this player. See {@link #isPreviousLevelStillTicking()}.
+     */
+    private volatile Level lastTickLevel;
     private Boolean openSignFront = null;
     protected Boolean flySneaking = false;
     // lastUseItem System and item cooldown
@@ -1208,8 +1212,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (processor == null) {
             return;
         }
+        // A handler may move this player to another level
+        final Level owner = this.level;
         BedrockPacket packet;
-        while ((packet = this.inboundPackets.poll()) != null) {
+        while (this.level == owner && (packet = this.inboundPackets.poll()) != null) {
             try {
                 processor.accept(packet);
             } catch (Exception e) {
@@ -3546,6 +3552,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
 
+        if (this.isPreviousLevelStillTicking()) {
+            return true;
+        }
+        this.lastTickLevel = this.level;
+
         int tickDiff = currentTick - this.lastUpdate;
 
         if (tickDiff == 0) {
@@ -3571,7 +3582,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (!this.isAlive() && this.spawned) {
+            final Level owner = this.level;
             this.drainInboundPackets();
+            if (this.level != owner) {
+                return true;
+            }
             if (this.closeIfRequested()) {
                 return true;
             }
@@ -3591,11 +3606,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.spawned) {
+            final Level owner = this.level;
             this.drainInboundPackets();
 
             // Draining may close the player synchronously (e.g. self-kick), nulling the
             // inventory; bail out before the getInventory() access below throws an NPE.
             if (!this.loggedIn) {
+                return true;
+            }
+
+            // A handler moved this player to another level
+            if (this.level != owner) {
                 return true;
             }
 
@@ -3792,8 +3813,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.enchSeed = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
     }
 
+    /**
+     * Whether this player was moved here out of a level whose tick is still running on another thread.
+     * Every level switch makes the player visible to the new level while the old level's thread may
+     * still be finishing the move (e.g. the rest of {@link #teleport}), so the new level holds off until
+     * that tick is over. Always false in shared tick mode, where every level ticks on the main loop.
+     */
+    private boolean isPreviousLevelStillTicking() {
+        Level previous = this.lastTickLevel;
+        return previous != null && previous != this.level && previous.isTickedByAnotherThread();
+    }
+
     public void checkNetwork() {
-        if (!this.isOnline()) {
+        if (!this.isOnline() || this.isPreviousLevelStillTicking()) {
             return;
         }
 

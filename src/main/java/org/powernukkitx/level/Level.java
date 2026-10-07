@@ -14,6 +14,7 @@ import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.config.category.GameplaySettings;
+import org.powernukkitx.config.category.LevelSettings;
 import org.powernukkitx.event.level.ChunkTickEvent;
 import org.powernukkitx.level.tickingarea.TickingArea;
 import org.powernukkitx.level.tickingarea.manager.TickingAreaManager;
@@ -383,6 +384,8 @@ public class Level implements Metadatable {
      */
     public long tickRateTimeNanos = 0;
     public int tickRateCounter = 0;
+    /** The thread inside {@link #doTick(int)} right now, or null between ticks. */
+    private volatile Thread tickingThread;
     /**
      * When the tps is too low, the tps optimization delay rises; compute-intensive tasks should only run once every this many ticks
      */
@@ -1381,33 +1384,58 @@ public class Level implements Metadatable {
     private void doTick(GameLoop gameLoop) {
         if (getProvider() == null) return; // level is closing
         try {
-            int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
-            long levelTime = System.currentTimeMillis();
-            doTick(gameLoop.getTick());
-            int tickMs = (int) (System.currentTimeMillis() - levelTime);
-
-            if (getServer().getSettings().levelSettings().autoTickRate()) {
-                if (tickMs < 50 && this.getTickRate() > baseTickRate) {
-                    int r;
-                    this.setTickRate(r = this.getTickRate() - 1);
-                    if (r > baseTickRate) {
-                        this.tickRateCounter = this.getTickRate();
-                    }
-                    log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
-                } else if (tickMs >= 50) {
-                    int autoTickRateLimit = getServer().getSettings().levelSettings().autoTickRateLimit();
-                    if (this.getTickRate() == baseTickRate) {
-                        this.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
-                        log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
-                    } else if ((tickMs / this.getTickRate()) >= 50 && this.getTickRate() < autoTickRateLimit) {
-                        this.setTickRate(this.getTickRate() + 1);
-                        log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
-                    }
-                    this.tickRateCounter = this.getTickRate();
-                }
-            }
+            tickAndAdjustTickRate(gameLoop.getTick());
         } catch (Exception e) {
-            log.error("Failed to tick levelThread for " + getName(), e);
+            log.error("Failed to tick levelThread for {}", getName(), e);
+        }
+    }
+
+    /**
+     * Runs one base tick through {@link #doTick(int)}, records its duration in {@link #tickRateTime} and
+     * {@link #tickRateTimeNanos}, and, with {@code level-settings.autoTickRate}, adapts {@link #getTickRate()}
+     * against {@link Server#getNanosPerTick()}. Called from the main loop in shared mode and from this level's
+     * own thread in level thread mode, so both modes measure and throttle the same way.
+     * <p>
+     * Must only be called by the thread that owns this level's tick; calling it from anywhere else ticks the
+     * level concurrently with its owner.
+     *
+     * @param currentTick the tick counter of the thread driving this level
+     */
+    @ApiStatus.Internal
+    public void tickAndAdjustTickRate(int currentTick) {
+        long tickStartNanos = System.nanoTime();
+        doTick(currentTick);
+        long tickNanos = System.nanoTime() - tickStartNanos;
+        int tickMs = (int) (tickNanos / 1_000_000L);
+        this.tickRateTime = tickMs;
+        this.tickRateTimeNanos = tickNanos;
+        if ((currentTick & 511) == 0) {
+            this.tickRateOptDelay = recalcTickOptDelay();
+        }
+
+        LevelSettings levelSettings = this.server.getSettings().levelSettings();
+        if (!levelSettings.autoTickRate()) {
+            return;
+        }
+        int baseTickRate = levelSettings.baseTickRate();
+        long nanosPerTick = this.server.getNanosPerTick();
+        if (tickNanos < nanosPerTick && this.getTickRate() > baseTickRate) {
+            int r;
+            this.setTickRate(r = this.getTickRate() - 1);
+            if (r > baseTickRate) {
+                this.tickRateCounter = this.getTickRate();
+            }
+            log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
+        } else if (tickNanos >= nanosPerTick) {
+            int autoTickRateLimit = levelSettings.autoTickRateLimit();
+            if (this.getTickRate() == baseTickRate) {
+                this.setTickRate(Math.max(baseTickRate + 1, (int) Math.min(autoTickRateLimit, tickNanos / nanosPerTick)));
+                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), tickMs, this.getTickRate());
+            } else if ((tickNanos / this.getTickRate()) >= nanosPerTick && this.getTickRate() < autoTickRateLimit) {
+                this.setTickRate(this.getTickRate() + 1);
+                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), tickMs, this.getTickRate());
+            }
+            this.tickRateCounter = this.getTickRate();
         }
     }
 
@@ -1483,6 +1511,7 @@ public class Level implements Metadatable {
         final long[] phase = prof ? new long[TICK_PHASE_NAMES.length] : null;
         long phaseStart = prof ? System.nanoTime() : 0;
         try {
+            this.tickingThread = Thread.currentThread();
             getScheduler().mainThreadHeartbeat(currentTick);
             if (prof) phase[0] = -phaseStart + (phaseStart = System.nanoTime());
             updateBlockLight();
@@ -1682,7 +1711,18 @@ public class Level implements Metadatable {
                 }
                 this.tickPhaseSampleCount++;
             }
+            this.tickingThread = null;
         }
+    }
+
+    /**
+     * Whether {@link #doTick(int)} is running right now on a thread other than the caller's. Only ever true
+     * in level thread mode, where each level ticks on its own thread.
+     */
+    @ApiStatus.Internal
+    public boolean isTickedByAnotherThread() {
+        Thread thread = this.tickingThread;
+        return thread != null && thread != Thread.currentThread();
     }
 
     /**
