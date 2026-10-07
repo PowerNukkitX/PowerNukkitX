@@ -4729,21 +4729,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         final Block hand = beforePlaceBlock(item, face, block, target);
         if (hand == null) return null;
-        if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
-            int realCount = 0;
-            Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
-            for (Entity e : entities) {
-                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityAreaEffectCloud ||
-                        e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
-                        (e instanceof Player p && p.isSpectator()) || !e.isCollisionEnabled()) {
-                    continue;
-                }
-                ++realCount;
-            }
-            if (realCount > 0) {
-                // Entity in block
-                return null;
-            }
+        if (!hand.canPassThrough() && hand.getBoundingBox() != null
+                && this.isBlockPlacementObstructed(hand.getBoundingBox(), player)) {
+            return null;
         }
 
         if (player != null) {
@@ -5187,6 +5175,27 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
         return getEntitiesFromBuffer(index, overflow);
+    }
+
+    /**
+     * Checks whether an entity stands in the way of a block placed in the given box. Projectiles,
+     * dropped items, experience orbs, area effect clouds, fireworks, paintings, spectators, entities
+     * without collision and the placing player never block a placement.
+     *
+     * @param bb     the box the placed block would fill
+     * @param player the player placing the block, or {@code null} when no player is involved
+     * @return {@code true} when at least one entity blocks the placement
+     */
+    public boolean isBlockPlacementObstructed(AxisAlignedBB bb, @Nullable Player player) {
+        for (Entity e : this.getCollidingEntities(bb)) {
+            if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityAreaEffectCloud ||
+                    e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
+                    (e instanceof Player p && p.isSpectator()) || !e.isCollisionEnabled()) {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

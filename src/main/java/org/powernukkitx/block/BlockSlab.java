@@ -3,7 +3,6 @@ package org.powernukkitx.block;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.MinecraftVerticalHalf;
-import org.powernukkitx.entity.Entity;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.AxisAlignedBB;
@@ -87,22 +86,22 @@ public abstract class BlockSlab extends BlockTransparent {
         setOnTop(false);
         if (face == BlockFace.DOWN) {
             if (target instanceof BlockSlab slab && slab.isOnTop() && isSameType((BlockSlab) target)) {
-                return setBlockIfUnobstructed(target, Block.get(doubleSlab), true, true);
+                return setBlockIfUnobstructed(target, Block.get(doubleSlab), player);
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                return setBlockIfUnobstructed(block, Block.get(doubleSlab), true, true);
+                return setBlockIfUnobstructed(block, Block.get(doubleSlab), player);
             } else {
                 setOnTop(true);
             }
         } else if (face == BlockFace.UP) {
             if (target instanceof BlockSlab slab && !slab.isOnTop() && isSameType((BlockSlab) target)) {
-                return setBlockIfUnobstructed(target, Block.get(doubleSlab), true, true);
+                return setBlockIfUnobstructed(target, Block.get(doubleSlab), player);
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                return setBlockIfUnobstructed(block, Block.get(doubleSlab), true, true);
+                return setBlockIfUnobstructed(block, Block.get(doubleSlab), player);
             }
         } else {
             if (block instanceof BlockSlab) {
                 if (isSameType((BlockSlab) block)) {
-                    return setBlockIfUnobstructed(block, Block.get(doubleSlab), true, true);
+                    return setBlockIfUnobstructed(block, Block.get(doubleSlab), player);
                 }
 
                 return false;
@@ -116,19 +115,15 @@ public abstract class BlockSlab extends BlockTransparent {
         if (block instanceof BlockSlab && !isSameType((BlockSlab) block)) {
             return false;
         }
-        return setBlockIfUnobstructed(block, this, true, true);
+        return setBlockIfUnobstructed(block, this, player);
     }
 
-    private boolean setBlockIfUnobstructed(Block position, Block replacement, boolean direct, boolean update) {
+    private boolean setBlockIfUnobstructed(Block position, Block replacement, @Nullable Player player) {
         replacement.position(position);
         AxisAlignedBB boundingBox = replacement.getBoundingBox();
-        if (boundingBox != null) {
-            for (Entity entity : replacement.getLevel().getCollidingEntities(boundingBox)) {
-                if (entity.canCollide()) {
-                    return false;
-                }
-            }
+        if (boundingBox != null && replacement.getLevel().isBlockPlacementObstructed(boundingBox, player)) {
+            return false;
         }
-        return replacement.getLevel().setBlock(position, replacement, direct, update);
+        return replacement.getLevel().setBlock(position, replacement, true, true);
     }
 }
