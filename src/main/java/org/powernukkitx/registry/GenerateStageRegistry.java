@@ -60,7 +60,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
                     return entry.getValue().getConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }
         }

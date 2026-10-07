@@ -1006,7 +1006,7 @@ public class LevelDBProvider implements LevelProvider {
                 entry.getKey().getRandomBlockUpdateScheduler().markStorageSaved(entry.getValue());
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -1266,7 +1266,6 @@ public class LevelDBProvider implements LevelProvider {
     public synchronized LevelDat readLevelDat() throws IOException {
         NbtMap d = readLevelDatNbt();
         if (d == null) return null;
-
             NbtMap abilities = getCompound(d, "abilities");
             NbtMap experiments = getCompound(d, "experiments");
             GameRules gameRules = readGameRules(d);

@@ -169,7 +169,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
                     return (GenerateFeature) entry.getValue().invoke();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }
         }

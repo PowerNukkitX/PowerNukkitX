@@ -110,9 +110,11 @@ public final class ServerMockFixture {
             throw new IllegalStateException(e);
         }
 
+        final File settingsFile = new File("nukkit_fixture_" + ProcessHandle.current().pid() + ".yml");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(settingsFile)));
         final ServerSettings serverSettings = ConfigManager.create(ServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer());
-            it.withBindFile("nukkit.yml");
+            it.withBindFile(settingsFile);
             it.withRemoveOrphans(true);
             it.saveDefaults();
             it.load(true);
