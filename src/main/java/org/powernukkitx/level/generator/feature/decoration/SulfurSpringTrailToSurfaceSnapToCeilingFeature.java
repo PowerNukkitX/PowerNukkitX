@@ -20,6 +20,7 @@ import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.level.structure.Structure;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.random.RandomSourceProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,12 @@ public class SulfurSpringTrailToSurfaceSnapToCeilingFeature extends GenerateFeat
     private static final int ALLOWED_VERTICAL_WATER_FOR_TREE = 1;
     private static final int MAX_CEILING_SCAN_STEPS = 12;
     private static final int TEMPLATE_Y_OFFSET = -7;
+    private static final Rotation[] TEMPLATE_ROTATIONS = {
+            Rotation.NONE,
+            Rotation.ROTATE_90,
+            Rotation.ROTATE_180,
+            Rotation.ROTATE_270
+    };
 
     private static final BlockState SULFUR = BlockSulfur.PROPERTIES.getDefaultState();
     private static final BlockState TUFF = BlockTuff.PROPERTIES.getDefaultState();
@@ -220,7 +227,7 @@ public class SulfurSpringTrailToSurfaceSnapToCeilingFeature extends GenerateFeat
             return;
         }
 
-        Rotation rotation = Rotation.values()[random.nextInt(Rotation.values().length - 1)];
+        Rotation rotation = pickTemplateRotation(random);
         AbstractStructure rotated = structure.rotate(rotation);
         BlockVector3 size = getSize(rotated);
         if (size == null) {
@@ -230,6 +237,10 @@ public class SulfurSpringTrailToSurfaceSnapToCeilingFeature extends GenerateFeat
         int placeX = originX - (size.getX() / 2);
         int placeZ = originZ - (size.getZ() / 2);
         rotated.preparePlace(new Position(placeX, originY, placeZ, manager.getLevel()), manager);
+    }
+
+    static Rotation pickTemplateRotation(RandomSourceProvider random) {
+        return TEMPLATE_ROTATIONS[random.nextInt(TEMPLATE_ROTATIONS.length)];
     }
 
     private BlockVector3 getSize(AbstractStructure structure) {
