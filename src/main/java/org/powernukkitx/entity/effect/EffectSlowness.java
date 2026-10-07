@@ -40,12 +40,13 @@ public class EffectSlowness extends Effect {
 
     /**
      * How much this effect scales the movement speed of whoever carries it. A high enough level
-     * brings them to a standstill instead of turning their speed negative.
+     * brings them to a standstill instead of turning their speed negative, and a level below 1, from
+     * a negative amplifier, counts as level 1.
      *
      * @param level the level of the effect
-     * @return the factor to apply to the movement speed, never below 0
+     * @return the factor to apply to the movement speed, between 0 and 0.85
      */
     public static float getSpeedFactor(int level) {
-        return Math.max(1 - 0.15f * level, 0f);
+        return Math.max(1 - 0.15f * Math.max(1, level), 0f);
     }
 }
