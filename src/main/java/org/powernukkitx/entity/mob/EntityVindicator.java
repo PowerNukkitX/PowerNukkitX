@@ -3,7 +3,6 @@ package org.powernukkitx.entity.mob;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -22,6 +21,7 @@ import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
@@ -35,6 +35,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author PikyCZ
  */
-public class EntityVindicator extends EntityIllager implements EntityWalkable {
+public class EntityVindicator extends EntityIllager {
 
     @Override
     @NotNull public String getIdentifier() {
@@ -89,7 +90,7 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     protected void initEntity() {
         this.diffHandDamage = new float[]{3.5f, 5f, 7.5f};
         super.initEntity();
-        setItemInHand(Item.get(Item.IRON_AXE));
+        setItemInHand(enchantGear(Item.get(Item.IRON_AXE), 0.25f));
     }
 
     @Override
@@ -130,12 +131,28 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-        Item axe = Item.get(Item.IRON_AXE);
-        axe.setDamage(ThreadLocalRandom.current().nextInt(1, axe.getMaxDurability()));
-        return new Item[]{
-                axe,
-                Item.get(Item.EMERALD, 0, Utils.rand(0, 2 + looting))
-        };
+        List<Item> drops = new ArrayList<>();
+
+        Item hand = getItemInHand();
+        if (!hand.isNull() && Utils.rand(0, 99) < (25 + looting * 5)) {
+            Item axe = hand.clone();
+            axe.setDamage(ThreadLocalRandom.current().nextInt(1, axe.getMaxDurability()));
+            drops.add(axe);
+        }
+
+        if (killedByPlayer()) {
+            int emeralds = Utils.rand(0, 1 + looting);
+            if (emeralds > 0) {
+                drops.add(Item.get(Item.EMERALD, 0, emeralds));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override
@@ -152,7 +169,7 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).getId());
+            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).uniqueIdLong());
             entity.setDataFlag(ActorFlags.ANGRY);
             entity.level.addLevelSoundEvent(entity, SoundEvent.ANGRY, -1, Entity.VINDICATOR, false, false);
             Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)));

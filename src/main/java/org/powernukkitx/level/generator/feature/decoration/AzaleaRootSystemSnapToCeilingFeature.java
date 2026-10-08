@@ -50,9 +50,9 @@ public class AzaleaRootSystemSnapToCeilingFeature extends GenerateFeature {
                     continue;
                 }
 
-                int surfaceY = chunk.getHeightMap(x, z);
+                int surfaceY = chunk.getHeightMap(x, z) - 1;
                 for (int y = surfaceY; y > level.getMinHeight() + 8; y--) {
-                    if (chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) != BiomeID.LUSH_CAVES) {
+                    if (chunk.getBiomeId(x, y, z) != BiomeID.LUSH_CAVES) {
                         continue;
                     }
 

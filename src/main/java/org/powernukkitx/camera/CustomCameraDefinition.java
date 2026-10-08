@@ -80,6 +80,7 @@ public record CustomCameraDefinition(String identifier, CameraPreset preset) {
         private Vector2f horizontalRotationLimit;
         private Vector2f verticalRotationLimit;
         private Float blockListeningRadius;
+        private boolean applyInheritedStartingRotation;
 
         private Builder(String identifier) {
             Objects.requireNonNull(identifier, "identifier");
@@ -377,6 +378,17 @@ public record CustomCameraDefinition(String identifier, CameraPreset preset) {
         }
 
         /**
+         * Sets whether the inherited camera's starting rotation should be applied.
+         *
+         * @param applyInheritedStartingRotation whether to apply the inherited starting rotation
+         * @return this builder
+         */
+        public Builder applyInheritedStartingRotation(boolean applyInheritedStartingRotation) {
+            this.applyInheritedStartingRotation = applyInheritedStartingRotation;
+            return this;
+        }
+
+        /**
          * Builds the custom camera definition.
          *
          * @return custom camera definition
@@ -384,7 +396,8 @@ public record CustomCameraDefinition(String identifier, CameraPreset preset) {
         public CustomCameraDefinition build() {
             CameraPreset.CameraPresetBuilder presetBuilder =
                     CameraPreset.builder()
-                            .name(this.identifier);
+                            .name(this.identifier)
+                            .applyInheritedStartingRotation(this.applyInheritedStartingRotation);
 
             if (this.inheritFrom != null) {
                 presetBuilder.inheritFrom(this.inheritFrom);

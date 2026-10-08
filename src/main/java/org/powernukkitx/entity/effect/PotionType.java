@@ -3,7 +3,13 @@ package org.powernukkitx.entity.effect;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.potion.PotionApplyEvent;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemArrow;
+import org.powernukkitx.item.ItemLingeringPotion;
+import org.powernukkitx.item.ItemPotion;
+import org.powernukkitx.item.ItemSplashPotion;
 import org.powernukkitx.registry.Registries;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -112,6 +118,25 @@ public record PotionType(String name, String stringId, int id, int level, Potion
 
     public List<Effect> getEffects(PotionApplicationMode mode) {
         return effects.getEffects(mode);
+    }
+
+    /**
+     * Creates an item that contains this potion and applies it using the specified mode.
+     * Tipped arrows use an item damage value one greater than the potion ID because zero
+     * represents an untipped arrow.
+     *
+     * @param mode how the potion is delivered
+     * @return a new item with a count of one
+     * @throws NullPointerException if {@code mode} is {@code null}
+     */
+    @NotNull
+    public Item getItem(@NotNull PotionApplicationMode mode) {
+        return switch (mode) {
+            case DRINK -> new ItemPotion(id);
+            case SPLASH -> new ItemSplashPotion(id);
+            case LINGERING -> new ItemLingeringPotion(id);
+            case ARROW -> new ItemArrow(id + 1);
+        };
     }
 
     public void applyEffects(Entity entity, PotionApplicationMode mode, double health) {

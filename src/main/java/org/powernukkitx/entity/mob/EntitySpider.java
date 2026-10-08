@@ -21,18 +21,20 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
-import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.components.RideableComponent;
 import org.powernukkitx.entity.passive.EntityArmadillo;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BiomeTags;
 import org.powernukkitx.utils.ItemHelper;
@@ -176,6 +178,11 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(2f);
+    }
+
+    @Override
     public String getOriginalName() {
         return "Spider";
     }
@@ -292,11 +299,11 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         switch (this.jockeyType) {
             case SKELETON_JOCKEY, STRAY_JOCKEY, BOGGED_JOCKEY, PARCHED_JOCKEY -> {
                 Item bow = Item.get(Item.BOW, 0, 1);
-                nbt.put("Mainhand", ItemHelper.write(bow));
+                nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(bow)));
             }
             case WITHER_SKELETON_JOCKEY -> {
                 Item sword = Item.get(Item.STONE_SWORD, 0, 1);
-                nbt.put("Mainhand", ItemHelper.write(sword));
+                nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(sword)));
             }
             default -> {}
         }
@@ -305,6 +312,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         if (rider == null) return null;
         return rider;
     }
+
     private boolean isUnderground() {
         if (this.level == null) return false;
 
@@ -313,7 +321,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
         int highest = b.getLevel().getHeightMap(b.getFloorX(), b.getFloorZ());
         return highest > b.getFloorY() && b.canPassThrough()
-                && b.getLevel().getBlock(b.getFloorX(), highest, b.getFloorZ()).isSolid();
+                && b.getLevel().getBlock(b.getFloorX(), highest - 1, b.getFloorZ()).isSolid();
     }
 
     private @Nullable Set<String> getSpawnBiomeTags() {
@@ -389,23 +397,24 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         List<Item> drops = new ArrayList<>();
 
-        float stringChance = 0.70f + (0.10f * looting);
-        stringChance = Math.min(stringChance, 1.0f);
-
-        if (Utils.rand(0f, 1f) < stringChance) {
-            int amount = Utils.rand(1, 2 + looting);
-            drops.add(Item.get(Item.STRING, 0, amount));
+        int string = Utils.rand(0, 2 + looting);
+        if (string > 0) {
+            drops.add(Item.get(Item.STRING, 0, string));
         }
 
-        float eyeChance = 0.50f + (0.05f * looting);
-        eyeChance = Math.min(eyeChance, 1.0f);
-
-        if (Utils.rand(0f, 1f) < eyeChance) {
-            int amount = Utils.rand(1, 1 + looting);
-            drops.add(Item.get(Item.SPIDER_EYE, 0, amount));
+        if (killedByPlayer()) {
+            int eyes = Utils.rand(0, 1 + looting);
+            if (eyes > 0) {
+                drops.add(Item.get(Item.SPIDER_EYE, 0, eyes));
+            }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

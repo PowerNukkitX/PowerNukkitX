@@ -73,19 +73,15 @@ public class EntityBoat extends EntityVehicle {
     public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
-        this.setHealthMax(40);
-        this.setHealthCurrent(40);
+        this.setHealthMax(4);
+        this.setHealthCurrent(4);
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
         final CompoundTag nbtMap = this.getNbt();
-        if (nbtMap.contains("Variant")) {
-            woodID = nbtMap.getInt("Variant");
-        } else if (nbtMap.contains("woodID")) {
-            woodID = nbtMap.getByte("woodID");
-        }
+        woodID = nbtMap.getInt("Variant");
 
         this.setDataFlag(ActorFlags.HAS_GRAVITY);
         this.setDataFlag(ActorFlags.STACKABLE);
@@ -135,8 +131,6 @@ public class EntityBoat extends EntityVehicle {
         if (invulnerable) {
             return false;
         } else {
-            source.setDamage(source.getDamage() * 2);
-
             boolean attack = super.attack(source);
 
             if (isAlive()) {
@@ -150,8 +144,8 @@ public class EntityBoat extends EntityVehicle {
     @Override
     protected BedrockPacket createAddEntityPacket() {
         final AddActorPacket packet = new AddActorPacket();
-        packet.setTargetActorID(this.getId());
-        packet.setTargetRuntimeID(this.getId());
+        packet.setTargetActorID(this.uniqueIdLong());
+        packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorType("minecraft:boat");
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         packet.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
@@ -161,8 +155,8 @@ public class EntityBoat extends EntityVehicle {
         for (int i = 0; i < this.passengers.size(); i++) {
             packet.getActorLinks().add(
                     new ActorLink(
-                            this.getId(),
-                            this.passengers.get(i).getId(),
+                            this.uniqueIdLong(),
+                            this.passengers.get(i).uniqueIdLong(),
                             i == 0 ? ActorLinkType.RIDING : ActorLinkType.PASSENGER,
                             false,
                             false,
@@ -190,6 +184,10 @@ public class EntityBoat extends EntityVehicle {
 
         if (this.isAlive()) {
             hasUpdate = this.updateBoat(tickDiff) || hasUpdate;
+        }
+
+        if (this.isAlive() && this.health < this.getMaxHealth()) {
+            this.health = Math.min(this.getMaxHealth(), this.health + 0.1f);
         }
 
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
@@ -472,8 +470,7 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putInt("Variant", this.woodID)
-                .putByte("woodID", (byte) this.woodID); // compatibility cb nukkit
+        this.nbt.putInt("Variant", this.woodID);
     }
 
     public int getVariant() {

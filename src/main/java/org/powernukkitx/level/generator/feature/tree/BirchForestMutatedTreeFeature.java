@@ -1,27 +1,31 @@
 package org.powernukkitx.level.generator.feature.tree;
 
-import org.powernukkitx.block.property.enums.WoodType;
-import org.powernukkitx.level.generator.feature.GriddedFeature;
-import org.powernukkitx.level.generator.object.ObjectFallenTree;
-import org.powernukkitx.level.generator.object.ObjectGenerator;
-import org.powernukkitx.level.generator.object.legacytree.LegacyBirchTree;
-import org.powernukkitx.level.generator.object.legacytree.LegacyTallBirchTree;
-import org.powernukkitx.utils.random.RandomSourceProvider;
+public class BirchForestMutatedTreeFeature extends TreeRuleFeature {
+    public static final String NAME = "minecraft:birch_forest_mutated_surface_trees_feature";
 
-public class BirchForestMutatedTreeFeature extends GriddedFeature {
+    private static final TreeFeatureSelector SELECTOR = random -> {
+        if (random.nextExclusiveInt(5) == 0) {
+            return TreePlacementFeatures.birch();
+        }
 
-    public static final String NAME = "minecraft:legacy:birch_forest_mutated_tree_feature";
+        return random.nextBoolean()
+                ? TreePlacementFeatures.superBirch()
+                : TreePlacementFeatures.birch();
+    };
+
+    private static final TreeFeaturePlan PLAN = TreeFeaturePlan.legacy(
+            10.0f,
+            TreePlacementFeatures::isMutatedBirchForestCandidate,
+            SELECTOR
+    );
+
+    @Override
+    protected TreeFeaturePlan treePlan() {
+        return PLAN;
+    }
 
     @Override
     public String name() {
         return NAME;
-    }
-
-    @Override
-    public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        boolean fallen = random.nextInt(100) == 0;
-        if(random.nextBoolean()) {
-            return fallen ? new ObjectFallenTree(WoodType.BIRCH, 4,10) : new LegacyTallBirchTree();
-        } else return fallen ? new ObjectFallenTree(WoodType.BIRCH) : new LegacyBirchTree();
     }
 }

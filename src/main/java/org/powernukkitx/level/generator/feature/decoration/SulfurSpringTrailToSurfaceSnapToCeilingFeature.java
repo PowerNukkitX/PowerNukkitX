@@ -221,6 +221,15 @@ public class SulfurSpringTrailToSurfaceSnapToCeilingFeature extends GenerateFeat
         }
 
         Rotation rotation = Rotation.values()[random.nextInt(Rotation.values().length - 1)];
+
+        if (structure instanceof PNXStructure pnx) {
+            BlockVector3 size = pnx.getBounds(rotation);
+            int placeX = originX - (size.getX() / 2);
+            int placeZ = originZ - (size.getZ() / 2);
+            pnx.preparePlace(new Position(placeX, originY, placeZ, manager.getLevel()), manager, rotation);
+            return;
+        }
+
         AbstractStructure rotated = structure.rotate(rotation);
         BlockVector3 size = getSize(rotated);
         if (size == null) {

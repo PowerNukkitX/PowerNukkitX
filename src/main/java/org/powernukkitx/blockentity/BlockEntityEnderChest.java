@@ -1,14 +1,27 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 
 public class BlockEntityEnderChest extends BlockEntitySpawnable implements BlockEntityNameable {
-
     public BlockEntityEnderChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
+    }
+
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+
+        if (!this.nbt.contains("Findable")) {
+            this.nbt.putByte("Findable", 0);
+        }
+
+        if (!this.nbt.contains("Items")) {
+            this.nbt.putList("Items", new ListTag<>());
+        }
     }
 
     @Override
@@ -19,7 +32,6 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag spawnCompound = super.getSpawnCompound();
-        spawnCompound.putBoolean("isMovable", this.isMovable());
         if (this.hasName()) {
             spawnCompound.put("CustomName", this.nbt.get("CustomName"));
         }
@@ -44,5 +56,10 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
         }
 
         this.nbt.putString("CustomName", name);
+    }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
     }
 }

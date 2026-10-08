@@ -1,10 +1,13 @@
 package org.powernukkitx.blockentity;
 
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockNoteblock;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 public class BlockEntityMusic extends BlockEntity {
+
+    private boolean powered;
 
     public BlockEntityMusic(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -16,9 +19,9 @@ public class BlockEntityMusic extends BlockEntity {
         if (!this.nbt.contains("note")) {
             this.nbt.putByte("note", (byte) 0);
         }
-        if (!this.nbt.contains("powered")) {
-            this.nbt.putBoolean("powered", false);
-        }
+
+        Block block = this.getBlock();
+        this.powered = block instanceof BlockNoteblock noteBlock && noteBlock.isGettingPower();
     }
 
     @Override
@@ -35,10 +38,10 @@ public class BlockEntityMusic extends BlockEntity {
     }
 
     public void setPowered(boolean powered) {
-        this.nbt.putBoolean("powered", powered);
+        this.powered = powered;
     }
 
     public boolean isPowered() {
-        return this.getNbt().getBoolean("powered");
+        return this.powered;
     }
 }

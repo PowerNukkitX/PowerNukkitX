@@ -536,6 +536,16 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
+     * Returns the Bedrock precipitation behavior, or null when the native component is absent.
+     */
+    @Nullable
+    public PrecipitationBehavior getPrecipitationBehavior() {
+        PrecipitationBehavior behavior = getProperties().getPrecipitationBehavior();
+        if (behavior != null) return behavior;
+        return getSnowloggingLevel() > 0 ? PrecipitationBehavior.SNOWLOGGING : null;
+    }
+
+    /**
      * Checks if this block is snowlogged.
      * Returns {@code true} if this block supports snowlogging and has a snow layer on layer 0.
      */
@@ -580,35 +590,45 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return whether the block can be pushed by a piston
      */
     public boolean canBePushed() {
-        return true;
+        return CustomBlockComponentBehavior.canBePushed(
+                this
+        );
     }
 
     /**
      * @return whether the block can be pulled by a piston
      */
     public boolean canBePulled() {
-        return true;
+        return CustomBlockComponentBehavior.canBePulled(
+                this
+        );
     }
 
     /**
      * @return whether the block is destroyed when moved by a piston
      */
     public boolean breaksWhenMoved() {
-        return false;
+        return CustomBlockComponentBehavior.breaksWhenMoved(
+                this
+        );
     }
 
     /**
-     * @return whether the block can stick to a sticky piston
+     * @return whether the block can stick to a sticky piston or sticky moving block
      */
     public boolean sticksToPiston() {
-        return true;
+        return this.canBePushed() &&
+                this.canBePulled() &&
+                CustomBlockComponentBehavior.sticksToPiston(this);
     }
 
     /**
-     * @return whether the block can stick other blocks when moved by a piston. e.g. slime block, honey block
+     * @return whether the block can move adjacent blocks with it, e.g. slime block, honey block
      */
     public boolean canSticksBlock() {
-        return false;
+        return CustomBlockComponentBehavior.canSticksBlock(
+                this
+        );
     }
 
     public boolean hasComparatorInputOverride() {
@@ -1862,6 +1882,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public boolean isTickingDisabled() {
         return isTickingDisabled(this.getLevel(), getId());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        return !(obj instanceof Block other) || this.layer == other.layer;
     }
 
     @Override

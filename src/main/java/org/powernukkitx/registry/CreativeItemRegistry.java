@@ -31,8 +31,10 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
@@ -51,6 +53,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> GROUPS = new ObjectLinkedOpenHashSet<>();
     public static final ObjectLinkedOpenHashSet<CreativeItemEntryPayload> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
+    public static final Set<String> CUSTOM_ITEM_IDENTIFIERS = new HashSet<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
     private static final Map<String, BlockState> ITEM_BLOCK_STATES = new HashMap<>();
 
@@ -102,9 +105,6 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 String name = tag.get("id").toString();
                 Item item = Item.get(name, damage, 1, nbt, false);
                 item.setNbtBytes(nbt);
-                if (ItemRegistry.getItemComponents().containsKey(name)) {
-                    item.setNbt(CompoundTag.fromNetwork(ItemRegistry.getItemComponents().getCompound(name).getCompound("components")));
-                }
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;
                     log.warn("load creative item {} damage {} is null", name, damage);
@@ -196,9 +196,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         if (!enabled) return;
         int i = MAP.lastIntKey();
         try {
+            CUSTOM_ITEM_IDENTIFIERS.add(item.getItemDefinition().getIdentifier());
             this.register(i + 1, item.clone());
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -209,6 +210,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         if (!enabled) return;
         int i = MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1;
         try {
+            CUSTOM_ITEM_IDENTIFIERS.add(item.getItemDefinition().getIdentifier());
             this.register(i, item.clone(), groupIndex);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
@@ -311,7 +313,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
         final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
         entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
-        entryPayload.setItemInstance(value.toNetwork());
+        entryPayload.setItemInstance(value.toCreativeNetwork());
         entryPayload.setGroupIndex(groupIndex);
         ITEM_DATA.add(entryPayload);
     }
@@ -325,7 +327,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } else {
             final CreativeItemEntryPayload entryPayload = new CreativeItemEntryPayload();
             entryPayload.setCreativeNetId(new CreativeItemNetId(MAP.isEmpty() ? 0 : MAP.lastIntKey()));
-            entryPayload.setItemInstance(value.toNetwork());
+            entryPayload.setItemInstance(value.toCreativeNetwork());
             entryPayload.setGroupIndex(CreativeItemRegistry.LAST_ITEMS_INDEX);
             ITEM_DATA.add(entryPayload);
         }
@@ -396,6 +398,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         MAP.clear();
         INTERNAL_DIFF_ITEM.clear();
         ITEM_BLOCK_STATES.clear();
+        CUSTOM_ITEM_IDENTIFIERS.clear();
         if (enabled) {
             init();
         } else {

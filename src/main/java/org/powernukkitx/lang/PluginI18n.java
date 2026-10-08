@@ -10,12 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -212,7 +212,7 @@ public class PluginI18n {
                 throw new FileNotFoundException();
             }
             Preconditions.checkArgument(file.getName().endsWith(".json"));
-            try (FileInputStream stream = new FileInputStream(file)) {
+            try (InputStream stream = Files.newInputStream(file.toPath())) {
                 this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
             }
         } catch (IOException e) {
@@ -266,7 +266,7 @@ public class PluginI18n {
             if (!file.exists() || file.isDirectory()) {
                 throw new FileNotFoundException();
             }
-            try (FileInputStream stream = new FileInputStream(file)) {
+            try (InputStream stream = Files.newInputStream(file.toPath())) {
                 return reloadLang(lang, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
             }
         } catch (IOException e) {

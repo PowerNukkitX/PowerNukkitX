@@ -5,6 +5,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.TradeRecipeBuildUtils;
 
@@ -13,7 +14,7 @@ import java.util.Random;
 public class ProfessionTool extends Profession {
 
     public ProfessionTool() {
-        super(10, BlockID.SMITHING_TABLE, "entity.villager.tool", Sound.SMITHING_TABLE_USE);
+        super(10, BlockID.SMITHING_TABLE, "entity.villager.tool", Sound.SMITHING_TABLE_USE, SoundEvent.SMITHING_TABLE_USE);
     }
 
     @Override
@@ -107,7 +108,7 @@ public class ProfessionTool extends Profession {
                         .setTraderExp(5)
                         .setPriceMultiplierA(0.2f)
                         .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.FLINT, 0, 24), Item.get(Item.EMERALD))
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.FLINT, 0, 30), Item.get(Item.EMERALD))
                         .setMaxUses(12)
                         .setRewardExp((byte) 1)
                         .setTier(3)

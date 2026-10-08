@@ -267,22 +267,18 @@ public class CaveGenerateFeature extends GenerateFeature {
     }
 
     protected boolean hasLiquid(IChunk chunk, int xFrom, int xTo, int yFrom, int yTo, int zFrom, int zTo, int maxY) {
-        for (int xx = xFrom; xx < xTo; xx++) {
-            for (int zz = zFrom; zz < zTo; zz++) {
-                for (int yy = yTo + 1; yy >= yFrom - 1; yy--) {
-                    if (yy >= maxY) {
-                        continue;
-                    }
-                    if (LIQUID_BLOCK_IDS.contains(chunk.getBlockState(xx, yy, zz).getIdentifier())) {
-                        return true;
-                    }
-                    if (yy != yFrom - 1 && xx != xFrom && xx != xTo - 1 && zz != zFrom && zz != zTo - 1) {
-                        yy = yFrom;
+        return chunk.readBlockStates(reader -> {
+            for (int xx = xFrom; xx < xTo; xx++) {
+                for (int zz = zFrom; zz < zTo; zz++) {
+                    for (int yy = yTo + 1; yy >= yFrom - 1; yy--) {
+                        if (yy >= maxY) continue;
+                        if (LIQUID_BLOCK_IDS.contains(reader.getBlockState(xx, yy, zz).getIdentifier())) return true;
+                        if (yy != yFrom - 1 && xx != xFrom && xx != xTo - 1 && zz != zFrom && zz != zTo - 1) yy = yFrom;
                     }
                 }
             }
-        }
-        return false;
+            return false;
+        });
     }
 
     protected void carveEllipsoid(
@@ -363,10 +359,6 @@ public class CaveGenerateFeature extends GenerateFeature {
 
     protected void restoreSurfaceIfNeeded(IChunk chunk, int x, int y, int z, boolean grassFound) {
         if (!grassFound) {
-            return;
-        }
-
-        if (chunk.getBlockState(x, y + 1, z) != BlockAir.STATE) {
             return;
         }
 

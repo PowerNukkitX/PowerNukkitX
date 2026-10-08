@@ -1,34 +1,29 @@
 package org.powernukkitx.level.generator.feature.tree;
 
-import org.powernukkitx.level.generator.feature.GriddedFeature;
-import org.powernukkitx.level.generator.object.ObjectBigSpruceTree;
-import org.powernukkitx.level.generator.object.ObjectGenerator;
-import org.powernukkitx.level.generator.object.ObjectSmallSpruceTree;
-import org.powernukkitx.registry.Registries;
-import org.powernukkitx.tags.BiomeTags;
-import org.powernukkitx.utils.random.RandomSourceProvider;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
-
-public class MegaTaigaTreeFeature extends GriddedFeature {
-
+public class MegaTaigaTreeFeature extends TreeRuleFeature {
     public static final String NAME = "minecraft:mega_taiga_surface_trees_feature";
-    public static final String ALIAS = "minecraft:scatter_taiga_plant_feature";
+
+    private static final TreeFeatureSelector SELECTOR = random -> {
+        if (random.nextExclusiveInt(3) == 0) {
+            return random.nextExclusiveInt(13) == 0
+                    ? TreePlacementFeatures.megaSpruce()
+                    : TreePlacementFeatures.megaPine();
+        }
+
+        return random.nextExclusiveInt(3) == 0
+                ? TreePlacementFeatures.pine()
+                : TreePlacementFeatures.spruce();
+    };
+
+    private static final TreeFeaturePlan PLAN = TreeFeaturePlan.legacy(
+            10.0f,
+            TreePlacementFeatures::isMegaTaigaCandidate,
+            SELECTOR
+    );
 
     @Override
-    public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        if (random.nextInt(5) < 2) {
-            return new ObjectBigSpruceTree();
-        } else return new ObjectSmallSpruceTree();
-    }
-
-    @Override
-    public boolean canSpawnHere(BiomeDefinitionData definition) {
-        return Registries.BIOME.containsTag(BiomeTags.TAIGA, definition);
-    }
-
-    @Override
-    public int getDistanceToNextField() {
-        return 1;
+    protected TreeFeaturePlan treePlan() {
+        return PLAN;
     }
 
     @Override

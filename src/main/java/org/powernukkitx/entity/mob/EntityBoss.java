@@ -23,9 +23,10 @@ public abstract class EntityBoss extends EntityMob {
     public void setHealthCurrent(float health) {
         super.setHealthCurrent(health);
         final BossEventPacket bossEventPacket = new BossEventPacket();
-        bossEventPacket.setTargetActorID(this.getId());
+        bossEventPacket.setTargetActorID(this.uniqueIdLong());
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
         bossEventPacket.setName(this.getName());
+        bossEventPacket.setFilteredName(this.getName());
         bossEventPacket.setHealthPercent(health / getHealthMax());
         bossEventPacket.setColor(getBossBarColor());
         bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
@@ -49,8 +50,8 @@ public abstract class EntityBoss extends EntityMob {
         super.despawnFrom(player);
         if (getViewers().containsKey(player.getLoaderId())) {
             final BossEventPacket bossEventPacket = new BossEventPacket();
-            bossEventPacket.setTargetActorID(this.getId());
-            bossEventPacket.setPlayerID(player.getId());
+            bossEventPacket.setTargetActorID(this.uniqueIdLong());
+            bossEventPacket.setPlayerID(player.uniqueIdLong());
             bossEventPacket.setEventType(BossEventUpdateType.REMOVE);
             player.sendPacket(bossEventPacket);
         }

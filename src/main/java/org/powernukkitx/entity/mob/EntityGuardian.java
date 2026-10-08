@@ -27,6 +27,7 @@ import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -34,6 +35,7 @@ import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -136,13 +138,31 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        int secondLoot = ThreadLocalRandom.current().nextInt(6);
-        return new Item[]{
-                Item.get(Item.PRISMARINE_SHARD, 0, Utils.rand(0, 2)),
-                ThreadLocalRandom.current().nextInt(1000) <= 25 ? Item.get(Item.COD, 0, 1) : Item.AIR,
-                secondLoot <= 2 ? Item.get(Item.COD, 0, Utils.rand(0, 1)) : Item.AIR,
-                secondLoot > 2 && secondLoot <= 4 ? Item.get(Item.PRISMARINE_CRYSTALS, 0, Utils.rand(0, 1)) : Item.AIR
-        };
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        int shards = Utils.rand(0, 2 + looting);
+        if (shards > 0) {
+            drops.add(Item.get(Item.PRISMARINE_SHARD, 0, shards));
+        }
+
+        int secondLoot = ThreadLocalRandom.current().nextInt(5);
+        if (secondLoot <= 1) {
+            drops.add(Item.get(Item.COD, 0, 1 + Utils.rand(0, looting)));
+        } else if (secondLoot <= 3) {
+            drops.add(Item.get(Item.PRISMARINE_CRYSTALS, 0, 1 + Utils.rand(0, looting)));
+        }
+
+        if (killedByPlayer() && Utils.rand(0, 999) < (25 + looting * 10)) {
+            drops.add(Item.get(Item.COD, 0, 1));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

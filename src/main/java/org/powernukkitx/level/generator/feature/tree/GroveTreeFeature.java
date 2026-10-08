@@ -16,7 +16,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class GroveTreeFeature extends GriddedFeature {
-
     protected final static BlockState SNOW_LAYER = BlockSnowLayer.PROPERTIES.getDefaultState();
 
     public static final String NAME = "minecraft:grove_spruce_tree_feature";
@@ -49,7 +48,7 @@ public class GroveTreeFeature extends GriddedFeature {
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int y = chunk.getHeightMap(x, z);
+                int y = chunk.getHeightMap(x, z) - 1;
                 BlockState support = chunk.getBlockState(x, y, z);
                 if (support.toBlock() instanceof BlockSpruceLeaves) {
                     object.setBlockStateAt(x + (chunk.getX() << 4), y + 1, z + (chunk.getZ() << 4), SNOW_LAYER);

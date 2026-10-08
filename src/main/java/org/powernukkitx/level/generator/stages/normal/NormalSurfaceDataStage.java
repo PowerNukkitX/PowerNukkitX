@@ -30,7 +30,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
         chunk.batchProcess(unsafeChunk -> {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    int y = unsafeChunk.getHeightMap(x, z);
+                    int y = unsafeChunk.getHeightMap(x, z) - 1;
                     BlockState topBlockState = unsafeChunk.getBlockState(x, y, z);
                     Pair<Short, BiomeDefinitionData> definition = Registries.BIOME.get(unsafeChunk.getBiomeId(x, y, z));
                     BiomeDefinitionData biome = definition.second();

@@ -18,7 +18,7 @@ import static org.powernukkitx.level.GameRule.*;
 
 public class GameRules {
     private final @Nonnull EnumMap<GameRule, Value<?>> gameRules = new EnumMap<>(GameRule.class);
-    private boolean stale;
+    private volatile boolean stale;
 
     private GameRules() {
     }
@@ -86,7 +86,7 @@ public class GameRules {
         stale = false;
     }
 
-    public <V> void setGameRule(GameRule gameRule, V value, Type type) {
+    public synchronized <V> void setGameRule(GameRule gameRule, V value, Type type) {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
@@ -167,8 +167,8 @@ public class GameRules {
 
     public static class Value<T> {
         private final Type type;
-        private T value;
-        private boolean canBeChanged;
+        private volatile T value;
+        private volatile boolean canBeChanged;
 
         public Value(Type type, T value) {
             this.type = type;

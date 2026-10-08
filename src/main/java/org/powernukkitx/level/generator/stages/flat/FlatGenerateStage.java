@@ -5,7 +5,6 @@ import org.powernukkitx.block.BlockDirt;
 import org.powernukkitx.block.BlockGrassBlock;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.biome.BiomeID;
-import org.powernukkitx.level.format.ChunkState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateStage;
@@ -39,6 +38,5 @@ public class FlatGenerateStage extends GenerateStage {
                 }
             }
         }
-        chunk.setChunkState(ChunkState.POPULATED);
     }
 };

@@ -33,6 +33,7 @@ public abstract class BlockWood extends BlockLog {
             case MANGROVE -> STRIPPED_MANGROVE_WOOD;
             case PALE_OAK -> STRIPPED_PALE_OAK_WOOD;
             case CHERRY -> STRIPPED_CHERRY_WOOD;
+            case POPLAR -> STRIPPED_POPLAR_WOOD;
         };
         return Registries.BLOCK.getBlockProperties(strippedId).getBlockState(PILLAR_AXIS, getPillarAxis());
     }

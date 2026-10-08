@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.inventory.EnchantInventory;
 import org.powernukkitx.level.format.IChunk;
@@ -9,8 +10,42 @@ import org.powernukkitx.nbt.tag.CompoundTag;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
+    private float rotation;
+
     public BlockEntityEnchantTable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.rotation = this.nbt.getFloat("rott");
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.nbt.putFloat("rott", this.rotation);
+    }
+
+    /**
+     * Returns the persisted enchanting table book rotation.
+     *
+     * @return book rotation
+     */
+    public float getRotation() {
+        return this.rotation;
+    }
+
+    /**
+     * Sets and persists the enchanting table book rotation.
+     *
+     * @param rotation book rotation
+     */
+    public void setRotation(float rotation) {
+        this.rotation = rotation;
+        this.nbt.putFloat("rott", rotation);
+        this.setDirty();
     }
 
     @Override
@@ -41,7 +76,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = super.getSpawnCompound()
-                .putBoolean("isMovable", false);
+                .putFloat("rott", this.rotation);
 
         if (this.hasName()) {
             c.putString("CustomName", this.getNbt().getString("CustomName"));
@@ -53,5 +88,10 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     @Override
     public EnchantInventory getInventory() {
         return new EnchantInventory(this);
+    }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
     }
 }

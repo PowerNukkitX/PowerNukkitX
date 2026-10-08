@@ -8,6 +8,16 @@ import java.util.List;
 
 public abstract class ItemBookWritable extends Item {
 
+    /**
+     * The number of pages a book can hold.
+     */
+    public static final int MAX_PAGES = 50;
+
+    /**
+     * The number of characters a page of a book can hold.
+     */
+    public static final int MAX_PAGE_LENGTH = 256;
+
     protected ItemBookWritable(String id) {
         super(id);
     }
@@ -28,7 +38,7 @@ public abstract class ItemBookWritable extends Item {
      * Returns whether the given page exists in this book.
      */
     public boolean pageExists(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         if (this.hasNbt()) {
             CompoundTag tag = this.getNbt();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
@@ -42,7 +52,7 @@ public abstract class ItemBookWritable extends Item {
      * Returns a string containing the content of a page (which could be empty), or null if the page doesn't exist.
      */
     public String getPageText(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         if (this.hasNbt()) {
             CompoundTag tag = this.getNbt();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
@@ -60,8 +70,8 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean setPageText(int pageId, String pageText) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
-        Preconditions.checkArgument(pageText.length() <= 256, "Text length " + pageText.length() + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageText.length() <= MAX_PAGE_LENGTH, "Text length " + pageText.length() + " is out of range");
         CompoundTag tag;
         if (this.hasNbt()) {
             tag = this.getNbt();
@@ -94,7 +104,7 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean addPage(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
@@ -116,7 +126,7 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean deletePage(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         if (this.hasNbt()) {
             CompoundTag tag = this.getNbt();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
@@ -143,8 +153,8 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean insertPage(int pageId, String pageText) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
-        Preconditions.checkArgument(pageText.length() <= 256, "Text length " + pageText.length() + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageText.length() <= MAX_PAGE_LENGTH, "Text length " + pageText.length() + " is out of range");
         CompoundTag tag = this.getOrCreateNbt();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
@@ -171,8 +181,8 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean swapPages(int pageId1, int pageId2) {
-        Preconditions.checkArgument(pageId1 >= 0 && pageId1 < 50, "Page number " + pageId1 + " is out of range");
-        Preconditions.checkArgument(pageId2 >= 0 && pageId2 < 50, "Page number " + pageId2 + " is out of range");
+        Preconditions.checkArgument(pageId1 >= 0 && pageId1 < MAX_PAGES, "Page number " + pageId1 + " is out of range");
+        Preconditions.checkArgument(pageId2 >= 0 && pageId2 < MAX_PAGES, "Page number " + pageId2 + " is out of range");
         if (this.hasNbt()) {
             CompoundTag tag = this.getNbt();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {

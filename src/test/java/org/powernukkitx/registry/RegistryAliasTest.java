@@ -3,15 +3,14 @@ package org.powernukkitx.registry;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockGrassBlock;
 import org.powernukkitx.block.BlockID;
-import org.powernukkitx.block.BlockProperties;
-import org.powernukkitx.block.BlockSolid;
-import org.powernukkitx.block.BlockState;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.cloudburstmc.nbt.NbtMap;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -22,7 +21,6 @@ class RegistryAliasTest {
     private static final String COLLIDING_ITEM_ID = "test:diamond_alias";
     private static final String STALE_ITEM_ID = "test:stale_alias_item";
     private static final String STALE_ITEM_ALIAS = "test:stale_alias";
-    private static final String COLLIDING_BLOCK_ID = "test:stone_alias";
 
     @BeforeAll
     static void init() {
@@ -81,13 +79,25 @@ class RegistryAliasTest {
     }
 
     @Test
-    void canonicalBlockIdentifierTakesPriorityOverAlias() throws RegisterException {
-        Registries.BLOCK.register(COLLIDING_BLOCK_ID, StoneAliasBlock.class);
+    void canonicalBlockIdentifierTakesPriorityOverAlias() throws ReflectiveOperationException {
+        Map<String, String> aliases = blockAliases();
+        String previousAlias = aliases.put(BlockID.STONE, BlockID.GRASS_BLOCK);
         try {
             assertEquals(BlockID.STONE, Registries.BLOCK.get(BlockID.STONE).getId());
         } finally {
-            Registries.BLOCK.reload();
+            if (previousAlias == null) {
+                aliases.remove(BlockID.STONE);
+            } else {
+                aliases.put(BlockID.STONE, previousAlias);
+            }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, String> blockAliases() throws NoSuchFieldException, IllegalAccessException {
+        Field aliases = BlockRegistry.class.getDeclaredField("ALIASES");
+        aliases.setAccessible(true);
+        return (Map<String, String>) aliases.get(null);
     }
 
     public static class DiamondAliasItem extends Item {
@@ -112,26 +122,4 @@ class RegistryAliasTest {
         }
     }
 
-    public static class StoneAliasBlock extends BlockSolid {
-        public static final BlockProperties PROPERTIES = new BlockProperties(COLLIDING_BLOCK_ID);
-
-        public StoneAliasBlock(BlockState blockState) {
-            super(blockState);
-        }
-
-        @Override
-        public @NotNull BlockProperties getProperties() {
-            return PROPERTIES;
-        }
-
-        @Override
-        public String getName() {
-            return "Stone Alias Test Block";
-        }
-
-        @Override
-        public String[] getAliases() {
-            return new String[]{BlockID.STONE};
-        }
-    }
 }

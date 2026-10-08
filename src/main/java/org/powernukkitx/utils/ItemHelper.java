@@ -5,11 +5,13 @@ import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemUnknown;
+import org.powernukkitx.item.customitem.CustomItem;
 import org.powernukkitx.level.updater.block.BlockStateUpdaters;
 import org.powernukkitx.level.updater.item.ItemUpdaters;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.NetworkConstants;
+import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.nbt.NbtMap;
@@ -22,25 +24,80 @@ import java.util.TreeMap;
 @UtilityClass
 public class ItemHelper {
 
+    /**
+     * Serializes an item into a fresh canonical Bedrock storage compound.
+     *
+     * @param item the item to serialize; {@code null} or air writes a canonical empty item
+     * @return the serialized item compound
+     */
     public CompoundTag write(Item item) {
-        return write(item, null);
+        return writeCanonical(item, null);
     }
 
-    public CompoundTag write(Item item, Integer slot) {
-        CompoundTag tag = new CompoundTag()
-                .putByte("Count", item.getCount())
-                .putShort("Damage", item.getDamage())
-                .putString("Name", item.getId());
-        if (slot != null) {
-            tag.putByte("Slot", slot);
+    /**
+     * Serializes an item into a fresh canonical Bedrock storage compound with a {@code Slot} field.
+     *
+     * @param item the item to serialize; {@code null} or air writes a canonical empty item
+     * @param slot the inventory or container slot
+     * @return the serialized item compound
+     */
+    public CompoundTag write(Item item, int slot) {
+        return writeCanonical(item, null).putByte("Slot", slot);
+    }
+
+    /**
+     * Rewrites a stored item while preserving Bedrock fields not modeled by {@link Item}.
+     *
+     * @param item the item to serialize; {@code null} or air writes a canonical empty item
+     * @param previous the previous compound to preserve when it represents the same item, or {@code null}
+     * @return the serialized item compound
+     */
+    public CompoundTag write(Item item, CompoundTag previous) {
+        return writeCanonical(item, previous);
+    }
+
+    /**
+     * Rewrites a stored item with a {@code Slot} field while preserving unmodeled Bedrock fields.
+     *
+     * @param item the item to serialize; {@code null} or air writes a canonical empty item
+     * @param slot the inventory or container slot
+     * @param previous the previous compound to preserve when it represents the same item, or {@code null}
+     * @return the serialized item compound
+     */
+    public CompoundTag write(Item item, int slot, CompoundTag previous) {
+        return writeCanonical(item, previous).putByte("Slot", slot);
+    }
+
+    private CompoundTag writeCanonical(Item item, CompoundTag previous) {
+        if (item == null || item.isNull()) {
+            return new CompoundTag()
+                    .putString("Name", "")
+                    .putByte("Count", 0)
+                    .putShort("Damage", 0)
+                    .putByte("WasPickedUp", 0);
         }
-        if (item.hasNbt()) {
-            tag.putCompound("tag", item.getNbt());
+
+        CompoundTag tag = previous != null && item.getId().equals(previous.getString("Name")) ? previous.copy() : new CompoundTag();
+        tag.putString("Name", item.getId()).putByte("Count", item.getCount()).putShort("Damage", item.getDamage());
+
+        if (!tag.contains("WasPickedUp")) {
+            tag.putByte("WasPickedUp", 0);
         }
+
         if (item.isBlock() && item.getBlockId().equals(item.getId())) {
             tag.putCompound("Block", CompoundTag.fromNetwork(item.getBlockUnsafe().getBlockState().getBlockStateTag()));
+        } else {
+            tag.remove("Block");
         }
-        tag.putInt("version", NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION);
+
+        if (item.hasNbt()) {
+            tag.putCompound("tag", item.getNbt());
+        } else {
+            tag.remove("tag");
+        }
+
+        tag.remove("Slot");
+        tag.remove("version");
         return tag;
     }
 
@@ -69,7 +126,10 @@ public class ItemHelper {
         }
         Tag tagTag = tag.get("tag");
         if (tagTag instanceof CompoundTag compoundTag && !compoundTag.isEmpty()) {
-            item.setNbt(compoundTag);
+            stripLeakedItemComponents(item, compoundTag);
+            if (!compoundTag.isEmpty()) {
+                item.setNbt(compoundTag);
+            }
         }
 
         if (tag.contains("Block")) {
@@ -90,15 +150,9 @@ public class ItemHelper {
 
             if (blockState != null) {
                 if (isUnknownBlock || wasUnknownItem) {
-                    Item resolvedItem = wasUnknownItem
-                        ? Item.get(item.getId(), damage, amount)
-                        : blockState.toItem();
-
+                    Item resolvedItem = wasUnknownItem ? Item.get(item.getId(), damage, amount) : blockState.toItem();
                     item = resolvedItem != Item.AIR ? resolvedItem : blockState.toItem();
-
-                    if (damage != 0) {
-                        item.setDamage(damage);
-                    }
+                    if (damage != 0) item.setDamage(damage);
                     item.setCount(amount);
                 }
                 item.setBlockUnsafe(blockState.toBlock());
@@ -115,6 +169,24 @@ public class ItemHelper {
             }
         }
         return item;
+    }
+
+    private void stripLeakedItemComponents(Item item, CompoundTag tag) {
+        if (item instanceof CustomItem) {
+            return;
+        }
+        NbtMap components = ItemRegistry.getItemComponents()
+            .getCompound(item.getId(), NbtMap.EMPTY)
+            .getCompound("components", NbtMap.EMPTY);
+        if (components.isEmpty()) {
+            return;
+        }
+        String[] leaked = tag.getTags().keySet().stream()
+            .filter(components::containsKey)
+            .toArray(String[]::new);
+        if (leaked.length > 0) {
+            tag.remove(leaked);
+        }
     }
 
     public BlockState getBlockStateHelper(CompoundTag tag) {

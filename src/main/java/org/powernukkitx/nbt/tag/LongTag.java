@@ -48,14 +48,4 @@ public class LongTag extends NumberTag<Long> {
     public Tag copy() {
         return new LongTag(data);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            LongTag o = (LongTag) obj;
-            return data == o.data;
-        }
-        return false;
-    }
-
 }

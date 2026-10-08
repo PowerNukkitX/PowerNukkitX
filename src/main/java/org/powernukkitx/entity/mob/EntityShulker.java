@@ -174,16 +174,14 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     public Item[] getDrops(@NotNull Item weapon) {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 1) == 0) {
-            int amount = Utils.rand(0, 1 + looting);
-            if (amount > 0) {
-                return new Item[]{
-                        Item.get(Item.SHULKER_SHELL, 0, amount)
-                };
-            }
+        int shells = Utils.rand(0, 1 + looting);
+        if (shells == 0) {
+            return Item.EMPTY_ARRAY;
         }
 
-        return Item.EMPTY_ARRAY;
+        return new Item[]{
+                Item.get(Item.SHULKER_SHELL, 0, shells)
+        };
     }
 
     public void teleport() {
