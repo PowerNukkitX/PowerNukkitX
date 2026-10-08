@@ -32,7 +32,7 @@ public class StructureBlockUpdateHandler implements PacketHandler<StructureBlock
             if (blockEntity instanceof BlockEntityStructureBlock structBlock) {
                 Block sBlock = structBlock.getLevelBlock();
                 sBlock.setPropertyValue(STRUCTURE_BLOCK_TYPE, StructureBlockType.valueOf(packet.getStructureData().getStructureBlockType().name()));
-                structBlock.updateSetting(packet);
+                structBlock.updateSetting(playerHandle.player, packet);
                 playerHandle.player.level.setBlock(structBlock, sBlock, true);
                 structBlock.spawnTo(playerHandle.player);
             }

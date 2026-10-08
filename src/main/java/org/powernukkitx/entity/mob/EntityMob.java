@@ -21,6 +21,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.powernukkitx.utils.random.NukkitRandom;
@@ -70,18 +71,24 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         super.initEntity();
 
         final CompoundTag nbtMap = this.getNbt();
-        if (this.nbt.contains(TAG_MAINHAND)) {
-            this.equipmentInventory.setItemInHand(ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND)), true);
+        if (this.nbt.containsList(TAG_MAINHAND, Tag.TAG_Compound)) {
+            ListTag<CompoundTag> mainhand = nbtMap.getList(TAG_MAINHAND, CompoundTag.class);
+            if (mainhand.size() > 0) {
+                this.equipmentInventory.setItemInHand(ItemHelper.read(mainhand.get(0)), true);
+            }
         }
 
-        if (this.nbt.contains(TAG_OFFHAND)) {
-            this.equipmentInventory.setItemInOffhand(ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND)), true);
+        if (this.nbt.containsList(TAG_OFFHAND, Tag.TAG_Compound)) {
+            ListTag<CompoundTag> offhand = nbtMap.getList(TAG_OFFHAND, CompoundTag.class);
+            if (offhand.size() > 0) {
+                this.equipmentInventory.setItemInOffhand(ItemHelper.read(offhand.get(0)), true);
+            }
         }
 
-        if (this.nbt.containsList(TAG_ARMOR)) {
+        if (this.nbt.containsList(TAG_ARMOR, Tag.TAG_Compound)) {
             ListTag<CompoundTag> armorList = nbtMap.getList(TAG_ARMOR, CompoundTag.class);
-            for (CompoundTag armorTag : armorList.getAll()) {
-                this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
+            for (int slot = 0; slot < Math.min(armorList.size(), 5); slot++) {
+                this.armorInventory.setItem(slot, ItemHelper.read(armorList.get(slot)));
             }
         } else if (!this.nbt.contains(TAG_MAINHAND)) {
             equipOnSpawn();
@@ -189,13 +196,13 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null))
-                .putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
+        this.nbt.putList(TAG_MAINHAND, new ListTag<CompoundTag>().add(ItemHelper.write(this.equipmentInventory.getItemInHand())))
+                .putList(TAG_OFFHAND, new ListTag<CompoundTag>().add(ItemHelper.write(this.equipmentInventory.getItemInOffhand())));
 
         if (this.armorInventory != null) {
             ListTag<CompoundTag> armorTag = new ListTag<>();
-            for (int i = 0; i < 4; i++) {
-                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
+            for (int i = 0; i < 5; i++) {
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i)));
             }
             this.nbt.putList(TAG_ARMOR, armorTag);
         }
@@ -216,7 +223,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
 
-        if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
+        if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER && source.getCause() != EntityDamageEvent.DamageCause.SONIC_BOOM) {
             int armorPoints = getAdditionalArmor();
             int toughnessPoints = 0;
             int epf = 0;
@@ -246,9 +253,11 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
                 damager = ((EntityDamageByEntityEvent) source).getDamager();
             }
 
-            for (int slot = 0; slot < 4; slot++) {
-                Item armor = damageArmor(armorInventory.getItem(slot), damager);
-                armorInventory.setItem(slot, armor, armor.getId() != BlockID.AIR);
+            if (source.getCause() != EntityDamageEvent.DamageCause.SONIC_BOOM) {
+                for (int slot = 0; slot < 4; slot++) {
+                    Item armor = damageArmor(armorInventory.getItem(slot), damager);
+                    armorInventory.setItem(slot, armor, armor.getId() != BlockID.AIR);
+                }
             }
 
             return true;

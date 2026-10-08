@@ -14,7 +14,6 @@ import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.IntArrayTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -429,13 +428,13 @@ public class MineshaftPieces {
                         EntityChestMinecart minecart = (EntityChestMinecart) Entity.createEntity(Entity.CHEST_MINECART,
                                 chunk, new CompoundTag()
                                         .putList("Pos", new ListTag<>()
-                                                .add(new DoubleTag(vec.getX() + 0.5))
-                                                .add(new DoubleTag(vec.getY() + 0.0625D))
-                                                .add(new DoubleTag(vec.getZ() + 0.5)))
+                                                .add(new FloatTag(vec.getX() + 0.5))
+                                                .add(new FloatTag(vec.getY() + 0.0625D))
+                                                .add(new FloatTag(vec.getZ() + 0.5)))
                                         .putList("Motion", new ListTag<>()
-                                                .add(new DoubleTag(0))
-                                                .add(new DoubleTag(0))
-                                                .add(new DoubleTag(0)))
+                                                .add(new FloatTag(0))
+                                                .add(new FloatTag(0))
+                                                .add(new FloatTag(0)))
                                         .putList("Rotation", new ListTag<>()
                                                 .add(new FloatTag(0))
                                                 .add(new FloatTag(0)))

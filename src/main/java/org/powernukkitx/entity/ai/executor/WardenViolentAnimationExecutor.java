@@ -1,7 +1,7 @@
 package org.powernukkitx.entity.ai.executor;
 
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
+import org.powernukkitx.entity.mob.EntityWarden;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 
@@ -17,13 +17,12 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
-        if (currentTick > duration) return false;
-        else {
-            //update the look target
-            if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
-                entity.setLookTarget(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET));
-            return true;
-        }
+        if (!(entity instanceof EntityWarden warden) || currentTick >= duration) return false;
+
+        var target = warden.getRoarTarget();
+        if (target == null) return false;
+        entity.setLookTarget(target);
+        return true;
     }
 
     @Override
@@ -34,9 +33,7 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        entity.getMemoryStorage().put(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, false);
         entity.setMoveTarget(null);
-
         entity.setDataFlag(ActorFlags.ROARING, true);
     }
 
@@ -44,5 +41,6 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
         entity.setDataFlag(ActorFlags.ROARING, false);
+        if (entity instanceof EntityWarden warden) warden.finishRoar();
     }
 }

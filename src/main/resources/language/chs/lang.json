@@ -89,7 +89,6 @@
   "pnx.settings.chunk.spawnThreshold": "玩家第一次生成需要接受的区块数量",
   "pnx.settings.chunk.chunksPerTicks": "tick区块的周期",
   "pnx.settings.chunk.tickRadius": "tick区块的范围",
-  "pnx.settings.chunk.lightUpdates": "区块是否进行灯光更新",
   "pnx.settings.chunk.clearTickList": "是否每次tick结束清理tickList",
   "pnx.settings.chunk.generationQueueSize": "最大的同时执行地形生成的任务数量",
   "pnx.settings.freezearray": "服务器的冻结数组配置",

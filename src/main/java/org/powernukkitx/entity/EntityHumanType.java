@@ -11,7 +11,6 @@ import org.powernukkitx.inventory.HumanEnderChestInventory;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.HumanOffHandInventory;
 import org.powernukkitx.inventory.Inventory;
-import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemShield;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class EntityHumanType extends EntityCreature implements IHuman, InventoryHolder, EntityHandItem {
+public abstract class EntityHumanType extends EntityCreature implements IHuman, EntityHandItem {
 
     protected HumanInventory inventory;
     protected HumanEnderChestInventory enderChestInventory;
@@ -77,7 +76,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
             return false;
         }
 
-        if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER) {
+        if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER && source.getCause() != DamageCause.SONIC_BOOM) {
             int armorPoints = 0;
             int toughnessPoints = 0;
             int epf = 0;
@@ -194,7 +193,8 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
                 event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION &&
                 event.getCause() != EntityDamageEvent.DamageCause.SUICIDE &&
                 event.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK &&
-                event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+                event.getCause() != EntityDamageEvent.DamageCause.FALL &&
+                event.getCause() != EntityDamageEvent.DamageCause.SONIC_BOOM) {
 
             if (armor instanceof ItemShield) {
                 armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));

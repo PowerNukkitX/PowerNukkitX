@@ -5,7 +5,6 @@ import io.netty.channel.EventLoop;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.util.nethernet.TransportIdentityBinding;
-import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
@@ -284,7 +283,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             final T result;
             try {
                 result = work.get();
-            } catch (Exception e) {
+            } catch (Exception | AssertionError | LinkageError e) {
                 log.debug("Error while validating login", e);
                 eventLoop.execute(() -> {
                     if (holder.getSession().isConnected()) {

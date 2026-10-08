@@ -1,7 +1,9 @@
 package org.powernukkitx.blockentity;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.BlockCauldron;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
@@ -9,10 +11,20 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.BlockColor;
+import org.powernukkitx.utils.RuntimeBlockDefinition;
+
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.ActorBlockSyncMessageId;
+import org.cloudburstmc.protocol.bedrock.data.BlockChangeEntry;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateSubChunkBlocksPacket;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+
+import static org.powernukkitx.block.property.CommonBlockProperties.FILL_LEVEL;
 
 /**
  * @author CreeperFace (Nukkit Project)
@@ -25,29 +37,30 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        int potionId;
-        if (!this.nbt.contains("PotionId")) {
+
+        if (!this.nbt.containsShort("PotionId")) {
             this.nbt.putShort("PotionId", (short) 0xffff);
         }
-        potionId = getNbt().getShort("PotionId");
-        int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
-        if (getNbt().getBoolean("SplashPotion")) {
-            potionType = PotionType.SPLASH.potionTypeData;
-            this.nbt.remove("SplashPotion");
+
+        if (!this.nbt.containsShort("PotionType")) {
+            this.nbt.putShort("PotionType", (short) PotionType.EMPTY.potionTypeData);
         }
 
-        if (!this.nbt.contains("PotionType")) {
-            this.nbt.putShort("PotionType", (short) potionType);
+        if (!this.nbt.containsList("Items")) {
+            this.nbt.putList("Items", new ListTag<>());
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        int potionId = getNbt().getShort("PotionId");
-        int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
+
         this.nbt.putShort("PotionId", (short) getPotionId())
-                .putShort("PotionType", (short) potionType);
+                .putShort("PotionType", (short) getPotionType());
+
+        if (!this.nbt.containsList("Items")) {
+            this.nbt.putList("Items", new ListTag<>());
+        }
     }
 
     public int getPotionId() {
@@ -109,13 +122,14 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         int color = (r << 16 | g << 8 | b) & 0xffffff;
 
         this.nbt.putInt("CustomColor", color);
-
-        spawnToAll();
+        setDirty();
+        refreshCustomColorToAll();
     }
 
     public void clearCustomColor() {
         nbt.remove("CustomColor");
-        spawnToAll();
+        setDirty();
+        refreshCustomColorToAll();
     }
 
     @Override
@@ -133,6 +147,57 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
                     super.spawnToAll();
                 }
             }
+        });
+    }
+
+    private void refreshCustomColorToAll() {
+        if (!this.isBlockEntityValid()) return;
+
+        Location location = getLocation();
+
+        getLevel().getScheduler().scheduleTask(null, () -> {
+            if (!isValid() || this.level.getBlockEntity(location) != this) return;
+            if (!(getBlock() instanceof BlockCauldron cauldron)) return;
+
+            Player[] viewers = this.level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
+            BlockState currentState = cauldron.getBlockState();
+            int fillLevel = cauldron.getFillLevel();
+
+            if (fillLevel > FILL_LEVEL.getMin()) {
+                BlockState refreshState = currentState.setPropertyValue(BlockCauldron.PROPERTIES, FILL_LEVEL, fillLevel - 1);
+                Vector3i position = Vector3i.from(getFloorX(), getFloorY(), getFloorZ());
+
+                UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
+                packet.setSubChunkBlockPosition(Vector3i.from(
+                        (getFloorX() >> 4) << 4,
+                        (getFloorY() >> 4) << 4,
+                        (getFloorZ() >> 4) << 4
+                ));
+
+                packet.getStandardBlocks().add(
+                        new BlockChangeEntry(position, new RuntimeBlockDefinition((int) refreshState.unsignedBlockStateHash()), 3, -1, ActorBlockSyncMessageId.NONE)
+                );
+
+                packet.getStandardBlocks().add(
+                        new BlockChangeEntry(position, new RuntimeBlockDefinition((int) currentState.unsignedBlockStateHash()), 3, -1, ActorBlockSyncMessageId.NONE)
+                );
+
+                for (Player viewer : viewers) {
+                    if (viewer.spawned) viewer.sendPacket(packet);
+                }
+
+                super.spawnToAll();
+                super.spawnToAll();
+            } else {
+                super.spawnToAll();
+            }
+
+            getLevel().getScheduler().scheduleTask(null, () -> {
+                if (!isValid() || this.level.getBlockEntity(location) != this) return;
+                Player[] currentViewers = this.level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
+                this.level.sendBlocks(currentViewers, new Vector3[]{location}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                super.spawnToAll();
+            });
         });
     }
 

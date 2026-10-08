@@ -46,8 +46,10 @@ public final class WoodlandMansionPieces {
 
     public static PostPlacement place(BlockManager manager, BlockVector3 origin, Rotation rotation, RandomSourceProvider random) {
         List<WoodlandMansionPiece> pieces = generate(origin, rotation, random);
+        List<BoundingBox> pieceBounds = new ArrayList<>(pieces.size());
         List<BlockVector3> wallPositions = new ArrayList<>();
         for (WoodlandMansionPiece piece : pieces) {
+            pieceBounds.add(piece.boundingBox());
             piece.place(manager);
         }
         for (var block : manager.getBlocks()) {
@@ -75,7 +77,7 @@ public final class WoodlandMansionPieces {
             }
         }
         List<MobSpawn> mobSpawns = collectMobSpawnsFromTemplates(pieces, markerBlocks, random);
-        return new PostPlacement(chests, mobSpawns, spiderSpawnerPositions);
+        return new PostPlacement(pieceBounds, chests, mobSpawns, spiderSpawnerPositions);
     }
 
     private static void refreshWallConnections(Level level, List<BlockVector3> wallPositions) {
@@ -1571,14 +1573,28 @@ public final class WoodlandMansionPieces {
     }
 
     public static final class PostPlacement {
+        private final List<BoundingBox> pieceBounds;
         private final List<BlockVector3> chests;
         private final List<MobSpawn> mobSpawns;
         private final List<BlockVector3> spiderSpawnerPositions;
 
-        private PostPlacement(List<BlockVector3> chests, List<MobSpawn> mobSpawns, List<BlockVector3> spiderSpawnerPositions) {
+        private PostPlacement(
+                List<BoundingBox> pieceBounds,
+                List<BlockVector3> chests,
+                List<MobSpawn> mobSpawns,
+                List<BlockVector3> spiderSpawnerPositions
+        ) {
+            this.pieceBounds = List.copyOf(pieceBounds);
             this.chests = List.copyOf(chests);
             this.mobSpawns = List.copyOf(mobSpawns);
             this.spiderSpawnerPositions = List.copyOf(spiderSpawnerPositions);
+        }
+
+        /**
+         * Returns the ordered structure-piece bounding boxes.
+         */
+        public List<BoundingBox> pieceBounds() {
+            return this.pieceBounds;
         }
 
         public List<BlockVector3> chests() {

@@ -32,7 +32,7 @@ public abstract class ContainerInventory extends BaseInventory {
         pk.setContainerType(this.getType());
         pk.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
         if (holder instanceof Entity entity) {
-            pk.setTargetActorID(entity.getId());
+            pk.setTargetActorID(entity.uniqueIdLong());
         }
         who.sendPacket(pk);
 

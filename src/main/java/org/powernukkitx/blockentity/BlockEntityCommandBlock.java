@@ -6,6 +6,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockChainCommandBlock;
 import org.powernukkitx.block.BlockCommandBlock;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.ConsoleCommandSender;
 import org.powernukkitx.event.command.CommandBlockExecuteEvent;
@@ -85,11 +86,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.powered = false;
         }
 
-        if (this.nbt.contains(TAG_CONDITIONAL_MODE)) {
-            this.conditionalMode = this.getNbt().getBoolean(TAG_CONDITIONAL_MODE);
-        } else {
-            this.conditionalMode = false;
-        }
+        this.conditionalMode = this.getLevelBlock().getPropertyValue(CommonBlockProperties.CONDITIONAL_BIT);
 
         final CompoundTag nbtMap = getNbt();
 
@@ -177,32 +174,30 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putBoolean(TAG_POWERED, this.powered)
-                .putBoolean(TAG_CONDITIONAL_MODE, this.conditionalMode)
-                .putBoolean(TAG_AUTO, this.auto);
-        if (this.command != null && !this.command.isEmpty()) {
-            this.nbt.putString(TAG_COMMAND, this.command);
-        }
-        this.nbt.putLong(TAG_LAST_EXECUTION, this.lastExecution)
-                .putBoolean(TAG_TRACK_OUTPUT, this.trackOutput);
-        if (this.lastOutput != null && !this.lastOutput.isEmpty()) {
-            this.nbt.putString(TAG_LAST_OUTPUT, this.lastOutput);
-        }
+
+        ListTag<StringTag> params = new ListTag<>();
         if (this.lastOutputParams != null) {
-            ListTag<StringTag> params = new ListTag<>();
             for (String param : this.lastOutputParams) {
                 params.add(new StringTag(param));
             }
-            this.nbt.putList(TAG_LAST_OUTPUT_PARAMS, params);
         }
-        this.nbt.putInt(TAG_LP_COMMAND_MODE, this.lastOutputCommandMode)
+
+        this.nbt.putString(TAG_COMMAND, this.command != null ? this.command : "")
+                .putString(TAG_CUSTOM_NAME, this.hasName() ? this.getNbt().getString(TAG_CUSTOM_NAME) : "")
+                .putBoolean(TAG_EXECUTE_ON_FIRST_TICK, this.executingOnFirstTick)
+                .putInt(TAG_LP_COMMAND_MODE, this.lastOutputCommandMode)
                 .putBoolean(TAG_LP_CONDIONAL_MODE, this.lastOutputCondionalMode)
                 .putBoolean(TAG_LP_REDSTONE_MODE, this.lastOutputRedstoneMode)
+                .putLong(TAG_LAST_EXECUTION, this.lastExecution)
+                .putString(TAG_LAST_OUTPUT, this.lastOutput != null ? this.lastOutput : "")
+                .putList(TAG_LAST_OUTPUT_PARAMS, params)
                 .putInt(TAG_SUCCESS_COUNT, this.successCount)
-                .putBoolean(TAG_CONDITION_MET, this.conditionMet)
-                .putInt(TAG_VERSION, CURRENT_VERSION)
                 .putInt(TAG_TICK_DELAY, this.tickDelay)
-                .putBoolean(TAG_EXECUTE_ON_FIRST_TICK, this.executingOnFirstTick);
+                .putBoolean(TAG_TRACK_OUTPUT, this.trackOutput)
+                .putInt(TAG_VERSION, CURRENT_VERSION)
+                .putBoolean(TAG_AUTO, this.auto)
+                .putBoolean(TAG_CONDITION_MET, this.conditionMet)
+                .putBoolean(TAG_POWERED, this.powered);
     }
 
     @Override
@@ -253,7 +248,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean hasName() {
-        return this.nbt.contains(TAG_CUSTOM_NAME);
+        return this.nbt.containsString(TAG_CUSTOM_NAME) && !this.nbt.getString(TAG_CUSTOM_NAME).isEmpty();
     }
 
     @Override

@@ -280,7 +280,7 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
         packet.setPosition(this.toNetwork());
         packet.setData(-1);
         packet.setActorIdentifier(getIdentifier());
-        packet.setActorUniqueId(getId());
+        packet.setActorUniqueId(uniqueIdLong());
         packet.setBaby(!isFullGrown());
         packet.setGlobal(false);
         this.level.addChunkPacket(getFloorX() >> 4, getFloorZ() >> 4, packet);
@@ -686,7 +686,7 @@ public class EntitySulfurCube extends EntityAnimal implements EntityWalkable, En
     }
 
     private void splitIntoChildren() {
-        CompoundTag childNbt = getNbt().copy();
+        CompoundTag childNbt = copyNBTForNewActor();
         childNbt.remove(TAG_ABSORBED_BLOCK);
         childNbt.remove(TAG_FUSE);
         childNbt.remove(TAG_FROM_BUCKET);

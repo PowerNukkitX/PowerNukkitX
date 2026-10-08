@@ -1,5 +1,6 @@
 package org.powernukkitx.level.village;
 
+import com.google.common.base.Preconditions;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.IntTag;
@@ -10,17 +11,36 @@ import java.util.List;
 import java.util.ArrayList;
 
 public final class VillageDwellers {
+    private static final int ROLE_COUNT = Role.values().length;
     private final List<Dweller> dwellers;
 
-    public VillageDwellers(List<Dweller> dwellers) {
-        this.dwellers = new ArrayList<>(dwellers);
+    enum Role {
+        INHABITANT,
+        DEFENDER,
+        HOSTILE,
+        PASSIVE
     }
 
-    public List<Dweller> dwellers() { return dwellers; }
+    public VillageDwellers(List<Dweller> dwellers) {
+        Preconditions.checkArgument(dwellers.size() <= ROLE_COUNT, "Dwellers can contain at most %s roles", ROLE_COUNT);
+        this.dwellers = new ArrayList<>(ROLE_COUNT);
+        this.dwellers.addAll(dwellers);
+        while (this.dwellers.size() < ROLE_COUNT) this.dwellers.add(new Dweller(List.of()));
+    }
+
+    public List<Dweller> dwellers() { return List.copyOf(dwellers); }
+
+    static VillageDwellers empty() {
+        return new VillageDwellers(List.of());
+    }
+
+    Dweller get(Role role) {
+        return dwellers.get(role.ordinal());
+    }
 
     public static VillageDwellers fromCompound(CompoundTag tag) {
         return new VillageDwellers(tag.getList("Dwellers", CompoundTag.class).getAll().stream()
-                .map(Dweller::fromCompound).toList());
+                .limit(ROLE_COUNT).map(Dweller::fromCompound).toList());
     }
 
     public CompoundTag toCompound() {
@@ -53,9 +73,7 @@ public final class VillageDwellers {
     public record Actor(long id, BlockVector3 lastSavedPosition, long timestamp, @Nullable Long lastWorked) {
         public static Actor fromCompound(CompoundTag tag) {
             var position = tag.getList("last_saved_pos");
-            if (position.size() != 3) {
-                throw new IllegalArgumentException("last_saved_pos must contain exactly three coordinates");
-            }
+            Preconditions.checkArgument(position.size() == 3, "last_saved_pos must contain exactly three coordinates");
             return new Actor(tag.getLong("ID"),
                     new BlockVector3(((Number) position.get(0).parseValue()).intValue(),
                             ((Number) position.get(1).parseValue()).intValue(),
@@ -66,11 +84,11 @@ public final class VillageDwellers {
         public CompoundTag toCompound() {
             CompoundTag result = new CompoundTag()
                     .putLong("ID", id)
+                    .putLong("TS", timestamp)
                     .putList("last_saved_pos", new ListTag<IntTag>()
                             .add(new IntTag(lastSavedPosition.x))
                             .add(new IntTag(lastSavedPosition.y))
-                            .add(new IntTag(lastSavedPosition.z)))
-                    .putLong("TS", timestamp);
+                            .add(new IntTag(lastSavedPosition.z)));
             if (lastWorked != null) {
                 result.putLong("last_worked", lastWorked);
             }
