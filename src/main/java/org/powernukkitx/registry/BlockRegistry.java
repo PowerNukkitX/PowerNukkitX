@@ -105,6 +105,14 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         return ALIASES.getOrDefault(id, id);
     }
 
+    private static FastConstructor<? extends Block> resolveConstructor(String identifier) {
+        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        if (constructor == null) {
+            constructor = CACHE_CONSTRUCTORS.get(resolveAlias(identifier));
+        }
+        return constructor;
+    }
+
     private static void registerAliases(String key, Block block) {
         for (String alias : block.getAliases()) {
             ALIASES.putIfAbsent(alias, key);
@@ -1528,13 +1536,16 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public BlockProperties getBlockProperties(String identifier) {
         BlockProperties properties = PROPERTIES.get(identifier);
         if (properties == null) {
+            properties = PROPERTIES.get(resolveAlias(identifier));
+        }
+        if (properties == null) {
             throw new IllegalArgumentException("Get the Block State from a unknown id: " + identifier);
         } else return properties;
     }
 
     @Override
     public Block get(String identifier) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(resolveAlias(identifier));
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             return (Block) constructor.invoke((Object) null);
@@ -1544,7 +1555,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
@@ -1558,7 +1569,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
@@ -1573,7 +1584,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z, int layer, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);

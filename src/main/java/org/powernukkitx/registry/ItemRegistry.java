@@ -672,8 +672,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     @Override
     public Item get(String key) {
         try {
-            key = resolveAlias(key);
             FastConstructor<? extends Item> fastConstructor = CACHE_CONSTRUCTORS.get(key);
+            if (fastConstructor == null) {
+                key = resolveAlias(key);
+                fastConstructor = CACHE_CONSTRUCTORS.get(key);
+            }
             if (fastConstructor == null) return null;
             Item item = (Item) fastConstructor.invoke();
 
@@ -689,8 +692,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta) {
         try {
-            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -707,8 +713,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count) {
         try {
-            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -726,8 +735,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count, NbtMap tags) {
         try {
-            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -747,8 +759,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
     public Item get(String id, int meta, int count, byte[] tags) {
         try {
-            id = resolveAlias(id);
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -783,6 +798,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         isLoad.set(false);
         CACHE_CONSTRUCTORS.clear();
         CUSTOM_ITEM_DEFINITIONS.clear();
+        ALIASES.clear();
         init();
     }
 
