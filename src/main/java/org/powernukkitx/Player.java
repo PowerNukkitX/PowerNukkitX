@@ -3663,6 +3663,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.startAirTicks = (int) ((-(Math.log(this.getGravity() / (this.getGravity() + this.getDrag() * this.motionY))) / this.getDrag()) * 2 + 5);
             }
 
+            this.motionX = this.motionY = this.motionZ = 0;
             return true;
         }
 
