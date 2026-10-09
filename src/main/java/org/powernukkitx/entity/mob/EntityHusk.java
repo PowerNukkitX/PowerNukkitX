@@ -133,7 +133,7 @@ public class EntityHusk extends EntityZombie {
     @Override
     protected boolean transform() {
         this.saveNBT();
-        Entity zombie = new EntityZombie(this.getChunk(), this.getNbt().copy().remove("Health"));
+        Entity zombie = new EntityZombie(this.getChunk(), this.copyNBTForNewActor().remove("Health"));
         EntityTransformEvent event = new EntityTransformEvent(this, zombie);
         server.getPluginManager().callEvent(event);
         if(event.isCancelled()) {

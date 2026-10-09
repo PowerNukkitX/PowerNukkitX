@@ -35,4 +35,11 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
         return Set.of("zombie", "zombie_villager", "undead", "monster", "mob");
     }
 
+    /**
+     * A zombie villager spawns empty handed, it keeps nothing from the villager it was.
+     */
+    @Override
+    protected void equipOnSpawn() {
+    }
+
 }

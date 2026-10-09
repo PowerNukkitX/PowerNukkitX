@@ -35,13 +35,8 @@ public class EatGrassExecutor implements IBehaviorExecutor {
                     entity.level.setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));
                 }
             }
-            if (entity instanceof EntitySheep sheep) {
-                if (sheep.isSheared()) {
-                    sheep.growWool();
-                    return false;
-                }
-                if (sheep.isBaby()) //TODO: Accelerated growth instead of instant growth
-                    sheep.setBaby(false);
+            if (entity instanceof EntitySheep sheep && sheep.isSheared()) {
+                sheep.growWool();
             }
             return false;
         }

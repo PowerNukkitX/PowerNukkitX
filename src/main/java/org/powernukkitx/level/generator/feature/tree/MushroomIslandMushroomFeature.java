@@ -9,7 +9,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class MushroomIslandMushroomFeature extends ObjectGeneratorFeature {
-
     public static final String NAME = "minecraft:mushroom_island_surface_huge_mushroom_feature";
 
     @Override

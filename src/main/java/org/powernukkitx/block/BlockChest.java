@@ -157,7 +157,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             return false;
 
         chest.pairWith(blockEntity);
-        blockEntity.pairWith(chest);
         return true;
     }
 
@@ -272,20 +271,12 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
 
     @Override
     public boolean canBePushed() {
-        return canMove();
+        return true;
     }
 
     @Override
     public boolean canBePulled() {
-        return canMove();
-    }
-
-    /**
-     * TODO: Double chests cannot be moved
-     */
-    protected boolean canMove() {
-        var blockEntity = this.getBlockEntity();
-        return blockEntity == null || !blockEntity.isPaired();
+        return true;
     }
 
     @Override

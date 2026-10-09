@@ -358,7 +358,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag tag = super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Active", this.active);
         Entity targetEntity = this.targetEntity;
         tag.putLong("Target", targetEntity != null ? targetEntity.runtimeId() : -1);

@@ -233,7 +233,11 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     );
                     cauldron.setCustomColor(mixed);
                 }
-                this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
+                this.level.addLevelEvent(
+                        this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
+                        LevelEvent.CAULDRON_ADD_DYE,
+                        cauldron.getCustomColor().getRGB() << 8 >> 8
+                );
 
                 break;
             case ItemID.WOLF_ARMOR:
@@ -402,7 +406,11 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         );
                         cauldron.setCustomColor(mixed);
                     }
-                    this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
+                    this.level.addLevelEvent(
+                            this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
+                            LevelEvent.CAULDRON_ADD_DYE,
+                            cauldron.getCustomColor().getRGB() << 8 >> 8
+                    );
                 } else {
                     return true;
                 }

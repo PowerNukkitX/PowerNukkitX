@@ -68,8 +68,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
             return false;
         }
 
-        BlockEntityConduit conduit = BlockEntityHolder.setBlockAndCreateEntity(this, false, true,
-                new CompoundTag().putBoolean("IsMovable", true));
+        BlockEntityConduit conduit = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, new CompoundTag());
         if (conduit != null) {
             conduit.scheduleUpdate();
             return true;

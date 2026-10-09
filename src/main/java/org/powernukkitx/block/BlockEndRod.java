@@ -99,7 +99,7 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(new BlockEndPortalFrame(), 0);
+        return new ItemBlock(new BlockEndRod(), 0);
     }
 
     @Override

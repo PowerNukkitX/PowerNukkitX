@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Kaooot
@@ -88,9 +89,10 @@ public class PlayerSessionHolder {
     private InternalPackManager internalPackManager;
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
+    private static final long DISCONNECT_TIMEOUT_SECONDS = 10L;
 
     private final Object rateLimitLock = new Object();
-    private boolean disconnected = false;
+    private volatile boolean disconnected = false;
 
     public InternalPackManager getInternalPackManager() {
         if (this.internalPackManager == null) {
@@ -149,16 +151,27 @@ public class PlayerSessionHolder {
     }
 
     public void disconnect(DisconnectFailReason reason) {
-        this.disconnected = true;
         this.disconnect(reason, Registries.DISCONNECT_REASON.get(reason));
     }
 
     public void disconnect(DisconnectFailReason reason, String message) {
+        if (this.disconnected) {
+            return;
+        }
+        this.disconnected = true;
+
         final DisconnectPacket packet = new DisconnectPacket();
         packet.setReason(reason);
         packet.setMessages(new DisconnectPacketMessages(message, ""));
 
         this.session.sendPacketImmediately(packet);
+        // Same idea as BedrockServerSession#disconnect, which we can't use since it drops the reason:
+        // let the client read the message and leave first, then close whatever is still open.
+        this.session.getPeer().getChannel().eventLoop().schedule(() -> {
+            if (this.session.isConnected()) {
+                this.session.close(message);
+            }
+        }, DISCONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         SocketAddress socketAddress = this.getSession().getSocketAddress();
 
@@ -224,7 +237,7 @@ public class PlayerSessionHolder {
         final PlayerListAddEntry playerListEntry = new PlayerListAddEntry();
 
         playerListEntry.setUuid(this.player.getUniqueId());
-        playerListEntry.setActorUniqueID(this.player.getId());
+        playerListEntry.setActorUniqueID(this.player.uniqueIdLong());
         playerListEntry.setPlayerName(this.player.getName());
         playerListEntry.setXblXUID(this.player.getXUID());
         playerListEntry.setPlatformOnlineID("");
@@ -243,6 +256,7 @@ public class PlayerSessionHolder {
         this.player.getLevel().sendTime(this.player);
 
         this.player.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
+        this.player.sendPacketImmediately(Registries.STRUCTURE.getJigsawStructureData());
         this.sendStartGame(server);
 
         for (SyncActorPropertyPacket syncActorPropertyPacket : EntityProperty.getEntityPropertyCache()) {
@@ -324,11 +338,11 @@ public class PlayerSessionHolder {
 
     private void sendStartGame(Server server) {
         final StartGamePacket packet = new StartGamePacket();
-        packet.setEntityID(this.player.getId());
+        packet.setEntityID(this.player.uniqueIdLong());
         packet.setRuntimeID(this.player.runtimeId());
         packet.setGameType(GameType.from(Player.toNetworkGamemode(this.player.getGamemode())));
         packet.setPosition(this.player.getInitialSpawnPosition());
-        packet.setRotation(Vector2f.from(this.player.getYaw(), this.player.getPitch()));
+        packet.setRotation(Vector2f.from(this.player.getPitch(), this.player.getYaw()));
 
         packet.getSettings().setSeed(-1L);
         packet.getSettings().getSpawnSettings().setDimension(DimensionType.from(this.player.level.getDimension()));
@@ -397,6 +411,7 @@ public class PlayerSessionHolder {
         packet.setLevelCurrentTime(this.player.getLevel().getCurrentTick());
         packet.setEnchantmentSeed(this.player.getEnchantmentSeed());
 
+        packet.getBlockProperties().addAll(Registries.BLOCK.getDataDrivenProperties());
         for (final CustomBlockDefinition definition : Registries.BLOCK.getCustomBlockDefinitionList()) {
             packet.getBlockProperties().add(definition.toNetwork());
         }
@@ -457,6 +472,9 @@ public class PlayerSessionHolder {
             this.player.setInboundProcessor(networkPacketHandler::processInbound);
         }
         Server.getInstance().onPlayerLogin((InetSocketAddress) this.session.getSocketAddress(), player);
+        if (!this.player.isConnected()) {
+            return;
+        }
         this.playerHandle.processLogin();
     }
 

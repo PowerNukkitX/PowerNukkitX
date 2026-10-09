@@ -54,6 +54,7 @@ import org.powernukkitx.inventory.EntityEquipmentInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -201,8 +202,13 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int bamboo = Utils.rand(0, 2 + looting);
+        if (bamboo == 0) {
+            return Item.EMPTY_ARRAY;
+        }
         return new Item[]{
-                Item.get(Block.BAMBOO, 0, Utils.rand(0, 3))
+                Item.get(Block.BAMBOO, 0, bamboo)
         };
     }
 

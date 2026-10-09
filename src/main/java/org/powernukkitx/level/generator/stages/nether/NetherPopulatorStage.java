@@ -1,5 +1,12 @@
 package org.powernukkitx.level.generator.stages.nether;
 
+import org.powernukkitx.block.BlockLava;
+import org.powernukkitx.block.BlockState;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.generator.ChunkGenerateContext;
+import org.powernukkitx.level.generator.object.BlockManager;
+import org.powernukkitx.level.generator.object.GenerationLiquidUpdateAccess;
 import org.powernukkitx.level.generator.populator.generic.PopulatorRuinedPortal;
 import org.powernukkitx.level.generator.populator.nether.*;
 import org.powernukkitx.level.generator.populator.nether.basalt_delta.BasaltDeltaLavaPopulator;
@@ -14,10 +21,13 @@ import org.powernukkitx.level.generator.populator.nether.warped.WarpedGrassesPop
 import org.powernukkitx.level.generator.populator.nether.warped.WarpedTwistingVinesPopulator;
 import org.powernukkitx.level.generator.stages.PopulatorStage;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import org.powernukkitx.utils.random.BedrockRandom;
 
 public class NetherPopulatorStage extends PopulatorStage {
 
     public static final String NAME = "nether_populator";
+    private static final int OPEN_SPRING_ATTEMPTS = 8;
+    private static final BlockState LAVA = BlockLava.PROPERTIES.getDefaultState();
 
     public static final ObjectArraySet<String> POPULATORS = new ObjectArraySet<>(new String[] {
             GlowstonePopulator.NAME,
@@ -46,6 +56,44 @@ public class NetherPopulatorStage extends PopulatorStage {
             PopulatorRuinedPortal.NAME,
             NetherFossilPopulator.NAME
     });
+
+    @Override
+    protected void beforeApplyBlocks(ChunkGenerateContext context, BlockManager root) {
+        IChunk chunk = context.getChunk();
+        var updates = chunk.getGenerationBlockUpdateQueue();
+        BedrockRandom random = createDecorationRandom(context.getLevel(), chunk);
+
+        int baseX = (chunk.getX() << 4) + 8;
+        int baseZ = (chunk.getZ() << 4) + 8;
+        for (int i = 0; i < OPEN_SPRING_ATTEMPTS; i++) {
+            int x = baseX + random.nextInt(16);
+            int y = 4 + random.nextInt(120);
+            int z = baseZ + random.nextInt(16);
+            updates.add(LAVA, x, y, z, 0L, 0);
+        }
+
+        if (context.getLevel().getGameplaySettings().enableLiquidFlow()) {
+            updates.settleLiquids(new GenerationLiquidUpdateAccess(root, updates));
+        }
+    }
+
+    @Override
+    protected void afterApplyBlocks(ChunkGenerateContext context, BlockManager root) {
+        context.getChunk().getGenerationBlockUpdateQueue().drainToRuntime(context.getLevel());
+    }
+
+    private static BedrockRandom createDecorationRandom(Level level, IChunk chunk) {
+        int worldSeed = (int) level.getSeed();
+        BedrockRandom random = new BedrockRandom(worldSeed);
+
+        int first = random.nextInt();
+        int second = random.nextInt();
+        int oddX = (first + (first >>> 31)) | 1;
+        int oddZ = (second + (second >>> 31)) | 1;
+        int decorationSeed = chunk.getX() * oddX + chunk.getZ() * oddZ ^ worldSeed;
+
+        return random.setSeed(decorationSeed);
+    }
 
     @Override
     public ObjectArraySet<String> populators() {

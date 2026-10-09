@@ -11,7 +11,6 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -92,15 +91,15 @@ public class ItemPainting extends Item {
 
         CompoundTag nbt = new CompoundTag()
                 .putByte("Direction", direction)
-                .putString("Motive", motive.title)
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(position.x))
-                        .add(new DoubleTag(position.y))
-                        .add(new DoubleTag(position.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
+                .putString("Motif", motive.title)
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag((float) position.x))
+                        .add(new FloatTag((float) position.y))
+                        .add(new FloatTag((float) position.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(direction * 90))
                         .add(new FloatTag(0)));

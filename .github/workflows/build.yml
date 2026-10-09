@@ -47,11 +47,11 @@ jobs:
           fetch-depth: 1
           submodules: false
 
-      - uses: actions/setup-java@v6.0.0
+      - uses: actions/setup-java@v6.0.1
         if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
 
       - uses: actions/cache@v6
         if: github.event_name == 'pull_request' && needs.changes.outputs.relevant == 'true'
@@ -86,11 +86,11 @@ jobs:
           fetch-depth: 1
           submodules: false
 
-      - uses: actions/setup-java@v6.0.0
+      - uses: actions/setup-java@v6.0.1
         if: needs.changes.outputs.relevant == 'true'
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
 
       - uses: actions/cache@v6
         if: needs.changes.outputs.relevant == 'true'
@@ -108,7 +108,7 @@ jobs:
       - if: needs.changes.outputs.relevant == 'true'
         run: ./gradlew checkFast --no-configuration-cache --no-daemon --parallel --max-workers=2 --stacktrace
 
-      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5
         if: needs.changes.outputs.relevant == 'true' && success()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

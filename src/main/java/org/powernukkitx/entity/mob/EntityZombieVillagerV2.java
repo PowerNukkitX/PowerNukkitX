@@ -95,6 +95,13 @@ public class EntityZombieVillagerV2 extends EntityZombie implements EntityWalkab
         return HealthComponent.value(20);
     }
 
+    /**
+     * A zombie villager spawns empty handed, it keeps nothing from the villager it was.
+     */
+    @Override
+    protected void equipOnSpawn() {
+    }
+
     @Override
     protected @Nullable MovementComponent getComponentMovement() {
         float ageMovement = this.isBaby() ? 0.35f : 0.23f;
@@ -146,7 +153,7 @@ public class EntityZombieVillagerV2 extends EntityZombie implements EntityWalkab
 
      protected void transformVillager() {
          this.saveNBT();
-         Entity villager = new EntityVillagerV2(this.getChunk(), this.getNbt().copy().remove("profession", "Health"));
+         Entity villager = new EntityVillagerV2(this.getChunk(), this.copyNBTForNewActor().remove("profession", "Health"));
          EntityTransformEvent event = new EntityTransformEvent(this, villager);
          server.getPluginManager().callEvent(event);
          if(event.isCancelled()) {

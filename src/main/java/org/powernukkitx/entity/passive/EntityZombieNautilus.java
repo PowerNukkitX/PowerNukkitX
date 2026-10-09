@@ -3,6 +3,7 @@ package org.powernukkitx.entity.passive;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -33,6 +34,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
@@ -47,7 +49,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Buddelbubi
  * @since 2025/12/15
  */
-public class EntityZombieNautilus extends EntityNautilus {
+public class EntityZombieNautilus extends EntityNautilus implements EntitySmite {
 
     private static final String[] VARIANTS = {
         "default",
@@ -136,6 +138,11 @@ public class EntityZombieNautilus extends EntityNautilus {
     @Override
     public Set<String> typeFamily() {
         return Set.of("zombie_nautilus", "zombie", "undead", "mob");
+    }
+
+    @Override
+    public boolean isUndead() {
+        return true;
     }
 
     @Override
@@ -325,7 +332,7 @@ public class EntityZombieNautilus extends EntityNautilus {
 
         if (this.jockeyType == SpawnRiderType.DROWNED_JOCKEY) {
             Item trident = Item.get(Item.TRIDENT, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(trident));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(trident)));
         }
 
         Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);

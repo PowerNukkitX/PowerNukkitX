@@ -8,12 +8,15 @@ import org.powernukkitx.blockentity.BlockEntityID;
 import org.powernukkitx.entity.mob.EntityCreaking;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityCreakingHeart> {
 
@@ -49,11 +52,9 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if(BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null) {
-            this.setPillarAxis(face.getAxis());
-            return true;
-        }
-        return false;
+        setPropertyValue(CommonBlockProperties.NATURAL, false);
+        setPillarAxis(face.getAxis());
+        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null;
     }
 
     @Override
@@ -66,11 +67,8 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
         if(getBlockEntity().getLinkedCreaking() == null) {
             CreakingHeartState state = CreakingHeartState.DORMANT;
             for (BlockFace face : BlockFace.values()) {
-                if (getPillarAxis().test(face)) {
-                    Block block = getSide(face);
-                    if (block instanceof BlockPaleOakLog log) {
-                        if (log.getPillarAxis() != getPillarAxis()) state = CreakingHeartState.UPROOTED;
-                    } else state = CreakingHeartState.UPROOTED;
+                if (getPillarAxis().test(face) && !BlockEntityCreakingHeart.isPaleOakHeartLog(getSide(face), getPillarAxis())) {
+                    state = CreakingHeartState.UPROOTED;
                 }
             }
 
@@ -99,7 +97,7 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
 
     @Override
     public int getLightLevel() {
-        return isActive() ? 15 : 0;
+        return getState() == CreakingHeartState.AWAKE ? 15 : 0;
     }
 
     @Override
@@ -138,7 +136,29 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
 
     @Override
     public boolean isSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
-        return false;
+        return item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {
+            return new Item[]{PROPERTIES.getDefaultState().toItem()};
+        }
+
+        int count = ThreadLocalRandom.current().nextInt(1, 4);
+        int fortune = item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING);
+        if (fortune > 0) count += ThreadLocalRandom.current().nextInt(fortune + 1);
+        count = Math.min(9, count);
+
+        Item resin = Block.get(Block.RESIN_CLUMP).toItem();
+        resin.setCount(count);
+        return new Item[]{resin};
+    }
+
+    @Override
+    public int getDropExp() {
+        if (!getPropertyValue(CommonBlockProperties.NATURAL)) return 0;
+        return ThreadLocalRandom.current().nextInt(20, 25);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.powernukkitx;
 
+import com.google.common.base.Preconditions;
 import org.powernukkitx.metadata.Metadatable;
+import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.permission.ServerOperator;
 
 import java.util.UUID;
@@ -118,5 +120,77 @@ public interface IPlayer extends ServerOperator, Metadatable {
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     boolean hasPlayedBefore();
+
+    /**
+     * Returns the canonical BDS-compatible player NBT.
+     */
+    default CompoundTag getNbt() {
+        return requireOnlinePlayerForNbt().getNbt();
+    }
+
+    /**
+     * Replaces the canonical BDS-compatible player NBT.
+     */
+    default void setNbt(CompoundTag nbt) {
+        requireOnlinePlayerForNbt().setNbt(Preconditions.checkNotNull(nbt, "nbt"));
+    }
+
+    /**
+     * Returns the PNX-specific player NBT sidecar.
+     */
+    default CompoundTag getNbtExtra() {
+        return requireOnlinePlayerForNbt().getNbtExtra();
+    }
+
+    /**
+     * Replaces the PNX-specific player NBT sidecar.
+     */
+    default void setNbtExtra(CompoundTag nbtExtra) {
+        requireOnlinePlayerForNbt().setNbtExtra(Preconditions.checkNotNull(nbtExtra, "nbtExtra"));
+    }
+
+    /**
+     * Returns the custom player NBT sidecar.
+     */
+    default CompoundTag getNbtCustom() {
+        return requireOnlinePlayerForNbt().getNbtCustom();
+    }
+
+    /**
+     * Replaces the custom player NBT sidecar.
+     */
+    default void setNbtCustom(CompoundTag nbtCustom) {
+        requireOnlinePlayerForNbt().setNbtCustom(Preconditions.checkNotNull(nbtCustom, "nbtCustom"));
+    }
+
+    /**
+     * Returns all persistent player NBT layers.
+     */
+    default PlayerNBTData getNbtFullData() {
+        return new PlayerNBTData(this.getNbt(), this.getNbtExtra(), this.getNbtCustom());
+    }
+
+    /**
+     * Replaces all persistent player NBT layers.
+     */
+    default void setNbtFullData(PlayerNBTData data) {
+        Preconditions.checkNotNull(data, "data");
+        this.setNbt(data.getNbt());
+        this.setNbtExtra(data.getNbtExtra());
+        this.setNbtCustom(data.getNbtCustom());
+    }
+
+    /**
+     * Saves this player's persistent data.
+     */
+    default void save() {
+        requireOnlinePlayerForNbt().save();
+    }
+
+    private Player requireOnlinePlayerForNbt() {
+        Player player = this.getPlayer();
+        Preconditions.checkState(player != null, "NBT operation is unavailable for this offline player implementation");
+        return player;
+    }
 
 }

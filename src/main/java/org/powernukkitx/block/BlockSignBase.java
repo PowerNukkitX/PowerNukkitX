@@ -160,6 +160,11 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     }
 
     @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return true;
     }

@@ -111,7 +111,7 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

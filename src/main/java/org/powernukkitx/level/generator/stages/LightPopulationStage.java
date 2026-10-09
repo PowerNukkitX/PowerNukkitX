@@ -15,11 +15,8 @@ public class LightPopulationStage extends GenerateStage {
     @Override
     public void apply(ChunkGenerateContext context) {
         final IChunk chunk = context.getChunk();
-        if (chunk == null) {
-            return;
-        }
+        if (chunk == null) return;
+
         chunk.recalculateHeightMap();
-        chunk.populateSkyLight();
-        chunk.setLightPopulated();
     }
 }

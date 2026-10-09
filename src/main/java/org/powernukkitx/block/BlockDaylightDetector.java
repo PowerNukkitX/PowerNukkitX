@@ -61,6 +61,11 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
+    public int getLightFilter() {
+        return 0;
+    }
+
+    @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
@@ -148,12 +153,12 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         Level level = this.getLevel();
 
         if (level.getDimension() == Level.DIMENSION_OVERWORLD) {
-            int skylight = getEffectiveSkyLightSignalAround(level, getFloorX(), getFloorY(), getFloorZ());
-            i = skylight - level.calculateSkylightSubtracted(1.0F);
+            i = level.getBlockSkyLightAt(getFloorX(), getFloorY(), getFloorZ()) - level.skyLightSubtracted;
 
-            float f = level.getCelestialAngle(1.0F) * 6.2831855F;
-
-            if (i > 0) {
+            if (this.isInverted()) {
+                i = 15 - i;
+            } else if (i > 0) {
+                float f = level.getCelestialAngle(1.0F) * 6.2831855F;
                 float f1 = f < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
                 f = f + (f1 - f) * 0.2F;
                 i = Math.round((float) i * MathHelper.cos(f));
@@ -169,43 +174,10 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
         if (i != current) {
             this.setPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL, i);
-            BlockState blockState = this.getBlockState();
-            level.setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), blockState);
+            level.setBlock(this, this, false, true);
             updateAroundRedstone();
         }
     }
-
-    public int getEffectiveSkyLightSignalAround(Level level, int x, int y, int z) {
-        int skyReduction = level.skyLightSubtracted;
-
-        int bestSignal = level.getBlockSkyLightAt(x, y + 1, z) - skyReduction;
-        if (bestSignal >= 15) {
-            return 15;
-        }
-
-        final int radius = 11;
-
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                int dist = Math.abs(dx) + Math.abs(dz);
-                if (dist == 0 || dist > radius) continue;
-
-                int cx = x + dx;
-                int cz = z + dz;
-
-                int skylight = level.getBlockSkyLightAt(cx, y + 1, cz);
-                int signal = skylight - skyReduction - dist;
-
-                if (signal > bestSignal) {
-                    bestSignal = signal;
-                    if (bestSignal >= 15) return 15;
-                }
-            }
-        }
-
-        return Math.max(0, bestSignal);
-    }
-
 
     @Override
     public boolean isSolid() {
@@ -214,6 +186,6 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     @Override
     public double getMaxY() {
-        return this.y + 0.625;
+        return this.y + 0.375;
     }
 }

@@ -119,6 +119,19 @@ public class EntityHuman extends EntityHumanType {
         this.skin = skin;
     }
 
+    /**
+     * Returns the UUID used by this human entity.
+     * <p>
+     * Unlike non-human entity custom UUIDs, this UUID is part of the
+     * human/player identity used by the player protocol.
+     *
+     * @return human entity UUID
+     */
+    @Override
+    public UUID getUUID() {
+        return this.uuid;
+    }
+
     @Override
     public UUID getUniqueId() {
         return uuid;
@@ -240,9 +253,9 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (this instanceof Player pl)
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), pl.getDisplayName(), this.skin, pl.getXUID(), pl.getLocatorBarColor(), new Player[]{player});
+                this.server.updatePlayerListData(this.getUniqueId(), this.uniqueIdLong(), pl.getDisplayName(), this.skin, pl.getXUID(), pl.getLocatorBarColor(), new Player[]{player});
             else
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
+                this.server.updatePlayerListData(this.getUniqueId(), this.uniqueIdLong(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
             synchronized (this.actorDataMap) {
                 this.actorDataMap.put(RESERVED_139, 0L);
@@ -253,7 +266,7 @@ public class EntityHuman extends EntityHumanType {
             addPlayerPacket.setActorData(this.snapshotActorData());
             addPlayerPacket.setUuid(this.getUniqueId());
             addPlayerPacket.setPlayerName(this.getName());
-            addPlayerPacket.setTargetActorID(this.getId());
+            addPlayerPacket.setTargetActorID(this.uniqueIdLong());
             addPlayerPacket.setTargetRuntimeID(this.runtimeId());
             addPlayerPacket.setPosition(this.getPosition().toNetwork());
             addPlayerPacket.setVelocity(this.getMotionVector());
@@ -276,8 +289,8 @@ public class EntityHuman extends EntityHumanType {
                 final SetActorLinkPacket setActorLinkPacket = new SetActorLinkPacket();
                 setActorLinkPacket.setLink(
                         new ActorLink(
-                                this.riding.getId(),
-                                this.getId(),
+                                this.riding.uniqueIdLong(),
+                                this.uniqueIdLong(),
                                 ActorLinkType.RIDING,
                                 true,
                                 false,
@@ -295,7 +308,7 @@ public class EntityHuman extends EntityHumanType {
 
     public SerializedAbilitiesData buildSerializedAbilitiesData() {
         final SerializedAbilitiesData data = new SerializedAbilitiesData();
-        data.setTargetPlayerRawId(this.getId());
+        data.setTargetPlayerRawId(this.uniqueIdLong());
         data.setCommandPermissions(CommandPermissionLevel.ANY);
         data.setPlayerPermissions(PlayerPermissionLevel.MEMBER);
         final SerializedAbilitiesDataSerializedLayer layer = new SerializedAbilitiesDataSerializedLayer();
@@ -311,7 +324,7 @@ public class EntityHuman extends EntityHumanType {
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             final RemoveActorPacket packet = new RemoveActorPacket();
-            packet.setTargetActorID(this.getId());
+            packet.setTargetActorID(this.uniqueIdLong());
             player.sendPacket(packet);
             this.hasSpawned.remove(player.getLoaderId());
         }

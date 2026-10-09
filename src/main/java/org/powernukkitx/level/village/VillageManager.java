@@ -59,6 +59,27 @@ public final class VillageManager {
         return ids;
     }
 
+    private static @Nullable Profession getJobSiteProfession(String blockId) {
+        for (Profession profession : Profession.getProfessions().values()) {
+            if (profession.getBlockID().equals(blockId)) return profession;
+        }
+        return null;
+    }
+
+    private @Nullable VillagePoi createPoi(PoiType type, BlockVector3 position) {
+        if (type != PoiType.ACQUIRABLE_JOB_SITE) return new VillagePoi(type, position);
+        Profession profession = getJobSiteProfession(level.getBlock(position.x, position.y, position.z, false).getId());
+        return profession == null ? null : VillagePoi.jobSite(profession, position);
+    }
+
+    private static BlockVector3 getPoiPosition(Block block, PoiType type) {
+        BlockVector3 position = block.asBlockVector3();
+        if (type == PoiType.HOME && block instanceof BlockBed bed && !bed.isHeadPiece()) {
+            return position.getSide(bed.getBlockFace());
+        }
+        return position;
+    }
+
     public VillageManager(Level level) {
         this.level = level;
     }
@@ -118,39 +139,15 @@ public final class VillageManager {
      * A naturally formed village uses the pillow of its first claimed bed as this center.
      */
     public synchronized Village createVillage(BlockVector3 center) {
-        BlockVector3 min = center.add(-INITIAL_HORIZONTAL_RADIUS, -INITIAL_VERTICAL_RADIUS,
-                -INITIAL_HORIZONTAL_RADIUS);
-        BlockVector3 max = center.add(INITIAL_HORIZONTAL_RADIUS, INITIAL_VERTICAL_RADIUS,
-                INITIAL_HORIZONTAL_RADIUS);
-        long tick = level.getCurrentTick();
-        VillageInfo info = new VillageInfo(0, 0, true, tick, tick, min, max, tick, (byte) 1, min, max);
-        Village village = new Village(UUID.randomUUID(), discoverDwellers(min, max, tick), info,
+        BlockVector3 min = center.add(-INITIAL_HORIZONTAL_RADIUS, -INITIAL_VERTICAL_RADIUS, -INITIAL_HORIZONTAL_RADIUS);
+        BlockVector3 max = center.add(INITIAL_HORIZONTAL_RADIUS, INITIAL_VERTICAL_RADIUS, INITIAL_HORIZONTAL_RADIUS);
+        BlockVector3 raidMin = new BlockVector3(0, 0, 0);
+        BlockVector3 raidMax = new BlockVector3(1, 1, 1);
+        VillageInfo info = new VillageInfo(0, 0, false, 0, 0, raidMin, raidMax, 0, (byte) 1, min, max);
+        Village village = new Village(UUID.randomUUID(), VillageDwellers.empty(), info,
                 new VillagePlayers(new ListTag<Tag>()), discoverPois(min, max), null);
         villages.put(village.uuid(), village);
         return village;
-    }
-
-    private VillageDwellers discoverDwellers(BlockVector3 min, BlockVector3 max, long tick) {
-        List<VillageDwellers.Actor> actors = new ArrayList<>();
-        for (int chunkX = min.x >> 4; chunkX <= max.x >> 4; chunkX++) {
-            for (int chunkZ = min.z >> 4; chunkZ <= max.z >> 4; chunkZ++) {
-                IChunk chunk = level.getChunkIfLoaded(chunkX, chunkZ);
-                if (chunk == null) {
-                    continue;
-                }
-                for (var entity : chunk.getEntities().values()) {
-                    if (entity instanceof EntityVillagerV2 villager) {
-                        BlockVector3 pos = villager.asBlockVector3();
-                        if (isInside(min, max, pos)) {
-                            actors.add(new VillageDwellers.Actor(villager.runtimeId(), pos, tick, null));
-                        }
-                    }
-                }
-            }
-        }
-        return actors.isEmpty()
-                ? new VillageDwellers(List.of())
-                : new VillageDwellers(List.of(new VillageDwellers.Dweller(actors)));
     }
 
     private VillagePois discoverPois(BlockVector3 min, BlockVector3 max) {
@@ -170,7 +167,8 @@ public final class VillageManager {
                         for (int y = min.y; y <= max.y; y++) {
                             Block block = level.getBlock(x, y, z, false);
                             PoiType type = null;
-                            if (block instanceof BlockBed bed && !bed.isHeadPiece()) {
+                            if (block instanceof BlockBed bed) {
+                                if (!bed.isHeadPiece()) continue;
                                 type = PoiType.HOME;
                             } else if (block instanceof BlockBell) {
                                 type = PoiType.MEETING;
@@ -178,7 +176,8 @@ public final class VillageManager {
                                 type = PoiType.ACQUIRABLE_JOB_SITE;
                             }
                             if (type != null) {
-                                pois.add(new VillagePoi(type, new BlockVector3(x, y, z)));
+                                VillagePoi poi = createPoi(type, getPoiPosition(block, type));
+                                if (poi != null) pois.add(poi);
                             }
                         }
                     }
@@ -192,15 +191,10 @@ public final class VillageManager {
 
     public synchronized void addDweller(UUID villageUuid, VillageDwellers.Actor actor) {
         Village village = villages.get(villageUuid);
-        if (village == null || isDweller(actor.id())) {
-            return;
-        }
-        List<VillageDwellers.Dweller> dwellers = village.dwellers().dwellers();
-        if (dwellers.isEmpty()) {
-            dwellers.add(new VillageDwellers.Dweller(List.of(actor)));
-        } else {
-            dwellers.getFirst().actors().add(actor);
-        }
+        if (village == null || isDweller(actor.id())) return;
+        village.dwellers().get(VillageDwellers.Role.INHABITANT).actors().add(actor);
+        if (findGroup(village.pois().poi(), actor.id()) < 0) village.pois().poi().add(new VillagePoiGroup(actor.id(), List.of()));
+        if (!village.info().initialized()) village.setInfo(withInitialized(village.info()));
     }
 
     public void addVillage(Village village) {
@@ -227,21 +221,17 @@ public final class VillageManager {
     public synchronized void onBlockChange(Block previous, Block current) {
         PoiType previousType = getPoiType(previous);
         PoiType currentType = getPoiType(current);
-        if (previousType == null && currentType == null) {
-            return;
-        }
-        BlockVector3 position = current.asBlockVector3();
-        if (previousType != null) {
-            removePoi(position);
-        }
-        if (currentType != null) {
-            addPoi(position, currentType);
-        }
+        if (previousType == null && currentType == null) return;
+        BlockVector3 previousPosition = previousType == null ? null : getPoiPosition(previous, previousType);
+        BlockVector3 currentPosition = currentType == null ? null : getPoiPosition(current, currentType);
+        if (previousType == currentType && previousType != null && previous.getId().equals(current.getId()) && samePosition(previousPosition, currentPosition)) return;
+        if (previousType != null) removePoi(previousPosition);
+        if (currentType != null) addPoi(currentPosition, currentType);
     }
 
     public static @Nullable PoiType getPoiType(Block block) {
-        if (block instanceof BlockBed bed) {
-            return bed.isHeadPiece() ? null : PoiType.HOME;
+        if (block instanceof BlockBed) {
+            return PoiType.HOME;
         }
         if (block instanceof BlockBell) {
             return PoiType.MEETING;
@@ -259,7 +249,7 @@ public final class VillageManager {
                 }
             }
             if (removed) {
-                village.pois().poi().removeIf(group -> group.instances().isEmpty());
+                village.pois().poi().removeIf(group -> group.villagerId() == -1 && group.instances().isEmpty());
                 if (village.houseCount() == 0) {
                     dissolveVillage(village);
                     continue;
@@ -275,7 +265,7 @@ public final class VillageManager {
         }
         for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {
             for (VillageDwellers.Actor actor : dweller.actors()) {
-                if (level.getEntity(actor.id()) instanceof EntityVillagerV2 villager) {
+                if (level.getEntityByUniqueId(actor.id()) instanceof EntityVillagerV2 villager) {
                     villager.leaveVillage(village.uuid());
                 }
             }
@@ -287,6 +277,8 @@ public final class VillageManager {
         if (village == null || findAt(position) != null) {
             return;
         }
+        VillagePoi poi = createPoi(type, position);
+        if (poi == null) return;
         List<VillagePoiGroup> groups = village.pois().poi();
         int unownedIndex = -1;
         for (int i = 0; i < groups.size(); i++) {
@@ -296,9 +288,9 @@ public final class VillageManager {
             }
         }
         if (unownedIndex < 0) {
-            groups.add(new VillagePoiGroup(-1, List.of(new VillagePoi(type, position))));
+            groups.add(new VillagePoiGroup(-1, List.of(poi)));
         } else {
-            groups.get(unownedIndex).instances().add(new VillagePoi(type, position));
+            groups.get(unownedIndex).instances().add(poi);
         }
         village.setInfo(recalculateBounds(groups, village.info()));
     }
@@ -357,20 +349,20 @@ public final class VillageManager {
 
     /** Claims a POI for a villager and creates or expands its village when required. */
     public synchronized boolean takeAt(BlockVector3 position, long villagerId) {
+        Block block = level.getBlock(position.x, position.y, position.z, false);
+        PoiType type = getPoiType(block);
+        if (type == null) return false;
+        position = getPoiPosition(block, type);
         VillagePoi existing = findAt(position);
         if (existing != null) {
             if (!existing.hasSpace()) {
                 return false;
             }
-            return existing.ownerCount() == 0 && villagerId >= 0
+            return existing.ownerCount() == 0 && villagerId != -1
                     ? claimExistingPoi(position, villagerId)
                     : updateOwnerCount(position, ownerCount -> ownerCount + 1, true);
         }
 
-        PoiType type = getPoiType(level.getBlock(position.x, position.y, position.z, false));
-        if (type == null) {
-            return false;
-        }
         Village village = findVillageForClaim(position).orElse(null);
         if (village == null) {
             if (type != PoiType.HOME) {
@@ -378,20 +370,21 @@ public final class VillageManager {
             }
             village = createVillage(getHomeCenter(position));
             if (findAt(position) != null) {
-                return villagerId >= 0
+                return villagerId != -1
                         ? claimExistingPoi(position, villagerId)
                         : updateOwnerCount(position, ownerCount -> ownerCount + 1, true);
             }
         }
 
-        VillagePoi claimed = new VillagePoi(type, position);
+        VillagePoi claimed = createPoi(type, position);
+        if (claimed == null) return false;
         claimed.setOwnerCount(1);
         List<VillagePoiGroup> groups = village.pois().poi();
         int groupIndex = findGroup(groups, villagerId);
         if (groupIndex < 0) {
             groups.add(new VillagePoiGroup(villagerId, List.of(claimed)));
         } else {
-            groups.get(groupIndex).instances().add(claimed);
+            groups.get(groupIndex).set(claimed);
         }
         village.setInfo(expandToInclude(village.info(), position));
         return true;
@@ -447,12 +440,12 @@ public final class VillageManager {
             claimed.setOwnerCount(claimed.ownerCount() + 1);
             sourceGroup.instances().remove(claimed);
             List<VillagePoiGroup> groups = village.pois().poi();
-            groups.removeIf(group -> group.instances().isEmpty());
+            groups.removeIf(group -> group.villagerId() == -1 && group.instances().isEmpty());
             int groupIndex = findGroup(groups, villagerId);
             if (groupIndex < 0) {
                 groups.add(new VillagePoiGroup(villagerId, List.of(claimed)));
             } else {
-                groups.get(groupIndex).instances().add(claimed);
+                groups.get(groupIndex).set(claimed);
             }
             village.setInfo(recalculateBounds(groups, village.info()));
             return true;
@@ -555,9 +548,16 @@ public final class VillageManager {
         return withBounds(fallback, new BlockVector3(minX, minY, minZ), new BlockVector3(maxX, maxY, maxZ));
     }
 
+    private static VillageInfo withInitialized(VillageInfo info) {
+        return new VillageInfo(info.breedingCooldownTime(), info.golemSpawnCooldownTime(), true,
+                info.mergeTick(), info.playerDetectionTick(), info.raidBoundsMin(), info.raidBoundsMax(),
+                info.tick(), info.version(), info.boundsMin(), info.boundsMax());
+    }
+
     private static VillageInfo withBounds(VillageInfo info, BlockVector3 min, BlockVector3 max) {
         return new VillageInfo(info.breedingCooldownTime(), info.golemSpawnCooldownTime(), info.initialized(),
-                info.mergeTick(), info.playerDetectionTick(), min, max, info.tick(), info.version(), min, max);
+                info.mergeTick(), info.playerDetectionTick(), info.raidBoundsMin(), info.raidBoundsMax(),
+                info.tick(), info.version(), min, max);
     }
 
     private static boolean isInsideExpansionRange(VillageInfo info, BlockVector3 position) {

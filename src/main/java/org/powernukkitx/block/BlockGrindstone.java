@@ -57,6 +57,16 @@ public class BlockGrindstone extends BlockTransparent implements Faceable, Block
     }
 
     @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public Item toItem() {
         return new ItemBlock(new BlockGrindstone());
     }

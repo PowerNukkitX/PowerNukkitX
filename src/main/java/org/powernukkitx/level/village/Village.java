@@ -32,7 +32,7 @@ public final class Village {
 
     public void setInfo(VillageInfo info) { this.info = info; }
     public long population() {
-        return dwellers.dwellers().stream().mapToLong(dweller -> dweller.actors().size()).sum();
+        return dwellers.get(VillageDwellers.Role.INHABITANT).actors().size();
     }
 
     public long houseCount() {
