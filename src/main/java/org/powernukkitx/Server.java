@@ -632,13 +632,30 @@ public class Server {
                 );
             }
 
+            String configuredDPGroupUUID = settings.miscSettings().defaultDynamicPropertiesGroupUUID();
+            configuredDPGroupUUID = configuredDPGroupUUID == null ? "" : configuredDPGroupUUID.trim();
+            if (!configuredDPGroupUUID.isEmpty()) {
+                try {
+                    configuredDPGroupUUID = UUID.fromString(configuredDPGroupUUID).toString();
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalStateException("Invalid misc-settings.defaultDynamicPropertiesGroupUUID", e);
+                }
+            }
+
             byte[] dynamicPropertiesUUID = serverDataDB.get(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY);
-            if (dynamicPropertiesUUID == null) {
-                DP_DEFAULT_GROUP_UUID = UUID.randomUUID().toString();
-                serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, DP_DEFAULT_GROUP_UUID.getBytes(StandardCharsets.UTF_8)
-                );
-            } else {
-                DP_DEFAULT_GROUP_UUID = UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
+            String persistedDPGroupUUID = dynamicPropertiesUUID == null ? null
+                : UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
+
+            DP_DEFAULT_GROUP_UUID = !configuredDPGroupUUID.isEmpty() ? configuredDPGroupUUID
+                : persistedDPGroupUUID != null ? persistedDPGroupUUID : UUID.randomUUID().toString();
+
+            if (!DP_DEFAULT_GROUP_UUID.equals(persistedDPGroupUUID)) {
+                if (persistedDPGroupUUID != null) {
+                    log.warn("Overriding persisted Dynamic Properties UUID '{}' with configured UUID '{}'",
+                        persistedDPGroupUUID, DP_DEFAULT_GROUP_UUID);
+                }
+                serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY,
+                    DP_DEFAULT_GROUP_UUID.getBytes(StandardCharsets.UTF_8));
             }
 
             dynamicProperties = new DynamicProperties(this::readServerDynamicProperties, this::writeServerDynamicProperties);
