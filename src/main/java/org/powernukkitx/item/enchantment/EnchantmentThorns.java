@@ -25,7 +25,7 @@ public class EnchantmentThorns extends Enchantment {
 
     @Override
     public int getMaxEnchantAbility(int level) {
-        return super.getMinEnchantAbility(level) + 50;
+        return this.getMinEnchantAbility(level) + 50;
     }
 
     @Override
