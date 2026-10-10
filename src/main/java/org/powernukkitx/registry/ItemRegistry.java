@@ -42,7 +42,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class<? extends Item>> {
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Map<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
+    private static final Map<String, String> ALIASES = new HashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+
+    private static String resolveAlias(String id) {
+        return ALIASES.getOrDefault(id, id);
+    }
+
+    private static void registerAliases(String key, Item item) {
+        for (String alias : item.getAliases()) {
+            ALIASES.putIfAbsent(alias, key);
+        }
+    }
 
     @Getter
     private static NbtMap itemComponents = NbtMap.EMPTY;
@@ -683,6 +694,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public Item get(String key) {
         try {
             FastConstructor<? extends Item> fastConstructor = CACHE_CONSTRUCTORS.get(key);
+            if (fastConstructor == null) {
+                key = resolveAlias(key);
+                fastConstructor = CACHE_CONSTRUCTORS.get(key);
+            }
             if (fastConstructor == null) return null;
             Item item = (Item) fastConstructor.invoke();
 
@@ -699,6 +714,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public Item get(String id, int meta) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -716,6 +735,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public Item get(String id, int meta, int count) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -734,6 +757,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public Item get(String id, int meta, int count, NbtMap tags) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -754,6 +781,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public Item get(String id, int meta, int count, byte[] tags) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
+            if (c == null) {
+                id = resolveAlias(id);
+                c = CACHE_CONSTRUCTORS.get(id);
+            }
             if (c == null) return null;
             Item item = (Item) c.invoke();
 
@@ -788,6 +819,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         isLoad.set(false);
         CACHE_CONSTRUCTORS.clear();
         CUSTOM_ITEM_DEFINITIONS.clear();
+        ALIASES.clear();
         init();
     }
 
@@ -798,6 +830,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
                 throw new RegisterException("This item has already been registered with the identifier: " + key);
             }
+            registerAliases(key, (Item) c.invoke());
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
@@ -833,6 +866,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             }
 
             CUSTOM_ITEM_DEFINITIONS.put(key, def);
+            registerAliases(key, (Item) customItem);
             Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
 
             CompoundTag nbt = def.nbt();

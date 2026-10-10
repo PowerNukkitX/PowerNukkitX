@@ -1300,6 +1300,13 @@ public abstract class Item implements Cloneable, ItemID {
         return id;
     }
 
+    /**
+     * @return the alias identifiers for this item, or an empty array if it has none
+     */
+    public String[] getAliases() {
+        return EmptyArrays.EMPTY_STRINGS;
+    }
+
     public final Identifier getIdentifier() {
         return identifier;
     }

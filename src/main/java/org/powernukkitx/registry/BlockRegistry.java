@@ -105,7 +105,27 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
     private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
+    private static final Map<String, String> ALIASES = new HashMap<>();
+    private static volatile boolean aliasesBuilt = false;
     private static final List<ServerBlockProperty> DATA_DRIVEN_PROPERTIES = new ObjectArrayList<>();
+
+    private static String resolveAlias(String id) {
+        return ALIASES.getOrDefault(id, id);
+    }
+
+    private static FastConstructor<? extends Block> resolveConstructor(String identifier) {
+        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        if (constructor == null) {
+            constructor = CACHE_CONSTRUCTORS.get(resolveAlias(identifier));
+        }
+        return constructor;
+    }
+
+    private static void registerAliases(String key, Block block) {
+        for (String alias : block.getAliases()) {
+            ALIASES.putIfAbsent(alias, key);
+        }
+    }
 
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
@@ -1442,7 +1462,19 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CINNABAR_BRICK_STAIRS, BlockCinnabarBrickStairs.class);
         register0(POLISHED_CINNABAR_STAIRS, BlockPolishedCinnabarStairs.class);
 
+        buildAliases();
         loadDataDrivenProperties();
+    }
+
+    private static void buildAliases() {
+        for (var entry : CACHE_CONSTRUCTORS.entrySet()) {
+            try {
+                registerAliases(entry.getKey(), (Block) entry.getValue().invoke((Object) null));
+            } catch (Throwable e) {
+                log.error("Failed to resolve aliases for block: {}", entry.getKey(), e);
+            }
+        }
+        aliasesBuilt = true;
     }
 
     /**
@@ -1509,6 +1541,11 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                         Registries.BLOCKSTATE.registerInternal(state);
                         CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), c);
                     });
+                    // Vanilla blocks are instantiated in a post-pass at the end of init(): constructors such as
+                    // BlockSlab's resolve other blocks (the double slab) that may not be registered yet.
+                    if (aliasesBuilt) {
+                        registerAliases(blockProperties.getIdentifier(), (Block) c.invoke((Object) null));
+                    }
                 }
             } else {
                 throw new RegisterException("There block: %s must define a field `public static final BlockProperties PROPERTIES` in this class!".formatted(key));
@@ -1590,6 +1627,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                         Registries.BLOCKSTATE.registerInternal(state);
                         CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), c);
                     });
+                    registerAliases(key, customBlock.toBlock());
                 } else {
                     throw new RegisterException("Register Error: Must implement the CustomBlock interface!");
                 }
@@ -1619,6 +1657,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         CACHE_CONSTRUCTORS_BY_HASH.clear();
         PROPERTIES.clear();
         CUSTOM_BLOCK_DEFINITIONS.clear();
+        ALIASES.clear();
+        aliasesBuilt = false;
         DATA_DRIVEN_PROPERTIES.clear();
         init();
     }
@@ -1626,13 +1666,16 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public BlockProperties getBlockProperties(String identifier) {
         BlockProperties properties = PROPERTIES.get(identifier);
         if (properties == null) {
+            properties = PROPERTIES.get(resolveAlias(identifier));
+        }
+        if (properties == null) {
             throw new IllegalArgumentException("Get the Block State from a unknown id: " + identifier);
         } else return properties;
     }
 
     @Override
     public Block get(String identifier) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             return (Block) constructor.invoke((Object) null);
@@ -1642,7 +1685,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
@@ -1656,7 +1699,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
@@ -1671,7 +1714,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z, int layer, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
