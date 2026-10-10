@@ -1,0 +1,61 @@
+name: PR title check
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions: {}
+
+jobs:
+  check-title:
+    name: Check Conventional Commits title
+    runs-on: ubuntu-latest
+
+    steps:
+      # no checkout here on purpose, this runs with base repo secrets for fork PRs too
+      - name: Generate bot token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.PNX_BOT_APP_ID }}
+          private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
+
+      - name: Validate title and update comment
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # title goes through env, never interpolated into the script
+          TITLE: ${{ github.event.pull_request.title }}
+          MARKER: <!-- pnx-pr-title-check -->
+        run: |
+          pattern='^(feat|fix|perf|refactor|docs|chore|test|ci|build|style|revert)(\([a-z0-9._/-]+\))?!?: .+'
+
+          # we squash on merge, so the title ends up as the commit message
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate \
+            --jq ".[] | select(.body | contains(\"$MARKER\")) | .id" | head -n1)
+
+          if printf '%s' "$TITLE" | grep -qE "$pattern"; then
+            # title is fine now, drop the old warning if there is one
+            if [ -n "$existing" ]; then
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$existing"
+            fi
+            exit 0
+          fi
+
+          body="$MARKER
+          Thanks for the PR! The title does not follow [Conventional Commits](https://www.conventionalcommits.org/). We squash on merge, so the title becomes the commit message.
+
+          Expected format: \`type(scope): subject\`, scope is optional, for example \`fix: prevent crash when chunk loads before world init\`.
+
+          Allowed types: \`feat\`, \`fix\`, \`perf\`, \`refactor\`, \`docs\`, \`chore\`, \`test\`, \`ci\`, \`build\`, \`style\`, \`revert\`.
+
+          Edit the title and this comment will be removed automatically."
+
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -f body="$body"
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -f body="$body"
+          fi
+
+          # the check itself stays red so it blocks merging until the title is fixed
+          exit 1
