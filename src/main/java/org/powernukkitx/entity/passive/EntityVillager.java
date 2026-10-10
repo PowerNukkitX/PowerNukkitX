@@ -117,8 +117,9 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     private void transform() {
+        CompoundTag transformNbt = this.copyNBTForNewActor();
         this.close();
-        EntityZombieVillager zombieVillager = new EntityZombieVillager(this.getChunk(), this.getNbt());
+        EntityZombieVillager zombieVillager = new EntityZombieVillager(this.getChunk(), transformNbt);
         zombieVillager.setPosition(this);
         zombieVillager.setRotation(this.yaw, this.pitch);
         zombieVillager.spawnToAll();

@@ -72,6 +72,13 @@ public class BlockPortal extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public void afterRemoval(Block newBlock, boolean update) {
+        if (!newBlock.getId().equals(PORTAL) && this.level != null && this.level.getPortalManager() != null) {
+            this.level.getPortalManager().remove(this.level.getDimension(), this.asBlockVector3());
+        }
+    }
+
+    @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }

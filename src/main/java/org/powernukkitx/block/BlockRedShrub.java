@@ -3,7 +3,7 @@ package org.powernukkitx.block;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockRedShrub extends BlockFlower {
-    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SHRUB);
+    public static final BlockProperties PROPERTIES = new BlockProperties(RED_SHRUB, PrecipitationBehavior.SNOWLOGGING);
 
     @Override
     @NotNull

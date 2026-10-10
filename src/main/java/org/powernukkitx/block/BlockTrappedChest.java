@@ -88,7 +88,6 @@ public class BlockTrappedChest extends BlockChest {
 
         if (chest != null) {
             chest.pairWith(blockEntity);
-            blockEntity.pairWith(chest);
         }
 
         return true;

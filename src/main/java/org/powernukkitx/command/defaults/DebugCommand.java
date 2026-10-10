@@ -254,7 +254,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage("Erosion: " + res.getErosion());
                     sender.sendMessage("Weirdness: " + res.getWeirdness());
                     sender.sendMessage("Peaks: " + res.getPv());
-                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4))) / 128f));
+                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4)) + 1) / 128f));
                     sender.sendMessage("§ePicked biome: " + Registries.BIOME.getFromBiomeStringList(Registries.BIOME.get(res.getBiomeId()).key()));
                 }
             }
@@ -332,7 +332,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         switch (list.getResult(1).toString()) {
             case "info" -> {
                 player.sendMessage("Chunk: X: " + chunk.getX() + ", Z: " + chunk.getZ());
-                player.sendMessage("Stage: " + chunk.getChunkState().name());
+                player.sendMessage("Finalization: " + chunk.getFinalizationState().name());
+                player.sendMessage("Generation: " + chunk.getGenerationState().name());
                 player.sendMessage("Loaded: " + chunk.isLoaded());
                 player.sendMessage("Current Block: " + player.getLevelBlock().getId());
                 player.sendMessage("Pending block updates: " + level.getPendingBlockUpdates(chunk).size());

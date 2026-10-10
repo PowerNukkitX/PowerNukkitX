@@ -54,14 +54,27 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     }
 
     @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
+
+    /**
+     * Ignores sign interactions without a player because editing and item use require one.
+     *
+     * @param player the interacting player, or {@code null} if no player is available
+     */
+    @Override
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
+        if (player == null) {
+            return;
+        }
         if(action== PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
             var blockEntity = this.getLevel().getBlockEntity(this);
             if (!(blockEntity instanceof BlockEntitySign sign)) {
                 return;
             }
             // If a sign is waxed, it cannot be modified.
-            if (sign.isWaxed() || (Objects.requireNonNull(player).isSneaking() && !Objects.equals(item.getId(), AIR))) {
+            if (sign.isWaxed() || (player.isSneaking() && !Objects.equals(item.getId(), AIR))) {
                 level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), SoundEvent.WAXED_SIGN_INTERACT_FAIL);
                 return;
             }

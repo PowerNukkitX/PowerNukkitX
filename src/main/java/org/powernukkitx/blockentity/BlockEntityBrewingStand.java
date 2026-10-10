@@ -61,10 +61,11 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
 
         final CompoundTag nbtMap = this.getNbt();
-        if (!nbt.contains("CookTime") || nbtMap.getShort("CookTime") > MAX_BREW_TIME) {
+        int cookTime = nbtMap.getShort("CookTime");
+        if (!nbt.contains("CookTime") || cookTime <= 0 || cookTime > MAX_BREW_TIME) {
             this.brewTime = MAX_BREW_TIME;
         } else {
-            this.brewTime = nbtMap.getShort("CookTime");
+            this.brewTime = cookTime;
         }
 
         this.fuelAmount = nbtMap.getShort("FuelAmount");
@@ -113,7 +114,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public void saveNBT() {
         super.saveNBT();
         this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound))
-                .putShort("CookTime", (short) brewTime)
+                .putShort("CookTime", (short) (brewTime == MAX_BREW_TIME ? 0 : brewTime))
                 .putShort("FuelAmount", (short) this.fuelAmount)
                 .putShort("FuelTotal", (short) this.fuelTotal);
         for (int index = 0; index < getSize(); index++) {

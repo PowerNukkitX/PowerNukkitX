@@ -53,7 +53,7 @@ public abstract class DiscGenerateFeature extends CountGenerateFeature {
         }
         int randomX = random.nextInt(15);
         int randomZ = random.nextInt(15);
-        int height = chunk.getHeightMap(randomX, randomZ);
+        int height = chunk.getHeightMap(randomX, randomZ) - 1;
         int sourceX = (chunkX << 4) + randomX;
         int sourceZ = (chunkZ << 4) + randomZ;
         BlockState topBlockState = chunk.getBlockState(randomX, height, randomZ);

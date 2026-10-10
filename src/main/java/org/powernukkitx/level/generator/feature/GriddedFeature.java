@@ -34,7 +34,7 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
 
                 int placeX = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (x * splitLength()) + (chunkX << 4);
                 int placeZ = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (z * splitLength()) + (chunkZ << 4);
-                int placeY = level.getHeightMap(placeX, placeZ);
+                int placeY = level.getHeightMap(placeX, placeZ) - 1;
 
                 if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(placeX, placeY, placeZ)).second())) continue;
                 if(isSupportDirt(level.getBlock(placeX, placeY, placeZ))) {

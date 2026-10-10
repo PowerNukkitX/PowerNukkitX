@@ -110,6 +110,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
                         this.getLevel().useBreakOn(vector3);
                     }
                     this.getLevel().setBlock(vector3, Block.get(Block.END_PORTAL));
+                    ((BlockEndPortal) this.getLevel().getBlock(vector3)).getOrCreateBlockEntity();
                     this.getLevel().addSound(this, Sound.BLOCK_END_PORTAL_SPAWN);
                 }
             }

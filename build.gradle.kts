@@ -20,7 +20,7 @@ plugins {
     idea
     jacoco
     id("io.github.goooler.shadow") version "8.1.8"
-    id("io.freefair.lombok") version "9.7.0"
+    id("io.freefair.lombok") version "9.8.0"
     id("com.gorylenko.gradle-git-properties") version "4.0.1"
 }
 
@@ -51,6 +51,7 @@ dependencies {
     api(libs.bedrock.connection)
 
     implementation(libs.bundles.leveldb)
+    implementation(libs.rng.core)
     implementation(libs.rng.simple)
     implementation(libs.rng.sampling)
     implementation(libs.asm)

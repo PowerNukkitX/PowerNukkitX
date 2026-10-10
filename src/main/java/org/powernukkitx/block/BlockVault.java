@@ -54,7 +54,7 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
             return false;
         }
 
-        RandomSourceProvider random = RandomSourceProvider.create(getLevel().getSeed() ^ player.getUniqueId().getLeastSignificantBits() ^ getLevel().getTick());
+        RandomSourceProvider random = RandomSourceProvider.create(getLevel().getSeed() ^ player.uniqueIdLong() ^ getLevel().getTick());
         if (!vault.populateItemsToEject(random, ominous)) {
             return false;
         }
@@ -63,8 +63,8 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
         }
 
-        vault.addRewardedPlayer(player.getUniqueId().toString());
-        vault.spawnToAll();
+        vault.addRewardedPlayer(player.uniqueIdLong());
+        vault.removeConnectedPlayer(player.runtimeId());
 
         setVaultState(VaultState.UNLOCKING);
 

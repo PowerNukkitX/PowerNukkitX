@@ -1,32 +1,51 @@
 package org.powernukkitx.entity.ai.executor;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
-import org.powernukkitx.entity.EntityCanAttack;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
+import org.powernukkitx.entity.mob.EntityWarden;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
+
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.packet.LevelEventGenericPacket;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 
 public class WardenRangedAttackExecutor implements IBehaviorExecutor {
+    private static final int ATTACK_COOLDOWN_TICKS = 40;
+    private static final float ATTACK_DAMAGE = 10f;
+    private static final float ATTACK_MOVEMENT_SPEED = 0.36f;
+    private static final float BASE_MOVEMENT_SPEED = 0.3f;
+    private static final double HORIZONTAL_KNOCKBACK = 1.0d;
+    private static final double VERTICAL_KNOCKBACK = 0.24d;
+    private static final double VERTICAL_KNOCKBACK_CAP = 0.5d;
+    private static final double MOTION_SCALE = 0.5d;
 
     protected int chargingTime;
     protected int totalRunningTime;
     protected int currentTick;
+    protected boolean running;
 
     public WardenRangedAttackExecutor(int chargingTime, int totalRunningTime) {
         this.chargingTime = chargingTime;
         this.totalRunningTime = totalRunningTime;
+    }
+
+    /**
+     * Returns whether the ranged attack behavior can currently run.
+     *
+     * @param entity behavior owner
+     * @return whether the behavior can run
+     */
+    public boolean canRun(EntityIntelligent entity) {
+        return running || ((EntityWarden) entity).canUseSonicBoom();
     }
 
     @Override
@@ -39,33 +58,19 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
             if (!target.isAlive()) return false;
 
+            Vector3 from = entity.add(0, entity.getHeight() / 2);
+            Vector3 to = target.add(0, target.getEyeHeight());
+
             //particle
-            sendAttackParticle(entity, entity.add(0, 1.5), target.add(0, target.getHeight() / 2));
+            sendAttackParticle(entity, from, to);
 
             //sound
             entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);
-//            LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//            pk.sound = LevelSoundEvent.SONIC_BOOM;
-//            pk.entityIdentifier = "minecraft:warden";
-//            pk.x = (float) entity.x;
-//            pk.y = (float) entity.y;
-//            pk.z = (float) entity.z;
-//
-//            Server.broadcastPacket(entity.getViewers().values(), pk);
 
             //attack
-            Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
-
-            float damage = 0;
-            if (entity instanceof EntityCanAttack entityCanAttack) {
-                damage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
-            }
-            damages.put(EntityDamageEvent.DamageModifier.BASE, damage);
-
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
-
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.SONIC_BOOM, ATTACK_DAMAGE, 0f);
             entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
-            target.attack(ev);
+            if (target.attack(ev)) applySonicKnockback(target, from, to);
         }
         if (currentTick > this.totalRunningTime) {
             return false;
@@ -81,30 +86,58 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
-
+        this.running = false;
+        ((EntityWarden) entity).setSonicBoomCooldown(ATTACK_COOLDOWN_TICKS);
+        entity.setMovementSpeed(BASE_MOVEMENT_SPEED);
         entity.setDataFlag(ActorFlags.SONIC_BOOM, false);
     }
 
     @Override
     public void onStart(EntityIntelligent entity) {
+        this.running = true;
+        entity.setMovementSpeed(ATTACK_MOVEMENT_SPEED);
         entity.setDataFlag(ActorFlags.SONIC_BOOM, true);
-
         entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
-//        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//        pk.sound = LevelSoundEvent.SONIC_CHARGE;
-//        pk.entityIdentifier = "minecraft:warden";
-//        pk.x = (float) entity.x;
-//        pk.y = (float) entity.y;
-//        pk.z = (float) entity.z;
-//
-//        Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
-
+        this.running = false;
+        ((EntityWarden) entity).setSonicBoomCooldown(ATTACK_COOLDOWN_TICKS);
+        entity.setMovementSpeed(BASE_MOVEMENT_SPEED);
         entity.setDataFlag(ActorFlags.SONIC_BOOM, false);
+    }
+
+    protected void applySonicKnockback(Entity target, Vector3 from, Vector3 to) {
+        double dx = to.x - from.x;
+        double dy = to.y - from.y;
+        double dz = to.z - from.z;
+        double horizontalLength = Math.sqrt(dx * dx + dz * dz);
+        double length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        double knockbackResistance = target.getKnockbackResistance();
+        if (target instanceof Player player) {
+            for (var armor : player.getInventory().getArmorInventory().getContents().values()) {
+                if (!armor.isNull()) knockbackResistance += armor.getKnockbackResistance();
+            }
+        }
+        double resistanceMultiplier = Math.max(0d, 1d - knockbackResistance);
+
+        Vector3 motion = target.getMotion();
+        double motionX = motion.x * MOTION_SCALE;
+        double motionY = motion.y * MOTION_SCALE;
+        double motionZ = motion.z * MOTION_SCALE;
+
+        if (horizontalLength > 1.0e-6) {
+            motionX += dx / horizontalLength * HORIZONTAL_KNOCKBACK * resistanceMultiplier;
+            motionZ += dz / horizontalLength * HORIZONTAL_KNOCKBACK * resistanceMultiplier;
+        }
+        if (length > 1.0e-6) {
+            motionY += dy / length * VERTICAL_KNOCKBACK * resistanceMultiplier;
+        }
+
+        target.setMotion(new Vector3(motionX, Math.min(motionY, VERTICAL_KNOCKBACK_CAP), motionZ));
     }
 
     protected void sendAttackParticle(EntityIntelligent entity, Vector3 from, Vector3 to) {

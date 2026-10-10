@@ -9,7 +9,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class MangroveTreeFeature extends ObjectGeneratorFeature {
-
     public static final String NAME = "minecraft:mangrove_swamp_mangrove_tree_feature";
 
     @Override
