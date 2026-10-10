@@ -7,6 +7,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityQueryOptions;
 import org.powernukkitx.entity.passive.EntityHappyGhast;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.Vector3;
@@ -15,6 +16,9 @@ import org.powernukkitx.math.Vector3;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemSnowball extends ProjectileItem {
+    public static final ItemDefinition DEFINITION = ProjectileItem.DEFINITION.toBuilder()
+            .maxStackSize(16)
+            .build();
 
     public ItemSnowball() {
         this(0, 1);
@@ -25,12 +29,7 @@ public class ItemSnowball extends ProjectileItem {
     }
 
     public ItemSnowball(Integer meta, int count) {
-        super(SNOWBALL, 0, count, "Snowball");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 16;
+        super(SNOWBALL, 0, count, "Snowball", DEFINITION);
     }
 
     @Override

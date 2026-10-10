@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.event.player.PlayerItemConsumeEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.Vector3;
@@ -11,6 +12,10 @@ import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 
 public class ItemOminousBottle extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .consumable(true)
+            .usingTicks(31)
+            .build();
 
     private static final String TAG_OMINOUS_BOTTLE_AMPLIFIER = "OminousBottleAmplifier";
     private static final int BAD_OMEN_DURATION = 100 * 60 * 20;
@@ -24,22 +29,12 @@ public class ItemOminousBottle extends Item {
     }
 
     public ItemOminousBottle(Integer meta, int count) {
-        super(OMINOUS_BOTTLE, meta, count);
+        super(OMINOUS_BOTTLE, meta, count, DEFINITION);
     }
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
-    }
-
-    @Override
-    public boolean isConsumable() {
-        return true;
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 31;
     }
 
     @Override

@@ -1,40 +1,47 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 abstract public class ItemArmor extends Item {
+    public static final ItemDefinition ARMOR = DEFAULT_DEFINITION.toBuilder()
+            .armor(true)
+            .canTakeDamage(true)
+            .maxStackSize(1)
+            .build();
 
     public ItemArmor(String id) {
-        super(id);
+        this(id, 0, 1, (String) null, ARMOR);
+    }
+
+    public ItemArmor(String id, ItemDefinition definition) {
+        this(id, 0, 1, (String) null, definition);
     }
 
     public ItemArmor(String id, Integer meta) {
-        super(id, meta);
+        this(id, meta, 1, (String) null, ARMOR);
+    }
+
+    public ItemArmor(String id, Integer meta, ItemDefinition definition) {
+        this(id, meta, 1, (String) null, definition);
     }
 
     public ItemArmor(String id, Integer meta, int count) {
-        super(id, meta, count);
+        this(id, meta, count, (String) null, ARMOR);
+    }
+
+    public ItemArmor(String id, Integer meta, int count, ItemDefinition definition) {
+        this(id, meta, count, (String) null, definition);
     }
 
     public ItemArmor(String id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        this(id, meta, count, name, ARMOR);
     }
 
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public boolean isArmor() {
-        return true;
-    }
-
-    @Override
-    public boolean canTakeDamage() {
-        return true;
+    public ItemArmor(String id, Integer meta, int count, String name, ItemDefinition definition) {
+        super(id, meta, count, name, definition);
     }
 
     @Override

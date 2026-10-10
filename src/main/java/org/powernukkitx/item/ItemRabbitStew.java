@@ -1,12 +1,18 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 /**
  * @author Snake1999
  * @since 2016/1/14
  */
 public class ItemRabbitStew extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .maxStackSize(1)
+            .nutrition(10)
+            .saturation(12f)
+            .build();
 
     public ItemRabbitStew() {
         this(0, 1);
@@ -17,22 +23,7 @@ public class ItemRabbitStew extends ItemFood {
     }
 
     public ItemRabbitStew(Integer meta, int count) {
-        super(RABBIT_STEW, meta, count, "Rabbit Stew");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public int getNutrition() {
-        return 10;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 12F;
+        super(RABBIT_STEW, meta, count, "Rabbit Stew", DEFINITION);
     }
 
     @Override

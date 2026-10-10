@@ -1,6 +1,12 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemSaddle extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
+
     public ItemSaddle() {
         this(0, 1);
     }
@@ -10,11 +16,6 @@ public class ItemSaddle extends Item {
     }
 
     public ItemSaddle(Integer meta, int count) {
-        super(SADDLE, meta, count, "Saddle");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+        super(SADDLE, meta, count, "Saddle", DEFINITION);
     }
 }

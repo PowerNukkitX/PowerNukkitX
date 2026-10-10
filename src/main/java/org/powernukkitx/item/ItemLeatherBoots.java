@@ -1,6 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemLeatherBoots extends ItemColorArmor {
+    public static final ItemDefinition DEFINITION = ItemColorArmor.DEFINITION.toBuilder()
+            .armorPoints(1)
+            .boots(true)
+            .maxDurability(66)
+            .tier(Item.WEARABLE_TIER_LEATHER)
+            .build();
+
     public ItemLeatherBoots() {
         this(0, 1);
     }
@@ -10,26 +19,6 @@ public class ItemLeatherBoots extends ItemColorArmor {
     }
 
     public ItemLeatherBoots(Integer meta, int count) {
-        super(LEATHER_BOOTS, meta, count, "Leather Boots");
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_LEATHER;
-    }
-
-    @Override
-    public boolean isBoots() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 1;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 66;
+        super(LEATHER_BOOTS, meta, count, "Leather Boots", DEFINITION);
     }
 }

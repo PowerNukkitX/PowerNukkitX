@@ -1,6 +1,17 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemNetheriteAxe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(8)
+            .axe(true)
+            .canBreakShield(true)
+            .lavaResistant(true)
+            .maxDurability(ItemTool.DURABILITY_NETHERITE)
+            .tier(ItemTool.TIER_NETHERITE)
+            .build();
+
     public ItemNetheriteAxe() {
         this(0, 1);
     }
@@ -10,36 +21,6 @@ public class ItemNetheriteAxe extends ItemTool {
     }
 
     public ItemNetheriteAxe(Integer meta, int count) {
-        super(NETHERITE_AXE, meta, count, "Netherite Axe");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_NETHERITE;
-    }
-
-    @Override
-    public boolean isAxe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_NETHERITE;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 8;
-    }
-
-    @Override
-    public boolean isLavaResistant() {
-        return true;
-    }
-
-    @Override
-    public boolean canBreakShield() {
-        return true;
+        super(NETHERITE_AXE, meta, count, "Netherite Axe", DEFINITION);
     }
 }

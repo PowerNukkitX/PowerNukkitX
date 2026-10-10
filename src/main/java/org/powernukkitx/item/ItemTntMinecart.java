@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockRail;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityTntMinecart;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -13,6 +14,10 @@ import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.Rail;
 
 public class ItemTntMinecart extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .maxStackSize(1)
+            .build();
 
     public ItemTntMinecart() {
         this(0, 1);
@@ -23,12 +28,7 @@ public class ItemTntMinecart extends Item {
     }
 
     public ItemTntMinecart(Integer meta, int count) {
-        super(TNT_MINECART, meta, count, "Minecart with TNT");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(TNT_MINECART, meta, count, "Minecart with TNT", DEFINITION);
     }
 
     @Override
@@ -68,10 +68,5 @@ public class ItemTntMinecart extends Item {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
     }
 }

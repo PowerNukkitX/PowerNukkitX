@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.entity.effect.PotionApplicationMode;
 import org.powernukkitx.entity.effect.PotionType;
 import org.powernukkitx.event.player.PlayerItemConsumeEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.Vector3;
@@ -13,6 +14,11 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 import javax.annotation.Nullable;
 
 public class ItemPotion extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .consumable(true)
+            .maxStackSize(1)
+            .usingTicks(31)
+            .build();
 
     public ItemPotion() {
         this(0, 1);
@@ -23,7 +29,7 @@ public class ItemPotion extends Item {
     }
 
     public ItemPotion(Integer meta, int count) {
-        super(POTION, meta, count, "Potion");
+        super(POTION, meta, count, "Potion", DEFINITION);
         updateName();
     }
 
@@ -76,23 +82,8 @@ public class ItemPotion extends Item {
     }
 
     @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public boolean isConsumable() {
-        return true;
-    }
-
-    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 31;
     }
 
     @Override

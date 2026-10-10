@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityElytraFirework;
 import org.powernukkitx.entity.item.EntityFireworksRocket;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
@@ -18,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemFireworkRocket extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
+
     public ItemFireworkRocket() {
         this(0);
     }
@@ -27,12 +32,7 @@ public class ItemFireworkRocket extends Item {
     }
 
     public ItemFireworkRocket(Integer meta, int count) {
-        super(FIREWORK_ROCKET, meta, count, "Firework Rocket");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(FIREWORK_ROCKET, meta, count, "Firework Rocket", DEFINITION);
     }
 
     @Override

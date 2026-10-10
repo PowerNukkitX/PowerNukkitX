@@ -1,10 +1,15 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
 
 public class ItemGoatHorn extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
+
     protected int coolDownTick = 140;
 
     public ItemGoatHorn() {
@@ -16,14 +21,9 @@ public class ItemGoatHorn extends Item {
     }
 
     public ItemGoatHorn(Integer aux, int count) {
-        super(GOAT_HORN);
+        super(GOAT_HORN, DEFINITION);
         this.meta = aux;
         this.count = count;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
     }
 
     @Override

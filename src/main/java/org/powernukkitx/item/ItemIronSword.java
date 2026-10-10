@@ -1,6 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemIronSword extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(6)
+            .maxDurability(ItemTool.DURABILITY_IRON)
+            .sword(true)
+            .tier(ItemTool.TIER_IRON)
+            .build();
+
     public ItemIronSword() {
         this(0, 1);
     }
@@ -10,26 +19,6 @@ public class ItemIronSword extends ItemTool {
     }
 
     public ItemIronSword(Integer meta, int count) {
-        super(IRON_SWORD, meta, count, "Iron Sword");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_IRON;
-    }
-
-    @Override
-    public boolean isSword() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_IRON;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 6;
+        super(IRON_SWORD, meta, count, "Iron Sword", DEFINITION);
     }
 }

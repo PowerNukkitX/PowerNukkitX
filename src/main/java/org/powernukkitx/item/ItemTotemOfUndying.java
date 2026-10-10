@@ -1,12 +1,13 @@
 package org.powernukkitx.item;
 
-public class ItemTotemOfUndying extends Item {
-    public ItemTotemOfUndying() {
-        super(TOTEM_OF_UNDYING);
-    }
+import org.powernukkitx.item.definition.ItemDefinition;
 
-    @Override
-    public int getMaxStackSize() {
-        return 1;
+public class ItemTotemOfUndying extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
+
+    public ItemTotemOfUndying() {
+        super(TOTEM_OF_UNDYING, DEFINITION);
     }
 }

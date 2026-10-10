@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
@@ -23,22 +24,41 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemSpawnEgg extends Item implements SpawnEggPickable {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
 
     public ItemSpawnEgg() {
-        this(0, 1);
+        this(0, 1, DEFINITION);
+    }
+
+    public ItemSpawnEgg(ItemDefinition definition) {
+        this(0, 1, definition);
     }
 
     public ItemSpawnEgg(Integer meta) {
-        this(meta, 1);
+        this(meta, 1, DEFINITION);
+    }
+
+    public ItemSpawnEgg(Integer meta, ItemDefinition definition) {
+        this(meta, 1, definition);
     }
 
     public ItemSpawnEgg(Integer meta, int count) {
-        super(SPAWN_EGG, meta, count, "Spawn Egg");
+        this(meta, count, DEFINITION);
+    }
+
+    public ItemSpawnEgg(Integer meta, int count, ItemDefinition definition) {
+        super(SPAWN_EGG, meta, count, "Spawn Egg", definition);
         updateName();
     }
 
     public ItemSpawnEgg(String id) {
-        super(id, 0, 1);
+        this(id, DEFINITION);
+    }
+
+    public ItemSpawnEgg(String id, ItemDefinition definition) {
+        super(id, 0, 1, definition);
     }
 
     protected CompoundTag entityNBT;
@@ -56,11 +76,6 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         } else {
             name = entityName + " Spawn Egg";
         }
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

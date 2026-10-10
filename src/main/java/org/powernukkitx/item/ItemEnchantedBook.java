@@ -1,21 +1,26 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemEnchantedBook extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .applyEnchantments(false)
+            .maxStackSize(1)
+            .build();
+
     public ItemEnchantedBook() {
-        super(ENCHANTED_BOOK);
+        this(ENCHANTED_BOOK, DEFINITION);
+    }
+
+    public ItemEnchantedBook(ItemDefinition definition) {
+        this(ENCHANTED_BOOK, definition);
     }
 
     protected ItemEnchantedBook(String id) {
-        super(id);
+        this(id, DEFINITION);
     }
 
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public boolean applyEnchantments() {
-        return false;
+    protected ItemEnchantedBook(String id, ItemDefinition definition) {
+        super(id, definition);
     }
 }
