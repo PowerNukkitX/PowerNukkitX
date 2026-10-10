@@ -646,8 +646,7 @@ public class Server {
             String persistedDPGroupUUID = dynamicPropertiesUUID == null ? null
                 : UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
 
-            DP_DEFAULT_GROUP_UUID = !configuredDPGroupUUID.isEmpty() ? configuredDPGroupUUID
-                : persistedDPGroupUUID != null ? persistedDPGroupUUID : UUID.randomUUID().toString();
+            initializeDefaultDynamicPropertiesGroupUUID(configuredDPGroupUUID, persistedDPGroupUUID);
 
             if (!DP_DEFAULT_GROUP_UUID.equals(persistedDPGroupUUID)) {
                 if (persistedDPGroupUUID != null) {
@@ -3660,20 +3659,9 @@ public class Server {
         return DP_DEFAULT_GROUP_UUID;
     }
 
-    /**
-     * Overrides the global Dynamic Properties namespace UUID and persists it.
-     */
-    public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
-        try {
-            String normalized = UUID.fromString(uuid).toString();
-            if (!normalized.equalsIgnoreCase(uuid)) throw new IllegalArgumentException();
-            DP_DEFAULT_GROUP_UUID = normalized;
-            if (instance != null && instance.serverDataDB != null) {
-                instance.serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, normalized.getBytes(StandardCharsets.UTF_8));
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            log.warn("DynamicProperties global UUID rejected: '{}'", uuid);
-        }
+    private static void initializeDefaultDynamicPropertiesGroupUUID(String configuredUUID, String persistedUUID) {
+        DP_DEFAULT_GROUP_UUID = !configuredUUID.isEmpty() ? configuredUUID
+            : persistedUUID != null ? persistedUUID : UUID.randomUUID().toString();
     }
 
     public static int getDynamicPropertiesMaxStringBytes() {
