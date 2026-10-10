@@ -15,7 +15,7 @@ public class BlockHoneycombBlock extends BlockSolid {
             .build();
 
     public BlockHoneycombBlock() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockHoneycombBlock(BlockState blockState) {

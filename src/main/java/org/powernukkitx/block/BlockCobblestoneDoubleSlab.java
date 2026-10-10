@@ -11,6 +11,7 @@ public class BlockCobblestoneDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(COBBLESTONE_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_PICKAXE)
+            .resistance(6)
             .build();
 
     @Override

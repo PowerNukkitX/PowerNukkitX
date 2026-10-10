@@ -12,6 +12,7 @@ public class BlockPetrifiedOakSlab extends BlockSlab {
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TYPE_NONE)
             .canHarvestWithHand(false)
+            .resistance(6)
             .build();
 
     public BlockPetrifiedOakSlab(BlockState blockState) {

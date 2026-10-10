@@ -18,6 +18,7 @@ public abstract class BlockCoralBlock extends BlockSolid {
             .hardness(1.5)
             .resistance(6.0)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
             .build();
     public BlockCoralBlock(BlockState blockstate) {
         super(blockstate, DEFINITION);

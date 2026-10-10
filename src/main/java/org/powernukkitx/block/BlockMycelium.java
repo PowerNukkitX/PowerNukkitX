@@ -29,6 +29,7 @@ public class BlockMycelium extends BlockDirt {
             .resistance(2.5)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canBeActivated(true)
+            .canSilkTouch(true)
             .build();
 
     public static final int MINIMUM_SPREAD_LIGHT_LEVEL = 4;
@@ -40,7 +41,7 @@ public class BlockMycelium extends BlockDirt {
     }
 
     public BlockMycelium() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockMycelium(BlockState blockState) {

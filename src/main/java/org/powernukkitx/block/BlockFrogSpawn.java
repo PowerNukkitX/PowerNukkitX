@@ -24,7 +24,7 @@ public class BlockFrogSpawn extends BlockFlowable {
     }
 
     public BlockFrogSpawn() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFrogSpawn(BlockState blockState) {

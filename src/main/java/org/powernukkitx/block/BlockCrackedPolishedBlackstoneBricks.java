@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockCrackedPolishedBlackstoneBricks extends BlockBlackstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRACKED_POLISHED_BLACKSTONE_BRICKS);
     public static final BlockDefinition DEFINITION = BlockBlackstone.DEFINITION.toBuilder()
+            .canHarvestWithHand(false)
             .build();
 
     @Override

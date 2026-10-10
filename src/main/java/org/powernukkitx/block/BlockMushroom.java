@@ -23,6 +23,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)
             .isFertilizable(true)
+            .canSilkTouch(true)
             .build();
 
     public BlockMushroom(BlockState blockState) {

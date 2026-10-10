@@ -28,7 +28,7 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
             .build();
 
     public BlockPumpkin() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockPumpkin(BlockState blockstate) {

@@ -1,6 +1,7 @@
 package org.powernukkitx.block.customblock;
 
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.customblock.data.CraftingTable;
 import org.powernukkitx.block.customblock.data.Geometry;
 import org.powernukkitx.block.customblock.data.Materials;
@@ -32,30 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.ServerBlockProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.powernukkitx.block.Block;
-import org.powernukkitx.block.customblock.data.CraftingTable;
-import org.powernukkitx.block.customblock.data.Geometry;
-import org.powernukkitx.block.customblock.data.Materials;
 import org.powernukkitx.block.customblock.data.Movable;
-import org.powernukkitx.block.customblock.data.Permutation;
-import org.powernukkitx.block.customblock.data.Transformation;
-import org.powernukkitx.block.property.type.BlockPropertyType;
-import org.powernukkitx.block.property.type.BooleanPropertyType;
-import org.powernukkitx.block.property.type.EnumPropertyType;
-import org.powernukkitx.block.property.type.IntPropertyType;
-import org.powernukkitx.entity.Entity;
-import org.powernukkitx.item.customitem.data.CreativeCategory;
-import org.powernukkitx.item.customitem.data.CreativeGroup;
-import org.powernukkitx.math.AxisAlignedBB;
-import org.powernukkitx.math.Vector3;
-import org.powernukkitx.math.Vector3f;
-import org.powernukkitx.nbt.tag.ByteTag;
-import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.FloatTag;
-import org.powernukkitx.nbt.tag.IntTag;
-import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.StringTag;
-import org.powernukkitx.nbt.tag.Tag;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -93,6 +71,40 @@ public class CustomBlockDefinition extends BlockDefinition {
         this.movable = resolveMovable(b.nbt);
     }
 
+    /**
+     * Legacy constructor kept for plugins compiled against the former record.
+     *
+     * @deprecated use {@link #builder(CustomBlock)} instead.
+     */
+    @Deprecated(since = "3.1.0")
+    public CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor, Movable movable) {
+        super(Block.DEFAULT_DEFINITION.toBuilder().hasEntityStepSensor(isStepSensor));
+
+        this.identifier = identifier;
+        this.nbt = nbt;
+        this.tickSettings = tickSettings;
+        this.movable = movable;
+    }
+
+    /**
+     * Legacy constructor kept for plugins compiled against the former record.
+     *
+     * @deprecated use {@link #builder(CustomBlock)} instead.
+     */
+    @Deprecated(since = "3.1.0")
+    public CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor) {
+        this(identifier, nbt, tickSettings, isStepSensor, resolveMovable(nbt));
+    }
+
+    /**
+     * @return whether this block reacts to entities stepping on/off it.
+     * @deprecated use {@link #isHasEntityStepSensor()}.
+     */
+    @Deprecated(since = "3.1.0")
+    public boolean isStepSensor() {
+        return isHasEntityStepSensor();
+    }
+
     private static Movable resolveMovable(CompoundTag nbt) {
         CompoundTag components = nbt.getCompound("components");
         if (components == null || !components.containsCompound("minecraft:movable")) {
@@ -119,18 +131,49 @@ public class CustomBlockDefinition extends BlockDefinition {
         return new CustomBlockDefinition.Builder(customBlock);
     }
 
+    /**
+     * Builder for a custom block definition that is created before the block instance exists, so it can be
+     * passed to the block's constructor ({@code super(blockState, DEFINITION)}).
+     *
+     * @param properties the properties of the custom block, their identifier becomes the block id
+     * @return the custom block definition builder.
+     */
+    public static CustomBlockDefinition.Builder builder(@NotNull BlockProperties properties) {
+        return new CustomBlockDefinition.Builder(properties);
+    }
+
     public static class Builder extends BlockDefinitionBuilder<BlockDefinition, Builder> {
         protected final String identifier;
+        @Nullable
         protected final CustomBlock customBlock;
+        @Nullable
+        protected final BlockProperties properties;
         private BlockTickSettings tickSettings = null;
 
         protected CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag());
 
         protected Builder(CustomBlock customBlock) {
-            this.identifier = customBlock.getId();
+            this(customBlock.getId(), customBlock, customBlock instanceof Block block ? block.getProperties() : null);
+        }
+
+        protected Builder(BlockProperties properties) {
+            this(properties.getIdentifier(), null, properties);
+        }
+
+        private Builder(String identifier, @Nullable CustomBlock customBlock, @Nullable BlockProperties properties) {
+            this.identifier = identifier;
             this.customBlock = customBlock;
+            this.properties = properties;
             var components = this.nbt.getCompound("components");
+
+            // Seed the runtime values with the same defaults the NBT components below advertise to the client,
+            // otherwise a minimally configured definition would report zeroed values (not placeable, stack size 0...).
+            this.$fillValuesFrom(Block.DEFAULT_DEFINITION);
+            super.friction(Block.DEFAULT_FRICTION_FACTOR);
+            super.resistance(0);
+            super.lightDampening(15);
+            super.lightEmission(0);
 
             // Set default components using static default values
             CompoundTag defaults = createDefaultComponents(
@@ -161,13 +204,10 @@ public class CustomBlockDefinition extends BlockDefinition {
 
             int block_id = INTERNAL_ALLOCATION_ID_MAP.getOrDefault(identifier, -1);
             if (block_id == -1) {
-                int newId;
                 do {
-                    newId = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
-                } while (INTERNAL_ALLOCATION_ID_MAP.containsValue(newId));
-
-                Integer previous = INTERNAL_ALLOCATION_ID_MAP.putIfAbsent(identifier, newId);
-                block_id = (previous == null) ? newId : previous;
+                    block_id = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
+                } while (INTERNAL_ALLOCATION_ID_MAP.containsValue(block_id));
+                INTERNAL_ALLOCATION_ID_MAP.put(identifier, block_id);
             }
             nbt.putCompound("vanilla_block_data",
                     new CompoundTag()
@@ -184,12 +224,30 @@ public class CustomBlockDefinition extends BlockDefinition {
         }
 
         /**
-         * Sets the friction value of the block. Default is 0.6f.
+         * @deprecated use {@link #friction(double)}.
+         */
+        @Deprecated(since = "3.1.0")
+        public Builder friction(float value) {
+            return this.friction((double) value);
+        }
+
+        /**
+         * Enables step sensor logic (entity step-on/off).
+         *
+         * @deprecated use {@link #hasEntityStepSensor(boolean)}.
+         */
+        @Deprecated(since = "3.1.0")
+        public Builder isStepSensor(boolean value) {
+            return this.hasEntityStepSensor(value);
+        }
+
+        /**
+         * Sets the friction value of the block. Default is 0.4.
          */
         @Override
         public Builder friction(double value) {
             this.nbt.getCompound("components")
-                    .putCompound("minecraft:friction", new CompoundTag().putDouble("value", value));
+                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", (float) value));
             return super.friction(value);
         }
 
@@ -633,9 +691,8 @@ public class CustomBlockDefinition extends BlockDefinition {
          */
         @Nullable
         private ListTag<CompoundTag> getPropertiesNBT() {
-            if (this.customBlock instanceof Block block) {
-                var properties = block.getProperties();
-                Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
+            if (this.properties != null) {
+                Set<BlockPropertyType<?>> propertyTypeSet = this.properties.getPropertyTypeSet();
                 if (propertyTypeSet.isEmpty()) {
                     return null;
                 }

@@ -23,6 +23,7 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
             .build();
     public BlockCopperBase(BlockState blockState) {
         super(blockState, DEFINITION);

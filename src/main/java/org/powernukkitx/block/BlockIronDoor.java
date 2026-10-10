@@ -15,6 +15,7 @@ public class BlockIronDoor extends BlockDoor {
             .hardness(5)
             .resistance(25)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
             .build();
 

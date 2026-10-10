@@ -24,6 +24,7 @@ public abstract class BlockGlazedTerracotta extends BlockSolid implements Faceab
             .canBePushed(true)
             .canBePulled(false)
             .sticksToPiston(false)
+            .canHarvestWithHand(false)
             .build();
     public BlockGlazedTerracotta(BlockState blockState) {
         super(blockState, DEFINITION);

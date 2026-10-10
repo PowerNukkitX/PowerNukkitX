@@ -30,7 +30,7 @@ public class BlockNetherrack extends BlockSolid {
             .build();
 
     public BlockNetherrack() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockNetherrack(BlockState blockState) {

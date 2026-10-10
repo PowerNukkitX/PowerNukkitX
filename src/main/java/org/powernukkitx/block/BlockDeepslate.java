@@ -28,7 +28,7 @@ public class BlockDeepslate extends BlockSolid {
     }
 
     public BlockDeepslate() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDeepslate(BlockState blockState) {

@@ -12,12 +12,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.RAIL_DATA_BI
 import static org.powernukkitx.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockRailPowerable extends BlockRail {
-    public static final BlockDefinition DEFINITION = BlockRail.DEFINITION.toBuilder()
-            .isPowerSource(true)
-            .build();
-
     public BlockRailPowerable(BlockState blockState) {
-        super(blockState, DEFINITION);
+        super(blockState);
 
         this.canBePowered = true;
     }

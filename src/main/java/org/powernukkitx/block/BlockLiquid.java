@@ -39,6 +39,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             .hasEntityCollision(true)
             .canBeFlowedInto(true)
             .walkThroughExtraCost(20)
+            .canHarvestWithHand(false)
             .build();
     private static final byte CAN_FLOW_DOWN = 1;
     private static final byte CAN_FLOW = 0;

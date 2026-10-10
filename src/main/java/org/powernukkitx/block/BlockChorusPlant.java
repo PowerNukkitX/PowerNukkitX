@@ -29,7 +29,7 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     public BlockChorusPlant() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockChorusPlant(BlockState blockState) {

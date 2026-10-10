@@ -36,7 +36,7 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     public BlockMobSpawner() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockMobSpawner(BlockState blockState) {

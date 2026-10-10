@@ -15,6 +15,7 @@ public class BlockCrimsonSlab extends BlockSlab {
             .burnChance(-1)
             .burnAbility(0)
             .canHarvestWithHand(false)
+            .resistance(6)
             .build();
 
     @Override

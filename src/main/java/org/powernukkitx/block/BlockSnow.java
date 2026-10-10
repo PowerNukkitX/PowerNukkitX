@@ -21,7 +21,7 @@ public class BlockSnow extends BlockSolid {
             .build();
 
     public BlockSnow() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockSnow(BlockState blockState) {

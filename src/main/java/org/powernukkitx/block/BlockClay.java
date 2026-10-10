@@ -20,7 +20,7 @@ public class BlockClay extends BlockSolid implements Natural {
             .build();
 
     public BlockClay() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockClay(BlockState blockState) {

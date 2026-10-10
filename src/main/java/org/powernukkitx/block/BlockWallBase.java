@@ -36,6 +36,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
             .resistance(30)
             .toolType(ItemTool.TYPE_PICKAXE)
             .isSolid(false)
+            .canHarvestWithHand(false)
             .waterloggingLevel(1)
             .build();
     private static final double MIN_POST_BB = 5.0 / 16;
@@ -49,13 +50,13 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         super(blockstate, definition);
     }
 
-    
+
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    
+
     private boolean shouldBeTall(Block above, BlockFace face) {
         return switch (above.getId()) {
             case AIR, SKULL -> false;
@@ -425,5 +426,5 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return getConnectionType(face) != WallConnectionType.NONE;
     }
 
-    
+
     }

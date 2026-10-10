@@ -38,7 +38,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
             .canHarvestWithHand(false)
             .build();
     public BlockLodestone() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockLodestone(BlockState blockState) {

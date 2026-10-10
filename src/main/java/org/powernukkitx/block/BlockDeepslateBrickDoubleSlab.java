@@ -13,6 +13,7 @@ public class BlockDeepslateBrickDoubleSlab extends BlockDoubleSlabBase {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

@@ -35,7 +35,7 @@ public class BlockSnifferEgg extends BlockTransparent {
     }
 
     public BlockSnifferEgg() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockSnifferEgg(BlockState blockstate) {

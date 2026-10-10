@@ -19,7 +19,7 @@ public class BlockLargeFern extends BlockDoublePlant {
     }
 
     public BlockLargeFern() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockLargeFern(BlockState blockstate) {

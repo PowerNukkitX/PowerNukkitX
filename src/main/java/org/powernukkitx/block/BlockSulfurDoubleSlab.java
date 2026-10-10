@@ -10,6 +10,7 @@ public class BlockSulfurDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(SULFUR_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_PICKAXE)
+            .resistance(6)
             .build();
 
     @Override

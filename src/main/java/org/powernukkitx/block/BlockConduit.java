@@ -26,7 +26,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
             .build();
 
     public BlockConduit() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockConduit(BlockState blockState) {

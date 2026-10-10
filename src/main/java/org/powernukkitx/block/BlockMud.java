@@ -14,7 +14,7 @@ public class BlockMud extends BlockSolid implements Natural {
             .build();
 
     public BlockMud() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockMud(BlockState blockState) {

@@ -12,6 +12,7 @@ public class BlockBlackstoneDoubleSlab extends BlockDoubleSlabBase {
             .hardness(2)
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

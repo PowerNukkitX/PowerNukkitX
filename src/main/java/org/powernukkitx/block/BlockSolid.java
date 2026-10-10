@@ -18,4 +18,9 @@ public abstract class BlockSolid extends Block {
     public BlockSolid(BlockState blockState, BlockDefinition definition) {
         super(blockState, definition);
     }
+
+    @Override
+    public boolean isSolid(BlockFace side) {
+        return true;
+    }
 }

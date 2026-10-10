@@ -11,6 +11,8 @@ public class BlockTuffBrickDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .resistance(6)
             .build();
 
     @Override

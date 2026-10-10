@@ -35,6 +35,10 @@ public class BlockDefinition {
     int tickRate;
     int toolType;
     int walkThroughExtraCost;
+    /**
+     * Amount of light this block absorbs (0-15). A negative value means "unset": the filter is then derived
+     * from the block's solidity, see {@code Block#getLightFilter()}. Zero is a valid explicit value.
+     */
     int lightDampening;
     int lightEmission;
     int toolTier;

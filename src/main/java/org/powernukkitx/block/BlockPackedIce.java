@@ -12,6 +12,7 @@ public class BlockPackedIce extends BlockIce {
             .toolType(ItemTool.TYPE_PICKAXE)
             .burnChance(0)
             .isTransparent(false)
+            .canSilkTouch(true)
             .build();
 
     @Override

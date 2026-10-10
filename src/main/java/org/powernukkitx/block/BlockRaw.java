@@ -14,6 +14,7 @@ public abstract class BlockRaw extends BlockSolid {
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockRaw(BlockState blockstate) {

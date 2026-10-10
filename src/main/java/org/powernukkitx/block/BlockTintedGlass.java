@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockTintedGlass extends BlockGlass {
     public static final BlockProperties PROPERTIES = new BlockProperties(TINTED_GLASS);
     public static final BlockDefinition DEFINITION = BlockGlass.DEFINITION.toBuilder()
+            .canSilkTouch(false)
             .build();
 
     @Override

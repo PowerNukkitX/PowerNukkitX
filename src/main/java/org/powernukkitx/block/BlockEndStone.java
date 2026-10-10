@@ -25,7 +25,7 @@ public class BlockEndStone extends BlockSolid {
     }
 
     public BlockEndStone() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockEndStone(BlockState blockState) {

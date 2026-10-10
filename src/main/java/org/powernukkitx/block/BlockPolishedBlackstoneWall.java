@@ -13,6 +13,7 @@ public class BlockPolishedBlackstoneWall extends BlockWallBase {
             .resistance(6.0)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

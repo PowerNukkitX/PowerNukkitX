@@ -18,6 +18,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.LIQUID_DEPTH
 public abstract class BlockCoral extends BlockFlowable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .waterloggingLevel(2)
+            .canSilkTouch(true)
             .build();
     public static final int TYPE_TUBE = 0;
     public static final int TYPE_BRAIN = 1;

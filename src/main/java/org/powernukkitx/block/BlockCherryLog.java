@@ -21,7 +21,7 @@ public class BlockCherryLog extends BlockLog {
     }
 
     public BlockCherryLog() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockCherryLog(BlockState blockState) {

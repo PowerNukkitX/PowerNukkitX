@@ -24,7 +24,7 @@ public class BlockIce extends BlockTransparent {
             .build();
 
     public BlockIce() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockIce(BlockState blockState) {

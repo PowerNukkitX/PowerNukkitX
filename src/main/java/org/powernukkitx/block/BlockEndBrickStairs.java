@@ -13,6 +13,7 @@ public class BlockEndBrickStairs extends BlockStairs {
             .resistance(9)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

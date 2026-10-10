@@ -23,7 +23,6 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
             .hardness(2)
             .resistance(3)
             .toolType(ItemTool.TYPE_AXE)
-            .toolTier(ItemTool.TIER_WOODEN)
             .burnChance(5)
             .burnAbility(20)
             .waterloggingLevel(1)

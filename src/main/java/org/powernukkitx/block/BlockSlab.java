@@ -4,7 +4,6 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.MinecraftVerticalHalf;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.block.definition.BlockDefinition;
@@ -59,11 +58,6 @@ public abstract class BlockSlab extends BlockTransparent {
     @Override
     public double getMaxY() {
         return isOnTop() ? this.y + 1 : this.y + 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return getToolType() == ItemTool.TYPE_PICKAXE ? 6 : 3;
     }
 
     public boolean isOnTop() {

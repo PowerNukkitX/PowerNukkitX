@@ -32,7 +32,7 @@ public class BlockShortGrass extends BlockFlowable implements Supportable {
     }
 
     public BlockShortGrass() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockShortGrass(BlockState blockstate) {

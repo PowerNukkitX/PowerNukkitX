@@ -29,7 +29,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             .build();
 
     public BlockFlowerPot() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFlowerPot(BlockState blockstate) {

@@ -27,7 +27,7 @@ public class BlockHeavyCore extends BlockFlowable {
     }
 
     public BlockHeavyCore() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockHeavyCore(BlockState blockstate) {

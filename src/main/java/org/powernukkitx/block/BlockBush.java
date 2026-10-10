@@ -14,6 +14,7 @@ public class BlockBush extends BlockFlowable implements Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(BUSH);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeReplaced(true)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockBush() {

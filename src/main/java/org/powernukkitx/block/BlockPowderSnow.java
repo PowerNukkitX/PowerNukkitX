@@ -22,7 +22,7 @@ public class BlockPowderSnow extends BlockTransparent {
             .build();
 
     public BlockPowderSnow() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockPowderSnow(BlockState blockState) {

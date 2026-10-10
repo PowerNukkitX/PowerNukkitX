@@ -9,6 +9,7 @@ public abstract class BlockMushroomBlock extends BlockSolid {
             .hardness(0.2)
             .resistance(0.2)
             .toolType(ItemTool.TYPE_AXE)
+            .canSilkTouch(true)
             .build();
 
     public BlockMushroomBlock(BlockState blockState) {

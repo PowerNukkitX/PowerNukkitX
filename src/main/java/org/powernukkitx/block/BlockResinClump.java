@@ -12,6 +12,7 @@ public class BlockResinClump extends BlockLichen {
     public static final BlockProperties PROPERTIES = new BlockProperties(RESIN_CLUMP, CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
     public static final BlockDefinition DEFINITION = BlockLichen.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_NONE)
+            .canHarvestWithHand(true)
             .build();
 
     @Override

@@ -11,6 +11,7 @@ public class BlockCobbledDeepslateDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
             .hardness(3.5)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .resistance(6)
             .build();
 
     @Override

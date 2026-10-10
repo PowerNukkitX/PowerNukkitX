@@ -12,6 +12,7 @@ public class BlockSandstoneSlab extends BlockSlab {
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
+            .resistance(6)
             .build();
 
     public BlockSandstoneSlab(BlockState blockState) {

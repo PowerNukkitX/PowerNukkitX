@@ -21,7 +21,7 @@ public class BlockGoldenDandelion extends BlockFlower {
     }
 
     public BlockGoldenDandelion() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
      public BlockGoldenDandelion(BlockState blockstate) {

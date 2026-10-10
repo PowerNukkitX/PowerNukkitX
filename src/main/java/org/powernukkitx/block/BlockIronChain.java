@@ -28,7 +28,7 @@ public class BlockIronChain extends BlockTransparent {
     }
 
     public BlockIronChain() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockIronChain(BlockState blockState) {

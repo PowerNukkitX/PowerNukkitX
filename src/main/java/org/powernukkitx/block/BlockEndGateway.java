@@ -38,7 +38,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     public BlockEndGateway() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockEndGateway(BlockState blockState) {

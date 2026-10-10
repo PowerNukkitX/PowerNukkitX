@@ -17,7 +17,7 @@ public class BlockPackedMud extends BlockSolid {
     }
 
     public BlockPackedMud() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockPackedMud(BlockState blockState) {

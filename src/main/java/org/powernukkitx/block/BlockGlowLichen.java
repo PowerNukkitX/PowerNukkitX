@@ -34,7 +34,7 @@ public class BlockGlowLichen extends BlockLichen {
     }
 
     public BlockGlowLichen() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockGlowLichen(BlockState blockState) {

@@ -19,6 +19,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.CORAL_FAN_DI
 public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .waterloggingLevel(1)
+            .canSilkTouch(true)
             .build();
     public BlockCoralFan(BlockState blockstate) {
         super(blockstate, DEFINITION);

@@ -12,6 +12,7 @@ public class BlockStoneButton extends BlockButton {
     public static final BlockDefinition DEFINITION = BlockButton.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

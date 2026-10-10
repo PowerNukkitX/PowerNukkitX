@@ -13,6 +13,7 @@ public class BlockQuartzStairs extends BlockStairs {
             .resistance(4)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

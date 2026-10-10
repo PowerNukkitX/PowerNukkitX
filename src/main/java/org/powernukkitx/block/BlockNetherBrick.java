@@ -20,7 +20,7 @@ public class BlockNetherBrick extends BlockSolid {
             .build();
 
     public BlockNetherBrick() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockNetherBrick(BlockState blockState) {

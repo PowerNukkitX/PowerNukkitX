@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPodzol extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(PODZOL);
     public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
+            .canSilkTouch(true)
             .build();
 
     @Override
@@ -24,7 +25,7 @@ public class BlockPodzol extends BlockDirt {
     }
 
     public BlockPodzol() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockPodzol(BlockState blockState) {

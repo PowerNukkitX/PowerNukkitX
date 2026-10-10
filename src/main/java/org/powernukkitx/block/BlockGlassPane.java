@@ -13,10 +13,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockGlassPane extends BlockThin {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
-    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+    public static final BlockDefinition DEFINITION = BlockThin.DEFINITION.toBuilder()
             .hardness(0.3)
             .resistance(1.5)
             .waterloggingLevel(1)
+            .canSilkTouch(true)
             .build();
 
     @Override
@@ -25,7 +26,7 @@ public class BlockGlassPane extends BlockThin {
     }
 
     public BlockGlassPane() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockGlassPane(BlockState blockstate) {

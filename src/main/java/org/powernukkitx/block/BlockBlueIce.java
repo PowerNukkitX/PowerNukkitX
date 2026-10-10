@@ -16,7 +16,7 @@ public class BlockBlueIce extends BlockPackedIce {
             .build();
 
     public BlockBlueIce() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockBlueIce(BlockState blockState) {

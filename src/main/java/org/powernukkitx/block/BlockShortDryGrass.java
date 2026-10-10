@@ -14,6 +14,7 @@ public class BlockShortDryGrass extends BlockFlowable implements Supportable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeReplaced(true)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override
@@ -23,7 +24,7 @@ public class BlockShortDryGrass extends BlockFlowable implements Supportable {
     }
 
     public BlockShortDryGrass() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockShortDryGrass(BlockState blockstate) {

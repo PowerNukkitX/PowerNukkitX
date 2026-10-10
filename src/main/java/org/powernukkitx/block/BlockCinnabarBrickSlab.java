@@ -14,6 +14,7 @@ public class BlockCinnabarBrickSlab extends BlockSlab {
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
+            .resistance(6)
             .build();
 
     public BlockCinnabarBrickSlab(BlockState blockState) {

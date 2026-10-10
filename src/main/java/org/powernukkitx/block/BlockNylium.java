@@ -25,6 +25,8 @@ public abstract class BlockNylium extends BlockSolid implements Natural {
             .burnAbility(0)
             .canBeActivated(true)
             .isFertilizable(true)
+            .canHarvestWithHand(false)
+            .canSilkTouch(true)
             .build();
     public BlockNylium(BlockState blockState) {
         super(blockState, DEFINITION);

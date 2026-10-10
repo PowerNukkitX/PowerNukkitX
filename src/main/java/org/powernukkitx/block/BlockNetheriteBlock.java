@@ -16,7 +16,7 @@ public class BlockNetheriteBlock extends BlockSolid {
             .canHarvestWithHand(false)
             .build();
     public BlockNetheriteBlock() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockNetheriteBlock(BlockState blockState) {

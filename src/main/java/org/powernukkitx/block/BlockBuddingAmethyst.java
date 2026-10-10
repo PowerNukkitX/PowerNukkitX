@@ -20,7 +20,7 @@ public class BlockBuddingAmethyst extends BlockSolid {
     private static final NukkitRandom RANDOM = new NukkitRandom();
 
     public BlockBuddingAmethyst() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockBuddingAmethyst(BlockState blockState) {

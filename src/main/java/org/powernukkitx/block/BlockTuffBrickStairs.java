@@ -12,6 +12,7 @@ public class BlockTuffBrickStairs extends BlockStairs {
             .hardness(1.5)
             .resistance(6)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

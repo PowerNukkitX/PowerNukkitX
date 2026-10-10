@@ -37,7 +37,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             .resistance(15)
             .canBeActivated(true)
             .toolType(ItemTool.TYPE_AXE)
-            .toolTier(ItemTool.TIER_WOODEN)
             .burnChance(5)
             .burnAbility(20)
             .waterloggingLevel(1)

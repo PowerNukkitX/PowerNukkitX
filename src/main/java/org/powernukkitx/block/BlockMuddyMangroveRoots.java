@@ -20,7 +20,7 @@ public class BlockMuddyMangroveRoots extends BlockSolid implements Natural {
             .build();
 
     public BlockMuddyMangroveRoots() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockMuddyMangroveRoots(BlockState blockState) {

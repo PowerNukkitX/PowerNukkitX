@@ -12,6 +12,7 @@ public class BlockMossyCobblestoneSlab extends BlockSlab {
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
+            .resistance(6)
             .build();
 
     public BlockMossyCobblestoneSlab(BlockState blockState) {

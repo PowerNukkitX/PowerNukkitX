@@ -33,7 +33,6 @@ public abstract class BlockLeaves extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0.2)
             .toolType(ItemTool.TYPE_HOE)
-            .toolTier(ItemTool.TIER_WOODEN)
             .burnChance(30)
             .burnAbility(60)
             .canSilkTouch(true)

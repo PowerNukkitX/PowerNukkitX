@@ -12,6 +12,7 @@ public class BlockBlackstoneStairs extends BlockStairs {
             .hardness(1.5)
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

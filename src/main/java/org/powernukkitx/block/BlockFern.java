@@ -33,7 +33,7 @@ public class BlockFern extends BlockFlowable implements BlockFlowerPot.FlowerPot
     }
 
     public BlockFern() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFern(BlockState blockstate) {

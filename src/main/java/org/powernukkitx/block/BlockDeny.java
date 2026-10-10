@@ -21,7 +21,7 @@ public class BlockDeny extends BlockSolid {
             .build();
 
     public BlockDeny() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDeny(BlockState blockState) {

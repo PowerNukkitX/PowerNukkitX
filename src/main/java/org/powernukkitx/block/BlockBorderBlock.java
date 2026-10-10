@@ -19,6 +19,7 @@ public class BlockBorderBlock extends BlockWallBase {
             .resistance(18000000)
             .canBePushed(false)
             .canBePulled(false)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

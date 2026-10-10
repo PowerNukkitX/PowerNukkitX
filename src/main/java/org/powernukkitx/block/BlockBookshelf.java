@@ -22,7 +22,7 @@ public class BlockBookshelf extends BlockSolid {
             .build();
 
     public BlockBookshelf() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockBookshelf(BlockState blockState) {

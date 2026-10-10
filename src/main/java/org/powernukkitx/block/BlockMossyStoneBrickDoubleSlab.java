@@ -12,6 +12,7 @@ public class BlockMossyStoneBrickDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
             .hardness(1.5)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .resistance(6)
             .build();
 
     @Override

@@ -32,6 +32,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
             .canPassThrough(true)
             .isPowerSource(true)
             .waterloggingLevel(1)
+            .canHarvestWithHand(false)
             .build();
     protected float onPitch;
     protected float offPitch;

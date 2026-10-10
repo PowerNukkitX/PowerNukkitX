@@ -30,7 +30,7 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     public BlockGlowstone() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockGlowstone(BlockState blockState) {

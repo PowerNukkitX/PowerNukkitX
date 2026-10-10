@@ -24,7 +24,7 @@ public class BlockSlime extends BlockTransparent {
     }
 
     public BlockSlime() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockSlime(BlockState blockState) {

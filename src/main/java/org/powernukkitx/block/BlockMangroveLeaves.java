@@ -35,7 +35,7 @@ public class BlockMangroveLeaves extends BlockLeaves {
     }
 
     public BlockMangroveLeaves() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockMangroveLeaves(BlockState blockstate) {

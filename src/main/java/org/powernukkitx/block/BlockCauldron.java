@@ -60,7 +60,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     }
 
     public BlockCauldron() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockCauldron(BlockState blockstate) {

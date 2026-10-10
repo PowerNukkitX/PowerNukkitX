@@ -26,7 +26,7 @@ public class BlockPrismarine extends BlockSolid {
     }
 
     public BlockPrismarine() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockPrismarine(BlockState blockState) {

@@ -11,7 +11,6 @@ public class BlockWoodenDoor extends BlockDoor {
             .hardness(3)
             .resistance(15)
             .toolType(ItemTool.TYPE_AXE)
-            .toolTier(ItemTool.TIER_WOODEN)
             .build();
 
     @Override

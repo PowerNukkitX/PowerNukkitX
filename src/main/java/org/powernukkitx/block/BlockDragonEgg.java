@@ -37,7 +37,7 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     public BlockDragonEgg() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDragonEgg(BlockState blockState) {

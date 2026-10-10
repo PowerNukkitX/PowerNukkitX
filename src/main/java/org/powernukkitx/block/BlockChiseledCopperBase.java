@@ -19,6 +19,7 @@ public abstract class BlockChiseledCopperBase extends BlockSolid implements Oxid
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockChiseledCopperBase(BlockState blockState) {

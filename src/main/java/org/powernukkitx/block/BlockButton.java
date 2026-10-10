@@ -33,7 +33,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             .build();
 
     public BlockButton(BlockState meta) {
-        super(meta);
+        this(meta, DEFINITION);
     }
 
     public BlockButton(BlockState meta, BlockDefinition definition) {

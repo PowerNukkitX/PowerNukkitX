@@ -77,7 +77,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             .hasEntityStepSensor(false)
             .isFertilizable(false)
             .isPowerSource(false)
-            .lightDampening(0)
+            .lightDampening(-1)
             .lightEmission(0)
             .passableFrictionFactor(Block.DEFAULT_AIR_FLUID_FRICTION)
             .isSolid(true)
@@ -119,6 +119,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             this.definition = definition;
         } else {
             this.definition = DEFAULT_DEFINITION;
+        }
+
+        // Respect legacy custom blocks' definition
+        if (this instanceof CustomBlock && !(this.definition instanceof CustomBlockDefinition)) {
+            CustomBlockDefinition custom = BlockRegistry.getCustomBlockDefinitionByIdStatic(this.blockstate.getIdentifier());
+            if (custom != null) {
+                this.definition = custom;
+            }
         }
     }
 
@@ -257,7 +265,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             return new BlockColor((int) ((val >> 16) & 0xFF), (int) ((val >> 8) & 0xFF), (int) (val & 0xFF), 0xFF);
         }
         if (s.length() == 8) {
-            return new BlockColor((int) ((val >> 24) & 0xFF), (int) ((val >> 16) & 0xFF), (int) ((val >> 8) & 0xFF), (int) (val & 0xFF));
+            return new BlockColor((int) ((val >> 16) & 0xFF), (int) ((val >> 8) & 0xFF), (int) (val & 0xFF), (int) ((val >> 24) & 0xFF));
         }
         return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
     }
@@ -277,8 +285,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     private static boolean correctTool0(int blockToolType, Item item, Block b) {
         String block = b.getId();
-        if (b instanceof BlockLeaves) {
-            return item.isHoe() || item.isShears();
+        if (b instanceof BlockLeaves && item.isHoe()) {
+            return (blockToolType == ItemTool.TYPE_SHEARS && item.isHoe());
         } else if (block.equals(BAMBOO) && item.isSword()) {
             return (blockToolType == ItemTool.TYPE_AXE && item.isSword());
         } else
@@ -464,7 +472,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return the waterlogging level (0 if not waterlogged)
      */
     public int getWaterloggingLevel() {
-        return this.definition.getWaterloggingLevel();
+        return definition.getWaterloggingLevel();
     }
 
     /**
@@ -1502,8 +1510,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return Light absorbed by the block 0-15
      */
     public int getLightFilter() {
-        int lightLevel = this.definition.getLightDampening();
-        return lightLevel != 0 ? lightLevel : isSolid() && !isTransparent() ? 15 : 1;
+        int lightLevel = definition.getLightDampening();
+        return lightLevel >= 0 ? lightLevel : isSolid() && !isTransparent() ? 15 : 1;
     }
 
     public final boolean canRandomTick() {
@@ -1560,6 +1568,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
     }
 
+    /**
+     * @return the definition backing this block's property getters. For custom blocks this is their
+     * {@link CustomBlockDefinition}.
+     */
     public BlockDefinition getDefinition() {
         return this.definition;
     }

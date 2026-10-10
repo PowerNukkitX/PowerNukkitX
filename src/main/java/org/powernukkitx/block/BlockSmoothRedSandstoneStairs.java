@@ -13,6 +13,7 @@ public class BlockSmoothRedSandstoneStairs extends BlockStairs {
             .resistance(30)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

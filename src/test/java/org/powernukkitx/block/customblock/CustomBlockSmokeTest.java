@@ -66,6 +66,11 @@ public class CustomBlockSmokeTest {
         public Item toItem() {
             return null;
         }
+
+        @Override
+        public CustomBlockDefinition getDefinition() {
+            return CustomBlockDefinition.builder(this).build();
+        }
     }
 
     @Test

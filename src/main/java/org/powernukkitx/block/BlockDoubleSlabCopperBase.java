@@ -22,6 +22,7 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
             .build();
 
     public BlockDoubleSlabCopperBase(BlockState blockstate) {

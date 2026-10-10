@@ -22,7 +22,7 @@ public class BlockMangroveRoots extends BlockTransparent {
     }
 
     public BlockMangroveRoots() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockMangroveRoots(BlockState blockState) {

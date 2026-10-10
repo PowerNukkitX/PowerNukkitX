@@ -19,7 +19,7 @@ public class BlockTuff extends BlockSolid {
             .build();
 
     public BlockTuff() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockTuff(BlockState blockState) {

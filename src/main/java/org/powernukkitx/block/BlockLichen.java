@@ -30,6 +30,8 @@ public abstract class BlockLichen extends BlockTransparent {
             .isSolid(false)
             .canBeFlowedInto(true)
             .waterloggingLevel(1)
+            .canHarvestWithHand(false)
+            .canSilkTouch(true)
             .build();
     public static final NukkitRandom RANDOM = new NukkitRandom();
 

@@ -17,13 +17,14 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDirt extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.5)
             .resistance(0.5)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canBeActivated(true)
             .build();
 
     public BlockDirt() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDirt(BlockState blockState) {
@@ -38,11 +39,6 @@ public class BlockDirt extends BlockSolid implements Natural {
     @NotNull
     public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
     }
 
     

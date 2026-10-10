@@ -15,12 +15,13 @@ import org.jetbrains.annotations.NotNull;
 public class BlockIronBars extends BlockThin {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(IRON_BARS, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
-    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+    public static final BlockDefinition DEFINITION = BlockThin.DEFINITION.toBuilder()
             .hardness(5)
             .resistance(10)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .waterloggingLevel(1)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

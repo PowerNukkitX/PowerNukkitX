@@ -17,7 +17,7 @@ public class BlockCalcite extends BlockSolid {
             .build();
 
     public BlockCalcite() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockCalcite(BlockState blockState) {

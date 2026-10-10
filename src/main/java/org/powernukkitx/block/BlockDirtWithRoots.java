@@ -31,7 +31,7 @@ public class BlockDirtWithRoots extends BlockDirt {
     }
 
     public BlockDirtWithRoots() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDirtWithRoots(BlockState blockState) {

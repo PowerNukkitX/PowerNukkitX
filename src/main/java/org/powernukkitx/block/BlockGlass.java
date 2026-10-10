@@ -22,7 +22,7 @@ public class BlockGlass extends BlockTransparent {
     }
 
     public BlockGlass() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockGlass(BlockState blockState) {

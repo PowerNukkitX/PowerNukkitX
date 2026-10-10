@@ -24,7 +24,7 @@ public class BlockSand extends BlockFallable implements Natural {
     }
 
     public BlockSand() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockSand(BlockState blockState) {

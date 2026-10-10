@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockChiseledPolishedBlackstone extends BlockBlackstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHISELED_POLISHED_BLACKSTONE);
     public static final BlockDefinition DEFINITION = BlockBlackstone.DEFINITION.toBuilder()
+            .canHarvestWithHand(false)
             .build();
 
     @Override

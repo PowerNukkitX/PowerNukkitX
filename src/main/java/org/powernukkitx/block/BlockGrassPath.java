@@ -22,7 +22,7 @@ public class BlockGrassPath extends BlockGrassBlock {
             .build();
 
     public BlockGrassPath() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockGrassPath(BlockState blockState) {

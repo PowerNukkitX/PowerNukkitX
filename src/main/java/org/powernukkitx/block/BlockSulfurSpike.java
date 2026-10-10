@@ -14,6 +14,7 @@ public class BlockSulfurSpike extends BlockPointedDripstone {
             .hardness(1.5)
             .resistance(3)
             .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

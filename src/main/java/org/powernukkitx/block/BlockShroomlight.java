@@ -21,7 +21,7 @@ public class BlockShroomlight extends BlockTransparent {
     }
 
     public BlockShroomlight() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockShroomlight(BlockState blockState) {

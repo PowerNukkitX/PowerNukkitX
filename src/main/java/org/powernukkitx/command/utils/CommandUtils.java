@@ -3,8 +3,6 @@ package org.powernukkitx.command.utils;
 import org.powernukkitx.block.customblock.CustomBlock;
 import org.powernukkitx.item.customitem.CustomItem;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.block.Block;
-import org.powernukkitx.block.customblock.CustomBlockDefinition;
 
 /**
  * Utility class for command-related helper methods in PowerNukkitX.
@@ -41,12 +39,8 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition;
  * @since PowerNukkitX 1.19.50
  */
 public final class CommandUtils {
-    public static boolean isHiddenInCommands(Block block) {
-        CustomBlockDefinition definition = block.getCustomDefinition();
-        if (definition == null) {
-            return false;
-        }
-        CompoundTag nbt = definition.nbt();
+    public static boolean isHiddenInCommands(CustomBlock block) {
+        CompoundTag nbt = block.getDefinition().nbt();
         CompoundTag menuCategory = nbt.getCompound("menu_category");
         return menuCategory.getByte("is_hidden_in_commands") == 1;
     }

@@ -55,7 +55,7 @@ public class BlockNode extends ParamNode<Block> {
         }
 
         // Reject if custom and marked hidden
-        if (CommandUtils.isHiddenInCommands(block)) {
+        if (block instanceof CustomBlock customBlock && CommandUtils.isHiddenInCommands(customBlock)) {
              this.error();
             return;
         }

@@ -62,7 +62,7 @@ public class BlockRespawnAnchor extends Block {
     }
 
     public BlockRespawnAnchor() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockRespawnAnchor(BlockState blockState) {

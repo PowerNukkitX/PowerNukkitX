@@ -33,7 +33,6 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
             .resistance(5)
             .isSolid(false)
             .toolType(ItemTool.TYPE_AXE)
-            .toolTier(ItemTool.TIER_WOODEN)
             .breaksWhenMoved(true)
             .canBePulled(false)
             .canBeActivated(true)

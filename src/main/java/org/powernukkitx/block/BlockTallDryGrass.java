@@ -15,6 +15,7 @@ public class BlockTallDryGrass extends BlockFlowable implements Supportable {
     public static final BlockProperties PROPERTIES = new BlockProperties(TALL_DRY_GRASS);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .canBeReplaced(true)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

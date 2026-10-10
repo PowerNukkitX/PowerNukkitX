@@ -11,7 +11,7 @@ public class BlockAndesiteDoubleSlab extends BlockDoubleSlabBase {
 
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_PICKAXE)
-            .toolTier(ItemTool.TIER_WOODEN)
+            .resistance(6)
             .build();
 
     @Override

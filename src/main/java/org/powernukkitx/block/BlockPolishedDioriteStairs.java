@@ -12,6 +12,7 @@ public class BlockPolishedDioriteStairs extends BlockStairs {
             .hardness(1.5)
             .resistance(30)
             .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

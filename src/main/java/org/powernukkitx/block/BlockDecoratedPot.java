@@ -41,7 +41,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     }
 
     public BlockDecoratedPot() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDecoratedPot(BlockState blockState) {

@@ -35,7 +35,7 @@ import java.util.List;
 public abstract class BlockDoor extends BlockTransparent implements RedstoneComponent, Faceable {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .isSolid(false)
-            .canBeActivated(false)
+            .canBeActivated(true)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .waterloggingLevel(1)
@@ -59,11 +59,16 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     }
 
     public BlockDoor(BlockState blockState) {
-        super(blockState);
+        this(blockState, DEFINITION);
     }
 
     public BlockDoor(BlockState meta, BlockDefinition definition) {
         super(meta, definition);
+    }
+
+    @Override
+    public boolean isSolid(BlockFace side) {
+        return false;
     }
 
     @Override

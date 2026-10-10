@@ -28,7 +28,7 @@ public class BlockLightningRod extends BlockTransparent implements Faceable, Wax
             .build();
 
     public BlockLightningRod() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockLightningRod(BlockState blockState) {

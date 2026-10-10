@@ -38,6 +38,7 @@ public abstract class BlockVinesNether extends BlockTransparent {
             .isSolid(false)
             .hasEntityCollision(true)
             .canBeFlowedInto(true)
+            .canSilkTouch(true)
             .build();
     /**
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.

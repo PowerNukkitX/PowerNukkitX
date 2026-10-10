@@ -13,6 +13,7 @@ public class BlockAzaleaLeaves extends BlockLeaves {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(AZALEA_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
     public static final BlockDefinition DEFINITION = BlockLeaves.DEFINITION.toBuilder()
+            .canHarvestWithHand(false)
             .build();
 
     public BlockAzaleaLeaves() {

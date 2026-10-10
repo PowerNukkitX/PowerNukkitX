@@ -14,6 +14,7 @@ public class BlockFurnace extends BlockLitFurnace {
     public static final BlockProperties PROPERTIES = new BlockProperties(FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
     public static final BlockDefinition DEFINITION = BlockLitFurnace.DEFINITION.toBuilder()
             .lightEmission(0)
+            .canHarvestWithHand(false)
             .build();
 
     @Override

@@ -22,6 +22,7 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
             .canBeActivated(true)
+            .canHarvestWithHand(false)
             .build();
     public BlockStairsCopperBase(BlockState blockstate) {
         super(blockstate, DEFINITION);

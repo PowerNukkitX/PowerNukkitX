@@ -22,7 +22,7 @@ public class BlockObsidian extends BlockSolid {
             .build();
 
     public BlockObsidian() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockObsidian(BlockState blockState) {

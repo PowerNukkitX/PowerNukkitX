@@ -18,7 +18,7 @@ public class BlockDriedKelpBlock extends BlockSolid {
     }
 
     public BlockDriedKelpBlock() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockDriedKelpBlock(BlockState blockState) {

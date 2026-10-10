@@ -22,7 +22,7 @@ public class BlockGravel extends BlockFallable implements Natural {
             .build();
 
     public BlockGravel() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockGravel(BlockState blockState) {

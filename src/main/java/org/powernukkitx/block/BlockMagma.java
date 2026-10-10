@@ -27,7 +27,7 @@ public class BlockMagma extends BlockSolid {
             .build();
 
     public BlockMagma() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockMagma(BlockState blockState) {
