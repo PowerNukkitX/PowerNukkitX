@@ -22,7 +22,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 03.07.2016
  */
 public class BlockEntityItemFrame extends BlockEntitySpawnable {
-
     public BlockEntityItemFrame(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -30,15 +29,6 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.contains("Item")) {
-            this.nbt.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
-        }
-        if (!nbt.contains("ItemRotation")) {
-            this.nbt.putByte("ItemRotation", (byte) 0);
-        }
-        if (!nbt.contains("ItemDropChance")) {
-            this.nbt.putFloat("ItemDropChance", 1.0f);
-        }
         this.scheduleComparatorOutputUpdate();
     }
 
@@ -53,11 +43,12 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public int getItemRotation() {
-        return this.getNbt().getByte("ItemRotation");
+        return Math.floorMod(Math.round(this.getNbt().getFloat("ItemRotation") / 45.0f), 8);
     }
 
     public void setItemRotation(int itemRotation) {
-        this.nbt.putByte("ItemRotation", (byte) itemRotation);
+        int normalizedRotation = Math.floorMod(itemRotation, 8);
+        this.nbt.putFloat("ItemRotation", normalizedRotation * 45.0f);
         this.level.updateComparatorOutputLevel(this);
         this.setDirty();
     }
@@ -71,14 +62,19 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
-        this.nbt.putCompound("Item", ItemHelper.write(item));
+        if (item == null || item.isNull()) {
+            this.nbt.remove("Item");
+        } else {
+            this.nbt.putCompound("Item", ItemHelper.write(item));
+        }
+
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);
     }
 
     public float getItemDropChance() {
-        return getNbt().getFloat("ItemDropChance");
+        return getNbt().containsFloat("ItemDropChance") ? getNbt().getFloat("ItemDropChance") : 1.0f;
     }
 
     public void setItemDropChance(float chance) {
@@ -152,13 +148,13 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
         EntityItem itemEntity = null;
         if (this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {
-            itemEntity = level.dropAndGetItem(add(0.5, 0.25, 0.5), drop);
-            if (itemEntity == null) {
+            EntityItem[] entities = level.dropItemAndGetEntities(add(0.5, 0.25, 0.5), drop);
+            if (entities.length == 0) {
                 if (player != null) {
                     spawnTo(player);
                 }
                 return null;
-            }
+            } else itemEntity = entities[0];
         }
 
         setItem(Item.get(BlockID.AIR, 0, 1), true);

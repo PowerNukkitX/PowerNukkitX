@@ -48,17 +48,11 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.95f;
-        }
         return 1.9f;
     }
 
@@ -123,8 +117,9 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     private void transform() {
+        CompoundTag transformNbt = this.copyNBTForNewActor();
         this.close();
-        EntityZombieVillager zombieVillager = new EntityZombieVillager(this.getChunk(), this.getNbt());
+        EntityZombieVillager zombieVillager = new EntityZombieVillager(this.getChunk(), transformNbt);
         zombieVillager.setPosition(this);
         zombieVillager.setRotation(this.yaw, this.pitch);
         zombieVillager.spawnToAll();

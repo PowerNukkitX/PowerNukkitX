@@ -45,7 +45,7 @@ import java.util.Map;
 @Slf4j
 public final class RegistryCache {
     private static final byte[] MAGIC = {'P', 'N', 'X', 'C'};
-    private static final byte SCHEMA_VERSION = 1;
+    private static final byte SCHEMA_VERSION = 2;
 
     private static final byte SECTION_ITEM_RUNTIMEID = 1;
     private static final byte SECTION_BLOCK_STATE_COLORS = 2;

@@ -1,9 +1,14 @@
 package org.powernukkitx.entity.passive;
 
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityMarkVariant;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityShearable;
+import org.powernukkitx.entity.EntityVariant;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -28,6 +33,7 @@ import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.ParticleEffect;
 import org.powernukkitx.level.Sound;
@@ -41,19 +47,93 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-// TODO: Variantes logic
-public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable {
+public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable, EntityVariant, EntityInteractable, EntityMarkVariant {
+
+    /**
+     * The mooshroom variants. Adding a new one only means adding a constant here - the id, the
+     * mushroom it is sheared into and the lightning cycle all follow from the declaration order.
+     */
+    public enum Variant {
+        RED(BlockID.RED_MUSHROOM),
+        BROWN(BlockID.BROWN_MUSHROOM);
+
+        private static final Variant[] VALUES = values();
+
+        private final String mushroom;
+
+        Variant(String mushroom) {
+            this.mushroom = mushroom;
+        }
+
+        public int getId() {
+            return ordinal();
+        }
+
+        /**
+         * The mushroom dropped when a mooshroom of this variant is sheared.
+         */
+        public String getMushroom() {
+            return mushroom;
+        }
+
+        /**
+         * The variant a lightning strike converts this one into, wrapping back to the first.
+         */
+        public Variant next() {
+            return VALUES[(ordinal() + 1) % VALUES.length];
+        }
+
+        public static Variant byId(int id) {
+            return id >= 0 && id < VALUES.length ? VALUES[id] : RED;
+        }
+    }
+
+    private static final int[] VARIANTS = Arrays.stream(Variant.values()).mapToInt(Variant::getId).toArray();
+
+    private static final int SHEAR_MUSHROOM_COUNT = 5;
+
+    /**
+     * Mark variant of a brown mooshroom that has not eaten a flower yet.
+     */
+    private static final int NO_STEW_EFFECT = -1;
+
+    /**
+     * The flower a brown mooshroom ate, mapped to the suspicious stew meta it gives when milked
+     * with a bowl. The value is stored as the mark variant, the way vanilla does it.
+     */
+    private static final Map<String, Integer> STEW_EFFECTS = Map.ofEntries(
+            Map.entry(BlockID.POPPY, 0),
+            Map.entry(BlockID.CORNFLOWER, 1),
+            Map.entry(BlockID.RED_TULIP, 2),
+            Map.entry(BlockID.ORANGE_TULIP, 2),
+            Map.entry(BlockID.WHITE_TULIP, 2),
+            Map.entry(BlockID.PINK_TULIP, 2),
+            Map.entry(BlockID.AZURE_BLUET, 3),
+            Map.entry(BlockID.LILY_OF_THE_VALLEY, 4),
+            Map.entry(BlockID.DANDELION, 5),
+            Map.entry(BlockID.BLUE_ORCHID, 6),
+            Map.entry(BlockID.ALLIUM, 7),
+            Map.entry(BlockID.OXEYE_DAISY, 8),
+            Map.entry(BlockID.WITHER_ROSE, 9),
+            Map.entry(BlockID.TORCHFLOWER, 10),
+            Map.entry(BlockID.OPEN_EYEBLOSSOM, 11),
+            Map.entry(BlockID.CLOSED_EYEBLOSSOM, 12)
+    );
+
+    private static final int[] MARK_VARIANTS = STEW_EFFECTS.values().stream().mapToInt(Integer::intValue).distinct().toArray();
+
     @Override
     @NotNull public String getIdentifier() {
         return MOOSHROOM;
     }
-    
 
     public EntityMooshroom(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -61,17 +141,11 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
 
     @Override
     public float getWidth() {
-        if (isBaby()) {
-            return 0.45f;
-        }
         return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 
@@ -93,6 +167,28 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     @Override
     public Set<String> typeFamily() {
         return Set.of("mushroomcow", "mob");
+    }
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+        if (!hasVariant()) {
+            setVariant(Variant.RED.getId());
+        }
+    }
+
+    @Override
+    public int[] getAllVariant() {
+        return VARIANTS;
+    }
+
+    public Variant getVariantType() {
+        return Variant.byId(getVariant());
+    }
+
+    public void setVariantType(Variant variant) {
+        setVariant(variant.getId());
+        setDataProperty(ActorDataTypes.VARIANT, variant.getId());
     }
 
     @Override
@@ -148,11 +244,9 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
                 meatAmount
         ));
 
-        if (Utils.rand(0, 2) != 0) {
-            int leatherAmount = Utils.rand(0, 2 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 2 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
@@ -167,31 +261,93 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
             shear();
             return true;
         } else if (item.getId().equals(Item.BUCKET) && item.getDamage() == 0) {
-            item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
         } else if (item.getId().equals(Item.BOWL) && item.getDamage() == 0) {
-            item.count--;
-            player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
+            if (getVariantType() == Variant.BROWN && hasStewEffect()) {
+                player.getInventory().addItem(Item.get(Item.SUSPICIOUS_STEW, getMarkVariant()));
+                this.level.addSound(this, Sound.MOB_MOOSHROOM_SUSPICIOUS_MILK);
+                clearStewEffect();
+            } else {
+                player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
+            }
             return true;
+        } else if (getVariantType() == Variant.BROWN && !hasStewEffect()) {
+            int stewEffect = STEW_EFFECTS.getOrDefault(item.getId(), -1);
+            if (stewEffect != -1) {
+                setMarkVariant(stewEffect);
+                this.level.addSound(this, Sound.MOB_MOOSHROOM_EAT);
+                return true;
+            }
         }
 
         return false;
     }
 
+    /**
+     * @return true if this mooshroom ate a flower and has not been milked since
+     */
+    public boolean hasStewEffect() {
+        return hasMarkVariant() && getMarkVariant() != NO_STEW_EFFECT;
+    }
+
+    /**
+     * Forgets the flower this mooshroom ate, so it gives a plain mushroom stew again.
+     */
+    public void clearStewEffect() {
+        setMarkVariant(NO_STEW_EFFECT);
+    }
+
+    @Override
+    public int[] getAllMarkVariant() {
+        return MARK_VARIANTS;
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        Item held = player.getInventory().getItemInMainHand();
+        if (held.isShears()) {
+            return "action.interact.mooshear";
+        }
+        if (held.getId().equals(ItemID.BUCKET) && held.getDamage() == 0) {
+            return "action.interact.milk";
+        }
+        if (held.getId().equals(ItemID.BOWL) && held.getDamage() == 0) {
+            return "action.interact.moostew";
+        }
+        if (getVariantType() == Variant.BROWN && !hasStewEffect() && STEW_EFFECTS.containsKey(held.getId())) {
+            return "action.interact.feed";
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
+    }
+
     @Override
     public boolean shear() {
+        CompoundTag cowNbt = this.copyNBTForNewActor();
         this.close();
-        this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
+        this.level.dropItem(this, Item.get(getVariantType().getMushroom(), 0, SHEAR_MUSHROOM_COUNT));
         this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
         this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
-        EntityCow cow = new EntityCow(this.getChunk(), this.getNbt());
+        EntityCow cow = new EntityCow(this.getChunk(), cowNbt);
         cow.setPosition(this);
         cow.setHealthCurrent(this.health);
         cow.setRotation(this.yaw, this.pitch);
         cow.spawnToAll();
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.SHEAR));
         return true;
+    }
+
+    @Override
+    public void onStruckByLightning(Entity entity) {
+        super.onStruckByLightning(entity);
+
+        setVariantType(getVariantType().next());
+        clearStewEffect();
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
@@ -201,66 +357,66 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        2, 1
+            .coreBehaviors(
+                new Behavior(
+                    new LoveTimeoutExecutor(20 * 30),
+                    e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                    2, 1
+                ),
+                new Behavior(
+                    new AnimalGrowExecutor(),
+                    all(
+                        e -> e.isAgeable(),
+                        e -> e.isBaby(),
+                        e -> !e.isGrowthPaused(),
+                        e -> e.getTicksGrowLeft() > 0
                     ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
+                    1, 1, 1200
                 )
-                .behaviors(
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10),
-                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                        4, 1
+            )
+            .behaviors(
+                new Behavior(
+                    new FlatRandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10),
+                    new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                    4, 1
+                ),
+                new Behavior(
+                    new BreedingExecutor(16, 200, 0.25f),
+                    all(
+                        e -> !e.isBaby(),
+                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
                     ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.25f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        3, 1
+                    3, 1
+                ),
+                new Behavior(
+                    new TemptExecutor(1.25f, TEMPT_ITEMS),
+                    all(
+                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
                     ),
-                    new Behavior(
-                        new TemptExecutor(1.25f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            new ProbabilityEvaluator(4, 10),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    )
+                    2, 1
+                ),
+                new Behavior(
+                    new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                    new ProbabilityEvaluator(4, 10),
+                    1, 1, 100
+                ),
+                new Behavior(
+                    new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10),
+                    (entity -> true),
+                    1, 1
                 )
-                .sensors(
-                    new NearestPlayerSensor(8, 0, 20)
-                )
-                .controllers(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
-                )
-                .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
-                .build();
+            )
+            .sensors(
+                new NearestPlayerSensor(8, 0, 20)
+            )
+            .controllers(
+                new WalkController(),
+                new LookController(true, true),
+                new FluctuateController()
+            )
+            .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
+            .build();
     }
 
 }

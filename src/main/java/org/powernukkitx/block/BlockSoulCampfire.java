@@ -5,6 +5,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.entity.EntityDamageByBlockEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.recipe.CampfireRecipe;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockSoulCampfire extends BlockCampfire {
@@ -36,6 +37,11 @@ public class BlockSoulCampfire extends BlockCampfire {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{Item.get(BlockID.SOUL_SOIL, 0, 1)};
+    }
+
+    @Override
+    protected CampfireRecipe findRecipe(Item item) {
+        return this.level.getServer().getRecipeRegistry().findSoulCampfireRecipe(item);
     }
 
     @Override

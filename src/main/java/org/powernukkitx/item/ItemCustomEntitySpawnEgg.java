@@ -11,9 +11,9 @@ import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.Identifier;
@@ -89,9 +89,12 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
             return false;
         }
 
-        double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
-        double spawnX = target.getX() + fx;
-        double spawnZ = target.getZ() + fz;
+        AxisAlignedBB boundingBox = target.getBoundingBox();
+        double spawnY = (face == BlockFace.UP && boundingBox != null)
+            ? boundingBox.getMaxY() + 0.0001d
+            : block.getY() + 0.0001d;
+        double spawnX = block.getX() + 0.5d;
+        double spawnZ = block.getZ() + 0.5d;
         Location loc = new Location(spawnX, spawnY, spawnZ, 0f, 0f, level);
 
         if (player != null) {
@@ -109,8 +112,8 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
             nbt.putString("CustomName", this.getCustomName());
         }
         if (this.entityNBT != null) {
-            this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
-            this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
+            this.entityNBT.putList("Pos", nbt.getList("Pos", FloatTag.class));
+            this.entityNBT.putList("Motion", nbt.getList("Motion", FloatTag.class));
             this.entityNBT.putList("Rotation", nbt.getList("Rotation", FloatTag.class));
             nbt = this.entityNBT;
         }

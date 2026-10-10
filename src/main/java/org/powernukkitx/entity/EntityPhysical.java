@@ -499,12 +499,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         RideableComponent.InputType type = getInputControlType();
         if (type == null) {
-            log.warn("Entity {} ({}) received rider input but has no RideableComponent.InputType defined.", this.getId(), this.getIdentifier());
+            log.warn("Entity {} ({}) received rider input but has no RideableComponent.InputType defined.", this.runtimeId(), this.getIdentifier());
             return false;
         }
 
         this.syncRiderLocationFromInput(rider, pk);
-        rider.broadcastMountedMovement();
 
         if ((type == RideableComponent.InputType.GROUND || type == RideableComponent.InputType.WATER) && handleRideJumpOrDash(pk, type)) {
             return true;
@@ -900,10 +899,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     /** Air Input Controls */
     public boolean onRiderInputAirControlled(Player rider, PlayerAuthInputPacket pk) {
-        if (!isControllingRider(rider)) {
-            resetAirRideRotation();
-            return false;
-        }
+        if (!isControllingRider(rider)) return false;
         if (!prepareManualRiderControl()) return false;
 
         // INPUT KNOBS
@@ -1377,11 +1373,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected int getAirRideRotationDelayTicks() {
-        return 2;
+        return 1;
     }
 
     protected float getAirRideYawTurnSpeed() {
-        return 4.21875f;
+        return 5.625f;
     }
 
     protected float getAirRideYawInputThreshold() {

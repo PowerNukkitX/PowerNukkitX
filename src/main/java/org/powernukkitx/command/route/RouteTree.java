@@ -50,6 +50,9 @@ public class RouteTree {
             Map.entry(BlockNode.class, CommandEnum.ENUM_BLOCK)
     );
 
+    private static final int EXECUTOR = 0;
+    private static final int FALLBACK = 1;
+
     private final RouteNode root;
 
     private Command command;
@@ -63,7 +66,10 @@ public class RouteTree {
     }
 
     /**
-     * Dispatches the command by walking the tree to find the matching route, then executing it.
+     * Dispatches the command by walking the tree to find the matching route, then executing it.<br>
+     * Else, the deepest fallback node is executed if available.<br>
+     * If not available, the usage is showed if present.<br>
+     * If not present, the syntax error is showed.
      *
      * @param sender the command sender
      * @param args   the raw command arguments
@@ -72,9 +78,16 @@ public class RouteTree {
     public CommandResult dispatch(CommandSender sender, String[] args) {
         CommandContext context = new CommandContext(sender);
 
-        RouteNode current = match(root, args, 0, context);
-        if (current == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", "", ""));
+        RouteNode[] matchResult = {null, null};
+        match(root, args, 0, context, matchResult);
+        if (matchResult[EXECUTOR] == null) {
+            if (matchResult[FALLBACK] != null) {
+                matchResult[FALLBACK].executeFallback(context);
+            } else if (!command.getUsage().equals("/" + command.getLabel())) {
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", command.getUsage()));
+            } else {
+                sender.sendMessage(new TranslationContainer("commands.generic.syntax", "", "", ""));
+            }
             return CommandResult.fail();
         }
 
@@ -82,7 +95,7 @@ public class RouteTree {
             return CommandResult.fail();
         }
 
-        CommandResult check = current.check(sender);
+        CommandResult check = matchResult[EXECUTOR].check(sender);
         if (!check.isSuccess()) {
             if (check.getMessage() != null) {
                 sender.sendMessage(check.getMessage());
@@ -90,7 +103,7 @@ public class RouteTree {
             return check;
         }
 
-        CommandResult result = current.execute(context);
+        CommandResult result = matchResult[EXECUTOR].execute(context);
 
         if (!result.isSuccess() && result.getMessage() != null) {
             sender.sendMessage(result.getMessage());
@@ -102,22 +115,32 @@ public class RouteTree {
     /**
      * Recursively matches {@code args} against the tree starting at {@code node}, with
      * backtracking: if a child route fails to consume the remaining args, sibling routes
-     * are tried. Literals are preferred over arguments at each level.
-     *
-     * @return the executable terminal node that consumes all args, or {@code null} if none
+     * are tried. Literals are preferred over arguments at each level. The fallback of the 
+     * most deeply nested node with fallback available is preferred.<br>
+     * The results are saved in the array of pointers {@code result} passed by the caller.
      */
-    private RouteNode match(RouteNode node, String[] args, int index, CommandContext context) {
-        if (index == args.length) {
-            return node.isExecutable() ? node : null;
+    private void match(RouteNode node, String[] args, int index, CommandContext context, RouteNode[] result) {
+        match(node, args, index, context, result, new int[] {-1});
+    }
+
+    private void match(RouteNode node, String[] args, int index, CommandContext context, RouteNode[] result, int[] fallbackDepth) {
+        if (node.isFallbackAvailable() && index >= fallbackDepth[0]) {
+            result[FALLBACK] = node;
+            fallbackDepth[0] = index;
         }
 
-        String arg = args[index];
+        if (index == args.length) {
+            if (node.isExecutable()) {
+                result[EXECUTOR] = node;
+            }
+            return;
+        }
 
         for (RouteNode child : node.getChildren()) {
-            if (child.getType() == NodeType.LITERAL && child.getName().equalsIgnoreCase(arg)) {
-                RouteNode result = match(child, args, index + 1, context);
-                if (result != null) {
-                    return result;
+            if (child.getType() == NodeType.LITERAL && child.getName().equalsIgnoreCase(args[index])) {
+                match(child, args, index + 1, context, result, fallbackDepth);
+                if (result[EXECUTOR] != null) {
+                    return;
                 }
             }
         }
@@ -126,34 +149,64 @@ public class RouteTree {
             if (child.getType() != NodeType.ARGUMENT) {
                 continue;
             }
-            Object parsed = parseArg(child, arg);
+
+            Object parsed = parseArg(child, args, index, context.getSender());
             if (parsed == null) {
                 continue;
             }
             context.putArg(child.getName(), parsed);
-            RouteNode result = match(child, args, index + 1, context);
-            if (result != null) {
-                return result;
+
+            if (child.getParamNode().getUsedArgs() == -1) {        // If the node consumes all the tokens, then...
+                if (child.isExecutable()) {
+                    result[EXECUTOR] = child;
+                }
+                if (child.isFallbackAvailable() && args.length >= fallbackDepth[0]) {
+                    result[FALLBACK] = child;
+                    fallbackDepth[0] = args.length;
+                }
+                return;
+            }
+
+            match(child, args, index + child.getParamNode().getUsedArgs(), context, result, fallbackDepth);
+            if (result[EXECUTOR] != null) {
+                return;
             }
         }
-
-        return null;
     }
 
     /**
-     * Parses a single token against the node's param node, returning the parsed value or
+     * Parses a certain number of tokens (defined by {@link org.powernukkitx.command.tree.node.IParamNode#getUsedArgs()}) against the node's param node, returning the parsed value or
      * {@code null} if it does not match. The fill/get/reset sequence is synchronized on the
      * (shared, per-node) param node so concurrent dispatches do not corrupt each other.
+     * 
+     * @see org.powernukkitx.command.tree.node.IParamNode#getUsedArgs()
      */
-    private Object parseArg(RouteNode child, String arg) {
+    private Object parseArg(RouteNode child, String args[], int index, CommandSender sender) {
         IParamNode<?> paramNode = child.getParamNode();
+
         synchronized (paramNode) {
             paramNode.reset();
-            paramNode.fill(arg);
+
+            if (paramNode.getUsedArgs() == -1) {        // If the node consumes all the tokens, then...
+                if (index >= args.length) {
+                    return null;
+                }
+                for (int i = index; i < args.length; i++) {
+                    paramNode.fill(args[i], sender, i == args.length - 1);
+                }
+            } else {
+                if (index + paramNode.getUsedArgs() > args.length) {
+                    return null;
+                }
+                for (int i = 0; i < paramNode.getUsedArgs(); i++) {
+                    paramNode.fill(args[index + i], sender);
+                }
+            }
+
             boolean matched = paramNode.hasResult();
-            Object parsed = matched ? paramNode.get() : null;
+            Object parsed = matched ? paramNode.get(sender) : null;
             paramNode.reset();
-            return matched ? parsed : null;
+            return parsed;
         }
     }
 

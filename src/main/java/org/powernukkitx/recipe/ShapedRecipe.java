@@ -7,6 +7,7 @@ import io.netty.util.collection.CharObjectHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeNetId;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingRequirement;
 import org.cloudburstmc.protocol.bedrock.data.payload.crafting.ShapedRecipePayload;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,7 @@ public class ShapedRecipe extends CraftingRecipe {
     private final int row;
     private final int col;
     private final boolean mirror;
+    private boolean assumeSymmetry;
 
     public ShapedRecipe(Item primaryResult, int netId, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
         this(null, netId, 1, primaryResult, shape, ingredients, extraResults);
@@ -69,6 +71,7 @@ public class ShapedRecipe extends CraftingRecipe {
         super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, data.getNetId(), data.getPriority(), recipeUnlockingRequirement);
         this.uuid = data.getUuid();
         this.mirror = mirror;
+        this.assumeSymmetry = mirror;
 
         this.row = shape.length;
         Preconditions.checkArgument(this.row <= 3 && 1 <= this.row, "Shaped recipes may only have 1, 2 or 3 rows, not " + this.row);
@@ -170,7 +173,9 @@ public class ShapedRecipe extends CraftingRecipe {
         for (int i = 0; i < input.getRow(); i++) {
             for (int j = 0; j < input.getCol(); j++) {
                 ItemDescriptor ingredient = getIngredient(j, i);
-                if (!ingredient.match(input.getData()[i][j])) {
+                Item inputItem = input.getData()[i][j];
+
+                if (!ingredient.match(inputItem) || inputItem.getCount() < ingredient.getCount()) {
                     if (mirrorInput != null) {
                         checkMirror = true;
                         break next;
@@ -185,7 +190,9 @@ public class ShapedRecipe extends CraftingRecipe {
             for (int i = 0; i < mirrorInput.getRow(); i++) {
                 for (int j = 0; j < mirrorInput.getCol(); j++) {
                     ItemDescriptor ingredient = getIngredient(j, i);
-                    if (!ingredient.match(mirrorInput.getData()[i][j])) {
+                    Item inputItem = mirrorInput.getData()[i][j];
+
+                    if (!ingredient.match(inputItem) || inputItem.getCount() < ingredient.getCount()) {
                         return false;
                     }
                 }
@@ -299,6 +306,15 @@ public class ShapedRecipe extends CraftingRecipe {
         return mirror;
     }
 
+    public boolean isAssumeSymmetry() {
+        return assumeSymmetry;
+    }
+
+    public ShapedRecipe setAssumeSymmetry(boolean assumeSymmetry) {
+        this.assumeSymmetry = assumeSymmetry;
+        return this;
+    }
+
     @Override
     public RecipeType getType() {
         return RecipeType.SHAPED;
@@ -316,11 +332,11 @@ public class ShapedRecipe extends CraftingRecipe {
         payload.setWidth(this.getWidth());
         payload.setHeight(this.getHeight());
         payload.getIngredients().addAll(ingredients.stream().map(ItemDescriptor::toNetwork).toList());
-        payload.getResults().addAll(this.getResults().stream().map(Item::toNetwork).toList());
+        payload.getResults().addAll(this.getResults().stream().map(Item::toRecipeNetwork).toList());
         payload.setUuid(this.getUUID());
-        payload.setTag("crafting_table");
+        payload.setTag(this.getCraftingTag());
         payload.setPriority(this.getPriority());
-        payload.setAssumeSymmetry(this.isMirror());
+        payload.setAssumeSymmetry(this.isAssumeSymmetry());
         payload.setUnlockingRequirement(this.getRequirement());
         payload.setNetId(new RecipeNetId(this.getNetId()));
         return payload;
@@ -331,5 +347,336 @@ public class ShapedRecipe extends CraftingRecipe {
         UUID uuid;
         int netId;
         int priority;
+    }
+
+    /**
+     * Constructs a shaped recipe from a builder configuration.
+     *
+     * @param builder the recipe builder
+     */
+    protected ShapedRecipe(Builder builder) {
+        this(
+                validateBuilder(builder).recipeId,
+                new Data(
+                        builder.uuid,
+                        builder.netId,
+                        builder.priority
+                ),
+                builder.result,
+                builder.shape.clone(),
+                builder.ingredients,
+                builder.extraResults,
+                builder.mirror,
+                builder.unlockingRequirement == null
+                        ? new RecipeUnlockingRequirement(RecipeUnlockingContext.ALWAYS_UNLOCKED)
+                        : builder.unlockingRequirement
+        );
+
+        this.setCraftingTag(builder.craftingTag);
+    }
+
+    private static Builder validateBuilder(Builder builder) {
+        return builder.validate();
+    }
+
+    /**
+     * Creates a new builder for a shaped recipe.
+     *
+     * @return a new shaped recipe builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder for creating {@link ShapedRecipe} instances using a fluent API.
+     * <p>
+     * Existing {@link ShapedRecipe} constructors remain available and are not
+     * affected by this builder.
+     */
+    public static final class Builder {
+        private String recipeId;
+        private UUID uuid;
+        private int netId;
+        private boolean netIdSet;
+        private int priority;
+        private Item result;
+        private String[] shape;
+        private final Map<Character, ItemDescriptor> ingredients = Maps.newHashMap();
+        private final List<Item> extraResults = new ArrayList<>();
+        private boolean mirror;
+        private String craftingTag = "crafting_table";
+        private RecipeUnlockingRequirement unlockingRequirement;
+
+        private Builder() {
+        }
+
+        /**
+         * Sets the recipe identifier.
+         *
+         * @param recipeId the recipe identifier
+         * @return this builder
+         */
+        public Builder id(String recipeId) {
+            this.recipeId = recipeId;
+            return this;
+        }
+
+        /**
+         * Sets the UUID used by the recipe on the network.
+         * <p>
+         * When not specified, the recipe registry assigns one during registration.
+         *
+         * @param uuid the recipe UUID
+         * @return this builder
+         */
+        public Builder uuid(UUID uuid) {
+            this.uuid = uuid;
+            return this;
+        }
+
+        /**
+         * Sets the network ID of the recipe.
+         *
+         * @param netId the recipe network ID
+         * @return this builder
+         */
+        public Builder netId(int netId) {
+            this.netId = netId;
+            this.netIdSet = true;
+            return this;
+        }
+
+        /**
+         * Sets the priority of the recipe.
+         * <p>
+         * Lower values have a higher matching priority.
+         *
+         * @param priority the recipe priority
+         * @return this builder
+         */
+        public Builder priority(int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        /**
+         * Sets the primary result produced by the recipe.
+         *
+         * @param result the primary recipe result
+         * @return this builder
+         */
+        public Builder result(Item result) {
+            this.result = result;
+            return this;
+        }
+
+        /**
+         * Sets the crafting pattern of the recipe.
+         * <p>
+         * Each string represents one row and each non-space character must have
+         * a corresponding ingredient.
+         *
+         * @param shape the recipe pattern
+         * @return this builder
+         */
+        public Builder shape(String... shape) {
+            this.shape = shape;
+            return this;
+        }
+
+        /**
+         * Associates a character in the recipe shape with an item.
+         *
+         * @param key the shape character
+         * @param item the ingredient
+         * @return this builder
+         */
+        public Builder ingredient(char key, Item item) {
+            this.ingredients.put(key, new DefaultDescriptor(item));
+            return this;
+        }
+
+        /**
+         * Associates a character in the recipe shape with an item descriptor.
+         *
+         * @param key the shape character
+         * @param descriptor the ingredient descriptor
+         * @return this builder
+         */
+        public Builder ingredient(char key, ItemDescriptor descriptor) {
+            this.ingredients.put(key, descriptor);
+            return this;
+        }
+
+        /**
+         * Adds an additional result produced by the recipe.
+         *
+         * @param item the additional result
+         * @return this builder
+         */
+        public Builder extraResult(Item item) {
+            this.extraResults.add(item);
+            return this;
+        }
+
+        /**
+         * Sets whether the shaped recipe may also match its mirrored pattern.
+         *
+         * @param mirror whether mirrored matching is allowed
+         * @return this builder
+         */
+        public Builder mirror(boolean mirror) {
+            this.mirror = mirror;
+            return this;
+        }
+
+        /**
+         * Sets the crafting tag used to associate this recipe with a crafting table.
+         * <p>
+         * The default value is {@code crafting_table}.
+         *
+         * @param craftingTag the crafting table tag
+         * @return this builder
+         */
+        public Builder craftingTag(String craftingTag) {
+            Preconditions.checkArgument(
+                    craftingTag != null && !craftingTag.isBlank() && craftingTag.length() <= 64,
+                    "Crafting tag cannot be null, blank, or exceed 64 characters"
+            );
+
+            this.craftingTag = craftingTag;
+            return this;
+        }
+
+        /**
+         * Adds an item that can trigger discovery of this recipe.
+         * <p>
+         * Calling this method uses {@link RecipeUnlockingContext#NONE} and cannot
+         * be combined with a contextual unlocking rule.
+         *
+         * @param item the item that unlocks the recipe
+         * @return this builder
+         */
+        public Builder unlockBy(Item item) {
+            return unlockBy(new DefaultDescriptor(item));
+        }
+
+        /**
+         * Adds an item descriptor that can trigger discovery of this recipe.
+         * <p>
+         * Multiple calls may be used to register multiple unlocking ingredients.
+         * This cannot be combined with a contextual unlocking rule.
+         *
+         * @param descriptor the descriptor that unlocks the recipe
+         * @return this builder
+         */
+        public Builder unlockBy(ItemDescriptor descriptor) {
+            if (this.unlockingRequirement == null) {
+                this.unlockingRequirement = new RecipeUnlockingRequirement(
+                        RecipeUnlockingContext.NONE
+                );
+            } else if (this.unlockingRequirement.getUnlockingContext() != RecipeUnlockingContext.NONE) {
+                throw new IllegalStateException(
+                        "Unlocking ingredients cannot be combined with unlocking context "
+                                + this.unlockingRequirement.getUnlockingContext()
+                );
+            }
+
+            this.unlockingRequirement.getUnlockingIngredients().add(
+                    descriptor.toNetwork()
+            );
+
+            return this;
+        }
+
+        /**
+         * Configures this recipe to always be unlocked.
+         *
+         * @return this builder
+         */
+        public Builder alwaysUnlocked() {
+            return unlockingContext(RecipeUnlockingContext.ALWAYS_UNLOCKED);
+        }
+
+        /**
+         * Sets a contextual condition used to unlock this recipe, such as
+         * {@link RecipeUnlockingContext#PLAYER_IN_WATER}.
+         * <p>
+         * {@link RecipeUnlockingContext#NONE} is reserved for ingredient-based
+         * unlocking and should be configured using {@link #unlockBy(Item)}.
+         *
+         * @param context the recipe unlocking context
+         * @return this builder
+         */
+        public Builder unlockingContext(RecipeUnlockingContext context) {
+            Preconditions.checkArgument(
+                    context != null,
+                    "Unlocking context cannot be null"
+            );
+
+            Preconditions.checkArgument(
+                    context != RecipeUnlockingContext.NONE,
+                    "Use unlockBy(...) for RecipeUnlockingContext.NONE"
+            );
+
+            Preconditions.checkState(
+                    this.unlockingRequirement == null || this.unlockingRequirement.getUnlockingIngredients().isEmpty(),
+                    "Unlocking context cannot be combined with unlocking ingredients"
+            );
+
+            this.unlockingRequirement = new RecipeUnlockingRequirement(context);
+            return this;
+        }
+
+        private Builder validate() {
+            Preconditions.checkState(
+                    this.netIdSet,
+                    "Network ID must be specified"
+            );
+
+            Preconditions.checkState(
+                    this.result != null,
+                    "Result must be specified"
+            );
+
+            Preconditions.checkState(
+                    this.shape != null && this.shape.length > 0,
+                    "Shape must be specified"
+            );
+
+            return this;
+        }
+
+        /**
+         * Builds the configured shaped recipe.
+         *
+         * @return the created shaped recipe
+         * @throws IllegalStateException if the network ID, result, or shape have not been specified
+         */
+        public ShapedRecipe build() {
+            this.validate();
+
+            ShapedRecipe recipe = new ShapedRecipe(
+                    this.recipeId,
+                    new Data(
+                            this.uuid,
+                            this.netId,
+                            this.priority
+                    ),
+                    this.result,
+                    this.shape.clone(),
+                    this.ingredients,
+                    this.extraResults,
+                    this.mirror,
+                    this.unlockingRequirement == null
+                            ? new RecipeUnlockingRequirement(RecipeUnlockingContext.ALWAYS_UNLOCKED)
+                            : this.unlockingRequirement
+            );
+
+            recipe.setCraftingTag(this.craftingTag);
+
+            return recipe;
+        }
     }
 }

@@ -41,7 +41,7 @@ public class ItemFireCharge extends Item {
 
         if (block.getId().equals(BlockID.AIR) && target.getBurnChance() != -1 && (target.isSolid() || target.getBurnChance() > 0)) {
             if (target.getId().equals(BlockID.OBSIDIAN)) {
-                if (level.createPortal(target)) {
+                if (level.createPortal(block)) {
                     return true;
                 }
             }

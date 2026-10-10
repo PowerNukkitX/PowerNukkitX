@@ -4,6 +4,7 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.TradeRecipeBuildUtils;
 
@@ -12,7 +13,7 @@ import java.util.Random;
 public class ProfessionCleric extends Profession {
 
     public ProfessionCleric() {
-        super(7, BlockID.BREWING_STAND, "entity.villager.cleric", Sound.RANDOM_POTION_BREWED);
+        super(7, BlockID.BREWING_STAND, "entity.villager.cleric", Sound.RANDOM_POTION_BREWED, SoundEvent.POTION_BREWED);
     }
 
     @Override

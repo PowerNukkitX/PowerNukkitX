@@ -10,28 +10,33 @@ import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.event.server.QueryRegenerateEvent;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.lang.BaseLang;
+import org.powernukkitx.level.ChunkPublisherBudgetController;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
+import org.powernukkitx.level.format.leveldb.LevelDBTestFixtureUtil;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.plugin.JavaPluginLoader;
-import org.powernukkitx.positiontracking.PositionTrackingService;
+import org.powernukkitx.network.positiontracking.PositionTrackingService;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.utils.collection.FreezableArrayManager;
 import eu.okaeri.configs.ConfigManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.Options;
+import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -50,6 +55,8 @@ public final class ServerMockFixture {
 
     public static final Server server;
     public static final Level level;
+    public static final TestPluginManager pluginManager;
+    public static final Network network;
 
     private ServerMockFixture() {
     }
@@ -103,9 +110,11 @@ public final class ServerMockFixture {
             throw new IllegalStateException(e);
         }
 
+        final File settingsFile = new File("nukkit_fixture_" + ProcessHandle.current().pid() + ".yml");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(settingsFile)));
         final ServerSettings serverSettings = ConfigManager.create(ServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer());
-            it.withBindFile("nukkit.yml");
+            it.withBindFile(settingsFile);
             it.withRemoveOrphans(true);
             it.saveDefaults();
             it.load(true);
@@ -114,7 +123,7 @@ public final class ServerMockFixture {
         doReturn("1.0.0").when(server).getApiVersion();
         doReturn(java.util.Collections.emptyMap()).when(simpleCommandMap).getCommands();
 
-        TestPluginManager pluginManager = new TestPluginManager(server, simpleCommandMap);
+        pluginManager = new TestPluginManager(server, simpleCommandMap);
         pluginManager.registerInterface(JavaPluginLoader.class);
         doReturn(pluginManager).when(server).getPluginManager();
         pluginManager.loadInternalPlugin();
@@ -140,7 +149,7 @@ public final class ServerMockFixture {
         doReturn(100).when(server).getMaxPlayers();
         doReturn(false).when(server).hasWhitelist();
         // Port 0 lets the OS hand each test JVM its own free UDP port. A fixed port would
-        // clash when Gradle runs the fork pool in parallel and the RakNet bind aborts startup.
+        // clash when Gradle runs the fork pool in parallel and the listener bind aborts startup.
         doReturn(0).when(server).getPort();
         doReturn("127.0.0.1").when(server).getIp();
 
@@ -148,9 +157,11 @@ public final class ServerMockFixture {
         doReturn(queryRegenerateEvent).when(server).getQueryInformation();
         doCallRealMethod().when(server).getNetwork();
         doReturn(false).when(server).getAutoSave();
+        doReturn(true).when(server).isRunning();
         doReturn(1).when(server).getTick();
         doReturn(4).when(server).getViewDistance();
         doReturn(20).when(server).getBaseTps();
+        doReturn(new ChunkPublisherBudgetController(server)).when(server).getChunkPublisherBudgetController();
         doReturn(java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "fixture-level-tick");
             t.setDaemon(true);
@@ -162,11 +173,20 @@ public final class ServerMockFixture {
         doReturn(simpleCommandMap).when(server).getCommandMap();
         doReturn(null).when(server).getScoreboardManager();
         try {
-            final PositionTrackingService positionTrackingService =
-                    new PositionTrackingService(new File(PowerNukkitX.DATA_PATH,
-                            "services/position_tracking_db_" + ProcessHandle.current().pid()));
-            doReturn(positionTrackingService).when(server).getPositionTrackingService();
-        } catch (FileNotFoundException e) {
+            final File positionTrackingDir = new File(
+                    PowerNukkitX.DATA_PATH,
+                    "position_tracking_db_" + ProcessHandle.current().pid() + "_" + System.nanoTime()
+            );
+            final DB positionTrackingDB = Iq80DBFactory.factory.open(positionTrackingDir, new Options().createIfMissing(true));
+            doReturn(new PositionTrackingService(positionTrackingDB)).when(server).getPositionTrackingService();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    positionTrackingDB.close();
+                } catch (IOException ignored) {
+                }
+                FileUtils.deleteQuietly(positionTrackingDir);
+            }));
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
         doNothing().when(server).sendRecipeList(any());
@@ -178,10 +198,11 @@ public final class ServerMockFixture {
         try {
             FieldUtils.writeDeclaredField(server, "levelArray", Level.EMPTY_ARRAY, true);
             FieldUtils.writeDeclaredField(server, "autoSave", false, true);
-            Network network = new Network(server);
+            network = new Network(server);
             FieldUtils.writeDeclaredField(server, "network", network, true);
 
             FileUtils.copyDirectory(new File("src/test/resources/level"), levelDir);
+            LevelDBTestFixtureUtil.canonicalizeCopiedWorld(levelDir.toPath());
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -191,12 +212,13 @@ public final class ServerMockFixture {
                 1, LevelDBProvider.class,
                 new LevelConfig.GeneratorConfig("flat", 114514L, false, LevelConfig.AntiXrayMode.LOW,
                         true, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
-        level.initLevel();
 
         HashMap<Integer, Level> levels = new HashMap<>();
         levels.put(1, level);
         doReturn(levels).when(server).getLevels();
         doReturn(level).when(server).getDefaultLevel();
+
+        level.initLevel();
     }
 
     /** Force class-load / static-init. */

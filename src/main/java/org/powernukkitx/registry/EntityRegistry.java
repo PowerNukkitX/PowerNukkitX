@@ -12,6 +12,7 @@ import org.powernukkitx.entity.mob.*;
 import org.powernukkitx.entity.passive.*;
 import org.powernukkitx.entity.projectile.*;
 import org.powernukkitx.entity.weather.EntityLightningBolt;
+import org.powernukkitx.level.DuplicateActorUniqueIdException;
 import org.powernukkitx.level.entity.spawners.*;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -185,6 +186,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(SNIFFER, "", 139, true, true), EntitySniffer.class);
         registerInternal(new EntityDefinition(TRADER_LLAMA, "", 157, true, true), EntityTraderLlama.class);
         registerInternal(new EntityDefinition(CHEST_BOAT, "", 218, false, true), EntityChestBoat.class);
+        registerInternal(new EntityDefinition(CUSHION, "", 154, false, true), EntityCushion.class);
         registerInternal(new EntityDefinition(ARMADILLO, "", 142, true, true), EntityArmadillo.class);
         registerInternal(new EntityDefinition(BREEZE, "", 140, true, true), EntityBreeze.class);
         registerInternal(new EntityDefinition(BREEZE_WIND_CHARGE_PROJECTILE, "", 141, false, false), EntityBreezeWindCharge.class);
@@ -197,6 +199,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(ZOMBIE_NAUTILUS, "", 150, true, true), EntityZombieNautilus.class);
         registerInternal(new EntityDefinition(PARCHED, "", 151, true, true), EntityParched.class);
         registerInternal(new EntityDefinition(CAMEL_HUSK, "", 152, true, true), EntityCamelHusk.class);
+        registerInternal(new EntityDefinition(SULFUR_CUBE, "", 153, true, true), EntitySulfurCube.class);
 
         registerSpawner(new SpawnRuleArmadillo());
         registerSpawner(new SpawnRuleAxolotl());
@@ -239,6 +242,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerSpawner(new SpawnRuleSquid());
         registerSpawner(new SpawnRuleStray());
         registerSpawner(new SpawnRuleStrider());
+        registerSpawner(new SpawnRuleSulfurCube());
         registerSpawner(new SpawnRuleTropicalFish());
         registerSpawner(new SpawnRuleTurtle());
         registerSpawner(new SpawnRuleWitch());
@@ -305,6 +309,11 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         Class<? extends Entity> clazz = getEntityClass(id);
         if (clazz == null) return null;
 
+        long actorUniqueId = nbt.contains("UniqueID") ? nbt.getLong("UniqueID") : 0;
+        if (actorUniqueId != 0 && chunk.getLevel().getEntityByUniqueId(actorUniqueId) != null) {
+            return null;
+        }
+
         Entity entity = null;
         List<Exception> exceptions = null;
         for (var constructor : clazz.getConstructors()) {
@@ -330,11 +339,17 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 
                 }
             } catch (Exception e) {
+                if (isDuplicateActorUniqueId(e)) {
+                    return null;
+                }
                 if (exceptions == null) {
                     exceptions = new ArrayList<>();
                 }
                 exceptions.add(e);
             } catch (Throwable e) {
+                if (isDuplicateActorUniqueId(e)) {
+                    return null;
+                }
                 if (exceptions == null) {
                     exceptions = new ArrayList<>();
                 }
@@ -354,6 +369,15 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             return entity;
         }
         return null;
+    }
+
+    private static boolean isDuplicateActorUniqueId(Throwable throwable) {
+        for (Throwable cause = throwable; cause != null; cause = cause.getCause()) {
+            if (cause instanceof DuplicateActorUniqueIdException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -403,7 +427,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
      *
      * @param plugin   the plugin
      * @param entityId the entity id {@link EntityID}
-     * @param value    the entity class,must extends internal entity
+     * @param value    the entity class must extend internal entity
      * @throws RegisterException the register exception
      */
     public void registerOverrideEntity(Plugin plugin, String entityId, Class<? extends Entity> value) throws RegisterException {

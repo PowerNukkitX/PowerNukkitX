@@ -7,17 +7,18 @@ import org.cloudburstmc.protocol.bedrock.data.GameRuleData;
 
 import javax.annotation.Nonnull;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import static org.powernukkitx.level.GameRule.*;
 
 
 public class GameRules {
     private final @Nonnull EnumMap<GameRule, Value<?>> gameRules = new EnumMap<>(GameRule.class);
-    private boolean stale;
+    private volatile boolean stale;
 
     private GameRules() {
     }
@@ -42,11 +43,12 @@ public class GameRules {
         gameRules.gameRules.put(FREEZE_DAMAGE, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(FUNCTION_COMMAND_LIMIT, new Value<>(Type.INTEGER, 10000));
         gameRules.gameRules.put(KEEP_INVENTORY, new Value<>(Type.BOOLEAN, false));
-        gameRules.gameRules.put(MAX_COMMAND_CHAIN_LENGTH, new Value<>(Type.INTEGER, 65536));
+        gameRules.gameRules.put(MAX_COMMAND_CHAIN_LENGTH, new Value<>(Type.INTEGER, 65535));
         gameRules.gameRules.put(MOB_GRIEFING, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(NATURAL_REGENERATION, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(PVP, new Value<>(Type.BOOLEAN, true));
-        gameRules.gameRules.put(RANDOM_TICK_SPEED, new Value<>(Type.INTEGER, 3));
+        gameRules.gameRules.put(PLAYER_WAYPOINTS, new Value<>(Type.INTEGER, 1));
+        gameRules.gameRules.put(RANDOM_TICK_SPEED, new Value<>(Type.INTEGER, 1));
         gameRules.gameRules.put(SEND_COMMAND_FEEDBACK, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_COORDINATES, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(SHOW_DEATH_MESSAGES, new Value<>(Type.BOOLEAN, true));
@@ -65,6 +67,7 @@ public class GameRules {
         gameRules.gameRules.put(RESPAWN_BLOCKS_EXPLODE, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_BORDER_EFFECT, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_DAYS_PLAYED, new Value<>(Type.BOOLEAN, false));
+        gameRules.gameRules.put(SHOW_RECIPE_MESSAGES, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(LOCATOR_BAR, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(RECIPES_UNLOCK, new Value<>(Type.BOOLEAN, false));
 
@@ -83,7 +86,7 @@ public class GameRules {
         stale = false;
     }
 
-    public <V> void setGameRule(GameRule gameRule, V value, Type type) {
+    public synchronized <V> void setGameRule(GameRule gameRule, V value, Type type) {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
@@ -164,18 +167,11 @@ public class GameRules {
 
     public static class Value<T> {
         private final Type type;
-        private T value;
-        private boolean canBeChanged;
+        private volatile T value;
+        private volatile boolean canBeChanged;
 
         public Value(Type type, T value) {
             this.type = type;
-            this.value = value;
-        }
-
-        private void setValue(T value, Type type) {
-            if (this.type != type) {
-                throw new UnsupportedOperationException("Rule not of type " + type.name().toLowerCase(Locale.ENGLISH));
-            }
             this.value = value;
         }
 
@@ -231,9 +227,16 @@ public class GameRules {
     }
 
     public List<GameRuleData<?>> toNetwork() {
-        final List<GameRuleData<?>> rulesList = new ObjectArrayList<>();
-        for (Entry<GameRule, Value<?>> entry : this.gameRules.entrySet()) {
+        final List<GameRuleData<?>> rulesList = new ObjectArrayList<>(this.gameRules.size());
+        final Set<String> sentRules = new HashSet<>();
+
+        for (Map.Entry<GameRule, Value<?>> entry : this.gameRules.entrySet()) {
             final GameRule gameRule = entry.getKey();
+
+            if (gameRule == EXPERIMENTAL_GAMEPLAY || !sentRules.add(gameRule.getName())) {
+                continue;
+            }
+
             rulesList.add(
                     new GameRuleData<>(
                             gameRule.getName(),
@@ -241,6 +244,7 @@ public class GameRules {
                     )
             );
         }
+
         return rulesList;
     }
 }

@@ -86,13 +86,9 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
             setRollingAmplitude(getRollingAmplitude() - 1);
         }
 
-        // A killer task
-        if (this.level != null) {
-            if (y < this.level.getMinHeight() - 16) {
-                kill();
-            }
-        } else if (y < -16) {
-            kill();
+        if (y < (this.level == null ? -16 : this.level.getMinHeight() - 16)) {
+            this.close();
+            return false;
         }
         // Movement code
         updateMovement();

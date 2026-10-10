@@ -24,7 +24,7 @@ import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.LookAtTargetExecutor;
 import org.powernukkitx.entity.ai.executor.LoveTimeoutExecutor;
 import org.powernukkitx.entity.ai.executor.MeleeAttackExecutor;
-import org.powernukkitx.entity.ai.executor.SleepOnOwnerBedExecutor;
+import org.powernukkitx.entity.ai.executor.CatSleepOnOwnerBedExecutor;
 import org.powernukkitx.entity.ai.executor.TemptExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -32,6 +32,7 @@ import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.AgeableComponent;
+import org.powernukkitx.entity.components.AttackDamageComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
@@ -90,17 +91,22 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     // Cat body sizes from Wiki https://minecraft.wiki/w/Cat
     @Override
     public float getWidth() {
-        return this.isBaby() ? 0.24f : 0.48f;
+        return 0.48f;
     }
 
     @Override
     public float getHeight() {
-        return this.isBaby() ? 0.28f : 0.56f;
+        return 0.56f;
     }
 
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(10);
+    }
+
+    @Override
+    public AttackDamageComponent getComponentAttackDamage() {
+        return AttackDamageComponent.value(4);
     }
 
     @Override
@@ -134,8 +140,9 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
-                this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
+            Long ownerEid = getDataProperty(ActorDataTypes.OWNER);
+            if (owner != null && !Long.valueOf(owner.uniqueIdLong()).equals(ownerEid)) {
+                this.setDataProperty(ActorDataTypes.OWNER, owner.uniqueIdLong());
             }
         }
         return super.onUpdate(currentTick);
@@ -331,7 +338,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
                 )
                 .behaviors(
                         new Behavior( // Sleep Priority 7
-                                new SleepOnOwnerBedExecutor(),
+                                new CatSleepOnOwnerBedExecutor(),
                                 entity -> {
                                     if (this.isSitting()) return false; // sitting should block sleeping pathing
                                     var player = this.getOwner();

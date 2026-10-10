@@ -2,6 +2,7 @@ package org.powernukkitx.command.tree.node;
 
 import org.powernukkitx.IPlayer;
 import org.powernukkitx.Server;
+import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.exceptions.SelectorSyntaxException;
 import org.powernukkitx.command.selector.EntitySelectorAPI;
 import org.powernukkitx.entity.Entity;
@@ -46,13 +47,18 @@ import java.util.stream.Collectors;
 public class IPlayersNode extends ParamNode<List<IPlayer>> {
     @Override
     public void fill(String arg) {
+        fill(arg, paramList.getParamTree().getSender());
+    }
+
+    @Override
+    public void fill(String arg, CommandSender sender) {
         if (arg.isBlank()) {
             this.error();
         } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
             List<Entity> entities;
             List<IPlayer> result;
             try {
-                entities = EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), arg);
+                entities = EntitySelectorAPI.getAPI().matchEntities(sender, arg);
             } catch (SelectorSyntaxException exception) {
                 error(exception.getMessage());
                 return;

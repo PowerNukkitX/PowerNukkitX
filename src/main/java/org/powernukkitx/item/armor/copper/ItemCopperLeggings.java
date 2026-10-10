@@ -27,8 +27,4 @@ public class ItemCopperLeggings extends ItemArmor {
         return 166;
     }
 
-    @Override
-    public int getToughness() {
-        return 2;
-    }
 }

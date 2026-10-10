@@ -1,5 +1,6 @@
 package org.powernukkitx;
 
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.PlayerChunkManager;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.GameLoop;
@@ -20,13 +21,34 @@ public class TestUtils {
         }
     }
 
+    /** Runs one {@code Server#checkTickUpdates}: player ticks plus, in shared tick mode, the level ticks. */
+    public static void checkTickUpdates(Server server, int currentTick) {
+        try {
+            Method method = Server.class.getDeclaredMethod("checkTickUpdates", int.class);
+            method.setAccessible(true);
+            method.invoke(server, currentTick);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static Object getField(Class<?> clazz, Object target, String fieldName) {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(target);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public static void setField(Class<?> clazz, Object target, String fieldName, Object value) {
         try {
             Field infoF = clazz.getDeclaredField(fieldName);
             infoF.setAccessible(true);
             infoF.set(target, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -45,11 +67,18 @@ public class TestUtils {
         return loop;
     }
 
+    /**
+     * Puts the shared fixture player back at spawn with a clean chunk pipeline. The chunk
+     * manager is replaced rather than cleared because its pending-load futures and send queues
+     * would otherwise leak between tests.
+     */
     public static void resetPlayerStatus(TestPlayer player) {
-//        player.level = GameMockExtension.level;
+        player.setLevel(ServerMockFixture.level);
         player.setPosition(new Vector3(0, 100, 0));
-        player.getPlayerChunkManager().getUsedChunks().clear();
-        player.getPlayerChunkManager().getInRadiusChunks().clear();
-        TestUtils.setField(PlayerChunkManager.class, player.getPlayerChunkManager(), "lastLoaderChunkPosHashed", Long.MAX_VALUE);
+        for (long hash : player.getPlayerChunkManager().getUsedChunks()) {
+            player.getLevel().unregisterChunkLoader(player, Level.getHashX(hash), Level.getHashZ(hash));
+        }
+        setField(Player.class, player, "playerChunkManager", new PlayerChunkManager(player));
+        player.getLevel().unloadChunks(true);
     }
 }

@@ -3,9 +3,11 @@ package org.powernukkitx.registry;
 import org.powernukkitx.level.generator.GenerateStage;
 import org.powernukkitx.level.generator.stages.GeneratedStage;
 import org.powernukkitx.level.generator.stages.NormalChunkFeatureStage;
+import org.powernukkitx.level.generator.stages.NormalPregenerationFeatureStage;
 import org.powernukkitx.level.generator.stages.end.TheEndPopulatorStage;
 import org.powernukkitx.level.generator.stages.end.TheEndTerrainStage;
 import org.powernukkitx.level.generator.stages.FinishedStage;
+import org.powernukkitx.level.generator.stages.VoidGenerateStage;
 import org.powernukkitx.level.generator.stages.flat.FlatGenerateStage;
 import org.powernukkitx.level.generator.stages.LightPopulationStage;
 import org.powernukkitx.level.generator.stages.BiomeMapStage;
@@ -32,11 +34,13 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(FinishedStage.NAME, FinishedStage.class);
             this.register(GeneratedStage.NAME, GeneratedStage.class);
             this.register(FlatGenerateStage.NAME, FlatGenerateStage.class);
+            this.register(VoidGenerateStage.NAME, VoidGenerateStage.class);
             this.register(LightPopulationStage.NAME, LightPopulationStage.class);
             this.register(BiomeMapStage.NAME, BiomeMapStage.class);
             this.register(NormalTerrainStage.NAME, NormalTerrainStage.class);
             this.register(NormalSurfaceDataStage.NAME, NormalSurfaceDataStage.class);
             this.register(NormalSurfaceOverwriteStage.NAME, NormalSurfaceOverwriteStage.class);
+            this.register(NormalPregenerationFeatureStage.NAME, NormalPregenerationFeatureStage.class);
             this.register(NormalPopulatorStage.NAME, NormalPopulatorStage.class);
             this.register(NormalChunkFeatureStage.NAME, NormalChunkFeatureStage.class);
             this.register(NetherTerrainStage.NAME, NetherTerrainStage.class);
@@ -56,7 +60,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
                     return entry.getValue().getConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }
         }

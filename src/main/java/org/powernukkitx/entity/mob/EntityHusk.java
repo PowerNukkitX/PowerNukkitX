@@ -91,12 +91,12 @@ public class EntityHusk extends EntityZombie {
 
     @Override
     public float getWidth() {
-        return this.isBaby() ? 0.3f : 0.6f;
+        return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        return this.isBaby() ? 0.95f : 1.9f;
+        return 1.9f;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class EntityHusk extends EntityZombie {
     @Override
     protected boolean transform() {
         this.saveNBT();
-        Entity zombie = new EntityZombie(this.getChunk(), this.getNbt().copy().remove("Health"));
+        Entity zombie = new EntityZombie(this.getChunk(), this.copyNBTForNewActor().remove("Health"));
         EntityTransformEvent event = new EntityTransformEvent(this, zombie);
         server.getPluginManager().callEvent(event);
         if(event.isCancelled()) {

@@ -87,6 +87,9 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private DensityFunction veinGap;
         private DensityFunction preliminarySurfaceDensity;
         private DensityFunction preliminarySurfaceUpperBound;
+        private DensityFunction terrainDensity;
+        private OreVeinifier oreVeinifier;
+        private BlockState terrainStone;
         private MultiMaterial multiMaterial;
         private final ThreadLocal<Aquifer> aquifer = new ThreadLocal<>();
 
@@ -169,20 +172,38 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
             );
             preliminarySurfaceDensity = OverworldCavesDensity.preliminarySurfaceLevel(offset, factor);
             preliminarySurfaceUpperBound = OverworldCavesDensity.preliminarySurfaceLevelUpperBound(offset, factor);
-            BlockState stone = BlockStone.PROPERTIES.getDefaultState();
+            terrainStone = BlockStone.PROPERTIES.getDefaultState();
             veinToggle = DensityOreVeins.overworldVeinToggle(veinToggleNoise);
             veinRidged = DensityOreVeins.overworldVeinRidged(veinANoise, veinBNoise);
             veinGap = DensityOreVeins.overworldVeinGap(oreGapNoise);
-            OreVeinifier oreVeinifier = new OreVeinifier(veinToggle, veinRidged, veinGap, randomSourceProvider.nextLong());
+            oreVeinifier = new OreVeinifier(veinToggle, veinRidged, veinGap, randomSourceProvider.nextLong());
             List<MaterialFiller> builder = new ArrayList<>();
-            DensityFunction wrapped = DensityCommon.cacheAllInCell(densityFunction);
+            terrainDensity = DensityCommon.cacheAllInCell(densityFunction);
             builder.add(context -> {
                 Aquifer currentAquifer = aquifer.get();
-                return currentAquifer == null ? null : currentAquifer.computeSubstance(context, wrapped.compute(context));
+                return currentAquifer == null ? null : currentAquifer.computeSubstance(context, terrainDensity.compute(context));
             });
             builder.add(oreVeinifier::calculate);
-            builder.add(context -> wrapped.compute(context) > 0.0d ? stone : null);
+            builder.add(context -> terrainDensity.compute(context) > 0.0d ? terrainStone : null);
             multiMaterial = new MultiMaterial(builder.toArray(new MaterialFiller[0]));
+        }
+
+        /**
+         * Resolves the terrain material for a density sample.
+         *
+         * @param context density-function context
+         * @param currentAquifer aquifer used for fluid material resolution
+         * @return resolved block state, or {@code null} when the position remains empty
+         */
+        public BlockState calculateTerrainMaterial(DensityFunction.FunctionContext context, Aquifer currentAquifer) {
+            final double density = terrainDensity.compute(context);
+            BlockState state = currentAquifer == null ? null : currentAquifer.computeSubstance(context, density);
+            if (state != null) return state;
+
+            state = oreVeinifier.calculate(context);
+            if (state != null) return state;
+
+            return density > 0.0d ? terrainStone : null;
         }
 
         public void beginAquifer(IChunk chunk, Level level, DensityCommon.ChunkCache chunkCache, int minY, int yBlockSize, int seaLevel) {

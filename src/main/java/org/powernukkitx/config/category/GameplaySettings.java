@@ -1,5 +1,6 @@
 package org.powernukkitx.config.category;
 
+import org.powernukkitx.config.category.gameplay.CdnPackSettings;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 import lombok.Data;
@@ -39,14 +40,12 @@ public class GameplaySettings extends OkaeriConfig {
     boolean pvp = true;
     @Comment("pnx.settings.gameplay.difficulty")
     int difficulty = 1;
-    @Comment("pnx.settings.gameplay.allowNether")
-    boolean allowNether = true;
-    @Comment("pnx.settings.gameplay.allowEnd")
-    boolean allowTheEnd = true;
     @Comment("pnx.settings.gameplay.forceResources")
     boolean forceResources = false;
     @Comment("pnx.settings.gameplay.allowClientPacks")
     boolean allowClientPacks = true;
+    @Comment("pnx.settings.gameplay.cdnPacks")
+    ArrayList<CdnPackSettings> cdnPacks = new ArrayList<>();
     @Comment("pnx.settings.gameplay.allowVibrantVisuals")
     boolean allowVibrantVisuals = true;
     @Comment("pnx.settings.gameplay.experiments")

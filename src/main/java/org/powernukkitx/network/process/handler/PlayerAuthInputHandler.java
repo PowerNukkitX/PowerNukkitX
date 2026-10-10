@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
@@ -7,16 +8,11 @@ import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityPhysical;
 import org.powernukkitx.entity.item.EntityBoat;
-import org.powernukkitx.event.player.PlayerHackDetectedEvent;
-import org.powernukkitx.event.player.PlayerJumpEvent;
-import org.powernukkitx.event.player.PlayerKickEvent;
-import org.powernukkitx.event.player.PlayerToggleCrawlEvent;
-import org.powernukkitx.event.player.PlayerToggleFlightEvent;
-import org.powernukkitx.event.player.PlayerToggleGlideEvent;
-import org.powernukkitx.event.player.PlayerToggleSneakEvent;
-import org.powernukkitx.event.player.PlayerToggleSprintEvent;
-import org.powernukkitx.event.player.PlayerToggleSwimEvent;
+import org.powernukkitx.event.player.*;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Location;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector2f;
@@ -43,8 +39,12 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     @Override
     public void handle(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
+        if (player == null) {
+            return;
+        }
+
         Vector3f pos = Vector3f.fromNetwork(packet.getPosition());
-        Vector3f rot = Vector3f.fromNetwork(packet.getPosition());
+        Vector3f rot = Vector3f.fromNetwork(packet.getPlayerRotation());
         if (!Float.isFinite(pos.getX()) || !Float.isFinite(pos.getY()) || !Float.isFinite(pos.getZ()) || !Float.isFinite(rot.getX()) || !Float.isFinite(rot.getY()) || !Float.isFinite(rot.getZ())) {
             log.debug("Player {} sent invalid movement values (NaN or Infinite)", player.getName());
             return;
@@ -204,8 +204,25 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
         Entity vehicle = null;
         if ((vehicle = player.getRiding()) != null && vehicle.hasWASDControls()) {
+            boolean controllingRider = vehicle.getRider() == player;
+
+            if (!controllingRider) {
+                syncMountedPlayerRotationFromInput(player, packet);
+            }
+
             syncVehiclePositionFromRiderInput(player, vehicle, packet);
-            if (vehicle.onRiderInput(player, packet)) return;
+
+            boolean handled = vehicle.onRiderInput(player, packet);
+
+            vehicle.updatePassengers(false, false);
+
+            if (controllingRider) {
+                vehicle.broadcastMountedPassengerMovements();
+            } else {
+                player.broadcastMountedMovement();
+            }
+
+            if (handled) return;
         }
 
         player.offerMovementTask(clientLoc);
@@ -214,14 +231,33 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     private static void handleBlockActionsAndItemStackRequest(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server, Player player) {
         // the override toggle ensures that an external source implements server authoritative block breaking, defaults to false
         if (!packet.getPlayerBlockActions().isEmpty() && !server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
+            final PlayerHandle playerHandle = new PlayerHandle(player);
             for (PlayerBlockActionData action : packet.getPlayerBlockActions()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
+                    // fire only sends START_DESTROY_BLOCK, so extinguish it before filtering the action out
+                    Vector3 hitPos = Vector3.fromNetwork(action.getBlockPosition().toFloat());
+                    BlockFace hitFace = BlockFace.fromIndex(action.getFacing());
+                    Block target = player.getLevel().getBlock(hitPos);
+                    Block fire = Player.getFireAt(target, hitFace);
+
+                    if (fire != null) {
+                        Item hand = player.getInventory().getItemInMainHand();
+                        PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, hand, fire, hitFace,
+                            PlayerInteractEvent.Action.LEFT_CLICK_BLOCK);
+                        server.getPluginManager().callEvent(interactEvent);
+                        new PlayerHandle(player).setInteract();
+
+                        if (interactEvent.isCancelled()) {
+                            player.getLevel().sendBlocks(new Player[]{player}, new Block[]{fire}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                        } else {
+                            player.extinguishFire(fire);
+                        }
+                    }
                     continue;
                 }
                 Vector3i blockPos = action.getBlockPosition();
                 BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
-                PlayerHandle playerHandle = new PlayerHandle(player);
                 if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getPlayerActionType() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
                         action.getPlayerActionType() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
                     playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
@@ -259,12 +295,24 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         }
     }
 
+    private static void syncMountedPlayerRotationFromInput(Player player, PlayerAuthInputPacket pk) {
+        Vector3f rot = Vector3f.fromNetwork(pk.getPlayerRotation());
+
+        if (!Float.isFinite(rot.x) || !Float.isFinite(rot.y) || !Float.isFinite(rot.z)) {
+            log.debug("Player {} sent invalid rotation values (NaN or Infinite)", player.getName());
+            return;
+        }
+
+        player.setRotation(rot.getY(), rot.getX());
+        player.setHeadYaw(rot.getZ());
+    }
+
     private static void syncVehiclePositionFromRiderInput(Player player, Entity vehicle, PlayerAuthInputPacket pk) {
         if (vehicle == null || !vehicle.isAlive()) return;
 
         Long clientPredictedVehicle = pk.getClientPredictedVehicle();
         if (clientPredictedVehicle == null || clientPredictedVehicle == 0L) return;
-        if (clientPredictedVehicle.longValue() != vehicle.getId()) return;
+        if (clientPredictedVehicle.longValue() != vehicle.runtimeId()) return;
 
         Vector3f pos = Vector3f.fromNetwork(pk.getPosition());
 
@@ -315,9 +363,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         vehicle.setHeadYaw(vehicleYaw);
         vehicle.updateMovement();
 
-        if (boat != null) {
-            boat.updatePassengers(false, false);
-        } else {
+        if (boat == null) {
             player.setPosition(packetPosition);
         }
 

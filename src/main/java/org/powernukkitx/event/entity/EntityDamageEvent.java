@@ -49,8 +49,9 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             throw new EventException("BASE Damage modifier missing");
         }
 
-        if (entity.hasEffect(EffectType.RESISTANCE)) {
-            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * entity.getEffect(EffectType.RESISTANCE).getLevel()), DamageModifier.RESISTANCE);
+        if (this.canBeReducedByResistance() && entity.hasEffect(EffectType.RESISTANCE)) {
+            double reduction = Math.min(1.0, 0.20 * entity.getEffect(EffectType.RESISTANCE).getLevel());
+            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * reduction), DamageModifier.RESISTANCE);
         }
     }
 
@@ -115,7 +116,14 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     public boolean canBeReducedByArmor() {
         return switch (this.cause) {
-            case FIRE_TICK, SUFFOCATION, DROWNING, HUNGER, FALL, VOID, MAGIC, SUICIDE -> false;
+            case FIRE_TICK, SUFFOCATION, DROWNING, HUNGER, FALL, VOID, MAGIC, SUICIDE, SONIC_BOOM -> false;
+            default -> true;
+        };
+    }
+
+    public boolean canBeReducedByResistance() {
+        return switch (this.cause) {
+            case VOID, SUICIDE -> false;
             default -> true;
         };
     }
@@ -287,6 +295,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by ageing
          */
-        AGE
+        AGE,
+        /**
+         * Damage caused by a Warden sonic boom
+         */
+        SONIC_BOOM
     }
 }

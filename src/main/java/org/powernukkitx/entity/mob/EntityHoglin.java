@@ -32,6 +32,7 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.BlockSensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.ai.sensor.ParentSensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
@@ -91,18 +92,18 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public float getBabyScale() {
+        // baby hoglin is 0.85 wide against the adult's 1.4
+        return 0.6071f;
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.85f;
-        }
         return 1.4f;
     }
 
@@ -169,11 +170,9 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                 porkAmount
         ));
 
-        if (Utils.rand(0, 1) == 1) {
-            int leatherAmount = Utils.rand(0, 1 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
+        int leatherAmount = Utils.rand(0, 1 + looting);
+        if (leatherAmount > 0) {
+            drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
@@ -290,6 +289,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                         )
                 )
                 .sensors(
+                        new ParentSensor(8, 20),
                         new NearestPlayerSensor(40, 0, 20),
                         new BlockSensor(BlockPortal.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 2, 20),
                         new BlockSensor(BlockWarpedFungus.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 2, 20),
@@ -311,7 +311,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).getId());
+            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).uniqueIdLong());
             entity.setDataFlag(ActorFlags.ANGRY);
             entity.level.addLevelSoundEvent(entity, SoundEvent.ANGRY, -1, Entity.HOGLIN, false, false);
         }

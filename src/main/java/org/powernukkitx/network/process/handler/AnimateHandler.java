@@ -21,6 +21,10 @@ public class AnimateHandler implements PacketHandler<AnimatePacket> {
             return;
         }
 
+        if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {
+            return;
+        }
+
         AnimatePacket.Action animation = packet.getAction();
 
         // prevent client send illegal packet to server and broadcast to other client and make other client crash
@@ -44,7 +48,7 @@ public class AnimateHandler implements PacketHandler<AnimatePacket> {
 
         final AnimatePacket pk = new AnimatePacket();
         pk.setAction(animationEvent.getAnimationType());
-        pk.setTargetRuntimeID(player.getId());
+        pk.setTargetRuntimeID(player.runtimeId());
         pk.setData(animationEvent.getData());
         pk.setSwingSource(animationEvent.getSwingSource());
         Server.broadcastPacket(player.getViewers().values(), pk);

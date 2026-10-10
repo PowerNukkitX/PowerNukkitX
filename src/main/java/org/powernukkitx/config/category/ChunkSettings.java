@@ -14,26 +14,18 @@ import java.util.ArrayList;
 public class ChunkSettings extends OkaeriConfig {
     @Comment("pnx.settings.chunk.spawnlimit")
     int spawnLimit = 3;
-    @Comment("pnx.settings.chunk.perticksend")
-    int perTickSend = 32;
     @Comment("pnx.settings.chunk.spawnthreshold")
     int spawnThreshold = 56;
     @Comment("pnx.settings.chunk.chunksperticks")
     int chunksPerTicks = -1;
     @Comment("pnx.settings.chunk.tickRadius")
     int tickRadius = 4;
-    @Comment("pnx.settings.chunk.lightupdates")
-    boolean lightUpdates = true;
     @Comment("pnx.settings.chunk.clearticklist")
     boolean clearTickList = true;
     @Comment("pnx.settings.chunk.generationqueuesize")
-    int generationQueueSize = 8;
-    @Comment("pnx.settings.chunk.payloadcachememorymb")
-    int payloadCacheMemoryMb = 64;
+    int generationQueueSize = -1;
     @Comment("pnx.settings.chunk.saveGenerated")
     boolean saveGenerated = true;
-    @Comment("pnx.settings.chunk.convertBDSChunks")
-    boolean convertBDSChunks = false;
     @Comment("pnx.settings.chunk.disableblockticking")
     ArrayList<String> disableBlockTicking = new ArrayList<>();
 }

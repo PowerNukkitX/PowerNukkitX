@@ -14,10 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ public class VanillaRecipeParser {
             field -> new IllegalArgumentException("Invalid recipe data: " + field);
 
     public void parseAndRegisterRecipe(@NotNull File file) {
-        try (var reader = new FileReader(file)) {
+        try (var reader = Files.newBufferedReader(file.toPath())) {
             matchAndParse(reader);
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -62,7 +63,7 @@ public class VanillaRecipeParser {
         }
     }
 
-    private void matchAndParse(InputStreamReader reader) {
+    private void matchAndParse(Reader reader) {
         Map<String, Object> map = JSONUtils.from(reader, new TypeToken<Map<String, Object>>() {
         });
         if (map.containsKey(SHAPED_KEY)) {
@@ -172,7 +173,8 @@ public class VanillaRecipeParser {
                 case FURNACE_TAG -> new FurnaceRecipe(description(recipeData), output, input);
                 case SMOKER_TAG -> new SmokerRecipe(description(recipeData), output, input);
                 case BLAST_FURNACE_TAG -> new BlastFurnaceRecipe(description(recipeData), output, input);
-                case CAMPFIRE_TAG, SOUL_CAMPFIRE_TAG -> new CampfireRecipe(description(recipeData), output, input);
+                case CAMPFIRE_TAG -> new CampfireRecipe(description(recipeData), output, input);
+                case SOUL_CAMPFIRE_TAG -> new SoulCampfireRecipe(description(recipeData), output, input);
                 default -> throw new IllegalArgumentException(tag);
             };
             Registries.RECIPE.register(recipe);

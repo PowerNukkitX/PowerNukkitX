@@ -4,11 +4,18 @@ import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.server.PacketHandleEvent;
 import org.powernukkitx.event.server.PacketReceiveEvent;
+import org.powernukkitx.network.process.cache.ClientBlobCacheManager;
+
+import org.powernukkitx.network.security.BotnetDetector;
+import java.net.InetSocketAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
+import org.cloudburstmc.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SubChunkRequestPacket;
 import org.cloudburstmc.protocol.common.PacketSignal;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Kaooot
@@ -22,19 +29,38 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
 
     @Override
     public PacketSignal handlePacket(BedrockPacket packet) {
-        if (!this.session.checkRateLimits()) {
+        this.recordForBotnetDetection(packet);
+
+        if (this.session.isDisconnected() || !this.session.checkRateLimits()) {
             return PacketSignal.HANDLED;
         }
 
         final Player player = this.session.getPlayer();
         final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
 
+        if (packetHandler != null && packetHandler.requiresPlayer() && player == null) {
+            return PacketSignal.HANDLED;
+        }
+
+        if (packetHandler != null
+                && !packetHandler.runsOnNetworkThread()
+                && player != null
+                && packet instanceof SubChunkRequestPacket) {
+            this.server.getScheduler().scheduleTask(() -> processInbound(packet));
+            return PacketSignal.HANDLED;
+        }
+
         if (packetHandler != null && !packetHandler.runsOnNetworkThread() && player != null && player.spawned) {
+            if (packet instanceof SetLocalPlayerAsInitializedPacket) {
+                this.server.getScheduler().scheduleTask(() -> processInbound(packet));
+                return PacketSignal.HANDLED;
+            }
+
             this.session.getPlayerHandle().handlePacket(packet);
             return PacketSignal.HANDLED;
         }
 
-        if (player != null && firePacketReceive(player, packet)) {
+        if (firePacketReceive(player, packet)) {
             return PacketSignal.UNHANDLED;
         }
         if (packetHandler != null) {
@@ -63,7 +89,17 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         packetHandler.handle(packet, this.session, this.server);
     }
 
-    private boolean firePacketReceive(Player player, BedrockPacket packet) {
+    private void recordForBotnetDetection(BedrockPacket packet) {
+        final BotnetDetector detector = this.server.getNetwork().getBotnetDetector();
+        if (detector == null) {
+            return;
+        }
+        if (this.session.getSession().getSocketAddress() instanceof InetSocketAddress address) {
+            detector.recordPacket(address, packet.getClass().hashCode());
+        }
+    }
+
+    private boolean firePacketReceive(@Nullable Player player, BedrockPacket packet) {
         if (PacketReceiveEvent.getHandlers().isEmpty()) {
             return false;
         }
@@ -84,6 +120,8 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
     // client closes the connection
     @Override
     public void onDisconnect(String reason) {
+        ClientBlobCacheManager.removeSession(this.session.getSession());
+
         final Player player = this.session.getPlayer();
         if (player != null) {
             if (player.spawned) {

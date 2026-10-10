@@ -17,13 +17,15 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,7 +63,7 @@ public class PowerNukkitX {
     public final static String VERSION = getVersion();
     public final static String CODENAME = dynamic("PowerNukkitX");
     public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("3.0.0");
+    public final static String API_VERSION = dynamic("3.0.5");
     public final static String PATH = System.getProperty("user.dir") + "/";
     public final static String DATA_PATH = System.getProperty("user.dir") + "/";
     public final static String PLUGIN_PATH = DATA_PATH + "plugins";
@@ -90,7 +92,7 @@ public class PowerNukkitX {
         Path propertiesPath = Paths.get(DATA_PATH, "server.properties");
         if (!disableSentry.get() && Files.isRegularFile(propertiesPath)) {
             Properties properties = new Properties();
-            try (FileReader reader = new FileReader(propertiesPath.toFile())) {
+            try (Reader reader = new InputStreamReader(Files.newInputStream(propertiesPath), StandardCharsets.UTF_8)) {
                 properties.load(reader);
 
                 String value = properties.getProperty("disable-auto-bug-report", "false");
@@ -116,6 +118,9 @@ public class PowerNukkitX {
 
         // Netty logger for debug info
         InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, thrown) ->
+            log.error("Thread {} died on an uncaught throwable", thread.getName(), thrown));
 
         // Define args
         OptionParser parser = new OptionParser();
@@ -292,7 +297,7 @@ public class PowerNukkitX {
     }
 
     private static boolean requiresShortTitle() {
-        //Shorter title for windows 8/2012
+        //Shorter title for Microsoft Windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
         return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
@@ -323,7 +328,7 @@ public class PowerNukkitX {
             version = GIT_INFO.getProperty("git.commit.id.describe");
         }
 
-        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "3.0.0-DEV-SNAPSHOT";
+        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "3.0.1-DEV-SNAPSHOT";
     }
 
     private static String getGitCommit() {

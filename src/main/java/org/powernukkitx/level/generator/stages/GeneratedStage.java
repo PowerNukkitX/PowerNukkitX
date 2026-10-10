@@ -1,6 +1,6 @@
 package org.powernukkitx.level.generator.stages;
 
-import org.powernukkitx.level.format.ChunkState;
+import org.powernukkitx.level.format.ChunkFinalizationState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateStage;
@@ -14,7 +14,7 @@ public class GeneratedStage extends GenerateStage {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
-        chunk.setChunkState(ChunkState.GENERATED);
+        chunk.setFinalizationState(ChunkFinalizationState.NEEDS_POPULATION);
         chunk.setChanged(false);
         BlockManager.applyPendingSubChunkUpdates(context.getLevel(), chunk);
     }

@@ -22,6 +22,8 @@ import java.util.Set;
  * @author MagicDroidX
  */
 public class EntityTnt extends Entity implements EntityExplosive {
+    private static final double EXPLOSION_Y_OFFSET = 0.06125;
+
     @Override
     @NotNull
     public String getIdentifier() {
@@ -169,7 +171,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
         if (event.isCancelled()) {
             return;
         }
-        Explosion explosion = new Explosion(this, event.getForce(), this);
+        Explosion explosion = new Explosion(this.add(0, EXPLOSION_Y_OFFSET, 0), event.getForce(), this);
         explosion.setFireChance(event.getFireChance());
         if (event.isBlockBreaking()) {
             explosion.explodeA();

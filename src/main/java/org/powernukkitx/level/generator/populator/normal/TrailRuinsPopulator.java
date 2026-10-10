@@ -7,12 +7,11 @@ import org.powernukkitx.level.generator.object.structures.StructureHelper;
 import org.powernukkitx.level.generator.object.structures.jigsaw.trailruins.TrailRuinsStructure;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BiomeTags;
-import org.powernukkitx.utils.random.RandomSourceProvider;
-import org.powernukkitx.utils.random.Xoroshiro128;
 
 /**
  * Trail Ruins for PowerNukkitX
@@ -23,12 +22,12 @@ public class TrailRuinsPopulator extends Populator implements PopulatorStructure
 
     public static final String NAME = "normal_trail_ruins";
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+    public static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
             .salt(83469867L)
             .minDistance(8)
             .maxDistance(34)
             .isBiomeValid(biome -> Registries.BIOME.getTags(biome).contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS))
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.LINEAR);
 
     private static final TrailRuinsStructure TRAIL_RUINS = new TrailRuinsStructure();
 
@@ -40,9 +39,8 @@ public class TrailRuinsPopulator extends Populator implements PopulatorStructure
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        RandomSourceProvider placementRandom = new Xoroshiro128(level.getSeed());
-        if (!PLACEMENT.canGenerate(level.getSeed(), placementRandom, chunkX, chunkZ, biome)) {
+        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7) - 1, 7);
+        if (!PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             return;
         }
 

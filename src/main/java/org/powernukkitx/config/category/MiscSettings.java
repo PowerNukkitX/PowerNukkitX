@@ -20,4 +20,6 @@ public class MiscSettings extends OkaeriConfig {
     boolean overrideServerAuthBlockBreaking = false;
     @Comment("pnx.settings.misc.enablemetrics")
     boolean enableMetrics = true;
+    @Comment("Optional global Dynamic Properties UUID. Overrides the persisted UUID on startup when configured.")
+    String defaultDynamicPropertiesGroupUUID = "";
 }

@@ -12,4 +12,9 @@ public interface Supportable {
         return block instanceof BlockGrassBlock && !(block instanceof BlockGrassPath);
     }
 
+    default boolean isSupportDirtSandClay(Block down) {
+        return down instanceof BlockHardenedClay ||
+               down.hasTag(BlockTags.DIRT) ||
+               down.hasTag(BlockTags.SAND);
+    }
 }

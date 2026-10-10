@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.block.BlockHead;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.NukkitMath;
@@ -17,29 +18,16 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     private boolean mouthMoving;
     private int mouthTickCount;
     private int skullType;
-    private int rotation;
+    private float rotation;
 
     @Override
     public void loadNBT() {
         super.loadNBT();
 
-        if (!nbt.contains("SkullType")) {
-            nbt.putByte("SkullType", (byte) 0);
-        }
-        if (!nbt.contains("Rot")) {
-            nbt.putByte("Rot", (byte) 0);
-        }
-
         this.skullType = this.nbt.getByte("SkullType") & 0xff;
-        this.rotation = this.nbt.getByte("Rot") & 0x0f;
-
-        if (nbt.contains("MouthMoving")) {
-            mouthMoving = getNbt().getBoolean("MouthMoving");
-        }
-
-        if (nbt.contains("MouthTickCount")) {
-            mouthTickCount = NukkitMath.clamp(getNbt().getInt("MouthTickCount"), 0, 60);
-        }
+        this.rotation = this.nbt.getFloat("Rotation");
+        this.mouthMoving = this.nbt.getBoolean("DoingAnimation");
+        this.mouthTickCount = NukkitMath.clamp(this.nbt.getInt("MouthTickCount"), 0, 60);
     }
 
     @Override
@@ -99,11 +87,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         super.saveNBT();
 
         this.nbt.putByte("SkullType", (byte) this.skullType)
-                .putByte("Rot", (byte) this.rotation)
-                .putBoolean("MouthMoving", this.mouthMoving)
+                .putFloat("Rotation", this.rotation)
+                .putBoolean("DoingAnimation", this.mouthMoving)
                 .putInt("MouthTickCount", this.mouthTickCount);
-
-        this.nbt.remove("Creator");
     }
 
     @Override
@@ -115,8 +101,13 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
                 .putByte("SkullType", (byte) this.skullType)
-                .putByte("Rot", (byte) this.rotation)
-                .putBoolean("MouthMoving", this.mouthMoving)
+                .putFloat("Rotation", this.rotation)
+                .putBoolean("DoingAnimation", this.mouthMoving)
                 .putInt("MouthTickCount", this.mouthTickCount);
+    }
+
+    @Override
+    public CompoundTag getPickNBT(Player player) {
+        return this.getCleanedNBT();
     }
 }

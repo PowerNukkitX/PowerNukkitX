@@ -21,6 +21,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
 import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
 import org.jetbrains.annotations.ApiStatus;
@@ -133,6 +134,16 @@ public abstract class BaseInventory implements Inventory {
     public void setItemInternal(int index, Item item) {
         synchronized (this.slots) {
             this.slots.put(index, item);
+        }
+    }
+
+    /**
+     * Returns the raw stored item without invoking inventory access behavior.
+     */
+    @ApiStatus.Internal
+    public Item getItemInternal(int index) {
+        synchronized (this.slots) {
+            return this.slots.getOrDefault(index, Item.AIR);
         }
     }
 
@@ -255,6 +266,9 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void decreaseCount(int slot, int amount) {
+        if (amount <= 0) {
+            return;
+        }
         Item item;
         synchronized (this.slots) {
             item = this.slots.getOrDefault(slot, Item.AIR);
@@ -541,7 +555,8 @@ public abstract class BaseInventory implements Inventory {
         InventoryContentPacket pk = new InventoryContentPacket();
 
         for (int i = 0; i < this.getSize(); i++) {
-            pk.getSlots().add(this.getUnclonedItem(i).toNetwork());
+            Item item = this.getUnclonedItem(i);
+            pk.getSlots().add(item.isNull() ? ItemData.AIR : item.toNetwork());
         }
 
         for (Player player : players) {
@@ -630,7 +645,8 @@ public abstract class BaseInventory implements Inventory {
         InventorySlotPacket pk = new InventorySlotPacket();
         int slot = toNetworkSlot(index);
         pk.setSlot(slot);
-        pk.setItem(this.getUnclonedItem(index).toNetwork());
+        Item slotItem = this.getUnclonedItem(index);
+        pk.setItem(slotItem.isNull() ? ItemData.AIR : slotItem.toNetwork());
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -677,8 +693,6 @@ public abstract class BaseInventory implements Inventory {
     }
 
     public boolean isValidSlot(int index) {
-        synchronized (this.slots) {
-            return index >= 0 && index < this.slots.size();
-        }
+        return index >= 0 && index < this.size;
     }
 }

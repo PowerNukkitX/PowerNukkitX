@@ -6,6 +6,7 @@ import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.network.process.SessionState;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
@@ -38,7 +39,7 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
             return;
         }
 
-        if (holder.getState().equals(SessionState.REQUESTED_NETWORK_SETTINGS)) {
+        if (!holder.getState().equals(SessionState.INITIAL)) {
             holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
             return;
         }
@@ -72,6 +73,11 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
             session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
             return true;
         }
+        return false;
+    }
+
+    @Override
+    public boolean requiresPlayer() {
         return false;
     }
 }

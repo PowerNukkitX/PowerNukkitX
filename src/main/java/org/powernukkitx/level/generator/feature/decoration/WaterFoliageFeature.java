@@ -19,7 +19,7 @@ public abstract class WaterFoliageFeature extends CountGenerateFeature {
         IChunk chunk = context.getChunk();
         int randomX = random.nextInt(15);
         int randomZ = random.nextInt(15);
-        int height = chunk.getHeightMap(randomX, randomZ);
+        int height = chunk.getHeightMap(randomX, randomZ) - 1;
         BlockState topBlockState = chunk.getBlockState(randomX, height, randomZ);
         if(topBlockState == STATE_STILL_WATER) {
             int depth = 0;

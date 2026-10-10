@@ -2,6 +2,7 @@ package org.powernukkitx.command.tree.node;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.command.Command;
+import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.command.exceptions.SelectorSyntaxException;
 import org.powernukkitx.command.selector.EntitySelectorAPI;
 import org.powernukkitx.entity.Entity;
@@ -42,15 +43,20 @@ import java.util.List;
  */
 public class EntitiesNode extends TargetNode<Entity> {
 
-    // TODO: Support UUID or xuid
     @Override
     public void fill(String arg) {
+        fill(arg, paramList.getParamTree().getSender());
+    }
+
+    // TODO: Support UUID or xuid
+    @Override
+    public void fill(String arg, CommandSender sender) {
         List<Entity> entities;
         if (arg.isBlank()) {
             this.error();
         } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
             try {
-                entities = EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), arg);
+                entities = EntitySelectorAPI.getAPI().matchEntities(sender, arg);
             } catch (SelectorSyntaxException exception) {
                 error(exception.getMessage());
                 return;
@@ -58,7 +64,7 @@ public class EntitiesNode extends TargetNode<Entity> {
             this.value = entities;
         } else {
             entities = Lists.newArrayList();
-            Player player = Command.resolveTargetPlayer(paramList.getParamTree().getSender(), arg);
+            Player player = Command.resolveTargetPlayer(sender, arg);
             if (player != null) {
                 entities.add(player);
             }

@@ -10,6 +10,6 @@ public class ConditionSpawnOnSurface extends Condition {
 
     @Override
     public boolean evaluate(Block block) {
-        return block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) == block.getFloorY()-1;
+        return block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) == block.getFloorY();
     }
 }

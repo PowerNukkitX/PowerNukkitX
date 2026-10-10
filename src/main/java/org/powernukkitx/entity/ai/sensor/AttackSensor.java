@@ -19,6 +19,12 @@ public class AttackSensor implements ISensor {
 
     @Override
     public void sense(EntityIntelligent entity) {
-        entity.getMemoryStorage().put(entityMemory, entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT).getEntity());
+        var memory = entity.getMemoryStorage();
+        if(memory.notEmpty(CoreMemoryTypes.BE_ATTACKED_EVENT)) {
+            Entity target = memory.get(CoreMemoryTypes.BE_ATTACKED_EVENT).getEntity();
+            if (target != entity) {
+                memory.put(entityMemory, target);
+            }
+        }
     }
 }

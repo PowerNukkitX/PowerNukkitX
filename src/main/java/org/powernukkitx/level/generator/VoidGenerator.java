@@ -1,0 +1,77 @@
+package org.powernukkitx.level.generator;
+
+import org.powernukkitx.level.DimensionData;
+import org.powernukkitx.level.generator.stages.FinishedStage;
+import org.powernukkitx.level.generator.stages.LightPopulationStage;
+import org.powernukkitx.level.generator.stages.VoidGenerateStage;
+import org.powernukkitx.registry.Registries;
+
+import java.util.List;
+import java.util.Map;
+
+public class VoidGenerator extends Generator {
+    public VoidGenerator(DimensionData dimensionData, Map<String, Object> options) {
+        super(dimensionData, options);
+    }
+
+    @Override
+    public void stages(GenerateStage.Builder builder) {
+        builder.start(Registries.GENERATE_STAGE.get(VoidGenerateStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
+    }
+
+    @Override
+    public List<ChunkGenerationTask> getGenerationTasks() {
+        return List.of(
+                new ChunkGenerationTask(
+                        "Chunk Gen",
+                        ChunkGenerationState.NEEDS_GENERATION,
+                        ChunkGenerationState.GENERATING,
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
+                        ChunkGenerationState.NEEDS_GENERATION,
+                        VoidGenerateStage.NAME,
+                        VoidGenerateStage.NAME,
+                        ChunkGenerationDependency.NONE
+                ),
+
+                new ChunkGenerationTask(
+                        "Structure Post Processing",
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
+                        ChunkGenerationState.STRUCTURE_PP,
+                        ChunkGenerationState.NEEDS_POPULATION,
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
+                        null,
+                        null,
+                        ChunkGenerationDependency.NEIGHBORHOOD_GENERATED
+                ),
+
+                new ChunkGenerationTask(
+                        "Decoration Post Processing",
+                        ChunkGenerationState.NEEDS_POPULATION,
+                        ChunkGenerationState.POPULATING,
+                        ChunkGenerationState.NEEDS_CFRD,
+                        ChunkGenerationState.NEEDS_STRUCTURE_PP,
+                        null,
+                        null,
+                        ChunkGenerationDependency.NEIGHBORHOOD_PRESENT
+                ),
+
+                new ChunkGenerationTask(
+                        "Chunk CFRD",
+                        ChunkGenerationState.NEEDS_CFRD,
+                        ChunkGenerationState.CFRD,
+                        ChunkGenerationState.NEEDS_LIGHTING,
+                        ChunkGenerationState.NEEDS_CFRD,
+                        LightPopulationStage.NAME,
+                        FinishedStage.NAME,
+                        ChunkGenerationDependency.NEIGHBORHOOD_PRESENT
+                )
+        );
+    }
+
+    @Override
+    public String getName() {
+        return "void";
+    }
+}

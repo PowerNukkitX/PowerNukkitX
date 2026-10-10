@@ -21,6 +21,7 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.AgeableComponent;
+import org.powernukkitx.entity.components.AttackDamageComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
@@ -48,23 +49,22 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.35f;
-        }
         return 0.7f;
     }
 
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(10);
+    }
+
+    @Override
+    public AttackDamageComponent getComponentAttackDamage() {
+        return AttackDamageComponent.value(3);
     }
 
     @Override

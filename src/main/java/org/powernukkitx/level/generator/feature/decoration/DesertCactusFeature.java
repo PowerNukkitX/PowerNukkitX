@@ -36,7 +36,7 @@ public class DesertCactusFeature extends CountGenerateFeature {
         IChunk chunk = context.getChunk();
         int x = random.nextBoundedInt(13) + 1;
         int z = random.nextBoundedInt(13) + 1;
-        int y = chunk.getHeightMap(x, z) + 1;
+        int y = chunk.getHeightMap(x, z);
         int height = 1;
         int range = random.nextBoundedInt(18);
         if (range >= 16) {

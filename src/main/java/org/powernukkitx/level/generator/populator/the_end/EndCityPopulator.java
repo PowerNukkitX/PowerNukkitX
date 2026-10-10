@@ -6,9 +6,13 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.EndCityPieces;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
+import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.utils.random.BedrockRandom;
 import org.powernukkitx.utils.random.Xoroshiro128;
 
 public class EndCityPopulator extends Populator implements PopulatorStructure {
@@ -16,6 +20,12 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
     public static final String NAME = "the_end_end_city";
     private static final int SPACING = 20;
     private static final int SEPARATION = 11;
+    private static final int PLACEMENT_SALT = 0x009E7F71;
+    private static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(PLACEMENT_SALT)
+            .minDistance(SEPARATION)
+            .maxDistance(SPACING)
+            .build(), StructureRandomSpreadPlacement.SpreadType.TRIANGULAR);
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -30,13 +40,12 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
             return;
         }
 
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if (chunkX != (((chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
-                || chunkZ != (((chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
+        if (!PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, 0)) {
             return;
         }
 
-        Rotation rotation = Rotation.from(random.nextInt(4));
+        int rotationSeed = chunkZ * PLACEMENT_SALT + chunkX;
+        Rotation rotation = Rotation.from(new BedrockRandom(rotationSeed).nextBoundedInt(4));
         BlockVector3 origin = getStartPosition(chunk, rotation);
         if (origin.getY() < 60) {
             return;
@@ -47,20 +56,25 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
         pieceRandom.setSeed((long) chunkX * pieceRandom.nextInt() ^ (long) chunkZ * pieceRandom.nextInt() ^ level.getSeed());
 
         EndCityPieces.PostPlacement postPlacement = EndCityPieces.place(manager, origin, rotation, pieceRandom);
+        StructureAabbVolumes.addDynamic(level, "minecraft:end_city", postPlacement.pieceBounds());
 
-        if (!postPlacement.chests().isEmpty() || !postPlacement.banners().isEmpty() || !postPlacement.itemFrames().isEmpty() || !postPlacement.brewingStands().isEmpty() || !postPlacement.shulkerMarkers().isEmpty()) {
-            manager.addHook(() -> {
-                EndCityPieces.populatePlacedData(
-                        level,
-                        postPlacement.chests(),
-                        postPlacement.banners(),
-                        postPlacement.itemFrames(),
-                        postPlacement.brewingStands(),
-                        postPlacement.shulkerMarkers(),
-                        new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)));
-            });
-            queueObject(chunk, manager);
+        if (!postPlacement.chests().isEmpty()
+            || !postPlacement.banners().isEmpty()
+            || !postPlacement.itemFrames().isEmpty()
+            || !postPlacement.brewingStands().isEmpty()
+            || !postPlacement.shulkerMarkers().isEmpty()) {
 
+                manager.addHook(() -> {
+                    EndCityPieces.populatePlacedData(
+                            level,
+                            postPlacement.chests(),
+                            postPlacement.banners(),
+                            postPlacement.itemFrames(),
+                            postPlacement.brewingStands(),
+                            postPlacement.shulkerMarkers(),
+                            new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)));
+                });
+                queueObject(chunk, manager);
         }
     }
 
@@ -83,7 +97,7 @@ public class EndCityPopulator extends Populator implements PopulatorStructure {
                     case ROTATE_270 -> 4 - dx;
                     default -> dz;
                 };
-                minY = Math.min(minY, chunk.getHeightMap(sampleX + 7, sampleZ + 7));
+                minY = Math.min(minY, chunk.getHeightMap(sampleX + 7, sampleZ + 7) - 1);
             }
         }
 

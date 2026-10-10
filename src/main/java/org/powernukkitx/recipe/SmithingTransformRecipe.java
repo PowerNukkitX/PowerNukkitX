@@ -77,7 +77,7 @@ public class SmithingTransformRecipe extends BaseRecipe {
         payload.setTemplateIngredient(this.getTemplate().toNetwork());
         payload.setBaseIngredient(this.getBase().toNetwork());
         payload.setAdditionIngredient(this.getAddition().toNetwork());
-        payload.setResult(this.getResult().toNetwork());
+        payload.setResult(this.getResult().toRecipeNetwork());
         payload.setTag("smithing_table");
         payload.setNetId(new RecipeNetId(this.netId));
         return payload;

@@ -18,12 +18,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,7 +108,7 @@ public class Utils {
         if (!file.exists()) {
             file.createNewFile();
         }
-        try (content; FileOutputStream stream = new FileOutputStream(file)) {
+        try (content; OutputStream stream = Files.newOutputStream(file.toPath())) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = content.read(buffer)) != -1) {
@@ -121,7 +121,7 @@ public class Utils {
         if (!file.exists() || file.isDirectory()) {
             throw new FileNotFoundException();
         }
-        return readFile(new FileInputStream(file));
+        return readFile(Files.newInputStream(file.toPath()));
     }
 
     public static String readFile(String filename) throws IOException {
@@ -129,7 +129,7 @@ public class Utils {
         if (!file.exists() || file.isDirectory()) {
             throw new FileNotFoundException();
         }
-        return readFile(new FileInputStream(file));
+        return readFile(Files.newInputStream(file.toPath()));
     }
 
     public static String readFile(InputStream inputStream) throws IOException {
@@ -160,12 +160,7 @@ public class Utils {
             throw new FileNotFoundException();
         }
 
-        try (FileInputStream fi = new FileInputStream(from);
-             FileOutputStream fo = new FileOutputStream(to);
-             FileChannel in = fi.getChannel();
-             FileChannel out = fo.getChannel()) {
-            in.transferTo(0, in.size(), out);
-        }
+        Files.copy(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static String getAllThreadDumps() {
@@ -448,7 +443,7 @@ public class Utils {
     }
 
     public static void zipFolder(Path sourceFolderPath, Path zipPath) throws IOException {
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()))) {
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipPath))) {
             Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -677,6 +672,25 @@ public class Utils {
         byte[] payload = new byte[buf.readableBytes()];
         buf.readBytes(payload);
         return payload;
+    }
+
+    public static String mapDeviceOSToString(int os) {
+        return switch (os) {
+            case 1 -> "Android";
+            case 2 -> "iOS";
+            case 3 -> "macOS";
+            case 4 -> "Fire OS";
+            case 5 -> "Gear VR";
+            case 6 -> "HoloLens";
+            case 7, 8 -> "Windows";
+            case 9 -> "Dedicated";
+            case 10 -> "tvOS";
+            case 11 -> "PlayStation";
+            case 12 -> "Switch";
+            case 13 -> "Xbox";
+            case 14 -> "Windows Phone";
+            default -> "Unknown";
+        };
     }
 
     public static String getExternalIP() {

@@ -18,13 +18,11 @@ import java.util.HashSet;
  * @author PetteriM1
  */
 public class BlockEntityShulkerBox extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
-
-    protected ShulkerBoxInventory inventory;
-
     public BlockEntityShulkerBox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
     }
+
+    protected ShulkerBoxInventory inventory;
 
     @Override
     public void loadNBT() {
@@ -63,6 +61,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
+        this.nbt.putByte("Findable", this.nbt.getByte("Findable"));
     }
 
     @Override
@@ -147,7 +146,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
-                .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false)
                 .putList("Items", this.getNbt().getList("Items", CompoundTag.class))
                 .putByte("facing", this.getNbt().getByte("facing"));

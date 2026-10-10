@@ -49,14 +49,4 @@ public class IntTag extends NumberTag<Integer> {
     public Tag copy() {
         return new IntTag(data);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            IntTag o = (IntTag) obj;
-            return data == o.data;
-        }
-        return false;
-    }
-
 }

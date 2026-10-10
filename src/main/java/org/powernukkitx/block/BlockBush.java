@@ -54,16 +54,13 @@ public class BlockBush extends BlockFlowable implements Supportable {
         return 0;
     }
 
-
     @Override
-    public Item[] getDrops(Item item) {
-        if (item.isShears() || item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
-            return new Item[]{
-                    toItem()
-            };
-        }
-
-        return Item.EMPTY_ARRAY;
+    public boolean canHarvestWithHand() {
+        return false;
     }
 
+    @Override
+    public boolean canHarvest(Item item) {
+        return item.isShears();
+    }
 }

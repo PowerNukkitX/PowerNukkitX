@@ -86,7 +86,7 @@ public class ProfessionLibrarian extends Profession {
                     .setPriceMultiplierA(0.2f)
                     .build());
         }
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.INK_SAC), Item.get(Item.EMERALD))
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.INK_SAC, 0, 5), Item.get(Item.EMERALD))
                 .setMaxUses(12)
                 .setRewardExp((byte) 1)
                 .setTier(3)
@@ -145,7 +145,7 @@ public class ProfessionLibrarian extends Profession {
                         .setPriceMultiplierA(0.2f)
                         .build());
         }
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 12), Item.get(Item.NAME_TAG))
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 3), Item.get(random.nextInt(4) == 3 ? BlockID.YELLOW_CANDLE : BlockID.RED_CANDLE))
                 .setMaxUses(12)
                 .setRewardExp((byte) 1)
                 .setTier(5)

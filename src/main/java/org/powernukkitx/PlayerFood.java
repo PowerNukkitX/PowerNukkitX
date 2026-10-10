@@ -56,10 +56,23 @@ public class PlayerFood {
      * @param saturation Initial saturation level
      */
     public PlayerFood(Player player, int food, float saturation) {
+        this(player, food, saturation, 0);
+    }
+
+    /**
+     * Constructs a food manager with the complete persisted food state.
+     *
+     * @param player player instance
+     * @param food initial food level
+     * @param saturation initial saturation level
+     * @param exhaustion initial exhaustion level
+     */
+    public PlayerFood(Player player, int food, float saturation, double exhaustion) {
         this.player = player;
         this.food = food;
         this.maxFood = 20;
         this.saturation = saturation;
+        this.exhaustion = exhaustion;
     }
 
     /**
@@ -87,19 +100,27 @@ public class PlayerFood {
      * @param saturation The new saturation level
      */
     public void setFood(int food, float saturation) {
+        this.setFood(food, saturation, true);
+    }
+
+    void setFood(int food, float saturation, boolean send) {
         food = Math.max(0, Math.min(food, 20));
         if (food <= 6 && this.food > 6 && this.player.isSprinting()) {
             this.player.setSprinting(false);
         }
+
         PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(this.player, food, saturation);
         Server.getInstance().getPluginManager().callEvent(event);
+
         if (event.isCancelled()) {
-            this.sendFood(this.food);
+            if (send) this.sendFood(this.food);
             return;
         }
+
         this.food = event.getFoodLevel();
         this.saturation = Math.min(event.getFoodSaturationLevel(), food);
-        this.send();
+
+        if (send) this.send();
     }
 
     /**

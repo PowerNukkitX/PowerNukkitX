@@ -1,6 +1,7 @@
 package org.powernukkitx.command.defaults;
 
 import org.powernukkitx.command.CommandSender;
+import org.powernukkitx.command.data.CommandEnum;
 import org.powernukkitx.command.data.CommandParameter;
 import org.powernukkitx.command.selector.args.impl.Type;
 import org.powernukkitx.command.tree.ParamList;
@@ -13,7 +14,6 @@ import org.powernukkitx.registry.EntityRegistry;
 import org.powernukkitx.registry.Registries;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,22 +25,16 @@ public class SummonCommand extends VanillaCommand {
         this.setPermission("nukkit.command.summon");
         this.commandParameters.clear();
 
-        List<String> entity_key = new ArrayList<>();
-        for (String key : Registries.ENTITY.getKnownEntities().keySet()) {
-            entity_key.add(key.replace("minecraft:", ""));
-        }
-        String[] entities = entity_key.toArray(new String[0]);
-
         // Syntax 1: /summon <entityType> <nameTag> [spawnPos]
         this.commandParameters.put("BasicWithName", new CommandParameter[]{
-                CommandParameter.newEnum("entityType", false, entities, true),
+                CommandParameter.newEnum("entityType", false, CommandEnum.ENUM_SUMMONABLE_ENTITY),
                 CommandParameter.newType("nameTag", false, CommandParamType.ID),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION)
         });
 
         // Syntax 2: /summon <entityType> [spawnPos] [yRot] [xRot] [nameTag]
         this.commandParameters.put("WithRotation", new CommandParameter[]{
-                CommandParameter.newEnum("entityType", false, entities, true),
+                CommandParameter.newEnum("entityType", false, CommandEnum.ENUM_SUMMONABLE_ENTITY),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
                 CommandParameter.newType("yRot", true, CommandParamType.VAL),
                 CommandParameter.newType("xRot", true, CommandParamType.VAL),
@@ -49,7 +43,7 @@ public class SummonCommand extends VanillaCommand {
 
         // Syntax 3: /summon <entityType> [spawnPos] facing <lookAtEntity> [nameTag]
         this.commandParameters.put("FacingEntity", new CommandParameter[]{
-                CommandParameter.newEnum("entityType", false, entities, true),
+                CommandParameter.newEnum("entityType", false, CommandEnum.ENUM_SUMMONABLE_ENTITY),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
                 CommandParameter.newEnum("facing", false, new String[]{"facing"}),
                 CommandParameter.newType("lookAtEntity", CommandParamType.SELECTION),
@@ -58,7 +52,7 @@ public class SummonCommand extends VanillaCommand {
 
         // Syntax 4: /summon <entityType> [spawnPos] facing <lookAtPosition> [nameTag]
         this.commandParameters.put("FacingPos", new CommandParameter[]{
-                CommandParameter.newEnum("entityType", false, entities, true),
+                CommandParameter.newEnum("entityType", false, CommandEnum.ENUM_SUMMONABLE_ENTITY),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
                 CommandParameter.newEnum("facing", false, new String[]{"facing"}),
                 CommandParameter.newType("lookAtPosition", CommandParamType.POSITION),

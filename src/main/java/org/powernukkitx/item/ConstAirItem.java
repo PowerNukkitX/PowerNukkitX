@@ -7,9 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ConstAirItem extends Item {
     public ConstAirItem() {
-        super("minecraft:air");
-        this.meta = 0;
-        this.count = 0;
+        super("minecraft:air", 0, 0, null, false);
         this.netId = 0;
     }
 
@@ -89,7 +87,8 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public void setCount(int count) {
+    public Item setCount(int count) {
+        return this;
     }
 
     @Override
