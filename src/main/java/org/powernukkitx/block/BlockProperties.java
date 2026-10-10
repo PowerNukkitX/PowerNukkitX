@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Arrays;
@@ -18,13 +19,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * @author Cool_Loong
  */
 public final class BlockProperties {
+    private static final byte NO_PRECIPITATION_BEHAVIOR = -1;
+
     @Getter
     private final String identifier;
     private final Set<BlockPropertyType<?>> propertyTypeSet;
@@ -37,16 +39,41 @@ public final class BlockProperties {
     @Getter
     private final BlockState defaultState;
     private final byte bitSize;
+    private final byte precipitationBehavior;
 
     public BlockProperties(String identifier, BlockPropertyType<?>... properties) {
-        this(identifier, Set.of(), properties);
+        this(identifier, Set.of(), null, properties);
+    }
+
+    /**
+     * Creates block properties with the specified precipitation behavior.
+     *
+     * @param identifier block identifier
+     * @param precipitationBehavior precipitation behavior
+     * @param properties block state properties
+     */
+    public BlockProperties(String identifier, PrecipitationBehavior precipitationBehavior, BlockPropertyType<?>... properties) {
+        this(identifier, Set.of(), precipitationBehavior, properties);
     }
 
     public BlockProperties(String identifier, Set<String> blockTags, BlockPropertyType<?>... properties) {
+        this(identifier, blockTags, null, properties);
+    }
+
+    /**
+     * Creates block properties with tags and the specified precipitation behavior.
+     *
+     * @param identifier block identifier
+     * @param blockTags block tags
+     * @param precipitationBehavior precipitation behavior
+     * @param properties block state properties
+     */
+    public BlockProperties(String identifier, Set<String> blockTags, PrecipitationBehavior precipitationBehavior, BlockPropertyType<?>... properties) {
         Identifier.assertValid(identifier);
         BlockTags.register(identifier, blockTags);
         this.identifier = identifier.intern();
         this.propertyTypeSet = Sets.newHashSet(properties);
+        this.precipitationBehavior = precipitationBehavior == null ? NO_PRECIPITATION_BEHAVIOR : precipitationBehavior.id();
 
         byte specialValueBits = 0;
         for (var value : this.propertyTypeSet) specialValueBits += value.getBitSize();
@@ -141,6 +168,14 @@ public final class BlockProperties {
 
     public BlockState getBlockState(BlockPropertyType.BlockPropertyValue<?, ?, ?>... values) {
         return defaultState.setPropertyValues(this, values);
+    }
+
+    /**
+     * Returns the Bedrock precipitation behavior, or null when the component is absent.
+     */
+    @Nullable
+    public PrecipitationBehavior getPrecipitationBehavior() {
+        return precipitationBehavior == NO_PRECIPITATION_BEHAVIOR ? null : PrecipitationBehavior.fromId(precipitationBehavior);
     }
 
     public byte getSpecialValueBits() {

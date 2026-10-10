@@ -124,7 +124,7 @@ public class BlockEntityNbtLoadTest {
     }
 
     @Test
-    void beehiveNbtLoadWithLegacyHoneyLevel() {
+    void beehiveRuntimeDoesNotMigrateLegacyHoneyLevel() {
         Position pos = new Position(testX.getAndIncrement(), 80, 100, level);
         IChunk chunk = getLoadedChunk(pos);
         chunk.setBlockState(pos.getFloorX() & 0x0f, pos.getFloorY(), pos.getFloorZ() & 0x0f, Block.get(BlockID.BEEHIVE).getBlockState());
@@ -132,7 +132,9 @@ public class BlockEntityNbtLoadTest {
         CompoundTag nbt = BlockEntity.getDefaultCompound(pos, BlockEntityID.BEEHIVE);
         nbt.putByte("HoneyLevel", (byte) 3);
         BlockEntityBeehive be = new BlockEntityBeehive(chunk, nbt);
-        Assertions.assertFalse(nbt.contains("HoneyLevel"), "Legacy HoneyLevel NBT tag should be removed after load");
+
+        Assertions.assertTrue(nbt.contains("HoneyLevel"), "Runtime must not perform legacy Beehive migration");
+        Assertions.assertEquals(0, be.getHoneyLevel(), "Legacy HoneyLevel must not modify the canonical block state at runtime");
         be.close();
     }
 

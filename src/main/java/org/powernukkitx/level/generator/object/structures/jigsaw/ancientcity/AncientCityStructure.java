@@ -24,7 +24,6 @@ import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.powernukkitx.utils.random.Xoroshiro128;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.powernukkitx.block.BlockID.CANDLE;
@@ -178,17 +177,23 @@ public class AncientCityStructure extends JigsawStructure {
     }
 
     @Override
+    protected String getStartJigsawName() {
+        return "minecraft:city_anchor";
+    }
+
+    @Override
     protected int getMaxDepth() {
         return 7;
     }
 
     @Override
-    protected void postProcessStructure(
-            StructureHelper helper,
-            List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces
-    ) {
-        Beardifier.apply(helper, terrainAdaptationPieces, Beardifier.carveAndFill(
-                BlockAir.STATE, BEARD_CARVE_THRESHOLD, DEEPSLATE, BEARD_FILL_THRESHOLD));
+    protected int getMaxDistanceFromCenter() {
+        return 128;
+    }
+
+    @Override
+    protected void postProcessStructure(StructureHelper helper, List<Beardifier.TerrainAdaptationPiece> terrainAdaptationPieces) {
+        Beardifier.applyBeardBox(helper, terrainAdaptationPieces, Beardifier.carveAndFill(BlockAir.STATE, BEARD_CARVE_THRESHOLD, DEEPSLATE, BEARD_FILL_THRESHOLD));
         helper.applySubChunkUpdate();
     }
 

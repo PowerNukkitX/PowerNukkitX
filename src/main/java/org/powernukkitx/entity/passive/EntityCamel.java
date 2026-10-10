@@ -26,6 +26,7 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.FollowEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.ai.sensor.ParentSensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.DashActionComponent;
@@ -476,6 +477,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
                         )
                 )
                 .sensors(
+                        new ParentSensor(8, 20),
                         new FollowEntitySensor(6f, 2f),
                         new NearestPlayerSensor(8, 0, 20)
                 )

@@ -17,13 +17,15 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -90,7 +92,7 @@ public class PowerNukkitX {
         Path propertiesPath = Paths.get(DATA_PATH, "server.properties");
         if (!disableSentry.get() && Files.isRegularFile(propertiesPath)) {
             Properties properties = new Properties();
-            try (FileReader reader = new FileReader(propertiesPath.toFile())) {
+            try (Reader reader = new InputStreamReader(Files.newInputStream(propertiesPath), StandardCharsets.UTF_8)) {
                 properties.load(reader);
 
                 String value = properties.getProperty("disable-auto-bug-report", "false");

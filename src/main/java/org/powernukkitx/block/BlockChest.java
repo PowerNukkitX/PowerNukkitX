@@ -157,7 +157,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             return false;
 
         chest.pairWith(blockEntity);
-        blockEntity.pairWith(chest);
         return true;
     }
 

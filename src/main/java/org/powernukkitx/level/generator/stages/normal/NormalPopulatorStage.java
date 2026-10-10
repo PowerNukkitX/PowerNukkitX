@@ -12,6 +12,7 @@ public class NormalPopulatorStage extends PopulatorStage {
     public static final ObjectArraySet<String> POPULATORS = new ObjectArraySet<>(new String[] {
             DesertWellPopulator.NAME,
             DesertPyramidPopulator.NAME,
+            BuriedTreasurePopulator.NAME,
             FossilPopulator.NAME,
             IglooPopulator.NAME,
             JungleTemplePopulator.NAME,

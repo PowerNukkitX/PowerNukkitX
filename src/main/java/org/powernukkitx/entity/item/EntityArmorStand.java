@@ -114,22 +114,24 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         this.actorDataMap.putIfAbsent(ActorDataTypes.POSE_INDEX, 0);
 
         final CompoundTag nbtMap = this.getNbt();
-        if (nbtMap.contains(TAG_MAINHAND)) {
-            final Item mainhand = ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND));
-            this.equipmentInventory.setItemInHand(mainhand, true);
+        if (nbtMap.containsList(TAG_MAINHAND, Tag.TAG_Compound)) {
+            ListTag<CompoundTag> mainhand = nbtMap.getList(TAG_MAINHAND, CompoundTag.class);
+            if (mainhand.size() > 0) {
+                this.equipmentInventory.setItemInHand(ItemHelper.read(mainhand.get(0)), true);
+            }
         }
 
-        if (nbtMap.contains(TAG_OFFHAND)) {
-            final Item offhand = ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND));
-            this.equipmentInventory.setItemInOffhand(offhand, true);
+        if (nbtMap.containsList(TAG_OFFHAND, Tag.TAG_Compound)) {
+            ListTag<CompoundTag> offhand = nbtMap.getList(TAG_OFFHAND, CompoundTag.class);
+            if (offhand.size() > 0) {
+                this.equipmentInventory.setItemInOffhand(ItemHelper.read(offhand.get(0)), true);
+            }
         }
 
-        if (nbtMap.contains(TAG_ARMOR)) {
+        if (nbtMap.containsList(TAG_ARMOR, Tag.TAG_Compound)) {
             ListTag<CompoundTag> armorList = nbtMap.getList(TAG_ARMOR, CompoundTag.class);
-            for (CompoundTag armorTag : armorList.getAll()) {
-                final int slot = armorTag.getByte("Slot");
-                final Item armorItem = ItemHelper.read(armorTag);
-                this.armorInventory.setItem(slot, armorItem);
+            for (int slot = 0; slot < Math.min(armorList.size(), 5); slot++) {
+                this.armorInventory.setItem(slot, ItemHelper.read(armorList.get(slot)));
             }
         }
 
@@ -339,14 +341,19 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         super.saveNBT();
 
         if (this.equipmentInventory != null) {
-            this.nbt.putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null));
-            this.nbt.putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
+            ListTag<CompoundTag> mainhand = new ListTag<>(Tag.TAG_Compound);
+            mainhand.add(ItemHelper.write(this.equipmentInventory.getItemInHand()));
+            this.nbt.putList(TAG_MAINHAND, mainhand);
+
+            ListTag<CompoundTag> offhand = new ListTag<>(Tag.TAG_Compound);
+            offhand.add(ItemHelper.write(this.equipmentInventory.getItemInOffhand()));
+            this.nbt.putList(TAG_OFFHAND, offhand);
         }
 
         if (this.armorInventory != null) {
             ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
-            for (int i = 0; i < 4; i++) {
-                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
+            for (int i = 0; i < 5; i++) {
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i)));
             }
             this.nbt.putList(TAG_ARMOR, armorTag);
         }

@@ -24,6 +24,7 @@ import org.powernukkitx.plugin.PluginManager;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.ItemTags;
+import org.powernukkitx.utils.DynamicProperties;
 import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.JSONUtils;
 import org.powernukkitx.utils.RuntimeBlockDefinition;
@@ -101,9 +102,16 @@ public abstract class Item implements Cloneable, ItemID {
         return Server.getDefaultDynamicPropertiesGroupUUID();
     }
 
-    private static final int DP_MAX_STRING_BYTES = Server.getDynamicPropertiesMaxStringBytes();
-    private static final double DP_NUMBER_ABS_MAX = Server.getDynamicPropertiesNumberAbsMax();
-    private static final String DP_ROOT = Server.getDynamicPropertyRoot();
+    private DynamicProperties getDynamicProperties() {
+        return new DynamicProperties(
+                () -> this.hasNbt() && this.getNbt().containsCompound(DynamicProperties.ROOT)
+                        ? this.getNbt().getCompound(DynamicProperties.ROOT) : new CompoundTag(),
+                dynamicProperties -> {
+                    CompoundTag root = this.hasNbt() ? this.getNbt() : new CompoundTag();
+                    root.putCompound(DynamicProperties.ROOT, dynamicProperties);
+                    this.setNbt(root);
+                });
+    }
 
     public static final int WEARABLE_TIER_LEATHER = 1;
     public static final int WEARABLE_TIER_IRON = 2;
@@ -866,15 +874,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param key the key id of the DynamicProperty
      */
     public Item removeDynamicProperty(String key) {
-        if (!this.hasNbt()) return this;
-        CompoundTag root = this.getNbt();
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (dyn == null) return this;
-        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID());
-        if (group == null || !group.contains(key)) return this;
-
-        group.remove(key);
-        this.setNbt(root);
+        getDynamicProperties().remove(DP_DEFAULT_GROUP_UUID(), key);
         return this;
     }
 
@@ -883,13 +883,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Remove all DynamicProperties on the item.
      */
     public Item clearDynamicProperties() {
-        if (!this.hasNbt()) return this;
-        CompoundTag root = this.getNbt();
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (dyn == null) return this;
-
-        dyn.putCompound(DP_DEFAULT_GROUP_UUID(), new CompoundTag());
-        this.setNbt(root);
+        getDynamicProperties().clear(DP_DEFAULT_GROUP_UUID());
         return this;
     }
 
@@ -900,14 +894,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param value the double int value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, Double value) {
-        if (value == null) return removeDynamicProperty(key);
-        if (!isFiniteAndInRange(value)) {
-            log.warn("DynamicProperty '{}' rejected: out of numeric bounds or non-finite (value={})", key, value);
-            return this;
-        }
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putDouble(key, value);
-        saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
+        getDynamicProperties().set(DP_DEFAULT_GROUP_UUID(), key, value);
         return this;
     }
 
@@ -938,10 +925,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param bool the bool value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, Boolean bool) {
-        if (bool == null) return removeDynamicProperty(key);
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putBoolean(key, bool);
-        saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
+        getDynamicProperties().set(DP_DEFAULT_GROUP_UUID(), key, bool);
         return this;
     }
 
@@ -952,14 +936,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param string the string value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, String string) {
-        if (string == null) return removeDynamicProperty(key);
-        if (!fitsUtf8Limit(string)) {
-            log.warn("DynamicProperty '{}' rejected: string exceeds {} UTF-8 bytes", key, DP_MAX_STRING_BYTES);
-            return this;
-        }
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putString(key, string);
-        saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
+        getDynamicProperties().set(DP_DEFAULT_GROUP_UUID(), key, string);
         return this;
     }
 
@@ -970,18 +947,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param vec3 the vec3 value of the DynamicProperty
      */
     public Item setVec3DynamicProperty(String key, Vector3 vec3) {
-        if (vec3 == null) return removeDynamicProperty(key);
-        if (!isFiniteAndInRange(vec3.x) || !isFiniteAndInRange(vec3.y) || !isFiniteAndInRange(vec3.z)) {
-            log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, vec3.x, vec3.y, vec3.z);
-            return this;
-        }
-        ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag((float) vec3.x));
-        list.add(new FloatTag((float) vec3.y));
-        list.add(new FloatTag((float) vec3.z));
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putList(key, list);
-        saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
+        getDynamicProperties().setVec3(DP_DEFAULT_GROUP_UUID(), key, vec3);
         return this;
     }
 
@@ -993,24 +959,14 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public Item setVec3DynamicProperty(String key, Map<String, Number> xyz) {
         if (xyz == null) return removeDynamicProperty(key);
+
         Number nx = xyz.get("x"), ny = xyz.get("y"), nz = xyz.get("z");
         if (nx == null || ny == null || nz == null) {
             log.warn("DynamicProperty '{}' rejected: vec3 map must contain numeric keys 'x','y','z'", key);
             return this;
         }
-        double x = nx.doubleValue(), y = ny.doubleValue(), z = nz.doubleValue();
-        if (!isFiniteAndInRange(x) || !isFiniteAndInRange(y) || !isFiniteAndInRange(z)) {
-            log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, x, y, z);
-            return this;
-        }
-        ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag((float) x));
-        list.add(new FloatTag((float) y));
-        list.add(new FloatTag((float) z));
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putList(key, list);
-        saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
-        return this;
+
+        return setVec3DynamicProperty(key, new Vector3(nx.doubleValue(), ny.doubleValue(), nz.doubleValue()));
     }
 
     /**
@@ -1020,25 +976,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the double int value or null if not available.
      */
     public Double getDoubleDynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null) return null;
-
-        return switch (t) {
-            case DoubleTag d -> d.data;
-            case FloatTag f -> (double) f.data;
-            case IntTag i -> (double) i.data;
-            case LongTag l -> (double) l.data;
-            case ShortTag s -> (double) s.data;
-            case ByteTag b -> (double) b.data;
-            case StringTag s -> {
-                try {
-                    yield Double.parseDouble(s.data.trim());
-                } catch (NumberFormatException ignored) {
-                    yield null;
-                }
-            }
-            default -> null;
-        };
+        return getDynamicProperties().getDouble(DP_DEFAULT_GROUP_UUID(), key);
     }
 
     /**
@@ -1060,9 +998,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the int value or defaultValue if not available.
      */
     public Integer getIntDynamicProperty(String key) {
-        Double d = getDoubleDynamicProperty(key);
-        if (d == null) return null;
-        return (int) Math.floor(d);
+        return getDynamicProperties().getInt(DP_DEFAULT_GROUP_UUID(), key);
     }
 
     /**
@@ -1084,9 +1020,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the float value or null if not available.
      */
     public Float getFloatDynamicProperty(String key) {
-        Double d = getDoubleDynamicProperty(key);
-        if (d == null) return null;
-        return d.floatValue();
+        return getDynamicProperties().getFloat(DP_DEFAULT_GROUP_UUID(), key);
     }
 
     /**
@@ -1108,17 +1042,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the bool value or false if not available.
      */
     public Boolean getBoolDynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null) return null;
-        if (t instanceof ByteTag) return ((ByteTag) t).data != 0;
-        Double d = getDoubleDynamicProperty(key);
-        if (d != null) return d != 0.0;
-        if (t instanceof StringTag) {
-            String s = ((StringTag) t).data.trim().toLowerCase();
-            if ("true".equals(s) || "1".equals(s)) return true;
-            if ("false".equals(s) || "0".equals(s)) return false;
-        }
-        return null;
+        return getDynamicProperties().getBoolean(DP_DEFAULT_GROUP_UUID(), key);
     }
 
     /**
@@ -1140,19 +1064,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the bool value or null if not available.
      */
     public String getStringDynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null) return null;
-
-        return switch (t) {
-            case StringTag s -> s.data;
-            case DoubleTag d -> String.valueOf(d.data);
-            case FloatTag f -> String.valueOf(f.data);
-            case IntTag i -> String.valueOf(i.data);
-            case LongTag l -> String.valueOf(l.data);
-            case ShortTag s -> String.valueOf(s.data);
-            case ByteTag b -> String.valueOf(b.data);
-            default -> null;
-        };
+        return getDynamicProperties().getString(DP_DEFAULT_GROUP_UUID(), key);
     }
 
     /**
@@ -1174,67 +1086,8 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the bool value or null if not available.
      */
     public Vector3 getVec3DynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null) return null;
-
-        if (t instanceof ListTag<?> list &&
-                list.size() == 3 &&
-                list.get(0) instanceof FloatTag fx &&
-                list.get(1) instanceof FloatTag fy &&
-                list.get(2) instanceof FloatTag fz) {
-            float x = fx.data;
-            float y = fy.data;
-            float z = fz.data;
-            return new Vector3(x, y, z);
-        }
-        return null;
+        return getDynamicProperties().getVec3(DP_DEFAULT_GROUP_UUID(), key);
     }
-
-    // Dynamic Properties Helpers start
-    private static boolean isFiniteAndInRange(double v) {
-        return !Double.isNaN(v) && !Double.isInfinite(v) && Math.abs(v) <= DP_NUMBER_ABS_MAX;
-    }
-
-    private static boolean fitsUtf8Limit(String s) {
-        if (s == null) return false;
-        int byteCount = s.getBytes(StandardCharsets.UTF_8).length;
-        return byteCount <= DP_MAX_STRING_BYTES;
-    }
-
-    private CompoundTag ensureDynamicPropertiesGroup(String groupId) {
-        CompoundTag root = this.getOrCreateNbt();
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        CompoundTag group = (dyn != null) ? dyn.getCompound(groupId) : null;
-        if (group == null) group = new CompoundTag();
-        return group;
-    }
-
-    private CompoundTag getDynamicPropertiesGroup(String groupId) {
-        CompoundTag root = this.getNbt();
-        if (root == null || !root.contains(DP_ROOT)) return null;
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (dyn == null) return null;
-        return dyn.getCompound(groupId);
-    }
-
-    private void saveDynamicPropertiesGroup(String groupId, CompoundTag group) {
-        CompoundTag root = this.getOrCreateNbt();
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (!root.contains(DP_ROOT) || dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
-        }
-
-        dyn.putCompound(groupId, group);
-        this.setNbt(root);
-    }
-
-    private Tag findDynamicPropertyTagInConfiguredGroup(String key) {
-        CompoundTag group = getDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        if (group == null || !group.contains(key)) return null;
-        return group.get(key);
-    }
-    // Dynamic Properties Helpers end
 
     public Tag getNbtEntry(String name) {
         CompoundTag tag = this.getNbt();

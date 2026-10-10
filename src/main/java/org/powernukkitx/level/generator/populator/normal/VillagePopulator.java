@@ -11,8 +11,10 @@ import org.powernukkitx.level.generator.object.structures.jigsaw.village.Savanna
 import org.powernukkitx.level.generator.object.structures.jigsaw.village.SnowyVillageStructure;
 import org.powernukkitx.level.generator.object.structures.jigsaw.village.TaigaVillageStructure;
 import org.powernukkitx.level.generator.object.structures.jigsaw.village.VillageStructure;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 
@@ -20,12 +22,12 @@ public class VillagePopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_village";
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+    public static final StructureRandomSpreadPlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
             .salt(10387312L)
             .minDistance(8)
             .maxDistance(34)
             .isBiomeValid(biome -> getVillageForBiome(biome) != null)
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.TRIANGULAR);
 
     protected static final VillageStructure PLAINS_VILLAGE = new PlainsVillageStructure();
     protected static final VillageStructure DESERT_VILLAGE = new DesertVillageStructure();
@@ -41,7 +43,7 @@ public class VillagePopulator extends Populator implements PopulatorStructure {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
+        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7) - 1, 7);
 
         if (!PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             return;
@@ -56,7 +58,8 @@ public class VillagePopulator extends Populator implements PopulatorStructure {
         int originZ = chunkZ << 4;
         int originY = findGenerationY(chunk, level);
         StructureHelper helper = new StructureHelper(level, new BlockVector3(originX, originY, originZ));
-        village.place(helper, random.fork());
+        var pieceBounds = village.placeWithBounds(helper, PLACEMENT.createPostSpreadRandom(level.getSeed(), chunkX, chunkZ));
+        StructureAabbVolumes.addDynamic(level, "minecraft:village", pieceBounds);
         if(level.getAutoSave()) {
             chunk.getProvider().saveChunk(chunkX, chunkZ, chunk);
         }

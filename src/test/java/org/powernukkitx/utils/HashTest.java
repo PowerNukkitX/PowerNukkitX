@@ -1,7 +1,11 @@
 package org.powernukkitx.utils;
 
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayOutputStream;
 
 public class HashTest {
     @Test
@@ -26,5 +30,32 @@ public class HashTest {
         long a = Hash.hashBlock(1, 2, 3);
         long b = Hash.hashBlock(3, 2, 1);
         Assertions.assertNotEquals(a, b);
+    }
+
+    @Test
+    void levelChunkMetaDataHashUsesNetworkNbt() throws Exception {
+        NbtMap metadata = NbtMap.builder()
+                .putString("DimensionName", "Overworld")
+                .putLong("GenerationSeed", 123456789L)
+                .putInt("GeneratorType", 1)
+                .build();
+
+        byte[] network;
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+             var writer = NbtUtils.createNetworkWriter(output)) {
+            writer.writeTag(metadata);
+            network = output.toByteArray();
+        }
+
+        byte[] littleEndian;
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+             var writer = NbtUtils.createWriterLE(output)) {
+            writer.writeTag(metadata);
+            littleEndian = output.toByteArray();
+        }
+
+        long hash = HashUtils.computeLevelChunkMetaDataHash(metadata);
+        Assertions.assertEquals(HashUtils.xxh64(network, 0), hash);
+        Assertions.assertNotEquals(HashUtils.xxh64(littleEndian, 0), hash);
     }
 }

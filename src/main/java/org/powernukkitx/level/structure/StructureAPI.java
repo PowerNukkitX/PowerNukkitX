@@ -7,7 +7,6 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -124,7 +123,7 @@ public class StructureAPI {
             }
             file.getParentFile().mkdirs();
 
-            try (var stream = new FileOutputStream(file);
+            try (var stream = Files.newOutputStream(file.toPath());
                  var nbtOutputStream = NbtUtils.createWriterLE(stream)) {
                 nbtOutputStream.writeTag(structure.toNBT().toNetwork());
             }

@@ -67,7 +67,7 @@ public class OverworldUnderwaterMagmaFeature extends GenerateFeature {
     }
 
     private boolean isConnectedToSurfaceWater(IChunk chunk, int x, int originY, int z) {
-        int surfaceY = chunk.getHeightMap(x, z);
+        int surfaceY = chunk.getHeightMap(x, z) - 1;
         if (originY >= surfaceY) {
             return true;
         }

@@ -24,7 +24,7 @@ import org.powernukkitx.item.ItemArrow;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.ShortTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
-
     public static final String TAG_ID = "id";
     public static final String TAG_X = "x";
     public static final String TAG_Y = "y";
@@ -45,6 +44,14 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     public static final String TAG_SPAWN_DATA = "spawn_data";
     public static final String TAG_TYPE_ID = "TypeId";
     public static final String TAG_WEIGHT = "Weight";
+    public static final String TAG_NORMAL_CONFIG = "normal_config";
+    public static final String TAG_OMINOUS_CONFIG = "ominous_config";
+    public static final String TAG_REQUIRED_PLAYER_RANGE_CANONICAL = "required_player_range";
+    public static final String TAG_COOLDOWN_END_AT = "cooldown_end_at";
+    public static final String TAG_CURRENT_MOBS = "current_mobs";
+    public static final String TAG_NEXT_MOB_SPAWNS_AT = "next_mob_spawns_at";
+    public static final String TAG_REGISTERED_PLAYERS = "registered_players";
+    public static final String TAG_TOTAL_MOBS_SPAWNED = "total_mobs_spawned";
     public static final String TAG_SPAWN_RANGE = "SpawnRange";
     public static final String TAG_REQUIRED_PLAYER_RANGE = "RequiredPlayerRange";
     public static final String TAG_TICKS_BETWEEN_SPAWN = "ticks_between_spawn";
@@ -99,8 +106,8 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     private boolean spawnBaby;
 
     private int state = STATE_WAITING_FOR_PLAYERS;
-    private int nextMobSpawnTick;
-    private int cooldownEndsAt;
+    private long nextMobSpawnTick;
+    private long cooldownEndsAt;
     private int rewardStateEndsAt;
     private int totalSpawnedThisCycle;
     private int nextOminousProjectileTick;
@@ -110,7 +117,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     public BlockEntityTrialSpawner(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        this.entityId = this.nbt.getString(TAG_TYPE_ID, EntityID.BREEZE);
+        this.entityId = this.nbt.containsCompound(TAG_SPAWN_DATA) ? this.nbt.getCompound(TAG_SPAWN_DATA).getString(TAG_TYPE_ID) : "";
     }
 
     @Override
@@ -118,66 +125,60 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         super.initBlockEntity();
         this.scheduleUpdate();
         this.state = this.entityId == null || this.entityId.isEmpty() ? STATE_INACTIVE : STATE_WAITING_FOR_PLAYERS;
-        this.nextMobSpawnTick = this.level.getTick() + this.ticksBetweenSpawn;
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.nbt.contains(TAG_SPAWN_RANGE) || !(this.nbt.get(TAG_SPAWN_RANGE) instanceof ShortTag)) {
-            this.nbt.putShort(TAG_SPAWN_RANGE, DEFAULT_SPAWN_RANGE);
-        }
-        if (!this.nbt.contains(TAG_REQUIRED_PLAYER_RANGE) || !(this.nbt.get(TAG_REQUIRED_PLAYER_RANGE) instanceof ShortTag)) {
-            this.nbt.putShort(TAG_REQUIRED_PLAYER_RANGE, DEFAULT_REQUIRED_PLAYER_RANGE);
-        }
-        if (!this.nbt.contains(TAG_TICKS_BETWEEN_SPAWN)) {
-            this.nbt.putInt(TAG_TICKS_BETWEEN_SPAWN, DEFAULT_TICKS_BETWEEN_SPAWN);
-        }
-        if (!this.nbt.contains(TAG_TARGET_COOLDOWN_LENGTH)) {
-            this.nbt.putInt(TAG_TARGET_COOLDOWN_LENGTH, DEFAULT_TARGET_COOLDOWN_LENGTH);
-        }
-        if (!this.nbt.contains(TAG_TOTAL_MOBS)) {
-            this.nbt.putDouble(TAG_TOTAL_MOBS, DEFAULT_TOTAL_MOBS);
-        }
-        if (!this.nbt.contains(TAG_TOTAL_MOBS_ADDED_PER_PLAYER)) {
-            this.nbt.putDouble(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, DEFAULT_TOTAL_MOBS_ADDED_PER_PLAYER);
-        }
-        if (!this.nbt.contains(TAG_SIMULTANEOUS_MOBS)) {
-            this.nbt.putDouble(TAG_SIMULTANEOUS_MOBS, DEFAULT_SIMULTANEOUS_MOBS);
-        }
-        if (!this.nbt.contains(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER)) {
-            this.nbt.putDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, DEFAULT_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER);
-        }
-        if (!this.nbt.contains(TAG_SPAWN_BABY)) {
-            this.nbt.putBoolean(TAG_SPAWN_BABY, false);
+
+        this.spawnRange = DEFAULT_SPAWN_RANGE;
+        this.requiredPlayerRange = DEFAULT_REQUIRED_PLAYER_RANGE;
+        this.ticksBetweenSpawn = DEFAULT_TICKS_BETWEEN_SPAWN;
+        this.targetCooldownLength = DEFAULT_TARGET_COOLDOWN_LENGTH;
+        this.totalMobs = DEFAULT_TOTAL_MOBS;
+        this.totalMobsAddedPerPlayer = DEFAULT_TOTAL_MOBS_ADDED_PER_PLAYER;
+        this.simultaneousMobs = DEFAULT_SIMULTANEOUS_MOBS;
+        this.simultaneousMobsAddedPerPlayer = DEFAULT_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER;
+        this.spawnBaby = false;
+
+        if (this.nbt.containsCompound(TAG_NORMAL_CONFIG)) {
+            loadInlineConfig(this.nbt.getCompound(TAG_NORMAL_CONFIG));
         }
 
-        this.entityId = this.nbt.getString(TAG_TYPE_ID, EntityID.BREEZE);
-        this.spawnRange = this.nbt.getShort(TAG_SPAWN_RANGE);
-        this.requiredPlayerRange = this.nbt.getShort(TAG_REQUIRED_PLAYER_RANGE);
-        this.ticksBetweenSpawn = this.nbt.getInt(TAG_TICKS_BETWEEN_SPAWN, DEFAULT_TICKS_BETWEEN_SPAWN);
-        this.targetCooldownLength = this.nbt.getInt(TAG_TARGET_COOLDOWN_LENGTH, DEFAULT_TARGET_COOLDOWN_LENGTH);
-        this.totalMobs = this.nbt.getDouble(TAG_TOTAL_MOBS, DEFAULT_TOTAL_MOBS);
-        this.totalMobsAddedPerPlayer = this.nbt.getDouble(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, DEFAULT_TOTAL_MOBS_ADDED_PER_PLAYER);
-        this.simultaneousMobs = this.nbt.getDouble(TAG_SIMULTANEOUS_MOBS, DEFAULT_SIMULTANEOUS_MOBS);
-        this.simultaneousMobsAddedPerPlayer = this.nbt.getDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, DEFAULT_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER);
-        this.spawnBaby = this.nbt.getBoolean(TAG_SPAWN_BABY);
-        this.nextOminousProjectileTick = this.nbt.getInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.level.getTick() + OMINOUS_PROJECTILE_INTERVAL_TICKS);
+        this.requiredPlayerRange = this.nbt.containsInt(TAG_REQUIRED_PLAYER_RANGE_CANONICAL) ? this.nbt.getInt(TAG_REQUIRED_PLAYER_RANGE_CANONICAL) : DEFAULT_REQUIRED_PLAYER_RANGE;
+
+        if (this.nbt.containsCompound(TAG_SPAWN_DATA)) {
+            this.entityId = this.nbt.getCompound(TAG_SPAWN_DATA).getString(TAG_TYPE_ID);
+        } else {
+            this.entityId = "";
+        }
+
+        this.cooldownEndsAt = this.nbt.getLong(TAG_COOLDOWN_END_AT);
+        this.nextMobSpawnTick = this.nbt.getLong(TAG_NEXT_MOB_SPAWNS_AT);
+        this.totalSpawnedThisCycle = this.nbt.getInt(TAG_TOTAL_MOBS_SPAWNED);
+
+        Set<Long> spawnedEntities = getSpawnedEntities();
+        spawnedEntities.clear();
+        if (this.nbt.containsList(TAG_CURRENT_MOBS)) {
+            for (CompoundTag mob : this.nbt.getList(TAG_CURRENT_MOBS, CompoundTag.class).getAll()) {
+                spawnedEntities.add(mob.getLong("uuid"));
+            }
+        }
+
+        this.nextOminousProjectileTick = this.level.getTick() + OMINOUS_PROJECTILE_INTERVAL_TICKS;
         resolveOminousProjectileSelection();
     }
 
     @Override
     public boolean onUpdate() {
-        if (this.closed || this.level == null) {
-            return true;
-        }
+        if (this.closed || this.level == null) return true;
+
         Set<Long> spawnedEntities = getSpawnedEntities();
         if (!isBlockEntityValid()) {
             this.close();
         }
-        if (this.closed) {
-            return true;
-        }
+
+        if (this.closed) return true;
 
         cleanupTrackedEntities();
 
@@ -265,8 +266,8 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     private void cleanupTrackedEntities() {
         Set<Long> spawnedEntities = getSpawnedEntities();
-        spawnedEntities.removeIf(entityId -> {
-            Entity entity = this.level.getEntity(entityId);
+        spawnedEntities.removeIf(uniqueId -> {
+            Entity entity = this.level.getEntityByUniqueId(uniqueId);
             return entity == null || entity.isClosed() || !entity.isAlive();
         });
     }
@@ -385,7 +386,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             entity.getNbt().putBoolean("trial_spawner", true);
             entity.setPersistent(true);
             entity.spawnToAll();
-            getSpawnedEntities().add(entity.getId());
+            getSpawnedEntities().add(entity.uniqueIdLong());
             return true;
         }
         return false;
@@ -441,8 +442,8 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void despawnTrackedMobs() {
-        for (long entityId : new ArrayList<>(getSpawnedEntities())) {
-            Entity entity = this.level.getEntity(entityId);
+        for (long uniqueId : new ArrayList<>(getSpawnedEntities())) {
+            Entity entity = this.level.getEntityByUniqueId(uniqueId);
             if (entity != null && !entity.isClosed()) {
                 entity.close();
             }
@@ -503,12 +504,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void resolveOminousProjectileSelection() {
-        if (this.nbt.contains(TAG_OMINOUS_LINGERING_POTION)) {
-            this.ominousLingeringPotion = PotionType.get(this.nbt.getInt(TAG_OMINOUS_LINGERING_POTION));
-        }
-        if (this.nbt.contains(TAG_OMINOUS_PROJECTILE_KIND)) {
-            this.ominousProjectileKind = this.nbt.getString(TAG_OMINOUS_PROJECTILE_KIND);
-        }
         if (this.ominousLingeringPotion != null && this.ominousProjectileKind != null && !this.ominousProjectileKind.isEmpty()) {
             return;
         }
@@ -560,7 +555,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         List<Entity> targets = new ArrayList<>(detectedPlayers);
         double maxDistanceSquared = this.requiredPlayerRange * this.requiredPlayerRange;
         for (long spawnedEntityId : getSpawnedEntities()) {
-            Entity entity = this.level.getEntity(spawnedEntityId);
+            Entity entity = this.level.getEntityByUniqueId(spawnedEntityId);
             if (entity == null || entity.isClosed() || !entity.isAlive()) {
                 continue;
             }
@@ -831,49 +826,121 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         this.spawnToAll();
     }
 
+    private void loadInlineConfig(CompoundTag config) {
+        if (config.containsInt("spawn_range")) {
+            this.spawnRange = config.getInt("spawn_range");
+        }
+
+        if (config.containsInt("ticks_between_spawn")) {
+            this.ticksBetweenSpawn = config.getInt("ticks_between_spawn");
+        }
+
+        if (config.containsInt("target_cooldown_length")) {
+            this.targetCooldownLength = config.getInt("target_cooldown_length");
+        }
+
+        if (config.containsNumber("total_mobs")) {
+            this.totalMobs = config.getFloat("total_mobs");
+        }
+
+        if (config.containsNumber("total_mobs_added_per_player")) {
+            this.totalMobsAddedPerPlayer = config.getFloat("total_mobs_added_per_player");
+        }
+
+        if (config.containsNumber("simultaneous_mobs")) {
+            this.simultaneousMobs = config.getFloat("simultaneous_mobs");
+        }
+
+        if (config.containsNumber("simultaneous_mobs_added_per_player")) {
+            this.simultaneousMobsAddedPerPlayer = config.getFloat("simultaneous_mobs_added_per_player");
+        }
+    }
+
+    private void saveConfig(String name) {
+        if (this.nbt.containsString(name)) return;
+
+        CompoundTag config = this.nbt.containsCompound(name) ? this.nbt.getCompound(name) : createInlineConfig();
+        config.putInt("spawn_range", this.spawnRange);
+        config.putInt("ticks_between_spawn", this.ticksBetweenSpawn);
+        config.putInt("target_cooldown_length", this.targetCooldownLength);
+        config.putFloat("total_mobs", (float) this.totalMobs);
+        config.putFloat("total_mobs_added_per_player", (float) this.totalMobsAddedPerPlayer);
+        config.putFloat("simultaneous_mobs", (float) this.simultaneousMobs);
+        config.putFloat("simultaneous_mobs_added_per_player", (float) this.simultaneousMobsAddedPerPlayer);
+        this.nbt.putCompound(name, config);
+    }
+
+    private CompoundTag createInlineConfig() {
+        ListTag<CompoundTag> lootTables = new ListTag<>();
+
+        lootTables.add(new CompoundTag()
+                        .putString("data", "loot_tables/spawners/trial_chamber/key.json")
+                        .putInt("weight", 1)
+        );
+
+        lootTables.add(new CompoundTag()
+                        .putString("data", "loot_tables/spawners/trial_chamber/consumables.json")
+                        .putInt("weight", 1)
+        );
+
+        return new CompoundTag()
+                .putString( "items_to_drop_when_ominous", "loot_tables/spawners/trial_chamber/items_to_drop_when_ominous.json")
+                .putList("loot_tables_to_eject", lootTables);
+    }
+
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putString(TAG_TYPE_ID, this.entityId);
-        this.nbt.putShort(TAG_SPAWN_RANGE, this.spawnRange);
-        this.nbt.putShort(TAG_REQUIRED_PLAYER_RANGE, this.requiredPlayerRange);
-        this.nbt.putInt(TAG_TICKS_BETWEEN_SPAWN, this.ticksBetweenSpawn);
-        this.nbt.putInt(TAG_TARGET_COOLDOWN_LENGTH, this.targetCooldownLength);
-        this.nbt.putDouble(TAG_TOTAL_MOBS, this.totalMobs);
-        this.nbt.putDouble(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, this.totalMobsAddedPerPlayer);
-        this.nbt.putDouble(TAG_SIMULTANEOUS_MOBS, this.simultaneousMobs);
-        this.nbt.putDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, this.simultaneousMobsAddedPerPlayer);
-        this.nbt.putBoolean(TAG_SPAWN_BABY, this.spawnBaby);
-        this.nbt.putInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.nextOminousProjectileTick);
-        if (this.ominousLingeringPotion != null) {
-            this.nbt.putInt(TAG_OMINOUS_LINGERING_POTION, this.ominousLingeringPotion.id());
+
+        saveConfig(TAG_NORMAL_CONFIG);
+        saveConfig(TAG_OMINOUS_CONFIG);
+
+        this.nbt.putInt(TAG_REQUIRED_PLAYER_RANGE_CANONICAL, this.requiredPlayerRange);
+        this.nbt.putLong(TAG_COOLDOWN_END_AT, this.cooldownEndsAt);
+        this.nbt.putLong(TAG_NEXT_MOB_SPAWNS_AT, this.nextMobSpawnTick);
+        this.nbt.putInt(TAG_TOTAL_MOBS_SPAWNED, this.totalSpawnedThisCycle);
+
+        ListTag<CompoundTag> currentMobs = new ListTag<>();
+        for (long uniqueId : getSpawnedEntities()) {
+            currentMobs.add(new CompoundTag().putLong("uuid", uniqueId));
         }
-        if (this.ominousProjectileKind != null) {
-            this.nbt.putString(TAG_OMINOUS_PROJECTILE_KIND, this.ominousProjectileKind);
+        this.nbt.putList(TAG_CURRENT_MOBS, currentMobs);
+
+        if (!this.nbt.containsList(TAG_REGISTERED_PLAYERS)) {
+            this.nbt.putList(TAG_REGISTERED_PLAYERS, new ListTag<>());
+        }
+
+        if (this.entityId == null || this.entityId.isEmpty()) {
+            this.nbt.remove(TAG_SPAWN_DATA);
+        } else {
+            this.nbt.putCompound(
+                    TAG_SPAWN_DATA,
+                    new CompoundTag()
+                            .putString(TAG_TYPE_ID, this.entityId)
+                            .putInt(TAG_WEIGHT, 1)
+            );
         }
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        if (this.entityId == null || this.entityId.isEmpty()) {
-            this.entityId = EntityID.BREEZE;
-        }
-        return new CompoundTag()
+        CompoundTag tag = new CompoundTag()
                 .putString(TAG_ID, BlockEntity.TRIAL_SPAWNER)
-                .putCompound(TAG_SPAWN_DATA, new CompoundTag()
-                        .putString(TAG_TYPE_ID, this.entityId)
-                        .putInt(TAG_WEIGHT, 1)
-                )
                 .putInt(TAG_X, (int) this.x)
                 .putInt(TAG_Y, (int) this.y)
                 .putInt(TAG_Z, (int) this.z);
+
+        if (this.entityId != null && !this.entityId.isEmpty()) {
+            tag.putCompound(TAG_SPAWN_DATA, new CompoundTag().putString(TAG_TYPE_ID, this.entityId).putInt(TAG_WEIGHT, 1)
+            );
+        }
+
+        return tag;
     }
 
     @Override
     public boolean isBlockEntityValid() {
-        if (this.level == null) {
-            return false;
-        }
+        if (this.level == null) return false;
         return Objects.equals(level.getBlockIdAt((int) x, (int) y, (int) z), Block.TRIAL_SPAWNER);
     }
 

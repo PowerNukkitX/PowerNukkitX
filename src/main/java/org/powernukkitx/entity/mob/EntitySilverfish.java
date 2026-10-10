@@ -17,6 +17,7 @@ import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.level.format.IChunk;
@@ -82,6 +83,11 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(8);
+    }
+
+    @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(1f);
     }
 
     @Override

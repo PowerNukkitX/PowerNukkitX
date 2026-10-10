@@ -10,6 +10,7 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
+import org.powernukkitx.level.format.leveldb.LevelDBTestFixtureUtil;
 import org.powernukkitx.math.Vector3;
 
 import java.io.File;
@@ -58,6 +59,7 @@ public class GeneratorSmokeTest {
         File dir = new File(path);
         FileUtils.deleteQuietly(dir);
         FileUtils.copyDirectory(new File("src/test/resources/level"), dir);
+        LevelDBTestFixtureUtil.canonicalizeCopiedWorld(dir.toPath());
 
         Level level = new Level(ServerMockFixture.server, name, path, dimId,
                 LevelDBProvider.class,
