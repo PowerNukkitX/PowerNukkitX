@@ -28,6 +28,7 @@ public class DummyBossBar {
     private static final BossBarColor DEFAULT_NETWORK_COLOR = BossBarColor.PINK;
     private static final BossBarOverlay DEFAULT_OVERLAY = BossBarOverlay.PROGRESS;
     private static final float ENTITY_Y = -74f;
+    private static final float MINIMUM_ENTITY_HEALTH = 1f;
 
     private final Player player;
     private final long bossBarId;
@@ -190,7 +191,7 @@ public class DummyBossBar {
     private void sendAttributes() {
         final Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
         attr.setMaxValue(100f);
-        attr.setValue(Math.max(0f, Math.min(100f, this.length)));
+        attr.setValue(Math.max(MINIMUM_ENTITY_HEALTH, Math.min(100f, this.length)));
 
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
         packet.setRuntimeID(this.bossBarId);
