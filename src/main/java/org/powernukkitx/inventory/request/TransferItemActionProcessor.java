@@ -92,7 +92,9 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.warn("mismatch destination stack network id!");
             return context.error();
         }
-        if (destItem.getCount() + count > destItem.getMaxStackSize()) {
+        // An empty destination slot holds air, whose stack size says nothing about what is going in.
+        int maxStackSize = Math.min(destItem.isNull() ? sourItem.getMaxStackSize() : destItem.getMaxStackSize(), destination.getMaxStackSize());
+        if (destItem.getCount() + count > maxStackSize) {
             log.warn("destination stack size bigger than the max stack size!");
             return context.error();
         }

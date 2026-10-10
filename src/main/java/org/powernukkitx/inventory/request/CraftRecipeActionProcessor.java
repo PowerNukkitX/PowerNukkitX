@@ -33,6 +33,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.TrimMaterial;
 import org.cloudburstmc.protocol.bedrock.data.TrimPattern;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantmentInstance;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchantOption;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeAction;
@@ -52,7 +53,6 @@ import java.util.Optional;
 public class CraftRecipeActionProcessor implements ItemStackRequestActionProcessor<CraftRecipeAction> {
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
-    public static final String GRID_CONSUMED_KEY = "grid_consumed";
     static final String MULTI_RESULT_KEY = "multi_result";
 
     private Item computeMultiRecipeResult(Item[][] data) {
@@ -276,7 +276,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     return context.error();
                 }
             }
-            context.put(GRID_CONSUMED_KEY, true);
+            context.markServerConsumed(ContainerEnumName.CRAFTING_INPUT_CONTAINER);
             player.getRecipeBook().unlock(recipe);
             if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
                 context.put(RECIPE_DATA_KEY, recipe);

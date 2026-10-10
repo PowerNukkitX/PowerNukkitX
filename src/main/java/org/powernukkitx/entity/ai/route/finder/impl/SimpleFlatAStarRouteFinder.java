@@ -14,6 +14,9 @@ import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.Utils;
+import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -40,7 +44,54 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     //Diagonal move cost
     protected final static int OBLIQUE_MOVE_COST = 14;
 
+    // ---------------------------------------------------------------------
+    // Per-search memoisation
+    //
+    // During a single search() the world is read exclusively through getTickCachedBlock, so it is
+    // effectively frozen and these lookups are pure functions of position. Neighbouring nodes
+    // overlap heavily - the node at (x,z) probes (x+1,z) and the node at (x+1,z) probes (x,z) right
+    // back - so the same column was previously evaluated four to eight times per search. All caches
+    // are cleared at the START of search(), not the end, so the interrupt early-return cannot leave
+    // stale entries behind.
+    //
+    // Encoding note: fastutil's default return value for an absent key is 0 for both byte and int
+    // maps, so 0 is used as "not cached". That avoids depending on defaultReturnValue() entirely.
+    // ---------------------------------------------------------------------
+
+    /** Absent-key marker shared by the boolean caches. */
+    private static final byte UNCACHED = 0;
+    private static final byte CACHED_FALSE = 1;
+    private static final byte CACHED_TRUE = 2;
+
+    /**
+     * getHighestUnder results are stored as {@code y + Y_OFFSET} so a real Y can never be confused
+     * with the 0 "not cached" marker or with {@link #NO_BLOCK_FOUND}.
+     */
+    private static final int Y_OFFSET = 4096;
+    /** Stored when a column has no valid standing block, so misses are cached too. */
+    private static final int NO_BLOCK_FOUND = 1;
+
+    /**
+     * The only {@code limit} value getHighestUnder results are cached for. The cache key holds
+     * (x, startY, z) but not the limit, so a call with any other limit must bypass the cache rather
+     * than read an entry produced with a different scan depth.
+     */
+    protected static final int CACHED_LIMIT = 4;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final Long2ByteOpenHashMap standingCache = new Long2ByteOpenHashMap();
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final Long2ByteOpenHashMap gridPosCache = new Long2ByteOpenHashMap();
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final Long2IntOpenHashMap highestUnderCache = new Long2IntOpenHashMap();
+
     protected final PriorityQueue<Node> openList = new PriorityQueue<>();
+    protected final HashMap<Vector3, Node> openIndex = new HashMap<>();
 
     protected final List<Node> closeList = new ArrayList<>();
     protected final HashSet<Vector3> closeHashSet = new HashSet<>();
@@ -102,8 +153,14 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.setEnableFloydSmooth(this.entity.isActive());
         //Clear openList and closeList
         openList.clear();
+        openIndex.clear();
         closeList.clear();
         closeHashSet.clear();
+        //Clear the per-search memoisation. Done here rather than at the end so the interrupt
+        //early-return below cannot carry entries into the next search.
+        standingCache.clear();
+        gridPosCache.clear();
+        highestUnderCache.clear();
         //Reset the pathfinding depth
         currentSearchDepth = maxSearchDepth;
 
@@ -128,7 +185,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             putNeighborNodeIntoOpen(currentNode);
             //If the pathfinding depth is not exceeded, get the lowest-cost node and set it as currentNode
             if (openList.peek() != null && currentSearchDepth-- > 0) {
-                closeList.add(currentNode = openList.poll());
+                closeList.add(currentNode = pollOpenNode());
                 closeHashSet.add(currentNode.getVector3());
             } else {
                 this.searching = false;
@@ -180,12 +237,31 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     /**
      * Get the move cost of the block at the given position
      *
-     * @param level
-     * @param pos
+     * <p>Reads with {@code load = false}: a pathfinding thread must never trigger a synchronous
+     * chunk load or generation. An unloaded chunk simply contributes no extra cost, which is why
+     * both lookups are null-guarded.
+     *
+     * @param level the level
+     * @param pos   the position
      * @return cost
      */
     protected int getBlockMoveCostAt(@NotNull Level level, Vector3 pos) {
-        return level.getTickCachedBlock(pos).getWalkThroughExtraCost() + level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
+        Block at = level.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), 0, false);
+        Block below = level.getTickCachedBlock(pos.getFloorX(), pos.getFloorY() - 1, pos.getFloorZ(), 0, false);
+        int cost = 0;
+        if (at != null) cost += at.getWalkThroughExtraCost();
+        if (below != null) cost += below.getWalkThroughExtraCost();
+        return cost;
+    }
+
+    /**
+     * Packs a block position into a single long: 26 bits x | 26 bits z | 12 bits y.
+     * Y is biased by 64 so the usual -64..320 world range stays inside 12 bits.
+     */
+    protected static long posKey(int x, int y, int z) {
+        return ((long) (x & 0x3FFFFFF) << 38)
+                | ((long) (z & 0x3FFFFFF) << 12)
+                | ((y + 64) & 0xFFF);
     }
 
     /**
@@ -206,7 +282,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 if (!existInCloseList(vec)) {
                     Node nodeNear = getOpenNode(vec);
                     if (nodeNear == null) {
-                        this.openList.offer(new Node(vec, node, node.getG(), calH(vec, target)));
+                        offerOpenNode(new Node(vec, node, node.getG(), calH(vec, target)));
                     } else {
                         if (node.getG() < nodeNear.getG()) {
                             nodeNear.setParent(node);
@@ -224,7 +300,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -241,7 +317,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -258,7 +334,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -275,7 +351,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -294,7 +370,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -311,7 +387,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -328,7 +404,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -345,7 +421,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
+                    offerOpenNode(new Node(vec, node, cost, calH(vec, target)));
                 } else {
                     if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
@@ -358,17 +434,24 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     protected Node getOpenNode(Vector3 vector2) {
-        for (Node node : this.openList) {
-            if (vector2.equals(node.getVector3())) {
-                return node;
-            }
-        }
-
-        return null;
+        return this.openIndex.get(vector2);
     }
 
     protected boolean existInOpenList(Vector3 vector2) {
-        return getOpenNode(vector2) != null;
+        return this.openIndex.containsKey(vector2);
+    }
+
+    protected void offerOpenNode(Node node) {
+        this.openList.offer(node);
+        this.openIndex.put(node.getVector3(), node);
+    }
+
+    protected Node pollOpenNode() {
+        Node node = this.openList.poll();
+        if (node != null) {
+            this.openIndex.remove(node.getVector3());
+        }
+        return node;
     }
 
     protected Node getCloseNode(Vector3 vector2) {
@@ -399,36 +482,93 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     /**
      * Get the highest valid point at the target coordinate (checking downwards along the Y axis)
+     *
+     * <p>Results are memoised per search, but only for {@link #CACHED_LIMIT}: the key holds
+     * (x, startY, z) and not the limit, so a different scan depth must not read an entry produced
+     * by another one.
      */
     public Block getHighestUnder(Vector3 vector3, int limit) {
+        final int x = vector3.getFloorX();
+        final int z = vector3.getFloorZ();
+        final int startY = vector3.getFloorY();
+
         if (limit > 0) {
-            for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
-                Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-                if (evalStandingBlock(block))
-                    return block;
+            final boolean cacheable = limit == CACHED_LIMIT;
+            final long key = cacheable ? posKey(x, startY, z) : 0L;
+
+            if (cacheable) {
+                int cached = highestUnderCache.get(key);
+                if (cached != 0) {
+                    if (cached == NO_BLOCK_FOUND) return null;
+                    return this.entity.level.getTickCachedBlock(x, cached - Y_OFFSET, z, false);
+                }
             }
+
+            for (int y = startY; y >= startY - limit; y--) {
+                Block block = this.entity.level.getTickCachedBlock(x, y, z, false);
+                if (evalStandingBlock(block)) {
+                    if (cacheable) highestUnderCache.put(key, y + Y_OFFSET);
+                    return block;
+                }
+            }
+            if (cacheable) highestUnderCache.put(key, NO_BLOCK_FOUND);
             return null;
         }
-        for (int y = vector3.getFloorY(); y >= -64; y--) {
-            Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-            if (evalStandingBlock(block))
-                return block;
+
+        for (int y = startY; y >= -64; y--) {
+            Block block = this.entity.level.getTickCachedBlock(x, y, z, false);
+            if (evalStandingBlock(block)) return block;
         }
         return null;
     }
 
     /**
-     * Whether the given position can serve as a valid node
+     * Whether the given position can serve as a valid node.
+     *
+     * <p>Deliberately NOT memoised. Callers disagree on coordinate convention:
+     * {@code putNeighborNodeIntoOpen} passes centres of the {@code .5} grid while {@code hasBarrier}
+     * passes interpolated sample points. Both floor to the same cell, but the flying evaluator
+     * builds its collision box around the raw vector, so the two produce boxes offset by a fraction
+     * of a block and can legitimately disagree. A shared cache would feed one caller the other's
+     * answer and let mobs clip through walls or stall in mid-air.
+     *
+     * <p>Callers that can guarantee grid-aligned input should use {@link #evalGridPos}.
      */
     protected boolean evalPos(Vector3 pos) {
         return evalPos.evalPos(entity, pos);
     }
 
     /**
-     * Whether the space above the given block can serve as a valid node
+     * Memoised {@link #evalPos} for positions guaranteed to sit on the {@code .5} grid, which makes
+     * flooring a lossless key.
+     *
+     * <p>Only safe from call sites that build their positions as {@code floor().add(0.5, 0.5, 0.5)}
+     * plus integer offsets. Do not call this with arbitrary coordinates; use {@link #evalPos}.
+     */
+    protected boolean evalGridPos(Vector3 gridPos) {
+        long key = posKey(gridPos.getFloorX(), gridPos.getFloorY(), gridPos.getFloorZ());
+        byte cached = gridPosCache.get(key);
+        if (cached != UNCACHED) return cached == CACHED_TRUE;
+        boolean result = evalPos.evalPos(entity, gridPos);
+        gridPosCache.put(key, result ? CACHED_TRUE : CACHED_FALSE);
+        return result;
+    }
+
+    /**
+     * Whether the space above the given block can serve as a valid node.
+     *
+     * <p>Memoised per search. Unlike {@link #evalPos} this is safe to key on the floored position
+     * because a Block always carries whole-block coordinates, so there is only ever one convention
+     * in play.
      */
     protected boolean evalStandingBlock(Block block) {
-        return evalPos.evalStandingBlock(entity, block);
+        if (block == null) return false;
+        long key = posKey(block.getFloorX(), block.getFloorY(), block.getFloorZ());
+        byte cached = standingCache.get(key);
+        if (cached != UNCACHED) return cached == CACHED_TRUE;
+        boolean result = evalPos.evalStandingBlock(entity, block);
+        standingCache.put(key, result ? CACHED_TRUE : CACHED_FALSE);
+        return result;
     }
 
     /**
@@ -436,7 +576,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      * @return the highest reachable point at the given coordinate (limit=4)
      */
     protected int getAvailableHorizontalOffset(Vector3 vector3) {
-        var block = getHighestUnder(vector3, 4);
+        var block = getHighestUnder(vector3, CACHED_LIMIT);
         if (block != null) {
             return block.getFloorY() - vector3.getFloorY() + 1;
         }
@@ -541,8 +681,16 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected Node getNearestNodeFromCloseList(Vector3 vector3) {
         double min = Double.MAX_VALUE;
         Node node = null;
-        for (Node n : closeList) {
-            double distanceSquared = n.getVector3().floor().distanceSquared(vector3.floor());
+        int targetX = vector3.getFloorX();
+        int targetY = vector3.getFloorY();
+        int targetZ = vector3.getFloorZ();
+        for (int i = 0, size = closeList.size(); i < size; i++) {
+            Node n = closeList.get(i);
+            Vector3 pos = n.getVector3();
+            double dx = pos.getFloorX() - targetX;
+            double dy = pos.getFloorY() - targetY;
+            double dz = pos.getFloorZ() - targetZ;
+            double distanceSquared = dx * dx + dy * dy + dz * dz;
             if (distanceSquared < min) {
                 min = distanceSquared;
                 node = n;

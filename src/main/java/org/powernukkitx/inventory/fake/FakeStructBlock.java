@@ -35,8 +35,9 @@ public class FakeStructBlock extends SingleFakeBlock {
     }
 
     public void create(BlockVector3 targetStart, BlockVector3 targetEnd, Player player) {
-        createAndGetLastPositions(player).add(this.getOffset(player));
-        lastPositions.get(player).forEach(position -> {
+        HashSet<Vector3> positions = createAndGetLastPositions(player);
+        positions.add(this.getOffset(player));
+        positions.forEach(position -> {
             final Vector3i vector3i = Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ());
             final UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);

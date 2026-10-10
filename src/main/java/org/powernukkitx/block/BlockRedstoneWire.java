@@ -85,15 +85,13 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         if (this.level.getBlock(pos).getId().equals(Block.REDSTONE_WIRE)) {
             updateAroundRedstone(face);
 
-            for (BlockFace side : BlockFace.values()) {
+            for (BlockFace side : BlockFace.getValues()) {
                 RedstoneComponent.updateAroundRedstone(pos.getSide(side), side.getOpposite());
             }
         }
     }
 
     private void updateSurroundingRedstone(boolean force) {
-        Vector3 pos = this.getLocation();
-
         int meta = this.getRedStoneSignal();
         int maxStrength = meta;
         int power = this.getIndirectPower();
@@ -104,26 +102,41 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
         int strength = 0;
 
+        int baseX = this.getFloorX();
+        int baseY = this.getFloorY();
+        int baseZ = this.getFloorZ();
+        // Loop invariant: the block above this wire does not depend on the face being examined,
+        // but it used to be fetched - Vector3 and Block both - once per horizontal face.
+        boolean coveredFromAbove = this.level.getBlock(baseX, baseY + 1, baseZ).isNormalBlock();
+
         for (BlockFace face : Plane.HORIZONTAL) {
-            Vector3 adjacentPos = pos.getSide(face);
+            int adjacentX = baseX + face.getXOffset();
+            int adjacentZ = baseZ + face.getZOffset();
 
-            if (adjacentPos.getX() == this.getX() && adjacentPos.getZ() == this.getZ()) {
-                continue;
-            }
+            strength = this.getMaxCurrentStrength(adjacentX, baseY, adjacentZ, strength);
 
-            strength = this.getMaxCurrentStrength(adjacentPos, strength);
+            // getMaxCurrentStrength is a pure read and strength does not move between the guard and
+            // the assignment, so each probe is resolved once instead of twice.
+            Block adjacentBlock = null;
 
             // Upward propagation do not allow to power from a wire UP and to the side when the wire is over a top slab
-            if (this.getMaxCurrentStrength(adjacentPos.up(), strength) > strength && !this.level.getBlock(pos.up()).isNormalBlock()) {
-                Block supportBelowUp = this.level.getBlock(adjacentPos);
-                if (!(supportBelowUp instanceof BlockSlab && ((BlockSlab) supportBelowUp).isOnTop())) {
-                    strength = this.getMaxCurrentStrength(adjacentPos.up(), strength);
+            int upStrength = this.getMaxCurrentStrength(adjacentX, baseY + 1, adjacentZ, strength);
+            if (upStrength > strength && !coveredFromAbove) {
+                adjacentBlock = this.level.getBlock(adjacentX, baseY, adjacentZ);
+                if (!(adjacentBlock instanceof BlockSlab slab && slab.isOnTop())) {
+                    strength = upStrength;
                 }
             }
 
             // Downward propagation allows to pull power from a wire DOWN and to the side even if the wire is over a top slab
-            if (this.getMaxCurrentStrength(adjacentPos.down(), strength) > strength && !this.level.getBlock(adjacentPos).isNormalBlock()) {
-                strength = this.getMaxCurrentStrength(adjacentPos.down(), strength);
+            int downStrength = this.getMaxCurrentStrength(adjacentX, baseY - 1, adjacentZ, strength);
+            if (downStrength > strength) {
+                if (adjacentBlock == null) {
+                    adjacentBlock = this.level.getBlock(adjacentX, baseY, adjacentZ);
+                }
+                if (!adjacentBlock.isNormalBlock()) {
+                    strength = downStrength;
+                }
             }
         }
 
@@ -149,19 +162,27 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
             updateAllAroundRedstone();
         } else if (force) {
-            for (BlockFace face : BlockFace.values()) {
+            for (BlockFace face : BlockFace.getValues()) {
                 RedstoneComponent.updateAroundRedstone(getSide(face), face.getOpposite());
             }
         }
     }
 
     private int getMaxCurrentStrength(Vector3 pos, int maxStrength) {
-        if (!Objects.equals(this.level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()), this.getId())) {
+        return getMaxCurrentStrength(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), maxStrength);
+    }
+
+    /**
+     * Reads the signal of a neighbouring wire. Takes coordinates rather than a {@link Vector3} so
+     * the callers that probe the positions above and below a neighbour do not have to allocate one
+     * per probe.
+     */
+    private int getMaxCurrentStrength(int x, int y, int z, int maxStrength) {
+        BlockState state = this.level.getBlockStateAt(x, y, z);
+        if (!Objects.equals(state.getIdentifier(), this.getId())) {
             return maxStrength;
-        } else {
-            int strength = this.level.getBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()).getPropertyValue(REDSTONE_SIGNAL);
-            return Math.max(strength, maxStrength);
         }
+        return Math.max(state.getPropertyValue(REDSTONE_SIGNAL), maxStrength);
     }
 
     @Override
@@ -175,7 +196,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             this.updateSurroundingRedstone(false);
             this.getLevel().setBlock(this, air, true, true);
 
-            for (BlockFace blockFace : BlockFace.values()) {
+            for (BlockFace blockFace : BlockFace.getValues()) {
                 RedstoneComponent.updateAroundRedstone(pos.getSide(blockFace));
             }
 
@@ -303,10 +324,13 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     private int getIndirectPower() {
         int power = 0;
-        Vector3 pos = getLocation();
+        int baseX = getFloorX();
+        int baseY = getFloorY();
+        int baseZ = getFloorZ();
 
-        for (BlockFace face : BlockFace.values()) {
-            int blockPower = this.getIndirectPower(pos.getSide(face), face);
+        for (BlockFace face : BlockFace.getValues()) {
+            int blockPower = this.getIndirectPower(
+                    baseX + face.getXOffset(), baseY + face.getYOffset(), baseZ + face.getZOffset(), face);
 
             if (blockPower >= 15) {
                 return 15;
@@ -320,33 +344,43 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return power;
     }
 
-    private int getIndirectPower(Vector3 pos, BlockFace face) {
-        Block block = this.level.getBlock(pos);
-        if (block.getId().equals(Block.REDSTONE_WIRE)) {
+    /**
+     * Resolves how much power a neighbour feeds into this wire.
+     * <p>
+     * Takes coordinates instead of a {@link Vector3}: a wire mesh walks six neighbours per wire and,
+     * for every neighbour that turns out to be a normal block, six more. Every one of those steps
+     * used to allocate a position and a {@link Block}, and a wire neighbour - the common case inside
+     * a mesh - contributes nothing, which the state alone can settle.
+     */
+    private int getIndirectPower(int x, int y, int z, BlockFace face) {
+        if (isWireAt(x, y, z)) {
             return 0;
         }
-        return block.isNormalBlock() ? getStrongPower(pos) : block.getWeakPower(face);
+        Block block = this.level.getBlock(x, y, z);
+        return block.isNormalBlock() ? getStrongPower(x, y, z) : block.getWeakPower(face);
     }
 
-    private int getStrongPower(Vector3 pos) {
+    private int getStrongPower(int x, int y, int z) {
         int i = 0;
-        for (BlockFace face : BlockFace.values()) {
-            i = Math.max(i, getStrongPower(pos.getSide(face), face));
+        for (BlockFace face : BlockFace.getValues()) {
+            i = Math.max(i, getStrongPower(
+                    x + face.getXOffset(), y + face.getYOffset(), z + face.getZOffset(), face));
 
             if (i >= 15) {
                 return i;
             }
         }
         return i;
-   }
+    }
 
-    private int getStrongPower(Vector3 pos, BlockFace direction) {
-        Block block = this.level.getBlock(pos);
-
-        if (block.getId().equals(Block.REDSTONE_WIRE)) {
+    private int getStrongPower(int x, int y, int z, BlockFace direction) {
+        if (isWireAt(x, y, z)) {
             return 0;
         }
+        return this.level.getBlock(x, y, z).getStrongPower(direction);
+    }
 
-        return block.getStrongPower(direction);
+    private boolean isWireAt(int x, int y, int z) {
+        return Objects.equals(this.level.getBlockStateAt(x, y, z).getIdentifier(), Block.REDSTONE_WIRE);
     }
 }

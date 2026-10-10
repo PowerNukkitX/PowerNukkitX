@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeOptionalAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +54,10 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         if (itemStackRequest.getStringsToFilter().length != 0 && !itemStackRequest.getStringsToFilter()[0].isBlank()) {
             int filteredStringIndex = action.getFilteredStringIndex();
             String[] filterStrings = itemStackRequest.getStringsToFilter();
+            if (filteredStringIndex < 0 || filteredStringIndex >= filterStrings.length) {
+                log.debug("{}: filtered string index {} is out of range", player.getName(), filteredStringIndex);
+                return context.error();
+            }
             filterString = filterStrings[filteredStringIndex];
             if (filterString.isBlank() || filterString.length() > 64) {
                 log.debug("{}: FilterTextPacket with too long text", player.getName());
@@ -323,7 +328,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             result = Item.get(Item.EMPTY_MAP);
         }
 
-        if (input.getId().equals(Item.EMPTY_MAP) || input.getId().equals(Item.FILLED_MAP) && additional.isNull()) {
+        if ((input.getId().equals(Item.EMPTY_MAP) || input.getId().equals(Item.FILLED_MAP)) && additional.isNull()) {
             result = input.clone();
         }
 

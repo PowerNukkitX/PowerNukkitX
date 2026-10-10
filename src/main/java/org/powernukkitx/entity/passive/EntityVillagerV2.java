@@ -35,6 +35,7 @@ import org.powernukkitx.entity.ai.executor.villager.WorkExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.DoorCapableWalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.BlockSensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
@@ -338,7 +339,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                             }
                         },
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK_2, 1, 0, 10),
-                        new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
+                        new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0, ISensor.DEFAULT_TARGETING_PERIOD)
                 )
                 .controllers(new WalkController(), new LookController(true, true), new FluctuateController())
                 .routeFinder(new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this))

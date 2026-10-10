@@ -10,10 +10,12 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * @author Nukkit Project Team
@@ -22,20 +24,40 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerScheduler {
     public static int WORKERS = 4;
     private final AsyncPool asyncPool;
+    private final boolean ownsAsyncPool;
 
     private final Queue<TaskHandler> pending;
     private final Map<Integer, ArrayDeque<TaskHandler>> queueMap;
     private final Map<Integer, TaskHandler> taskMap;
     private final AtomicInteger currentTaskId;
+    /**
+     * Asynchronous work this scheduler handed to the pool and that has not finished yet. A borrowed
+     * pool is not shut down on close, so this is the only thing keeping teardown from running while
+     * a task still touches the resources it is about to release.
+     */
+    private final AtomicInteger inFlightAsyncTasks = new AtomicInteger();
+    private final Object asyncTaskDrainLock = new Object();
 
     private volatile int currentTick = -1;
 
     public ServerScheduler() {
+        this(null);
+    }
+
+    /**
+     * Creates a scheduler that submits its asynchronous tasks to an existing pool instead of
+     * allocating its own. Every scheduler owning a pool costs up to {@code cores * WORKERS} threads,
+     * so schedulers created per level must share the server pool.
+     *
+     * @param sharedAsyncPool the pool to borrow, or null to create a dedicated one
+     */
+    public ServerScheduler(AsyncPool sharedAsyncPool) {
         this.pending = new ConcurrentLinkedQueue<>();
         this.currentTaskId = new AtomicInteger();
         this.queueMap = new ConcurrentHashMap<>();
         this.taskMap = new ConcurrentHashMap<>();
-        this.asyncPool = new AsyncPool(WORKERS);
+        this.ownsAsyncPool = sharedAsyncPool == null;
+        this.asyncPool = this.ownsAsyncPool ? new AsyncPool(WORKERS) : sharedAsyncPool;
     }
 
     /**
@@ -456,7 +478,7 @@ public class ServerScheduler {
                     taskMap.remove(taskHandler.getTaskId());
                     continue;
                 } else if (taskHandler.isAsynchronous()) {
-                    asyncPool.execute(taskHandler.getTask());
+                    executeAsync(taskHandler.getTask());
                 } else {
                     try {
                         taskHandler.run(currentTick);
@@ -491,7 +513,80 @@ public class ServerScheduler {
         return currentTaskId.incrementAndGet();
     }
 
+    /**
+     * Runs a task on the asynchronous pool and counts it as in-flight until it returns, so
+     * {@link #close()} can wait for it even when the pool is shared.
+     */
+    public void executeAsync(Runnable task) {
+        this.inFlightAsyncTasks.incrementAndGet();
+        try {
+            this.asyncPool.execute(() -> {
+                try {
+                    task.run();
+                } finally {
+                    asyncTaskFinished();
+                }
+            });
+        } catch (RuntimeException e) {
+            asyncTaskFinished();
+            throw e;
+        }
+    }
+
+    /**
+     * {@link CompletableFuture#supplyAsync(Supplier, java.util.concurrent.Executor)} on the
+     * asynchronous pool, tracked the same way as {@link #executeAsync(Runnable)}.
+     */
+    public <T> CompletableFuture<T> supplyAsync(Supplier<T> supplier) {
+        this.inFlightAsyncTasks.incrementAndGet();
+        try {
+            return CompletableFuture.supplyAsync(supplier, this.asyncPool)
+                    .whenComplete((result, error) -> asyncTaskFinished());
+        } catch (RuntimeException e) {
+            asyncTaskFinished();
+            throw e;
+        }
+    }
+
+    private void asyncTaskFinished() {
+        if (this.inFlightAsyncTasks.decrementAndGet() <= 0) {
+            synchronized (this.asyncTaskDrainLock) {
+                this.asyncTaskDrainLock.notifyAll();
+            }
+        }
+    }
+
+    /**
+     * Blocks until every task submitted through this scheduler has finished, or the timeout passes.
+     *
+     * @return whether the pending work drained in time
+     */
+    public boolean awaitAsyncTasks(long timeout, TimeUnit unit) {
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
+        synchronized (this.asyncTaskDrainLock) {
+            while (this.inFlightAsyncTasks.get() > 0) {
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0) return false;
+                try {
+                    this.asyncTaskDrainLock.wait(Math.max(1, remaining / 1_000_000));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void close() {
+        // A borrowed pool outlives this scheduler and is shut down by whoever created it, so the
+        // best we can do is wait for the work we submitted before the caller releases its resources.
+        if (!this.ownsAsyncPool) {
+            if (!awaitAsyncTasks(10, TimeUnit.SECONDS)) {
+                log.warn("Timed out while waiting for asynchronous tasks to finish");
+            }
+            return;
+        }
         this.asyncPool.shutdown();
         try {
             if (!this.asyncPool.awaitTermination(10, TimeUnit.SECONDS)) {

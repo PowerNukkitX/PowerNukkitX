@@ -15,6 +15,62 @@ class FreezableArrayManagerTest {
         return new FreezableArrayManager(false, 32, 32, 0, -256, 1024, 16, 1, 32);
     }
 
+    private static class FakeClockManager extends FreezableArrayManager {
+        private int cycle;
+
+        FakeClockManager() {
+            super(true, 32, 32, 0, -256, 1024, 16, 1, 32);
+        }
+
+        @Override
+        public int getCoolingCycle() {
+            return cycle;
+        }
+    }
+
+    @Test
+    void temperatureDropsOneDegreePerCycleWithoutBeingVisited() {
+        var m = new FakeClockManager();
+        var arr = (AutoFreezable) m.createByteArray(1);
+        assertEquals(32, arr.getTemperature());
+
+        m.cycle = 10;
+        assertEquals(22, arr.getTemperature());
+    }
+
+    @Test
+    void temperatureNeverFallsBelowAbsoluteZero() {
+        var m = new FakeClockManager();
+        var arr = (AutoFreezable) m.createByteArray(1);
+
+        m.cycle = 1_000_000;
+        assertEquals(-256, arr.getTemperature());
+    }
+
+    @Test
+    void warmingRestampsTheArraySoCoolingStartsOver() {
+        var m = new FakeClockManager();
+        var arr = (AutoFreezable) m.createByteArray(1);
+
+        m.cycle = 20;
+        assertEquals(12, arr.getTemperature());
+
+        arr.warmer(8);
+        assertEquals(20, arr.getTemperature());
+
+        m.cycle = 25;
+        assertEquals(15, arr.getTemperature());
+    }
+
+    @Test
+    void warmingIsCappedAtTheBoilingPoint() {
+        var m = new FakeClockManager();
+        var arr = (AutoFreezable) m.createByteArray(1);
+
+        arr.warmer(100_000);
+        assertEquals(1024, arr.getTemperature());
+    }
+
     @Test
     void gettersReflectConstructorArgs() {
         var m = disabledManager();
