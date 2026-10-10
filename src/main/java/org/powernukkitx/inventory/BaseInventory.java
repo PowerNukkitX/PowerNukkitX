@@ -693,8 +693,6 @@ public abstract class BaseInventory implements Inventory {
     }
 
     public boolean isValidSlot(int index) {
-        synchronized (this.slots) {
-            return index >= 0 && index < this.slots.size();
-        }
+        return index >= 0 && index < this.size;
     }
 }
