@@ -42,7 +42,7 @@ public class NukkitMath {
     }
 
     public static int randomRange(RandomSourceProvider random, int start) {
-        return randomRange(random, 0, 0x7fffffff);
+        return randomRange(random, start, 0x7fffffff);
     }
 
     public static int randomRange(RandomSourceProvider random, int start, int end) {
