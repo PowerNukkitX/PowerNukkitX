@@ -403,7 +403,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                                 }
                         ))
                 .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
-                        .when(e -> e.passengers == null || e.passengers.isEmpty())
+                        .when(e -> e.passengers.isEmpty())
                 .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
                         .when(all(
                                 new ProbabilityEvaluator(4, 10),
@@ -412,7 +412,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                                     Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return p != null && !e.isPassenger(p);
                                 },
-                                e -> e.passengers == null || e.passengers.isEmpty()
+                                e -> e.passengers.isEmpty()
                         ))
                         .period(100)
                 .sensors(

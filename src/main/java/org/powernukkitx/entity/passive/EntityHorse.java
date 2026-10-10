@@ -427,7 +427,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                                     Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return p != null && !e.isPassenger(p);
                                 },
-                                e -> e.passengers == null || e.passengers.isEmpty()
+                                e -> e.passengers.isEmpty()
                         ))
                         .period(100)
                 .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))

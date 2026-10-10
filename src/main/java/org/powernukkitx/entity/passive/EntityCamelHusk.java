@@ -288,7 +288,7 @@ public class EntityCamelHusk extends EntityCamel {
                                     Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return p != null && !e.isPassenger(p);
                                 },
-                                e -> e.passengers == null || e.passengers.isEmpty()
+                                e -> e.passengers.isEmpty()
                         ))
                         .period(100)
                 .behavior(new CamelSittingExecutor(8))
