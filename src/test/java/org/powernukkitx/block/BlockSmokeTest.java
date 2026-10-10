@@ -1,9 +1,16 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.blockentity.BlockEntitySign;
+import org.powernukkitx.event.player.PlayerInteractEvent;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.Vector3;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Set;
 
@@ -56,6 +63,16 @@ public class BlockSmokeTest {
     void vanillaPrecipitationBehaviorsMatchBedrock() {
         Assertions.assertSame(PrecipitationBehavior.SNOWLOGGING, BlockRedShrub.PROPERTIES.getPrecipitationBehavior());
         Assertions.assertSame(PrecipitationBehavior.NONE, BlockShelfMushroom.PROPERTIES.getPrecipitationBehavior());
+    }
+
+    @Test
+    void signIgnoresRightClickWithoutPlayer() {
+        BlockStandingSign sign = new BlockStandingSign();
+        Level level = Mockito.mock(Level.class);
+        sign.setLevel(level);
+        Mockito.when(level.getBlockEntity(sign)).thenReturn(Mockito.mock(BlockEntitySign.class));
+        Assertions.assertDoesNotThrow(() -> sign.onTouch(new Vector3(0, 0, 0), Item.AIR,
+                BlockFace.NORTH, 0, 0, 0, null, PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK));
     }
 
     private void exerciseState(BlockState state) {
