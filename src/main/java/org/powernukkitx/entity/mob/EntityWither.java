@@ -242,7 +242,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         packet.getAttributesList().add(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth()).toNetwork()
         );
-        packet.setActorData(this.getActorDataMap());
+        packet.setActorData(this.snapshotActorData());
         packet.setTargetActorID(this.uniqueIdLong());
         packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorType("minecraft:wither");

@@ -958,17 +958,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Initialize entity data defaults first
         // =========================================================
-        this.actorDataMap.getOrCreateFlags();
-        this.actorDataMap.put(AIR_SUPPLY, nbtMap.getShort("Air"));
-        this.actorDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
-        this.actorDataMap.put(ActorDataTypes.NAME, "");
-        this.actorDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
-        this.actorDataMap.put(ActorDataTypes.SCALE, 1f);
-        this.actorDataMap.put(ActorDataTypes.HEIGHT, this.getHeight());
-        this.actorDataMap.put(ActorDataTypes.WIDTH, this.getWidth());
-        this.actorDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
-        this.actorDataMap.put(ActorDataTypes.RESERVED_139, 0L);
-        this.actorDataMap.put(ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.getOrCreateFlags();
+            this.actorDataMap.put(AIR_SUPPLY, nbtMap.getShort("Air"));
+            this.actorDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
+            this.actorDataMap.put(ActorDataTypes.NAME, "");
+            this.actorDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
+            this.actorDataMap.put(ActorDataTypes.SCALE, 1f);
+            this.actorDataMap.put(ActorDataTypes.HEIGHT, this.getHeight());
+            this.actorDataMap.put(ActorDataTypes.WIDTH, this.getWidth());
+            this.actorDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
+            this.actorDataMap.put(ActorDataTypes.RESERVED_139, 0L);
+            this.actorDataMap.put(ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
+        }
 
         // =========================================================
         // Load Effects from NBT
@@ -1006,7 +1008,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Send initial data + default flags
         // =========================================================
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), actorDataMap);
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
         if (this.isFireImmune()) {
             this.setFireImmune(true);
         }
@@ -1174,18 +1176,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setSneaking(boolean value) {
-        boolean changed = this.getActorDataMap().getOrCreateFlags().contains(ActorFlags.SNEAKING) ^ value;
-
-        if (changed) {
-            this.getActorDataMap().setFlag(ActorFlags.SNEAKING, value);
+        boolean changed;
+        EnumSet<ActorFlags> flags = null;
+        synchronized (this.actorDataMap) {
+            changed = this.actorDataMap.getOrCreateFlags().contains(ActorFlags.SNEAKING) ^ value;
+            if (changed) {
+                this.actorDataMap.setFlag(ActorFlags.SNEAKING, value);
+                flags = EnumSet.copyOf(this.actorDataMap.getFlags());
+            }
         }
 
         recalculateBoundingBox(false);
-        float newHeight = (float) this.getActorDataMap().getOrDefault(ActorDataTypes.HEIGHT, getCurrentHeight());
+        float newHeight = (float) this.getDataProperty(ActorDataTypes.HEIGHT, getCurrentHeight());
 
         if (changed) {
             ActorDataMap delta = new ActorDataMap();
-            delta.put(ActorDataTypes.FLAGS, this.getActorDataMap().getFlags());
+            delta.put(ActorDataTypes.FLAGS, flags);
             delta.putType(ActorDataTypes.HEIGHT, newHeight);
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
         } else {
@@ -1400,13 +1406,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         );
 
         boolean change = false;
-        if (!this.getActorDataMap().containsKey(ActorDataTypes.HEIGHT) || this.getActorDataMap().get(ActorDataTypes.HEIGHT) != entityHeight) {
-            change = true;
-            this.getActorDataMap().put(ActorDataTypes.HEIGHT, entityHeight);
-        }
-        if (!this.getActorDataMap().containsKey(ActorDataTypes.WIDTH) || this.getActorDataMap().get(ActorDataTypes.WIDTH) != this.getWidth()) {
-            change = true;
-            this.getActorDataMap().put(ActorDataTypes.WIDTH, this.getWidth());
+        synchronized (this.actorDataMap) {
+            if (!this.actorDataMap.containsKey(ActorDataTypes.HEIGHT) || this.actorDataMap.get(ActorDataTypes.HEIGHT) != entityHeight) {
+                change = true;
+                this.actorDataMap.put(ActorDataTypes.HEIGHT, entityHeight);
+            }
+            if (!this.actorDataMap.containsKey(ActorDataTypes.WIDTH) || this.actorDataMap.get(ActorDataTypes.WIDTH) != this.getWidth()) {
+                change = true;
+                this.actorDataMap.put(ActorDataTypes.WIDTH, this.getWidth());
+            }
         }
         if (send && change) {
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.copyEntityData(ActorDataTypes.WIDTH, ActorDataTypes.HEIGHT));
@@ -1415,9 +1423,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     private ActorDataMap copyEntityData(ActorDataType<?>... types) {
         final ActorDataMap map = new ActorDataMap();
-        for (ActorDataType<?> type : types) {
-            if (this.actorDataMap.containsKey(type)) {
-                map.put(type, this.actorDataMap.get(type));
+        synchronized (this.actorDataMap) {
+            for (ActorDataType<?> type : types) {
+                if (this.actorDataMap.containsKey(type)) {
+                    map.put(type, this.actorDataMap.get(type));
+                }
             }
         }
         return map;
@@ -1677,7 +1687,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
         }
 
-        addActorPacket.setActorData(this.actorDataMap);
+        addActorPacket.setActorData(this.snapshotActorData());
 
         int controlSeat = getControllingSeatIndex();
         for (int i = 0; i < this.passengers.size(); i++) {
@@ -1729,9 +1739,25 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.sendData(player, null);
     }
 
+    /**
+     * Returns a copy of this entity's actor data, taken under the map lock so a packet can serialize it
+     * on another thread without risking a {@link java.util.ConcurrentModificationException}.
+     */
+    protected ActorDataMap snapshotActorData() {
+        final ActorDataMap copy = new ActorDataMap();
+        synchronized (this.actorDataMap) {
+            copy.putAll(this.actorDataMap);
+            copy.put(ActorDataTypes.FLAGS, EnumSet.copyOf(this.actorDataMap.getFlags()));
+        }
+        return copy;
+    }
+
+    /**
+     * @param data the data to send or {@code null} to send a snapshot of the whole actor data map
+     */
     public void sendData(Player player, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(data == null ? this.actorDataMap : data);
+        packet.setActorData(data == null ? this.snapshotActorData() : data);
         packet.setTargetRuntimeID(this.runtimeId());
         PropertySyncData syncData = this.propertySyncData();
         packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
@@ -1744,9 +1770,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.sendData(players, null);
     }
 
+    /**
+     * @param data the data to send or {@code null} to send a snapshot of the whole actor data map
+     */
     public void sendData(Player[] players, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(data == null ? this.actorDataMap : data);
+        packet.setActorData(data == null ? this.snapshotActorData() : data);
         packet.setTargetRuntimeID(this.runtimeId());
         PropertySyncData syncData = this.propertySyncData();
         packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
@@ -3396,32 +3425,34 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected ActorDataMap getSeatDataMap() {
         ActorDataMap data = new ActorDataMap();
 
-        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_OFFSET)) {
-            data.put(ActorDataTypes.SEAT_OFFSET, this.actorDataMap.get(ActorDataTypes.SEAT_OFFSET));
-        }
+        synchronized (this.actorDataMap) {
+            if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_OFFSET)) {
+                data.put(ActorDataTypes.SEAT_OFFSET, this.actorDataMap.get(ActorDataTypes.SEAT_OFFSET));
+            }
 
-        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS)) {
-            data.put(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, this.actorDataMap.get(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS));
-        }
+            if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS)) {
+                data.put(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, this.actorDataMap.get(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS));
+            }
 
-        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING)) {
-            data.put(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, this.actorDataMap.get(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING));
-        }
+            if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING)) {
+                data.put(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, this.actorDataMap.get(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING));
+            }
 
-        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION)) {
-            data.put(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, this.actorDataMap.get(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION));
-        }
+            if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION)) {
+                data.put(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, this.actorDataMap.get(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION));
+            }
 
-        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES)) {
-            data.put(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, this.actorDataMap.get(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES));
-        }
+            if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES)) {
+                data.put(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, this.actorDataMap.get(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES));
+            }
 
-        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_ROTATION_OFFSET)) {
-            data.put(ActorDataTypes.SEAT_ROTATION_OFFSET, this.actorDataMap.get(ActorDataTypes.SEAT_ROTATION_OFFSET));
-        }
+            if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_ROTATION_OFFSET)) {
+                data.put(ActorDataTypes.SEAT_ROTATION_OFFSET, this.actorDataMap.get(ActorDataTypes.SEAT_ROTATION_OFFSET));
+            }
 
-        if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES)) {
-            data.put(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, this.actorDataMap.get(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES));
+            if (this.actorDataMap.containsKey(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES)) {
+                data.put(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, this.actorDataMap.get(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES));
+            }
         }
 
         return data;
@@ -4945,7 +4976,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (!hasJumpStrength()) return;
 
         this.setDataFlag(ActorFlags.CAN_POWER_JUMP, true);
-        this.actorDataMap.put(ActorDataTypes.CHARGE_AMOUNT, (byte) 0);
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.put(ActorDataTypes.CHARGE_AMOUNT, (byte) 0);
+        }
     }
 
     public boolean hasGroundInputControlsMeta() {
@@ -6422,14 +6455,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void setDataProperties(Map<ActorDataType<?>, Object> maps, boolean send) {
         ActorDataMap sendMap = new ActorDataMap();
-        for (var e : maps.entrySet()) {
-            ActorDataType<?> key = e.getKey();
-            Object value = e.getValue();
-            if (this.getActorDataMap().containsKey(key) && this.getActorDataMap().get(key).equals(value)) {
-                continue;
+        synchronized (this.actorDataMap) {
+            for (var e : maps.entrySet()) {
+                ActorDataType<?> key = e.getKey();
+                Object value = e.getValue();
+                if (this.actorDataMap.containsKey(key) && this.actorDataMap.get(key).equals(value)) {
+                    continue;
+                }
+                this.actorDataMap.put(key, value);
+                sendMap.put(key, value);
             }
-            this.getActorDataMap().put(key, value);
-            sendMap.put(key, value);
         }
         if (send) {
             this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), sendMap);
@@ -6441,11 +6476,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public boolean setDataProperty(ActorDataType<?> key, Object value, boolean send) {
-        if (this.getActorDataMap().containsKey(key) && this.getActorDataMap().get(key).equals(value)) {
-            return false;
+        synchronized (this.actorDataMap) {
+            if (this.actorDataMap.containsKey(key) && this.actorDataMap.get(key).equals(value)) {
+                return false;
+            }
+            this.actorDataMap.put(key, value);
         }
-
-        this.getActorDataMap().put(key, value);
         if (send) {
             ActorDataMap map = new ActorDataMap();
             map.put(key, value);
@@ -6460,12 +6496,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     @Nullable
     public <T> T getDataProperty(ActorDataType<T> key) {
-        return !this.getActorDataMap().containsKey(key) ? null : this.getActorDataMap().get(key);
+        synchronized (this.actorDataMap) {
+            return !this.actorDataMap.containsKey(key) ? null : this.actorDataMap.get(key);
+        }
     }
 
     @NotNull
     public <T> T getDataProperty(ActorDataType<T> key, T d) {
-        return (T) this.getActorDataMap().getOrDefault(key, d);
+        synchronized (this.actorDataMap) {
+            return (T) this.actorDataMap.getOrDefault(key, d);
+        }
     }
 
     public void setDataFlag(ActorFlags entityFlag) {
@@ -6477,11 +6517,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setDataFlag(ActorFlags entityFlag, boolean value, boolean send) {
-        if (this.getActorDataMap().getOrCreateFlags().contains(entityFlag) ^ value) {
-            this.getActorDataMap().setFlag(entityFlag, value);
-            if (send) {
-                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
+        boolean changed;
+        synchronized (this.actorDataMap) {
+            changed = this.actorDataMap.getOrCreateFlags().contains(entityFlag) ^ value;
+            if (changed) {
+                this.actorDataMap.setFlag(entityFlag, value);
             }
+        }
+        if (changed && send) {
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
         }
     }
 
@@ -6495,8 +6539,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param entityFlags the complete set of flags the entity should have
      */
     public void setDataFlags(EnumSet<ActorFlags> entityFlags) {
-        this.getActorDataMap().putFlags(entityFlags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.putFlags(entityFlags);
+        }
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
     }
 
     /**
@@ -6505,12 +6551,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @param entityFlags the flags to enable
      */
     public void addDataFlags(EnumSet<ActorFlags> entityFlags) {
-        this.getActorDataMap().getOrCreateFlags().addAll(entityFlags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
+        synchronized (this.actorDataMap) {
+            this.actorDataMap.getOrCreateFlags().addAll(entityFlags);
+        }
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY));
     }
 
     public boolean getDataFlag(ActorFlags id) {
-        return this.getActorDataMap().getOrCreateFlags().contains(id);
+        synchronized (this.actorDataMap) {
+            return this.actorDataMap.getOrCreateFlags().contains(id);
+        }
     }
 
     @Override
