@@ -1,5 +1,6 @@
 package org.powernukkitx.block.customblock;
 
+import org.powernukkitx.TestUtils;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.BlockSolid;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -162,12 +162,10 @@ public class CustomBlockRuntimeDefinitionTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void registeredDefinitionDrivesBlockGetters() throws Exception {
+    void registeredDefinitionDrivesBlockGetters() {
         // The plugin registration path needs a plugin class loader; publish the definition the same way
         // BlockRegistry#registerCustomBlock does. Instances created afterwards carry it.
-        Field definitions = BlockRegistry.class.getDeclaredField("CUSTOM_BLOCK_DEFINITION_BY_ID");
-        definitions.setAccessible(true);
-        ((Map<String, CustomBlockDefinition>) definitions.get(null))
+        ((Map<String, CustomBlockDefinition>) TestUtils.getField(BlockRegistry.class, null, "CUSTOM_BLOCK_DEFINITION_BY_ID"))
                 .put(RegisteredCustomBlock.PROPERTIES.getIdentifier(), new RegisteredCustomBlock().getDefinition());
         RegisteredCustomBlock block = new RegisteredCustomBlock();
 
