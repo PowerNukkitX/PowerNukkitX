@@ -15,6 +15,8 @@ import org.powernukkitx.entity.components.NameableComponent;
 import org.powernukkitx.entity.components.TameableComponent;
 import org.powernukkitx.entity.custom.CustomEntityComponents;
 import org.powernukkitx.entity.effect.Effect;
+import org.powernukkitx.entity.effect.EffectSlowness;
+import org.powernukkitx.entity.effect.EffectSpeed;
 import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.entity.passive.EntityWanderingTrader;
@@ -192,6 +194,28 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         );
 
         return (float) (damage * effectiveArmorPoints / ARMOR_REDUCTION_DIVISOR);
+    }
+
+    /**
+     * How much the speed and slowness effects currently on this entity scale the speed its AI
+     * asked for.
+     *
+     * @return the factor to apply to the movement speed, never below 0
+     */
+    public float getMovementSpeedFactor() {
+        float factor = 1f;
+
+        Effect slowness = this.getEffect(EffectType.SLOWNESS);
+        if (slowness != null) {
+            factor *= EffectSlowness.getSpeedFactor(slowness.getLevel());
+        }
+
+        Effect speed = this.getEffect(EffectType.SPEED);
+        if (speed != null) {
+            factor *= EffectSpeed.getSpeedFactor(speed.getLevel());
+        }
+
+        return factor;
     }
 
     @Override
@@ -1122,24 +1146,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @SuppressWarnings("removal")
     public void recalcMovementSpeedFromEffects() {
         float base = this.getMovementSpeedDefault() * this.getSprintMultiplier();
-        float mul = 1.0f;
-
-        Effect speed = this.getEffect(EffectType.SPEED);
-        int speedLvl = (speed != null) ? (Math.max(0, speed.getAmplifier()) + 1) : 0;
-
-        Effect slow = this.getEffect(EffectType.SLOWNESS);
-        int slowLvl = (slow != null) ? (Math.max(0, slow.getAmplifier()) + 1) : 0;
-
-        if (slowLvl >= 7) {
-            mul = 0.0f;
-        } else {
-            if (speedLvl > 0) {
-                mul *= (1.0f + 0.20f * speedLvl);
-            }
-            if (slowLvl > 0) {
-                mul *= Math.max(0.0f, 1.0f - 0.15f * slowLvl);
-            }
-        }
+        float mul = this instanceof EntityIntelligent ? 1f : this.getMovementSpeedFactor();
 
         if (this instanceof Player p && p.isSprinting()) mul *= 1.3f;
         float newSpeed = base * mul;
