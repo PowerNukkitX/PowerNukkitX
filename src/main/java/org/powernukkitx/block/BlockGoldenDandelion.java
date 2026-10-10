@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -8,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 public class BlockGoldenDandelion extends BlockFlower {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(GOLDEN_DANDELION);
+    public static final BlockDefinition DEFINITION = BlockFlower.DEFINITION.toBuilder()
+            .canBeActivated(false)
+            .build();
 
     @Override
     @NotNull
@@ -16,15 +21,11 @@ public class BlockGoldenDandelion extends BlockFlower {
     }
 
     public BlockGoldenDandelion() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
      public BlockGoldenDandelion(BlockState blockstate) {
-         super(blockstate);
+         super(blockstate, DEFINITION);
      }
 
-    @Override
-    public boolean canBeActivated() {
-        return false;
     }
-}

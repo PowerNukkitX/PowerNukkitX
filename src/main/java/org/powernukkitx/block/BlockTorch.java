@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.TorchFacingDirection;
 import org.powernukkitx.item.Item;
@@ -18,6 +20,9 @@ import static org.powernukkitx.block.property.CommonBlockProperties.TORCH_FACING
  */
 public class BlockTorch extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(TORCH, TORCH_FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .lightEmission(14)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -29,7 +34,11 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     }
 
     public BlockTorch(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockTorch(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -37,11 +46,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         return "Torch";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 14;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

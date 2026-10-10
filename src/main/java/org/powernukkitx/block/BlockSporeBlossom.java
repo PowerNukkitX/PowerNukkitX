@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySporeBlossom;
@@ -12,6 +14,11 @@ import javax.annotation.Nullable;
 
 public class BlockSporeBlossom extends BlockTransparent implements BlockEntityHolder<BlockEntitySporeBlossom> {
     public static final BlockProperties PROPERTIES = new BlockProperties(SPORE_BLOSSOM);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .isSolid(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -23,7 +30,7 @@ public class BlockSporeBlossom extends BlockTransparent implements BlockEntityHo
     }
 
     public BlockSporeBlossom(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -49,18 +56,4 @@ public class BlockSporeBlossom extends BlockTransparent implements BlockEntityHo
         return false;
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
     }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-}

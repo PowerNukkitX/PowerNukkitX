@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -20,6 +22,15 @@ import static org.powernukkitx.block.property.CommonBlockProperties.SCULK_SENSOR
 
 public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEntityHolder<BlockEntityCalibratedSculkSensor>, RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CALIBRATED_SCULK_SENSOR, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.SCULK_SENSOR_PHASE);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .breaksWhenMoved(false)
+            .canBePushed(false)
+            .canBePulled(false)
+            .isPowerSource(true)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -31,7 +42,7 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
     }
 
     public BlockCalibratedSculkSensor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     public String getName() {
@@ -51,11 +62,7 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
         return BlockEntityCalibratedSculkSensor.class;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     @Override
     @NotNull public String getBlockEntityType() {
         return BlockEntity.CALIBRATED_SCULK_SENSOR;
@@ -141,37 +148,9 @@ public class BlockCalibratedSculkSensor extends BlockFlowable implements BlockEn
         return false;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
-    }
-
+    
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntityBrushable;
@@ -17,16 +19,19 @@ import org.jetbrains.annotations.Nullable;
  * @since 2026/03/31
  */
 public abstract class BlockBrushable extends BlockFallable implements BlockEntityHolder<BlockEntityBrushable> {
+    public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
+            .canBeActivated(true)
+            .build();
 
     public BlockBrushable(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
+    public BlockBrushable(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         int progress = getPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS);

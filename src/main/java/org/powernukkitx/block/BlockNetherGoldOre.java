@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
@@ -11,6 +13,9 @@ import javax.annotation.Nullable;
 
 public class BlockNetherGoldOre extends BlockGoldOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_GOLD_ORE);
+    public static final BlockDefinition DEFINITION = BlockGoldOre.DEFINITION.toBuilder()
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,14 +27,10 @@ public class BlockNetherGoldOre extends BlockGoldOre {
     }
 
     public BlockNetherGoldOre(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public String getName() {
         return "Nether Gold Ore";

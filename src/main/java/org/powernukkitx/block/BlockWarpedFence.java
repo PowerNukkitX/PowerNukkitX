@@ -1,9 +1,11 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 import org.powernukkitx.block.property.CommonBlockProperties;
 
-public class BlockWarpedFence extends BlockFence {
+public class BlockWarpedFence extends BlockFenceNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_FENCE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
     @Override
@@ -15,23 +17,16 @@ public class BlockWarpedFence extends BlockFence {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWarpedFence(BlockState blockstate) {
-        super(blockstate);
+    public static final BlockDefinition DEFINITION = BlockFenceNonFlammable.DEFINITION.toBuilder()
+            .burnChance(-1)
+            .build();
+
+    public BlockWarpedFence(BlockState blockState) {
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Warped Fence";
     }
-
-    @Override
-    public int getBurnChance() {
-        return -1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-
 }

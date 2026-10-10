@@ -1,23 +1,17 @@
 package org.powernukkitx.block.customblock;
 
-import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.ServerBlockProperty;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.customblock.data.CraftingTable;
 import org.powernukkitx.block.customblock.data.Geometry;
 import org.powernukkitx.block.customblock.data.Materials;
-import org.powernukkitx.block.customblock.data.Movable;
 import org.powernukkitx.block.customblock.data.Permutation;
 import org.powernukkitx.block.customblock.data.Transformation;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.block.property.type.BooleanPropertyType;
 import org.powernukkitx.block.property.type.EnumPropertyType;
 import org.powernukkitx.block.property.type.IntPropertyType;
-import org.powernukkitx.entity.Entity;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
 import org.powernukkitx.item.customitem.data.CreativeGroup;
 import org.powernukkitx.math.AxisAlignedBB;
@@ -30,6 +24,16 @@ import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
+
+import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.ServerBlockProperty;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.powernukkitx.block.customblock.data.Movable;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -47,12 +51,58 @@ import java.util.function.Consumer;
  * For further customization of runtime behavior, you can still override methods in {@link Block Block}.
  */
 @Slf4j
-public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor, Movable movable) {
+@Getter
+@Accessors(fluent = true)
+public class CustomBlockDefinition extends BlockDefinition {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
 
+    protected String identifier;
+    protected CompoundTag nbt;
+    protected BlockTickSettings tickSettings;
+    protected Movable movable;
+
+    public CustomBlockDefinition(Builder b) {
+        super(b);
+
+        this.identifier = b.identifier;
+        this.nbt = b.nbt;
+        this.tickSettings = b.tickSettings;
+        this.movable = resolveMovable(b.nbt);
+    }
+
+    /**
+     * Legacy constructor kept for plugins compiled against the former record.
+     *
+     * @deprecated use {@link #builder(CustomBlock)} instead.
+     */
+    @Deprecated(since = "3.1.0")
+    public CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor, Movable movable) {
+        super(Block.DEFAULT_DEFINITION.toBuilder().hasEntityStepSensor(isStepSensor));
+
+        this.identifier = identifier;
+        this.nbt = nbt;
+        this.tickSettings = tickSettings;
+        this.movable = movable;
+    }
+
+    /**
+     * Legacy constructor kept for plugins compiled against the former record.
+     *
+     * @deprecated use {@link #builder(CustomBlock)} instead.
+     */
+    @Deprecated(since = "3.1.0")
     public CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor) {
         this(identifier, nbt, tickSettings, isStepSensor, resolveMovable(nbt));
+    }
+
+    /**
+     * @return whether this block reacts to entities stepping on/off it.
+     * @deprecated use {@link #isHasEntityStepSensor()}.
+     */
+    @Deprecated(since = "3.1.0")
+    public boolean isStepSensor() {
+        return isHasEntityStepSensor();
     }
 
     private static Movable resolveMovable(CompoundTag nbt) {
@@ -64,7 +114,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     }
 
     public int getRuntimeId() {
-        return CustomBlockDefinition.INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
+        return getRuntimeId(identifier);
     }
 
     public static int getRuntimeId(String identifier) {
@@ -81,19 +131,49 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         return new CustomBlockDefinition.Builder(customBlock);
     }
 
-    public static class Builder {
+    /**
+     * Builder for a custom block definition that is created before the block instance exists, so it can be
+     * passed to the block's constructor ({@code super(blockState, DEFINITION)}).
+     *
+     * @param properties the properties of the custom block, their identifier becomes the block id
+     * @return the custom block definition builder.
+     */
+    public static CustomBlockDefinition.Builder builder(@NotNull BlockProperties properties) {
+        return new CustomBlockDefinition.Builder(properties);
+    }
+
+    public static class Builder extends BlockDefinitionBuilder<BlockDefinition, Builder> {
         protected final String identifier;
+        @Nullable
         protected final CustomBlock customBlock;
+        @Nullable
+        protected final BlockProperties properties;
         private BlockTickSettings tickSettings = null;
-        private boolean isStepSensor = false;
 
         protected CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag());
 
         protected Builder(CustomBlock customBlock) {
-            this.identifier = customBlock.getId();
+            this(customBlock.getId(), customBlock, customBlock instanceof Block block ? block.getProperties() : null);
+        }
+
+        protected Builder(BlockProperties properties) {
+            this(properties.getIdentifier(), null, properties);
+        }
+
+        private Builder(String identifier, @Nullable CustomBlock customBlock, @Nullable BlockProperties properties) {
+            this.identifier = identifier;
             this.customBlock = customBlock;
+            this.properties = properties;
             var components = this.nbt.getCompound("components");
+
+            // Seed the runtime values with the same defaults the NBT components below advertise to the client,
+            // otherwise a minimally configured definition would report zeroed values (not placeable, stack size 0...).
+            this.$fillValuesFrom(Block.DEFAULT_DEFINITION);
+            super.friction(Block.DEFAULT_FRICTION_FACTOR);
+            super.resistance(0);
+            super.lightDampening(15);
+            super.lightEmission(0);
 
             // Set default components using static default values
             CompoundTag defaults = createDefaultComponents(
@@ -122,13 +202,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                 nbt.putList("properties", propertiesNBT);
             }
 
-            int block_id;
-            if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(identifier)) {
-                while (INTERNAL_ALLOCATION_ID_MAP.containsValue(block_id = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement())) {
-                }
+            int block_id = INTERNAL_ALLOCATION_ID_MAP.getOrDefault(identifier, -1);
+            if (block_id == -1) {
+                do {
+                    block_id = CUSTOM_BLOCK_RUNTIMEID.getAndIncrement();
+                } while (INTERNAL_ALLOCATION_ID_MAP.containsValue(block_id));
                 INTERNAL_ALLOCATION_ID_MAP.put(identifier, block_id);
-            } else {
-                block_id = INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
             }
             nbt.putCompound("vanilla_block_data",
                     new CompoundTag()
@@ -145,12 +224,31 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         /**
-         * Sets the friction value of the block. Default is 0.6f.
+         * @deprecated use {@link #friction(double)}.
          */
+        @Deprecated(since = "3.1.0")
         public Builder friction(float value) {
+            return this.friction((double) value);
+        }
+
+        /**
+         * Enables step sensor logic (entity step-on/off).
+         *
+         * @deprecated use {@link #hasEntityStepSensor(boolean)}.
+         */
+        @Deprecated(since = "3.1.0")
+        public Builder isStepSensor(boolean value) {
+            return this.hasEntityStepSensor(value);
+        }
+
+        /**
+         * Sets the friction value of the block. Default is 0.4.
+         */
+        @Override
+        public Builder friction(double value) {
             this.nbt.getCompound("components")
-                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", value));
-            return this;
+                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", (float) value));
+            return super.friction(value);
         }
 
         /**
@@ -169,7 +267,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             this.nbt.getCompound("components")
                     .putCompound("minecraft:destructible_by_explosion",
                             new CompoundTag().putInt("explosion_resistance", resistance));
-            return this;
+            return super.resistance(resistance);
         }
 
         /**
@@ -185,7 +283,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         public Builder destructibleByMining(float seconds) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:destructible_by_mining", new CompoundTag().putFloat("value", seconds));
-            return this;
+            return super.hardness(seconds);
         }
         /**
          * @deprecated Use {@link #destructibleByMining(float)} or {@link #destructibleByMining(boolean)} instead.
@@ -198,19 +296,21 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         /**
          * Sets the light dampening level. Default is 15.
          */
+        @Override
         public Builder lightDampening(int lightLevel) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:light_dampening", new CompoundTag().putByte("lightLevel", (byte) lightLevel));
-            return this;
+            return super.lightDampening(lightLevel);
         }
 
         /**
          * Sets the light emission level. Default is 0.
          */
+        @Override
         public Builder lightEmission(int emission) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:light_emission", new CompoundTag().putByte("emission", (byte) emission));
-            return this;
+            return super.lightEmission(emission);
         }
 
         /**
@@ -529,7 +629,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             this.nbt.getCompound("components")
                     .getCompound("minecraft:custom_components")
                     .putByte("hasPlayerInteract", (byte) (value ? 1 : 0));
-            return this;
+
+            return this.canBeActivated(value);
         }
 
         public Builder hasPlayerPlacingSensor(boolean value) {
@@ -545,27 +646,16 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
 
         /**
          * Defines how this custom block should tick over time.
+         * Example: {@code .blockTick(60, 60, true)} will schedule the block to tick every 60 ticks (3 seconds).
          *
          * @param minTicks The minimum number of ticks before the block updates.
          * @param maxTicks The maximum number of ticks before the block updates. Must be ≥ {@code minTicks}.
          * @param looping  If {@code true}, the block will continue ticking; if {@code false}, it will tick only once.
          * @return This builder instance for chaining.
-         *
-         * Example: {@code .blockTick(60, 60, true)} will schedule the block to tick every 3 seconds.
          */
         public Builder blockTick(int minTicks, int maxTicks, boolean looping) {
             Preconditions.checkArgument(minTicks >= 0 && maxTicks >= minTicks, "Invalid tick interval range");
             this.tickSettings = new BlockTickSettings(minTicks, maxTicks, looping);
-            return this;
-        }
-
-        /**
-         * Enables step sensor logic (entity step-on/off).
-         * <p>
-         * When enabled, override {@link Block#onEntityStepOn(Entity)} and {@link Block#onEntityStepOff(Entity)} for custom handling.
-         */
-        public Builder isStepSensor(boolean value) {
-            this.isStepSensor = value;
             return this;
         }
 
@@ -601,9 +691,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          */
         @Nullable
         private ListTag<CompoundTag> getPropertiesNBT() {
-            if (this.customBlock instanceof Block block) {
-                var properties = block.getProperties();
-                Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
+            if (this.properties != null) {
+                Set<BlockPropertyType<?>> propertyTypeSet = this.properties.getPropertyTypeSet();
                 if (propertyTypeSet.isEmpty()) {
                     return null;
                 }
@@ -642,7 +731,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         public CustomBlockDefinition build() {
-            return new CustomBlockDefinition(this.identifier, this.nbt, this.tickSettings, this.isStepSensor);
+            return new CustomBlockDefinition(this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
         }
     }
 

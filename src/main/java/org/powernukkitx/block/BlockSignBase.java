@@ -20,6 +20,7 @@ import org.powernukkitx.utils.BlockColor;
 import org.powernukkitx.utils.Faceable;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,23 +28,23 @@ import java.util.Objects;
 
 
 public abstract class BlockSignBase extends BlockTransparent implements Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1)
+            .resistance(5)
+            .isSolid(false)
+            .toolType(ItemTool.TYPE_AXE)
+            .breaksWhenMoved(true)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
+
     public BlockSignBase(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
+    public BlockSignBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -144,11 +145,6 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
         }
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
     public CompassRoseDirection getSignDirection() {
         return CompassRoseDirection.from(getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION));
     }
@@ -165,20 +161,5 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     @Override
     public void setBlockFace(BlockFace face) {
         setSignDirection(face.getCompassRoseDirection());
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 }

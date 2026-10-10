@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
@@ -11,6 +13,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockNetherreactor extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHERREACTOR);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(10)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -22,39 +31,15 @@ public class BlockNetherreactor extends BlockSolid {
     }
 
     public BlockNetherreactor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Nether Reactor Core";
     }
-    
-    @Override
-    public double getHardness() {
-        return 10;
-    }
-    
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-    
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-    
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe()) {

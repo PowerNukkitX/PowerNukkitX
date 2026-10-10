@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySign;
@@ -37,6 +39,10 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
 
     public BlockStandingSign(BlockState blockstate) {
         super(blockstate);
+    }
+
+    public BlockStandingSign(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     protected String getStandingSignId() {

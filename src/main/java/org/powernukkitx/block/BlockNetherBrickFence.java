@@ -2,10 +2,18 @@ package org.powernukkitx.block;
 
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockNetherBrickFence extends BlockFence {
+public class BlockNetherBrickFence extends BlockFenceNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_BRICK_FENCE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
+    public static final BlockDefinition DEFINITION = BlockFenceNonFlammable.DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,47 +24,12 @@ public class BlockNetherBrickFence extends BlockFence {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockNetherBrickFence(BlockState blockstate) {
-        super(blockstate);
+    public BlockNetherBrickFence(BlockState blockState) {
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Nether Brick Fence";
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 }

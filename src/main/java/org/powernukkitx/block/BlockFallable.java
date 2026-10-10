@@ -6,6 +6,7 @@ import org.powernukkitx.event.block.BlockFallEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.math.Vector3;
 
 
@@ -13,9 +14,15 @@ import org.powernukkitx.math.Vector3;
  * @author rcsuperman (Nukkit Project)
  */
 public abstract class BlockFallable extends BlockSolid {
+    public static final BlockDefinition FALLABLE = SOLID.toBuilder()
+            .build();
 
     public BlockFallable(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, FALLABLE);
+    }
+
+    public BlockFallable(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
