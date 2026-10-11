@@ -65,6 +65,16 @@ public class BlockInvisibleBedrock extends BlockSolid {
     }
 
     @Override
+    public boolean isTransparent() {
+        return true;
+    }
+
+    @Override
+    public int getLightFilter() {
+        return 0;
+    }
+
+    @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
     }
