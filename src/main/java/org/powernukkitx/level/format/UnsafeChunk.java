@@ -52,6 +52,7 @@ public class UnsafeChunk {
 
     private void setChanged() {
         this.chunk.changes.incrementAndGet();
+        this.chunk.markNetworkPayloadStale();
     }
 
     @Deprecated(since = "3.1.0", forRemoval = true)
@@ -323,9 +324,9 @@ public class UnsafeChunk {
         int sectionIndex = (y >> 4) - getDimensionData().getMinSectionY();
         if (sectionIndex < 0 || sectionIndex >= chunk.biomeSections.length) return;
 
-        setChanged();
         chunk.biomeSections[sectionIndex].set(IChunk.index(x, y & 0x0f, z), ChunkSection.boxBiomeId(biomeId));
         chunk.biomeState.updateBiome(biomeId);
+        setChanged();
     }
 
     public short[] getHeightMapArray() {
