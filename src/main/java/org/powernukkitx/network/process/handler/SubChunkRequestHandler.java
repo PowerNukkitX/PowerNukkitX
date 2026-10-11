@@ -151,27 +151,28 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
             Level level,
             ClientBlobCacheManager.TransferBuilder cacheTransfer
     ) {
-        final ByteBuf terrainData = PooledByteBufAllocator.DEFAULT.ioBuffer();
         final ByteBuf serializedSubChunk = PooledByteBufAllocator.DEFAULT.ioBuffer();
         boolean success = false;
 
         try {
-            if (level.isAntiXrayEnabled()) {
-                section.writeObfuscatedToBuf(level, terrainData);
-            } else {
-                section.writeToBuf(terrainData);
-            }
-
             final SubChunkPacketData data = new SubChunkPacketData();
 
             data.setSubChunkPosOffset(offsetPos);
             data.setSubChunkRequestResult(SubChunkRequestResult.SUCCESS);
 
-            if (cacheTransfer != null) {
-                data.setBlobId(cacheTransfer.remember(terrainData));
+            if (!level.isAntiXrayEnabled() && chunk instanceof Chunk concreteChunk) {
+                final Chunk.SectionNetworkPayload sectionPayload = concreteChunk.getSectionNetworkPayload(section);
+
+                if (cacheTransfer != null) {
+                    final ClientBlobCacheManager.Blob blob = sectionPayload.blob();
+                    cacheTransfer.add(blob);
+                    data.setBlobId(blob.id());
+                } else {
+                    data.setBlobId(null);
+                    serializedSubChunk.writeBytes(sectionPayload.data());
+                }
             } else {
-                data.setBlobId(null);
-                serializedSubChunk.writeBytes(terrainData, terrainData.readerIndex(), terrainData.readableBytes());
+                writeUncachedTerrain(section, level, cacheTransfer, data, serializedSubChunk);
             }
 
             writeBlockEntitiesForSubChunk(chunk, subChunkPos, serializedSubChunk);
@@ -181,11 +182,36 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
             success = true;
             return data;
         } finally {
-            terrainData.release();
-
             if (!success) {
                 serializedSubChunk.release();
             }
+        }
+    }
+
+    private void writeUncachedTerrain(
+            ChunkSection section,
+            Level level,
+            ClientBlobCacheManager.TransferBuilder cacheTransfer,
+            SubChunkPacketData data,
+            ByteBuf serializedSubChunk
+    ) {
+        final ByteBuf terrainData = PooledByteBufAllocator.DEFAULT.ioBuffer();
+
+        try {
+            if (level.isAntiXrayEnabled()) {
+                section.writeObfuscatedToBuf(level, terrainData);
+            } else {
+                section.writeToBuf(terrainData);
+            }
+
+            if (cacheTransfer != null) {
+                data.setBlobId(cacheTransfer.remember(terrainData));
+            } else {
+                data.setBlobId(null);
+                serializedSubChunk.writeBytes(terrainData, terrainData.readerIndex(), terrainData.readableBytes());
+            }
+        } finally {
+            terrainData.release();
         }
     }
 

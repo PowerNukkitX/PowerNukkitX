@@ -45,7 +45,6 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import org.iq80.leveldb.WriteBatch;
@@ -65,7 +64,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import lombok.extern.slf4j.Slf4j;
@@ -76,8 +74,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LevelDBProvider implements LevelProvider {
     static final Map<String, LevelDBStorage> CACHE = new ConcurrentHashMap<>();
-    /** Off-heap budget for {@link #payloadCache}, per level; least recently used entries are dropped to stay within it. */
-    private static final long PAYLOAD_CACHE_LIMIT_BYTES = 64L * 1024L * 1024L;
     private static final int LEVEL_DAT_VERSION = 10;
     private static final int BIOME_STATE_SAMPLE_ATTEMPTS = 10;
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
@@ -87,25 +83,6 @@ public class LevelDBProvider implements LevelProvider {
     protected final LevelDBStorage storage;
     protected final Level level;
     protected final String path;
-    /**
-     * Serialised network payloads keyed by chunk hash, in least-recently-used order. Each entry
-     * owns one reference to its buffer; callers receive retained duplicates. Guarded by its own
-     * monitor because chunk sends, saves and unloads reach it from different threads.
-     */
-    private final Long2ObjectLinkedOpenHashMap<CachedChunkPayload> payloadCache = new Long2ObjectLinkedOpenHashMap<>();
-    /** Total {@link CachedChunkPayload#byteSize()} held in {@link #payloadCache}. Guarded by it. */
-    private long payloadCacheBytes;
-
-    /**
-     * A serialised chunk payload together with the {@link IChunk#getContentVersion()} it was
-     * built from, which is what makes a hit safe.
-     *
-     * @param byteSize readable size of {@code data} when it was cached, kept separately so the
-     *                 budget can be adjusted without touching a possibly-released buffer
-     */
-    private record CachedChunkPayload(ByteBuf data, int subChunkCount, long contentVersion, int byteSize) {
-    }
-
     private long runtimeTime;
     private long runtimeCurrentTick;
     private boolean runtimeRaining;
@@ -596,7 +573,6 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public void putChunk(long index, IChunk chunk) {
-        invalidatePayloadCache(index);
         if (this.chunks.containsKey(index)) {
             level.getPlayers().values().forEach(player -> {
                 synchronized (player.getPlayerChunkManager()) {
@@ -634,22 +610,17 @@ public class LevelDBProvider implements LevelProvider {
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
-        final boolean cacheable = chunk.getContentVersion() >= 0 && !this.level.isAntiXrayEnabled();
-        final long index = Level.chunkHash(x, z);
-        if (cacheable) {
-            long currentVersion = chunk.getContentVersion();
-            synchronized (this.payloadCache) {
-                CachedChunkPayload cached = this.payloadCache.getAndMoveToLast(index);
-                if (cached != null && cached.contentVersion() == currentVersion) {
-                    return Pair.of(cached.data().retainedDuplicate(), cached.subChunkCount());
-                }
+        final Chunk cacheChunk = chunk instanceof Chunk concrete && !this.level.isAntiXrayEnabled() ? concrete : null;
+        if (cacheChunk != null) {
+            final Chunk.NetworkPayload cached = cacheChunk.getNetworkPayload();
+            if (cached != null) {
+                return Pair.of(assembleCachedPayload(cached), cached.subChunkCount());
             }
         }
         AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
-        AtomicLong serializedVersion = new AtomicLong(-1);
         chunk.batchProcess(unsafeChunk -> {
-            serializedVersion.set(chunk.getContentVersion());
+            if (cacheChunk != null) cacheChunk.beginNetworkPayload();
             final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer();
             boolean success = false;
             try {
@@ -662,6 +633,8 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 int total = subChunkCount + 1;
                 final int minSectionY = unsafeChunk.getDimensionData().getMinSectionY();
+                final Chunk.SectionNetworkPayload[] sectionPayloads =
+                        cacheChunk == null ? null : new Chunk.SectionNetworkPayload[sections.length];
                 //write block
                 if (level != null && level.isAntiXrayEnabled()) {
                     for (int i = 0; i < total; i++) {
@@ -671,13 +644,18 @@ public class LevelDBProvider implements LevelProvider {
                 } else {
                     for (int i = 0; i < total; i++) {
                         final ChunkSection section = sections[i];
-                        if (section != null) {
-                            section.writeToBuf(byteBuf);
-                        } else {
+                        if (section == null) {
                             byteBuf.writeBytes(emptySectionPayload(i + minSectionY));
+                        } else if (sectionPayloads != null) {
+                            final Chunk.SectionNetworkPayload sectionPayload = cacheChunk.getSectionNetworkPayload(section);
+                            sectionPayloads[i] = sectionPayload;
+                            byteBuf.writeBytes(sectionPayload.data());
+                        } else {
+                            section.writeToBuf(byteBuf);
                         }
                     }
                 }
+                final int tailStart = byteBuf.writerIndex();
 
                 // Write biomes
                 final var biomeSections = unsafeChunk.getBiomeSections();
@@ -706,6 +684,10 @@ public class LevelDBProvider implements LevelProvider {
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
+                if (sectionPayloads != null) {
+                    cacheChunk.setNetworkPayload(new Chunk.NetworkPayload(sectionPayloads, total,
+                            ByteBufUtil.getBytes(byteBuf, tailStart, byteBuf.writerIndex() - tailStart)));
+                }
                 data.set(byteBuf);
                 subChunkCountRef.set(total);
                 success = true;
@@ -716,52 +698,28 @@ public class LevelDBProvider implements LevelProvider {
                 }
             }
         });
-        ByteBuf payload = data.get();
-        Integer subChunkCount = subChunkCountRef.get();
-        if (!cacheable || payload == null || subChunkCount == null) {
-            return Pair.of(payload, subChunkCount);
-        }
-        int payloadBytes = payload.readableBytes();
-        synchronized (this.payloadCache) {
-            discardCached(this.payloadCache.put(index,
-                    new CachedChunkPayload(payload, subChunkCount, serializedVersion.get(), payloadBytes)));
-            this.payloadCacheBytes += payloadBytes;
-            while (this.payloadCacheBytes > PAYLOAD_CACHE_LIMIT_BYTES && !this.payloadCache.isEmpty()) {
-                discardCached(this.payloadCache.removeFirst());
-            }
-        }
-        return Pair.of(payload.retainedDuplicate(), subChunkCount);
+        return Pair.of(data.get(), subChunkCountRef.get());
     }
 
     /**
-     * Releases this provider's reference to a cached payload and stops counting it against the
-     * budget. Outstanding duplicates already handed to callers keep the memory alive until they
-     * are released, so this is safe to call while a chunk send is in flight.
-     *
-     * @param cached the entry being dropped, or {@code null} when there was none
+     * Copies a cached payload into one buffer. Section bytes are shared with the per-section
+     * cache, so only the tail is held per chunk.
      */
-    private void discardCached(@Nullable CachedChunkPayload cached) {
-        if (cached == null) {
-            return;
+    private ByteBuf assembleCachedPayload(Chunk.NetworkPayload payload) {
+        final Chunk.SectionNetworkPayload[] sectionPayloads = payload.sections();
+        final int minSectionY = getDimensionData().getMinSectionY();
+        int size = payload.tail().length;
+        for (int i = 0; i < payload.subChunkCount(); i++) {
+            final Chunk.SectionNetworkPayload sectionPayload = sectionPayloads[i];
+            size += sectionPayload == null ? emptySectionPayload(i + minSectionY).length : sectionPayload.data().length;
         }
-        this.payloadCacheBytes -= cached.byteSize();
-        cached.data().release();
-    }
-
-    private void invalidatePayloadCache(long index) {
-        synchronized (this.payloadCache) {
-            discardCached(this.payloadCache.remove(index));
+        final ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer(size);
+        for (int i = 0; i < payload.subChunkCount(); i++) {
+            final Chunk.SectionNetworkPayload sectionPayload = sectionPayloads[i];
+            byteBuf.writeBytes(sectionPayload == null ? emptySectionPayload(i + minSectionY) : sectionPayload.data());
         }
-    }
-
-    private void clearPayloadCache() {
-        synchronized (this.payloadCache) {
-            for (CachedChunkPayload cached : this.payloadCache.values()) {
-                cached.data().release();
-            }
-            this.payloadCache.clear();
-            this.payloadCacheBytes = 0;
-        }
+        byteBuf.writeBytes(payload.tail());
+        return byteBuf;
     }
 
     @Override
@@ -1177,7 +1135,6 @@ public class LevelDBProvider implements LevelProvider {
         if (chunk != null && chunk.unload(false, safe)) {
             lastChunk.remove();
             this.chunks.remove(index, chunk);
-            invalidatePayloadCache(index);
             return true;
         }
         return false;
@@ -1314,7 +1271,6 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void close() {
         flushWorldDynamicProperties();
-        clearPayloadCache();
         storage.getWorldMetadata().unregisterDimension(getDimensionData().getDimensionId());
         storage.close();
     }

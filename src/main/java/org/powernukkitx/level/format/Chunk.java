@@ -35,17 +35,25 @@ import org.powernukkitx.scheduler.GenerationBlockUpdateQueue;
 import org.powernukkitx.scheduler.RandomBlockUpdateScheduler;
 import org.powernukkitx.utils.Utils;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
+import org.powernukkitx.network.process.cache.ClientBlobCacheManager;
 import com.google.common.base.Preconditions;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.PooledByteBufAllocator;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -74,7 +82,15 @@ public class Chunk implements IChunk {
     protected final short[] renderHeightMap;
     protected final short[] rainHeightMap;
     protected final AtomicLong changes;
-    private final AtomicLong contentVersion = new AtomicLong();
+    /**
+     * Set by every edit the network payload carries outside block data, cleared when a payload is
+     * built. Block edits are covered by per-section versions instead, see {@link NetworkPayload}.
+     */
+    private final AtomicBoolean networkPayloadStale = new AtomicBoolean(true);
+    private volatile NetworkPayload networkPayload;
+    private final AtomicReferenceArray<SectionNetworkPayload> sectionNetworkPayloads;
+    /** Fits a section of up to 16 bits per block without regrowing the scratch buffer. */
+    private static final int SECTION_PAYLOAD_INITIAL_CAPACITY = 8192;
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
     /**
@@ -153,6 +169,7 @@ public class Chunk implements IChunk {
         this.blockLock = new StampedLock();
         this.heightAndBiomeLock = new StampedLock();
         this.lightLock = new StampedLock();
+        this.sectionNetworkPayloads = new AtomicReferenceArray<>(this.sections.length);
     }
 
     private Chunk(
@@ -199,6 +216,7 @@ public class Chunk implements IChunk {
         this.blockLock = new StampedLock();
         this.heightAndBiomeLock = new StampedLock();
         this.lightLock = new StampedLock();
+        this.sectionNetworkPayloads = new AtomicReferenceArray<>(this.sections.length);
 
         new UnsafeChunk(this).recalculateRenderHeightMap();
     }
@@ -498,6 +516,7 @@ public class Chunk implements IChunk {
         try {
             int index = fY - getDimensionData().getMinSectionY();
             this.sections[index] = section;
+            this.sectionNetworkPayloads.set(index, null);
 
             if (section != null) {
                 this.biomeSections[index] = section.biomes();
@@ -642,7 +661,7 @@ public class Chunk implements IChunk {
         long heightAndBiomeStamp = 0L;
 
         try {
-            setChanged();
+            setChangedForSave();
             ChunkSection section = getOrCreateSection(y >> 4);
             int localY = y & 0x0f;
             BlockState oldState = section.getBlockState(x, localY, z, layer);
@@ -692,7 +711,7 @@ public class Chunk implements IChunk {
         long heightAndBiomeStamp = 0L;
 
         try {
-            setChanged();
+            setChangedForSave();
             ChunkSection section = getOrCreateSection(y >> 4);
             int localY = y & 0x0f;
             BlockState oldState = section.getBlockState(x, localY, z, layer);
@@ -767,7 +786,7 @@ public class Chunk implements IChunk {
     public void setBlockSkyLight(int x, int y, int z, int level) {
         long stamp = lightLock.writeLock();
         try {
-            setChanged();
+            setChangedForSave();
             getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
         } finally {
             lightLock.unlockWrite(stamp);
@@ -795,7 +814,7 @@ public class Chunk implements IChunk {
     public void setBlockLight(int x, int y, int z, int level) {
         long stamp = lightLock.writeLock();
         try {
-            setChanged();
+            setChangedForSave();
             getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
         } finally {
             lightLock.unlockWrite(stamp);
@@ -1001,7 +1020,7 @@ public class Chunk implements IChunk {
             this.entityCount.incrementAndGet();
         }
         if (!(entity instanceof Player) && this.isInit) {
-            this.setChanged();
+            this.setChangedForSave();
         }
     }
 
@@ -1014,7 +1033,7 @@ public class Chunk implements IChunk {
                     this.entityCount.decrementAndGet();
                 }
                 if (!(entity instanceof Player) && this.isInit) {
-                    this.setChanged();
+                    this.setChangedForSave();
                 }
             }
         }
@@ -1504,7 +1523,7 @@ public class Chunk implements IChunk {
     public void setAabbVolumes(AabbVolumes aabbVolumes) {
         this.aabbVolumes = Preconditions.checkNotNull(aabbVolumes);
         if (this.isInit) {
-            this.setChanged();
+            this.setChangedForSave();
         }
     }
 
@@ -1523,12 +1542,160 @@ public class Chunk implements IChunk {
     @Override
     public void setChanged() {
         this.changes.incrementAndGet();
-        this.contentVersion.incrementAndGet();
+        markNetworkPayloadStale();
     }
 
-    @Override
-    public long getContentVersion() {
-        return this.contentVersion.get();
+    /**
+     * Marks the chunk for saving without touching the cached network payload, for edits the
+     * payload either does not carry (light, entities) or validates on its own (blocks, through
+     * {@link ChunkSection#blockChanges()}).
+     */
+    private void setChangedForSave() {
+        this.changes.incrementAndGet();
+    }
+
+    /**
+     * Must be called after the edit has landed. The release store pairs with the acquiring
+     * {@code getAndSet} in {@link #beginNetworkPayload()}, so an edit made without the chunk lock
+     * is either visible to the serializer or leaves the payload stale.
+     */
+    void markNetworkPayloadStale() {
+        this.networkPayloadStale.setRelease(true);
+    }
+
+    /**
+     * Serialized network bytes of one section, as written by {@link ChunkSection#writeToBuf}.
+     * Valid while {@link #section()} is still installed and its {@link ChunkSection#blockChanges()}
+     * still equals {@link #version()}.
+     */
+    @ApiStatus.Internal
+    public static final class SectionNetworkPayload {
+        private final ChunkSection section;
+        private final long version;
+        private final byte[] data;
+        private volatile ClientBlobCacheManager.Blob blob;
+
+        private SectionNetworkPayload(ChunkSection section, long version, byte[] data) {
+            this.section = section;
+            this.version = version;
+            this.data = data;
+        }
+
+        public ChunkSection section() {
+            return section;
+        }
+
+        public long version() {
+            return version;
+        }
+
+        /**
+         * @return the serialized section, which callers must not modify
+         */
+        public byte[] data() {
+            return data;
+        }
+
+        /**
+         * @return the client cache blob of {@link #data()}, hashed on first use.
+         */
+        public ClientBlobCacheManager.Blob blob() {
+            ClientBlobCacheManager.Blob result = this.blob;
+            if (result == null) {
+                result = ClientBlobCacheManager.rememberBlob(this.data);
+                this.blob = result;
+            }
+            return result;
+        }
+
+        boolean isValidFor(@Nullable ChunkSection installed) {
+            return installed == this.section && installed.blockChanges().get() == this.version;
+        }
+    }
+
+    /**
+     * Serialized bytes of a section of this chunk, reused until a block in it changes or the section
+     * is replaced. Safe to call from any thread, with or without the chunk lock: a copy taken while
+     * the section is being edited is never returned again, because the edit advances
+     * {@link ChunkSection#blockChanges()} past the version read here.
+     *
+     * @param section a section currently installed in this chunk
+     */
+    @ApiStatus.Internal
+    public @NotNull SectionNetworkPayload getSectionNetworkPayload(@NotNull ChunkSection section) {
+        final int index = section.y() - getDimensionData().getMinSectionY();
+        final long version = section.blockChanges().get();
+        final SectionNetworkPayload cached = this.sectionNetworkPayloads.get(index);
+        if (cached != null && cached.section == section && cached.version == version) {
+            return cached;
+        }
+        final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.heapBuffer(SECTION_PAYLOAD_INITIAL_CAPACITY);
+        final SectionNetworkPayload created;
+        try {
+            section.writeToBuf(buffer);
+            created = new SectionNetworkPayload(section, version, ByteBufUtil.getBytes(buffer));
+        } finally {
+            buffer.release();
+        }
+        this.sectionNetworkPayloads.set(index, created);
+        return created;
+    }
+
+    /**
+     * A serialized {@code LevelChunkPacket} payload, stored as its sections plus the bytes that
+     * follow them, so section bytes are shared with {@link #getSectionNetworkPayload} rather than
+     * held twice.
+     *
+     * @param sections      one entry per section slot, {@code null} where the slot was empty
+     * @param subChunkCount number of sub-chunks the payload writes, absent ones included
+     * @param tail          biomes, border blocks and block entity NBT, which must not be modified
+     */
+    @ApiStatus.Internal
+    public record NetworkPayload(SectionNetworkPayload[] sections, int subChunkCount, byte[] tail) {
+    }
+
+    /**
+     * @return the cached network payload if it still matches this chunk's content, otherwise
+     * {@code null}. Safe to call from any thread.
+     */
+    @ApiStatus.Internal
+    public @Nullable NetworkPayload getNetworkPayload() {
+        if (this.networkPayloadStale.get()) {
+            return null;
+        }
+        final NetworkPayload payload = this.networkPayload;
+        if (payload == null) {
+            return null;
+        }
+        final SectionNetworkPayload[] cachedSections = payload.sections();
+        for (int i = 0; i < cachedSections.length; i++) {
+            final SectionNetworkPayload cached = cachedSections[i];
+            final ChunkSection installed = this.sections[i];
+            if (cached == null ? installed != null : !cached.isValidFor(installed)) {
+                return null;
+            }
+        }
+        return payload;
+    }
+
+    /**
+     * Starts serializing a new network payload. Must be called inside {@link #batchProcess} before
+     * any content is read, followed by {@link #setNetworkPayload} in the same batch, so that
+     * payloads are stored in the order they were built.
+     */
+    @ApiStatus.Internal
+    public void beginNetworkPayload() {
+        this.networkPayload = null;
+        this.networkPayloadStale.getAndSet(false);
+    }
+
+    /**
+     * Caches the payload started by {@link #beginNetworkPayload()}. An edit made in between leaves
+     * it stale, so it is never returned.
+     */
+    @ApiStatus.Internal
+    public void setNetworkPayload(@NotNull NetworkPayload payload) {
+        this.networkPayload = payload;
     }
 
     @Override
@@ -1654,12 +1821,14 @@ public class Chunk implements IChunk {
         int index = (localX << 4) | localZ;
         if (isBorderBlock(newState)) {
             this.borderBlockMap[index] = true;
+            markNetworkPayloadStale();
             return;
         }
 
         if (!isBorderBlock(oldState)) return;
 
         this.borderBlockMap[index] = hasBorderBlockInColumnInternal(localX, localZ);
+        markNetworkPayloadStale();
     }
 
     private boolean hasBorderBlockInColumnInternal(int localX, int localZ) {
