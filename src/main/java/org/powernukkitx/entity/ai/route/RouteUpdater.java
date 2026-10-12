@@ -35,13 +35,18 @@ public class RouteUpdater {
     protected final IRouteFinder routeFinder;
 
     @Getter
+    @Setter
     protected RouteFindingManager.RouteFindingTask routeFindingTask;
 
     /**
      * Records the number of gt elapsed since the last path update
      */
+    @Getter
+    @Setter
     protected int currentUpdateTick;//gt
 
+    @Getter
+    @Setter
     protected long blockChangeCache;
 
     @Getter

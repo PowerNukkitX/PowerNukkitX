@@ -6,6 +6,7 @@ import org.powernukkitx.entity.ai.behavior.IBehavior;
 import org.powernukkitx.entity.ai.controller.IController;
 import org.powernukkitx.entity.ai.memory.IMemoryStorage;
 import org.powernukkitx.entity.ai.memory.MemoryStorage;
+import org.powernukkitx.entity.ai.route.RouteFindingManager;
 import org.powernukkitx.entity.ai.route.RouteUpdater;
 import org.powernukkitx.entity.ai.route.finder.IRouteFinder;
 import org.powernukkitx.entity.ai.sensor.ISensor;
@@ -113,6 +114,60 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public IRouteFinder getRouteFinder() {
         return routeUpdater.getRouteFinder();
+    }
+
+    /**
+     * The pathfinding task last submitted for this entity, or {@code null} if none was submitted yet.
+     *
+     * @deprecated route state moved to {@link RouteUpdater}, kept so plugins built against the old group keep working
+     */
+    @Deprecated
+    public RouteFindingManager.RouteFindingTask getRouteFindingTask() {
+        return routeUpdater.getRouteFindingTask();
+    }
+
+    /**
+     * @deprecated route state moved to {@link RouteUpdater}, kept so plugins built against the old group keep working
+     */
+    @Deprecated
+    public void setRouteFindingTask(RouteFindingManager.RouteFindingTask routeFindingTask) {
+        routeUpdater.setRouteFindingTask(routeFindingTask);
+    }
+
+    /**
+     * Number of gt elapsed since the last path update.
+     *
+     * @deprecated route state moved to {@link RouteUpdater}, kept so plugins built against the old group keep working
+     */
+    @Deprecated
+    public int getCurrentRouteUpdateTick() {
+        return routeUpdater.getCurrentUpdateTick();
+    }
+
+    /**
+     * @deprecated route state moved to {@link RouteUpdater}, kept so plugins built against the old group keep working
+     */
+    @Deprecated
+    public void setCurrentRouteUpdateTick(int currentRouteUpdateTick) {
+        routeUpdater.setCurrentUpdateTick(currentRouteUpdateTick);
+    }
+
+    /**
+     * Sum of the block changes of the chunk sections the last calculated route passes through.
+     *
+     * @deprecated route state moved to {@link RouteUpdater}, kept so plugins built against the old group keep working
+     */
+    @Deprecated
+    public long getBlockChangeCache() {
+        return routeUpdater.getBlockChangeCache();
+    }
+
+    /**
+     * @deprecated route state moved to {@link RouteUpdater}, kept so plugins built against the old group keep working
+     */
+    @Deprecated
+    public void setBlockChangeCache(long blockChangeCache) {
+        routeUpdater.setBlockChangeCache(blockChangeCache);
     }
 
     /**
