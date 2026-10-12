@@ -19,6 +19,6 @@ public abstract class ItemPotterySherd extends Item {
     }
 
     public ItemPotterySherd(String id, int count, ItemDefinition definition) {
-        super(id, 0, count, definition);
+        super(id, 0, count, (String) null, definition);
     }
 }

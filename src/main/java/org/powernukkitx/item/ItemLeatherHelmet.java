@@ -19,6 +19,6 @@ public class ItemLeatherHelmet extends ItemColorArmor {
     }
 
     public ItemLeatherHelmet(Integer meta, int count) {
-        super(LEATHER_HELMET, meta, count, DEFINITION);
+        super(LEATHER_HELMET, meta, count, (String) null, DEFINITION);
     }
 }

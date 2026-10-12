@@ -10,6 +10,6 @@ public abstract class ItemFish extends ItemFood {
     }
 
     protected ItemFish(String id, Integer meta, int count, ItemDefinition definition) {
-        super(id, meta, count, definition);
+        super(id, meta, count, (String) null, definition);
     }
 }

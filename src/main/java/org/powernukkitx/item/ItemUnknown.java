@@ -8,7 +8,7 @@ public class ItemUnknown extends Item {
             .build();
 
     public ItemUnknown(String originalId, int meta, int count, byte[] tags) {
-        super(originalId, meta, count, DEFINITION);
+        super(originalId, meta, count, (String) null, DEFINITION);
         if (tags != null && tags.length > 0) {
             this.setNbtBytes(tags);
         }

@@ -19,6 +19,6 @@ public class ItemLeatherLeggings extends ItemColorArmor {
     }
 
     public ItemLeatherLeggings(Integer meta, int count) {
-        super(LEATHER_LEGGINGS, meta, count, DEFINITION);
+        super(LEATHER_LEGGINGS, meta, count, (String) null, DEFINITION);
     }
 }

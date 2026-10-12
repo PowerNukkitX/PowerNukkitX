@@ -59,7 +59,7 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     }
 
     public ItemSpawnEgg(String id, ItemDefinition definition) {
-        super(id, 0, 1, definition);
+        super(id, 0, 1, (String) null, definition);
     }
 
     protected CompoundTag entityNBT;

@@ -22,7 +22,7 @@ public class ItemBed extends Item {
     }
 
     public ItemBed(Integer meta, int count) {
-        super(BlockID.BED, meta, count, DEFINITION);
+        super(BlockID.BED, meta, count, (String) null, DEFINITION);
     }
 
     public void internalAdjust() {

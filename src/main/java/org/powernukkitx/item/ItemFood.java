@@ -32,10 +32,6 @@ public abstract class ItemFood extends Item {
         this(id, meta, count, (String) null, FOOD);
     }
 
-    public ItemFood(String id, Integer meta, int count, ItemDefinition definition) {
-        this(id, meta, count, (String) null, definition);
-    }
-
     public ItemFood(String id, Integer meta, int count, String name) {
         this(id, meta, count, name, FOOD);
     }

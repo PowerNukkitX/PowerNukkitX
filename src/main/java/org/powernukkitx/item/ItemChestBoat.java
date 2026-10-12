@@ -41,7 +41,7 @@ public class ItemChestBoat extends Item {
     }
 
     public ItemChestBoat(Integer meta, int count, ItemDefinition definition) {
-        super(CHEST_BOAT, meta, count, definition);
+        super(CHEST_BOAT, meta, count, (String) null, definition);
         adjustName();
     }
 

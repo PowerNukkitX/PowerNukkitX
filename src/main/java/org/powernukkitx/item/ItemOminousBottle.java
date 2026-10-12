@@ -29,7 +29,7 @@ public class ItemOminousBottle extends Item {
     }
 
     public ItemOminousBottle(Integer meta, int count) {
-        super(OMINOUS_BOTTLE, meta, count, DEFINITION);
+        super(OMINOUS_BOTTLE, meta, count, (String) null, DEFINITION);
     }
 
     @Override

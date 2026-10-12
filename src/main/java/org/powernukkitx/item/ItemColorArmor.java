@@ -32,10 +32,6 @@ abstract public class ItemColorArmor extends ItemArmor {
         this(id, meta, count, (String) null, DEFINITION);
     }
 
-    public ItemColorArmor(String id, Integer meta, int count, ItemDefinition definition) {
-        this(id, meta, count, (String) null, definition);
-    }
-
     public ItemColorArmor(String id, Integer meta, int count, String name) {
         this(id, meta, count, name, DEFINITION);
     }

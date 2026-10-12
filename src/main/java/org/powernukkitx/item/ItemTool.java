@@ -107,10 +107,6 @@ public abstract class ItemTool extends Item {
         this(id, meta, count, (String) null, TOOL);
     }
 
-    public ItemTool(String id, Integer meta, int count, ItemDefinition definition) {
-        this(id, meta, count, (String) null, definition);
-    }
-
     public ItemTool(String id, Integer meta, int count, String name) {
         this(id, meta, count, name, TOOL);
     }

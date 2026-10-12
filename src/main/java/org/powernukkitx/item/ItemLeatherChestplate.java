@@ -19,6 +19,6 @@ public class ItemLeatherChestplate extends ItemColorArmor {
     }
 
     public ItemLeatherChestplate(Integer meta, int count) {
-        super(LEATHER_CHESTPLATE, meta, count, DEFINITION);
+        super(LEATHER_CHESTPLATE, meta, count, (String) null, DEFINITION);
     }
 }

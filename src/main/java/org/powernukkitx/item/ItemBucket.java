@@ -59,23 +59,19 @@ public class ItemBucket extends Item {
     }
 
     public ItemBucket(Integer meta, int count, ItemDefinition definition) {
-        super(BUCKET, meta, count, definition);
+        super(BUCKET, meta, count, (String) null, definition);
     }
 
     public ItemBucket(String id) {
-        this(id, 0, DEFINITION);
+        this(id, 0, (String) null, DEFINITION);
     }
 
     public ItemBucket(String id, ItemDefinition definition) {
-        this(id, 0, definition);
+        this(id, 0, (String) null, definition);
     }
 
     public ItemBucket(String id, int count) {
         this(id, count, (String) null, DEFINITION);
-    }
-
-    public ItemBucket(String id, int count, ItemDefinition definition) {
-        this(id, count, (String) null, definition);
     }
 
     public ItemBucket(String id, int count, String name) {

@@ -32,10 +32,6 @@ abstract public class ItemArmor extends Item {
         this(id, meta, count, (String) null, ARMOR);
     }
 
-    public ItemArmor(String id, Integer meta, int count, ItemDefinition definition) {
-        this(id, meta, count, (String) null, definition);
-    }
-
     public ItemArmor(String id, Integer meta, int count, String name) {
         this(id, meta, count, name, ARMOR);
     }

@@ -41,7 +41,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     private CompoundTag entityNBT;
 
     public ItemCustomEntitySpawnEgg() {
-        super(PLACEHOLDER_ID, 0, 1, DEFINITION);
+        super(PLACEHOLDER_ID, 0, 1, (String) null, DEFINITION);
         selfHealIdentifierFromNamedTag();
     }
 

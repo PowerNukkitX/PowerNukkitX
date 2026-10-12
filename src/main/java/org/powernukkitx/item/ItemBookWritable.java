@@ -40,10 +40,6 @@ public abstract class ItemBookWritable extends Item {
         this(id, meta, count, (String) null, DEFINITION);
     }
 
-    protected ItemBookWritable(String id, Integer meta, int count, ItemDefinition definition) {
-        this(id, meta, count, (String) null, definition);
-    }
-
     protected ItemBookWritable(String id, Integer meta, int count, String name) {
         this(id, meta, count, name, DEFINITION);
     }

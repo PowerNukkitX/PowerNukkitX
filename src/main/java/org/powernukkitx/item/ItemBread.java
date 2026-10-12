@@ -16,6 +16,6 @@ public class ItemBread extends ItemFood {
     }
 
     public ItemBread(int count) {
-        super(BREAD, 0, count, DEFINITION);
+        super(BREAD, 0, count, (String) null, DEFINITION);
     }
 }

@@ -202,10 +202,6 @@ public abstract class Item implements Cloneable, ItemID {
         this(id, meta, count, (String) null);
     }
 
-    public Item(@NotNull String id, int meta, int count, @Nullable ItemDefinition definition) {
-        this(id, meta, count, (String) null, true, definition);
-    }
-
     public Item(@NotNull String id, int meta, int count, @Nullable String name) {
         this(id, meta, count, name, true);
     }

@@ -45,7 +45,7 @@ public class ItemBoat extends Item {
     }
 
     public ItemBoat(Integer meta, int count, ItemDefinition definition) {
-        super(BOAT, meta, count, definition);
+        super(BOAT, meta, count, (String) null, definition);
     }
 
     public ItemBoat(String id) {
