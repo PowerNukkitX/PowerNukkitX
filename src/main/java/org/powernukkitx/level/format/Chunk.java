@@ -45,6 +45,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -87,8 +88,12 @@ public class Chunk implements IChunk {
      * built. Block edits are covered by per-section versions instead, see {@link NetworkPayload}.
      */
     private final AtomicBoolean networkPayloadStale = new AtomicBoolean(true);
-    private volatile NetworkPayload networkPayload;
-    private final AtomicReferenceArray<SectionNetworkPayload> sectionNetworkPayloads;
+    /**
+     * Payloads are soft so that every loaded chunk holding a copy of its terrain can't pin the
+     * heap. Losing one only costs a re-serialise on the next request.
+     */
+    private volatile SoftReference<NetworkPayload> networkPayload;
+    private final AtomicReferenceArray<SoftReference<SectionNetworkPayload>> sectionNetworkPayloads;
     /** Fits a section of up to 16 bits per block without regrowing the scratch buffer. */
     private static final int SECTION_PAYLOAD_INITIAL_CAPACITY = 8192;
 
@@ -1625,7 +1630,8 @@ public class Chunk implements IChunk {
     public @NotNull SectionNetworkPayload getSectionNetworkPayload(@NotNull ChunkSection section) {
         final int index = section.y() - getDimensionData().getMinSectionY();
         final long version = section.blockChanges().get();
-        final SectionNetworkPayload cached = this.sectionNetworkPayloads.get(index);
+        final SoftReference<SectionNetworkPayload> cachedRef = this.sectionNetworkPayloads.get(index);
+        final SectionNetworkPayload cached = cachedRef == null ? null : cachedRef.get();
         if (cached != null && cached.section == section && cached.version == version) {
             return cached;
         }
@@ -1637,7 +1643,7 @@ public class Chunk implements IChunk {
         } finally {
             buffer.release();
         }
-        this.sectionNetworkPayloads.set(index, created);
+        this.sectionNetworkPayloads.set(index, new SoftReference<>(created));
         return created;
     }
 
@@ -1663,7 +1669,8 @@ public class Chunk implements IChunk {
         if (this.networkPayloadStale.get()) {
             return null;
         }
-        final NetworkPayload payload = this.networkPayload;
+        final SoftReference<NetworkPayload> payloadRef = this.networkPayload;
+        final NetworkPayload payload = payloadRef == null ? null : payloadRef.get();
         if (payload == null) {
             return null;
         }
@@ -1695,7 +1702,7 @@ public class Chunk implements IChunk {
      */
     @ApiStatus.Internal
     public void setNetworkPayload(@NotNull NetworkPayload payload) {
-        this.networkPayload = payload;
+        this.networkPayload = new SoftReference<>(payload);
     }
 
     @Override
