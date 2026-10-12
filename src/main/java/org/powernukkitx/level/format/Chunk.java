@@ -45,7 +45,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,6 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -88,12 +88,13 @@ public class Chunk implements IChunk {
      * built. Block edits are covered by per-section versions instead, see {@link NetworkPayload}.
      */
     private final AtomicBoolean networkPayloadStale = new AtomicBoolean(true);
-    /**
-     * Payloads are soft so that every loaded chunk holding a copy of its terrain can't pin the
-     * heap. Losing one only costs a re-serialise on the next request.
-     */
-    private volatile SoftReference<NetworkPayload> networkPayload;
-    private final AtomicReferenceArray<SoftReference<SectionNetworkPayload>> sectionNetworkPayloads;
+    private final AtomicReference<NetworkPayload> networkPayload = new AtomicReference<>();
+    private volatile boolean holdsNetworkPayloads;
+    private volatile long networkPayloadLastUse;
+    private static final AtomicLong NETWORK_PAYLOAD_BYTES = new AtomicLong();
+    private static volatile long networkPayloadBudget = Runtime.getRuntime().maxMemory() / 10;
+    private static final long NETWORK_PAYLOAD_IDLE_NANOS = TimeUnit.SECONDS.toNanos(60);
+    private final AtomicReferenceArray<SectionNetworkPayload> sectionNetworkPayloads;
     /** Fits a section of up to 16 bits per block without regrowing the scratch buffer. */
     private static final int SECTION_PAYLOAD_INITIAL_CAPACITY = 8192;
 
@@ -521,7 +522,7 @@ public class Chunk implements IChunk {
         try {
             int index = fY - getDimensionData().getMinSectionY();
             this.sections[index] = section;
-            this.sectionNetworkPayloads.set(index, null);
+            dropSectionNetworkPayload(index);
 
             if (section != null) {
                 this.biomeSections[index] = section.biomes();
@@ -1415,6 +1416,7 @@ public class Chunk implements IChunk {
             this.available = false;
             this.discarded = true;
         }
+        releaseNetworkPayloads();
 
         for (Entity entity : new ArrayList<>(this.getEntities().values())) {
             if (entity instanceof Player) {
@@ -1630,9 +1632,9 @@ public class Chunk implements IChunk {
     public @NotNull SectionNetworkPayload getSectionNetworkPayload(@NotNull ChunkSection section) {
         final int index = section.y() - getDimensionData().getMinSectionY();
         final long version = section.blockChanges().get();
-        final SoftReference<SectionNetworkPayload> cachedRef = this.sectionNetworkPayloads.get(index);
-        final SectionNetworkPayload cached = cachedRef == null ? null : cachedRef.get();
+        final SectionNetworkPayload cached = this.sectionNetworkPayloads.get(index);
         if (cached != null && cached.section == section && cached.version == version) {
+            this.networkPayloadLastUse = System.nanoTime();
             return cached;
         }
         final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.heapBuffer(SECTION_PAYLOAD_INITIAL_CAPACITY);
@@ -1643,7 +1645,12 @@ public class Chunk implements IChunk {
         } finally {
             buffer.release();
         }
-        this.sectionNetworkPayloads.set(index, new SoftReference<>(created));
+        if (reserveNetworkPayloadBytes(created.data.length)) {
+            discardSectionNetworkPayload(this.sectionNetworkPayloads.getAndSet(index, created));
+            touchNetworkPayloads();
+        } else {
+            discardSectionNetworkPayload(this.sectionNetworkPayloads.getAndSet(index, null));
+        }
         return created;
     }
 
@@ -1669,8 +1676,7 @@ public class Chunk implements IChunk {
         if (this.networkPayloadStale.get()) {
             return null;
         }
-        final SoftReference<NetworkPayload> payloadRef = this.networkPayload;
-        final NetworkPayload payload = payloadRef == null ? null : payloadRef.get();
+        final NetworkPayload payload = this.networkPayload.get();
         if (payload == null) {
             return null;
         }
@@ -1682,6 +1688,7 @@ public class Chunk implements IChunk {
                 return null;
             }
         }
+        this.networkPayloadLastUse = System.nanoTime();
         return payload;
     }
 
@@ -1692,7 +1699,7 @@ public class Chunk implements IChunk {
      */
     @ApiStatus.Internal
     public void beginNetworkPayload() {
-        this.networkPayload = null;
+        discardNetworkPayload(this.networkPayload.getAndSet(null));
         this.networkPayloadStale.getAndSet(false);
     }
 
@@ -1702,8 +1709,103 @@ public class Chunk implements IChunk {
      */
     @ApiStatus.Internal
     public void setNetworkPayload(@NotNull NetworkPayload payload) {
-        this.networkPayload = new SoftReference<>(payload);
+        final SectionNetworkPayload[] payloadSections = payload.sections();
+        for (int i = 0; i < payloadSections.length; i++) {
+            if (payloadSections[i] != null && this.sectionNetworkPayloads.get(i) != payloadSections[i]) {
+                return;
+            }
+        }
+        if (!reserveNetworkPayloadBytes(payload.tail().length)) {
+            return;
+        }
+        discardNetworkPayload(this.networkPayload.getAndSet(payload));
+        touchNetworkPayloads();
     }
+
+    /**
+     * Drops this chunk's cached network payloads if none has been used for a minute. Called
+     * periodically from {@link org.powernukkitx.level.Level#doLevelGarbageCollection(boolean)}.
+     *
+     * @param now the current {@link System#nanoTime()}
+     */
+    @ApiStatus.Internal
+    public void expireNetworkPayloads(long now) {
+        if (this.holdsNetworkPayloads && now - this.networkPayloadLastUse >= NETWORK_PAYLOAD_IDLE_NANOS) {
+            releaseNetworkPayloads();
+        }
+    }
+
+    /**
+     * Drops every cached network payload of this chunk and returns its bytes to the shared budget.
+     * Safe to call from any thread.
+     */
+    @ApiStatus.Internal
+    public void releaseNetworkPayloads() {
+        this.holdsNetworkPayloads = false;
+        discardNetworkPayload(this.networkPayload.getAndSet(null));
+        for (int i = 0; i < this.sectionNetworkPayloads.length(); i++) {
+            final SectionNetworkPayload old = this.sectionNetworkPayloads.getAndSet(i, null);
+            if (old != null) {
+                releaseNetworkPayloadBytes(old.data.length);
+            }
+        }
+    }
+
+    /**
+     * @return bytes currently held by cached network payloads across all chunks, bounded by
+     * {@code chunk-settings.payloadCacheMemoryMb} and 10% of the maximum heap
+     */
+    @ApiStatus.Internal
+    public static long getCachedNetworkPayloadBytes() {
+        return NETWORK_PAYLOAD_BYTES.get();
+    }
+
+    void dropSectionNetworkPayload(int index) {
+        discardSectionNetworkPayload(this.sectionNetworkPayloads.getAndSet(index, null));
+    }
+
+    private void touchNetworkPayloads() {
+        this.networkPayloadLastUse = System.nanoTime();
+        this.holdsNetworkPayloads = true;
+    }
+
+    private void discardSectionNetworkPayload(@Nullable SectionNetworkPayload old) {
+        if (old != null) {
+            releaseNetworkPayloadBytes(old.data.length);
+            discardNetworkPayload(this.networkPayload.getAndSet(null));
+        }
+    }
+
+    private static void discardNetworkPayload(@Nullable NetworkPayload old) {
+        if (old != null) {
+            releaseNetworkPayloadBytes(old.tail().length);
+        }
+    }
+
+    private static boolean reserveNetworkPayloadBytes(long bytes) {
+        if (NETWORK_PAYLOAD_BYTES.addAndGet(bytes) <= networkPayloadBudget) {
+            return true;
+        }
+        releaseNetworkPayloadBytes(bytes);
+        return false;
+    }
+
+    private static void releaseNetworkPayloadBytes(long bytes) {
+        NETWORK_PAYLOAD_BYTES.addAndGet(-bytes);
+    }
+
+    /**
+     * Sets the shared budget for cached network payloads from
+     * {@code chunk-settings.payloadCacheMemoryMb}, capped at 10% of the maximum heap. Until this is
+     * called the budget is 10% of the maximum heap.
+     *
+     * @param megabytes the configured budget; {@code 0} or less disables caching
+     */
+    @ApiStatus.Internal
+    public static void setNetworkPayloadBudgetMb(int megabytes) {
+        networkPayloadBudget = Math.min(Runtime.getRuntime().maxMemory() / 10, Math.max(0, megabytes) * 1024L * 1024L);
+    }
+
 
     @Override
     public void setChanged(boolean changed) {

@@ -68,6 +68,7 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
@@ -400,6 +401,7 @@ public class Server {
             }
         }
         this.settings.save();
+        Chunk.setNetworkPayloadBudgetMb(this.settings.chunkSettings().payloadCacheMemoryMb());
         while (updateConfiguration()) {
             /* repeat until all configuration updates are applied */
         }

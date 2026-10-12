@@ -1270,6 +1270,11 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void close() {
+        for (IChunk chunk : this.chunks.values()) {
+            if (chunk instanceof Chunk concreteChunk) {
+                concreteChunk.releaseNetworkPayloads();
+            }
+        }
         flushWorldDynamicProperties();
         storage.getWorldMetadata().unregisterDimension(getDimensionData().getDimensionId());
         storage.close();

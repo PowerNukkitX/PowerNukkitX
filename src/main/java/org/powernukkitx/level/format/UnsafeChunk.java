@@ -133,6 +133,7 @@ public class UnsafeChunk {
     public void setSection(int fY, ChunkSection section) {
         int index = fY - getDimensionData().getMinSectionY();
         this.chunk.sections[index] = section;
+        this.chunk.dropSectionNetworkPayload(index);
 
         if (section != null) {
             this.chunk.biomeSections[index] = section.biomes();

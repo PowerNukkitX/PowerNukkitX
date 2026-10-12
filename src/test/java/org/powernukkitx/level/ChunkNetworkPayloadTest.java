@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.concurrent.TimeUnit;
+
 @ExtendWith({GameMockExtension.class})
 public class ChunkNetworkPayloadTest {
     private static Chunk chunkWithBlock(LevelProvider provider, int chunkX) {
@@ -146,6 +148,48 @@ public class ChunkNetworkPayloadTest {
         byte[] edited = requestChunkBytes(levelDBProvider, chunk);
         Assertions.assertFalse(java.util.Arrays.equals(fresh, edited));
         Assertions.assertArrayEquals(edited, requestChunkBytes(levelDBProvider, chunk));
+    }
+
+    @Test
+    void testReleaseReturnsBytesToBudget(LevelProvider levelDBProvider) {
+        long before = Chunk.getCachedNetworkPayloadBytes();
+        Chunk chunk = chunkWithBlock(levelDBProvider, 14);
+        cachePayload(chunk);
+        Assertions.assertTrue(Chunk.getCachedNetworkPayloadBytes() > before);
+        chunk.releaseNetworkPayloads();
+        Assertions.assertEquals(before, Chunk.getCachedNetworkPayloadBytes());
+        Assertions.assertNull(chunk.getNetworkPayload());
+    }
+
+    @Test
+    void testIdlePayloadsExpire(LevelProvider levelDBProvider) {
+        long before = Chunk.getCachedNetworkPayloadBytes();
+        Chunk chunk = chunkWithBlock(levelDBProvider, 11);
+        Chunk.NetworkPayload payload = cachePayload(chunk);
+        chunk.expireNetworkPayloads(System.nanoTime());
+        Assertions.assertSame(payload, chunk.getNetworkPayload());
+        chunk.expireNetworkPayloads(System.nanoTime() + TimeUnit.SECONDS.toNanos(61));
+        Assertions.assertNull(chunk.getNetworkPayload());
+        Assertions.assertEquals(before, Chunk.getCachedNetworkPayloadBytes());
+    }
+
+    @Test
+    void testUnloadReleasesPayloads(LevelProvider levelDBProvider) {
+        long before = Chunk.getCachedNetworkPayloadBytes();
+        Chunk chunk = chunkWithBlock(levelDBProvider, 12);
+        cachePayload(chunk);
+        chunk.unload(false, false);
+        Assertions.assertEquals(before, Chunk.getCachedNetworkPayloadBytes());
+    }
+
+    @Test
+    void testSetSectionDropsReplacedPayloads(LevelProvider levelDBProvider) {
+        Chunk chunk = chunkWithBlock(levelDBProvider, 13);
+        cachePayload(chunk);
+        long cached = Chunk.getCachedNetworkPayloadBytes();
+        chunk.setSection(100 >> 4, new ChunkSection((byte) (100 >> 4)));
+        Assertions.assertNull(chunk.getNetworkPayload());
+        Assertions.assertTrue(Chunk.getCachedNetworkPayloadBytes() < cached);
     }
 
     private static byte[] requestChunkBytes(LevelProvider provider, Chunk chunk) {

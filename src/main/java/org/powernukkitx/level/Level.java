@@ -7088,10 +7088,14 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
             //gcDeadChunks
+            final long now = System.nanoTime();
             for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
                 long index = entry.getKey();
+                IChunk chunk = entry.getValue();
+                if (chunk instanceof Chunk concreteChunk) {
+                    concreteChunk.expireNetworkPayloads(now);
+                }
                 if (!this.unloadQueue.containsKey(index)) {
-                    IChunk chunk = entry.getValue();
                     int X = chunk.getX();
                     int Z = chunk.getZ();
                     this.unloadChunkRequest(X, Z, true);
