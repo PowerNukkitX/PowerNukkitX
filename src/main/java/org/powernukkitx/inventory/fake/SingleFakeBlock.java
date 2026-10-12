@@ -11,20 +11,19 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.RuntimeBlockDefinition;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public class SingleFakeBlock implements FakeBlock {
     protected final Block block;
     protected final String tileId;
-    protected final Map<Player, HashSet<Vector3>> lastPositions = new ConcurrentHashMap<>();
+    protected Object2ObjectArrayMap<Player, HashSet<Vector3>> lastPositions = new Object2ObjectArrayMap<>();
 
     public SingleFakeBlock(String blockId) {
         this.block = Block.get(blockId);

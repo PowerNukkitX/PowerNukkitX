@@ -16,6 +16,7 @@ import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -90,18 +93,22 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * Stores the number of gt elapsed since each core behavior was last evaluated
      */
+    @Getter(AccessLevel.NONE)
     protected final int[] coreBehaviorPeriodTimer;
     /**
      * Stores the number of gt elapsed since each behavior was last evaluated
      */
+    @Getter(AccessLevel.NONE)
     protected final int[] behaviorPeriodTimer;
     /**
      * Stores the number of gt elapsed since each sensor was last refreshed
      */
+    @Getter(AccessLevel.NONE)
     protected final int[] sensorPeriodTimer;
     /**
      * Reusable buffer holding the indices into {@link #behaviorArray} that evaluated successfully
      */
+    @Getter(AccessLevel.NONE)
     private final int[] evalSucceedBuffer;
     /**
      * Memory storage
@@ -568,6 +575,45 @@ public class BehaviorGroup implements IBehaviorGroup {
             return originalDelay << 2;
         }
         return originalDelay;
+    }
+
+    /**
+     * Snapshot of the core behavior gt counters. The timers live in an int array now, so writing to
+     * the returned map no longer changes anything.
+     *
+     * @deprecated read-only compatibility view, will be removed
+     */
+    @Deprecated
+    public Map<IBehavior, Integer> getCoreBehaviorPeriodTimer() {
+        return timerSnapshot(coreBehaviorArray, coreBehaviorPeriodTimer);
+    }
+
+    /**
+     * Snapshot of the behavior gt counters, see {@link #getCoreBehaviorPeriodTimer()}.
+     *
+     * @deprecated read-only compatibility view, will be removed
+     */
+    @Deprecated
+    public Map<IBehavior, Integer> getBehaviorPeriodTimer() {
+        return timerSnapshot(behaviorArray, behaviorPeriodTimer);
+    }
+
+    /**
+     * Snapshot of the sensor gt counters, see {@link #getCoreBehaviorPeriodTimer()}.
+     *
+     * @deprecated read-only compatibility view, will be removed
+     */
+    @Deprecated
+    public Map<ISensor, Integer> getSensorPeriodTimer() {
+        return timerSnapshot(sensorArray, sensorPeriodTimer);
+    }
+
+    private static <T> Map<T, Integer> timerSnapshot(T[] keys, int[] timers) {
+        Map<T, Integer> snapshot = new IdentityHashMap<>(keys.length);
+        for (int i = 0; i < keys.length; i++) {
+            snapshot.put(keys[i], timers[i]);
+        }
+        return Collections.unmodifiableMap(snapshot);
     }
 
     protected void initPeriodTimer() {

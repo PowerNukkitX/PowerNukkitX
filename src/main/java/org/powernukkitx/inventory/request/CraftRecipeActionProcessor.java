@@ -53,6 +53,12 @@ import java.util.Optional;
 public class CraftRecipeActionProcessor implements ItemStackRequestActionProcessor<CraftRecipeAction> {
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
+    /**
+     * @deprecated use {@link ItemStackRequestContext#isServerConsumed} with
+     * {@link ContainerEnumName#CRAFTING_INPUT_CONTAINER}. Still set for plugins that read it.
+     */
+    @Deprecated
+    public static final String GRID_CONSUMED_KEY = "grid_consumed";
     static final String MULTI_RESULT_KEY = "multi_result";
 
     private Item computeMultiRecipeResult(Item[][] data) {
@@ -279,6 +285,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 }
             }
             context.markServerConsumed(ContainerEnumName.CRAFTING_INPUT_CONTAINER);
+            context.put(GRID_CONSUMED_KEY, true);
             player.getRecipeBook().unlock(recipe);
             if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
                 context.put(RECIPE_DATA_KEY, recipe);
