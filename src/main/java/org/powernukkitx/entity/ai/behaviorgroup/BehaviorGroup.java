@@ -47,6 +47,12 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     private static final double ROUTE_TARGET_EPSILON_SQUARED = 1.0;
 
+    /**
+     * How far an active entity may stray from the node it is walking to, squared, before the cached
+     * route is considered lost (knockback, getting pushed, falling off a ledge).
+     */
+    private static final double ROUTE_DRIFT_SQUARED = 9.0;
+
 
     /**
      * "Core" behaviors that will not be overridden by other behaviors
@@ -443,6 +449,12 @@ public class BehaviorGroup implements IBehaviorGroup {
         //applies, otherwise a wall built across the cached route would never be noticed.
         if (entity.isActive()) {
             if (current.distanceSquared(lastTarget) >= ROUTE_TARGET_EPSILON_SQUARED) return true;
+            //the cached route only helps while the entity is still walking it. A partial route that
+            //ran out short of a target that sits still, or a mob knocked off its path, never moves
+            //the target, so without these two checks it would just stand there forever
+            if (!this.routeFinder.hasNext()) return true;
+            Node node = this.routeFinder.getCurrentNode();
+            if (node == null || entity.distanceSquared(node.getVector3()) >= ROUTE_DRIFT_SQUARED) return true;
         } else if (hasNewUnCalMoveTarget(entity)) {
             //the endpoint changed, so recalculation is needed
             return true;
