@@ -1406,6 +1406,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 y + height,
                 z + radius
         );
+        // a bigger box (setScale and friends) has to widen the chunk's Y index reach too, but only
+        // once the chunk actually indexed us, otherwise the constructor would index a half built entity
+        if (this.chunkSectionIndex >= 0) {
+            updateChunkSection();
+        }
 
         boolean change = false;
         if (!this.getActorDataMap().containsKey(ActorDataTypes.HEIGHT) || this.getActorDataMap().get(ActorDataTypes.HEIGHT) != entityHeight) {

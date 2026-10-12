@@ -27,6 +27,7 @@ import org.powernukkitx.level.structure.spawn.SpawnOverrideState;
 import org.powernukkitx.level.structure.spawn.StructureSpawnHandler;
 import org.powernukkitx.level.structure.spawn.StructureSpawnerData;
 import org.powernukkitx.level.structure.spawn.StructureSpawnerEntry;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
@@ -1100,10 +1101,7 @@ public class Chunk implements IChunk {
         if (entitySection(section).put(entity.getId(), entity) == null) {
             this.indexedEntityCount.incrementAndGet();
         }
-        double height = entity.getHeight();
-        if (height > this.maxIndexedEntityHeight) {
-            this.maxIndexedEntityHeight = height;
-        }
+        trackEntityHeight(entity);
         entity.chunkSectionIndex = section;
     }
 
@@ -1122,10 +1120,6 @@ public class Chunk implements IChunk {
     }
 
     /**
-     * Re-buckets an entity whose Y has moved it into another section. Called from the same place
-     * that re-buckets an entity between chunks, so the two indexes stay in step.
-     */
-    /**
      * Places an entity in its bucket unconditionally, dropping any bucket of this chunk it was
      * previously in. Used when an entity joins this chunk: it may already carry the section index
      * it held in a different chunk, so {@link #updateEntitySection} - which short-circuits when the
@@ -1141,10 +1135,30 @@ public class Chunk implements IChunk {
         indexEntitySection(entity, section);
     }
 
+    /**
+     * Grows {@link #maxIndexedEntityHeight} to cover how far this entity reaches above its feet.
+     * Has to read the live bounding box rather than {@code getHeight()}: scale multiplies the box,
+     * so a scaled-up mob reaches well past its default height.
+     */
+    private void trackEntityHeight(Entity entity) {
+        AxisAlignedBB bb = entity.boundingBox;
+        if (bb == null) return;
+        double reach = bb.getMaxY() - entity.y;
+        if (reach > this.maxIndexedEntityHeight) {
+            this.maxIndexedEntityHeight = reach;
+        }
+    }
+
+    /**
+     * Re-buckets an entity whose Y has moved it into another section. Called from the same place
+     * that re-buckets an entity between chunks, so the two indexes stay in step. Also called when
+     * the entity's box changes size, which is why the height is tracked before the early return.
+     */
     public void updateEntitySection(Entity entity) {
         int section = sectionIndexOf(entity.y);
         int previous = entity.chunkSectionIndex;
         if (section == previous) {
+            trackEntityHeight(entity);
             return;
         }
         if (previous >= 0 && previous < this.entitySections.length()
