@@ -258,6 +258,9 @@ public abstract class Item implements Cloneable, ItemID {
      * <p>
      * The components are still exposed as mutable tags, so the folded result is only reused while
      * they match the snapshot it was built from. Mutating them is picked up on the next call.
+     * <p>
+     * That check walks the whole component tree, so getters for values no component can set read
+     * {@link #definition} directly instead. Keep it that way for anything called every tick.
      */
     @NotNull
     protected final ItemDefinition definition() {
@@ -283,7 +286,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean canBeActivated() {
-        return definition().isCanBeActivated();
+        return this.definition.isCanBeActivated();
     }
 
     public static Item get(String id) {
@@ -411,7 +414,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Whether the item can be enchanted
      */
     public boolean applyEnchantments() {
-        return definition().isApplyEnchantments();
+        return this.definition.isApplyEnchantments();
     }
 
     public boolean hasEnchantments() {
@@ -1719,7 +1722,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return {@code true} if it can act like a bone meal
      */
     public boolean isFertilizer() {
-        return definition().isFertilizer();
+        return this.definition.isFertilizer();
     }
 
 
@@ -2088,7 +2091,7 @@ public abstract class Item implements Cloneable, ItemID {
 
 
     public int getUsingTicks() {
-        int ticks = definition().getUsingTicks();
+        int ticks = this.definition.getUsingTicks();
         if (ticks > 0) {
             return ticks;
         }
@@ -2103,21 +2106,21 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if the item is Unbreakable
      */
     public boolean isUnbreakable() {
-        return definition().isUnbreakable();
+        return this.definition.isUnbreakable();
     }
 
     /**
      * Define the item Tier level
      */
     public int getTier() {
-        return definition().getTier();
+        return this.definition.getTier();
     }
 
     /**
      * Define the enchantment of an item
      */
     public int getEnchantAbility() {
-        return definition().getEnchantAbility();
+        return this.definition.getEnchantAbility();
     }
 
     /**
@@ -2126,7 +2129,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @since 1.4.0.0-PN
      */
     public boolean isLavaResistant() {
-        return definition().isLavaResistant();
+        return this.definition.isLavaResistant();
     }
 
     /**
@@ -2157,7 +2160,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return whether the item should take damage when used to attack entities
      */
     public boolean noDamageOnAttack() {
-        return definition().isNoDamageOnAttack();
+        return this.definition.isNoDamageOnAttack();
     }
 
     /**
@@ -2166,7 +2169,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return whether the item should take damage when used to break blocks
      */
     public boolean noDamageOnBreak() {
-        return definition().isNoDamageOnBreak();
+        return this.definition.isNoDamageOnBreak();
     }
 
     /**
@@ -2186,7 +2189,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return true if the item can be consumed, otherwise {@link #isEdible()}
      */
     public boolean isConsumable() {
-        return definition().isConsumable() || this.isEdible();
+        return this.definition.isConsumable() || this.isEdible();
     }
 
     public boolean isEdible() {
@@ -2336,7 +2339,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean isArmor() {
-        return definition().isArmor() || isWearable();
+        return this.definition.isArmor() || isWearable();
     }
 
     public @NotNull ItemArmorType getWearableType() {
@@ -2399,7 +2402,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the Armor Toughness of an item
      */
     public int getToughness() {
-        return definition().getToughness();
+        return this.definition.getToughness();
     }
 
     public boolean wearableOnClickAir(Player player, Vector3 directionVector) {
@@ -2467,7 +2470,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return armor knockback resistance
      */
     public float getKnockbackResistance() {
-        return definition().getKnockbackResistance();
+        return this.definition.getKnockbackResistance();
     }
 
 
@@ -2585,7 +2588,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if the item can break the shield
      */
     public boolean canBreakShield() {
-        return definition().isCanBreakShield();
+        return this.definition.isCanBreakShield();
     }
 
     /**
