@@ -40,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -1844,26 +1845,33 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     private static final String FLOWING_PREFIX = "flowing_";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-    private static volatile List<String> tickingDisabledSource;
-    private static volatile String[] tickingDisabledNormalized = EMPTY_STRING_ARRAY;
+    /**
+     * Copy of the settings list the normalized ids were built from. Kept together in one object so
+     * a reader never pairs a new source with old normalized ids.
+     */
+    private record TickingDisabledCache(List<String> source, String[] normalized) {
+    }
 
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    private static volatile TickingDisabledCache tickingDisabledCache = new TickingDisabledCache(List.of(), EMPTY_STRING_ARRAY);
+
     public static boolean isTickingDisabled(Level level, String id) {
         if (level == null) return false;
 
         List<String> disabledList = level.getServer().getSettings().chunkSettings().disableBlockTicking();
         if (disabledList == null || disabledList.isEmpty()) return false;
 
-        String[] normalized = tickingDisabledNormalized;
-        // identity check on purpose: we only want to renormalize when the settings list instance itself changes
-        if (disabledList != tickingDisabledSource) {
-            normalized = new String[disabledList.size()];
+        // compared by content, the settings hand out a plain ArrayList that can be edited in place.
+        // the elements are the same String instances between edits, so equals mostly stops at ==
+        TickingDisabledCache cache = tickingDisabledCache;
+        if (!cache.source().equals(disabledList)) {
+            String[] normalized = new String[disabledList.size()];
             for (int i = 0; i < normalized.length; i++) {
                 normalized[i] = stripBlockIdPrefixes(disabledList.get(i));
             }
-            tickingDisabledNormalized = normalized;
-            tickingDisabledSource = disabledList;
+            cache = new TickingDisabledCache(new ArrayList<>(disabledList), normalized);
+            tickingDisabledCache = cache;
         }
+        String[] normalized = cache.normalized();
 
         int offset = 0;
         if (id.regionMatches(true, 0, MINECRAFT_NAMESPACE, 0, MINECRAFT_NAMESPACE.length())) {
