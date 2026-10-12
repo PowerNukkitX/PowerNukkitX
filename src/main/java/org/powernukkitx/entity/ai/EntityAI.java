@@ -54,7 +54,11 @@ public final class EntityAI {
     }
 
     /**
-     * Starts declaring the AI of the given entity.
+     * Starts declaring the AI of the given entity. Every call gives a fresh declaration, since behaviors,
+     * sensors and route finders hold on to the entity they were made for.
+     *
+     * @param entity the entity the AI is built for
+     * @return an empty declaration bound to {@code entity}
      */
     public static EntityAI of(@NotNull EntityIntelligent entity) {
         return new EntityAI(entity);
@@ -91,26 +95,61 @@ public final class EntityAI {
         return routeParticleSpawnInterval;
     }
 
+    /**
+     * Adds sensors to the AI. Calling this more than once keeps the sensors added before, and adding the
+     * same sensor instance twice has no effect. Don't rely on the order sensors run in.
+     *
+     * @param sensors the sensors to add, none of them may be {@code null}
+     * @return this declaration
+     * @throws NullPointerException if {@code sensors} or one of its elements is {@code null}
+     */
     public EntityAI sensors(@NotNull ISensor... sensors) {
         this.sensors.addAll(List.of(sensors));
         return this;
     }
 
+    /**
+     * Same as {@link #sensors(ISensor...)}, for sensors that are already in a collection.
+     *
+     * @param sensors the sensors to add
+     * @return this declaration
+     */
     public EntityAI sensors(@NotNull Collection<ISensor> sensors) {
         this.sensors.addAll(sensors);
         return this;
     }
 
+    /**
+     * Adds controllers to the AI. Like sensors, controllers add up across calls, a duplicate instance is
+     * ignored, and the order they are applied in is not guaranteed.
+     *
+     * @param controllers the controllers to add, none of them may be {@code null}
+     * @return this declaration
+     * @throws NullPointerException if {@code controllers} or one of its elements is {@code null}
+     */
     public EntityAI controllers(@NotNull IController... controllers) {
         this.controllers.addAll(List.of(controllers));
         return this;
     }
 
+    /**
+     * Same as {@link #controllers(IController...)}, for controllers that are already in a collection.
+     *
+     * @param controllers the controllers to add
+     * @return this declaration
+     */
     public EntityAI controllers(@NotNull Collection<IController> controllers) {
         this.controllers.addAll(controllers);
         return this;
     }
 
+    /**
+     * Sets the pathfinder the entity moves with. Only the last call counts. Nothing checks for {@code null}
+     * here, so leave it unset only if the entity never gets a move target.
+     *
+     * @param routeFinder the pathfinder, usually created for this same entity
+     * @return this declaration
+     */
     public EntityAI routeFinder(IRouteFinder routeFinder) {
         this.routeFinder = routeFinder;
         return this;
@@ -142,6 +181,12 @@ public final class EntityAI {
         return new BehaviorSpec(builder, null);
     }
 
+    /**
+     * Turns the declaration into a behavior group, assigning priorities from the declaration order. Call it
+     * once all behaviors are declared, usually as the return value of {@code requireBehaviorGroup()}.
+     *
+     * @return a new behavior group for the entity
+     */
     public IBehaviorGroup build() {
         return BehaviorGroup.builder(entity)
                 .behaviors(buildBehaviors())
@@ -269,26 +314,44 @@ public final class EntityAI {
             return this;
         }
 
+        /**
+         * Shortcut for {@link EntityAI#behavior(IBehaviorExecutor)}, so the chain doesn't have to break.
+         */
         public BehaviorSpec behavior(@NotNull IBehaviorExecutor executor) {
             return EntityAI.this.behavior(executor);
         }
 
+        /**
+         * Shortcut for {@link EntityAI#coreBehavior(IBehaviorExecutor)}.
+         */
         public BehaviorSpec coreBehavior(@NotNull IBehaviorExecutor executor) {
             return EntityAI.this.coreBehavior(executor);
         }
 
+        /**
+         * Shortcut for {@link EntityAI#sensors(ISensor...)}.
+         */
         public EntityAI sensors(@NotNull ISensor... sensors) {
             return EntityAI.this.sensors(sensors);
         }
 
+        /**
+         * Shortcut for {@link EntityAI#controllers(IController...)}.
+         */
         public EntityAI controllers(@NotNull IController... controllers) {
             return EntityAI.this.controllers(controllers);
         }
 
+        /**
+         * Shortcut for {@link EntityAI#routeFinder(IRouteFinder)}.
+         */
         public EntityAI routeFinder(IRouteFinder routeFinder) {
             return EntityAI.this.routeFinder(routeFinder);
         }
 
+        /**
+         * Shortcut for {@link EntityAI#build()}.
+         */
         public IBehaviorGroup build() {
             return EntityAI.this.build();
         }
