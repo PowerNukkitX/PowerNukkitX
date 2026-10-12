@@ -77,6 +77,14 @@ public final class ClientBlobCacheManager {
     public static Blob rememberBlob(ByteBuf buffer) {
         final byte[] data = new byte[buffer.readableBytes()];
         buffer.getBytes(buffer.readerIndex(), data);
+        return rememberBlob(data);
+    }
+
+    /**
+     * Remembers a blob without copying it. The caller must not modify {@code data} afterwards,
+     * since the cache and every transfer hold the same array.
+     */
+    public static Blob rememberBlob(byte[] data) {
         final long id = xxHash64(data);
         BLOBS.put(id, data);
         return new Blob(id, data);
