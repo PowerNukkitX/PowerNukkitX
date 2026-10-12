@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.enums.WoodType;
 import org.powernukkitx.registry.Registries;
 
@@ -12,6 +14,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.PILLAR_AXIS;
 public abstract class BlockWood extends BlockLog {
     public BlockWood(BlockState blockstate) {
         super(blockstate);
+    }
+
+    public BlockWood(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public abstract WoodType getWoodType();

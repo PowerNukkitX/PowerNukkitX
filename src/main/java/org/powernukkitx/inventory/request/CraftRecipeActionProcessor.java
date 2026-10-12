@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Allay Project 2023/12/1
@@ -54,6 +55,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
     public static final String GRID_CONSUMED_KEY = "grid_consumed";
     static final String MULTI_RESULT_KEY = "multi_result";
+    static final UUID REPAIR_ITEM_RECIPE_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     private Item computeMultiRecipeResult(Item[][] data) {
         ItemShield shield = null;
@@ -79,6 +81,38 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             return result;
         }
         return null;
+    }
+
+    static Item computeRepairRecipeResult(Item[][] data) {
+        Item first = null;
+        Item second = null;
+        for (Item[] row : data) {
+            for (Item ingredient : row) {
+                if (ingredient == null || ingredient.isNull()) continue;
+                if (first == null) {
+                    first = ingredient;
+                } else if (second == null) {
+                    second = ingredient;
+                } else {
+                    return null;
+                }
+            }
+        }
+        if (first == null || second == null || first.getCount() != 1 || second.getCount() != 1
+                || !first.getId().equals(second.getId()) || !first.canTakeDamage()
+                || first.getMaxDurability() <= 0 || first.getMaxDurability() != second.getMaxDurability()) {
+            return null;
+        }
+
+        int maxDurability = first.getMaxDurability();
+        int remainingDurability = maxDurability - first.getDamage()
+                + maxDurability - second.getDamage()
+                + maxDurability * 5 / 100;
+        int resultingDamage = Math.max(maxDurability - remainingDurability + 1, 0);
+        Item result = first.clone().clearNamedTag();
+        result.setCount(1);
+        result.setDamage(resultingDamage);
+        return result;
     }
 
     public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
@@ -260,8 +294,15 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         } else {
             Inventory craftInventory = (Inventory) craft;
             Item multiResult = null;
-            if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
-                multiResult = computeMultiRecipeResult(data);
+            if (recipe instanceof MultiRecipe multiRecipe && recipe.getResults().isEmpty()) {
+                if (REPAIR_ITEM_RECIPE_ID.equals(multiRecipe.getId())) {
+                    multiResult = computeRepairRecipeResult(data);
+                    if (multiResult == null || multiResult.isNull()) {
+                        return context.error();
+                    }
+                } else {
+                    multiResult = computeMultiRecipeResult(data);
+                }
             }
             if (recipe instanceof ShapelessRecipe shapelessRecipe) {
                 if (!consumeShapelessRecipe(shapelessRecipe, craftInventory, numberOfRequestedCrafts)) {

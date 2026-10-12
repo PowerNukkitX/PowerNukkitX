@@ -1,11 +1,16 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
 
 public class BlockCopperTorch extends BlockTorch {
     public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_TORCH, TORCH_FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockTorch.DEFINITION.toBuilder()
+            .lightEmission(14)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,7 +22,7 @@ public class BlockCopperTorch extends BlockTorch {
     }
 
     public BlockCopperTorch(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -25,8 +30,4 @@ public class BlockCopperTorch extends BlockTorch {
         return "Copper Torch";
     }
 
-    @Override
-    public int getLightLevel() {
-        return 14;
     }
-}

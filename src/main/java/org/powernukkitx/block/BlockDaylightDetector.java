@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -21,6 +23,14 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDaylightDetector extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .isSolid(false)
+            .isPowerSource(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -32,7 +42,11 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     public BlockDaylightDetector(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
+    }
+
+    public BlockDaylightDetector(BlockState state, BlockDefinition definition) {
+        super(state, definition);
     }
 
     @Override
@@ -51,23 +65,8 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
     public int getLightFilter() {
         return 0;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     @Override
@@ -75,11 +74,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         return new ItemBlock(new BlockDaylightDetector(), 0);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
@@ -139,11 +134,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         return getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL);
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     public boolean isInverted() {
         return false;
     }
@@ -177,11 +168,6 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
             level.setBlock(this, this, false, true);
             updateAroundRedstone();
         }
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

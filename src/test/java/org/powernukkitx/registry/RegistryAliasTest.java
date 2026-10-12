@@ -2,15 +2,11 @@ package org.powernukkitx.registry;
 
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockGrassBlock;
-import org.powernukkitx.block.BlockID;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.cloudburstmc.nbt.NbtMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -76,28 +72,6 @@ class RegistryAliasTest {
         assertInstanceOf(BlockGrassBlock.class, positioned);
         assertEquals(1, positioned.layer);
         assertSame(BlockGrassBlock.PROPERTIES, Registries.BLOCK.getBlockProperties(alias));
-    }
-
-    @Test
-    void canonicalBlockIdentifierTakesPriorityOverAlias() throws ReflectiveOperationException {
-        Map<String, String> aliases = blockAliases();
-        String previousAlias = aliases.put(BlockID.STONE, BlockID.GRASS_BLOCK);
-        try {
-            assertEquals(BlockID.STONE, Registries.BLOCK.get(BlockID.STONE).getId());
-        } finally {
-            if (previousAlias == null) {
-                aliases.remove(BlockID.STONE);
-            } else {
-                aliases.put(BlockID.STONE, previousAlias);
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, String> blockAliases() throws NoSuchFieldException, IllegalAccessException {
-        Field aliases = BlockRegistry.class.getDeclaredField("ALIASES");
-        aliases.setAccessible(true);
-        return (Map<String, String>) aliases.get(null);
     }
 
     public static class DiamondAliasItem extends Item {

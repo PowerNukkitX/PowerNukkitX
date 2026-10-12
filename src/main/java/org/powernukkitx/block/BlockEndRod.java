@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -19,6 +21,14 @@ import javax.annotation.Nullable;
  */
 public class BlockEndRod extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(END_ROD, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .lightEmission(14)
+            .canBeFlowedInto(false)
+            .waterloggingLevel(2)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -30,32 +40,12 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
     }
 
     public BlockEndRod(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "End Rod";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 14;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -76,16 +66,6 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
     @Override
     public double getMaxZ() {
         return this.z + 0.6;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

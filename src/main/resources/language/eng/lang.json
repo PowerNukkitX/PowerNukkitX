@@ -143,7 +143,7 @@
   "pnx.settings.level.autotickrate": "Whether the server dynamically adjusts the tick rate",
   "pnx.settings.level.autotickratelimit": "Maximum adjustable tick count",
   "pnx.settings.level.basetickrate": "Base tick rate",
-  "pnx.settings.level.alwaysTickPlayers": "Whether to tick players",
+  "pnx.settings.level.alwaystickplayers": "Whether to tick all players from the main loop before the levels tick, instead of during their level's tick. Has no effect when levelThread is enabled",
   "pnx.settings.level.loadalllevels": "Whether to load all levels",
   "pnx.settings.level.chunkunloaddelay": "Chunk unload tick cycle",
   "pnx.settings.level.entityspawncap": "Limits how many entites can spawn in a world",

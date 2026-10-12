@@ -632,13 +632,29 @@ public class Server {
                 );
             }
 
+            String configuredDPGroupUUID = settings.miscSettings().defaultDynamicPropertiesGroupUUID();
+            configuredDPGroupUUID = configuredDPGroupUUID == null ? "" : configuredDPGroupUUID.trim();
+            if (!configuredDPGroupUUID.isEmpty()) {
+                try {
+                    configuredDPGroupUUID = UUID.fromString(configuredDPGroupUUID).toString();
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalStateException("Invalid misc-settings.defaultDynamicPropertiesGroupUUID", e);
+                }
+            }
+
             byte[] dynamicPropertiesUUID = serverDataDB.get(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY);
-            if (dynamicPropertiesUUID == null) {
-                DP_DEFAULT_GROUP_UUID = UUID.randomUUID().toString();
-                serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, DP_DEFAULT_GROUP_UUID.getBytes(StandardCharsets.UTF_8)
-                );
-            } else {
-                DP_DEFAULT_GROUP_UUID = UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
+            String persistedDPGroupUUID = dynamicPropertiesUUID == null ? null
+                : UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
+
+            initializeDefaultDynamicPropertiesGroupUUID(configuredDPGroupUUID, persistedDPGroupUUID);
+
+            if (!DP_DEFAULT_GROUP_UUID.equals(persistedDPGroupUUID)) {
+                if (persistedDPGroupUUID != null) {
+                    log.warn("Overriding persisted Dynamic Properties UUID '{}' with configured UUID '{}'",
+                        persistedDPGroupUUID, DP_DEFAULT_GROUP_UUID);
+                }
+                serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY,
+                    DP_DEFAULT_GROUP_UUID.getBytes(StandardCharsets.UTF_8));
             }
 
             dynamicProperties = new DynamicProperties(this::readServerDynamicProperties, this::writeServerDynamicProperties);
@@ -1161,8 +1177,8 @@ public class Server {
     }
 
     private void checkTickUpdates(int currentTick) {
-        boolean tickPlayers = getSettings().levelSettings().alwaysTickPlayers();
-        for (Player player : new ArrayList<>(this.players.values())) {
+        boolean tickPlayers = !this.levelThreadMode && getSettings().levelSettings().alwaysTickPlayers();
+        for (Player player : this.players.values()) {
             if (tickPlayers) player.onUpdate(currentTick);
             player.checkNetwork();
         }
@@ -1172,50 +1188,25 @@ public class Server {
         if (!this.levelThreadMode) {
             for (Level level : this.levelArray) {
                 if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
+                    for (Player player : level.getPlayers().values()) {
+                        try {
+                            if (!tickPlayers && player.spawned) player.onUpdate(currentTick);
+                        } catch (Exception e) {
+                            log.error(this.getLanguage().tr("nukkit.level.tickError",
+                                level.getFolderPath(), Utils.getExceptionMessage(e)), e);
+                        }
+                    }
+                    level.releaseTickCachedBlocks();
                     continue;
                 }
 
                 try {
-                    long levelTimeNano = System.nanoTime();
                     // Ensures that the server won't try to tick a level without providers.
                     if (level.getProvider().getLevel() == null) {
                         log.warn("Tried to tick Level {} without a provider!", level.getName());
                         continue;
                     }
-                    level.doTick(currentTick);
-                    long tickNanos = System.nanoTime() - levelTimeNano;
-                    int tickMs = (int) (tickNanos / 1_000_000L);
-                    level.tickRateTime = tickMs;
-                    level.tickRateTimeNanos = tickNanos;
-                    if ((currentTick & 511) == 0) { // % 511
-                        level.tickRateOptDelay = level.recalcTickOptDelay();
-                    }
-
-                    if (getSettings().levelSettings().autoTickRate()) {
-                        long nanosPerTick = getNanosPerTick();
-                        if (tickNanos < nanosPerTick && level.getTickRate() > baseTickRate) {
-                            int r;
-                            level.setTickRate(r = level.getTickRate() - 1);
-                            if (r > baseTickRate) {
-                                level.tickRateCounter = level.getTickRate();
-                            }
-                            log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(),
-                                level.getTickRate());
-                        } else if (tickNanos >= nanosPerTick) {
-                            int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
-                            if (level.getTickRate() == baseTickRate) {
-                                level.setTickRate(Math.max(baseTickRate + 1, (int) Math.min(autoTickRateLimit, tickNanos / nanosPerTick)));
-                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
-                                    NukkitMath.round(tickMs, 2), level.getTickRate());
-                            } else if ((tickNanos / level.getTickRate()) >= nanosPerTick
-                                && level.getTickRate() < autoTickRateLimit) {
-                                level.setTickRate(level.getTickRate() + 1);
-                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
-                                    NukkitMath.round(tickMs, 2), level.getTickRate());
-                            }
-                            level.tickRateCounter = level.getTickRate();
-                        }
-                    }
+                    level.tickAndAdjustTickRate(currentTick);
                 } catch (Exception e) {
                     log.error(this.getLanguage().tr("nukkit.level.tickError",
                         level.getFolderPath(), Utils.getExceptionMessage(e)), e);
@@ -3643,20 +3634,9 @@ public class Server {
         return DP_DEFAULT_GROUP_UUID;
     }
 
-    /**
-     * Overrides the global Dynamic Properties namespace UUID and persists it.
-     */
-    public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
-        try {
-            String normalized = UUID.fromString(uuid).toString();
-            if (!normalized.equalsIgnoreCase(uuid)) throw new IllegalArgumentException();
-            DP_DEFAULT_GROUP_UUID = normalized;
-            if (instance != null && instance.serverDataDB != null) {
-                instance.serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, normalized.getBytes(StandardCharsets.UTF_8));
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            log.warn("DynamicProperties global UUID rejected: '{}'", uuid);
-        }
+    private static void initializeDefaultDynamicPropertiesGroupUUID(String configuredUUID, String persistedUUID) {
+        DP_DEFAULT_GROUP_UUID = !configuredUUID.isEmpty() ? configuredUUID
+            : persistedUUID != null ? persistedUUID : UUID.randomUUID().toString();
     }
 
     public static int getDynamicPropertiesMaxStringBytes() {
