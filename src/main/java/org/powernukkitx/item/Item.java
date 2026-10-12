@@ -141,6 +141,7 @@ public abstract class Item implements Cloneable, ItemID {
     protected Block block = null;
     protected ItemDefinition definition;
     private CustomItemDefinition resolvedCustomSource;
+    private CompoundTag resolvedCustomComponents;
     private ItemDefinition resolvedCustomDefinition;
     protected boolean hasMeta = true;
     private boolean recipeBlockDefinitionOverridden = false;
@@ -258,6 +259,9 @@ public abstract class Item implements Cloneable, ItemID {
      * The definition backing this item. For a custom item the registered
      * {@link CustomItemDefinition} is folded onto the class definition, so component driven
      * behaviour and hardcoded behaviour are read through the same object.
+     * <p>
+     * The components are still exposed as mutable tags, so the folded result is only reused while
+     * they match the snapshot it was built from. Mutating them is picked up on the next call.
      */
     @NotNull
     protected final ItemDefinition definition() {
@@ -265,8 +269,10 @@ public abstract class Item implements Cloneable, ItemID {
         if (custom == null) {
             return this.definition;
         }
-        if (custom != this.resolvedCustomSource) {
+        CompoundTag components = custom.getComponents();
+        if (custom != this.resolvedCustomSource || !components.equals(this.resolvedCustomComponents)) {
             this.resolvedCustomSource = custom;
+            this.resolvedCustomComponents = components.copy();
             this.resolvedCustomDefinition = custom.toItemDefinition(this.definition);
         }
         return this.resolvedCustomDefinition;
@@ -2204,6 +2210,11 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getSaturation() {
+        // derived from getNutrition() so a plugin overriding it still gets matching saturation
+        CompoundTag c = getCustomItemComponent("minecraft:food");
+        if (c != null) {
+            return getNutrition() * c.getFloat("saturation_modifier") * 2f;
+        }
         return getSaturationRestore();
     }
 
@@ -2472,7 +2483,11 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if this item is a tool
      */
     public boolean isTool() {
-        return definition().isTool();
+        if (definition().isTool()) {
+            return true;
+        }
+        // custom items may only override the predicates, so ask them instead of trusting the flag alone
+        return getCustomDefinition() != null && (isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears());
     }
 
     /**

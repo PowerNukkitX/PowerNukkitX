@@ -1909,29 +1909,41 @@ public final class CustomItemDefinition extends ItemDefinition {
         boolean hoe = slot == ItemEnchantSlot.HOE;
         boolean shears = slot == ItemEnchantSlot.SHEARS;
 
-        b.canTakeDamage(components.contains("minecraft:durability"))
-                .maxDurability(maxDurability(components))
-                .damageChanceMin(damageChance(components, "min"))
-                .damageChanceMax(damageChance(components, "max"))
-                .edible(components.contains("minecraft:food"))
-                .helmet(wearable == ItemArmorType.HEAD)
-                .chestplate(wearable == ItemArmorType.CHEST)
-                .leggings(wearable == ItemArmorType.LEGS)
-                .boots(wearable == ItemArmorType.FEET)
-                .armorPoints(wearableProtection(components))
-                .sword(sword)
-                .spear(slot == ItemEnchantSlot.SPEAR)
-                .axe(axe)
-                .pickaxe(pickaxe)
-                .shovel(shovel)
-                .hoe(hoe)
-                .shears(shears)
-                .shield(slot == ItemEnchantSlot.SHIELD)
-                .bow(slot == ItemEnchantSlot.BOW)
-                .crossbow(slot == ItemEnchantSlot.CROSSBOW)
-                .trident(slot == ItemEnchantSlot.TRIDENT)
-                .mace(slot == ItemEnchantSlot.MACE)
-                .tool(pickaxe || axe || shovel || hoe || sword || shears);
+        // only touch fields whose component is present, otherwise the subclass definition
+        // (ItemCustomTool, ItemCustomFood...) would lose its defaults
+        if (components.contains("minecraft:durability")) {
+            b.canTakeDamage(true)
+                    .maxDurability(maxDurability(components))
+                    .damageChanceMin(damageChance(components, "min"))
+                    .damageChanceMax(damageChance(components, "max"));
+        }
+
+        if (components.contains("minecraft:wearable")) {
+            b.helmet(wearable == ItemArmorType.HEAD)
+                    .chestplate(wearable == ItemArmorType.CHEST)
+                    .leggings(wearable == ItemArmorType.LEGS)
+                    .boots(wearable == ItemArmorType.FEET)
+                    .armorPoints(wearableProtection(components));
+        }
+
+        if (slot != null) {
+            b.sword(sword)
+                    .spear(slot == ItemEnchantSlot.SPEAR)
+                    .axe(axe)
+                    .pickaxe(pickaxe)
+                    .shovel(shovel)
+                    .hoe(hoe)
+                    .shears(shears)
+                    .shield(slot == ItemEnchantSlot.SHIELD)
+                    .bow(slot == ItemEnchantSlot.BOW)
+                    .crossbow(slot == ItemEnchantSlot.CROSSBOW)
+                    .trident(slot == ItemEnchantSlot.TRIDENT)
+                    .mace(slot == ItemEnchantSlot.MACE);
+            // a bow or shield slot says nothing about the tool flag, keep whatever the base had
+            if (pickaxe || axe || shovel || hoe || sword || shears) {
+                b.tool(true);
+            }
+        }
 
         if (components.contains("minecraft:max_stack_size")) {
             b.maxStackSize(components.getCompound("minecraft:max_stack_size").getByte("value") & 0xFF);
@@ -1946,6 +1958,7 @@ public final class CustomItemDefinition extends ItemDefinition {
         if (components.contains("minecraft:food")) {
             CompoundTag food = components.getCompound("minecraft:food");
             int nutrition = food.getInt("nutrition");
+            b.edible(true);
             b.nutrition(nutrition);
             b.saturation(nutrition * food.getFloat("saturation_modifier") * 2f);
             b.requiresHunger(!food.getBoolean("can_always_eat"));
