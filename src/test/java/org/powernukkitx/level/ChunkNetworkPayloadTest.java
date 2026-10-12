@@ -94,6 +94,14 @@ public class ChunkNetworkPayloadTest {
     }
 
     @Test
+    void testSectionBiomeChangeInvalidatesPayload(LevelProvider levelDBProvider) {
+        Chunk chunk = chunkWithBlock(levelDBProvider, 10);
+        cachePayload(chunk);
+        chunk.getSection(100 >> 4).setBiomeId(0, 100 & 0x0f, 0, 10);
+        Assertions.assertNull(chunk.getNetworkPayload());
+    }
+
+    @Test
     void testEditDuringBuildLeavesPayloadStale(LevelProvider levelDBProvider) {
         Chunk chunk = chunkWithBlock(levelDBProvider, 6);
         chunk.batchProcess(unsafeChunk -> {

@@ -214,6 +214,8 @@ public record ChunkSection(byte y, BlockPalette[] blockLayer, Palette<Integer> b
 
     public void setBiomeId(int x, int y, int z, int biomeId) {
         biomes.set(index(x, y, z), boxBiomeId(biomeId));
+        // not a block, but the cached chunk payload validates against this counter and carries biomes
+        blockChanges.addAndGet(1);
     }
 
     public int getBiomeId(int x, int y, int z) {
