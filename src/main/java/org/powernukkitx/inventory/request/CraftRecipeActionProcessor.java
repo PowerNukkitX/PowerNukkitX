@@ -111,6 +111,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 return context.error();
             }
             final ItemEnchantOption enchantOptionData = enchantOptionWithEntry.getOption();
+            context.markServerConsumed(ContainerEnumName.ENCHANTING_INPUT_CONTAINER, ContainerEnumName.ENCHANTING_MATERIAL_CONTAINER);
             Item first = inventory.getItem(0);
             if (first.isNull()) {
                 log.error("Can't find enchant input!");
@@ -149,6 +150,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 log.error("Can't find trade recipe from netId {}", action.getRecipeNetId());
                 return context.error();
             }
+            context.markServerConsumed(ContainerEnumName.TRADE2_INGREDIENT1_CONTAINER, ContainerEnumName.TRADE2_INGREDIENT2_CONTAINER);
             if (action.getNumberOfRequestedCrafts() < 1) {
                 log.error("Invalid number of requested crafts {}", action.getNumberOfRequestedCrafts());
                 return context.error();
@@ -307,6 +309,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     }
 
     public ActionResponse handleSmithingUpgrade(SmithingTransformRecipe recipe, Player player, ItemStackRequestContext context) {
+        context.markServerConsumed(ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER, ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER, ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER);
         Optional<Inventory> topWindow = player.getTopWindow();
         if (topWindow.isEmpty()) {
             log.error("the player's haven't open any inventory!");
@@ -350,6 +353,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     }
 
     public ActionResponse handleSmithingTrim(Player player, ItemStackRequestContext context) {
+        context.markServerConsumed(ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER, ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER, ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER);
         Optional<Inventory> topWindow = player.getTopWindow();
         if (topWindow.isEmpty()) {
             log.error("the player's haven't open any inventory!");

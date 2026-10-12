@@ -66,6 +66,8 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         }
 
         if (inventory instanceof AnvilInventory anvilInventory) {
+            // the anvil takes its inputs itself, the consume actions that follow only get acknowledged
+            context.markServerConsumed(ContainerEnumName.ANVIL_INPUT_CONTAINER, ContainerEnumName.ANVIL_MATERIAL_CONTAINER);
             AnvilResult anvilResult = updateAnvilResult(player, anvilInventory, filterString);
             if (anvilResult != null) {
                 player.getCreativeOutputInventory().setItem(anvilResult.result());
@@ -79,6 +81,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 return context.error();
             }
         } else if (inventory instanceof CartographyTableInventory cartographyInventory) {
+            context.markServerConsumed(ContainerEnumName.CARTOGRAPHY_INPUT_CONTAINER, ContainerEnumName.CARTOGRAPHY_ADDITIONAL_CONTAINER);
             Item item = updateCartographyTableResult(player, cartographyInventory, filterString);
             if (item != null) {
                 player.getCreativeOutputInventory().setItem(item);
