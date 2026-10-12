@@ -140,9 +140,6 @@ public abstract class Item implements Cloneable, ItemID {
     protected Integer netId = null;
     protected Block block = null;
     protected ItemDefinition definition;
-    private CustomItemDefinition resolvedCustomSource;
-    private CompoundTag resolvedCustomComponents;
-    private ItemDefinition resolvedCustomDefinition;
     protected boolean hasMeta = true;
     private boolean recipeBlockDefinitionOverridden = false;
     private Integer recipeBlockRuntimeId = null;
@@ -215,8 +212,8 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public Item(@NotNull String id, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId, @Nullable ItemDefinition definition) {
-        this.definition = definition == null ? DEFAULT_DEFINITION : definition;
         this.id = id.intern();
+        this.definition = resolveDefinition(definition);
         this.identifier = new Identifier(id);
         this.count = count;
         if (name != null) {
@@ -233,8 +230,8 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     protected Item(@NotNull Block block, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId, @Nullable ItemDefinition definition) {
-        this.definition = definition == null ? DEFAULT_DEFINITION : definition;
         this.id = block.getItemId().intern();
+        this.definition = resolveDefinition(definition);
         this.identifier = new Identifier(id);
         this.count = count;
         if (name != null) {
@@ -251,30 +248,25 @@ public abstract class Item implements Cloneable, ItemID {
     public void internalAdjust() {
     }
 
+    private ItemDefinition resolveDefinition(@Nullable ItemDefinition definition) {
+        ItemDefinition resolved = definition == null ? DEFAULT_DEFINITION : definition;
+        if (this instanceof CustomItem && !(resolved instanceof CustomItemDefinition)) {
+            CustomItemDefinition custom = ItemRegistry.getCustomItemDefinitionByIdStatic(this.id);
+            if (custom != null) {
+                return custom;
+            }
+        }
+        return resolved;
+    }
+
     /**
-     * The definition backing this item. For a custom item the registered
-     * {@link CustomItemDefinition} is folded onto the class definition, so component driven
-     * behaviour and hardcoded behaviour are read through the same object.
-     * <p>
-     * The components are still exposed as mutable tags, so the folded result is only reused while
-     * they match the snapshot it was built from. Mutating them is picked up on the next call.
-     * <p>
-     * That check walks the whole component tree, so getters for values no component can set read
-     * {@link #definition} directly instead. Keep it that way for anything called every tick.
+     * @return the definition backing this item's property getters. For a registered custom item this is its
+     * {@link CustomItemDefinition}, resolved once when the item is constructed. Its components were applied on top
+     * of the item class definition when it was built, so later edits to the component NBT are not reflected here.
      */
     @NotNull
-    protected final ItemDefinition definition() {
-        CustomItemDefinition custom = getCustomDefinition();
-        if (custom == null) {
-            return this.definition;
-        }
-        CompoundTag components = custom.getComponents();
-        if (custom != this.resolvedCustomSource || !components.equals(this.resolvedCustomComponents)) {
-            this.resolvedCustomSource = custom;
-            this.resolvedCustomComponents = components.copy();
-            this.resolvedCustomDefinition = custom.toItemDefinition(this.definition);
-        }
-        return this.resolvedCustomDefinition;
+    public ItemDefinition definition() {
+        return this.definition;
     }
 
     public void setMeta(int meta) {
@@ -2026,15 +2018,16 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if item can take damage
      */
     public boolean canTakeDamage() {
-        return definition().isCanTakeDamage();
+        return this.definition.isCanTakeDamage();
     }
 
     /**
      * Define the maximum number of items to be stacked
      */
     public int getMaxStackSize() {
-        int size = definition().getMaxStackSize();
-        if (block == null || size != DEFAULT_DEFINITION.getMaxStackSize()) {
+        int size = this.definition.getMaxStackSize();
+        if (block == null || size != DEFAULT_DEFINITION.getMaxStackSize()
+                || this.definition instanceof CustomItemDefinition custom && custom.hasComponent("minecraft:max_stack_size")) {
             return size;
         }
         return block.getItemMaxStackSize();
@@ -2064,7 +2057,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the maximum durability value of the item
      */
     public int getMaxDurability() {
-        return definition().getMaxDurability();
+        return this.definition.getMaxDurability();
     }
 
     /**
@@ -2073,7 +2066,7 @@ public abstract class Item implements Cloneable, ItemID {
      * getDamageChanceMin() and getDamageChanceMax()
      */
     public int getDamageChanceMin() {
-        return definition().getDamageChanceMin();
+        return this.definition.getDamageChanceMin();
     }
 
     /**
@@ -2082,11 +2075,11 @@ public abstract class Item implements Cloneable, ItemID {
      * getDamageChanceMin() and getDamageChanceMax()
      */
     public int getDamageChanceMax() {
-        return definition().getDamageChanceMax();
+        return this.definition.getDamageChanceMax();
     }
 
     public float getUseDuration() {
-        return definition().getUseDuration();
+        return this.definition.getUseDuration();
     }
 
 
@@ -2099,7 +2092,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getMovimentModifier() {
-        return definition().getMovementModifier();
+        return this.definition.getMovementModifier();
     }
 
     /**
@@ -2176,7 +2169,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if item never despawns
      */
     public boolean shouldDespawn() {
-        return definition().isShouldDespawn();
+        return this.definition.isShouldDespawn();
     }
 
 
@@ -2193,7 +2186,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean isEdible() {
-        return definition().isEdible();
+        return this.definition.isEdible();
     }
 
     public int getNutrition() {
@@ -2205,7 +2198,7 @@ public abstract class Item implements Cloneable, ItemID {
      */
     @Deprecated
     public int getFoodRestore() {
-        return definition().getNutrition();
+        return this.definition.getNutrition();
     }
 
     public float getSaturation() {
@@ -2222,7 +2215,7 @@ public abstract class Item implements Cloneable, ItemID {
      */
     @Deprecated
     public float getSaturationRestore() {
-        return definition().getSaturation();
+        return this.definition.getSaturation();
     }
 
     public float getSaturationModifier() {
@@ -2242,7 +2235,7 @@ public abstract class Item implements Cloneable, ItemID {
      */
     @Deprecated
     public boolean isRequiresHunger() {
-        return definition().isRequiresHunger();
+        return this.definition.isRequiresHunger();
     }
 
 
@@ -2359,35 +2352,35 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if the item is a Helmet
      */
     public boolean isHelmet() {
-        return definition().isHelmet();
+        return this.definition.isHelmet();
     }
 
     /**
      * Define if the item is a Chestplate
      */
     public boolean isChestplate() {
-        return definition().isChestplate();
+        return this.definition.isChestplate();
     }
 
     /**
      * Define if the item is a Leggings
      */
     public boolean isLeggings() {
-        return definition().isLeggings();
+        return this.definition.isLeggings();
     }
 
     /**
      * Define if the item is a Boots
      */
     public boolean isBoots() {
-        return definition().isBoots();
+        return this.definition.isBoots();
     }
 
     /**
      * Define the Armor value of an item
      */
     public int getArmorPoints() {
-        return definition().getArmorPoints();
+        return this.definition.getArmorPoints();
     }
 
     /**
@@ -2482,18 +2475,18 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if this item is a tool
      */
     public boolean isTool() {
-        if (definition().isTool()) {
+        if (this.definition.isTool()) {
             return true;
         }
         // custom items may only override the predicates, so ask them instead of trusting the flag alone
-        return getCustomDefinition() != null && (isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears());
+        return this.definition instanceof CustomItemDefinition && (isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears());
     }
 
     /**
      * Define the attackdamage of an item
      */
     public int getAttackDamage() {
-        return definition().getAttackDamage();
+        return this.definition.getAttackDamage();
     }
 
     public int getAttackDamage(Entity entity) {
@@ -2504,84 +2497,84 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if the item is a Sword
      */
     public boolean isSword() {
-        return definition().isSword();
+        return this.definition.isSword();
     }
 
     /**
      * Define if the item is a Spear
      */
     public boolean isSpear() {
-        return definition().isSpear();
+        return this.definition.isSpear();
     }
 
     /**
      * Defines if the item is an Axe
      */
     public boolean isAxe() {
-        return definition().isAxe();
+        return this.definition.isAxe();
     }
 
     /**
      * Define if the item is a Pickaxe
      */
     public boolean isPickaxe() {
-        return definition().isPickaxe();
+        return this.definition.isPickaxe();
     }
 
     /**
      * Define if the item is a Shovel
      */
     public boolean isShovel() {
-        return definition().isShovel();
+        return this.definition.isShovel();
     }
 
     /**
      * Define if the item is a Hoe
      */
     public boolean isHoe() {
-        return definition().isHoe();
+        return this.definition.isHoe();
     }
 
     /**
      * Define if the item is a Shield
      */
     public boolean isShield() {
-        return definition().isShield();
+        return this.definition.isShield();
     }
 
     /**
      * Define if the item is a Bow
      */
     public boolean isBow() {
-        return definition().isBow();
+        return this.definition.isBow();
     }
 
     /**
      * Define if the item is a Crossbow
      */
     public boolean isCrossbow() {
-        return definition().isCrossbow();
+        return this.definition.isCrossbow();
     }
 
     /**
      * Define if the item is a Trident
      */
     public boolean isTrident() {
-        return definition().isTrident();
+        return this.definition.isTrident();
     }
 
     /**
      * Define if the item is a Mace
      */
     public boolean isMace() {
-        return definition().isMace();
+        return this.definition.isMace();
     }
 
     /**
      * Define if the item is a Shears
      */
     public boolean isShears() {
-        return definition().isShears();
+        return this.definition.isShears();
     }
 
     /**

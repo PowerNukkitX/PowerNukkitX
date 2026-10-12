@@ -10,11 +10,12 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.registry.Registries;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Custom items written against the old getter based API should keep behaving the same now that
- * their components are folded onto an {@link ItemDefinition}.
+ * their components are applied onto an {@link ItemDefinition}.
  */
 class CustomItemCompatibilityTest {
 
@@ -26,43 +27,52 @@ class CustomItemCompatibilityTest {
 
     @Test
     void absentComponentsPreserveBaseDefinition() {
-        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem()).build();
-
-        ItemDefinition resolved = custom.toItemDefinition(ItemTool.TOOL.toBuilder()
+        ItemDefinition base = ItemTool.TOOL.toBuilder()
                 .maxDurability(ItemTool.DURABILITY_WOODEN)
                 .edible(true)
-                .build());
+                .build();
+        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem(base)).build();
 
-        assertTrue(resolved.isTool());
-        assertTrue(resolved.isCanTakeDamage());
-        assertTrue(resolved.isEdible());
-        assertEquals(ItemTool.DURABILITY_WOODEN, resolved.getMaxDurability());
+        assertTrue(custom.isTool());
+        assertTrue(custom.isCanTakeDamage());
+        assertTrue(custom.isEdible());
+        assertEquals(ItemTool.DURABILITY_WOODEN, custom.getMaxDurability());
     }
 
     @Test
     void nonToolEnchantSlotDoesNotClearBaseToolFlag() {
-        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem())
+        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem(ItemTool.TOOL))
                 .enchantable("bow", 5)
                 .build();
 
-        assertTrue(custom.toItemDefinition(ItemTool.TOOL).isTool());
+        assertTrue(custom.isTool());
     }
 
     @Test
-    void componentMutationsAreVisibleToExistingItems() {
-        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem())
+    void customDefinitionBacksItemGetters() {
+        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem(null))
                 .damage(4)
                 .build();
         TestCustomItem item = new TestCustomItem(custom);
 
+        assertSame(custom, item.definition());
         assertEquals(4, item.getAttackDamage());
+    }
+
+    @Test
+    void componentEditsAfterBuildAreNotReflected() {
+        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem(null))
+                .damage(4)
+                .build();
+        TestCustomItem item = new TestCustomItem(custom);
+
         custom.getComponents().getCompound("minecraft:damage").putByte("value", 9);
-        assertEquals(9, item.getAttackDamage());
+        assertEquals(4, item.getAttackDamage());
     }
 
     @Test
     void toolClassificationUsesOverriddenPredicates() {
-        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem()).build();
+        CustomItemDefinition custom = CustomItemDefinition.simpleBuilder(new TestCustomItem(null)).build();
         Item item = new TestCustomItem(custom) {
             @Override
             public boolean isPickaxe() {
@@ -93,25 +103,13 @@ class CustomItemCompatibilityTest {
     }
 
     private static class TestCustomItem extends Item implements CustomItem {
-        private final CustomItemDefinition customDefinition;
-
-        private TestCustomItem() {
-            this(null);
-        }
-
-        private TestCustomItem(CustomItemDefinition customDefinition) {
-            super("test:compatibility_item");
-            this.customDefinition = customDefinition;
+        private TestCustomItem(ItemDefinition definition) {
+            super("test:compatibility_item", definition);
         }
 
         @Override
         public CustomItemDefinition getDefinition() {
-            return customDefinition;
-        }
-
-        @Override
-        public CustomItemDefinition getCustomDefinition() {
-            return customDefinition;
+            return definition() instanceof CustomItemDefinition custom ? custom : null;
         }
     }
 }

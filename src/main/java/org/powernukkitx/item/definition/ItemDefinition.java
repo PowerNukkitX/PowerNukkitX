@@ -3,6 +3,18 @@ package org.powernukkitx.item.definition;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * Constant per-item values backing the property getters of {@link org.powernukkitx.item.Item}.
+ * <p>
+ * Item classes declare a shared {@code DEFINITION} derived from {@link org.powernukkitx.item.Item#DEFAULT_DEFINITION}
+ * (or a base class constant such as {@code ItemTool.TOOL}) with {@link #toBuilder()} and pass it to their
+ * constructor. Overriding a getter still takes precedence over the definition.
+ * <p>
+ * Custom items are backed by {@link org.powernukkitx.item.customitem.CustomItemDefinition}, which extends this
+ * class with values read from the item components.
+ * <p>
+ * {@code maxDurability} is {@code -1} for items without durability.
+ */
 @SuperBuilder(toBuilder = true)
 @Getter
 public class ItemDefinition {

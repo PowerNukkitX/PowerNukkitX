@@ -34,10 +34,10 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-
-import static org.powernukkitx.block.BlockID.*;
 
 /**
  * CustomItemDefinition defines custom items from behavior packs. <p>
@@ -50,32 +50,43 @@ import static org.powernukkitx.block.BlockID.*;
  * specialized logic not covered by the builder.
  */
 @Slf4j
+@Getter
+@Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false)
 @ToString
-public final class CustomItemDefinition extends ItemDefinition {
+public class CustomItemDefinition extends ItemDefinition implements BlockID {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
     public record BlockPlacerData(String blockId, List<String> useOn) {}
 
-    private final String identifier;
-    private final CompoundTag nbt;
+    protected final String identifier;
+    protected final CompoundTag nbt;
 
     /**
-     * The inherited {@link ItemDefinition} values are read from the components once, here, on top of
-     * {@link Item#DEFAULT_DEFINITION}. Changing {@code nbt} afterwards will not update them.
+     * Creates a definition whose inherited {@link ItemDefinition} values are read from the components on top of
+     * {@link Item#DEFAULT_DEFINITION}. Class level values of the item (tool, armor, food...) are not applied, prefer
+     * {@link #simpleBuilder(Item)} or {@link #CustomItemDefinition(String, CompoundTag, ItemDefinition)}.
+     *
+     * @param identifier the custom item identifier
+     * @param nbt        the client component NBT
      */
     public CustomItemDefinition(String identifier, CompoundTag nbt) {
-        super(applyComponents(Item.DEFAULT_DEFINITION.toBuilder(), nbt.getCompound("components")));
+        this(identifier, nbt, Item.DEFAULT_DEFINITION);
+    }
+
+    /**
+     * Creates a definition whose inherited {@link ItemDefinition} values are read from the components once, on top
+     * of {@code base}. Values without a matching component keep the value from {@code base}. Changing {@code nbt}
+     * afterwards does not update them.
+     *
+     * @param identifier the custom item identifier
+     * @param nbt        the client component NBT
+     * @param base       the definition the components are applied on, usually the item class definition
+     */
+    public CustomItemDefinition(String identifier, CompoundTag nbt, @NotNull ItemDefinition base) {
+        super(applyComponents(base.toBuilder(), nbt.getCompound("components")));
         this.identifier = identifier;
         this.nbt = nbt;
-    }
-
-    public String identifier() {
-        return this.identifier;
-    }
-
-    public CompoundTag nbt() {
-        return this.nbt;
     }
 
     /**
@@ -1003,7 +1014,7 @@ public final class CustomItemDefinition extends ItemDefinition {
         public CustomItemDefinition customBuild(Consumer<CompoundTag> nbtConsumer) {
             var def = this.build();
             nbtConsumer.accept(def.nbt);
-            return new CustomItemDefinition(def.identifier, def.nbt);
+            return new CustomItemDefinition(def.identifier, def.nbt, this.item.definition());
         }
 
         public CustomItemDefinition build() {
@@ -1030,7 +1041,7 @@ public final class CustomItemDefinition extends ItemDefinition {
             applyAutoToolTag(itemProps);
 
             allocateRuntimeId(identifier);
-            return new CustomItemDefinition(identifier, nbt);
+            return new CustomItemDefinition(identifier, nbt, this.item.definition());
         }
 
         // Write Build Definition Helpers
@@ -1800,10 +1811,6 @@ public final class CustomItemDefinition extends ItemDefinition {
         return comps != null ? comps.getCompound("item_properties") : null;
     }
 
-    public boolean isEdible() {
-        return hasComponent("minecraft:food");
-    }
-
     public boolean isWearable() {
         return getWearableType() != ItemArmorType.NONE;
     }
@@ -1816,10 +1823,6 @@ public final class CustomItemDefinition extends ItemDefinition {
         if (!components.contains("minecraft:wearable")) return ItemArmorType.NONE;
         return ItemArmorType.get(components.getCompound("minecraft:wearable").getString("slot"));
     }
-    public boolean isHelmet()     { return getWearableType() == ItemArmorType.HEAD; }
-    public boolean isChestplate() { return getWearableType() == ItemArmorType.CHEST; }
-    public boolean isLeggings()   { return getWearableType() == ItemArmorType.LEGS; }
-    public boolean isBoots()      { return getWearableType() == ItemArmorType.FEET; }
 
     public @Nullable ItemEnchantSlot getEnchantSlot() {
         return enchantSlot(getComponents());
@@ -1833,18 +1836,6 @@ public final class CustomItemDefinition extends ItemDefinition {
 
         return ItemEnchantSlot.fromId(slot);
     }
-    public boolean isSword()     { return getEnchantSlot() == ItemEnchantSlot.SWORD; }
-    public boolean isMace()      { return getEnchantSlot() == ItemEnchantSlot.MACE; }
-    public boolean isShield()    { return getEnchantSlot() == ItemEnchantSlot.SHIELD; }
-    public boolean isPickaxe()   { return getEnchantSlot() == ItemEnchantSlot.PICKAXE; }
-    public boolean isShovel()    { return getEnchantSlot() == ItemEnchantSlot.SHOVEL; }
-    public boolean isAxe()       { return getEnchantSlot() == ItemEnchantSlot.AXE; }
-    public boolean isHoe()       { return getEnchantSlot() == ItemEnchantSlot.HOE; }
-    public boolean isShears()    { return getEnchantSlot() == ItemEnchantSlot.SHEARS; }
-    public boolean isBow()       { return getEnchantSlot() == ItemEnchantSlot.BOW; }
-    public boolean isCrossbow()  { return getEnchantSlot() == ItemEnchantSlot.CROSSBOW; }
-    public boolean isTrident()   { return getEnchantSlot() == ItemEnchantSlot.TRIDENT; }
-    public boolean isSpear()   { return getEnchantSlot() == ItemEnchantSlot.SPEAR; }
 
     public int wearableProtection() {
         return wearableProtection(getComponents());
@@ -1889,14 +1880,6 @@ public final class CustomItemDefinition extends ItemDefinition {
 
     public CompoundTag getNbt() {
         return this.nbt;
-    }
-
-    /**
-     * Folds this component-driven definition onto {@code base}, so that a custom item exposes its
-     * behaviour through the same {@link ItemDefinition} every other item uses.
-     */
-    public ItemDefinition toItemDefinition(@NotNull ItemDefinition base) {
-        return applyComponents(base.toBuilder(), getComponents()).build();
     }
 
     private static ItemDefinition.ItemDefinitionBuilder<?, ?> applyComponents(ItemDefinition.ItemDefinitionBuilder<?, ?> b, CompoundTag components) {

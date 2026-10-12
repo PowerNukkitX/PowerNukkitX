@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemBlock extends Item {
-    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder().build();
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION;
 
     public ItemBlock(Block block) {
         this(block, 0, 1, DEFINITION);

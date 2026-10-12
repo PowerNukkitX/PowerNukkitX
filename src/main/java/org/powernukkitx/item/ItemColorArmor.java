@@ -10,7 +10,7 @@ import org.powernukkitx.utils.DyeColor;
  * @since 27.03.2016
  */
 abstract public class ItemColorArmor extends ItemArmor {
-    public static final ItemDefinition DEFINITION = ARMOR.toBuilder().build();
+    public static final ItemDefinition DEFINITION = ARMOR;
 
     public ItemColorArmor(String id) {
         this(id, 0, 1, (String) null, DEFINITION);

@@ -7,7 +7,7 @@ import org.powernukkitx.utils.DyeColor;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemDye extends Item {
-    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder().build();
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION;
 
     public ItemDye() {
         this(0, 1, DEFINITION);

@@ -16,7 +16,7 @@ import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
  * @author CreeperFace
  */
 public abstract class ProjectileItem extends Item {
-    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder().build();
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION;
 
     public ProjectileItem(String id, Integer meta, int count, String name) {
         this(id, meta, count, name, DEFINITION);

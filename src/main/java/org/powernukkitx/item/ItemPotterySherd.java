@@ -4,7 +4,7 @@ import org.powernukkitx.item.definition.ItemDefinition;
 
 
 public abstract class ItemPotterySherd extends Item {
-    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder().build();
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION;
 
     public ItemPotterySherd(String id) {
         this(id, DEFINITION);

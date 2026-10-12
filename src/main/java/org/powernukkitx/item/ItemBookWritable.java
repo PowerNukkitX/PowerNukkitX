@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 
 public abstract class ItemBookWritable extends Item {
-    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder().build();
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION;
 
     /**
      * The number of pages a book can hold.
