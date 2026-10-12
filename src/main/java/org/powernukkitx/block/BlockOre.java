@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -15,9 +16,20 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public abstract class BlockOre extends BlockSolid {
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_STONE)
+            .canSilkTouch(true)
+            .build();
 
     public BlockOre(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockOre(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -52,30 +64,5 @@ public abstract class BlockOre extends BlockSolid {
 
     protected float getDropMultiplier() {
         return 1;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
     }
 }

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityLiving;
@@ -13,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockWitherRose extends BlockFlower {
     public static final BlockProperties PROPERTIES = new BlockProperties(WITHER_ROSE);
+    public static final BlockDefinition DEFINITION = BlockFlower.DEFINITION.toBuilder()
+            .hasEntityCollision(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -24,7 +29,7 @@ public class BlockWitherRose extends BlockFlower {
     }
 
     public BlockWitherRose(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -55,8 +60,4 @@ public class BlockWitherRose extends BlockFlower {
         return this;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
     }
-}

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -23,13 +25,17 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CA
 public class BlockLeafLitter extends BlockFlowable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(LEAF_LITTER, MINECRAFT_CARDINAL_DIRECTION, GROWTH);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeReplaced(true)
+            .canBeActivated(true)
+            .build();
 
     public BlockLeafLitter() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockLeafLitter(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -53,11 +59,7 @@ public class BlockLeafLitter extends BlockFlowable {
         return !(block instanceof BlockAir) && !(block instanceof BlockLeaves) && block.isSideFull(face);
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (block.getLevelBlockAtLayer(1) instanceof BlockLiquid || !isSupportValid(block.down())) {
@@ -71,11 +73,7 @@ public class BlockLeafLitter extends BlockFlowable {
         return this.getLevel().setBlock(this, this);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (Objects.equals(item.getBlockId(), getId()) && getPropertyValue(GROWTH) < 3) {

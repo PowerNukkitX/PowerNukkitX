@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityMinecartAbstract;
@@ -19,6 +21,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.RAIL_DIRECTI
 
 public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(DETECTOR_RAIL, RAIL_DATA_BIT, CommonBlockProperties.RAIL_DIRECTION_6);
+    public static final BlockDefinition DEFINITION = BlockRail.DEFINITION.toBuilder()
+            .hasComparatorInputOverride(true)
+            .isPowerSource(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -30,22 +36,12 @@ public class BlockDetectorRail extends BlockRail implements RedstoneComponent {
     }
 
     public BlockDetectorRail(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Detector Rail";
-    }
-
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
     }
 
     @Override

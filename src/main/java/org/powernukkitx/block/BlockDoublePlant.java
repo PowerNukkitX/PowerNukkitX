@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.DoublePlantType;
 import org.powernukkitx.item.Item;
@@ -16,8 +18,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.powernukkitx.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
 
 public abstract class BlockDoublePlant extends BlockFlowable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
     public BlockDoublePlant(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockDoublePlant(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @NotNull
@@ -132,11 +142,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         return new Item[]{toItem()};
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { //Bone meal
@@ -158,8 +164,4 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         return false;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}
