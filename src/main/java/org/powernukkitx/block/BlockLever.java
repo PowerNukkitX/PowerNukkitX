@@ -62,7 +62,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockLever(), 0);
     }
 
     public boolean isPowerOn() {

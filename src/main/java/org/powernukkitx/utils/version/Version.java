@@ -1,6 +1,6 @@
 /*
  Copyright (C) 2020  powernukkit.org - José Roberto de Araújo Júnior
- 
+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -26,10 +26,10 @@ import java.util.List;
 /**
  * Represents a version string allowing to compare.
  * <p>
- * The version must contains letters, numbers or ideograms. Other characters are considered separators.
+ * The version must contain letters, numbers or ideograms. Other characters are considered separators.
  * If a string contains only separators than it will be considered the same as an empty string.
  * <p>
- * The versions are case insensitive but the original case sensitive version can be retrieved from {@link #toString()}.
+ * The versions are case-insensitive but the original case-sensitive version can be retrieved from {@link #toString()}.
  * @author joserobjr
  * @since 0.1.0
  */
@@ -40,7 +40,7 @@ public class Version implements Comparable<Version>, Serializable {
 
     /**
      * Creates a version object from the given String. The content will not be parsed, this operation is fast.
-     * @param version The version string. Case insensitive.
+     * @param version The version string. Case-insensitive.
      * @see Version
      * @since 0.1.0
      */
@@ -68,7 +68,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @param o The other version to compare
      * @throws NullPointerException If {@code o} is {@code null}
      * @throws ClassCastException If {@code o} is not an instance of {@link Version}
-     * @return Negative number if this version is older than {@code o}, {@code 0} if it is the same, 
+     * @return Negative number if this version is older than {@code o}, {@code 0} if it is the same,
      *         or a positive number if {@code o} is newer
      * @since 0.1.0
      */
@@ -78,7 +78,7 @@ public class Version implements Comparable<Version>, Serializable {
         if (original.equalsIgnoreCase(o.original)) {
             return 0;
         }
-        
+
         List<Comparable<?>> partsB = o.getParts();
         List<Comparable<?>> partsA = getParts();
         int sizeA = partsA.size();
@@ -108,8 +108,8 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
-     * Compares if the other object is a {@link Version} object and it represents the same version.
-     * The comparison is case insensitive.
+     * Compares if the other object is a {@link Version} object, and it represents the same version.
+     * The comparison is case-insensitive.
      * Both version strings will be parsed if necessary and if they are not cached.
      * @param o The object to be compared
      * @return If the object represents the same version

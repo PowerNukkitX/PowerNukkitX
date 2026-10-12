@@ -6,6 +6,9 @@ import org.powernukkitx.block.BlockState;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
+import org.powernukkitx.level.biome.BiomeID;
+import org.powernukkitx.level.format.palette.Palette;
+import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -29,6 +32,16 @@ public class UnsafeChunk {
         return this.chunk.sections;
     }
 
+    /**
+     * Returns the chunk biome palettes without acquiring chunk locks.
+     *
+     * @return biome section palettes
+     */
+    @ApiStatus.Internal
+    public Palette<Integer>[] getBiomeSections() {
+        return this.chunk.biomeSections;
+    }
+
     public DimensionData getDimensionData() {
         return chunk.getDimensionData();
     }
@@ -41,19 +54,12 @@ public class UnsafeChunk {
         this.chunk.changes.incrementAndGet();
     }
 
-    private void setChanged(boolean changed) {
-        if (changed) {
-            setChanged();
-        } else {
-            chunk.changes.set(0);
-        }
-    }
-
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void populateSkyLight() {
         // basic light calculation
         for (int z = 0; z < 16; ++z) {
             for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
-                int top = this.getHeightMap(x, z); // top-most block
+                int top = this.getHeightMap(x, z) - 1; // top-most heightmap blocker
 
                 int y;
                 for (y = getDimensionData().getMaxHeight(); y > top; --y) {
@@ -111,7 +117,10 @@ public class UnsafeChunk {
         // sectionY outside the dimension's vertical range (below the floor or above the roof): no section exists.
         if (offsetY < 0 || offsetY >= chunk.sections.length) return null;
         if(chunk.sections[offsetY] == null) {
-            chunk.sections[offsetY] = new ChunkSection((byte) (offsetY + minSectionY));
+            chunk.sections[offsetY] = new ChunkSection(
+                    (byte) (offsetY + minSectionY),
+                    chunk.biomeSections[offsetY]
+            );
         }
         return chunk.sections[offsetY];
     }
@@ -121,7 +130,14 @@ public class UnsafeChunk {
     }
 
     public void setSection(int fY, ChunkSection section) {
-        this.chunk.sections[fY - getDimensionData().getMinSectionY()] = section;
+        int index = fY - getDimensionData().getMinSectionY();
+        this.chunk.sections[index] = section;
+
+        if (section != null) {
+            this.chunk.biomeSections[index] = section.biomes();
+        }
+
+        ChunkRainHeightMap.invalidateAll(chunk);
         setChanged();
     }
 
@@ -139,14 +155,66 @@ public class UnsafeChunk {
 
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
         ChunkSection section = getOrCreateSection(y >> 4);
-        if (section == null) return BlockAir.STATE; // y outside world height; nothing to set/return
-        return section.getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
+        if (section == null) return BlockAir.STATE;
+
+        int localY = y & 0x0f;
+        BlockState oldState = section.getBlockState(x, localY, z, layer);
+        long heightMasks = 0L;
+
+        if (oldState != blockstate && chunk.getFinalizationState() != ChunkFinalizationState.NEEDS_INSTATICKING) {
+            heightMasks = ChunkHeightMap.cellMasksWithStateChange(section, x, localY, z, layer, oldState, blockstate);
+        }
+
+        section.setBlockState(x, localY, z, blockstate, layer, oldState);
+
+        if (oldState != blockstate) {
+            ChunkRainHeightMap.invalidateAfterBlockChange(chunk, x, y, z);
+
+            int oldHeightMask = (int) (heightMasks >>> 32);
+            int newHeightMask = (int) heightMasks;
+            if (oldHeightMask != newHeightMask) {
+                ChunkHeightMap.updateAfterMaskChange(chunk, x, y, z, oldHeightMask, newHeightMask);
+            }
+
+            chunk.updateBorderBlockMap(x, z, oldState, blockstate);
+        }
+
+        return oldState;
     }
 
     public void setBlockState(int x, int y, int z, BlockState blockstate, int layer) {
         ChunkSection section = getOrCreateSection(y >> 4);
-        if (section == null) return; // y outside world height; ignore the write instead of crashing
-        section.setBlockState(x, y & 0x0f, z, blockstate, layer);
+        if (section == null) return;
+
+        int localY = y & 0x0f;
+        BlockState oldState = section.getBlockState(x, localY, z, layer);
+        long heightMasks = 0L;
+
+        if (oldState != blockstate && chunk.getFinalizationState() != ChunkFinalizationState.NEEDS_INSTATICKING) {
+            heightMasks = ChunkHeightMap.cellMasksWithStateChange(section, x, localY, z, layer, oldState, blockstate);
+        }
+
+        section.setBlockState(x, localY, z, blockstate, layer, oldState);
+
+        if (oldState != blockstate) {
+            ChunkRainHeightMap.invalidateAfterBlockChange(chunk, x, y, z);
+
+            int oldHeightMask = (int) (heightMasks >>> 32);
+            int newHeightMask = (int) heightMasks;
+            if (oldHeightMask != newHeightMask) {
+                ChunkHeightMap.updateAfterMaskChange(chunk, x, y, z, oldHeightMask, newHeightMask);
+            }
+
+            chunk.updateBorderBlockMap(x, z, oldState, blockstate);
+        }
+    }
+
+    /**
+     * Returns the Border Block state for a local X/Z column without acquiring additional chunk locks.
+     */
+    @ApiStatus.Internal
+    public boolean hasBorderBlock(int localX, int localZ) {
+        return chunk.hasBorderBlockInternal(localX, localZ);
     }
 
     public int getBlockSkyLight(int x, int y, int z) {
@@ -183,7 +251,7 @@ public class UnsafeChunk {
     public int getHighestBlockAt(int x, int z) {
         for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); --y) {
             if (getBlockState(x, y, z) != BlockAir.STATE) {
-                this.setHeightMap(x, z, y);
+                this.setHeightMap(x, z, y + 1);
                 return y;
             }
         }
@@ -191,28 +259,28 @@ public class UnsafeChunk {
     }
 
     /**
-     * Recalculate height map for this chunk
+     * Recalculate height map for this chunk.
      */
     public int recalculateHeightMapColumn(int x, int z) {
-        int max = getHighestBlockAt(x, z);
-        int y;
-        for (y = max; y >= 0; --y) {
-            BlockState blockState = getBlockState(x, y, z, 0);
-            Block block = Block.get(blockState);
-            if (block.getLightFilter() > 1 || block.diffusesSkyLight()) {
-                break;
-            }
-        }
-        setHeightMap(x, z, y);
-        return y;
+        return ChunkHeightMap.recalculateColumn(chunk, x, z);
     }
 
     public void recalculateHeightMap() {
-        for (int z = 0; z < 16; ++z) {
-            for (int x = 0; x < 16; ++x) {
-                this.recalculateHeightMapColumn(x, z);
-            }
-        }
+        ChunkHeightMap.recalculateAll(chunk);
+    }
+
+    /**
+     * Recalculates the complete render heightmap without acquiring chunk locks.
+     */
+    public void recalculateRenderHeightMap() {
+        ChunkHeightMap.recalculateRender(chunk);
+    }
+
+    /**
+     * Gets the first free Y above the highest precipitation obstruction without acquiring chunk locks.
+     */
+    public int getRainHeight(int x, int z) {
+        return ChunkRainHeightMap.get(chunk, x, z);
     }
 
     public int getHeightMap(int x, int z) {
@@ -223,17 +291,41 @@ public class UnsafeChunk {
         this.chunk.heightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
     }
 
+    /**
+     * Returns the render heightmap value without acquiring chunk locks.
+     *
+     * @param x local X
+     * @param z local Z
+     * @return render height
+     */
+    public int getRenderHeightMap(int x, int z) {
+        return this.chunk.renderHeightMap[(z << 4) | x] + getDimensionData().getMinHeight();
+    }
+
+    /**
+     * Sets the render heightmap value without acquiring chunk locks.
+     *
+     * @param x local X
+     * @param z local Z
+     * @param value render height
+     */
+    public void setRenderHeightMap(int x, int z, int value) {
+        this.chunk.renderHeightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
+    }
+
     public int getBiomeId(int x, int y, int z) {
-        ChunkSection section = getSection(y >> 4);
-        if (section == null) return 0;
-        return section.getBiomeId(x, y & 0x0f, z);
+        int sectionIndex = (y >> 4) - getDimensionData().getMinSectionY();
+        if (sectionIndex < 0 || sectionIndex >= chunk.biomeSections.length) return BiomeID.PLAINS;
+        return chunk.biomeSections[sectionIndex].get(IChunk.index(x, y & 0x0f, z));
     }
 
     public void setBiomeId(int x, int y, int z, int biomeId) {
+        int sectionIndex = (y >> 4) - getDimensionData().getMinSectionY();
+        if (sectionIndex < 0 || sectionIndex >= chunk.biomeSections.length) return;
+
         setChanged();
-        ChunkSection section = getOrCreateSection(y >> 4);
-        if (section == null) return; // y outside world height
-        section.setBiomeId(x, y & 0x0f, z, biomeId);
+        chunk.biomeSections[sectionIndex].set(IChunk.index(x, y & 0x0f, z), ChunkSection.boxBiomeId(biomeId));
+        chunk.biomeState.updateBiome(biomeId);
     }
 
     public short[] getHeightMapArray() {
@@ -272,20 +364,52 @@ public class UnsafeChunk {
         return chunk.isLightPopulated();
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void setLightPopulated(boolean value) {
         chunk.setLightPopulated(value);
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void setLightPopulated() {
         chunk.setLightPopulated();
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public ChunkState getChunkState() {
-        return chunk.getChunkState();
+        return ChunkState.fromFinalizationState(chunk.getFinalizationState());
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void setChunkState(ChunkState chunkState) {
-        chunk.setChunkState(chunkState);
+        chunk.setFinalizationState(chunkState.toFinalizationState());
+    }
+
+    /**
+     * Returns the transient runtime generation-tree state.
+     *
+     * @return runtime generation state
+     */
+    @ApiStatus.Internal
+    public ChunkGenerationState getGenerationState() {
+        return chunk.getGenerationState();
+    }
+
+    /**
+     * Returns the chunk finalization state.
+     *
+     * @return finalization state
+     */
+    public ChunkFinalizationState getFinalizationState() {
+        return chunk.getFinalizationState();
+    }
+
+    /**
+     * Sets the chunk finalization state.
+     *
+     * @param finalizationState finalization state
+     */
+    public void setFinalizationState(ChunkFinalizationState finalizationState) {
+        chunk.setFinalizationState(finalizationState);
     }
 
     public void addEntity(Entity entity) {
@@ -316,6 +440,15 @@ public class UnsafeChunk {
         return chunk.getExtraData();
     }
 
+    /**
+     * Returns the persisted biome state associated with the chunk.
+     *
+     * @return biome state
+     */
+    public BiomeState getBiomeState() {
+        return chunk.getBiomeState();
+    }
+
     public boolean hasChanged() {
         return chunk.hasChanged();
     }
@@ -340,19 +473,23 @@ public class UnsafeChunk {
         return chunk.isTheEnd();
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public boolean isGenerated() {
-        return chunk.isGenerated();
+        return chunk.getFinalizationState() != ChunkFinalizationState.NEEDS_INSTATICKING;
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public boolean isPopulated() {
-        return chunk.isPopulated();
+        return chunk.getFinalizationState() == ChunkFinalizationState.DONE;
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void setGenerated() {
-        chunk.setGenerated();
+        chunk.setFinalizationState(ChunkFinalizationState.NEEDS_POPULATION);
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     public void setPopulated() {
-        chunk.setPopulated();
+        chunk.setFinalizationState(ChunkFinalizationState.DONE);
     }
 }

@@ -46,20 +46,20 @@ public class DripstoneClusterFeature extends GenerateFeature {
             int baseX = ((chunk.getX() << 4) + x);
             for(int z = 0; z < 16; z++) {
                 int baseZ = ((chunk.getZ() << 4) + z);
-                if(noise.noise2D(baseX * 1.25f, baseZ * 1.25f, true) > 0.1) {
+                if (noise.noise2D(baseX * 1.25f, baseZ * 1.25f, true) > 0.1) {
                     boolean hasDripstoneCave = false;
                     for (int y = chunk.getHeightMap(x, z); y > level.getMinHeight(); y--) {
-                        if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.DRIPSTONE_CAVES) {
+                        if (chunk.getBiomeId(x, y, z) == BiomeID.DRIPSTONE_CAVES) {
                             hasDripstoneCave = true;
                             break;
                         }
                     }
-                    if(!hasDripstoneCave) continue;
+                    if (!hasDripstoneCave) continue;
                     for(int y : getHighestWorkableBlocks(chunk, x, z)) {
                         int depth = (int) NukkitMath.clamp(NukkitMath.remapFromNormalized(noise.noise3D(baseX, y, baseZ, true), 1, 3), 1, 2);
                         boolean water = false;
                         for(int i = 0; i < depth; i++) {
-                            if(i == 0 && random.nextFloat() < 0.002f) {
+                            if (i == 0 && random.nextFloat() < 0.002f) {
                                 boolean air = false;
                                 for (BlockFace face : BlockFace.getHorizontals()) {
                                     BlockVector3 side = new BlockVector3(baseX, y, baseZ).getSide(face);
@@ -68,14 +68,14 @@ public class DripstoneClusterFeature extends GenerateFeature {
                                         break;
                                     }
                                 }
-                                if(!air) {
+                                if (!air) {
                                     manager.setBlockStateAt(baseX, y, baseZ, WATER);
                                     water = true;
                                 }
                             } else manager.setBlockStateAt(baseX, y-i, baseZ, DRIPSTONE_BLOCK);
 
                         }
-                        if(!water && random.nextFloat() < 0.1) {
+                        if (!water && random.nextFloat() < 0.1) {
                             placePointedDripstone(manager, baseX, y + 1, baseZ, false, random.nextInt(1, 3));
                         }
                     }
@@ -84,7 +84,7 @@ public class DripstoneClusterFeature extends GenerateFeature {
                         for(int i = 0; i < depth; i++) {
                             manager.setBlockStateAt(baseX, y+i, baseZ, DRIPSTONE_BLOCK);
                         }
-                        if(random.nextFloat() < 0.3) {
+                        if (random.nextFloat() < 0.3) {
                             placePointedDripstone(manager, baseX, y - 1, baseZ, true, random.nextInt(1, 5));
                         }
                     }
@@ -100,7 +100,7 @@ public class DripstoneClusterFeature extends GenerateFeature {
         int y;
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = chunk.getHeightMap(x, z); y > chunk.getLevel().getMinHeight(); --y) {
-            if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.DRIPSTONE_CAVES) {
+            if (chunk.getBiomeId(x, y, z) == BiomeID.DRIPSTONE_CAVES) {
                 String b = chunk.getBlockState(x, y, z).getIdentifier();
                 if ((b == STONE || b == DEEPSLATE) && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
                     blockYs.add(y);
@@ -114,7 +114,7 @@ public class DripstoneClusterFeature extends GenerateFeature {
         int y;
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = chunk.getHeightMap(x, z); y > chunk.getLevel().getMinHeight(); --y) {
-            if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.DRIPSTONE_CAVES) {
+            if (chunk.getBiomeId(x, y, z) == BiomeID.DRIPSTONE_CAVES) {
                 String b = chunk.getBlockState(x, y, z).getIdentifier();
                 if ((b == STONE || b == DEEPSLATE) && chunk.getBlockState(x, y - 1, z) == BlockAir.STATE) {
                     blockYs.add(y);

@@ -58,7 +58,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public Item[] addItem(Item... slots) {
-        return new Item[0];
+        return Item.EMPTY_ARRAY;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public Item[] removeItem(Item... slots) {
-        return new Item[0];
+        return Item.EMPTY_ARRAY;
     }
 
     @Override

@@ -8,10 +8,10 @@ import java.lang.annotation.Target;
 /**
  * Annotation that defines a handler.
  *
- * <p>The importance of a handler is called its <b>priority</b>, handlers with higher priority speaks louder then
+ * <p>The importance of a handler is called its <b>priority</b>, handlers with higher priority speak louder than
  * lower ones. See: {@link #priority()}</p>
  *
- * <p>A handler can choose to ignore a cancelled event or not, that can be defined in {@link #ignoreCancelled()}.</p>
+ * <p>A handler can choose to ignore a canceled event or not, that can be defined in {@link #ignoreCancelled()}.</p>
  *
  * @author MagicDroidX(code) @ Nukkit Project
  * @author null(javadoc) @ Nukkit Project

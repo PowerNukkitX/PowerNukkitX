@@ -1,18 +1,21 @@
 package org.powernukkitx.level.generator.feature.tree;
 
-import org.powernukkitx.level.generator.object.ObjectFallenTree;
-import org.powernukkitx.level.generator.object.ObjectGenerator;
-import org.powernukkitx.level.generator.object.ObjectSavannaTree;
-import org.powernukkitx.level.generator.object.legacytree.LegacyOakTree;
-import org.powernukkitx.utils.random.RandomSourceProvider;
-
-public class SavannaMutatedTreeFeature extends SavannaTreeFeature {
-
+public class SavannaMutatedTreeFeature extends TreeRuleFeature {
     public static final String NAME = "minecraft:savanna_mutated_surface_trees_feature";
 
+    private static final TreeFeatureSelector SELECTOR = random -> random.nextExclusiveInt(5) > 0
+            ? TreePlacementFeatures.savanna()
+            : TreePlacementFeatures.oak();
+
+    private static final TreeFeaturePlan PLAN = TreeFeaturePlan.legacy(
+            2.0f,
+            TreePlacementFeatures::isMutatedSavannaCandidate,
+            SELECTOR
+    );
+
     @Override
-    public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return random.nextInt(3) == 0 ? (random.nextInt(100) == 0 ? new ObjectFallenTree() : new LegacyOakTree()) : new ObjectSavannaTree();
+    protected TreeFeaturePlan treePlan() {
+        return PLAN;
     }
 
     @Override

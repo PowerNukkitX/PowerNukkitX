@@ -499,7 +499,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         RideableComponent.InputType type = getInputControlType();
         if (type == null) {
-            log.warn("Entity {} ({}) received rider input but has no RideableComponent.InputType defined.", this.getId(), this.getIdentifier());
+            log.warn("Entity {} ({}) received rider input but has no RideableComponent.InputType defined.", this.runtimeId(), this.getIdentifier());
             return false;
         }
 

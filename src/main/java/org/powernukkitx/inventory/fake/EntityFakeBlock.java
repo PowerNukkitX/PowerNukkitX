@@ -52,7 +52,7 @@ public class EntityFakeBlock implements FakeBlock {
     @Override
     public long getEntityId(Player player) {
         EntityFakeInventory fake = entities.get(player);
-        return (fake != null && !fake.isClosed()) ? fake.getId() : 0L;
+        return (fake != null && !fake.isClosed()) ? fake.uniqueIdLong() : 0L;
     }
 
     @Override

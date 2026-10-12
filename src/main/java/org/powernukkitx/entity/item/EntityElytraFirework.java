@@ -53,7 +53,7 @@ public class EntityElytraFirework extends EntityFireworksRocket {
                     hasUpdate = true;
                     if (this.fireworkAge >= this.lifetime) {
                         ActorEventPacket pk = new ActorEventPacket();
-                        pk.setTargetRuntimeID(this.getId());
+                        pk.setTargetRuntimeID(this.runtimeId());
                         pk.setType(ActorEvent.FIREWORKS_EXPLODE);
                         this.level.addLevelSoundEvent(this, SoundEvent.LARGE_BLAST, -1, 72);
                         Server.broadcastPacket(this.getViewers().values(), pk);

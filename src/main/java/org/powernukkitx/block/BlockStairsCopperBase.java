@@ -26,7 +26,10 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
 
     @Override
     public int onUpdate(int type) {
-        return Oxidizable.super.onUpdate(type);
+        final int handled = super.onUpdate(type);
+        final int oxidised = Oxidizable.super.onUpdate(type);
+
+        return handled != 0 ? handled : oxidised;
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.FollowEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.ai.sensor.ParentSensor;
 import org.powernukkitx.entity.components.AgeableComponent;
 import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.DashActionComponent;
@@ -308,14 +309,12 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        ArrayList<Item> drops = new ArrayList<>();
-
         // Drop Ride Inventory
         ensureInventories();
-        drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
+        ArrayList<Item> drops = new ArrayList<>(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
 
         if (drops.isEmpty()) return Item.EMPTY_ARRAY;
-        return drops.toArray(new Item[0]);
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
@@ -449,6 +448,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
                                 e -> !((EntityCamel) e).isSitting()
                         ))
                 .sensors(
+                        new ParentSensor(8, 20),
                         new FollowEntitySensor(6f, 2f),
                         new NearestPlayerSensor(8, 0, 20)
                 )

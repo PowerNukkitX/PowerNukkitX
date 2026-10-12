@@ -1,6 +1,6 @@
 /*
  Copyright (C) 2020  powernukkit.org - José Roberto de Araújo Júnior
- 
+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
@@ -25,7 +25,7 @@ import java.util.Map;
  * to avoid parsing the same string multiple times. The cache have a limited size and have
  * strong reference to the version objects.
  * <p><strong>Note that this implementation is not synchronized.</strong>
- * If multiple threads access a this comparator concurrently it <em>must</em> be
+ * If multiple threads access this comparator concurrently it <em>must</em> be
  * synchronized externally.  This is typically accomplished by
  * synchronizing on some object that naturally encapsulates the comparator or the
  * object that is using it.

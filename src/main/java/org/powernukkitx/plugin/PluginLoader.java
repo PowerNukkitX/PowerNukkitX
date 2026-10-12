@@ -81,7 +81,7 @@ public interface PluginLoader {
      * <p>When Nukkit is trying to load all its plugins, the plugin manager will look for all installed plugin loader,
      * and choose the correct one by checking if this plugin matches the filters given below.</p>
      *
-     * <p>For example, to check if this file is has a "jar" extension, the regular expression should be:<br>
+     * <p>For example, to check if this file has a "jar" extension, the regular expression should be:<br>
      * {@code ^.+\\.jar$}<br>
      * So, for a jar-extension-only file plugin loader, this method should be:
      * </p>

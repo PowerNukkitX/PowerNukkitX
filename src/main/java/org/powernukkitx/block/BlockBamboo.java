@@ -89,6 +89,11 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         return false;
     }
 
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
     public int countHeight() {
         int count = 0;
         Optional<Block> opt;
@@ -121,7 +126,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
             if (player != null) {
                 final AnimatePacket animatePacket = new AnimatePacket();
                 animatePacket.setAction(AnimatePacket.Action.SWING);
-                animatePacket.setTargetRuntimeID(player.getId());
+                animatePacket.setTargetRuntimeID(player.runtimeId());
                 this.getLevel().addChunkPacket(player.getChunkX(), player.getChunkZ(), animatePacket);
             }
             setBambooLeafSize(BambooLeafSize.SMALL_LEAVES);

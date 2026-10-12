@@ -109,6 +109,8 @@ public interface ItemID {
 
     String BREAD = "minecraft:bread";
 
+    String STRAW_BED = "minecraft:straw_bed";
+
     String BREEZE_ROD = "minecraft:breeze_rod";
 
     String BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";
@@ -704,6 +706,46 @@ public interface ItemID {
     String PALE_OAK_HANGING_SIGN = "minecraft:pale_oak_hanging_sign";
 
     String PALE_OAK_SIGN = "minecraft:pale_oak_sign";
+
+    String POPLAR_BOAT = "minecraft:poplar_boat";
+
+    String POPLAR_CHEST_BOAT = "minecraft:poplar_chest_boat";
+
+    String POPLAR_HANGING_SIGN = "minecraft:poplar_hanging_sign";
+
+    String POPLAR_SIGN = "minecraft:poplar_sign";
+
+    String WHITE_CUSHION = "minecraft:white_cushion";
+
+    String ORANGE_CUSHION = "minecraft:orange_cushion";
+
+    String MAGENTA_CUSHION = "minecraft:magenta_cushion";
+
+    String LIGHT_BLUE_CUSHION = "minecraft:light_blue_cushion";
+
+    String YELLOW_CUSHION = "minecraft:yellow_cushion";
+
+    String LIME_CUSHION = "minecraft:lime_cushion";
+
+    String PINK_CUSHION = "minecraft:pink_cushion";
+
+    String GRAY_CUSHION = "minecraft:gray_cushion";
+
+    String LIGHT_GRAY_CUSHION = "minecraft:light_gray_cushion";
+
+    String CYAN_CUSHION = "minecraft:cyan_cushion";
+
+    String PURPLE_CUSHION = "minecraft:purple_cushion";
+
+    String BLUE_CUSHION = "minecraft:blue_cushion";
+
+    String BROWN_CUSHION = "minecraft:brown_cushion";
+
+    String GREEN_CUSHION = "minecraft:green_cushion";
+
+    String RED_CUSHION = "minecraft:red_cushion";
+
+    String BLACK_CUSHION = "minecraft:black_cushion";
 
     String PANDA_SPAWN_EGG = "minecraft:panda_spawn_egg";
 

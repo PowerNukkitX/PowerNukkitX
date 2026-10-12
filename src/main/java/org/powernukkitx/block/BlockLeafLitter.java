@@ -43,7 +43,14 @@ public class BlockLeafLitter extends BlockFlowable {
     }
 
     public boolean isSupportValid(Block block) {
-        return block.isFullBlock() && block.isSolid();
+        return isSupportValid(block, BlockFace.UP);
+    }
+
+    /**
+     * Returns whether the block provides valid support on the requested face.
+     */
+    public static boolean isSupportValid(Block block, BlockFace face) {
+        return !(block instanceof BlockAir) && !(block instanceof BlockLeaves) && block.isSideFull(face);
     }
 
     @Override
@@ -53,7 +60,7 @@ public class BlockLeafLitter extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!isSupportValid(block.down())) {
+        if (block.getLevelBlockAtLayer(1) instanceof BlockLiquid || !isSupportValid(block.down())) {
             return false;
         }
 
@@ -84,7 +91,7 @@ public class BlockLeafLitter extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!isSupportValid(getLevelBlock().down())) {
+            if (getLevelBlockAtLayer(1) instanceof BlockLiquid || !isSupportValid(getLevelBlock().down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

@@ -13,5 +13,6 @@ public class SetLocalPlayerAsInitializedHandler implements PacketHandler<SetLoca
     @Override
     public void handle(SetLocalPlayerAsInitializedPacket packet, PlayerSessionHolder holder, Server server) {
         holder.getPlayer().onPlayerLocallyInitialized();
+        holder.getPlayer().scheduleUpdate();
     }
 }

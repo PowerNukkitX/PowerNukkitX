@@ -375,7 +375,7 @@ public class CompoundTag extends Tag {
     /**
      * Check existence of NBT tag
      *
-     * @param name - NBT tag Id.
+     * @param name - NBT tag id.
      * @return - true, if tag exists
      */
     public boolean exist(String name) {

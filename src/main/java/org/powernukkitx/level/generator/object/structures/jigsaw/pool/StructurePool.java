@@ -27,7 +27,7 @@ public class StructurePool {
             totalWeight += entry.weight;
         }
 
-        int target = randomSourceProvider.nextBoundedInt(totalWeight - 1);
+        int target = randomSourceProvider.nextExclusiveInt(totalWeight);
         for (Entry entry : entries) {
             if (target < entry.weight) {
                 return entry;

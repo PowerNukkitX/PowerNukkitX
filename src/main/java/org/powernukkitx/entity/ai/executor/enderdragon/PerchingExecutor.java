@@ -13,7 +13,6 @@ import org.powernukkitx.entity.item.EntityAreaEffectCloud;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -44,18 +43,18 @@ public class PerchingExecutor implements EntityControl, IBehaviorExecutor {
                     location.y = location.level.getHighestBlockAt(location.toHorizontal()) + 1;
                     EntityAreaEffectCloud areaEffectCloud = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, location.getChunk(),
                             new CompoundTag().putList("Pos", new ListTag<>()
-                                            .add(new DoubleTag(location.x))
-                                            .add(new DoubleTag(location.y))
-                                            .add(new DoubleTag(location.z))
+                                            .add(new FloatTag(location.x))
+                                            .add(new FloatTag(location.y))
+                                            .add(new FloatTag(location.z))
                                     )
                                     .putList("Rotation", new ListTag<>()
                                             .add(new FloatTag(0))
                                             .add(new FloatTag(0))
                                     )
                                     .putList("Motion", new ListTag<>()
-                                            .add(new DoubleTag(0))
-                                            .add(new DoubleTag(0))
-                                            .add(new DoubleTag(0))
+                                            .add(new FloatTag(0))
+                                            .add(new FloatTag(0))
+                                            .add(new FloatTag(0))
                                     )
                                     .putInt("Duration", 60)
                                     .putFloat("InitialRadius", 6)

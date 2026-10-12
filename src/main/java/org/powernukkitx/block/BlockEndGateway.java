@@ -9,6 +9,9 @@ import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.IntTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -45,6 +48,20 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     @Override
     @NotNull public String getBlockEntityType() {
         return BlockEntity.END_GATEWAY;
+    }
+
+    @Override
+    public @NotNull BlockEntityEndGateway createBlockEntity(@Nullable CompoundTag initialData, @Nullable Object... args) {
+        if (initialData == null) {
+            initialData = new CompoundTag()
+                    .putInt("Age", 0)
+                    .putList("ExitPortal", new ListTag<IntTag>()
+                            .add(new IntTag(0))
+                            .add(new IntTag(0))
+                            .add(new IntTag(0)))
+                    .putByte("EndGatewayBadPosChecked", (byte) 1);
+        }
+        return BlockEntityHolder.super.createBlockEntity(initialData, args);
     }
 
     @Override

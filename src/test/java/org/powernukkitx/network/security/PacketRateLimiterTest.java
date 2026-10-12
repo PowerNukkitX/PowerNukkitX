@@ -22,6 +22,7 @@ class PacketRateLimiterTest {
         Mockito.when(s.maxChatPerSecondPerPlayer()).thenReturn(chat);
         Mockito.when(s.maxFormResponsesPerSecondPerPlayer()).thenReturn(forms);
         Mockito.when(s.maxMovementPacketsPerSecondPerPlayer()).thenReturn(movement);
+        Mockito.when(s.maxWorldInteractionPacketsPerSecondPerPlayer()).thenReturn(1000);
         return s;
     }
 
@@ -75,6 +76,17 @@ class PacketRateLimiterTest {
         PacketRateLimiter limiter = new PacketRateLimiter(settingsWith(1000, 1000, 1000, 1));
         assertTrue(limiter.tryMovement(), "First call must succeed");
         assertFalse(limiter.tryMovement(), "Second immediate call must fail at rate=1/s");
+    }
+
+    @Test
+    void zeroMeansNoLimit() {
+        PacketRateLimiter limiter = new PacketRateLimiter(settingsWith(0, 0, 0, 0));
+        for (int i = 0; i < 1000; i++) {
+            assertTrue(limiter.tryCommand(), "A limit of 0 must not throttle commands");
+            assertTrue(limiter.tryChat(), "A limit of 0 must not throttle chat");
+            assertTrue(limiter.tryFormResponse(), "A limit of 0 must not throttle form responses");
+            assertTrue(limiter.tryMovement(), "A limit of 0 must not throttle movement");
+        }
     }
 
     @Test

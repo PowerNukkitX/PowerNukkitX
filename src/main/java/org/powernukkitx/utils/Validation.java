@@ -35,7 +35,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
@@ -48,7 +48,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
@@ -61,7 +61,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
@@ -74,7 +74,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
@@ -87,7 +87,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
@@ -100,7 +100,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
@@ -113,7 +113,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
@@ -126,7 +126,7 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is not null.
      * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */

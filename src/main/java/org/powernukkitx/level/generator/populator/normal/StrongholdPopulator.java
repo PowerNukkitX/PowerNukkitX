@@ -1,18 +1,17 @@
 package org.powernukkitx.level.generator.populator.normal;
 
-import org.powernukkitx.block.Block;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.StrongholdPieces;
 import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.object.structures.utils.StructurePiece;
 import org.powernukkitx.level.generator.object.structures.utils.StructureStart;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
-import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
-import com.google.common.collect.Lists;
+import org.powernukkitx.level.generator.populator.placement.StrongholdPlacement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +20,9 @@ public class StrongholdPopulator extends Populator implements PopulatorStructure
 
     public static final String NAME = "normal_stronghold";
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
-            .minDistance(3)
-            .maxDistance(32)
-            .build());
+    public static final StrongholdPlacement PLACEMENT = new StrongholdPlacement(VillagePopulator.PLACEMENT);
 
-    private final List<StrongholdStart> discoveredStarts = Lists.newArrayList();
+    private static final int START_SEARCH_RADIUS = 8;
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -37,41 +33,46 @@ public class StrongholdPopulator extends Populator implements PopulatorStructure
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         if (!chunk.isOverWorld()) return;
-        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
 
-        if (PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
-            BlockManager object = new BlockManager(level);
-            StrongholdStart start = new StrongholdStart(object, chunkX, chunkZ);
-            start.generatePieces(object, chunkX, chunkZ);
-            if (start.isValid()) {
-                long seed = level.getSeed();
-                random.setSeed(seed);
-                BoundingBox boundingBox = start.getBoundingBox();
-                for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
-                    for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                        int x = cx << 4;
-                        int z = cz << 4;
-                        start.postProcess(object, random, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
-                    }
+        long seed = level.getSeed();
+        BlockManager object = new BlockManager(level);
+        BoundingBox chunkBounds = new BoundingBox(chunkX << 4, chunkZ << 4, (chunkX << 4) + 15, (chunkZ << 4) + 15);
+        random.setSeed(seed);
+        List<StructureAabbVolumes.DynamicStructure> aabbStructures = new ArrayList<>();
+
+        for (int startChunkX = chunkX - START_SEARCH_RADIUS; startChunkX <= chunkX + START_SEARCH_RADIUS; startChunkX++) {
+            for (int startChunkZ = chunkZ - START_SEARCH_RADIUS; startChunkZ <= chunkZ + START_SEARCH_RADIUS; startChunkZ++) {
+                if (!PLACEMENT.canGenerate(seed, random, startChunkX, startChunkZ, level.getBiomePicker())) {
+                    continue;
+                }
+
+                final int originChunkX = startChunkX;
+                final int originChunkZ = startChunkZ;
+                StrongholdStart start = context.getGenerator().getStructureStartCache().getOrCreate(
+                        StrongholdStart.class,
+                        originChunkX,
+                        originChunkZ,
+                        () -> createStart(level, originChunkX, originChunkZ)
+                );
+                if (start.isValid() && start.getBoundingBox().intersects(chunkBounds)) {
+                    start.postProcessPieces(object, random, chunkBounds, chunkX, chunkZ);
+                    aabbStructures.add(StructureAabbVolumes.DynamicStructure.fromStart(start));
                 }
             }
-            List<Long> chunks = new ArrayList<>();
-            for (Block block : object.getBlocks()) {
-                long hash = Level.chunkHash(block.getChunkX(), block.getChunkZ());
-                if (!chunks.contains(hash)) {
-                    chunks.add(hash);
-                }
-            }
-            for (Long hash : chunks) {
-                int cx = Level.getHashX(hash);
-                int cz = Level.getHashZ(hash);
-                level.getOrGenerateChunk(cx, cz);
-            }
-            queueObject(chunk, object);
         }
+
+        StructureAabbVolumes.replaceDynamic(chunk, "minecraft:stronghold", aabbStructures);
+        queueObject(chunk, object);
     }
 
-    public class StrongholdStart extends StructureStart {
+    private static StrongholdStart createStart(Level level, int chunkX, int chunkZ) {
+        BlockManager manager = new BlockManager(level);
+        StrongholdStart start = new StrongholdStart(manager, chunkX, chunkZ);
+        start.generatePieces(manager, chunkX, chunkZ);
+        return start;
+    }
+
+    public static class StrongholdStart extends StructureStart {
 
         public StrongholdStart(BlockManager level, int chunkX, int chunkZ) {
             super(level, chunkX, chunkZ);
@@ -104,14 +105,12 @@ public class StrongholdPopulator extends Populator implements PopulatorStructure
                     this.calculateBoundingBox();
                     this.moveBelowSeaLevel(this.random, 10);
                 } while (this.pieces.isEmpty() || start.portalRoomPiece == null);
-
-                StrongholdPopulator.this.discoveredStarts.add(this);
             }
         }
 
         @Override //\\ StrongholdStart::getType(void) // 5
         public String getType() {
-            return "Stronghold";
+            return "minecraft:stronghold";
         }
     }
 

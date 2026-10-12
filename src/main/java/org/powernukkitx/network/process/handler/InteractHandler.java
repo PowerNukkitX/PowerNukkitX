@@ -72,7 +72,7 @@ public class InteractHandler implements PacketHandler<InteractPacket> {
                         boolean restricted = targetEntity.getComponentInventory().isRestrictedToOwner();
                         if (restricted && !player.getName().equals(targetEntity.getOwnerName())) return;
                     }
-                } else if (targetEntity.getId() != player.getId()) {
+                } else if (targetEntity.runtimeId() != player.runtimeId()) {
                     return;
                 }
                 if (!player.isInventoryOpen()) {

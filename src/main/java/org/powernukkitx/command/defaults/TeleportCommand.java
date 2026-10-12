@@ -14,6 +14,7 @@ import org.powernukkitx.math.NukkitMath;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -161,22 +162,26 @@ public class TeleportCommand extends VanillaCommand {
                 double xRot = hasXRot ? list.getResult(3) : 0;
                 boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
 
-                String message = victims.stream().map(v -> v.getViewableName(sender)).collect(Collectors.joining(", "));
-                Location target = Location.fromObject(pos, pos.level);
-
-                if (isUnsafe(target, checkForBlocks)) {
-                    log.addError("commands.tp.safeTeleportFail", message, NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
-                    return 0;
-                }
-
+                List<String> teleported = new ArrayList<>(victims.size());
                 for (Entity victim : victims) {
-                    Location destination = getTeleportLocation(victim, pos);
+                    Location destination = getTeleportLocation(victim, Position.fromObject(pos, victim.getLevel()));
                     if (hasYRot) destination.setYaw(yRot).setHeadYaw(yRot);
                     if (hasXRot) destination.setPitch(xRot);
+
+                    if (isUnsafe(destination, checkForBlocks)) {
+                        log.addError("commands.tp.safeTeleportFail", victim.getViewableName(sender), NukkitMath.round(destination.getX(), 2) + ", " + NukkitMath.round(destination.getY(), 2) + ", " + NukkitMath.round(destination.getZ(), 2)).output();
+                        continue;
+                    }
+
                     victim.teleport(destination);
+                    teleported.add(victim.getViewableName(sender));
                 }
-                log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
-                return 1;
+
+                if (teleported.isEmpty()) {
+                    return 0;
+                }
+                log.addSuccess("commands.tp.success.coordinates", String.join(", ", teleported), String.valueOf(NukkitMath.round(pos.getX(), 2)), String.valueOf(NukkitMath.round(pos.getY(), 2)), String.valueOf(NukkitMath.round(pos.getZ(), 2))).output(true);
+                return teleported.size();
             }
             case "Entity->Pos(FacingPos)" -> {
                 List<Entity> victims = list.getResult(0);

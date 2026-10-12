@@ -56,10 +56,23 @@ public class PlayerFood {
      * @param saturation Initial saturation level
      */
     public PlayerFood(Player player, int food, float saturation) {
+        this(player, food, saturation, 0);
+    }
+
+    /**
+     * Constructs a food manager with the complete persisted food state.
+     *
+     * @param player player instance
+     * @param food initial food level
+     * @param saturation initial saturation level
+     * @param exhaustion initial exhaustion level
+     */
+    public PlayerFood(Player player, int food, float saturation, double exhaustion) {
         this.player = player;
         this.food = food;
         this.maxFood = 20;
         this.saturation = saturation;
+        this.exhaustion = exhaustion;
     }
 
     /**

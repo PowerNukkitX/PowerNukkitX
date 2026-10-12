@@ -44,7 +44,7 @@ public class EntityEquipmentInventory extends BaseInventory {
     @Override
     public void sendSlot(int index, Player player) {
         final MobEquipmentPacket packet = new MobEquipmentPacket();
-        packet.setTargetRuntimeID(this.entity.getId());
+        packet.setTargetRuntimeID(this.entity.runtimeId());
         packet.setSlot(index);
         packet.setSelectedSlot(index);
         packet.setItem(this.getItem(index).toNetwork());

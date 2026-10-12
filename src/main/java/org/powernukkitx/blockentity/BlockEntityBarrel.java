@@ -7,11 +7,14 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 
 
 public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
-
-
     public BlockEntityBarrel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        movable = true;
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.nbt.putByte("Findable", this.nbt.getByte("Findable"));
     }
 
     @Override
@@ -22,7 +25,6 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false);
     }
 
@@ -48,7 +50,7 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             this.nbt.remove("CustomName");
             return;
         }

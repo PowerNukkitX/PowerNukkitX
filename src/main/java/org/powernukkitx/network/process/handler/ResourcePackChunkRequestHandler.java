@@ -22,4 +22,9 @@ public class ResourcePackChunkRequestHandler implements PacketHandler<ResourcePa
 
         holder.getInternalPackManager().handleChunkRequest(packet);
     }
+
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
 }

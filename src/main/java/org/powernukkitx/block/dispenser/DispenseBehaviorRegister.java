@@ -50,6 +50,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.MANGROVE_BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.CHERRY_BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.PALE_OAK_BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.POPLAR_BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.BAMBOO_RAFT, new BoatDispenseBehavior());
 
         registerBehavior(ItemID.OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
@@ -61,6 +62,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.MANGROVE_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.CHERRY_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.PALE_OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.POPLAR_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.BAMBOO_CHEST_RAFT, new ChestBoatDispenseBehavior());
 
         registerBehavior(BlockID.UNDYED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
@@ -87,13 +89,7 @@ public final class DispenseBehaviorRegister {
         });
 
         registerBehavior(BlockID.TNT, new TNTDispenseBehavior());
-        registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior(EntityID.ARROW) {
-            @Override
-            protected double getMotion() {
-                return super.getMotion() * 1.5;
-            }
-        });
-        //TODO: tipped arrow
+        registerBehavior(ItemID.ARROW, new ArrowDispenseBehavior());
         //TODO: spectral arrow
         registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityID.EGG));
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntityID.SNOWBALL));

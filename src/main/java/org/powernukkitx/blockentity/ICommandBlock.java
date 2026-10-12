@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ICommandBlock extends CommandSender, InventoryHolder {
 
-    int CURRENT_VERSION = 10;
+    int CURRENT_VERSION = 50;
 
     //TODO: enum
     int MODE_NORMAL = 0;

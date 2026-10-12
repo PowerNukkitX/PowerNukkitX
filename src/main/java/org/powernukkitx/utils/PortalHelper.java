@@ -3,6 +3,8 @@ package org.powernukkitx.utils;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.block.property.enums.PortalAxis;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.Level;
@@ -58,11 +60,11 @@ public final class PortalHelper implements BlockID {
         int z = pos.getFloorZ();
 
         Block obsidian = Block.get(OBSIDIAN);
-        Block netherPortal = Block.get(PORTAL);
+        Block netherPortal = Block.get(PORTAL).setPropertyValue(CommonBlockProperties.PORTAL_AXIS, PortalAxis.X);
         for (int xx = -2; xx <= 4; xx++) {
             for (int yy = -1; yy <= 5; yy++) {
                 for (int zz = -1; zz <= 1; zz++) {
-                    Block block = lvl.getBlock(x + xx, y + yy, z + zz);           
+                    Block block = lvl.getBlock(x + xx, y + yy, z + zz);
                     if (block.getId() != BlockID.BEDROCK) {
                         lvl.setBlock(x + xx, y + yy, z + zz, Block.get(AIR), false, true);
                     }
@@ -98,6 +100,14 @@ public final class PortalHelper implements BlockID {
         lvl.setBlock(x + 1, y, z, obsidian, false, true);
         lvl.setBlock(x + 2, y, z, obsidian, false, true);
         lvl.setBlock(x + 3, y, z, obsidian, false, true);
+
+        if (lvl.getPortalManager() != null) {
+            lvl.getPortalManager().registerPortal(
+                    lvl,
+                    new BlockVector3(pos.getFloorX(), pos.getFloorY() + 1, pos.getFloorZ()),
+                    2, 3, 1, 0
+            );
+        }
     }
 
     /**
@@ -111,6 +121,18 @@ public final class PortalHelper implements BlockID {
             log.warn("Cannot search for portal: position or level is null");
             return Optional.empty();
         }
+        var portalManager = currentPos.level.getPortalManager();
+        if (portalManager != null) {
+            BlockVector3 portal = portalManager.findNearest(
+                    currentPos.level.getDimension(),
+                    currentPos.asBlockVector3(),
+                    PORTAL_SEARCH_RADIUS
+            );
+            return portal == null
+                    ? Optional.empty()
+                    : Optional.of(new Position(portal.x, portal.y, portal.z, currentPos.level));
+        }
+
         AxisAlignedBB searchBox = new SimpleAxisAlignedBB(
                 new Vector3(currentPos.getFloorX() - PORTAL_SEARCH_RADIUS, currentPos.level.getDimensionData().getMinHeight(), currentPos.getFloorZ() - PORTAL_SEARCH_RADIUS),
                 new Vector3(currentPos.getFloorX() + PORTAL_SEARCH_RADIUS, currentPos.level.getDimensionData().getMaxHeight(), currentPos.getFloorZ() + PORTAL_SEARCH_RADIUS));
@@ -137,6 +159,18 @@ public final class PortalHelper implements BlockID {
      * @throws IllegalArgumentException if the position is not in Nether or Overworld.
      */
     public static Position convertPosBetweenNetherAndOverworld(Position current) {
+        Level destination = current == null || current.level == null ? null : current.getLevel().getNetherPortalDestination();
+        return convertPosBetweenNetherAndOverworld(current, destination);
+    }
+
+    /**
+     * Converts a position between the Nether and Overworld using an explicit destination level.
+     *
+     * @param current source position
+     * @param destination destination level
+     * @return converted position, or {@code null} when conversion is unavailable
+     */
+    public static Position convertPosBetweenNetherAndOverworld(Position current, Level destination) {
         if (current == null || current.level == null) {
             log.warn("Cannot convert position: position or level is null");
             return null;
@@ -146,8 +180,8 @@ public final class PortalHelper implements BlockID {
         DimensionData dimensionData;
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
             dimensionData = DimensionEnum.NETHER.getDimensionData();
-            Level netherLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_NETHER);
-            if (netherLevel == null)
+            Level netherLevel = destination;
+            if (netherLevel == null || netherLevel.getProvider() == null || netherLevel.getDimension() != DIMENSION_NETHER)
                 return null;
             
             // Converts coordinates using the configurable nether scale
@@ -195,8 +229,8 @@ public final class PortalHelper implements BlockID {
         } else if (current.level.getDimension() == Level.DIMENSION_NETHER) {
 
             dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
-            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
-            if (overworldLevel == null)
+            Level overworldLevel = destination;
+            if (overworldLevel == null || overworldLevel.getProvider() == null || overworldLevel.getDimension() != DIMENSION_OVERWORLD)
                 return null;
             int x = current.getFloorX() * scale;
             int z = current.getFloorZ() * scale;
@@ -241,17 +275,29 @@ public final class PortalHelper implements BlockID {
      * @throws IllegalArgumentException if the position is not in End or Overworld.
      */
     public static Position convertPosBetweenEndAndOverworld(Position current) {
+        Level destination = current == null || current.level == null ? null : current.getLevel().getEndPortalDestination();
+        return convertPosBetweenEndAndOverworld(current, destination);
+    }
+
+    /**
+     * Converts a position between the End and Overworld using an explicit destination level.
+     *
+     * @param current source position
+     * @param destination destination level
+     * @return converted position, or {@code null} when conversion is unavailable
+     */
+    public static Position convertPosBetweenEndAndOverworld(Position current, Level destination) {
         if (current == null || current.level == null) {
             log.warn("Cannot convert position: position or level is null");
             return null;
         }
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
-            Level endLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_THE_END);
-            if (endLevel == null) return null;
+            Level endLevel = destination;
+            if (endLevel == null || endLevel.getProvider() == null || endLevel.getDimension() != DIMENSION_THE_END) return null;
             return new Location(100, 50, 0, endLevel);
         } else if (current.level.getDimension() == DIMENSION_THE_END) {
-            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
-            if (overworldLevel == null) return null;
+            Level overworldLevel = destination;
+            if (overworldLevel == null || overworldLevel.getProvider() == null || overworldLevel.getDimension() != DIMENSION_OVERWORLD) return null;
             return overworldLevel.getSafeSpawn();
         } else {
             throw new IllegalArgumentException("Position must be in End or Overworld!");

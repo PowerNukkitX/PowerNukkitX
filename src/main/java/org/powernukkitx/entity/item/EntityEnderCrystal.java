@@ -13,6 +13,7 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
@@ -107,6 +108,13 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
             Position pos = this.getPosition();
             Explosion explode = new Explosion(pos, 6, this);
 
+            if (this.level.isTheEnd()) {
+                var fight = this.level.getEndDragonFight();
+                if (fight != null) {
+                    fight.onCrystalDestroyed(this);
+                }
+            }
+
             this.close();
 
             if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
@@ -150,6 +158,13 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
 
     public void setBeamTarget(BlockVector3 beamTarget) {
         this.setDataProperty(ActorDataTypes.BLOCK_TARGET, beamTarget.toNetwork());
+    }
+
+    /**
+     * Clears the End crystal beam target.
+     */
+    public void clearBeamTarget() {
+        this.setDataProperty(ActorDataTypes.BLOCK_TARGET, Vector3i.ZERO);
     }
 
     @Override

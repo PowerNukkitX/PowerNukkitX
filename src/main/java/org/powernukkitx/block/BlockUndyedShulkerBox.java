@@ -188,6 +188,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     }
 
     @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return true;
     }

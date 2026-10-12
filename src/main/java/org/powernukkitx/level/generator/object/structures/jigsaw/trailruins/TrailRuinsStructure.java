@@ -65,7 +65,12 @@ public class TrailRuinsStructure extends JigsawStructure {
 
     @Override
     protected int getMaxDepth() {
-        return 16;
+        return 7;
+    }
+
+    @Override
+    protected int getMaxDistanceFromCenter() {
+        return 80;
     }
 
     @Override

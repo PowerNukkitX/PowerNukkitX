@@ -3,7 +3,6 @@ package org.powernukkitx.inventory;
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntityChest;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
@@ -30,22 +29,6 @@ public class DoubleChestInventory extends ContainerInventory {
 
         this.right = right.getRealInventory();
         this.right.setDoubleInventory(this);
-
-        Map<Integer, Item> items = new HashMap<>();
-        // First we add the items from the left chest
-        for (int idx = 0; idx < this.left.getSize(); idx++) {
-            if (this.left.getContents().containsKey(idx)) { // Don't forget to skip empty slots!
-                items.put(idx, this.left.getContents().get(idx));
-            }
-        }
-        // And them the items from the right chest
-        for (int idx = 0; idx < this.right.getSize(); idx++) {
-            if (this.right.getContents().containsKey(idx)) { // Don't forget to skip empty slots!
-                items.put(idx + this.left.getSize(), this.right.getContents().get(idx)); // idx + this.left.getSize() so we don't overlap left chest items
-            }
-        }
-
-        this.setContents(items);
     }
 
     @Override
@@ -125,54 +108,14 @@ public class DoubleChestInventory extends ContainerInventory {
         this.right.viewers.add(who);
 
         if (this.getVisibleViewersCount() == 1) {
-            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk1 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
-            pk1.setBlockPosition(Vector3i.from(this.left.getHolder().getX(), this.left.getHolder().getY(), this.left.getHolder().getZ()));
-            pk1.setEventType(1);
-            pk1.setEventValue(2);
-
-            Level level = this.left.getHolder().getLevel();
-            if (level != null) {
-                level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
-                level.addChunkPacket((int) this.left.getHolder().getX() >> 4, (int) this.left.getHolder().getZ() >> 4, pk1);
-            }
-
-            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk2 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
-            pk2.setBlockPosition(Vector3i.from(this.right.getHolder().getX(), this.right.getHolder().getY(), this.right.getHolder().getZ()));
-            pk2.setEventType(1);
-            pk2.setEventValue(2);
-
-            level = this.right.getHolder().getLevel();
-            if (level != null) {
-                level.addSound(this.right.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
-                level.addChunkPacket((int) this.right.getHolder().getX() >> 4, (int) this.right.getHolder().getZ() >> 4, pk2);
-            }
+            this.left.getHolder().broadcastLidState(true);
         }
     }
 
     @Override
     public void onClose(Player who) {
         if (this.getVisibleViewersCount() == 1) {
-            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk1 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
-            pk1.setBlockPosition(Vector3i.from(this.right.getHolder().getX(), this.right.getHolder().getY(), this.right.getHolder().getZ()));
-            pk1.setEventType(1);
-            pk1.setEventValue(0);
-
-            Level level = this.right.getHolder().getLevel();
-            if (level != null) {
-                level.addSound(this.right.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
-                level.addChunkPacket((int) this.right.getHolder().getX() >> 4, (int) this.right.getHolder().getZ() >> 4, pk1);
-            }
-
-            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk2 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
-            pk2.setBlockPosition(Vector3i.from(this.left.getHolder().getX(), this.left.getHolder().getY(), this.left.getHolder().getZ()));
-            pk2.setEventType(1);
-            pk2.setEventValue(0);
-
-            level = this.left.getHolder().getLevel();
-            if (level != null) {
-                level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
-                level.addChunkPacket((int) this.left.getHolder().getX() >> 4, (int) this.left.getHolder().getZ() >> 4, pk2);
-            }
+            this.left.getHolder().broadcastLidState(false);
         }
 
         this.left.viewers.remove(who);

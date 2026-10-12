@@ -5,6 +5,7 @@ import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.registry.Registries;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,18 @@ public abstract class BlockCopperBarBase extends BlockTransparent implements Oxi
 
     @Override
     public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL && this instanceof BlockConnectable connectable && connectable.updateConnections()) {
+            level.setBlock(this, this, true);
+        }
         return Oxidizable.super.onUpdate(type);
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (this instanceof BlockConnectable connectable) {
+            connectable.updateConnections();
+        }
+        return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
     @Override

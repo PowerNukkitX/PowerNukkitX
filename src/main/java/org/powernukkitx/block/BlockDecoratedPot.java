@@ -49,7 +49,6 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         CompoundTag nbt = new CompoundTag();
 
         nbt.putString("id", BlockEntity.DECORATED_POT);
-        nbt.putByte("isMovable", (byte) 1);
 
         if (item.getNbt() != null) {
             for (var entry : item.getNbt().getEntrySet()) {
@@ -59,7 +58,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
 
         nbt.putInt("x", (int) this.x);
         nbt.putInt("y", (int) this.y);
-        nbt.putInt("z", (int) this.y);
+        nbt.putInt("z", (int) this.z);
 
         this.setBlockFace(player.getDirection().getOpposite());
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
@@ -88,6 +87,11 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     }
 
     @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return false;
     }
@@ -108,7 +112,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
 
     @Override
     public Item[] getDrops(Item item) {
-        if (item != null && item.hasEnchantment(Enchantment.ID_SILK_TOUCH) && isShatteringTool(item)) {
+        if (item == null || !isShatteringTool(item) || item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
             return new Item[]{super.toItem()};
         }
 

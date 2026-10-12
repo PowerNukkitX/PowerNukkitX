@@ -8,6 +8,7 @@ import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
+import org.powernukkitx.level.format.leveldb.LevelDBTestFixtureUtil;
 import org.powernukkitx.level.format.palette.Palette;
 import org.powernukkitx.level.village.VillageManager;
 import org.powernukkitx.network.NetworkConstants;
@@ -40,6 +41,7 @@ public class LevelStorageTest {
     static void before() {
         Registries.BLOCK.init();
         FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/level2"));
+        LevelDBTestFixtureUtil.canonicalizeCopiedWorld(new File("src/test/resources/level2").toPath());
         Level level = Mockito.mock(Level.class);
         Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
         Mockito.when(level.getVillageManager()).thenReturn(new VillageManager(level));

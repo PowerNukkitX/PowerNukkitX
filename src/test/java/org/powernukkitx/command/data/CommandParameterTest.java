@@ -63,6 +63,13 @@ class CommandParameterTest {
     }
 
     @Test
+    void newEnumFromIdenticalValuesReusesEnumName() {
+        CommandParameter first = CommandParameter.newEnum("mode", new String[]{"easy"});
+        CommandParameter second = CommandParameter.newEnum("mode", new String[]{"easy"});
+        assertEquals(first.enumData.getName(), second.enumData.getName());
+    }
+
+    @Test
     void newEnumWithSoftFlagGeneratesUniqueEnumNames() {
         CommandParameter first = CommandParameter.newEnum("mode", false, new String[]{"easy"}, true);
         CommandParameter second = CommandParameter.newEnum("mode", false, new String[]{"hard"}, true);

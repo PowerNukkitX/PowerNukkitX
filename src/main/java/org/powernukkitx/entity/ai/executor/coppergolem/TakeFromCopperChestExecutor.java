@@ -10,7 +10,6 @@ import org.powernukkitx.entity.ai.executor.EntityControl;
 import org.powernukkitx.entity.ai.executor.IBehaviorExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.mob.EntityCopperGolem;
-import org.powernukkitx.inventory.ChestInventory;
 import org.powernukkitx.item.Item;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
@@ -55,7 +54,7 @@ public class TakeFromCopperChestExecutor implements EntityControl, IBehaviorExec
             animateChest(golem, false);
             if (chest instanceof BlockCopperChest chest) {
                 BlockEntityChest blockEntityChest = chest.getOrCreateBlockEntity();
-                ChestInventory chestInventory = (ChestInventory) blockEntityChest.getInventory();
+                var chestInventory = blockEntityChest.getInventory();
                 Optional<Item> optionalItem = chestInventory.getContents().values().stream().filter(item1 -> !item1.isNull()).findFirst();
                 if (optionalItem.isPresent()) {
                     Item item = optionalItem.get().clone();

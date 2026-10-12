@@ -32,8 +32,8 @@ public class StructurePlacement {
     }
 
     public boolean canGenerate(long levelSeed, RandomSourceProvider random, int chunkX, int chunkZ, BiomePicker<?> biomePicker) {
-        int sampleX = (chunkX << 4) + 7;
-        int sampleZ = (chunkZ << 4) + 7;
+        int sampleX = (chunkX << 4) + settings.biomeSampleOffset;
+        int sampleZ = (chunkZ << 4) + settings.biomeSampleOffset;
         int sampleY = settings.biomeSampleY;
         int biome;
         if (biomePicker instanceof OverworldBiomePicker overworldBiomePicker) {
@@ -119,6 +119,9 @@ public class StructurePlacement {
         protected final int minDistance = 0;
         @Builder.Default
         protected final int maxDistance = 1;
+        /** Local X/Z block offset used when sampling the structure start biome. */
+        @Builder.Default
+        protected final int biomeSampleOffset = 7;
         @Builder.Default
         protected final int biomeSampleY = SEA_LEVEL;
         @Builder.Default

@@ -8,31 +8,13 @@ import org.powernukkitx.network.protocol.types.BannerPattern;
 import org.powernukkitx.utils.DyeColor;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
-    public int color;
-
     public BlockEntityBanner(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
-    public void loadNBT() {
-        super.loadNBT();
-        if (!this.nbt.contains("color")) {
-            this.nbt.putByte("color", (byte) 0);
-        }
-
-        this.color = this.getNbt().getByte("color");
-    }
-
-    @Override
     public boolean isBlockEntityValid() {
         return this.getBlock().getId().equals(Block.WALL_BANNER) || this.getBlock().getId().equals(Block.STANDING_BANNER);
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-       this.nbt.putByte("color", (byte) this.color);
     }
 
     @Override
@@ -101,12 +83,10 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
         return super.getSpawnCompound()
                 .putInt("Base", getBaseColor())
                 .putList("Patterns", (ListTag<CompoundTag>) this.getNbt().getList("Patterns", CompoundTag.class).copy())
-                .putInt("Type", getType())
-                .putByte("color", (byte) this.color);
+                .putInt("Type", getType());
     }
 
     public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(color);
+        return DyeColor.getByDyeData(getBaseColor());
     }
-
 }
