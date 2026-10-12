@@ -21,14 +21,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,20 +94,37 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected final IBehavior[] behaviorArray;
     protected final ISensor[] sensorArray;
     /**
-     * Stores the number of gt elapsed since each core behavior was last evaluated
+     * Stores the number of gt elapsed since each core behavior was last evaluated, indexed like
+     * {@link #coreBehaviorArray}
      */
     @Getter(AccessLevel.NONE)
-    protected final int[] coreBehaviorPeriodTimer;
+    protected final int[] coreBehaviorPeriodTicks;
     /**
-     * Stores the number of gt elapsed since each behavior was last evaluated
+     * Stores the number of gt elapsed since each behavior was last evaluated, indexed like
+     * {@link #behaviorArray}
      */
     @Getter(AccessLevel.NONE)
-    protected final int[] behaviorPeriodTimer;
+    protected final int[] behaviorPeriodTicks;
     /**
-     * Stores the number of gt elapsed since each sensor was last refreshed
+     * Stores the number of gt elapsed since each sensor was last refreshed, indexed like
+     * {@link #sensorArray}
      */
     @Getter(AccessLevel.NONE)
-    protected final int[] sensorPeriodTimer;
+    protected final int[] sensorPeriodTicks;
+    /**
+     * Map view over {@link #coreBehaviorPeriodTicks}, kept for subclasses written against the old
+     * map field. Reads and writes go straight to the array; adding a behavior through it is not
+     * supported because the arrays are fixed at construction.
+     */
+    protected final Map<IBehavior, Integer> coreBehaviorPeriodTimer;
+    /**
+     * Map view over {@link #behaviorPeriodTicks}, see {@link #coreBehaviorPeriodTimer}
+     */
+    protected final Map<IBehavior, Integer> behaviorPeriodTimer;
+    /**
+     * Map view over {@link #sensorPeriodTicks}, see {@link #coreBehaviorPeriodTimer}
+     */
+    protected final Map<ISensor, Integer> sensorPeriodTimer;
     /**
      * Reusable buffer holding the indices into {@link #behaviorArray} that evaluated successfully
      */
@@ -155,9 +175,12 @@ public class BehaviorGroup implements IBehaviorGroup {
         this.coreBehaviorArray = coreBehaviors.toArray(new IBehavior[0]);
         this.behaviorArray = behaviors.toArray(new IBehavior[0]);
         this.sensorArray = sensors.toArray(new ISensor[0]);
-        this.coreBehaviorPeriodTimer = new int[this.coreBehaviorArray.length];
-        this.behaviorPeriodTimer = new int[this.behaviorArray.length];
-        this.sensorPeriodTimer = new int[this.sensorArray.length];
+        this.coreBehaviorPeriodTicks = new int[this.coreBehaviorArray.length];
+        this.behaviorPeriodTicks = new int[this.behaviorArray.length];
+        this.sensorPeriodTicks = new int[this.sensorArray.length];
+        this.coreBehaviorPeriodTimer = new PeriodTimerView<>(this.coreBehaviorArray, this.coreBehaviorPeriodTicks);
+        this.behaviorPeriodTimer = new PeriodTimerView<>(this.behaviorArray, this.behaviorPeriodTicks);
+        this.sensorPeriodTimer = new PeriodTimerView<>(this.sensorArray, this.sensorPeriodTicks);
         this.evalSucceedBuffer = new int[this.behaviorArray.length];
         this.initPeriodTimer();
     }
@@ -301,10 +324,10 @@ public class BehaviorGroup implements IBehaviorGroup {
         for (int i = 0; i < sensorArray.length; i++) {
             ISensor sensor = sensorArray[i];
             //refresh the gt count
-            int nextTick = ++sensorPeriodTimer[i];
+            int nextTick = ++sensorPeriodTicks[i];
             //don't evaluate until the period is reached
             if (nextTick < sensor.getPeriod()) continue;
-            sensorPeriodTimer[i] = 0;
+            sensorPeriodTicks[i] = 0;
             sensor.sense(entity);
         }
     }
@@ -316,10 +339,10 @@ public class BehaviorGroup implements IBehaviorGroup {
             //if it's already running, there's no need to evaluate it
             if (runningCoreBehaviors.contains(coreBehavior)) continue;
             //refresh the gt count
-            int nextTick = ++coreBehaviorPeriodTimer[i];
+            int nextTick = ++coreBehaviorPeriodTicks[i];
             //don't evaluate until the period is reached
             if (nextTick < coreBehavior.getPeriod()) continue;
-            coreBehaviorPeriodTimer[i] = 0;
+            coreBehaviorPeriodTicks[i] = 0;
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
                 coreBehavior.setBehaviorState(BehaviorState.ACTIVE);
@@ -343,10 +366,10 @@ public class BehaviorGroup implements IBehaviorGroup {
             //if it's already running, there's no need to evaluate it
             if (runningBehaviors.contains(behavior)) continue;
             //refresh the gt count
-            int nextTick = ++behaviorPeriodTimer[i];
+            int nextTick = ++behaviorPeriodTicks[i];
             //don't evaluate until the period is reached
             if (nextTick < behavior.getPeriod()) continue;
-            behaviorPeriodTimer[i] = 0;
+            behaviorPeriodTicks[i] = 0;
             if (behavior.evaluate(entity)) {
                 if (behavior.getPriority() > highestPriority) {
                     evalSucceedCount = 0;
@@ -577,49 +600,95 @@ public class BehaviorGroup implements IBehaviorGroup {
         return originalDelay;
     }
 
-    /**
-     * Snapshot of the core behavior gt counters. The timers live in an int array now, so writing to
-     * the returned map no longer changes anything.
-     *
-     * @deprecated read-only compatibility view, will be removed
-     */
-    @Deprecated
-    public Map<IBehavior, Integer> getCoreBehaviorPeriodTimer() {
-        return timerSnapshot(coreBehaviorArray, coreBehaviorPeriodTimer);
-    }
-
-    /**
-     * Snapshot of the behavior gt counters, see {@link #getCoreBehaviorPeriodTimer()}.
-     *
-     * @deprecated read-only compatibility view, will be removed
-     */
-    @Deprecated
-    public Map<IBehavior, Integer> getBehaviorPeriodTimer() {
-        return timerSnapshot(behaviorArray, behaviorPeriodTimer);
-    }
-
-    /**
-     * Snapshot of the sensor gt counters, see {@link #getCoreBehaviorPeriodTimer()}.
-     *
-     * @deprecated read-only compatibility view, will be removed
-     */
-    @Deprecated
-    public Map<ISensor, Integer> getSensorPeriodTimer() {
-        return timerSnapshot(sensorArray, sensorPeriodTimer);
-    }
-
-    private static <T> Map<T, Integer> timerSnapshot(T[] keys, int[] timers) {
-        Map<T, Integer> snapshot = new IdentityHashMap<>(keys.length);
-        for (int i = 0; i < keys.length; i++) {
-            snapshot.put(keys[i], timers[i]);
-        }
-        return Collections.unmodifiableMap(snapshot);
-    }
-
     protected void initPeriodTimer() {
-        Arrays.fill(coreBehaviorPeriodTimer, 0);
-        Arrays.fill(behaviorPeriodTimer, 0);
-        Arrays.fill(sensorPeriodTimer, 0);
+        Arrays.fill(coreBehaviorPeriodTicks, 0);
+        Arrays.fill(behaviorPeriodTicks, 0);
+        Arrays.fill(sensorPeriodTicks, 0);
+    }
+
+    /**
+     * Live map over a key array and its parallel timer array. Only exists so code written against
+     * the old {@code Map} timer fields keeps compiling and linking; the tick loops use the arrays.
+     */
+    private static final class PeriodTimerView<K> extends AbstractMap<K, Integer> {
+        private final K[] keys;
+        private final int[] timers;
+
+        private PeriodTimerView(K[] keys, int[] timers) {
+            this.keys = keys;
+            this.timers = timers;
+        }
+
+        private int indexOf(Object key) {
+            for (int i = 0; i < keys.length; i++) {
+                if (keys[i].equals(key)) return i;
+            }
+            return -1;
+        }
+
+        @Override
+        public int size() {
+            return keys.length;
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return indexOf(key) >= 0;
+        }
+
+        @Override
+        public Integer get(Object key) {
+            int index = indexOf(key);
+            return index >= 0 ? timers[index] : null;
+        }
+
+        @Override
+        public Integer put(K key, Integer value) {
+            int index = indexOf(key);
+            if (index < 0) {
+                throw new UnsupportedOperationException("timers are fixed at construction, cannot add " + key);
+            }
+            int previous = timers[index];
+            timers[index] = value;
+            return previous;
+        }
+
+        @Override
+        public Set<Entry<K, Integer>> entrySet() {
+            return new AbstractSet<>() {
+                @Override
+                public int size() {
+                    return keys.length;
+                }
+
+                @Override
+                public Iterator<Entry<K, Integer>> iterator() {
+                    return new Iterator<>() {
+                        private int next;
+
+                        @Override
+                        public boolean hasNext() {
+                            return next < keys.length;
+                        }
+
+                        @Override
+                        public Entry<K, Integer> next() {
+                            if (next >= keys.length) throw new NoSuchElementException();
+                            int index = next++;
+                            return new SimpleEntry<>(keys[index], timers[index]) {
+                                @Override
+                                public Integer setValue(Integer value) {
+                                    super.setValue(value);
+                                    int previous = timers[index];
+                                    timers[index] = value;
+                                    return previous;
+                                }
+                            };
+                        }
+                    };
+                }
+            };
+        }
     }
 
     protected void updateMoveDirection(EntityIntelligent entity) {
