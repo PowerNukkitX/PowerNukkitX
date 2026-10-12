@@ -50,15 +50,6 @@ public class ByteTag extends NumberTag<Byte> {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            ByteTag byteTag = (ByteTag) obj;
-            return data == byteTag.data;
-        }
-        return false;
-    }
-
-    @Override
     public Tag copy() {
         return new ByteTag(data);
     }

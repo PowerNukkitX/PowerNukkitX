@@ -35,7 +35,7 @@ public class BambooForestBambooFeature extends SurfaceGenerateFeature {
             if (i > 0) {
                 px += random.nextInt(-3, 3);
                 pz += random.nextInt(-3, 3);
-                py = manager.getLevel().getHeightMap(px, pz) + 1;
+                py = manager.getLevel().getHeightMap(px, pz);
             }
 
             this.placeBambooAt(manager, px, py, pz);
@@ -59,7 +59,7 @@ public class BambooForestBambooFeature extends SurfaceGenerateFeature {
                 int px = midX + _x;
                 int pz = midZ + _z;
                 if((calcX * calcX) + (calcZ * calcZ) < (calcRad * calcRad))
-                    placePodzolAt(manager, px, manager.getLevel().getHeightMap(px, pz), pz);
+                    placePodzolAt(manager, px, manager.getLevel().getHeightMap(px, pz) - 1, pz);
             }
         }
         int height = 5 + random.nextInt(11);

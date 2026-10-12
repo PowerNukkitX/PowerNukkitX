@@ -2,6 +2,7 @@ package org.powernukkitx.entity.ai.executor;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
+import org.powernukkitx.entity.Attribute;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityCanAttack;
 import org.powernukkitx.entity.EntityIntelligent;
@@ -40,6 +41,15 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     /** Give target potion effect */
     protected Effect[] effects;
+
+    static float scaleDamageForDifficulty(float damage, int difficulty) {
+        return switch (difficulty) {
+            case 0 -> 0f;
+            case 1 -> Math.min(damage / 2f + 1f, damage);
+            case 3 -> damage * 1.5f;
+            default -> damage;
+        };
+    }
 
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown,2.5f);
@@ -116,9 +126,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         if (entity.distanceSquared(entity.targetEntity) <= attackRange && attackTick > coolDown) {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR;
 
+            boolean usesAttackDamageAttribute = entity.getAttributes().containsKey(Attribute.ATTACK_DAMAGE);
             float defaultDamage = 0;
-            if (entity.isCustomEntity()) {
-                defaultDamage = entity.getAttackPower();
+            if (usesAttackDamageAttribute) {
+                defaultDamage = entity.resolveAttackDamage();
             } else if (entity instanceof EntityCanAttack entityCanAttack) {
                 defaultDamage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
             }
@@ -129,6 +140,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
                 for (Enchantment enchantment : enchantments) {
                     itemDamage += enchantment.getDamageBonus(entity.targetEntity, entity);
                 }
+            }
+
+            if (usesAttackDamageAttribute && entity.targetEntity instanceof Player) {
+                itemDamage = scaleDamageForDifficulty(itemDamage, entity.getServer().getDifficulty());
             }
 
             Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);

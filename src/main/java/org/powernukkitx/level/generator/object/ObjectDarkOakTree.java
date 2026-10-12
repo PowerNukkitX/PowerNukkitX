@@ -3,6 +3,7 @@ package org.powernukkitx.level.generator.object;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockDarkOakLeaves;
 import org.powernukkitx.block.BlockDarkOakLog;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockLeaves;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -158,7 +159,13 @@ public class ObjectDarkOakTree extends TreeGenerator {
             for (int j1 = -i1; j1 <= i1; ++j1) {
                 for (int k1 = -i1; k1 <= i1; ++k1) {
                     blockPos.setComponents(i + j1, j + l, k + k1);
-                    if (!this.canGrowInto(worldIn.getBlockIdIfCachedOrLoaded(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ()))) {
+                    String id = worldIn.getBlockIdIfCachedOrLoaded(
+                            blockPos.getFloorX(),
+                            blockPos.getFloorY(),
+                            blockPos.getFloorZ()
+                    );
+
+                    if (!this.canGrowInto(id)) {
                         return false;
                     }
                 }
@@ -173,7 +180,12 @@ public class ObjectDarkOakTree extends TreeGenerator {
     }
 
     private void placeLogAt(BlockManager worldIn, Vector3 pos, boolean treeWithVines) {
-        if (this.canGrowInto(worldIn.getBlockIdIfCachedOrLoaded(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
+        String id = worldIn.getBlockIdIfCachedOrLoaded(
+                pos.getFloorX(),
+                pos.getFloorY(),
+                pos.getFloorZ()
+        );
+        if (this.canGrowInto(id)) {
             worldIn.setBlockStateAt(pos, DARK_OAK_WOOD);
             if (treeWithVines) {
                 this.addVinesAroundLog(worldIn, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
@@ -183,7 +195,11 @@ public class ObjectDarkOakTree extends TreeGenerator {
 
     private void placeLeafAt(BlockManager worldIn, int x, int y, int z) {
         Vector3 blockpos = new Vector3(x, y, z);
-        String material = worldIn.getBlockIdIfCachedOrLoaded(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+        String material = worldIn.getBlockIdIfCachedOrLoaded(
+                blockpos.getFloorX(),
+                blockpos.getFloorY(),
+                blockpos.getFloorZ()
+        );
         if (material.equals(Block.AIR) || material.equals(Block.VINE)) {
             worldIn.setBlockStateAt(blockpos, DARK_OAK_LEAVES);
         }

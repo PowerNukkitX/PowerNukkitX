@@ -6,12 +6,14 @@ import org.powernukkitx.block.BlockLava;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockWater;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateFeature;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.math.BlockFace;
-import org.powernukkitx.math.NukkitMath;
+import org.powernukkitx.registry.Registries;
+import org.powernukkitx.tags.BiomeTags;
 
 import java.util.Set;
 
@@ -30,15 +32,12 @@ public class OverworldSurfaceSpringsFeature extends GenerateFeature {
 
     private static final Set<String> VALID_BLOCKS = Set.of(
             BlockID.STONE,
-            BlockID.GRANITE,
-            BlockID.DIORITE,
-            BlockID.ANDESITE,
             BlockID.DEEPSLATE,
             BlockID.TUFF,
             BlockID.CALCITE,
-            BlockID.DIRT,
-            BlockID.GRASS_BLOCK,
-            BlockID.POWDER_SNOW
+            BlockID.SNOW,
+            BlockID.POWDER_SNOW,
+            BlockID.PACKED_ICE
     );
 
     private static final BlockFace[] SPRING_NEIGHBORS = {
@@ -60,24 +59,26 @@ public class OverworldSurfaceSpringsFeature extends GenerateFeature {
         BlockManager manager = new BlockManager(level);
 
         int minY = level.getMinHeight();
-        placeSprings(manager, chunkX, chunkZ, 25, minY, Math.min(192, level.getMaxHeight()), WATER);
-        placeSprings(manager, chunkX, chunkZ, 20, minY, Math.max(minY, level.getMaxHeight() - 8), LAVA);
+        placeSprings(manager, chunk, 25, minY, WATER);
+        placeSprings(manager, chunk, 20, minY, LAVA);
 
         queueObject(chunk, manager);
     }
 
-    private void placeSprings(BlockManager manager, int chunkX, int chunkZ, int count, int minY, int maxY, BlockState fluid) {
-        if (maxY < minY) {
-            return;
-        }
-
-        int sourceX = chunkX << 4;
-        int sourceZ = chunkZ << 4;
+    private void placeSprings(BlockManager manager, IChunk chunk, int count, int minY, BlockState fluid) {
+        int sourceX = chunk.getX() << 4;
+        int sourceZ = chunk.getZ() << 4;
 
         for (int i = 0; i < count; i++) {
-            int x = sourceX + random.nextInt(14) + 1;
-            int y = fluid == LAVA ? nextVeryBiasedToBottomY(minY, maxY) : nextUniformY(minY, maxY);
-            int z = sourceZ + random.nextInt(14) + 1;
+            int localX = random.nextInt(16);
+            int localZ = random.nextInt(16);
+            int x = sourceX + localX;
+            int y = fluid == LAVA ? nextLavaY(minY) : nextWaterY(minY);
+            int z = sourceZ + localZ;
+
+            if (fluid == LAVA && !isLavaBiomeAllowed(chunk, localX, y, localZ)) {
+                continue;
+            }
 
             if (canPlaceSpring(manager, x, y, z)) {
                 manager.setBlockStateAt(x, y, z, fluid);
@@ -86,18 +87,32 @@ public class OverworldSurfaceSpringsFeature extends GenerateFeature {
         }
     }
 
-    private int nextUniformY(int minY, int maxY) {
-        return minY + random.nextInt(maxY - minY + 1);
+    private int nextWaterY(int minY) {
+        int range = 192 - minY;
+        return range <= 0 ? minY : minY + random.nextInt(range);
     }
 
-    private int nextVeryBiasedToBottomY(int minY, int maxY) {
-        if (maxY - minY - 8 + 1 <= 0) {
-            return minY;
+    private int nextLavaY(int minY) {
+        int range = 174 - minY;
+        if (range <= 0) {
+            return minY + 8;
         }
 
-        int upperInclusive = NukkitMath.randomRange(random, minY + 8, maxY);
-        int biasedUpperInclusive = NukkitMath.randomRange(random, minY, upperInclusive - 1);
-        return NukkitMath.randomRange(random, minY, biasedUpperInclusive - 1 + 8);
+        double bias = random.nextDouble() * random.nextDouble() * random.nextDouble();
+        return minY + 8 + (int) (bias * range);
+    }
+
+    private boolean isLavaBiomeAllowed(IChunk chunk, int x, int y, int z) {
+        int biomeId = chunk.getBiomeId(x, y, z);
+        if (biomeId == BiomeID.DEEP_DARK) {
+            return false;
+        }
+
+        boolean frozen = Registries.BIOME.containsTag(BiomeTags.FROZEN, biomeId);
+        boolean ocean = Registries.BIOME.containsTag(BiomeTags.OCEAN, biomeId);
+        boolean icePlains = Registries.BIOME.containsTag(BiomeTags.ICE_PLAINS, biomeId);
+        boolean mutated = Registries.BIOME.containsTag(BiomeTags.MUTATED, biomeId);
+        return !(frozen && ocean || icePlains && mutated);
     }
 
     private boolean canPlaceSpring(BlockManager manager, int x, int y, int z) {

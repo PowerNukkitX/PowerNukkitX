@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
 
@@ -8,33 +10,19 @@ import org.powernukkitx.item.ItemTool;
  * @since 2015/11/25
  */
 public abstract class BlockStairsWood extends BlockStairs {
+    public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_AXE)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
     public BlockStairsWood(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
+    public BlockStairsWood(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override

@@ -21,8 +21,8 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
-import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.components.RideableComponent;
@@ -34,6 +34,7 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BiomeTags;
 import org.powernukkitx.utils.ItemHelper;
@@ -177,6 +178,11 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(2f);
+    }
+
+    @Override
     public String getOriginalName() {
         return "Spider";
     }
@@ -293,11 +299,11 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         switch (this.jockeyType) {
             case SKELETON_JOCKEY, STRAY_JOCKEY, BOGGED_JOCKEY, PARCHED_JOCKEY -> {
                 Item bow = Item.get(Item.BOW, 0, 1);
-                nbt.put("Mainhand", ItemHelper.write(bow));
+                nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(bow)));
             }
             case WITHER_SKELETON_JOCKEY -> {
                 Item sword = Item.get(Item.STONE_SWORD, 0, 1);
-                nbt.put("Mainhand", ItemHelper.write(sword));
+                nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(sword)));
             }
             default -> {}
         }
@@ -306,6 +312,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         if (rider == null) return null;
         return rider;
     }
+
     private boolean isUnderground() {
         if (this.level == null) return false;
 
@@ -314,7 +321,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
         int highest = b.getLevel().getHeightMap(b.getFloorX(), b.getFloorZ());
         return highest > b.getFloorY() && b.canPassThrough()
-                && b.getLevel().getBlock(b.getFloorX(), highest, b.getFloorZ()).isSolid();
+                && b.getLevel().getBlock(b.getFloorX(), highest - 1, b.getFloorZ()).isSolid();
     }
 
     private @Nullable Set<String> getSpawnBiomeTags() {

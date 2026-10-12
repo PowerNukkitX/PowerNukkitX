@@ -48,14 +48,4 @@ public class DoubleTag extends NumberTag<Double> {
     public Tag copy() {
         return new DoubleTag(data);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            DoubleTag o = (DoubleTag) obj;
-            return data == o.data;
-        }
-        return false;
-    }
-
 }

@@ -170,14 +170,48 @@ public class BlockEntityDeepSmokeTest {
     void campfireItems() {
         BlockEntityCampfire be = make(BlockEntityID.CAMPFIRE, BlockEntityCampfire.class);
         if (be == null) return;
-        safe(be::getSize);
-        safe(() -> be.setItem(0, Item.get("minecraft:beef")));
-        safe(() -> be.getItem(0));
-        safe(() -> be.setKeepItem(0, true));
-        safe(() -> be.getKeepItem(0));
-        safe(be::onUpdate);
-        safe(be::close);
-        Assertions.assertTrue(true);
+
+        be.setItem(0, Item.get("minecraft:beef"));
+        be.getNbt().putInt("ItemTime1", 123);
+
+        be.loadNBT();
+
+        Assertions.assertEquals(4, be.getSize());
+        Assertions.assertEquals("minecraft:beef", be.getItem(0).getId());
+
+        be.setKeepItem(0, true);
+
+        Assertions.assertTrue(be.getKeepItem(0));
+
+        be.saveNBT();
+
+        Assertions.assertTrue(be.getNbt().containsCompound("Item1"));
+        Assertions.assertTrue(be.getNbt().containsInt("ItemTime1"));
+        Assertions.assertEquals(123, be.getNbt().getInt("ItemTime1"));
+
+        Assertions.assertFalse(be.getNbt().contains("KeepItem1"));
+        Assertions.assertFalse(be.getNbt().contains("KeepItem2"));
+        Assertions.assertFalse(be.getNbt().contains("KeepItem3"));
+        Assertions.assertFalse(be.getNbt().contains("KeepItem4"));
+
+        var item = be.getNbt().getCompound("Item1");
+
+        Assertions.assertEquals("minecraft:beef", item.getString("Name"));
+        Assertions.assertTrue(item.containsByte("WasPickedUp"));
+        Assertions.assertFalse(item.contains("version"));
+
+        Assertions.assertTrue(be.getKeepItem(0));
+
+        be.loadNBT();
+
+        Assertions.assertFalse(be.getKeepItem(0));
+
+        be.saveNBT();
+
+        Assertions.assertEquals(123, be.getNbt().getInt("ItemTime1"));
+        Assertions.assertFalse(be.getNbt().contains("KeepItem1"));
+
+        be.close();
     }
 
     @Test

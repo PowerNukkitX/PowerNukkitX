@@ -137,6 +137,16 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
+    /**
+     * Returns the raw stored item without invoking inventory access behavior.
+     */
+    @ApiStatus.Internal
+    public Item getItemInternal(int index) {
+        synchronized (this.slots) {
+            return this.slots.getOrDefault(index, Item.AIR);
+        }
+    }
+
     public boolean setItem(int index, Item item, boolean send) {
         if (index < 0 || index >= this.size) {
             return false;
@@ -256,6 +266,9 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void decreaseCount(int slot, int amount) {
+        if (amount <= 0) {
+            return;
+        }
         Item item;
         synchronized (this.slots) {
             item = this.slots.getOrDefault(slot, Item.AIR);
@@ -680,8 +693,6 @@ public abstract class BaseInventory implements Inventory {
     }
 
     public boolean isValidSlot(int index) {
-        synchronized (this.slots) {
-            return index >= 0 && index < this.slots.size();
-        }
+        return index >= 0 && index < this.size;
     }
 }

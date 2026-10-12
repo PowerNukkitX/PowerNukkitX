@@ -21,11 +21,12 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 /**
  * Enumeration of memory types used by the core
@@ -105,10 +106,6 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Entity> ATTACK_TARGET = new MemoryType<>("minecraft:attack_target");
     /**
-     * Whether the entity's attack target has been changed is currently only available in Warden.
-     */
-    MemoryType<Boolean> IS_ATTACK_TARGET_CHANGED = new MemoryType<>("minecraft:is_attack_target_changed", false);
-    /**
      * The entity is generated from the server tick.
      */
     MemoryType<Integer> ENTITY_SPAWN_TIME = new MemoryType<>("minecraft:entity_spawn_time", () -> Server.getInstance().getTick());
@@ -184,10 +181,6 @@ public interface CoreMemoryTypes {
     MemoryType<Entity> ENTITY_SPOUSE = new MemoryType<>("minecraft:entity_spouse");
     MemoryType<Integer> BREEDING_TICK = new MemoryType<>("minecraft:breeding_tick", 0);
     MemoryType<Boolean> IS_BREEDING = new MemoryType<>("minecraft:is_breeding", false);
-    /**
-     * Currently only used in Warden
-     */
-    MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE = new MemoryType<>("minecraft:warden_anger_value", HashMap::new);
     /**
      * Track nearest skeleton entity
      */

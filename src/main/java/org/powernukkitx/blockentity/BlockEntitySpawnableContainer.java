@@ -6,14 +6,20 @@ import org.powernukkitx.inventory.ContainerInventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.loot.VanillaLootTables;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
+import com.google.common.base.Preconditions;
 
 import java.util.HashSet;
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected ContainerInventory inventory;
+
+    private String lootTable;
+    private int lootTableSeed;
+    private boolean unpackingLootTable;
 
 
     public BlockEntitySpawnableContainer(IChunk chunk, CompoundTag nbt) {
@@ -23,6 +29,8 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void loadNBT() {
         super.loadNBT();
+        this.lootTable = this.nbt.containsString("LootTable") ? this.nbt.getString("LootTable") : "";
+        this.lootTableSeed = this.nbt.containsInt("LootTableSeed") ? this.nbt.getInt("LootTableSeed") : 0;
         this.inventory = requireContainerInventory();
         if (!this.nbt.containsList("Items")) {
             this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
@@ -55,10 +63,51 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
 
     @Override
     public void saveNBT() {
+        if (this.lootTable.isEmpty()) {
+            this.nbt.remove("LootTable", "LootTableSeed");
+        } else {
+            this.nbt.putString("LootTable", this.lootTable).putInt("LootTableSeed", this.lootTableSeed);
+        }
+
         super.saveNBT();
         this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         for (int index = 0; index < this.inventory.getSize(); index++) {
-            this.setItem(index, this.inventory.getItem(index));
+            this.setItem(index, this.inventory.getItemInternal(index));
+        }
+    }
+
+    /**
+     * Sets loot metadata for this container.
+     */
+    public synchronized void setLootTable(String lootTable, int seed) {
+        Preconditions.checkArgument(lootTable != null && !lootTable.isEmpty(), "lootTable cannot be null or empty");
+        this.lootTable = lootTable;
+        this.lootTableSeed = seed;
+        this.nbt.putString("LootTable", lootTable).putInt("LootTableSeed", seed);
+        if (this.chunk != null) {
+            this.chunk.setChanged();
+        }
+    }
+
+    /**
+     * Materializes this container's pending BDS loot table when supported.
+     */
+    public synchronized void unpackLootTable() {
+        if (this.unpackingLootTable || this.lootTable.isEmpty()) {
+            return;
+        }
+
+        this.unpackingLootTable = true;
+        try {
+            if (!VanillaLootTables.populate(this.lootTable, this.inventory, this.lootTableSeed)) {
+                return;
+            }
+
+            this.lootTable = "";
+            this.nbt.remove("LootTable", "LootTableSeed");
+            this.setDirty();
+        } finally {
+            this.unpackingLootTable = false;
         }
     }
 

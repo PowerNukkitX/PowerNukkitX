@@ -22,6 +22,7 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.passive.EntityVillagerV2;
@@ -132,6 +133,11 @@ public class EntityVex extends EntityMob implements EntityFlyable {
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(14);
+    }
+
+    @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(3f);
     }
 
     @Override

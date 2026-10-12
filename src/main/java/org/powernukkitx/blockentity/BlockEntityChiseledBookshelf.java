@@ -6,6 +6,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.utils.ItemHelper;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt = addBookshelfNbt(nbt);
+        this.nbt = addBookshelfStorageNbt(nbt);
     }
 
     public Item removeBook(int index) {
@@ -93,7 +94,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                     continue;
                 }
                 Item item = Item.get(name);
-                item.setDamage(compoundTag.getByte("Damage"));
+                item.setDamage(compoundTag.getShort("Damage"));
                 item.setCount(compoundTag.getByte("Count"));
                 if (compoundTag.containsCompound("tag")) {
                     item.setNbt(compoundTag.getCompound("tag"));
@@ -101,6 +102,39 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                 this.items[i] = item;
             }
         }
+    }
+
+    private CompoundTag addBookshelfStorageNbt(CompoundTag namedTag) {
+        if (lastInteractedSlot != null) {
+            namedTag.putInt(LAST_INTERACTED_SLOT, lastInteractedSlot);
+        } else {
+            namedTag.remove(LAST_INTERACTED_SLOT);
+        }
+
+        boolean hasStoredItem = false;
+        ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
+
+        for (var item : items) {
+            if (item == null || item.isNull()) {
+                compoundTagListTag.add(new CompoundTag()
+                        .putByte("Count", 0)
+                        .putShort("Damage", 0)
+                        .putString("Name", "")
+                        .putByte("WasPickedUp", 0)
+                );
+            } else {
+                hasStoredItem = true;
+                compoundTagListTag.add(ItemHelper.write(item));
+            }
+        }
+
+        if (!hasStoredItem && lastInteractedSlot == null) {
+            namedTag.remove("Items");
+        } else {
+            namedTag.putList("Items", compoundTagListTag);
+        }
+
+        return namedTag;
     }
 
     private CompoundTag addBookshelfNbt(CompoundTag namedTag) {

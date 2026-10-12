@@ -25,6 +25,7 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
@@ -110,6 +111,11 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
     @Override
     public HealthComponent getComponentHealth() {
         return HealthComponent.value(20);
+    }
+
+    @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(6f);
     }
 
     @Override

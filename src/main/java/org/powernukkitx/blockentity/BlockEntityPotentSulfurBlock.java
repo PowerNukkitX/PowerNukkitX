@@ -31,7 +31,6 @@ public class BlockEntityPotentSulfurBlock extends BlockEntity {
     private static final double GEYSER_LAUNCH_FORCE = 0.2d;
 
     private int waitingCountdown = -1;
-    private long eruptionTick = -1L;
 
     public BlockEntityPotentSulfurBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -40,30 +39,7 @@ public class BlockEntityPotentSulfurBlock extends BlockEntity {
     @Override
     protected void initBlockEntity() {
         super.initBlockEntity();
-        if (this.eruptionTick == -1L && this.level != null) {
-            this.eruptionTick = this.level.getCurrentTick();
-        }
         scheduleUpdate();
-    }
-
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.waitingCountdown = this.nbt.getInt("countdown");
-        this.eruptionTick = this.nbt.getLong("eruptionTick");
-        if (!this.nbt.contains("countdown")) {
-            this.waitingCountdown = -1;
-        }
-        if (!this.nbt.contains("eruptionTick")) {
-            this.eruptionTick = -1L;
-        }
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-        this.nbt.putInt("countdown", this.waitingCountdown);
-        this.nbt.putLong("eruptionTick", this.eruptionTick);
     }
 
     @Override
@@ -106,12 +82,6 @@ public class BlockEntityPotentSulfurBlock extends BlockEntity {
 
     private void resetCountdown() {
         this.waitingCountdown = -1;
-        setDirty();
-    }
-
-    private void markEruptionStarted() {
-        this.eruptionTick = this.level == null ? -1L : this.level.getCurrentTick();
-        setDirty();
     }
 
     private PotentSulfurState refreshState(BlockPotentSulfur block) {
@@ -121,9 +91,6 @@ public class BlockEntityPotentSulfurBlock extends BlockEntity {
             setState(block, after, false);
             if (isPeriodicGeyserState(after) && !isPeriodicGeyserState(before)) {
                 resetCountdown();
-            }
-            if (isLaunchingGeyserState(after)) {
-                markEruptionStarted();
             }
             return after;
         }
@@ -165,7 +132,6 @@ public class BlockEntityPotentSulfurBlock extends BlockEntity {
 
         if (this.waitingCountdown <= 0) {
             this.waitingCountdown = nextWaitingCountdown(state, waterBlocks);
-            setDirty();
         }
 
         if (this.waitingCountdown > 0) {
@@ -175,9 +141,6 @@ public class BlockEntityPotentSulfurBlock extends BlockEntity {
         if (this.waitingCountdown == 0) {
             PotentSulfurState next = state == PotentSulfurState.DORMANT ? PotentSulfurState.ERUPTING : PotentSulfurState.DORMANT;
             setState(block, next, true);
-            if (next == PotentSulfurState.ERUPTING) {
-                markEruptionStarted();
-            }
         }
     }
 

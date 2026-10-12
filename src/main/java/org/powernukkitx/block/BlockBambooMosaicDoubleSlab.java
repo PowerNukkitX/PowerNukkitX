@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockBambooMosaicDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO_MOSAIC_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
+            .toolType(ItemTool.TYPE_AXE)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -18,7 +25,7 @@ public class BlockBambooMosaicDoubleSlab extends BlockDoubleSlabBase {
     }
 
     public BlockBambooMosaicDoubleSlab(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -31,18 +38,4 @@ public class BlockBambooMosaicDoubleSlab extends BlockDoubleSlabBase {
         return BlockBambooMosaicSlab.PROPERTIES.getDefaultState();
     }
 
-    @Override
-    public int getBurnChance() {
-        return 5;
     }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-}

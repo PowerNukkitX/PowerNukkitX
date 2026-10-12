@@ -74,7 +74,7 @@ public class SulfurSpikeFeature extends GenerateFeature {
     }
 
     private boolean isSulfurCave(IChunk chunk, int x, int y, int z) {
-        return chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.SULFUR_CAVES;
+        return chunk.getBiomeId(x, y, z) == BiomeID.SULFUR_CAVES;
     }
 
     private boolean isInCurrentChunk(IChunk chunk, int x, int z) {

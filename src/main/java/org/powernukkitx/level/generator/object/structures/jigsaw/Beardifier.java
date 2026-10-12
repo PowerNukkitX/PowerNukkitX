@@ -53,6 +53,19 @@ public final class Beardifier {
      */
     public static void apply(StructureHelper helper, List<TerrainAdaptationPiece> pieces,
                              ColumnProcessor processor) {
+        apply(helper, pieces, processor, false);
+    }
+
+    /**
+     * Traverses the BEARD_BOX kernel around structure bounding boxes.
+     */
+    public static void applyBeardBox(StructureHelper helper, List<TerrainAdaptationPiece> pieces,
+                                     ColumnProcessor processor) {
+        apply(helper, pieces, processor, true);
+    }
+
+    private static void apply(StructureHelper helper, List<TerrainAdaptationPiece> pieces,
+                              ColumnProcessor processor, boolean beardBox) {
         BlockVector3 origin = helper.getOrigin();
         int minHeight = helper.getMinHeight();
         int maxHeight = helper.getMaxHeight() - 1;
@@ -61,7 +74,7 @@ public final class Beardifier {
             BoundingBox box = piece.boundingBox().moved(origin.getX(), origin.getY(), origin.getZ());
             int groundY = origin.getY() + piece.groundY();
             int minY = Math.max(minHeight, groundY - KERNEL_RADIUS);
-            int maxY = Math.min(maxHeight, groundY + KERNEL_RADIUS);
+            int maxY = Math.min(maxHeight, (beardBox ? box.y1 : groundY) + KERNEL_RADIUS);
 
             for (int x = box.x0 - KERNEL_RADIUS; x <= box.x1 + KERNEL_RADIUS; x++) {
                 for (int z = box.z0 - KERNEL_RADIUS; z <= box.z1 + KERNEL_RADIUS; z++) {
@@ -77,7 +90,9 @@ public final class Beardifier {
                             continue;
                         }
 
-                        int dy = Math.abs(y - groundY);
+                        int dy = beardBox
+                                ? distanceToRange(y, groundY, box.y1)
+                                : Math.abs(y - groundY);
                         if (dy >= KERNEL_RADIUS) {
                             continue;
                         }

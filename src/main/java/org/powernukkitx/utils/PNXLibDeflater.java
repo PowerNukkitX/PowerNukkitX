@@ -1,7 +1,7 @@
 package org.powernukkitx.utils;
 
 import org.powernukkitx.Server;
-import cn.powernukkitx.libdeflate.LibdeflateCompressor;
+import org.powernukkitx.libdeflate.LibdeflateCompressor;
 
 public final class PNXLibDeflater extends LibdeflateCompressor {
     public PNXLibDeflater() {

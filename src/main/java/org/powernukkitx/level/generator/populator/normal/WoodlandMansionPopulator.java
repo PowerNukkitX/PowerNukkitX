@@ -7,8 +7,10 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.structures.WoodlandMansionPieces;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.utils.random.Xoroshiro128;
@@ -17,12 +19,12 @@ public class WoodlandMansionPopulator extends Populator implements PopulatorStru
 
     public static final String NAME = "normal_woodland_mansion";
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+    public static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
             .salt(10387319L)
             .minDistance(20)
             .maxDistance(80)
             .isBiomeValid(biome -> biome == BiomeID.ROOFED_FOREST || biome == BiomeID.ROOFED_FOREST_MUTATED)
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.TRIANGULAR);
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -36,7 +38,7 @@ public class WoodlandMansionPopulator extends Populator implements PopulatorStru
             return;
         }
 
-        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
+        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7) - 1, 7);
         if(!PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             return;
         }
@@ -48,6 +50,7 @@ public class WoodlandMansionPopulator extends Populator implements PopulatorStru
         Xoroshiro128 pieceRandom = new Xoroshiro128(level.getSeed());
         pieceRandom.setSeed((long) chunkX * pieceRandom.nextInt() ^ (long) chunkZ * pieceRandom.nextInt() ^ level.getSeed());
         WoodlandMansionPieces.PostPlacement postPlacement = WoodlandMansionPieces.place(manager, origin, rotation, pieceRandom);
+        StructureAabbVolumes.addDynamic(level, "minecraft:mansion", postPlacement.pieceBounds());
         if (!postPlacement.chests().isEmpty() || !postPlacement.mobSpawns().isEmpty() || !postPlacement.spiderSpawnerPositions().isEmpty()) {
             manager.addHook(() -> WoodlandMansionPieces.populatePlacedData(
                     level,
@@ -79,7 +82,7 @@ public class WoodlandMansionPopulator extends Populator implements PopulatorStru
                     case ROTATE_270 -> 4 - dx;
                     default -> dz;
                 };
-                minY = Math.min(minY, Math.max(chunk.getHeightMap(sampleX + 7, sampleZ + 7), 64));
+                minY = Math.min(minY, Math.max(chunk.getHeightMap(sampleX + 7, sampleZ + 7) - 1, 64));
             }
         }
 

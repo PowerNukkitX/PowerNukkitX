@@ -153,7 +153,7 @@ public class EntityZombieVillagerV2 extends EntityZombie implements EntityWalkab
 
      protected void transformVillager() {
          this.saveNBT();
-         Entity villager = new EntityVillagerV2(this.getChunk(), this.getNbt().copy().remove("profession", "Health"));
+         Entity villager = new EntityVillagerV2(this.getChunk(), this.copyNBTForNewActor().remove("profession", "Health"));
          EntityTransformEvent event = new EntityTransformEvent(this, villager);
          server.getPluginManager().callEvent(event);
          if(event.isCancelled()) {

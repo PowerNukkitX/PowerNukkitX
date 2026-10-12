@@ -1,5 +1,6 @@
 package org.powernukkitx.blockentity;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.level.Level;
@@ -186,6 +187,22 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         }
     }
 
+    /**
+     * Returns the data a creative player picking this block with its data gets on the item, which placing that item
+     * then writes back into the new block entity.
+     * <p>
+     * Nothing is copied unless a block entity opts in, because its NBT often holds what such a copy would duplicate,
+     * such as the items of a container, the food on a campfire or the bees of a hive. A block entity whose data is
+     * safe to copy returns {@link #getCleanedNBT()}, or the part of it that is.
+     *
+     * @param player the player picking the block
+     * @return the data to copy onto the picked item, or {@code null} to copy none
+     */
+    @Nullable
+    public CompoundTag getPickNBT(Player player) {
+        return null;
+    }
+
     public Block getBlock() {
         return this.getLevelBlock();
     }
@@ -207,7 +224,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         level.scheduleBlockEntityUpdate(this);
     }
 
-    public void close() {
+    public synchronized void close() {
         if (!this.closed) {
             this.closed = true;
             if (this.chunk != null) {

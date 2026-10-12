@@ -14,7 +14,6 @@ import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -142,14 +141,14 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         Vector3 directionVector = entity.getDirectionVector().multiply(1 + ThreadLocalRandom.current().nextFloat(0.2f));
         tridentLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY());
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(tridentLocation.x))
-                        .add(new DoubleTag(tridentLocation.y))
-                        .add(new DoubleTag(tridentLocation.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(tridentLocation.x))
+                        .add(new FloatTag(tridentLocation.y))
+                        .add(new FloatTag(tridentLocation.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(-Math.sin(entity.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag((float) -entity.pitch)))
@@ -179,7 +178,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     private void playTridentAnimation(Entity entity) {
-        entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
+        entity.setDataProperty(ActorDataTypes.TARGET, this.target.uniqueIdLong());
         entity.setDataFlag(ActorFlags.FACING_TARGET_TO_RANGE_ATTACK);
     }
 

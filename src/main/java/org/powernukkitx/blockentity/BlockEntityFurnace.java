@@ -2,7 +2,6 @@ package org.powernukkitx.blockentity;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockID;
 import org.powernukkitx.event.inventory.FurnaceBurnEvent;
 import org.powernukkitx.event.inventory.FurnaceSmeltEvent;
 import org.powernukkitx.inventory.FurnaceTypeInventory;
@@ -34,7 +33,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     protected int burnTime;
     protected int burnDuration;
     protected int cookTime;
-    protected int maxTime;
     protected float storedXP;
     private int crackledTime;
 
@@ -87,20 +85,8 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             burnDuration = nbtMap.getShort("BurnDuration");
         }
 
-        if (!this.nbt.contains("MaxTime")) {
-            maxTime = burnTime;
-            burnDuration = 0;
-        } else {
-            maxTime = nbtMap.getShort("MaxTime");
-        }
-
-        if (this.nbt.contains("BurnTicks")) {
-            burnDuration = nbtMap.getShort("BurnTicks");
-            this.nbt.remove("BurnTicks");
-        }
-
-        if (this.nbt.contains("StoredXpInt")) {
-            storedXP = nbtMap.getShort("StoredXpInt");
+        if (this.nbt.contains("StoredXPInt")) {
+            storedXP = nbtMap.getInt("StoredXPInt");
         } else {
             storedXP = 0;
         }
@@ -168,8 +154,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
                 .putShort("CookTime", (short) cookTime)
                 .putShort("BurnTime", (short) burnTime)
                 .putShort("BurnDuration", (short) burnDuration)
-                .putShort("MaxTime", (short) maxTime)
-                .putShort("StoredXpInt", (short) storedXP);
+                .putInt("StoredXPInt", (int) storedXP);
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -255,9 +240,8 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             return;
         }
 
-        maxTime = (int) Math.ceil(ev.getBurnTime() / (float) getSpeedMultiplier());
-        burnTime = (int) Math.ceil(ev.getBurnTime() / (float) getSpeedMultiplier());
-        burnDuration = 0;
+        burnDuration = (int) Math.ceil(ev.getBurnTime() / (float) getSpeedMultiplier());
+        burnTime = burnDuration;
         setBurning(true);
 
         if (burnTime > 0 && ev.isBurning()) {
@@ -310,7 +294,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         if (burnTime > 0) {
             burnTime--;
             int readyAt = 200 / getSpeedMultiplier();
-            burnDuration = (int) Math.ceil((float) burnTime / maxTime * readyAt);
 
             if (this.crackledTime-- <= 0) {
                 this.crackledTime = ThreadLocalRandom.current().nextInt(20, 100);
@@ -341,7 +324,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             } else if (burnTime <= 0) {
                 burnTime = 0;
                 cookTime = 0;
-                burnDuration = 0;
             } else {
                 cookTime = 0;
             }
@@ -350,7 +332,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             setBurning(false);
             burnTime = 0;
             cookTime = 0;
-            burnDuration = 0;
             this.crackledTime = 0;
         }
 
@@ -363,10 +344,14 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
                 pk.setValue(cookTime);
                 player.sendPacket(pk);
 
+                int litTime = burnDuration > 0
+                        ? (int) Math.ceil((float) burnTime / burnDuration * (200 / getSpeedMultiplier()))
+                        : 0;
+
                 pk = new ContainerSetDataPacket();
                 pk.setContainerID((byte) windowId);
                 pk.setId(ContainerSetDataPacket.FURNACE_LIT_TIME);
-                pk.setValue(burnDuration);
+                pk.setValue(litTime);
                 player.sendPacket(pk);
             }
         }
@@ -380,7 +365,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
                 .putShort("BurnDuration", (short) burnDuration)
                 .putShort("BurnTime", (short) burnTime)
                 .putShort("CookTime", (short) cookTime)
-                .putShort("StoredXpInt", (short) this.storedXP);
+                .putInt("StoredXPInt", (int) this.storedXP);
         if (this.hasName()) {
             c.put("CustomName", this.nbt.get("CustomName").copy());
         }
@@ -412,11 +397,11 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     public int getMaxTime() {
-        return maxTime;
+        return burnDuration;
     }
 
     public void setMaxTime(int maxTime) {
-        this.maxTime = maxTime;
+        this.burnDuration = maxTime;
     }
 
     public float getStoredXP() {

@@ -46,6 +46,11 @@ public class Xoroshiro128 implements RandomSourceProvider {
     }
 
     @Override
+    public int nextExclusiveInt(int bound) {
+        return nextInt(bound);
+    }
+
+    @Override
     public long nextLong() {
         long i = this.s0;
         long j = this.s1;

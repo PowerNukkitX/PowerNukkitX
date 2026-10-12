@@ -328,11 +328,12 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
 
     @Override
     public boolean shear() {
+        CompoundTag cowNbt = this.copyNBTForNewActor();
         this.close();
         this.level.dropItem(this, Item.get(getVariantType().getMushroom(), 0, SHEAR_MUSHROOM_COUNT));
         this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
         this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
-        EntityCow cow = new EntityCow(this.getChunk(), this.getNbt());
+        EntityCow cow = new EntityCow(this.getChunk(), cowNbt);
         cow.setPosition(this);
         cow.setHealthCurrent(this.health);
         cow.setRotation(this.yaw, this.pitch);

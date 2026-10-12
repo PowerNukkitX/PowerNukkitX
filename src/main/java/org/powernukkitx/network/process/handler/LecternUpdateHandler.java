@@ -20,8 +20,17 @@ public class LecternUpdateHandler implements PacketHandler<LecternUpdatePacket> 
     @Override
     public void handle(LecternUpdatePacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+            return;
+        }
+        if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {
+            return;
+        }
         BlockVector3 blockPosition = BlockVector3.fromNetwork(packet.getPositionOfLecternToUpdate());
         playerHandle.player.temporalVector.setComponents(blockPosition.x, blockPosition.y, blockPosition.z);
+        if (!playerHandle.player.canInteract(playerHandle.player.temporalVector.add(0.5, 0.5, 0.5), 7)) {
+            return;
+        }
         BlockEntity blockEntityLectern = playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
         if (blockEntityLectern instanceof BlockEntityLectern lectern) {
             LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(playerHandle.player, lectern, packet.getNewPageToShow());

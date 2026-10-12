@@ -1,42 +1,32 @@
 package org.powernukkitx.level.generator.feature.tree;
 
-import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockBamboo;
-import org.powernukkitx.level.generator.feature.ObjectGeneratorFeature;
-import org.powernukkitx.level.generator.object.ObjectGenerator;
-import org.powernukkitx.level.generator.object.ObjectJungleBigTree;
-import org.powernukkitx.registry.Registries;
-import org.powernukkitx.tags.BiomeTags;
-import org.powernukkitx.utils.random.RandomSourceProvider;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.powernukkitx.level.generator.feature.placement.vegetation.TallGrassAroundTreePlacementFeature;
 
-public class BambooJungleTreeFeature extends ObjectGeneratorFeature {
-
+public class BambooJungleTreeFeature extends TreeRuleFeature {
     public static final String NAME = "minecraft:bamboo_jungle_surface_trees_feature";
 
-    @Override
-    public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return new ObjectJungleBigTree(10, 20);
-    }
+    private static final TreeFeatureSelector SELECTOR = random -> {
+        if (random.nextExclusiveInt(20) == 0) {
+            return TreePlacementFeatures.fancyOak();
+        }
+        if (random.nextExclusiveInt(20) <= 2) {
+            return TreePlacementFeatures.jungleBush();
+        }
+        if (random.nextExclusiveInt(10) <= 6) {
+            return TreePlacementFeatures.megaJungle();
+        }
+        return TallGrassAroundTreePlacementFeature.scatter();
+    };
+
+    private static final TreeFeaturePlan PLAN = TreeFeaturePlan.legacy(
+            30.0f,
+            TreePlacementFeatures::isBambooJungleCandidate,
+            SELECTOR
+    );
 
     @Override
-    public boolean canSpawnHere(BiomeDefinitionData definition) {
-        return Registries.BIOME.containsTag(BiomeTags.BAMBOO, definition);
-    }
-
-    @Override
-    public int getMin() {
-        return -1;
-    }
-
-    @Override
-    public int getMax() {
-        return 1;
-    }
-
-    @Override
-    protected boolean checkBlock(Block bl) {
-        return super.checkBlock(bl) && !(bl instanceof BlockBamboo);
+    protected TreeFeaturePlan treePlan() {
+        return PLAN;
     }
 
     @Override

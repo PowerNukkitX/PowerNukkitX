@@ -12,6 +12,7 @@ import org.powernukkitx.entity.mob.*;
 import org.powernukkitx.entity.passive.*;
 import org.powernukkitx.entity.projectile.*;
 import org.powernukkitx.entity.weather.EntityLightningBolt;
+import org.powernukkitx.level.DuplicateActorUniqueIdException;
 import org.powernukkitx.level.entity.spawners.*;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -308,6 +309,11 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         Class<? extends Entity> clazz = getEntityClass(id);
         if (clazz == null) return null;
 
+        long actorUniqueId = nbt.contains("UniqueID") ? nbt.getLong("UniqueID") : 0;
+        if (actorUniqueId != 0 && chunk.getLevel().getEntityByUniqueId(actorUniqueId) != null) {
+            return null;
+        }
+
         Entity entity = null;
         List<Exception> exceptions = null;
         for (var constructor : clazz.getConstructors()) {
@@ -333,11 +339,17 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
 
                 }
             } catch (Exception e) {
+                if (isDuplicateActorUniqueId(e)) {
+                    return null;
+                }
                 if (exceptions == null) {
                     exceptions = new ArrayList<>();
                 }
                 exceptions.add(e);
             } catch (Throwable e) {
+                if (isDuplicateActorUniqueId(e)) {
+                    return null;
+                }
                 if (exceptions == null) {
                     exceptions = new ArrayList<>();
                 }
@@ -357,6 +369,15 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             return entity;
         }
         return null;
+    }
+
+    private static boolean isDuplicateActorUniqueId(Throwable throwable) {
+        for (Throwable cause = throwable; cause != null; cause = cause.getCause()) {
+            if (cause instanceof DuplicateActorUniqueIdException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -10,7 +10,6 @@ import org.powernukkitx.entity.mob.EntityVex;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.BlockColor;
@@ -69,14 +68,14 @@ public class VexSummonExecutor extends FangLineExecutor {
         vexLocation.y += ThreadLocalRandom.current().nextFloat(2);
         vexLocation.z += ThreadLocalRandom.current().nextFloat(2);
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(vexLocation.x))
-                        .add(new DoubleTag(vexLocation.y))
-                        .add(new DoubleTag(vexLocation.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(vexLocation.x))
+                        .add(new FloatTag(vexLocation.y))
+                        .add(new FloatTag(vexLocation.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0))
+                        .add(new FloatTag(0)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag(0f)));

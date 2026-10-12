@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -25,6 +27,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockFlowingLava extends BlockLiquid {
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWING_LAVA, CommonBlockProperties.LIQUID_DEPTH);
+    public static final BlockDefinition DEFINITION = BlockLiquid.DEFINITION.toBuilder()
+            .lightEmission(15)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -36,14 +41,14 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     public BlockFlowingLava(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
-    @Override
-    public int getLightLevel() {
-        return 15;
+    public BlockFlowingLava(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
+    
     @Override
     public String getName() {
         return "Lava";
@@ -194,11 +199,61 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
+    protected void checkForMixing(LiquidUpdateAccess access) {
+        int x = getFloorX();
+        int y = getFloorY();
+        int z = getFloorZ();
+        Block colliding = null;
+        Block down = access.getBlock(x, y - 1, z, 0);
+
+        for (int side = 1; side < 6; ++side) { //don't check downwards side
+            BlockFace face = BlockFace.fromIndex(side);
+            int sideX = x + face.getXOffset();
+            int sideY = y + face.getYOffset();
+            int sideZ = z + face.getZOffset();
+            Block blockSide = access.getBlock(sideX, sideY, sideZ, 0);
+
+            if (blockSide instanceof BlockFlowingWater
+                    || access.getBlock(sideX, sideY, sideZ, 1) instanceof BlockFlowingWater) {
+                colliding = blockSide;
+                break;
+            }
+
+            if (down instanceof BlockSoulSoil && blockSide instanceof BlockBlueIce) {
+                this.liquidCollide(this, Block.get(BlockID.BASALT), access);
+                return;
+            }
+        }
+
+        if (colliding != null) {
+            if (this.getLiquidDepth() == 0) {
+                this.liquidCollide(colliding, Block.get(BlockID.OBSIDIAN), access);
+            } else if (this.getLiquidDepth() <= 4) {
+                this.liquidCollide(colliding, Block.get(BlockID.COBBLESTONE), access);
+            }
+        }
+    }
+
+    @Override
     protected void flowIntoBlock(Block block, BlockFace blockFace, int newFlowDecay) {
         if (block instanceof BlockFlowingWater) {
             ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE));
         } else {
             super.flowIntoBlock(block, blockFace, newFlowDecay);
+        }
+    }
+
+    @Override
+    protected void flowIntoBlock(
+            Block block,
+            BlockFace blockFace,
+            int newFlowDecay,
+            LiquidUpdateAccess access
+    ) {
+        if (block instanceof BlockFlowingWater) {
+            ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE), access);
+        } else {
+            super.flowIntoBlock(block, blockFace, newFlowDecay, access);
         }
     }
 

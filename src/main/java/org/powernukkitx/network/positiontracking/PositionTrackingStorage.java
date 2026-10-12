@@ -1,547 +1,379 @@
 package org.powernukkitx.network.positiontracking;
 
-import org.powernukkitx.math.NukkitMath;
 import com.google.common.base.Preconditions;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBIterator;
+import org.iq80.leveldb.WriteBatch;
 import org.jetbrains.annotations.NotNull;
+import org.powernukkitx.Server;
+import org.powernukkitx.ServerDBStorageFormat;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.Position;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.IntTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.Closeable;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Stores a sequential range of {@link PositionTracking} objects in a file. The read operation is cached.
- * <p>This object holds a file handler and must be closed when it is no longer needed.</p>
- * <p>Once closed the instance cannot be reused.</p>
+ * Stores position-tracking records directly in the server-global LevelDB.
+ * PNX adds only the level name required to distinguish the same Bedrock dimension across multiple server worlds.
  *
  * @author joserobjr
+ * @author Curse
  */
-
-
 @ParametersAreNonnullByDefault
-public class PositionTrackingStorage implements Closeable {
-
-
-    public static final int DEFAULT_MAX_STORAGE = 500;
-    private static final byte[] HEADER = new byte[]{12, 32, 32, 'P', 'N', 'P', 'T', 'D', 'B', '1'};
-    private final int startIndex;
-    private final int maxStorage;
-    private final long garbagePos;
-    private final long stringHeapPos;
-    private final RandomAccessFile persistence;
-    private final Cache<Integer, Optional<PositionTracking>> cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).concurrencyLevel(1).build();
-    private int nextIndex;
+public class PositionTrackingStorage {
+    private static final byte VERSION = 1;
+    private static final byte STATUS_ENABLED = 0;
+    private static final byte STATUS_DISABLED = 1;
+    private static final String POSITION_PREFIX = new String(
+            ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_PREFIX,
+            StandardCharsets.UTF_8
+    );
+    private final DB database;
 
     /**
-     * Opens or create the file and all directories in the path automatically. The given start index will be used
-     * in new files and will be checked when opening files. If the file being opened doesn't match this value
-     * internally than an <code>IllegalArgumentException</code> will be thrown.
+     * Creates a position-tracking storage backed by the server-global LevelDB.
      *
-     * @param startIndex      The number of the first handler. Must be higher than 0 and must match the number of the existing file.
-     * @param persistenceFile The file being opened or created. Parent directories will also be created if necessary.
-     * @throws IOException              If an error has occurred while reading, parsing or creating the file
-     * @throws IllegalArgumentException If opening an existing file and the internal startIndex don't match the given startIndex
+     * @param database server-global LevelDB
      */
-    public PositionTrackingStorage(int startIndex, File persistenceFile) throws IOException {
-        this(startIndex, persistenceFile, 0);
+    public PositionTrackingStorage(DB database) {
+        this.database = Preconditions.checkNotNull(database, "database");
     }
 
     /**
-     * Opens or create the file and all directories in the path automatically. The given start index will be used
-     * in new files and will be checked when opening files. If the file being opened doesn't match this value
-     * internally than an <code>IllegalArgumentException</code> will be thrown.
-     *
-     * @param startIndex      The number of the first handler. Must be higher than 0 and must match the number of the existing file.
-     * @param persistenceFile The file being opened or created. Parent directories will also be created if necessary.
-     * @param maxStorage      The maximum amount of positions that this storage may hold. It cannot be changed after creation.
-     *                        Ignored when loading an existing file. When zero or negative, a default value will be used.
-     * @throws IOException              If an error has occurred while reading, parsing or creating the file
-     * @throws IllegalArgumentException If opening an existing file and the internal startIndex don't match the given startIndex
-     */
-    public PositionTrackingStorage(int startIndex, File persistenceFile, int maxStorage) throws IOException {
-        Preconditions.checkArgument(startIndex > 0, "Start index must be positive. Got {}", startIndex);
-        this.startIndex = startIndex;
-        if (maxStorage <= 0) {
-            maxStorage = DEFAULT_MAX_STORAGE;
-        }
-
-        boolean created = false;
-        if (!persistenceFile.isFile()) {
-            if (!persistenceFile.getParentFile().isDirectory() && !persistenceFile.getParentFile().mkdirs()) {
-                throw new FileNotFoundException("Could not create the directory " + persistenceFile.getParent());
-            }
-            if (!persistenceFile.createNewFile()) {
-                throw new FileNotFoundException("Could not create the file " + persistenceFile);
-            }
-            created = true;
-        } else if (persistenceFile.length() == 0) {
-            created = true;
-        }
-
-        this.persistence = new RandomAccessFile(persistenceFile, "rwd");
-        try {
-            if (created) {
-                persistence.write(ByteBuffer.allocate(HEADER.length + 4 + 4 + 4)
-                        .put(HEADER)
-                        .putInt(maxStorage)
-                        .putInt(startIndex)
-                        .putInt(startIndex)
-                        .array());
-                this.maxStorage = maxStorage;
-                nextIndex = startIndex;
-            } else {
-                byte[] check = new byte[HEADER.length];
-                EOFException eof = null;
-                int max;
-                int next;
-                int start;
-                try {
-                    persistence.readFully(check);
-                    byte[] buf = new byte[4 + 4 + 4];
-                    persistence.readFully(buf);
-                    ByteBuffer buffer = ByteBuffer.wrap(buf);
-                    max = buffer.getInt();
-                    next = buffer.getInt();
-                    start = buffer.getInt();
-                } catch (EOFException e) {
-                    eof = e;
-                    max = 0;
-                    next = 0;
-                    start = 0;
-                }
-                if (eof != null || max <= 0 || next <= 0 || start <= 0 || !Arrays.equals(check, HEADER)) {
-                    throw new IOException("The file " + persistenceFile + " is not a valid PowerNukkit TrackingPositionDB persistence file.", eof);
-                }
-                if (start != startIndex) {
-                    throw new IllegalArgumentException("The start index " + startIndex + " was given but the file " + persistenceFile + " has start index " + start);
-                }
-                this.maxStorage = maxStorage = max;
-                this.nextIndex = next;
-            }
-            garbagePos = getAxisPos(startIndex + maxStorage);
-
-            //                          cnt  off len  max
-            stringHeapPos = garbagePos + 4 + (8 + 4) * 15;
-
-            if (created) {
-                persistence.seek(stringHeapPos - 1);
-                persistence.writeByte(0);
-            }
-        } catch (Throwable e) {
-            try {
-                persistence.close();
-            } catch (Throwable e2) {
-                e.addSuppressed(e2);
-            }
-            throw e;
-        }
-    }
-
-    private long getAxisPos(int trackingHandler) {
-        //                    max str cur  on  nam len  x   y   z
-        return HEADER.length + 4 + 4 + 4 + (1 + 8 + 4 + 8 + 8 + 8) * (long) (trackingHandler - startIndex);
-    }
-
-    private void validateHandler(int trackingHandler) {
-        Preconditions.checkArgument(trackingHandler >= startIndex, "The trackingHandler {} is too low for this storage (starts at {})", trackingHandler, startIndex);
-        int limit = startIndex + maxStorage;
-        Preconditions.checkArgument(trackingHandler <= limit, "The trackingHandler {} is too high for this storage (ends at {})", trackingHandler, limit);
-    }
-
-    /**
-     * Retrieves the {@link PositionTracking} object that is assigned to the given trackingHandler.
-     * The handler must be valid for this storage.
-     * <p>This call may return a cached result but the returned object can be modified freely.</p>
-     *
-     * @param trackingHandler A valid handler for this storage
-     * @return A clone of the cached result.
-     * @throws IOException              If an error has occurred while accessing the file
-     * @throws IllegalArgumentException If the trackingHandler is not valid for this storage
+     * Returns an enabled position-tracking record.
      */
     public @Nullable PositionTracking getPosition(int trackingHandler) throws IOException {
-        validateHandler(trackingHandler);
-        try {
-            return cache.get(trackingHandler, () -> loadPosition(trackingHandler, true))
-                    .map(PositionTracking::clone)
-                    .orElse(null);
-        } catch (ExecutionException e) {
-            throw handleExecutionException(e);
-        }
+        return getPosition(trackingHandler, true);
     }
 
     /**
-     * Retrieves the {@link PositionTracking} object that is assigned to the given trackingHandler.
-     * The handler must be valid for this storage.
-     * <p>This call may return a cached result but the returned object can be modified freely.</p>
-     *
-     * @param trackingHandler A valid handler for this storage
-     * @param onlyEnabled     When false, disabled positions that wasn't invalidated may be returned.
-     *                        Caching only works when this is set to true
-     * @return A clone of the cached result.
-     * @throws IOException              If an error has occurred while accessing the file
-     * @throws IllegalArgumentException If the trackingHandler is not valid for this storage
+     * Returns a position-tracking record.
      */
     public @Nullable PositionTracking getPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
-        if (onlyEnabled) {
-            return getPosition(trackingHandler);
+        Preconditions.checkArgument(trackingHandler > 0, "Tracking handler must be positive");
+        StoredPosition stored = readPosition(trackingHandler);
+        if (stored == null || onlyEnabled && stored.status() != STATUS_ENABLED) {
+            return null;
         }
-        validateHandler(trackingHandler);
-        return loadPosition(trackingHandler, false).orElse(null);
+        return stored.position();
     }
 
     /**
-     * Attempts to reuse an existing and enabled trackingHandler for the given position, if none is found than a new handler is created
-     * if the limit was not exceeded.
-     *
-     * @param position The position that needs a handler
-     * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
-     * @throws IOException If an error occurred while reading or writing the file
+     * Reuses an enabled record for the position or creates a new one.
      */
-    public OptionalInt addOrReusePosition(NamedPosition position) throws IOException {
+    public synchronized OptionalInt addOrReusePosition(NamedPosition position) throws IOException {
         OptionalInt handler = findTrackingHandler(position);
-        if (handler.isPresent()) {
-            return handler;
-        }
-        return addNewPosition(position);
+        return handler.isPresent() ? handler : addNewPosition(position);
     }
 
     /**
-     * Adds the given position as a new entry in this storage, even if the position is already registered and enabled.
-     *
-     * @param position The position that needs a handler
-     * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
-     * @throws IOException If an error occurred while reading or writing the file
+     * Creates a new enabled position-tracking record.
      */
     public synchronized OptionalInt addNewPosition(NamedPosition position) throws IOException {
         return addNewPosition(position, true);
     }
 
     /**
-     * Adds the given position as a new entry in this storage, even if the position is already registered and enabled.
-     *
-     * @param position The position that needs a handler
-     * @param enabled  If the position will be added as enabled or disabled
-     * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
-     * @throws IOException If an error occurred while reading or writing the file
+     * Creates a new position-tracking record.
      */
     public synchronized OptionalInt addNewPosition(NamedPosition position, boolean enabled) throws IOException {
-        OptionalInt handler = addNewPos(position, enabled);
-        if (!handler.isPresent()) {
-            return handler;
+        int lastId = readLastId();
+        Preconditions.checkState(lastId < Integer.MAX_VALUE, "Position tracking ID space is exhausted");
+        int trackingHandler = lastId + 1;
+        int dimensionId = resolveDimension(position);
+        StoredPosition stored = new StoredPosition(new PositionTracking(position), dimensionId, enabled ? STATUS_ENABLED : STATUS_DISABLED);
+
+        try (WriteBatch batch = database.createWriteBatch()) {
+            batch.put(positionKey(trackingHandler), writePosition(trackingHandler, stored));
+            batch.put(ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_LAST_ID_KEY, writeLastId(trackingHandler));
+            database.write(batch);
         }
-        if (enabled) {
-            cache.put(handler.getAsInt(), Optional.of(new PositionTracking(position)));
-        }
-        return handler;
+        return OptionalInt.of(trackingHandler);
     }
 
-    @NotNull public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
-        OptionalInt cached = cache.asMap().entrySet().stream()
-                .filter(e -> e.getValue().filter(position::matchesNamedPosition).isPresent())
-                .mapToInt(Map.Entry::getKey)
-                .findFirst();
-        if (cached.isPresent()) {
-            return cached;
-        }
+    /**
+     * Finds one enabled tracking handle for a position.
+     */
+    public @NotNull OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         IntList handlers = findTrackingHandlers(position, true, 1);
-        if (handlers.isEmpty()) {
-            return OptionalInt.empty();
-        }
-        int found = handlers.getInt(0);
-        cache.put(found, Optional.of(new PositionTracking(position)));
-        return OptionalInt.of(found);
+        return handlers.size() == 0 ? OptionalInt.empty() : OptionalInt.of(handlers.getInt(0));
     }
 
-    private IOException handleExecutionException(ExecutionException e) {
-        Throwable cause = e.getCause();
-        if (cause instanceof IOException) {
-            return (IOException) cause;
-        }
-        return new IOException(e);
+    /**
+     * Permanently invalidates a tracking handle.
+     */
+    public synchronized void invalidateHandler(int trackingHandler) {
+        Preconditions.checkArgument(trackingHandler > 0, "Tracking handler must be positive");
+        database.delete(positionKey(trackingHandler));
     }
 
-    public synchronized void invalidateHandler(int trackingHandler) throws IOException {
-        validateHandler(trackingHandler);
-        invalidatePos(trackingHandler);
-    }
-
+    /**
+     * Returns whether a tracking handle is enabled.
+     */
     public synchronized boolean isEnabled(int trackingHandler) throws IOException {
-        validateHandler(trackingHandler);
-        persistence.seek(getAxisPos(trackingHandler));
-        return persistence.readBoolean();
+        Preconditions.checkArgument(trackingHandler > 0, "Tracking handler must be positive");
+        StoredPosition stored = readPosition(trackingHandler);
+        return stored != null && stored.status() == STATUS_ENABLED;
     }
 
+    /**
+     * Changes the enabled state of a persisted tracking handle.
+     */
     public synchronized boolean setEnabled(int trackingHandler, boolean enabled) throws IOException {
-        validateHandler(trackingHandler);
-        long pos = getAxisPos(trackingHandler);
-        persistence.seek(pos);
-        if (persistence.readBoolean() == enabled) {
+        Preconditions.checkArgument(trackingHandler > 0, "Tracking handler must be positive");
+        StoredPosition stored = readPosition(trackingHandler);
+        if (stored == null) {
             return false;
         }
-        if (persistence.readLong() == 0 && enabled) {
+
+        byte status = enabled ? STATUS_ENABLED : STATUS_DISABLED;
+        if (stored.status() == status) {
             return false;
         }
-        persistence.seek(pos);
-        persistence.writeBoolean(enabled);
-        cache.invalidate(trackingHandler);
+
+        database.put(
+                positionKey(trackingHandler),
+                writePosition(trackingHandler, new StoredPosition(stored.position(), stored.dimensionId(), status))
+        );
         return true;
     }
 
+    /**
+     * Returns whether an enabled record exists for a tracking handle.
+     */
     public synchronized boolean hasPosition(int trackingHandler) throws IOException {
         return hasPosition(trackingHandler, true);
     }
 
+    /**
+     * Returns whether a persisted record exists for a tracking handle.
+     */
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
-        validateHandler(trackingHandler);
-        persistence.seek(getAxisPos(trackingHandler));
-        boolean enabled = persistence.readBoolean();
-        if (!enabled && onlyEnabled) {
+        Preconditions.checkArgument(trackingHandler > 0, "Tracking handler must be positive");
+        StoredPosition stored = readPosition(trackingHandler);
+        return stored != null && (!onlyEnabled || stored.status() == STATUS_ENABLED);
+    }
+
+    /**
+     * Finds enabled tracking handles for a position.
+     */
+    public @NotNull IntList findTrackingHandlers(NamedPosition position) throws IOException {
+        return findTrackingHandlers(position, true);
+    }
+
+    /**
+     * Finds tracking handles for a position.
+     */
+    public @NotNull IntList findTrackingHandlers(NamedPosition position, boolean onlyEnabled) throws IOException {
+        return findTrackingHandlers(position, onlyEnabled, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Finds tracking handles for a position up to the requested limit.
+     */
+    public synchronized @NotNull IntList findTrackingHandlers(NamedPosition position, boolean onlyEnabled, int limit) throws IOException {
+        Preconditions.checkArgument(limit > 0, "Limit must be positive");
+        IntList result = new IntArrayList();
+
+        try (DBIterator iterator = database.iterator()) {
+            iterator.seek(ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_PREFIX);
+            while (iterator.hasNext() && result.size() < limit) {
+                Map.Entry<byte[], byte[]> entry = iterator.next();
+                if (!isPositionKey(entry.getKey())) {
+                    break;
+                }
+
+                int trackingHandler = readHandle(entry.getKey());
+                StoredPosition stored = readPosition(trackingHandler, entry.getValue());
+                if (stored == null || onlyEnabled && stored.status() != STATUS_ENABLED) {
+                    continue;
+                }
+                if (stored.position().matchesNamedPosition(position)) {
+                    result.add(trackingHandler);
+                }
+            }
+        }
+        return result;
+    }
+
+    private int resolveDimension(NamedPosition position) throws IOException {
+        if (position instanceof Position levelPosition && levelPosition.getLevel() != null) {
+            return levelPosition.getLevel().getDimension();
+        }
+
+        Level level = Server.getInstance().getLevelByName(position.getLevelName());
+        if (level == null) {
+            throw new IOException("Unknown level for position tracking: " + position.getLevelName());
+        }
+        return level.getDimension();
+    }
+
+    private StoredPosition readPosition(int trackingHandler) throws IOException {
+        byte[] value = database.get(positionKey(trackingHandler));
+        return value == null ? null : readPosition(trackingHandler, value);
+    }
+
+    private StoredPosition readPosition(int trackingHandler, byte[] value) throws IOException {
+        if (value.length == 0) {
+            throw new IOException("Empty position-tracking record for handle " + trackingHandler);
+        }
+
+        CompoundTag root = readCompound(value);
+        if (!root.containsByte("version") || root.getByte("version") != VERSION) {
+            throw new IOException("Unsupported position-tracking version for handle " + trackingHandler);
+        }
+        if (!root.containsString("id") || !formatId(trackingHandler).equals(root.getString("id"))) {
+            throw new IOException("Position-tracking id mismatch for handle " + trackingHandler);
+        }
+        if (!root.containsInt("dim") || !root.containsByte("status") || !root.containsString("level")) {
+            throw new IOException("Incomplete position-tracking record for handle " + trackingHandler);
+        }
+        if (!root.containsList("pos", Tag.TAG_Int)) {
+            throw new IOException("Invalid position list for handle " + trackingHandler);
+        }
+
+        ListTag<IntTag> pos = root.getList("pos", IntTag.class);
+        if (pos.size() != 3) {
+            throw new IOException("Invalid position list size for handle " + trackingHandler + ": " + pos.size());
+        }
+
+        byte status = root.getByte("status");
+        if (status != STATUS_ENABLED && status != STATUS_DISABLED) {
+            throw new IOException("Invalid position-tracking status for handle " + trackingHandler + ": " + status);
+        }
+
+        String levelName = root.getString("level");
+        if (levelName.isEmpty()) {
+            throw new IOException("Position-tracking record has no level for handle " + trackingHandler);
+        }
+
+        return new StoredPosition(
+                new PositionTracking(levelName, pos.get(0).data, pos.get(1).data, pos.get(2).data),
+                root.getInt("dim"),
+                status
+        );
+    }
+
+    private int readLastId() throws IOException {
+        byte[] value = database.get(ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_LAST_ID_KEY);
+        if (value == null) {
+            return 0;
+        }
+        if (value.length == 0) {
+            throw new IOException("Empty position-tracking allocator record");
+        }
+
+        CompoundTag root = readCompound(value);
+        if (!root.containsByte("version") || root.getByte("version") != VERSION || !root.containsString("id")) {
+            throw new IOException("Invalid position-tracking allocator record");
+        }
+        return parseId(root.getString("id"));
+    }
+
+    private static byte[] writePosition(int trackingHandler, StoredPosition stored) throws IOException {
+        PositionTracking position = stored.position();
+        CompoundTag root = new CompoundTag()
+                .putInt("dim", stored.dimensionId())
+                .putString("id", formatId(trackingHandler))
+                .putList("pos", new ListTag<IntTag>(Tag.TAG_Int)
+                        .add(new IntTag(position.getFloorX()))
+                        .add(new IntTag(position.getFloorY()))
+                        .add(new IntTag(position.getFloorZ())))
+                .putByte("status", stored.status())
+                .putByte("version", VERSION)
+                .putString("level", position.getLevelName());
+        return writeCompound(root);
+    }
+
+    private static byte[] writeLastId(int lastId) throws IOException {
+        return writeCompound(new CompoundTag().putString("id", formatId(lastId)).putByte("version", VERSION));
+    }
+
+    private static CompoundTag readCompound(byte[] value) throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(value);
+             NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+            Object tag = nbtInputStream.readTag();
+            if (!(tag instanceof NbtMap map)) {
+                throw new IOException("Position-tracking value is not a compound");
+            }
+            return CompoundTag.fromNetwork(map);
+        }
+    }
+
+    private static byte[] writeCompound(CompoundTag root) throws IOException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+            nbtOutputStream.writeTag(root.toNetwork());
+            return outputStream.toByteArray();
+        }
+    }
+
+    private static byte[] positionKey(int trackingHandler) {
+        return (POSITION_PREFIX + formatId(trackingHandler)).getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static boolean isPositionKey(byte[] key) {
+        byte[] prefix = ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_PREFIX;
+        if (key.length != prefix.length + 10) {
             return false;
         }
-        return persistence.readLong() != 0;
-    }
-
-    private synchronized void invalidatePos(int trackingHandler) throws IOException {
-        long pos = getAxisPos(trackingHandler);
-        persistence.seek(pos);
-        persistence.writeBoolean(false);
-        byte[] buf = new byte[8 + 4];
-        persistence.readFully(buf);
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
-        long namePos = buffer.getLong();
-        int nameLen = buffer.getInt();
-        persistence.seek(pos + 1);
-        persistence.write(new byte[8 + 4]);
-        cache.put(trackingHandler, Optional.empty());
-        addGarbage(namePos, nameLen);
-    }
-
-    private synchronized void addGarbage(long pos, int len) throws IOException {
-        persistence.seek(garbagePos);
-        int count = persistence.readInt();
-        if (count >= 15) {
-            return;
-        }
-        byte[] buf = new byte[4 + 8];
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
-        if (count > 0) {
-            for (int attempt = 0; attempt < 15; attempt++) {
-                persistence.readFully(buf);
-                buffer.rewind();
-                long garbage = buffer.getLong();
-                int garbageLen = buffer.getInt();
-                if (garbage != 0) {
-                    if (garbage + garbageLen == pos) {
-                        persistence.seek(persistence.getFilePointer() - 4 - 8);
-                        buffer.rewind();
-                        buffer.putLong(garbage)
-                                .putInt(garbageLen + len);
-                        persistence.write(buf);
-                        return;
-                    } else if (pos + len == garbage) {
-                        persistence.seek(persistence.getFilePointer() - 4 - 8);
-                        buffer.rewind();
-                        buffer.putLong(pos)
-                                .putInt(garbageLen + len);
-                        persistence.write(buf);
-                        return;
-                    }
-                }
-            }
-
-            persistence.seek(garbagePos + 4);
-        }
-
-        for (int attempt = 0; attempt < 15; attempt++) {
-            persistence.readFully(buf);
-            buffer.rewind();
-            long garbage = buffer.getLong();
-            if (garbage == 0) {
-                persistence.seek(persistence.getFilePointer() - 4 - 8);
-                buffer.rewind();
-                buffer.putLong(pos).putInt(len);
-                persistence.write(buf);
-                persistence.seek(garbagePos);
-                persistence.writeInt(count + 1);
-                return;
+        for (int i = 0; i < prefix.length; i++) {
+            if (key[i] != prefix[i]) {
+                return false;
             }
         }
+        return true;
     }
 
-    private synchronized long findSpaceInStringHeap(int len) throws IOException {
-        persistence.seek(garbagePos);
-        int remaining = persistence.readInt();
-        if (remaining <= 0) {
-            return persistence.length();
+    private static int readHandle(byte[] key) throws IOException {
+        int handle = parseId(new String(
+                key,
+                ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_PREFIX.length,
+                10,
+                StandardCharsets.UTF_8
+        ));
+        if (handle <= 0) {
+            throw new IOException("Invalid position-tracking key handle: " + handle);
         }
+        return handle;
+    }
 
-        byte[] buf = new byte[4 + 8];
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
-        for (int attempt = 0; attempt < 15; attempt++) {
-            persistence.readFully(buf);
-            buffer.rewind();
-            long garbage = buffer.getLong();
-            int garbageLen = buffer.getInt();
-            if (garbage >= stringHeapPos && len <= garbageLen) {
-                persistence.seek(persistence.getFilePointer() - 4 - 8);
-                if (garbageLen == len) {
-                    persistence.write(new byte[8 + 4]);
-                    persistence.seek(garbagePos);
-                    persistence.writeInt(remaining - 1);
-                } else {
-                    buffer.rewind();
-                    buffer.putLong(garbage + len).putInt(garbageLen - len);
-                    persistence.write(buf);
-                }
-                return garbage;
+    private static int parseId(String value) throws IOException {
+        if (value.length() != 10 || !value.startsWith("0x")) {
+            throw new IOException("Invalid position-tracking id: " + value);
+        }
+        try {
+            long id = Long.parseLong(value.substring(2), 16);
+            if (id < 0 || id > Integer.MAX_VALUE) {
+                throw new IOException("Position-tracking id is outside the supported range: " + value);
             }
-        }
-        return persistence.length();
-    }
-
-    private synchronized OptionalInt addNewPos(NamedPosition pos, boolean enabled) throws IOException {
-        if (nextIndex - startIndex >= maxStorage) {
-            return OptionalInt.empty();
-        }
-        int handler = nextIndex++;
-        writePos(handler, pos, enabled);
-        persistence.seek(HEADER.length + 4);
-        persistence.writeInt(nextIndex);
-        return OptionalInt.of(handler);
-    }
-
-    private synchronized void writePos(int trackingHandler, NamedPosition pos, boolean enabled) throws IOException {
-        byte[] name = pos.getLevelName().getBytes(StandardCharsets.UTF_8);
-        long namePos = addLevelName(name);
-        persistence.seek(getAxisPos(trackingHandler));
-        persistence.write(ByteBuffer.allocate(1 + 8 + 4 + 8 + 8 + 8)
-                .put(enabled ? (byte) 1 : 0)
-                .putLong(namePos)
-                .putInt(name.length)
-                .putDouble(pos.x)
-                .putDouble(pos.y)
-                .putDouble(pos.z)
-                .array());
-    }
-
-    private synchronized long addLevelName(byte[] name) throws IOException {
-        long pos = findSpaceInStringHeap(name.length);
-        persistence.seek(pos);
-        persistence.write(name);
-        return pos;
-    }
-
-    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
-        return findTrackingHandlers(pos, true);
-    }
-
-    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
-        return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
-    }
-
-    @NotNull public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
-        persistence.seek(HEADER.length + 4 + 4 + 4);
-        int handler = startIndex - 1;
-        final double lookingX = pos.x;
-        final double lookingY = pos.y;
-        final double lookingZ = pos.z;
-        final byte[] lookingName = pos.getLevelName().getBytes(StandardCharsets.UTF_8);
-        IntList results = new IntArrayList(NukkitMath.clamp(limit, 1, 16));
-        byte[] buf = new byte[8 + 4 + 8 + 8 + 8];
-        ByteBuffer buffer = ByteBuffer.wrap(buf);
-        while (true) {
-            handler++;
-            if (handler >= nextIndex) {
-                return results;
-            }
-            boolean enabled = persistence.readBoolean();
-            if (onlyEnabled && !enabled) {
-                if (persistence.skipBytes(36) != 36) throw new EOFException();
-                continue;
-            }
-
-            persistence.readFully(buf);
-
-            buffer.rewind();
-            long namePos = buffer.getLong();
-            int nameLen = buffer.getInt();
-            double x = buffer.getDouble();
-            double y = buffer.getDouble();
-            double z = buffer.getDouble();
-            if (namePos > 0 && nameLen > 0 && x == lookingX && y == lookingY && z == lookingZ) {
-                long fp = persistence.getFilePointer();
-                byte[] nameBytes = new byte[nameLen];
-                persistence.seek(namePos);
-                persistence.readFully(nameBytes);
-                if (Arrays.equals(lookingName, nameBytes)) {
-                    results.add(handler);
-                    if (results.size() >= limit) {
-                        return results;
-                    }
-                }
-                persistence.seek(fp);
-            }
+            return (int) id;
+        } catch (NumberFormatException e) {
+            throw new IOException("Invalid position-tracking id: " + value, e);
         }
     }
 
-    private synchronized Optional<PositionTracking> loadPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
-        if (trackingHandler >= nextIndex) {
-            return Optional.empty();
-        }
-
-        persistence.seek(getAxisPos(trackingHandler));
-        byte[] buf = new byte[1 + 8 + 4 + 8 + 8 + 8];
-        persistence.readFully(buf);
-        boolean enabled = buf[0] == 1;
-        if (!enabled && onlyEnabled) {
-            return Optional.empty();
-        }
-
-        ByteBuffer buffer = ByteBuffer.wrap(buf, 1, buf.length - 1);
-
-        long namePos = buffer.getLong();
-        if (namePos == 0) {
-            return Optional.empty();
-        }
-        int nameLen = buffer.getInt();
-
-        double x = buffer.getDouble();
-        double y = buffer.getDouble();
-        double z = buffer.getDouble();
-
-        byte[] nameBytes = new byte[nameLen];
-        persistence.seek(namePos);
-        persistence.readFully(nameBytes);
-        String name = new String(nameBytes, StandardCharsets.UTF_8);
-        return Optional.of(new PositionTracking(name, x, y, z));
+    private static String formatId(int trackingHandler) {
+        return String.format("0x%08x", trackingHandler);
     }
 
-    public int getStartingHandler() {
-        return startIndex;
-    }
-
-    public int getMaxHandler() {
-        return startIndex + maxStorage - 1;
-    }
-
-    @Override
-    public synchronized void close() throws IOException {
-        persistence.close();
+    private record StoredPosition(PositionTracking position, int dimensionId, byte status) {
     }
 }

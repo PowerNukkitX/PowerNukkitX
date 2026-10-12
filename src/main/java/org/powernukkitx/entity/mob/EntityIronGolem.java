@@ -53,7 +53,6 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -252,14 +251,14 @@ public class EntityIronGolem extends EntityGolem {
                         }
                         Block pos = block.getSide(blockFace, 2);
                         CompoundTag nbt = new CompoundTag()
-                                .putList("Pos", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(pos.x + 0.5))
-                                        .add(new DoubleTag(pos.y))
-                                        .add(new DoubleTag(pos.z + 0.5)))
-                                .putList("Motion", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0)))
+                                .putList("Pos", new ListTag<FloatTag>()
+                                        .add(new FloatTag(pos.x + 0.5))
+                                        .add(new FloatTag(pos.y))
+                                        .add(new FloatTag(pos.z + 0.5)))
+                                .putList("Motion", new ListTag<FloatTag>()
+                                        .add(new FloatTag(0))
+                                        .add(new FloatTag(0))
+                                        .add(new FloatTag(0)))
                                 .putList("Rotation", new ListTag<FloatTag>()
                                         .add(new FloatTag(0f))
                                         .add(new FloatTag(0f)));

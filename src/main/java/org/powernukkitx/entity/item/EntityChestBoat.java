@@ -75,7 +75,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     @Override
     protected BedrockPacket createAddEntityPacket() {
         final AddActorPacket packet = new AddActorPacket();
-        packet.setTargetActorID(this.getId());
+        packet.setTargetActorID(this.uniqueIdLong());
         packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorType("minecraft:chest_boat");
         packet.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
@@ -86,8 +86,8 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         for (int i = 0; i < this.passengers.size(); i++) {
             packet.getActorLinks().add(
                     new ActorLink(
-                            this.getId(),
-                            this.passengers.get(i).getId(),
+                            this.uniqueIdLong(),
+                            this.passengers.get(i).uniqueIdLong(),
                             i == 0 ? ActorLinkType.RIDING : ActorLinkType.PASSENGER,
                             false,
                             false,

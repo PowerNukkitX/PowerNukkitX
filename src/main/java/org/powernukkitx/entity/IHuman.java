@@ -186,50 +186,152 @@ public interface IHuman extends InventoryHolder {
             );
         }
 
-        if (nbtMap.containsList("Inventory")) {
-            var inventory = this.getInventory();
-            ListTag<CompoundTag> inventoryList = nbtMap.getList("Inventory", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                int slot = item.getByte("Slot");
-                inventory.setItem(slot, ItemHelper.read(item));//inventory 0-39
+        if (human instanceof Player) {
+            HumanInventory inventory = this.getInventory();
+
+            if (nbtMap.containsList("Inventory")) {
+                ListTag<CompoundTag> inventoryList = nbtMap.getList("Inventory", CompoundTag.class);
+                for (CompoundTag item : inventoryList.getAll()) {
+                    int slot = item.getByte("Slot") & 0xff;
+                    if (slot < 36) {
+                        inventory.setItem(slot, ItemHelper.read(item));
+                    }
+                }
             }
-        }
-        if (nbtMap.contains("OffInventory")) {
-            HumanOffHandInventory offhandInventory = getOffhandInventory();
-            CompoundTag offHand = nbtMap.getCompound("OffInventory");
-            offhandInventory.setItem(0, ItemHelper.read(offHand));//offinventory index 0
-        }
-        if (nbtMap.containsList("EnderItems")) {
-            ListTag<CompoundTag> inventoryList = nbtMap.getList("EnderItems", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {//enderItems index 0-26
-                ((EntityHumanType) human).getEnderChestInventory().setItem(item.getByte("Slot"), ItemHelper.read(item));
+
+            if (nbtMap.containsList("Armor")) {
+                ListTag<CompoundTag> armorList = nbtMap.getList("Armor", CompoundTag.class);
+                for (int slot = 0; slot < Math.min(4, armorList.size()); slot++) {
+                    inventory.setArmorItem(slot, ItemHelper.read(armorList.get(slot)));
+                }
+            }
+
+            if (nbtMap.containsList("Offhand")) {
+                ListTag<CompoundTag> offhandList = nbtMap.getList("Offhand", CompoundTag.class);
+                if (offhandList.size() > 0) {
+                    this.getOffhandInventory().setItem(0, ItemHelper.read(offhandList.get(0)));
+                }
+            }
+
+            if (nbtMap.containsList("EnderChestInventory")) {
+                ListTag<CompoundTag> enderList = nbtMap.getList("EnderChestInventory", CompoundTag.class);
+                for (CompoundTag item : enderList.getAll()) {
+                    int slot = item.getByte("Slot") & 0xff;
+                    if (slot < this.getEnderChestInventory().getSize()) {
+                        this.getEnderChestInventory().setItem(slot, ItemHelper.read(item));
+                    }
+                }
+            }
+
+            if (nbtMap.containsList("Mainhand") && inventory.getItemInMainHand().isNull()) {
+                ListTag<CompoundTag> mainhandList = nbtMap.getList("Mainhand", CompoundTag.class);
+                if (mainhandList.size() > 0) {
+                    inventory.setItemInMainHand(ItemHelper.read(mainhandList.get(0)), false);
+                }
+            }
+        } else {
+            if (nbtMap.containsList("Inventory")) {
+                var inventory = this.getInventory();
+                ListTag<CompoundTag> inventoryList = nbtMap.getList("Inventory", CompoundTag.class);
+                for (CompoundTag item : inventoryList.getAll()) {
+                    int slot = item.getByte("Slot");
+                    inventory.setItem(slot, ItemHelper.read(item));
+                }
+            }
+
+            if (nbtMap.contains("OffInventory")) {
+                HumanOffHandInventory offhandInventory = getOffhandInventory();
+                CompoundTag offHand = nbtMap.getCompound("OffInventory");
+                offhandInventory.setItem(0, ItemHelper.read(offHand));
+            }
+
+            if (nbtMap.containsList("EnderItems")) {
+                ListTag<CompoundTag> inventoryList = nbtMap.getList("EnderItems", CompoundTag.class);
+                for (CompoundTag item : inventoryList.getAll()) {
+                    ((EntityHumanType) human).getEnderChestInventory().setItem(item.getByte("Slot"), ItemHelper.read(item));
+                }
             }
         }
     }
 
     default void saveHumanEntity(Entity human) {
         //EntityHumanType
-        final ListTag<CompoundTag> inventoryTag = new ListTag<>(Tag.TAG_Compound);
-        human.nbt.putList("Inventory", inventoryTag);
-        if (this.getInventory() != null) {
-            for (var entry : getInventory().getContents().entrySet()) {
-                inventoryTag.add(ItemHelper.write(entry.getValue(), entry.getKey()));
+        if (human instanceof Player) {
+            HumanInventory inventory = this.getInventory();
+
+            ListTag<CompoundTag> previousInventory = human.nbt.getList("Inventory", CompoundTag.class);
+            ListTag<CompoundTag> inventoryTag = new ListTag<>(Tag.TAG_Compound);
+
+            for (int slot = 0; slot < 36; slot++) {
+                Item item = inventory.getItem(slot);
+                CompoundTag previous = previousInventory.size() > slot ? previousInventory.get(slot) : null;
+                inventoryTag.add(ItemHelper.write(item, slot, previous));
             }
-            human.nbt.putInt("SelectedInventorySlot", this.getInventory().getHeldItemIndex());
-        }
 
-        if (this.getOffhandInventory() != null) {
-            Item item = this.getOffhandInventory().getItem(0);
-            human.nbt.putCompound("OffInventory", ItemHelper.write(item, 0));
-        }
+            human.nbt.putList("Inventory", inventoryTag);
 
-        human.nbt.putList("EnderItems", new ListTag<>(Tag.TAG_Compound));
-        if (this.getEnderChestInventory() != null) {
-            ListTag<CompoundTag> enderItems = human.getNbt().getList("EnderItems", CompoundTag.class);
-            for (int slot = 0; slot < this.getEnderChestInventory().getSize(); ++slot) {
+            ListTag<CompoundTag> previousArmor = human.nbt.getList("Armor", CompoundTag.class);
+            ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
+
+            for (int slot = 0; slot < 4; slot++) {
+                Item item = inventory.getArmorItem(slot);
+                CompoundTag previous = previousArmor.size() > slot ? previousArmor.get(slot) : null;
+                armorTag.add(ItemHelper.write(item, previous));
+            }
+
+            for (int slot = 4; slot < previousArmor.size(); slot++) {
+                armorTag.add((CompoundTag) previousArmor.get(slot).copy());
+            }
+
+            human.nbt.putList("Armor", armorTag);
+
+            ListTag<CompoundTag> previousMainhand = human.nbt.getList("Mainhand", CompoundTag.class);
+            CompoundTag previousMain = previousMainhand.size() > 0 ? previousMainhand.get(0) : null;
+            human.nbt.putList("Mainhand", new ListTag<CompoundTag>(Tag.TAG_Compound)
+                    .add(ItemHelper.write(inventory.getItemInMainHand(), previousMain)));
+
+            ListTag<CompoundTag> previousOffhand = human.nbt.getList("Offhand", CompoundTag.class);
+            CompoundTag previousOff = previousOffhand.size() > 0 ? previousOffhand.get(0) : null;
+            human.nbt.putList("Offhand", new ListTag<CompoundTag>(Tag.TAG_Compound)
+                    .add(ItemHelper.write(this.getOffhandInventory().getItem(0), previousOff)));
+
+            ListTag<CompoundTag> previousEnder = human.nbt.getList("EnderChestInventory", CompoundTag.class);
+            ListTag<CompoundTag> enderTag = new ListTag<>(Tag.TAG_Compound);
+
+            for (int slot = 0; slot < this.getEnderChestInventory().getSize(); slot++) {
                 Item item = this.getEnderChestInventory().getItem(slot);
-                if (!item.isNull()) {
-                    enderItems.add(ItemHelper.write(item, slot));
+                CompoundTag previous = previousEnder.size() > slot ? previousEnder.get(slot) : null;
+                enderTag.add(ItemHelper.write(item, slot, previous));
+            }
+
+            human.nbt.putList("EnderChestInventory", enderTag);
+            human.nbt.putInt("SelectedInventorySlot", inventory.getHeldItemIndex());
+            human.nbt.remove("OffInventory", "EnderItems");
+        } else {
+            final ListTag<CompoundTag> inventoryTag = new ListTag<>(Tag.TAG_Compound);
+            human.nbt.putList("Inventory", inventoryTag);
+
+            if (this.getInventory() != null) {
+                for (var entry : getInventory().getContents().entrySet()) {
+                    inventoryTag.add(ItemHelper.write(entry.getValue(), entry.getKey()));
+                }
+                human.nbt.putInt("SelectedInventorySlot", this.getInventory().getHeldItemIndex());
+            }
+
+            if (this.getOffhandInventory() != null) {
+                Item item = this.getOffhandInventory().getItem(0);
+                human.nbt.putCompound("OffInventory", ItemHelper.write(item, 0));
+            }
+
+            human.nbt.putList("EnderItems", new ListTag<>(Tag.TAG_Compound));
+
+            if (this.getEnderChestInventory() != null) {
+                ListTag<CompoundTag> enderItems = human.getNbt().getList("EnderItems", CompoundTag.class);
+                for (int slot = 0; slot < this.getEnderChestInventory().getSize(); ++slot) {
+                    Item item = this.getEnderChestInventory().getItem(slot);
+                    if (!item.isNull()) {
+                        enderItems.add(ItemHelper.write(item, slot));
+                    }
                 }
             }
         }

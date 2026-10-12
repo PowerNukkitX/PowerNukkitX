@@ -7,7 +7,6 @@ import org.powernukkitx.item.ItemFireworkRocket.FireworkExplosion.ExplosionType;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.DyeColor;
@@ -136,14 +135,14 @@ public class FireworkBuilder {
         this.itemFirework.setNbt(fireworks);
 
         final CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(pos.x))
-                        .add(new DoubleTag(pos.y + 0.5))
-                        .add(new DoubleTag(pos.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0.0))
-                        .add(new DoubleTag(0.0))
-                        .add(new DoubleTag(0.0)))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(pos.x))
+                        .add(new FloatTag(pos.y + 0.5))
+                        .add(new FloatTag(pos.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(0.0))
+                        .add(new FloatTag(0.0))
+                        .add(new FloatTag(0.0)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0f))
                         .add(new FloatTag(0f)))

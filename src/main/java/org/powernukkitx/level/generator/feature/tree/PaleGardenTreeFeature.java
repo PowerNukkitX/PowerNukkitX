@@ -9,7 +9,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class PaleGardenTreeFeature extends ObjectGeneratorFeature {
-
     public static final String NAME = "minecraft:random_pale_oak_tree_feature";
 
     @Override

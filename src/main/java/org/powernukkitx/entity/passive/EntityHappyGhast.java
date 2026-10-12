@@ -124,12 +124,10 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         super.initEntity();
         setDataFlag(ActorFlags.COLLIDABLE, true); //allow standing on them
         this.armorInventory = new EntityArmorInventory(this);
-        if (this.nbt.contains("Armor")) {
+        if (this.nbt.containsList("Armor", Tag.TAG_Compound)) {
             ListTag<CompoundTag> armorList = this.getNbt().getList("Armor", CompoundTag.class);
-            for (CompoundTag armorTag : armorList.getAll()) {
-                int slot = armorTag.getByte("Slot");
-                var item = ItemHelper.read(armorTag);
-
+            for (int slot = 0; slot < Math.min(armorList.size(), 5); slot++) {
+                var item = ItemHelper.read(armorList.get(slot));
                 this.armorInventory.setItem(slot, item);
                 if (!item.isNull()) this.setInputControls(true);
             }
@@ -142,10 +140,12 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     @Override
     public void saveNBT() {
         super.saveNBT();
+        this.nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(Item.AIR)))
+                .putList("Offhand", new ListTag<CompoundTag>().add(ItemHelper.write(Item.AIR)));
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
+            ListTag<CompoundTag> armorTag = new ListTag<>();
             for (int i = 0; i < 5; i++) {
-                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i)));
             }
             this.nbt.putList("Armor", armorTag);
         }

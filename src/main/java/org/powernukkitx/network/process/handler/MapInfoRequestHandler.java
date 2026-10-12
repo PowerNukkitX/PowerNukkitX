@@ -24,6 +24,9 @@ public class MapInfoRequestHandler implements PacketHandler<MapInfoRequestPacket
     public void handle(MapInfoRequestPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
 
+        if (!holder.getPlayerHandle().packetRateLimiter.tryWorldInteraction()) {
+            return;
+        }
 
         if (packet.getMapUniqueID() <= 0) {
             log.debug("Player {} sent an invalid map id {}", player.getName(), packet.getMapUniqueID());
@@ -59,8 +62,16 @@ public class MapInfoRequestHandler implements PacketHandler<MapInfoRequestPacket
         }
 
         if (mapItem == null) {
+            int radius = player.getViewDistance() << 4;
+            long radiusSquared = (long) radius * radius;
             for (BlockEntity be : player.level.getBlockEntities().values()) {
-                if (be instanceof BlockEntityItemFrame itemFrame && checkMapItemValid(itemFrame.getItem(), packet)) {
+                if (!(be instanceof BlockEntityItemFrame itemFrame)) {
+                    continue;
+                }
+                if (itemFrame.distanceSquared(player) > radiusSquared) {
+                    continue;
+                }
+                if (checkMapItemValid(itemFrame.getItem(), packet)) {
                     ((ItemFilledMap) itemFrame.getItem()).sendImage(player);
                     break;
                 }

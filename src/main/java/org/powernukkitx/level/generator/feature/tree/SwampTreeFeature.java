@@ -10,7 +10,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class SwampTreeFeature extends ObjectGeneratorFeature {
-
     public static final String NAME = "minecraft:swamp_oak_tree_feature";
 
     @Override

@@ -9,7 +9,6 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class JungleBushFeature extends ObjectGeneratorFeature {
-
     public static final String NAME = "minecraft:jungle_bush";
 
     @Override

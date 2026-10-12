@@ -1,42 +1,27 @@
 package org.powernukkitx.level.generator.feature.tree;
 
-import org.powernukkitx.block.property.enums.WoodType;
-import org.powernukkitx.level.generator.feature.ObjectGeneratorFeature;
-import org.powernukkitx.level.generator.object.ObjectFallenTree;
-import org.powernukkitx.level.generator.object.ObjectFancyOakTree;
-import org.powernukkitx.level.generator.object.ObjectJungleTree;
-import org.powernukkitx.level.generator.object.ObjectGenerator;
-import org.powernukkitx.registry.Registries;
-import org.powernukkitx.tags.BiomeTags;
-import org.powernukkitx.utils.random.RandomSourceProvider;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+public class JungleEdgeTreeFeature extends TreeRuleFeature {
+    public static final String NAME = "minecraft:jungle_edge_surface_trees_feature";
 
-public class JungleEdgeTreeFeature extends ObjectGeneratorFeature {
+    private static final TreeFeatureSelector SELECTOR = random -> {
+        if (random.nextExclusiveInt(10) == 0) {
+            return TreePlacementFeatures.fancyOakWithOptionalBeehive();
+        }
+        if (random.nextExclusiveInt(2) == 0) {
+            return TreePlacementFeatures.jungleBush();
+        }
+        return TreePlacementFeatures.jungle();
+    };
 
-    public static final String NAME = "minecraft:legacy:jungle_edge_tree_feature";
-
-
-    @Override
-    public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return switch (random.nextInt(5)) {
-            case 0, 1 -> random.nextInt(100) == 0 ? new ObjectFallenTree(WoodType.JUNGLE) : new ObjectJungleTree(7, 8);
-            default -> new ObjectFancyOakTree();
-        };
-    }
+    private static final TreeFeaturePlan PLAN = TreeFeaturePlan.legacy(
+            2.0f,
+            TreePlacementFeatures::isJungleEdgeCandidate,
+            SELECTOR
+    );
 
     @Override
-    public boolean canSpawnHere(BiomeDefinitionData definition) {
-        return Registries.BIOME.containsTag(BiomeTags.EDGE, definition);
-    }
-
-    @Override
-    public int getMin() {
-        return 1;
-    }
-
-    @Override
-    public int getMax() {
-        return 2;
+    protected TreeFeaturePlan treePlan() {
+        return PLAN;
     }
 
     @Override

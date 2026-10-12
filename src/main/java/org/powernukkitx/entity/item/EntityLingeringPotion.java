@@ -6,7 +6,6 @@ import org.powernukkitx.entity.effect.PotionApplicationMode;
 import org.powernukkitx.entity.effect.PotionType;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -40,7 +39,7 @@ public class EntityLingeringPotion extends EntitySplashPotion {
     protected void splash(Entity collidedWith) {
         super.splash(collidedWith);
         saveNBT();
-        ListTag<?> pos = (ListTag<?>) nbt.getList("Pos", CompoundTag.class).copy();
+        ListTag<?> pos = (ListTag<?>) nbt.getList("Pos", FloatTag.class).copy();
         EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
                 new CompoundTag().putList("Pos", pos)
                         .putList("Rotation", new ListTag<>()
@@ -48,9 +47,9 @@ public class EntityLingeringPotion extends EntitySplashPotion {
                                 .add(new FloatTag(0))
                         )
                         .putList("Motion", new ListTag<>()
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0))
+                                .add(new FloatTag(0))
+                                .add(new FloatTag(0))
+                                .add(new FloatTag(0))
                         )
                         .putShort("PotionId", potionId)
         );

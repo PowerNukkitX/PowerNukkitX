@@ -37,7 +37,7 @@ public class TradeInventory extends BaseInventory {
     public void onOpen(Player who) {
         super.onOpen(who);
         var villager = this.getHolder();
-        villager.setTradingPlayer(who.getId());
+        villager.setTradingPlayer(who.uniqueIdLong());
         villager.updateTrades(who);
     }
 

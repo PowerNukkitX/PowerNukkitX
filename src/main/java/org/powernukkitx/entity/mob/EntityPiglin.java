@@ -359,7 +359,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).getId());
+            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).uniqueIdLong());
             entity.setDataFlag(ActorFlags.ANGRY);
             entity.level.addLevelSoundEvent(entity, SoundEvent.ANGRY, -1, Entity.PIGLIN, false, false);
             Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(memory)));

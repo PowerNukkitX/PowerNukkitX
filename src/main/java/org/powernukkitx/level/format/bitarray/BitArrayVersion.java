@@ -52,11 +52,12 @@ public enum BitArrayVersion {
     }
 
     public int getWordsForSize(int size) {
+        if (this == V0) return 0;
         return NukkitMath.ceilFloat((float) size / this.entriesPerWord);
     }
 
     public BitArray createArray(int size) {
-        return this.createArray(size, new int[NukkitMath.ceilFloat((float) size / this.entriesPerWord)]);
+        return this.createArray(size, new int[this.getWordsForSize(size)]);
     }
 
     public BitArray createArray(int size, int[] words) {

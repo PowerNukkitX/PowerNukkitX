@@ -27,7 +27,7 @@ public class EmeraldOreExtremeHillsSurfaceGenerationFeature extends CountGenerat
         IChunk chunk = context.getChunk();
         int x = random.nextInt(15);
         int z = random.nextInt(15);
-        int y = chunk.getHeightMap(x, z);
+        int y = chunk.getHeightMap(x, z) - 1;
         BlockState state = chunk.getBlockState(x, y, z);
         if(state.getIdentifier().equals(BlockID.STONE)) {
             chunk.setBlockState(x, y, z, BlockEmeraldOre.PROPERTIES.getDefaultState());

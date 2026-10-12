@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
@@ -10,6 +12,11 @@ import static org.powernukkitx.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockInfestedDeepslate extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(INFESTED_DEEPSLATE, PILLAR_AXIS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(1.5)
+            .resistance(0.75)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,34 +28,18 @@ public class BlockInfestedDeepslate extends BlockSolid {
     }
 
     public BlockInfestedDeepslate(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Infested Deepslate";
     }
-    
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-    
-    @Override
-    public double getResistance() {
-        return 0.75;
-    }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
 
     public BlockFace.Axis getPillarAxis() {
         return getPropertyValue(PILLAR_AXIS);

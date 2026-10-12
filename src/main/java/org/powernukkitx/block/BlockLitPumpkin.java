@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.entity.mob.EntityIronGolem;
@@ -9,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockLitPumpkin extends BlockPumpkin {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_PUMPKIN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockPumpkin.DEFINITION.toBuilder()
+            .lightEmission(15)
+            .canBeActivated(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,22 +26,12 @@ public class BlockLitPumpkin extends BlockPumpkin {
     }
 
     public BlockLitPumpkin(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Jack o'Lantern";
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 15;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return false;
     }
 
     @Override
