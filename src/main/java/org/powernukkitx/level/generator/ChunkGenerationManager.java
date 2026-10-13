@@ -266,15 +266,30 @@ public final class ChunkGenerationManager {
         };
     }
 
+    /**
+     * Loads a chunk a demand depends on and drives it. A chunk that cannot be loaded fails the
+     * demand, which releases everything it drives: the chunk is never driven for the demand again,
+     * so the demand would otherwise wait forever.
+     */
     private void driveChunk(GenerationDemand demand, int chunkX, int chunkZ, int targetNativeId) {
         if (!retainDriven(demand, Level.chunkHash(chunkX, chunkZ), targetNativeId)) return;
 
+        final IChunk acquired;
         try {
-            onChunkViewAcquired(level.acquireGenerationChunk(chunkX, chunkZ));
+            acquired = level.acquireGenerationChunk(chunkX, chunkZ);
         } catch (Throwable throwable) {
-            log.error("Could not acquire chunk ({}, {}) for demanded chunk ({}, {}) in level '{}'",
-                    chunkX, chunkZ, demand.chunkX, demand.chunkZ, level.getFolderName(), throwable);
+            failDemand(demand, new IllegalStateException("Could not load chunk (" + chunkX + ", " + chunkZ
+                    + ") needed by demanded chunk (" + demand.chunkX + ", " + demand.chunkZ + ")", throwable));
+            return;
         }
+
+        if (!(acquired instanceof Chunk)) {
+            failDemand(demand, new IllegalStateException("Chunk generation manager requires Chunk, got "
+                    + (acquired == null ? "null" : acquired.getClass().getName())));
+            return;
+        }
+
+        onChunkViewAcquired(acquired);
     }
 
     /**

@@ -99,6 +99,7 @@ import org.powernukkitx.network.NetworkInterface;
 import org.powernukkitx.network.SharedPacket;
 import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.network.process.NetworkState;
+import org.powernukkitx.network.process.PlayerListEncoder;
 import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.network.process.auth.ProxyAuthProvider;
 import org.powernukkitx.permission.BanEntry;
@@ -312,21 +313,23 @@ public class Server {
     private ActorUniqueIdManager actorUniqueIdManager;
     private DynamicProperties dynamicProperties;
 
-    record PlayerDataRecord(CompoundTag nbt, CompoundTag pnxExtra, CompoundTag custom) {
+    /**
+     * @param nbt the player data, {@code null} only in a preloaded record whose stored data is
+     *            corrupted
+     */
+    record PlayerDataRecord(@Nullable CompoundTag nbt, CompoundTag pnxExtra, CompoundTag custom) {
     }
 
     /**
      * Player data read ahead of the player being created, see {@link #preloadPlayerData(UUID)}.
      *
      * @param uuid       the player the data belongs to
-     * @param record     the stored data, or {@code null} when the player has none yet or it could
-     *                   not be read
-     * @param stored     whether storage holds data of the player, which with a {@code null}
-     *                   {@code record} means it is corrupted
+     * @param record     the stored data, or {@code null} when the player has none yet; its
+     *                   {@code nbt} is {@code null} when the stored data is corrupted
      * @param writeCount the number of saves requested for this player when the data was read
      */
     @ApiStatus.Internal
-    public record PreloadedPlayerData(UUID uuid, @Nullable PlayerDataRecord record, boolean stored, long writeCount) {
+    public record PreloadedPlayerData(UUID uuid, @Nullable PlayerDataRecord record, long writeCount) {
         /**
          * @return the name of the level the player was last in, or {@code null} when unknown
          */
@@ -339,7 +342,7 @@ public class Server {
          * @return the stored position of the player, or {@code null} when unknown
          */
         public @Nullable Vector3 position() {
-            if (this.record == null || !this.record.nbt().containsList("Pos")) {
+            if (this.record == null || this.record.nbt() == null || !this.record.nbt().containsList("Pos")) {
                 return null;
             }
             ListTag<FloatTag> pos = this.record.nbt().getList("Pos", FloatTag.class);
@@ -358,9 +361,25 @@ public class Server {
         final AtomicLong completed = new AtomicLong();
         int preloads;
         volatile @Nullable CompletableFuture<Void> lastAsyncWrite;
+        volatile RequestedPlayerData latest = RequestedPlayerData.NONE;
 
         boolean idle() {
             return this.requested.get() == this.completed.get() && this.preloads == 0;
+        }
+    }
+
+    /**
+     * The newest data saves were requested with, part by part, each with the request count it was
+     * requested at. A save that leaves out a sidecar keeps the one requested before.
+     */
+    private record RequestedPlayerData(@Nullable CompoundTag nbt, long nbtAt, @Nullable CompoundTag pnxExtra,
+                                       long pnxExtraAt, @Nullable CompoundTag custom, long customAt) {
+        static final RequestedPlayerData NONE = new RequestedPlayerData(null, 0L, null, 0L, null, 0L);
+
+        RequestedPlayerData with(long at, CompoundTag nbt, @Nullable CompoundTag pnxExtra, @Nullable CompoundTag custom) {
+            return new RequestedPlayerData(nbt, at,
+                pnxExtra != null ? pnxExtra : this.pnxExtra, pnxExtra != null ? at : this.pnxExtraAt,
+                custom != null ? custom : this.custom, custom != null ? at : this.customAt);
         }
     }
 
@@ -1982,6 +2001,7 @@ public class Server {
         boolean removed = this.playerList.remove(player.getUniqueId(), player);
         this.playerListByUniqueId.remove(player.uniqueIdLong(), player);
 
+        PlayerListEncoder.forget(player.getUniqueId());
         if (removed) {
             this.sendSleepingPlayersStatus(this.playerList.values());
 
@@ -2108,20 +2128,13 @@ public class Server {
      * @param player The player
      */
     public void sendFullPlayerListData(Player player) {
+        if (PlayerListEncoder.trySend(player, this.playerList.values(), PLAYER_LIST_ENTRIES_PER_PACKET)) {
+            return;
+        }
         PlayerListPacket pk = new PlayerListPacket();
 
         for (Player value : this.playerList.values()) {
-            final PlayerListAddEntry entry = new PlayerListAddEntry();
-            entry.setUuid(value.getUniqueId());
-            entry.setActorUniqueID(value.uniqueIdLong());
-            entry.setPlayerName(value.getName());
-            entry.setXblXUID(value.getXUID());
-            entry.setPlatformOnlineID("");
-            entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-            entry.setSerializedSkin(value.getSkin().toSerializedSkin());
-            entry.setPlayerColor(value.getLocatorBarColor().getRGB());
-
-            pk.getEntries().add(entry);
+            pk.getEntries().add(PlayerListEncoder.addEntry(value));
             // Every entry carries a whole skin, so a full server would otherwise make one packet
             // of many megabytes that has to be encoded and acknowledged in one go
             if (pk.getEntries().size() >= PLAYER_LIST_ENTRIES_PER_PACKET) {
@@ -2645,9 +2658,10 @@ public class Server {
 
     private void queueOfflinePlayerDataWrite(UUID uuid, CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, boolean async) {
         final CompletableFuture<Void> written = async ? new CompletableFuture<>() : null;
+        final CompoundTag snapshot = async ? tag.copy() : tag;
         this.playerDataWrites.compute(uuid, (_, writes) -> {
             final PlayerDataWrites entry = writes != null ? writes : new PlayerDataWrites();
-            entry.requested.incrementAndGet();
+            entry.latest = entry.latest.with(entry.requested.incrementAndGet(), snapshot, pnxExtra, custom);
             if (written != null) {
                 entry.lastAsyncWrite = written;
             }
@@ -2655,9 +2669,6 @@ public class Server {
         });
 
         if (async) {
-            // The caller keeps using its tag, so the write works on a copy. The single player data
-            // thread keeps writes and the login reads that follow them in order.
-            final CompoundTag snapshot = tag.copy();
             final Runnable write = () -> {
                 try {
                     saveOfflinePlayerDataInternal(snapshot, pnxExtra, custom, uuid);
@@ -2747,9 +2758,44 @@ public class Server {
         if (writes != null && writes.completed.get() != requested) {
             return null;
         }
-        final boolean stored = this.hasOfflinePlayerData(uuid);
-        final PlayerDataRecord record = stored ? this.getOfflinePlayerDataRecord(uuid, false) : null;
-        return new PreloadedPlayerData(uuid, record, stored, requested);
+        final PlayerDataRecord record = this.hasOfflinePlayerData(uuid)
+            ? new PlayerDataRecord(this.getOfflinePlayerDataInternal(uuid, false),
+                this.getOfflinePlayerExtraDataInternal(uuid), this.getOfflinePlayerCustomDataInternal(uuid))
+            : null;
+        return new PreloadedPlayerData(uuid, record, requested);
+    }
+
+    /**
+     * The data a joining player is created from: the preloaded data, updated with every save of
+     * that player requested since it was read, such as one from a {@code PlayerLoginEvent}
+     * listener. Never reads storage or waits for a write, so it is safe on a level thread. Must be
+     * called before the preload ends, see {@link #endPlayerDataPreload(UUID)}.
+     *
+     * @return {@code null} when the player has neither stored data nor a save requested
+     */
+    @Nullable PlayerDataRecord resolvePreloadedPlayerData(PreloadedPlayerData preloaded) {
+        final PlayerDataRecord stored = preloaded.record();
+        final PlayerDataWrites writes = this.playerDataWrites.get(preloaded.uuid());
+        if (writes == null || writes.requested.get() == preloaded.writeCount()) {
+            return stored;
+        }
+
+        final long since = preloaded.writeCount();
+        final RequestedPlayerData latest = writes.latest;
+        final CompoundTag nbt;
+        if (latest.nbtAt() > since) {
+            nbt = latest.nbt().copy();
+            this.cleanupOfflinePlayerData(nbt);
+        } else if (stored != null) {
+            nbt = stored.nbt();
+        } else {
+            return null;
+        }
+        final CompoundTag pnxExtra = latest.pnxExtraAt() > since ? latest.pnxExtra().copy()
+            : stored != null ? stored.pnxExtra() : new CompoundTag();
+        final CompoundTag custom = latest.customAt() > since ? latest.custom().copy()
+            : stored != null ? stored.custom() : new CompoundTag();
+        return new PlayerDataRecord(nbt, pnxExtra, custom);
     }
 
     /**

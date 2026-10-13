@@ -22,7 +22,6 @@ import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
 import org.cloudburstmc.protocol.bedrock.data.payload.editor.ServerEditorConnectionPolicy;
 import org.cloudburstmc.protocol.bedrock.data.payload.experiment.Experiments;
-import org.cloudburstmc.protocol.bedrock.data.payload.list.PlayerListAddEntry;
 import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackIdVersion;
 import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackInfoData;
 import org.cloudburstmc.protocol.bedrock.packet.*;
@@ -585,20 +584,11 @@ public class PlayerSessionHolder {
 
         server.sendSleepingPlayersStatusImmediately(Set.of(this.player));
 
-        final PlayerListPacket playerListPacket = new PlayerListPacket();
-        final PlayerListAddEntry playerListEntry = new PlayerListAddEntry();
-
-        playerListEntry.setUuid(this.player.getUniqueId());
-        playerListEntry.setActorUniqueID(this.player.uniqueIdLong());
-        playerListEntry.setPlayerName(this.player.getName());
-        playerListEntry.setXblXUID(this.player.getXUID());
-        playerListEntry.setPlatformOnlineID("");
-        playerListEntry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        playerListEntry.setSerializedSkin(this.player.getSkin().toSerializedSkin());
-        playerListEntry.setPlayerColor(this.player.getLocatorBarColor().getRGB());
-
-        playerListPacket.getEntries().add(playerListEntry);
-        this.player.sendPacketImmediately(playerListPacket);
+        if (!PlayerListEncoder.trySend(this.player, List.of(this.player), 1)) {
+            final PlayerListPacket playerListPacket = new PlayerListPacket();
+            playerListPacket.getEntries().add(PlayerListEncoder.addEntry(this.player));
+            this.player.sendPacketImmediately(playerListPacket);
+        }
 
         this.player.getLevel().sendTime(this.player);
 
@@ -888,7 +878,7 @@ public class PlayerSessionHolder {
      * listens to {@link PacketSendEvent}, which could change a packet on its way out; and its
      * session speaks the codec the caches encode with.
      */
-    private static boolean canSendEncoded(Player player) {
+    static boolean canSendEncoded(Player player) {
         return player.getClass() == Player.class && PacketSendEvent.getHandlers().isEmpty()
             && player.getSession().getCodec() == NetworkConstants.CODEC;
     }
