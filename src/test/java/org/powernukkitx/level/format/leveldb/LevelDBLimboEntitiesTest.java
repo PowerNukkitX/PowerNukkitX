@@ -22,10 +22,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -66,7 +68,7 @@ class LevelDBLimboEntitiesTest {
             CompoundTag overworld = storage.readGlobalCompound(OVERWORLD_KEY);
             assertNotNull(overworld);
             ListTag<?> overworldLimbo = overworld.getCompound("data").getList("LimboEntities");
-            assertEquals(Tag.TAG_Compound, overworldLimbo.type);
+            assertEquals(Tag.TAG_End, overworldLimbo.type);
             assertEquals(0, overworldLimbo.size());
 
             CompoundTag theEnd = storage.readGlobalCompound(THE_END_KEY);
@@ -75,8 +77,62 @@ class LevelDBLimboEntitiesTest {
             assertTrue(endData.containsCompound("DragonFight"));
             assertEquals(1, endData.getCompound("DragonFight").getByte("DragonKilled"));
             ListTag<?> endLimbo = endData.getList("LimboEntities");
-            assertEquals(Tag.TAG_Compound, endLimbo.type);
+            assertEquals(Tag.TAG_End, endLimbo.type);
             assertEquals(0, endLimbo.size());
+        } finally {
+            storage.close();
+        }
+    }
+
+    @Test
+    void loadsEmptyEndListWithoutRewritingIt(@TempDir Path tempDir) throws Exception {
+        LevelDBStorage storage = new LevelDBStorage(1, tempDir.resolve("world").toString());
+        try {
+            CompoundTag root = new CompoundTag().putCompound("data", new CompoundTag()
+                    .putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_End)));
+            storage.writeGlobalCompound(OVERWORLD_KEY, root);
+            byte[] stored = storage.getDb().get(OVERWORLD_KEY);
+
+            LevelDBLimboEntities limbo = new LevelDBLimboEntities(storage);
+            limbo.initializeGeneratedDimension(OVERWORLD);
+            limbo.loadDimension(OVERWORLD);
+
+            assertArrayEquals(stored, storage.getDb().get(OVERWORLD_KEY));
+        } finally {
+            storage.close();
+        }
+    }
+
+    @Test
+    void savesEmptyListAsEndList(@TempDir Path tempDir) throws Exception {
+        LevelDBStorage storage = new LevelDBStorage(1, tempDir.resolve("world").toString());
+        try {
+            CompoundTag root = new CompoundTag().putCompound("data", new CompoundTag()
+                    .putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_Compound)));
+            storage.writeGlobalCompound(OVERWORLD_KEY, root);
+
+            LevelDBLimboEntities limbo = new LevelDBLimboEntities(storage);
+            limbo.loadDimension(OVERWORLD);
+            limbo.saveDimension(OVERWORLD);
+
+            ListTag<?> buckets = storage.readGlobalCompound(OVERWORLD_KEY).getCompound("data").getList("LimboEntities");
+            assertEquals(Tag.TAG_End, buckets.type);
+            assertEquals(0, buckets.size());
+        } finally {
+            storage.close();
+        }
+    }
+
+    @Test
+    void rejectsNonEmptyListOfAnotherType(@TempDir Path tempDir) throws Exception {
+        LevelDBStorage storage = new LevelDBStorage(1, tempDir.resolve("world").toString());
+        try {
+            CompoundTag root = new CompoundTag().putCompound("data", new CompoundTag()
+                    .putList("LimboEntities", new ListTag<FloatTag>().add(new FloatTag(1f))));
+            storage.writeGlobalCompound(OVERWORLD_KEY, root);
+
+            LevelDBLimboEntities limbo = new LevelDBLimboEntities(storage);
+            assertThrows(IllegalStateException.class, () -> limbo.loadDimension(OVERWORLD));
         } finally {
             storage.close();
         }

@@ -8,8 +8,8 @@ import org.powernukkitx.block.BlockOakLog;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockUnknown;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
-import org.powernukkitx.level.format.leveldb.LevelDBTestFixtureUtil;
 import org.powernukkitx.level.format.palette.Palette;
 import org.powernukkitx.level.village.VillageManager;
 import org.powernukkitx.network.NetworkConstants;
@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LevelStorageTest {
@@ -44,7 +45,6 @@ public class LevelStorageTest {
         ServerMockFixture.boot();
         Registries.BLOCK.init();
         FileUtils.copyDirectory(new File("src/test/resources/level"), new File("src/test/resources/level2"));
-        LevelDBTestFixtureUtil.canonicalizeCopiedWorld(new File("src/test/resources/level2").toPath());
         Level level = Mockito.mock(Level.class);
         Mockito.when(level.getDimensionData()).thenReturn(DimensionEnum.OVERWORLD.getDimensionData());
         Mockito.when(level.getVillageManager()).thenReturn(new VillageManager(level));
@@ -165,6 +165,8 @@ public class LevelStorageTest {
         Mockito.when(level.getVillageManager()).thenReturn(new VillageManager(level));
         Mockito.when(level.getServer()).thenReturn(Mockito.mock(Server.class));
         try {
+            LevelDBProvider.generate("src/test/resources/level3", "level3", new LevelConfig.GeneratorConfig("flat", 0L,
+                    false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), new HashMap<>()));
             var newProvider = new LevelDBProvider(level, "src/test/resources/level3");
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {

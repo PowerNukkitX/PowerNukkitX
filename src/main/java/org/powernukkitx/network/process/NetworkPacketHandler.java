@@ -39,9 +39,9 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
 
         if (packetHandler != null && packetHandler.requiresPlayer() && !packetHandler.runsOnNetworkThread()
-                && this.session.isSpawning()) {
-            // The level thread is creating the player; handling this now would either drop it or
-            // race the creation, so it waits for the creation to finish
+                && this.session.shouldDeferUntilSpawned()) {
+            // The level thread is creating the player, or still handling what arrived meanwhile;
+            // handling this now would either drop it, race the creation or overtake older packets
             this.session.deferUntilSpawned(packet);
             return PacketSignal.HANDLED;
         }

@@ -1547,9 +1547,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.preloadedPlayerData = null;
 
             Server.PlayerDataRecord playerData;
-            if (preloaded != null && preloaded.uuid().equals(this.uuid)
-                && preloaded.record() != null && this.server.isPreloadCurrent(preloaded)) {
-                playerData = preloaded.record();
+            if (preloaded != null && preloaded.uuid().equals(this.uuid) && this.server.isPreloadCurrent(preloaded)) {
+                playerData = preloaded.record() != null || preloaded.stored()
+                    ? preloaded.record() : this.server.createPlayerData(this.uuid);
             } else {
                 // A save of an earlier session may still be queued, and reading before it lands would
                 // bring back the state from before it

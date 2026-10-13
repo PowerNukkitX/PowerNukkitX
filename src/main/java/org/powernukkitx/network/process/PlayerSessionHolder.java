@@ -132,9 +132,6 @@ public class PlayerSessionHolder {
     private static volatile ItemRegistryCache itemRegistryCache;
 
 
-    /** How often the stored player data is read again while a save of it is still on its way. */
-    private static final int MAX_PRELOAD_ATTEMPTS = 5;
-
     /** Share of a tick a level spends creating joining players before the rest wait for the next tick. */
     private static final int SPAWN_BUDGET_DIVISOR = 5;
 
@@ -390,12 +387,12 @@ public class PlayerSessionHolder {
         server.beginPlayerDataPreload(uuid);
         this.playerDataPreloading.set(true);
         this.session.getPeer().getChannel().closeFuture().addListener(_ -> this.endPlayerDataPreload(server, uuid));
-        this.schedulePreload(server, uuid, 1);
+        this.schedulePreload(server, uuid);
     }
 
-    private void schedulePreload(Server server, UUID uuid, int attempt) {
+    private void schedulePreload(Server server, UUID uuid) {
         try {
-            server.getLoginService().executePlayerData(() -> this.preloadAndSchedule(server, uuid, attempt));
+            server.getLoginService().executePlayerData(() -> this.preloadAndSchedule(server, uuid));
         } catch (RejectedExecutionException e) {
             this.endPlayerDataPreload(server, uuid);
             this.disconnect(DisconnectFailReason.UNKNOWN, "Server is shutting down");
@@ -408,32 +405,36 @@ public class PlayerSessionHolder {
         }
     }
 
-    private void preloadAndSchedule(Server server, UUID uuid, int attempt) {
+    /**
+     * Reads the stored player data on the player data thread and hands it to the level thread. A
+     * read that would miss a save still on its way is retried on the next tick for as long as the
+     * client stays connected, so the level thread never reads storage or waits for a write itself.
+     */
+    private void preloadAndSchedule(Server server, UUID uuid) {
         if (!this.session.isConnected()) {
             this.endPlayerDataPreload(server, uuid);
             return;
         }
 
-        Server.PreloadedPlayerData preloaded = null;
-        boolean failed = false;
+        final Server.PreloadedPlayerData preloaded;
         try {
             preloaded = server.preloadPlayerData(uuid);
         } catch (Exception e) {
-            // processLogin reads storage itself when nothing was preloaded
-            log.warn("Failed to preload player data for {}", uuid, e);
-            failed = true;
+            log.error("Failed to load player data for {}", uuid, e);
+            this.endPlayerDataPreload(server, uuid);
+            this.disconnect(DisconnectFailReason.UNKNOWN, "Failed to load player data");
+            return;
         }
-        if (preloaded == null && !failed && attempt < MAX_PRELOAD_ATTEMPTS) {
+        if (preloaded == null) {
             server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE,
-                () -> this.schedulePreload(server, uuid, attempt + 1), 1);
+                () -> this.schedulePreload(server, uuid), 1);
             return;
         }
 
-        final String levelName = preloaded != null ? preloaded.levelName() : null;
+        final String levelName = preloaded.levelName();
         final Level storedLevel = levelName != null ? server.getLevelByName(levelName) : null;
         final Level level = storedLevel != null ? storedLevel : server.getDefaultLevel();
         final Vector3 position = storedLevel != null ? preloaded.position() : null;
-        final Server.PreloadedPlayerData data = preloaded;
 
         final CompletableFuture<?> spawnChunk = position != null
             ? level.getChunkAsync(NukkitMath.floorDouble(position.x) >> 4, NukkitMath.floorDouble(position.z) >> 4)
@@ -443,7 +444,7 @@ public class PlayerSessionHolder {
                 })
             : CompletableFuture.completedFuture(null);
         spawnChunk.thenRun(() -> level.getScheduler().scheduleTask(InternalPlugin.INSTANCE,
-            () -> this.spawnWithinBudget(server, level, () -> this.completeSpawn(server, uuid, data, attempt))));
+            () -> this.spawnWithinBudget(server, level, () -> this.completeSpawn(server, uuid, preloaded))));
     }
 
     /**
@@ -479,6 +480,15 @@ public class PlayerSessionHolder {
     }
 
     /**
+     * Whether a packet that needs the player has to wait in the backlog: while the player is being
+     * created, and afterwards until every packet held back meanwhile has been handled, so a newer
+     * packet never overtakes an older one.
+     */
+    boolean shouldDeferUntilSpawned() {
+        return this.isSpawning() || !this.spawnBacklog.isEmpty();
+    }
+
+    /**
      * Holds a packet that arrived while the player was being created, and handles it on the
      * level thread once the creation is done, in arrival order.
      */
@@ -503,11 +513,13 @@ public class PlayerSessionHolder {
             return;
         }
         BedrockPacket packet;
-        while ((packet = this.spawnBacklog.poll()) != null) {
+        while ((packet = this.spawnBacklog.peek()) != null) {
             try {
                 handler.processInbound(packet);
             } catch (Exception e) {
                 log.error("Error handling packet {} for player {}", packet.getClass().getSimpleName(), created.getName(), e);
+            } finally {
+                this.spawnBacklog.poll();
             }
         }
     }
@@ -517,13 +529,13 @@ public class PlayerSessionHolder {
      * can spawn. A disconnect that happened meanwhile is handled here, because the network thread
      * leaves a session in {@link SessionState#SPAWNING} alone.
      */
-    private void completeSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded, int attempt) {
+    private void completeSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded) {
         if (!this.session.isConnected()) {
             this.endPlayerDataPreload(server, uuid);
             return;
         }
-        if (preloaded != null && !server.isPreloadCurrent(preloaded) && attempt < MAX_PRELOAD_ATTEMPTS) {
-            this.schedulePreload(server, uuid, attempt + 1);
+        if (!server.isPreloadCurrent(preloaded)) {
+            this.schedulePreload(server, uuid);
             return;
         }
 

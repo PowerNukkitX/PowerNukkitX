@@ -319,11 +319,14 @@ public class Server {
      * Player data read ahead of the player being created, see {@link #preloadPlayerData(UUID)}.
      *
      * @param uuid       the player the data belongs to
-     * @param record     the stored data, or {@code null} when the player has none yet
+     * @param record     the stored data, or {@code null} when the player has none yet or it could
+     *                   not be read
+     * @param stored     whether storage holds data of the player, which with a {@code null}
+     *                   {@code record} means it is corrupted
      * @param writeCount the number of saves requested for this player when the data was read
      */
     @ApiStatus.Internal
-    public record PreloadedPlayerData(UUID uuid, @Nullable PlayerDataRecord record, long writeCount) {
+    public record PreloadedPlayerData(UUID uuid, @Nullable PlayerDataRecord record, boolean stored, long writeCount) {
         /**
          * @return the name of the level the player was last in, or {@code null} when unknown
          */
@@ -2422,143 +2425,159 @@ public class Server {
         }
 
         if (create) {
-            if (this.getSettings().playerSettings().savePlayerData()) {
-                log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
-            }
-            Position spawn = this.getDefaultLevel().getSafeSpawn();
-
-            ListTag<CompoundTag> inventory = new ListTag<>(Tag.TAG_Compound);
-            for (int slot = 0; slot < 36; slot++) {
-                inventory.add(ItemHelper.write(Item.AIR, slot));
-            }
-
-            ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
-            for (int slot = 0; slot < 5; slot++) {
-                armor.add(ItemHelper.write(Item.AIR));
-            }
-
-            ListTag<CompoundTag> mainhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
-            ListTag<CompoundTag> offhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
-            ListTag<CompoundTag> enderChest = new ListTag<>(Tag.TAG_Compound);
-            for (int slot = 0; slot < 27; slot++) {
-                enderChest.add(ItemHelper.write(Item.AIR, slot));
-            }
-
-            Attribute knockbackResistance = Attribute.getAttribute(Attribute.KNOCKBACK_RESISTANCE)
-                .setMinValue(-2f)
-                .setDefaultMinimum(-2f);
-
-            Attribute attackDamage = Attribute.getAttribute(Attribute.ATTACK_DAMAGE)
-                .setMinValue(1f)
-                .setMaxValue(1f)
-                .setDefaultMinimum(1f)
-                .setDefaultMaximum(1f)
-                .setDefaultValue(1f)
-                .setValue(1f);
-
-            ListTag<CompoundTag> attributes = new ListTag<CompoundTag>(Tag.TAG_Compound)
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.HEALTH).setValue(20)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOLLOW_RANGE)))
-                .add(Attribute.toNBT(knockbackResistance))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.MOVEMENT_SPEED)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.UNDER_WATER_MOVEMENT_SPEED)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LAVA_MOVEMENT_SPEED)))
-                .add(Attribute.toNBT(attackDamage))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.ABSORPTION).setValue(0)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LUCK)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FRICTION_MODIFIER)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.BOUNCINESS)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.AIR_DRAG_MODIFIER)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOOD).setValue(20)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.SATURATION).setValue(5)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXHAUSTION).setValue(0)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setDefaultValue(0).setValue(0)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE).setDefaultValue(0).setValue(0)));
-
-            int defaultGamemode = this.getGamemode();
-            boolean creative = defaultGamemode == Player.CREATIVE;
-            boolean spectator = defaultGamemode == Player.SPECTATOR;
-
-            CompoundTag abilities = new CompoundTag()
-                .putByte("attackmobs", 1)
-                .putByte("attackplayers", 1)
-                .putByte("build", 1)
-                .putByte("doorsandswitches", 1)
-                .putFloat("flySpeed", Player.DEFAULT_FLY_SPEED)
-                .putByte("flying", spectator ? 1 : 0)
-                .putByte("instabuild", creative ? 1 : 0)
-                .putByte("invulnerable", 0)
-                .putByte("lightning", 0)
-                .putByte("mayfly", creative || spectator ? 1 : 0)
-                .putByte("mine", 1)
-                .putByte("op", 0)
-                .putByte("opencontainers", 1)
-                .putByte("teleport", 0)
-                .putFloat("verticalFlySpeed", 1f)
-                .putFloat("walkSpeed", Player.DEFAULT_SPEED);
-
-            long now = System.currentTimeMillis() / 1000;
-
-            final CompoundTag pnxExtra = new CompoundTag()
-                .putLong("firstPlayed", now)
-                .putLong("lastPlayed", now)
-                .putString("Level", this.getDefaultLevel().getName())
-                .putCompound("Achievements", new CompoundTag());
-
-            final CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<FloatTag>()
-                    .add(new FloatTag((float) spawn.x))
-                    .add(new FloatTag((float) spawn.y))
-                    .add(new FloatTag((float) spawn.z)))
-                .putInt("DimensionId", this.getDefaultLevel().getDimension())
-                .putList("Inventory", inventory)
-                .putList("Armor", armor)
-                .putList("Mainhand", mainhand)
-                .putList("Offhand", offhand)
-                .putList("EnderChestInventory", enderChest)
-                .putInt("SelectedInventorySlot", 0)
-                .putInt("SelectedContainerId", 0)
-                .putList("Attributes", attributes)
-                .putList("definitions", new ListTag<StringTag>(Tag.TAG_String)
-                    .add(new StringTag("+minecraft:player")))
-                .putString("format_version", "1.12.0")
-                .putString("identifier", "minecraft:player")
-                .putList("fogCommandStack", new ListTag<>())
-                .putList("PlayerUIItems", new ListTag<>())
-                .putInt("SpawnX", Integer.MIN_VALUE)
-                .putInt("SpawnY", Integer.MIN_VALUE)
-                .putInt("SpawnZ", Integer.MIN_VALUE)
-                .putInt("SpawnBlockPositionX", Integer.MIN_VALUE)
-                .putInt("SpawnBlockPositionY", Integer.MIN_VALUE)
-                .putInt("SpawnBlockPositionZ", Integer.MIN_VALUE)
-                .putInt("SpawnDimension", 3)
-                .putInt("PlayerGameMode", Player.toStorageGamemode(defaultGamemode))
-                .putInt("PlayerLevel", 0)
-                .putFloat("PlayerLevelProgress", 0)
-                .putInt("EnchantmentSeed", Player.generateEnchantmentSeed())
-                .putList("Motion", new ListTag<FloatTag>()
-                    .add(new FloatTag(0))
-                    .add(new FloatTag(0))
-                    .add(new FloatTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                    .add(new FloatTag(0))
-                    .add(new FloatTag(0)))
-                .putFloat("FallDistance", 0)
-                .putShort("Fire", 0)
-                .putShort("Air", 300)
-                .putBoolean("OnGround", true)
-                .putBoolean("Invulnerable", false)
-                .putCompound("abilities", abilities)
-                .putInt("permissionsLevel", 0)
-                .putInt("playerPermissionsLevel", Player.PERMISSION_MEMBER);
-
-            this.actorUniqueIdManager.assignPlayer(uuid, nbt);
-            this.saveOfflinePlayerDataInternal(nbt, pnxExtra, new CompoundTag(), uuid);
-            return nbt;
+            final PlayerDataRecord created = this.newPlayerData(uuid);
+            this.saveOfflinePlayerDataInternal(created.nbt(), created.pnxExtra(), created.custom(), uuid);
+            return created.nbt();
         } else {
             log.error("Player {} does not exist and cannot read playerdata", uuid);
             return null;
         }
+    }
+
+    /**
+     * Creates the data of a player that has none stored yet and writes it on the player data
+     * thread, so the caller neither touches storage nor waits for it. The spawn position is taken
+     * from the default level.
+     */
+    PlayerDataRecord createPlayerData(UUID uuid) {
+        final PlayerDataRecord created = this.newPlayerData(uuid);
+        this.queueOfflinePlayerDataWrite(uuid, created.nbt(), created.pnxExtra().copy(), new CompoundTag(), true);
+        return created;
+    }
+
+    private PlayerDataRecord newPlayerData(UUID uuid) {
+        if (this.getSettings().playerSettings().savePlayerData()) {
+            log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
+        }
+        Position spawn = this.getDefaultLevel().getSafeSpawn();
+
+        ListTag<CompoundTag> inventory = new ListTag<>(Tag.TAG_Compound);
+        for (int slot = 0; slot < 36; slot++) {
+            inventory.add(ItemHelper.write(Item.AIR, slot));
+        }
+
+        ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
+        for (int slot = 0; slot < 5; slot++) {
+            armor.add(ItemHelper.write(Item.AIR));
+        }
+
+        ListTag<CompoundTag> mainhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
+        ListTag<CompoundTag> offhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
+        ListTag<CompoundTag> enderChest = new ListTag<>(Tag.TAG_Compound);
+        for (int slot = 0; slot < 27; slot++) {
+            enderChest.add(ItemHelper.write(Item.AIR, slot));
+        }
+
+        Attribute knockbackResistance = Attribute.getAttribute(Attribute.KNOCKBACK_RESISTANCE)
+            .setMinValue(-2f)
+            .setDefaultMinimum(-2f);
+
+        Attribute attackDamage = Attribute.getAttribute(Attribute.ATTACK_DAMAGE)
+            .setMinValue(1f)
+            .setMaxValue(1f)
+            .setDefaultMinimum(1f)
+            .setDefaultMaximum(1f)
+            .setDefaultValue(1f)
+            .setValue(1f);
+
+        ListTag<CompoundTag> attributes = new ListTag<CompoundTag>(Tag.TAG_Compound)
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.HEALTH).setValue(20)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOLLOW_RANGE)))
+            .add(Attribute.toNBT(knockbackResistance))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.MOVEMENT_SPEED)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.UNDER_WATER_MOVEMENT_SPEED)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LAVA_MOVEMENT_SPEED)))
+            .add(Attribute.toNBT(attackDamage))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.ABSORPTION).setValue(0)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LUCK)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FRICTION_MODIFIER)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.BOUNCINESS)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.AIR_DRAG_MODIFIER)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOOD).setValue(20)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.SATURATION).setValue(5)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXHAUSTION).setValue(0)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setDefaultValue(0).setValue(0)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE).setDefaultValue(0).setValue(0)));
+
+        int defaultGamemode = this.getGamemode();
+        boolean creative = defaultGamemode == Player.CREATIVE;
+        boolean spectator = defaultGamemode == Player.SPECTATOR;
+
+        CompoundTag abilities = new CompoundTag()
+            .putByte("attackmobs", 1)
+            .putByte("attackplayers", 1)
+            .putByte("build", 1)
+            .putByte("doorsandswitches", 1)
+            .putFloat("flySpeed", Player.DEFAULT_FLY_SPEED)
+            .putByte("flying", spectator ? 1 : 0)
+            .putByte("instabuild", creative ? 1 : 0)
+            .putByte("invulnerable", 0)
+            .putByte("lightning", 0)
+            .putByte("mayfly", creative || spectator ? 1 : 0)
+            .putByte("mine", 1)
+            .putByte("op", 0)
+            .putByte("opencontainers", 1)
+            .putByte("teleport", 0)
+            .putFloat("verticalFlySpeed", 1f)
+            .putFloat("walkSpeed", Player.DEFAULT_SPEED);
+
+        long now = System.currentTimeMillis() / 1000;
+
+        final CompoundTag pnxExtra = new CompoundTag()
+            .putLong("firstPlayed", now)
+            .putLong("lastPlayed", now)
+            .putString("Level", this.getDefaultLevel().getName())
+            .putCompound("Achievements", new CompoundTag());
+
+        final CompoundTag nbt = new CompoundTag()
+            .putList("Pos", new ListTag<FloatTag>()
+                .add(new FloatTag((float) spawn.x))
+                .add(new FloatTag((float) spawn.y))
+                .add(new FloatTag((float) spawn.z)))
+            .putInt("DimensionId", this.getDefaultLevel().getDimension())
+            .putList("Inventory", inventory)
+            .putList("Armor", armor)
+            .putList("Mainhand", mainhand)
+            .putList("Offhand", offhand)
+            .putList("EnderChestInventory", enderChest)
+            .putInt("SelectedInventorySlot", 0)
+            .putInt("SelectedContainerId", 0)
+            .putList("Attributes", attributes)
+            .putList("definitions", new ListTag<StringTag>(Tag.TAG_String)
+                .add(new StringTag("+minecraft:player")))
+            .putString("format_version", "1.12.0")
+            .putString("identifier", "minecraft:player")
+            .putList("fogCommandStack", new ListTag<>())
+            .putList("PlayerUIItems", new ListTag<>())
+            .putInt("SpawnX", Integer.MIN_VALUE)
+            .putInt("SpawnY", Integer.MIN_VALUE)
+            .putInt("SpawnZ", Integer.MIN_VALUE)
+            .putInt("SpawnBlockPositionX", Integer.MIN_VALUE)
+            .putInt("SpawnBlockPositionY", Integer.MIN_VALUE)
+            .putInt("SpawnBlockPositionZ", Integer.MIN_VALUE)
+            .putInt("SpawnDimension", 3)
+            .putInt("PlayerGameMode", Player.toStorageGamemode(defaultGamemode))
+            .putInt("PlayerLevel", 0)
+            .putFloat("PlayerLevelProgress", 0)
+            .putInt("EnchantmentSeed", Player.generateEnchantmentSeed())
+            .putList("Motion", new ListTag<FloatTag>()
+                .add(new FloatTag(0))
+                .add(new FloatTag(0))
+                .add(new FloatTag(0)))
+            .putList("Rotation", new ListTag<FloatTag>()
+                .add(new FloatTag(0))
+                .add(new FloatTag(0)))
+            .putFloat("FallDistance", 0)
+            .putShort("Fire", 0)
+            .putShort("Air", 300)
+            .putBoolean("OnGround", true)
+            .putBoolean("Invulnerable", false)
+            .putCompound("abilities", abilities)
+            .putInt("permissionsLevel", 0)
+            .putInt("playerPermissionsLevel", Player.PERMISSION_MEMBER);
+
+        this.actorUniqueIdManager.assignPlayer(uuid, nbt);
+        return new PlayerDataRecord(nbt, pnxExtra, new CompoundTag());
     }
 
     private CompoundTag getOfflinePlayerExtraDataInternal(UUID uuid) {
@@ -2621,6 +2640,10 @@ public class Server {
         if (!this.getSettings().playerSettings().savePlayerData()) {
             return;
         }
+        this.queueOfflinePlayerDataWrite(uuid, tag, pnxExtra, custom, async);
+    }
+
+    private void queueOfflinePlayerDataWrite(UUID uuid, CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, boolean async) {
         final CompletableFuture<Void> written = async ? new CompletableFuture<>() : null;
         this.playerDataWrites.compute(uuid, (_, writes) -> {
             final PlayerDataWrites entry = writes != null ? writes : new PlayerDataWrites();
@@ -2724,8 +2747,9 @@ public class Server {
         if (writes != null && writes.completed.get() != requested) {
             return null;
         }
-        final PlayerDataRecord record = this.hasOfflinePlayerData(uuid) ? this.getOfflinePlayerDataRecord(uuid, false) : null;
-        return new PreloadedPlayerData(uuid, record, requested);
+        final boolean stored = this.hasOfflinePlayerData(uuid);
+        final PlayerDataRecord record = stored ? this.getOfflinePlayerDataRecord(uuid, false) : null;
+        return new PreloadedPlayerData(uuid, record, stored, requested);
     }
 
     /**

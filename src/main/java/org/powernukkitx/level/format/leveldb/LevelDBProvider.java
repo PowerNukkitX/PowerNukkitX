@@ -618,7 +618,8 @@ public class LevelDBProvider implements LevelProvider {
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
-        final Chunk cacheChunk = chunk instanceof Chunk concrete && !this.level.isAntiXrayEnabled() ? concrete : null;
+        final boolean antiXray = this.level != null && this.level.isAntiXrayEnabled();
+        final Chunk cacheChunk = chunk instanceof Chunk concrete && !antiXray ? concrete : null;
         if (cacheChunk != null) {
             final Chunk.NetworkPayload cached = cacheChunk.getNetworkPayload();
             if (cached != null) {
@@ -644,7 +645,7 @@ public class LevelDBProvider implements LevelProvider {
                 final Chunk.SectionNetworkPayload[] sectionPayloads =
                         cacheChunk == null ? null : new Chunk.SectionNetworkPayload[sections.length];
                 //write block
-                if (level != null && level.isAntiXrayEnabled()) {
+                if (antiXray) {
                     for (int i = 0; i < total; i++) {
                         if (sections[i] == null) sections[i] = new ChunkSection((byte) (i + minSectionY), unsafeChunk.getBiomeSections()[i]);
                         sections[i].writeObfuscatedToBuf(level, byteBuf);
