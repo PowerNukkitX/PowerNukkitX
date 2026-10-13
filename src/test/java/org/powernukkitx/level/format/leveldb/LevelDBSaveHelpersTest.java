@@ -34,9 +34,20 @@ class LevelDBSaveHelpersTest {
         Set<IChunk> seen = ConcurrentHashMap.newKeySet();
         AtomicInteger calls = new AtomicInteger();
         Set<Thread> threads = ConcurrentHashMap.newKeySet();
+        Thread caller = Thread.currentThread();
+        CountDownLatch callerStarted = new CountDownLatch(1);
         ExecutorService helpers = Executors.newFixedThreadPool(4);
         try {
             LevelDBProvider.serializeWithHelpers(chunks, chunk -> {
+                if (Thread.currentThread() == caller) {
+                    callerStarted.countDown();
+                } else {
+                    try {
+                        callerStarted.await(10, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
                 calls.incrementAndGet();
                 seen.add(chunk);
                 threads.add(Thread.currentThread());
