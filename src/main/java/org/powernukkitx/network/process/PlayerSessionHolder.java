@@ -437,10 +437,13 @@ public class PlayerSessionHolder {
 
         final CompletableFuture<?> spawnChunk = position != null
             ? level.getChunkAsync(NukkitMath.floorDouble(position.x) >> 4, NukkitMath.floorDouble(position.z) >> 4)
+                .exceptionally(error -> {
+                    log.debug("Could not load the spawn chunk of {} ahead of time", uuid, error);
+                    return null;
+                })
             : CompletableFuture.completedFuture(null);
-        spawnChunk.whenComplete((ignored, _) ->
-            level.getScheduler().scheduleTask(InternalPlugin.INSTANCE,
-                () -> this.spawnWithinBudget(server, level, () -> this.completeSpawn(server, uuid, data, attempt))));
+        spawnChunk.thenRun(() -> level.getScheduler().scheduleTask(InternalPlugin.INSTANCE,
+            () -> this.spawnWithinBudget(server, level, () -> this.completeSpawn(server, uuid, data, attempt))));
     }
 
     /**
@@ -543,12 +546,16 @@ public class PlayerSessionHolder {
         } finally {
             this.preloadedPlayerData = null;
             this.endPlayerDataPreload(server, uuid);
-            this.setState(SessionState.CHUNKS);
             if (holdable != null) {
                 holdable.releaseOutbound();
             }
         }
 
+        try {
+            this.drainSpawnBacklog();
+        } finally {
+            this.setState(SessionState.CHUNKS);
+        }
         final Player created = this.player;
         if (created != null && !this.session.isConnected()) {
             created.close("Disconnected");
@@ -853,7 +860,7 @@ public class PlayerSessionHolder {
      * nothing can change it on the way out, and the regular way otherwise.
      */
     private void sendEncoded(StaticPacket packet) {
-        if (trySendEncoded(this.session, packet)) {
+        if (trySendEncoded(this.player, packet)) {
             return;
         }
         if (packet.fireEvent) {
@@ -864,20 +871,22 @@ public class PlayerSessionHolder {
     }
 
     /**
-     * Whether packets for {@code session} may come from an {@link EncodedPacketCache}: no plugin
-     * listens to {@link PacketSendEvent}, which could change a packet on its way out, and the
+     * Whether packets for {@code player} may come from an {@link EncodedPacketCache}: it is no
+     * plugin's subclass of {@link Player}, whose send methods may do more than send; no plugin
+     * listens to {@link PacketSendEvent}, which could change a packet on its way out; and its
      * session speaks the codec the caches encode with.
      */
-    private static boolean canSendEncoded(BedrockServerSession session) {
-        return PacketSendEvent.getHandlers().isEmpty() && session.getCodec() == NetworkConstants.CODEC;
+    private static boolean canSendEncoded(Player player) {
+        return player.getClass() == Player.class && PacketSendEvent.getHandlers().isEmpty()
+            && player.getSession().getCodec() == NetworkConstants.CODEC;
     }
 
-    private static boolean trySendEncoded(BedrockServerSession session, StaticPacket packet) {
-        if (!canSendEncoded(session) || packet.key.get() == null) {
+    private static boolean trySendEncoded(Player player, StaticPacket packet) {
+        if (!canSendEncoded(player) || packet.key.get() == null) {
             return false;
         }
-        if (session.isConnected()) {
-            session.sendPacketImmediately(packet.encoded());
+        if (player.getSession().isConnected()) {
+            player.getSession().sendPacketImmediately(packet.encoded());
         }
         return true;
     }
@@ -890,8 +899,8 @@ public class PlayerSessionHolder {
      * {@link Player#syncCreativeContent()}
      */
     @ApiStatus.Internal
-    public static boolean trySendCreativeContent(BedrockServerSession session) {
-        return trySendEncoded(session, StaticPacket.CREATIVE_CONTENT);
+    public static boolean trySendCreativeContent(Player player) {
+        return trySendEncoded(player, StaticPacket.CREATIVE_CONTENT);
     }
 
     private static void prepareEncodingHelper(BedrockCodecHelper helper) {

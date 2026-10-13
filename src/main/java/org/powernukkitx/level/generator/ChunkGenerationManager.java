@@ -996,11 +996,33 @@ public final class ChunkGenerationManager {
 
     private void failDemand(long chunkHash, Throwable throwable) {
         GenerationDemand demand = demands.remove(chunkHash);
-        if (demand == null) return;
+        if (demand != null) {
+            releaseDemandNeighborhood(demand);
+            demand.terrainFuture.completeExceptionally(throwable);
+            demand.completionFuture.completeExceptionally(throwable);
+        }
+        if (isInDemandNeighborhood(chunkHash)) {
+            failDemandsAround(chunkHash, throwable);
+        }
+    }
 
-        releaseDemandNeighborhood(demand);
-        demand.terrainFuture.completeExceptionally(throwable);
-        demand.completionFuture.completeExceptionally(throwable);
+    /**
+     * Fails every forced demand whose neighbourhood holds the failed chunk. Such a demand waits for
+     * that chunk to reach a later stage, which it no longer will, so it would wait forever and keep
+     * its neighbourhood loaded.
+     */
+    private void failDemandsAround(long chunkHash, Throwable throwable) {
+        final int chunkX = Level.getHashX(chunkHash);
+        final int chunkZ = Level.getHashZ(chunkHash);
+        for (GenerationDemand demand : demands.values()) {
+            if (demand.neighborhoodRetained.get()
+                    && Math.abs(demand.chunkX - chunkX) <= DEMAND_NEIGHBORHOOD_RADIUS
+                    && Math.abs(demand.chunkZ - chunkZ) <= DEMAND_NEIGHBORHOOD_RADIUS) {
+                failDemand(demand, new IllegalStateException(
+                        "Chunk (" + chunkX + ", " + chunkZ + ") around demanded chunk (" + demand.chunkX + ", "
+                                + demand.chunkZ + ") failed to generate", throwable));
+            }
+        }
     }
 
     private void failDemand(GenerationDemand demand, Throwable throwable) {

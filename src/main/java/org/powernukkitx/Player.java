@@ -7783,7 +7783,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void syncCreativeContent() {
-        if (this.isConnected() && PlayerSessionHolder.trySendCreativeContent(this.getSession())) {
+        if (this.isConnected() && PlayerSessionHolder.trySendCreativeContent(this)) {
             return;
         }
         final CreativeContentPacket packet = new CreativeContentPacket();
