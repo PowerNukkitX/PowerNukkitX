@@ -76,6 +76,7 @@ public class Chunk implements IChunk {
     protected final StampedLock lightLock;
     protected final LevelProvider provider;
     protected volatile boolean isInit;
+    private volatile boolean statesUpgraded;
     protected boolean isInitializing;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
@@ -226,6 +227,30 @@ public class Chunk implements IChunk {
         } finally {
             blockLock.unlockRead(stamp);
         }
+    }
+
+    @Override
+    public boolean hasLegacyStates() {
+        if (this.statesUpgraded) {
+            return false;
+        }
+        long stamp = blockLock.readLock();
+        try {
+            for (ChunkSection section : this.sections) {
+                if (section != null && section.hasLegacyStates()) {
+                    return true;
+                }
+            }
+        } finally {
+            blockLock.unlockRead(stamp);
+        }
+        this.statesUpgraded = true;
+        return false;
+    }
+
+    @Override
+    public void markStatesUpgraded() {
+        this.statesUpgraded = true;
     }
 
     @Override

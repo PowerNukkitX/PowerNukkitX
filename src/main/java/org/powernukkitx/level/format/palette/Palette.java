@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -40,6 +41,12 @@ public class Palette<V> {
     protected final List<V> palette;
     protected Object2IntOpenHashMap<V> paletteIndex;
     protected BitArray bitArray;
+    /**
+     * Set while reading a palette holding an entry older than the current block state version. Any
+     * state added to a block since that entry was written was defaulted by the updater, which is
+     * wrong for the states a block derives from its surroundings.
+     */
+    private boolean legacyStates;
 
     public Palette(V first) {
         this(first, BitArrayVersion.V2);
@@ -94,6 +101,23 @@ public class Palette<V> {
         } else {
             this.paletteIndex = null;
         }
+    }
+
+    public boolean hasLegacyStates() {
+        return this.legacyStates;
+    }
+
+    /**
+     * Runs the predicate over the palette entries rather than over every block, so a section holding
+     * none of the wanted blocks is skipped without reading any of them.
+     */
+    public boolean anyInPalette(Predicate<V> predicate) {
+        for (V value : this.palette) {
+            if (predicate.test(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public V get(int index) {
@@ -266,6 +290,9 @@ public class Palette<V> {
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
             NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
             final int storedVersion = blockTag.getInt("version");
+            if (storedVersion != 0 && storedVersion < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
+                this.legacyStates = true;
+            }
             final NbtMapBuilder builder = blockTag.toBuilder();
             builder.remove("version");
             blockTag = builder.build();

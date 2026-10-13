@@ -23,7 +23,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.DISARMED_BIT
 import static org.powernukkitx.block.property.CommonBlockProperties.POWERED_BIT;
 import static org.powernukkitx.block.property.CommonBlockProperties.SUSPENDED_BIT;
 
-public class BlockTripWire extends BlockTransparent implements BlockConnectable {
+public class BlockTripWire extends BlockTransparent implements BlockConnectable, StateDeriving {
     public static final BlockProperties PROPERTIES = new BlockProperties(TRIP_WIRE,
         POWERED_BIT, SUSPENDED_BIT, ATTACHED_BIT, DISARMED_BIT, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
@@ -173,6 +173,7 @@ public class BlockTripWire extends BlockTransparent implements BlockConnectable 
         }
     }
 
+    @Override
     public boolean autoConfigureState() {
         return HorizontalConnections.configure(this);
     }
