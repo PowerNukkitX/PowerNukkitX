@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraAimAssistPresetPacketOperation;
@@ -35,10 +36,12 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.config.category.network.RateLimitSettings;
 import org.powernukkitx.entity.data.property.EntityProperty;
 import org.powernukkitx.event.player.PlayerCreationEvent;
+import org.powernukkitx.event.server.PacketSendEvent;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.network.HoldableServerSession;
+import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.network.process.pack.InternalPackManager;
 import org.powernukkitx.plugin.InternalPlugin;
@@ -63,6 +66,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.function.Supplier;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -124,6 +128,12 @@ public class PlayerSessionHolder {
     private final Queue<BedrockPacket> spawnBacklog = new ConcurrentLinkedQueue<>();
 
     private static volatile ItemRegistryCache itemRegistryCache;
+
+    private static final EncodedPacketCache VOXEL_SHAPES = new EncodedPacketCache(NetworkConstants.CODEC);
+    private static final EncodedPacketCache JIGSAW_STRUCTURES = new EncodedPacketCache(NetworkConstants.CODEC);
+    private static final EncodedPacketCache ITEM_REGISTRY = new EncodedPacketCache(NetworkConstants.CODEC);
+    private static final EncodedPacketCache ACTOR_IDENTIFIERS = new EncodedPacketCache(NetworkConstants.CODEC);
+    private static final EncodedPacketCache CRAFTING_DATA = new EncodedPacketCache(NetworkConstants.CODEC);
 
     /** How often the stored player data is read again while a save of it is still on its way. */
     private static final int MAX_PRELOAD_ATTEMPTS = 5;
@@ -581,8 +591,10 @@ public class PlayerSessionHolder {
 
         this.player.getLevel().sendTime(this.player);
 
-        this.player.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
-        this.player.sendPacketImmediately(Registries.STRUCTURE.getJigsawStructureData());
+        final VoxelShapesPacket voxelShapes = VoxelShapeRegistry.getPACKET();
+        this.sendEncoded(VOXEL_SHAPES, voxelShapes, () -> voxelShapes, true);
+        final JigsawStructureDataPacket jigsawStructures = Registries.STRUCTURE.getJigsawStructureData();
+        this.sendEncoded(JIGSAW_STRUCTURES, jigsawStructures, () -> jigsawStructures, true);
         this.sendStartGame(server);
 
         for (SyncActorPropertyPacket syncActorPropertyPacket : EntityProperty.getEntityPropertyCache()) {
@@ -619,9 +631,12 @@ public class PlayerSessionHolder {
 
         this.session.sendPacketImmediately(Registries.BIOME.getBiomeDefinitionListPacket());
 
-        final AvailableActorIdentifiersPacket availableActorIdentifiersPacket = new AvailableActorIdentifiersPacket();
-        availableActorIdentifiersPacket.setActorInfoList(Registries.ENTITY.getTag());
-        this.session.sendPacketImmediately(availableActorIdentifiersPacket);
+        final NbtMap actorIdentifiers = Registries.ENTITY.getTag();
+        this.sendEncoded(ACTOR_IDENTIFIERS, actorIdentifiers, () -> {
+            final AvailableActorIdentifiersPacket availableActorIdentifiersPacket = new AvailableActorIdentifiersPacket();
+            availableActorIdentifiersPacket.setActorInfoList(actorIdentifiers);
+            return availableActorIdentifiersPacket;
+        }, false);
 
         final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
         playerFogPacket.getFogStack().addAll(this.player.getFogStack());
@@ -659,7 +674,8 @@ public class PlayerSessionHolder {
         this.session.sendPacketImmediately(Registries.TRIM.buildPacket());
 
         this.player.syncInventory();
-        this.player.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
+        final CraftingDataPacket craftingData = Registries.RECIPE.getCraftingPacket();
+        this.sendEncoded(CRAFTING_DATA, craftingData, itemRegistryCache(), () -> craftingData, true);
 
         this.player.setCanClimb(true);
         this.player.setMovementSpeed(this.player.getMovementSpeed());
@@ -757,9 +773,47 @@ public class PlayerSessionHolder {
     private void sendItemRegistry() {
         final ItemRegistryCache cache = itemRegistryCache();
         this.runInOutboundOrder(() -> this.session.getPeer().getCodecHelper().setItemDefinitions(cache.definitions()));
-        final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-        itemRegistryPacket.getItemData().addAll(cache.itemDefinitions());
-        this.player.sendPacketImmediately(itemRegistryPacket);
+        this.sendEncoded(ITEM_REGISTRY, cache, () -> {
+            final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
+            itemRegistryPacket.getItemData().addAll(cache.itemDefinitions());
+            return itemRegistryPacket;
+        }, true);
+    }
+
+    /**
+     * Sends a packet that is the same for every player, from its {@link EncodedPacketCache} when
+     * nothing can change it on the way out, and the regular way otherwise.
+     *
+     * @param key       identifies the content of the packet, see {@link EncodedPacketCache#get}
+     * @param fireEvent whether the regular way goes through the player, firing {@link PacketSendEvent}
+     */
+    private void sendEncoded(EncodedPacketCache cache, Object key, Supplier<? extends BedrockPacket> packet, boolean fireEvent) {
+        this.sendEncoded(cache, key, null, packet, fireEvent);
+    }
+
+    private void sendEncoded(EncodedPacketCache cache, Object key, @Nullable Object dependency,
+                             Supplier<? extends BedrockPacket> packet, boolean fireEvent) {
+        if (key == null || !PacketSendEvent.getHandlers().isEmpty() || this.session.getCodec() != NetworkConstants.CODEC) {
+            if (fireEvent) {
+                this.player.sendPacketImmediately(packet.get());
+            } else {
+                this.session.sendPacketImmediately(packet.get());
+            }
+            return;
+        }
+        if (!this.session.isConnected()) {
+            return;
+        }
+        this.session.sendPacketImmediately(cache.get(key, dependency, packet, PlayerSessionHolder::prepareEncodingHelper));
+    }
+
+    private static void prepareEncodingHelper(BedrockCodecHelper helper) {
+        helper.setItemDefinitions(itemRegistryCache().definitions());
+        helper.setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
+        helper.setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
+        if (Server.getInstance().getSettings().debugSettings().disableEncodingLimits()) {
+            helper.setEncodingSettings(EncodingSettings.UNLIMITED);
+        }
     }
 
     /**
