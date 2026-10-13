@@ -28,6 +28,7 @@ import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
@@ -134,6 +135,8 @@ public class PlayerSessionHolder {
     private static final EncodedPacketCache ITEM_REGISTRY = new EncodedPacketCache(NetworkConstants.CODEC);
     private static final EncodedPacketCache ACTOR_IDENTIFIERS = new EncodedPacketCache(NetworkConstants.CODEC);
     private static final EncodedPacketCache CRAFTING_DATA = new EncodedPacketCache(NetworkConstants.CODEC);
+    private static final EncodedPacketCache BIOME_DEFINITIONS = new EncodedPacketCache(NetworkConstants.CODEC);
+    private static final EncodedPacketCache CREATIVE_CONTENT = new EncodedPacketCache(NetworkConstants.CODEC);
 
     /** How often the stored player data is read again while a save of it is still on its way. */
     private static final int MAX_PRELOAD_ATTEMPTS = 5;
@@ -629,7 +632,8 @@ public class PlayerSessionHolder {
             this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
         });
 
-        this.session.sendPacketImmediately(Registries.BIOME.getBiomeDefinitionListPacket());
+        this.sendEncoded(BIOME_DEFINITIONS, Registries.BIOME, Registries.BIOME.getBiomeDefinitionListFingerprint(), null,
+            Registries.BIOME::getBiomeDefinitionListPacket, false);
 
         final NbtMap actorIdentifiers = Registries.ENTITY.getTag();
         this.sendEncoded(ACTOR_IDENTIFIERS, actorIdentifiers, () -> {
@@ -793,18 +797,61 @@ public class PlayerSessionHolder {
 
     private void sendEncoded(EncodedPacketCache cache, Object key, @Nullable Object dependency,
                              Supplier<? extends BedrockPacket> packet, boolean fireEvent) {
-        if (key == null || !PacketSendEvent.getHandlers().isEmpty() || this.session.getCodec() != NetworkConstants.CODEC) {
-            if (fireEvent) {
-                this.player.sendPacketImmediately(packet.get());
-            } else {
-                this.session.sendPacketImmediately(packet.get());
-            }
+        this.sendEncoded(cache, key, 0L, dependency, packet, fireEvent);
+    }
+
+    private void sendEncoded(EncodedPacketCache cache, Object key, long stamp, @Nullable Object dependency,
+                             Supplier<? extends BedrockPacket> packet, boolean fireEvent) {
+        if (trySendEncoded(this.session, cache, key, stamp, dependency, packet)) {
             return;
         }
-        if (!this.session.isConnected()) {
-            return;
+        if (fireEvent) {
+            this.player.sendPacketImmediately(packet.get());
+        } else {
+            this.session.sendPacketImmediately(packet.get());
         }
-        this.session.sendPacketImmediately(cache.get(key, dependency, packet, PlayerSessionHolder::prepareEncodingHelper));
+    }
+
+    /**
+     * Whether packets for {@code session} may come from an {@link EncodedPacketCache}: no plugin
+     * listens to {@link PacketSendEvent}, which could change a packet on its way out, and the
+     * session speaks the codec the caches encode with.
+     */
+    private static boolean canSendEncoded(BedrockServerSession session) {
+        return PacketSendEvent.getHandlers().isEmpty() && session.getCodec() == NetworkConstants.CODEC;
+    }
+
+    private static boolean trySendEncoded(BedrockServerSession session, EncodedPacketCache cache, Object key, long stamp,
+                                          @Nullable Object dependency, Supplier<? extends BedrockPacket> packet) {
+        if (key == null || !canSendEncoded(session)) {
+            return false;
+        }
+        if (session.isConnected()) {
+            session.sendPacketImmediately(cache.get(key, stamp, dependency, packet, PlayerSessionHolder::prepareEncodingHelper));
+        }
+        return true;
+    }
+
+    /**
+     * Sends the creative inventory content from its {@link EncodedPacketCache}, encoding it again
+     * whenever its groups or entries change.
+     *
+     * @return {@code false} when the content has to be sent the regular way instead, see
+     * {@link Player#syncCreativeContent()}
+     */
+    @ApiStatus.Internal
+    public static boolean trySendCreativeContent(BedrockServerSession session) {
+        if (!canSendEncoded(session)) {
+            return false;
+        }
+        final long fingerprint = EncodedPacketCache.identityFingerprint(
+            Registries.CREATIVE.getCreativeGroups(), Registries.CREATIVE.getCreativeItemData());
+        return trySendEncoded(session, CREATIVE_CONTENT, Registries.CREATIVE, fingerprint, itemRegistryCache(), () -> {
+            final CreativeContentPacket packet = new CreativeContentPacket();
+            packet.getGroups().addAll(Registries.CREATIVE.getCreativeGroups());
+            packet.getEntries().addAll(Registries.CREATIVE.getCreativeItemData());
+            return packet;
+        });
     }
 
     private static void prepareEncodingHelper(BedrockCodecHelper helper) {

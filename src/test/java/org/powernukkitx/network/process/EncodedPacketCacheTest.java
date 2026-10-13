@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.powernukkitx.network.NetworkConstants;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class EncodedPacketCacheTest {
@@ -91,6 +92,42 @@ class EncodedPacketCacheTest {
             created.incrementAndGet();
             return time(3);
         }, _ -> {});
+
+        Assertions.assertEquals(2, created.get());
+    }
+
+    @Test
+    void identityFingerprintFollowsWhichInstancesAreHeldInWhatOrder() {
+        Object a = new Object();
+        Object b = new Object();
+        Object c = new Object();
+        long base = EncodedPacketCache.identityFingerprint(List.of(a, b), List.of(c));
+
+        Assertions.assertEquals(base, EncodedPacketCache.identityFingerprint(List.of(a, b), List.of(c)));
+        Assertions.assertNotEquals(base, EncodedPacketCache.identityFingerprint(List.of(b, a), List.of(c)));
+        Assertions.assertNotEquals(base, EncodedPacketCache.identityFingerprint(List.of(a, b, c), List.of()));
+        Assertions.assertNotEquals(base, EncodedPacketCache.identityFingerprint(List.of(a, new Object()), List.of(c)));
+        Assertions.assertNotEquals(base, EncodedPacketCache.identityFingerprint(List.of(a), List.of(c)));
+    }
+
+    @Test
+    void encodesAgainWhenTheStampChanges() {
+        EncodedPacketCache cache = new EncodedPacketCache(CODEC);
+        AtomicInteger created = new AtomicInteger();
+        Object key = new Object();
+
+        cache.get(key, 1L, null, () -> {
+            created.incrementAndGet();
+            return time(4);
+        }, helper -> {});
+        cache.get(key, 1L, null, () -> {
+            created.incrementAndGet();
+            return time(4);
+        }, helper -> {});
+        cache.get(key, 2L, null, () -> {
+            created.incrementAndGet();
+            return time(4);
+        }, helper -> {});
 
         Assertions.assertEquals(2, created.get());
     }

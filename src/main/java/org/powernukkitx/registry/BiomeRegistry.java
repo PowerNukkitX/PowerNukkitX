@@ -20,6 +20,8 @@ import org.cloudburstmc.protocol.bedrock.data.RandomDistributionType;
 import org.cloudburstmc.protocol.bedrock.data.biome.*;
 import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
 import org.cloudburstmc.protocol.bedrock.packet.BiomeDefinitionListPacket;
+import org.powernukkitx.network.process.EncodedPacketCache;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.awt.*;
@@ -118,6 +120,17 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
 
     public String getBiomeName(int biomeId) {
         return ID2NAME.get(biomeId);
+    }
+
+    /**
+     * Changes whenever the content of {@link #getBiomeDefinitionListPacket()} does, so the packet
+     * can be encoded once and reused until then.
+     *
+     * @return a fingerprint of the biome definitions the packet is built from
+     */
+    @ApiStatus.Internal
+    public long getBiomeDefinitionListFingerprint() {
+        return EncodedPacketCache.identityFingerprint(BIOME_STRING_LIST, LIST);
     }
 
     public BiomeDefinitionListPacket getBiomeDefinitionListPacket() {

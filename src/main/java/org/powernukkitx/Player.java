@@ -169,6 +169,7 @@ import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.primitiveshape.PrimitiveShapes;
 import org.powernukkitx.network.process.PacketHandler;
+import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.permission.PermissibleBase;
 import org.powernukkitx.permission.Permission;
@@ -7783,6 +7784,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void syncCreativeContent() {
+        if (this.isConnected() && PlayerSessionHolder.trySendCreativeContent(this.getSession())) {
+            return;
+        }
         final CreativeContentPacket packet = new CreativeContentPacket();
         packet.getGroups().addAll(Registries.CREATIVE.getCreativeGroups());
         packet.getEntries().addAll(Registries.CREATIVE.getCreativeItemData());
