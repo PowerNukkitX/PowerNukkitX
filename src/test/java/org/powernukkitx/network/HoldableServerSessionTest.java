@@ -3,6 +3,9 @@ package org.powernukkitx.network;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoop;
 import org.cloudburstmc.protocol.bedrock.BedrockPeer;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.cloudburstmc.protocol.bedrock.packet.LevelChunkPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetTimePacket;
 import org.cloudburstmc.protocol.bedrock.packet.StartGamePacket;
 import org.junit.jupiter.api.Assertions;
@@ -12,11 +15,13 @@ import org.mockito.InOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -81,6 +86,25 @@ class HoldableServerSessionTest {
         SetTimePacket after = new SetTimePacket();
         this.session.sendPacket(after);
         verify(this.peer).sendPacket(anyInt(), anyInt(), same(after));
+    }
+
+    @Test
+    void heldPacketsAreReleasedWhenTheEventLoopRefusesWork() {
+        EventLoop stopped = mock(EventLoop.class);
+        doThrow(new RejectedExecutionException()).when(stopped).execute(any(Runnable.class));
+        when(this.peer.getChannel().eventLoop()).thenReturn(stopped);
+
+        ByteBuf chunkData = Unpooled.buffer(4).writeInt(1);
+        LevelChunkPacket chunk = new LevelChunkPacket();
+        chunk.setSerializedChunkData(chunkData);
+        this.session.holdOutbound();
+        this.session.sendPacket(chunk);
+
+        this.session.releaseOutbound();
+
+        Assertions.assertEquals(0, chunk.refCnt());
+        Assertions.assertEquals(0, chunkData.refCnt());
+        verify(this.peer, never()).sendPacket(anyInt(), anyInt(), any());
     }
 
     @Test

@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,6 +33,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class ChunkGenerationManager {
+    /**
+     * Chunks around a demanded chunk that are driven along with it. Its later stages wait for its
+     * neighbours, theirs for their neighbours and so on; a player's view keeps the same margin
+     * around the chunks it needs complete (see {@code PlayerChunkManager}).
+     */
+    private static final int DEMAND_NEIGHBORHOOD_RADIUS = 6;
+
     private final Level level;
     private final Generator generator;
     private final ForkJoinPool executor;
@@ -45,6 +53,8 @@ public final class ChunkGenerationManager {
     private final ReentrantLock generationQueueLock = new ReentrantLock();
     private final Map<ChunkGenerationState, ChunkGenerationTask> tasksByState = new EnumMap<>(ChunkGenerationState.class);
     private final ConcurrentHashMap<Long, GenerationDemand> demands = new ConcurrentHashMap<>();
+    /** Chunks driven because a demand around them needs them, counted per demand. */
+    private final ConcurrentHashMap<Long, Integer> demandNeighborhoods = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<GenerationRequestKey, GenerationRequest> requests = new ConcurrentHashMap<>();
     private final ConcurrentLinkedDeque<GenerationRequest> pending = new ConcurrentLinkedDeque<>();
 
@@ -106,11 +116,17 @@ public final class ChunkGenerationManager {
 
     /**
      * Requests chunk generation.
+     * <p>
+     * A chunk only completes once the chunks around it have caught up. An unforced request leaves
+     * driving those to whatever already keeps them loaded, such as a player's view, so it may never
+     * complete for a chunk nobody can see. A forced request drives that neighbourhood itself and
+     * keeps it loaded until the chunk is complete, which generates up to
+     * {@value #DEMAND_NEIGHBORHOOD_RADIUS} chunks in every direction.
      *
-     * @param chunkX value for this API
-     * @param chunkZ value for this API
-     * @param force value for this API
-     * @return the requested value
+     * @param chunkX chunk X
+     * @param chunkZ chunk Z
+     * @param force whether to drive the neighbourhood of the chunk so the request completes
+     * @return completes with the chunk once it is complete
      */
     public CompletableFuture<IChunk> request(int chunkX, int chunkZ, boolean force) {
         return requestToState(chunkX, chunkZ, ChunkGenerationState.COMPLETE, force);
@@ -179,6 +195,9 @@ public final class ChunkGenerationManager {
             if (hasReachedTarget(chunk, demand)) {
                 completeDemand(demand, chunk);
             } else {
+                if (force && targetState == ChunkGenerationState.COMPLETE) {
+                    retainDemandNeighborhood(demand);
+                }
                 tryEnqueueStableState(chunk);
                 schedule();
             }
@@ -186,10 +205,60 @@ public final class ChunkGenerationManager {
             failDemand(demand, new IllegalStateException(
                     "Chunk generation manager requires Chunk, got " + loaded.getClass().getName()));
         } else {
+            if (force && targetState == ChunkGenerationState.COMPLETE) {
+                retainDemandNeighborhood(demand);
+            }
             ensureDemandChunkAcquired(demand);
         }
 
         return targetState == ChunkGenerationState.COMPLETE ? demand.completionFuture : demand.terrainFuture;
+    }
+
+    /**
+     * Acquires and keeps loaded the chunks a forced complete demand depends on, and queues their
+     * next stage. Without this a chunk that no player can see never completes, because nothing else
+     * drives its neighbours, and whoever waits for it waits forever.
+     * <p>
+     * Skipped on generation workers: a stage that demands another chunk is already inside a
+     * neighbourhood that is being driven, and widening it from there would spread without bound.
+     */
+    private void retainDemandNeighborhood(GenerationDemand demand) {
+        if (isGenerationWorker() || !demand.neighborhoodRetained.compareAndSet(false, true)) return;
+
+        for (int dx = -DEMAND_NEIGHBORHOOD_RADIUS; dx <= DEMAND_NEIGHBORHOOD_RADIUS; dx++) {
+            for (int dz = -DEMAND_NEIGHBORHOOD_RADIUS; dz <= DEMAND_NEIGHBORHOOD_RADIUS; dz++) {
+                final int chunkX = demand.chunkX + dx;
+                final int chunkZ = demand.chunkZ + dz;
+                final long chunkHash = Level.chunkHash(chunkX, chunkZ);
+                // Retained before it is acquired, so it never sits in the unload queue
+                level.retainGenerationTask(chunkHash);
+                demandNeighborhoods.merge(chunkHash, 1, Integer::sum);
+                try {
+                    if (dx != 0 || dz != 0) {
+                        onChunkViewAcquired(level.acquireGenerationChunk(chunkX, chunkZ));
+                    }
+                } catch (Throwable throwable) {
+                    log.error("Could not acquire chunk ({}, {}) around demanded chunk ({}, {}) in level '{}'",
+                            chunkX, chunkZ, demand.chunkX, demand.chunkZ, level.getFolderName(), throwable);
+                }
+            }
+        }
+    }
+
+    private void releaseDemandNeighborhood(GenerationDemand demand) {
+        if (!demand.neighborhoodRetained.compareAndSet(true, false)) return;
+
+        for (int dx = -DEMAND_NEIGHBORHOOD_RADIUS; dx <= DEMAND_NEIGHBORHOOD_RADIUS; dx++) {
+            for (int dz = -DEMAND_NEIGHBORHOOD_RADIUS; dz <= DEMAND_NEIGHBORHOOD_RADIUS; dz++) {
+                final long chunkHash = Level.chunkHash(demand.chunkX + dx, demand.chunkZ + dz);
+                demandNeighborhoods.computeIfPresent(chunkHash, (hash, count) -> count > 1 ? count - 1 : null);
+                level.releaseGenerationTask(chunkHash);
+            }
+        }
+    }
+
+    private boolean isGenerationWorker() {
+        return Thread.currentThread() instanceof ForkJoinWorkerThread worker && worker.getPool() == executor;
     }
 
     private static boolean hasReachedTarget(Chunk chunk, ChunkGenerationState targetState) {
@@ -699,7 +768,8 @@ public final class ChunkGenerationManager {
 
     private boolean isCurrentChunk(Chunk chunk) {
         return isSameChunkIdentity(chunk)
-                && (level.isChunkViewRetained(chunk.getIndex()) || demands.containsKey(chunk.getIndex()));
+                && (level.isChunkViewRetained(chunk.getIndex()) || demands.containsKey(chunk.getIndex())
+                || demandNeighborhoods.containsKey(chunk.getIndex()));
     }
 
     private boolean launch(Candidate candidate) {
@@ -909,12 +979,14 @@ public final class ChunkGenerationManager {
     private void completeDemand(GenerationDemand demand, Chunk chunk) {
         if (!demands.remove(demand.chunkHash, demand)) return;
         completeReachedWaiters(demand, chunk);
+        releaseDemandNeighborhood(demand);
     }
 
     private void failDemand(long chunkHash, Throwable throwable) {
         GenerationDemand demand = demands.remove(chunkHash);
         if (demand == null) return;
 
+        releaseDemandNeighborhood(demand);
         demand.terrainFuture.completeExceptionally(throwable);
         demand.completionFuture.completeExceptionally(throwable);
     }
@@ -922,6 +994,7 @@ public final class ChunkGenerationManager {
     private void failDemand(GenerationDemand demand, Throwable throwable) {
         if (!demands.remove(demand.chunkHash, demand)) return;
 
+        releaseDemandNeighborhood(demand);
         demand.terrainFuture.completeExceptionally(throwable);
         demand.completionFuture.completeExceptionally(throwable);
     }
@@ -1038,6 +1111,7 @@ public final class ChunkGenerationManager {
         private final CompletableFuture<IChunk> terrainFuture = new CompletableFuture<>();
         private final CompletableFuture<IChunk> completionFuture = new CompletableFuture<>();
         private final AtomicInteger targetNativeId;
+        private final AtomicBoolean neighborhoodRetained = new AtomicBoolean();
 
         private GenerationDemand(
                 int chunkX,

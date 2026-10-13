@@ -1,5 +1,6 @@
 package org.powernukkitx.network;
 
+import io.netty.util.ReferenceCountUtil;
 import org.cloudburstmc.protocol.bedrock.BedrockPeer;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * A server session whose outbound packets can be held back while a burst is written from a thread
@@ -58,7 +60,8 @@ public class HoldableServerSession extends BedrockServerSession {
 
     /**
      * Sends the packets held since {@link #holdOutbound()} on the session's event loop and stops
-     * holding. Safe to call when nothing is held.
+     * holding. Safe to call when nothing is held. When the event loop no longer accepts work, as
+     * while the server stops, the held packets are dropped and released instead.
      */
     public void releaseOutbound() {
         synchronized (this.holdLock) {
@@ -66,7 +69,27 @@ public class HoldableServerSession extends BedrockServerSession {
                 return;
             }
         }
-        this.getPeer().getChannel().eventLoop().execute(this::flushHeld);
+        try {
+            this.getPeer().getChannel().eventLoop().execute(this::flushHeld);
+        } catch (RejectedExecutionException e) {
+            this.discardHeld();
+        }
+    }
+
+    private void discardHeld() {
+        synchronized (this.holdLock) {
+            final List<Held> entries = this.held;
+            this.held = null;
+            if (entries == null) {
+                return;
+            }
+            // Chunk packets own pooled buffers, which would leak without a write to release them
+            for (Held entry : entries) {
+                if (entry instanceof HeldPacket packet) {
+                    ReferenceCountUtil.safeRelease(packet.packet());
+                }
+            }
+        }
     }
 
     private void flushHeld() {

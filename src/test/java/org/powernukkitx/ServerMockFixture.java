@@ -39,8 +39,10 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -180,6 +182,10 @@ public final class ServerMockFixture {
             return t;
         })).when(server).getChunkIoExecutor();
         doReturn(new LoginService(serverSettings.networkSettings())).when(server).getLoginService();
+        // Persistent actor IDs need a negative high half, as the real allocator hands out; the mock's 0
+        // is refused as soon as a generated chunk stores its actors
+        final AtomicLong nextActorUniqueId = new AtomicLong();
+        doAnswer(invocation -> (-1L << 32) | nextActorUniqueId.incrementAndGet()).when(server).getNewActorUniqueId();
         doReturn(simpleCommandMap).when(server).getCommandMap();
         doReturn(null).when(server).getScoreboardManager();
         try {
