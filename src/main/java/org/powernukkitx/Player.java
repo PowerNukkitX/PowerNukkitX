@@ -342,6 +342,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
      */
     protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
+    private @Nullable Server.PreloadedPlayerData preloadedPlayerData;
     private Consumer<BedrockPacket> inboundProcessor;
     protected volatile String pendingClose;
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
@@ -1244,6 +1245,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * layer; lets {@link #drainInboundPackets} run a packet through the full handle path without the
      * player owning that logic.
      */
+    /**
+     * Hands over player data read off the level thread before this player was created, so
+     * {@link #processLogin()} does not read storage itself. Ignored when it is stale by then.
+     *
+     * @param preloaded the preloaded data, or {@code null} to read storage during login
+     */
+    @ApiStatus.Internal
+    public void setPreloadedPlayerData(@Nullable Server.PreloadedPlayerData preloaded) {
+        this.preloadedPlayerData = preloaded;
+    }
+
     public void setInboundProcessor(Consumer<BedrockPacket> processor) {
         this.inboundProcessor = processor;
     }
@@ -1531,7 +1543,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.customDirty = oldPlayer.customDirty;
             oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
-            Server.PlayerDataRecord playerData = this.server.getOfflinePlayerDataRecord(this.uuid, true);
+            final Server.PreloadedPlayerData preloaded = this.preloadedPlayerData;
+            this.preloadedPlayerData = null;
+
+            Server.PlayerDataRecord playerData;
+            if (preloaded != null && preloaded.uuid().equals(this.uuid)
+                && preloaded.record() != null && this.server.isPreloadCurrent(preloaded)) {
+                playerData = preloaded.record();
+            } else {
+                // A save of an earlier session may still be queued, and reading before it lands would
+                // bring back the state from before it
+                this.server.awaitPlayerDataWrites(this.uuid);
+                playerData = this.server.getOfflinePlayerDataRecord(this.uuid, true);
+            }
 
             if (playerData == null) {
                 nbt = null;
@@ -4779,7 +4803,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.removeAllWindows(false);
 
         if (ev != null && ev.getAutoSave() && this.nbt != null) {
-            this.save();
+            // Written on the player data thread, which orders it before a rejoin's read
+            this.save(true);
         }
         super.close();
 
@@ -7381,9 +7406,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the XUID
      */
     public String getXUID() {
-        String xuid = this.info.identityClaims.extraData.xuid;
-        var proxy = this.server.getProxyAuthProvider();
-        return proxy != null ? proxy.getXuid(this.info.clientChainData, xuid) : xuid;
+        return Server.resolveXuid(this.info, this.server.getProxyAuthProvider());
     }
 
     /**

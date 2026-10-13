@@ -34,8 +34,12 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.config.category.network.RateLimitSettings;
 import org.powernukkitx.entity.data.property.EntityProperty;
 import org.powernukkitx.event.player.PlayerCreationEvent;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.Vector3;
+import org.powernukkitx.network.HoldableServerSession;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.network.process.pack.InternalPackManager;
+import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.ItemRuntimeIdRegistry;
 import org.powernukkitx.registry.Registries;
@@ -51,9 +55,14 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Kaooot
@@ -63,9 +72,10 @@ import java.util.concurrent.TimeUnit;
 public class PlayerSessionHolder {
 
     private final BedrockServerSession session;
-    private SessionState state = SessionState.INITIAL;
+    // Written on the level thread during the spawn handoff and read on the network thread
+    private volatile SessionState state = SessionState.INITIAL;
     @Setter(AccessLevel.PRIVATE)
-    private Player player;
+    private volatile Player player;
     private Player.PlayerInfo playerInfo;
     @Setter(AccessLevel.PRIVATE)
     private PlayerHandle playerHandle;
@@ -93,6 +103,58 @@ public class PlayerSessionHolder {
 
     private final Object rateLimitLock = new Object();
     private volatile boolean disconnected = false;
+    @Getter(AccessLevel.NONE)
+    private final AtomicBoolean loginAdmitted = new AtomicBoolean();
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Server.PreloadedPlayerData preloadedPlayerData;
+
+    /** Packets that arrived while the player was being created, see {@link #deferUntilSpawned}. */
+    @Getter(AccessLevel.NONE)
+    private final Queue<BedrockPacket> spawnBacklog = new ConcurrentLinkedQueue<>();
+
+    private static volatile ItemRegistryCache itemRegistryCache;
+
+    /**
+     * The item palette sent to every client, built once instead of per join. Rebuilt when items are
+     * registered after it was built.
+     */
+    private record ItemRegistryCache(int itemDataCount, int customItemCount, NbtMap itemComponents,
+                                     ItemRegistryPacket packet, DefinitionRegistry<ItemDefinition> definitions) {
+        boolean matches() {
+            return this.itemDataCount == ItemRuntimeIdRegistry.getITEMDATA().size()
+                && this.customItemCount == Registries.ITEM.getCustomItemDefinition().size()
+                && this.itemComponents == ItemRegistry.getItemComponents();
+        }
+    }
+
+    /**
+     * Reserves one of the {@link LoginService} slots for this session while its login is verified,
+     * see {@link #releaseLogin(Server)}. The slot is freed when the session closes at the latest.
+     *
+     * @return {@code false} when too many logins are already in progress
+     */
+    public boolean tryAdmitLogin(Server server) {
+        if (this.loginAdmitted.get()) {
+            return true;
+        }
+        if (!server.getLoginService().tryAdmit()) {
+            return false;
+        }
+        this.loginAdmitted.set(true);
+        this.session.getPeer().getChannel().closeFuture().addListener(future -> this.releaseLogin(server));
+        return true;
+    }
+
+    /**
+     * Frees the login slot taken by {@link #tryAdmitLogin(Server)}, if any. Safe to call more than once.
+     */
+    public void releaseLogin(Server server) {
+        if (this.loginAdmitted.compareAndSet(true, false)) {
+            server.getLoginService().release();
+        }
+    }
 
     public InternalPackManager getInternalPackManager() {
         if (this.internalPackManager == null) {
@@ -227,8 +289,140 @@ public class PlayerSessionHolder {
         this.session.sendPacketImmediately(infoPacket);
     }
 
+    /**
+     * Starts creating the player once the client has accepted the resource packs.
+     * <p>
+     * Called on the network thread. The stored player data is read on the player data thread of
+     * the {@link LoginService}, the chunk the player stands in is loaded on the chunk IO executor,
+     * and everything that touches the world then runs on the thread of the level the player joins,
+     * see {@link #sendBeforeSpawn(Server)}. None of it blocks the network thread, which serves many
+     * other sessions.
+     */
+    public void beginSpawn(Server server) {
+        this.setState(SessionState.SPAWNING);
+        final UUID uuid = Server.uuidFromXUID(Server.resolveXuid(this.playerInfo, server.getProxyAuthProvider()));
+        try {
+            server.getLoginService().executePlayerData(() -> this.preloadAndSchedule(server, uuid));
+        } catch (RejectedExecutionException e) {
+            this.disconnect(DisconnectFailReason.UNKNOWN, "Server is shutting down");
+        }
+    }
+
+    private void preloadAndSchedule(Server server, UUID uuid) {
+        if (!this.session.isConnected()) {
+            return;
+        }
+
+        Server.PreloadedPlayerData preloaded = null;
+        try {
+            preloaded = server.preloadPlayerData(uuid);
+        } catch (Exception e) {
+            // processLogin reads storage itself when nothing was preloaded
+            log.warn("Failed to preload player data for {}", uuid, e);
+        }
+
+        final String levelName = preloaded != null ? preloaded.levelName() : null;
+        final Level storedLevel = levelName != null ? server.getLevelByName(levelName) : null;
+        final Level level = storedLevel != null ? storedLevel : server.getDefaultLevel();
+        final Vector3 position = storedLevel != null ? preloaded.position() : null;
+        final Server.PreloadedPlayerData data = preloaded;
+
+        final CompletableFuture<?> spawnChunk = position != null
+            ? level.getChunkAsync((int) position.x >> 4, (int) position.z >> 4)
+            : CompletableFuture.completedFuture(null);
+        spawnChunk.whenComplete((ignored, error) ->
+            level.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> this.completeSpawn(server, data)));
+    }
+
+    /**
+     * Whether the player is being created on the level thread right now.
+     */
+    public boolean isSpawning() {
+        final SessionState current = this.state;
+        return current == SessionState.SPAWNING || current == SessionState.BEFORE_SPAWN;
+    }
+
+    /**
+     * Holds a packet that arrived while the player was being created, and handles it on the
+     * level thread once the creation is done, in arrival order.
+     */
+    void deferUntilSpawned(BedrockPacket packet) {
+        this.spawnBacklog.add(packet);
+        // The creation may have finished, and drained the backlog, while this packet was added
+        if (!this.isSpawning()) {
+            final Player created = this.player;
+            if (created != null) {
+                created.getLevel().getScheduler().scheduleTask(InternalPlugin.INSTANCE, this::drainSpawnBacklog);
+            } else {
+                this.spawnBacklog.clear();
+            }
+        }
+    }
+
+    private void drainSpawnBacklog() {
+        final Player created = this.player;
+        if (created == null || !created.isConnected()
+                || !(this.session.getPacketHandler() instanceof NetworkPacketHandler handler)) {
+            this.spawnBacklog.clear();
+            return;
+        }
+        BedrockPacket packet;
+        while ((packet = this.spawnBacklog.poll()) != null) {
+            try {
+                handler.processInbound(packet);
+            } catch (Exception e) {
+                log.error("Error handling packet {} for player {}", packet.getClass().getSimpleName(), created.getName(), e);
+            }
+        }
+    }
+
+    /**
+     * Runs on the level thread: creates the player and sends everything the client needs before it
+     * can spawn. A disconnect that happened meanwhile is handled here, because the network thread
+     * leaves a session in {@link SessionState#SPAWNING} alone.
+     */
+    private void completeSpawn(Server server, Server.PreloadedPlayerData preloaded) {
+        if (!this.session.isConnected()) {
+            return;
+        }
+
+        this.preloadedPlayerData = preloaded;
+        // Off the event loop, so the order of the login burst has to be kept by holding it back;
+        // see HoldableServerSession. Released below whatever happens
+        final HoldableServerSession holdable = this.session instanceof HoldableServerSession h ? h : null;
+        if (holdable != null) {
+            holdable.holdOutbound();
+        }
+        try {
+            this.sendBeforeSpawn(server);
+        } catch (Exception e) {
+            log.error("Failed to spawn a player from {}", this.session.getSocketAddress(), e);
+            if (this.player != null) {
+                this.player.close("Failed to create player");
+            } else {
+                this.session.close("Failed to create player");
+            }
+        } finally {
+            this.preloadedPlayerData = null;
+            this.setState(SessionState.CHUNKS);
+            if (holdable != null) {
+                holdable.releaseOutbound();
+            }
+        }
+
+        final Player created = this.player;
+        if (created != null && !this.session.isConnected()) {
+            created.close("Disconnected");
+        }
+        this.drainSpawnBacklog();
+    }
+
     public void sendBeforeSpawn(Server server) {
         this.doPlayerCreation();
+        if (this.player == null || !this.player.isConnected()) {
+            // Refused by a plugin or failed to load; closing has already been taken care of
+            return;
+        }
         this.setState(SessionState.BEFORE_SPAWN);
 
         server.sendSleepingPlayersStatusImmediately(Set.of(this.player));
@@ -285,8 +479,10 @@ public class PlayerSessionHolder {
         server.addOnlinePlayer(this.player);
         server.onPlayerCompleteLoginSequence(this.player);
 
-        this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
-        this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
+        this.runInOutboundOrder(() -> {
+            this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
+            this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
+        });
 
         this.session.sendPacketImmediately(Registries.BIOME.getBiomeDefinitionListPacket());
 
@@ -426,36 +622,69 @@ public class PlayerSessionHolder {
     }
 
     private void sendItemRegistry() {
-        final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-        final List<ItemDefinition> itemDefinitions = new ObjectArrayList<>();
+        final ItemRegistryCache cache = itemRegistryCache();
+        this.runInOutboundOrder(() -> this.session.getPeer().getCodecHelper().setItemDefinitions(cache.definitions()));
+        this.player.sendPacketImmediately(cache.packet());
+    }
 
-        for (ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
-            CompoundTag tag = new CompoundTag();
-            if (ItemRegistry.getItemComponents().containsKey(data.identifier())) {
-                NbtMap itemTag = ItemRegistry.getItemComponents().getCompound(data.identifier());
-                tag.putCompound("components", CompoundTag.fromNetwork(itemTag.getCompound("components")));
-            } else if (Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier())) {
-                tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt();
-            }
-            final NbtMap components = tag.toNetwork();
-            itemDefinitions.add(
-                new SimpleItemDefinition(
-                    data.identifier(),
-                    data.runtimeId(),
-                    ItemVersion.from(data.version()),
-                    data.componentBased(),
-                    components
-                )
-            );
+    /**
+     * Applies a codec helper change at the current point of the outbound stream, so packets sent
+     * before it are still encoded without it. See {@link HoldableServerSession#runInOrder}.
+     */
+    private void runInOutboundOrder(Runnable action) {
+        if (this.session instanceof HoldableServerSession holdable) {
+            holdable.runInOrder(action);
+        } else {
+            action.run();
         }
-        itemRegistryPacket.getItemData().addAll(itemDefinitions);
+    }
 
-        final DefinitionRegistry<ItemDefinition> itemDefinitionRegistry = new SimpleDefinitionRegistry.Builder<ItemDefinition>()
-            .addAll(itemDefinitions)
-            .build();
-        this.session.getPeer().getCodecHelper().setItemDefinitions(itemDefinitionRegistry);
+    private static ItemRegistryCache itemRegistryCache() {
+        ItemRegistryCache cache = itemRegistryCache;
+        if (cache != null && cache.matches()) {
+            return cache;
+        }
+        synchronized (PlayerSessionHolder.class) {
+            cache = itemRegistryCache;
+            if (cache != null && cache.matches()) {
+                return cache;
+            }
+            final int itemDataCount = ItemRuntimeIdRegistry.getITEMDATA().size();
+            final int customItemCount = Registries.ITEM.getCustomItemDefinition().size();
+            final NbtMap itemComponents = ItemRegistry.getItemComponents();
+            final List<ItemDefinition> itemDefinitions = new ObjectArrayList<>();
 
-        this.player.sendPacketImmediately(itemRegistryPacket);
+            for (ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
+                CompoundTag tag = new CompoundTag();
+                if (itemComponents.containsKey(data.identifier())) {
+                    NbtMap itemTag = itemComponents.getCompound(data.identifier());
+                    tag.putCompound("components", CompoundTag.fromNetwork(itemTag.getCompound("components")));
+                } else if (Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier())) {
+                    tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt();
+                }
+                final NbtMap components = tag.toNetwork();
+                itemDefinitions.add(
+                    new SimpleItemDefinition(
+                        data.identifier(),
+                        data.runtimeId(),
+                        ItemVersion.from(data.version()),
+                        data.componentBased(),
+                        components
+                    )
+                );
+            }
+
+            // Shared by every session: the packet and the registry are only read once built
+            final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
+            itemRegistryPacket.getItemData().addAll(itemDefinitions);
+            final DefinitionRegistry<ItemDefinition> itemDefinitionRegistry = new SimpleDefinitionRegistry.Builder<ItemDefinition>()
+                .addAll(itemDefinitions)
+                .build();
+
+            cache = new ItemRegistryCache(itemDataCount, customItemCount, itemComponents, itemRegistryPacket, itemDefinitionRegistry);
+            itemRegistryCache = cache;
+            return cache;
+        }
     }
 
     public void doPlayerCreation() {
@@ -468,6 +697,7 @@ public class PlayerSessionHolder {
         }
         this.playerHandle = new PlayerHandle(this.player);
         this.player.setPlayerHandle(this.playerHandle);
+        this.player.setPreloadedPlayerData(this.preloadedPlayerData);
         if (this.session.getPacketHandler() instanceof NetworkPacketHandler networkPacketHandler) {
             this.player.setInboundProcessor(networkPacketHandler::processInbound);
         }

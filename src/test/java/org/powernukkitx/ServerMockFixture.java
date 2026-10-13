@@ -20,6 +20,7 @@ import org.powernukkitx.network.Network;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.plugin.JavaPluginLoader;
 import org.powernukkitx.network.positiontracking.PositionTrackingService;
+import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.utils.collection.FreezableArrayManager;
@@ -35,6 +36,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -170,6 +174,12 @@ public final class ServerMockFixture {
 
         ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
         doReturn(pool).when(server).getComputeThreadPool();
+        doReturn(new ThreadPoolExecutor(2, 2, 30L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
+            Thread t = new Thread(r, "fixture-chunk-io");
+            t.setDaemon(true);
+            return t;
+        })).when(server).getChunkIoExecutor();
+        doReturn(new LoginService(serverSettings.networkSettings())).when(server).getLoginService();
         doReturn(simpleCommandMap).when(server).getCommandMap();
         doReturn(null).when(server).getScoreboardManager();
         try {

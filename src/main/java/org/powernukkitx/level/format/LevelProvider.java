@@ -73,6 +73,17 @@ public interface LevelProvider {
 
     void saveChunks(Collection<IChunk> chunks);
 
+    /**
+     * Saves the given chunks.
+     *
+     * @param chunks   chunks to save; unchanged chunks are skipped
+     * @param parallel whether serialization may fan out to the compute pool and wait for it. Pass
+     *                 {@code false} from a tick thread, so a busy pool cannot stall the tick
+     */
+    default void saveChunks(Collection<IChunk> chunks, boolean parallel) {
+        saveChunks(chunks);
+    }
+
     void saveChunk(int x, int z);
 
     void saveChunk(int x, int z, IChunk chunk);

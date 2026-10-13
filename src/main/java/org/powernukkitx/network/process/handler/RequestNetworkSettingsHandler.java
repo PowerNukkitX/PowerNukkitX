@@ -1,6 +1,7 @@
 package org.powernukkitx.network.process.handler;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -11,6 +12,8 @@ import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.BatchCompression;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.ZlibCompression;
 import org.cloudburstmc.protocol.bedrock.packet.NetworkSettingsPacket;
 import org.cloudburstmc.protocol.bedrock.packet.RequestNetworkSettingsPacket;
 
@@ -58,12 +61,28 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
 
         session.sendPacketImmediately(networkSettingsPacket);
         session.setCompression(algorithm);
+        this.applyCompressionLevel(session, server);
 
         if (server.getSettings().debugSettings().disableEncodingLimits()) {
             session.getPeer().getCodecHelper().setEncodingSettings(EncodingSettings.UNLIMITED);
         }
 
         holder.setState(SessionState.LOGIN);
+    }
+
+    /**
+     * Applies {@code network-settings.compressionLevel}, which the protocol library would otherwise
+     * leave at its own default of 7. The library shares one zlib compressor between all sessions,
+     * so this sets the level server-wide; every session asks for the same value.
+     */
+    private void applyCompressionLevel(BedrockServerSession session, Server server) {
+        final BatchCompression compression = session.getPeer().getCompressionStrategy().getDefaultCompression();
+        if (compression instanceof ZlibCompression zlib) {
+            final int level = NukkitMath.clamp(server.getSettings().networkSettings().compressionLevel(), 0, 9);
+            if (zlib.getLevel() != level) {
+                zlib.setLevel(level);
+            }
+        }
     }
 
     private boolean addressBanCheck(Server server, BedrockServerSession session) {

@@ -66,6 +66,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -610,17 +611,9 @@ public class LevelDBProvider implements LevelProvider {
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
-        final Chunk cacheChunk = chunk instanceof Chunk concrete && !this.level.isAntiXrayEnabled() ? concrete : null;
-        if (cacheChunk != null) {
-            final Chunk.NetworkPayload cached = cacheChunk.getNetworkPayload();
-            if (cached != null) {
-                return Pair.of(assembleCachedPayload(cached), cached.subChunkCount());
-            }
-        }
         AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
-            if (cacheChunk != null) cacheChunk.beginNetworkPayload();
             final var byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer();
             boolean success = false;
             try {
@@ -633,8 +626,6 @@ public class LevelDBProvider implements LevelProvider {
                 }
                 int total = subChunkCount + 1;
                 final int minSectionY = unsafeChunk.getDimensionData().getMinSectionY();
-                final Chunk.SectionNetworkPayload[] sectionPayloads =
-                        cacheChunk == null ? null : new Chunk.SectionNetworkPayload[sections.length];
                 //write block
                 if (level != null && level.isAntiXrayEnabled()) {
                     for (int i = 0; i < total; i++) {
@@ -644,18 +635,13 @@ public class LevelDBProvider implements LevelProvider {
                 } else {
                     for (int i = 0; i < total; i++) {
                         final ChunkSection section = sections[i];
-                        if (section == null) {
-                            byteBuf.writeBytes(emptySectionPayload(i + minSectionY));
-                        } else if (sectionPayloads != null) {
-                            final Chunk.SectionNetworkPayload sectionPayload = cacheChunk.getSectionNetworkPayload(section);
-                            sectionPayloads[i] = sectionPayload;
-                            byteBuf.writeBytes(sectionPayload.data());
-                        } else {
+                        if (section != null) {
                             section.writeToBuf(byteBuf);
+                        } else {
+                            byteBuf.writeBytes(emptySectionPayload(i + minSectionY));
                         }
                     }
                 }
-                final int tailStart = byteBuf.writerIndex();
 
                 // Write biomes
                 final var biomeSections = unsafeChunk.getBiomeSections();
@@ -671,6 +657,8 @@ public class LevelDBProvider implements LevelProvider {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
                         if (blockEntity instanceof BlockEntityMobSpawner spawner && !spawner.hasSpawnEntityType()) continue;
                         tagList.add(blockEntitySpawnable.getSpawnCompound());
+                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
+                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
                     }
                 }
                 try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf); final NBTOutputStream outputStream = NbtUtils.createNetworkWriter(stream)) {
@@ -684,10 +672,6 @@ public class LevelDBProvider implements LevelProvider {
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
-                if (sectionPayloads != null) {
-                    cacheChunk.setNetworkPayload(new Chunk.NetworkPayload(sectionPayloads, total,
-                            ByteBufUtil.getBytes(byteBuf, tailStart, byteBuf.writerIndex() - tailStart)));
-                }
                 data.set(byteBuf);
                 subChunkCountRef.set(total);
                 success = true;
@@ -699,27 +683,6 @@ public class LevelDBProvider implements LevelProvider {
             }
         });
         return Pair.of(data.get(), subChunkCountRef.get());
-    }
-
-    /**
-     * Copies a cached payload into one buffer. Section bytes are shared with the per-section
-     * cache, so only the tail is held per chunk.
-     */
-    private ByteBuf assembleCachedPayload(Chunk.NetworkPayload payload) {
-        final Chunk.SectionNetworkPayload[] sectionPayloads = payload.sections();
-        final int minSectionY = getDimensionData().getMinSectionY();
-        int size = payload.tail().length;
-        for (int i = 0; i < payload.subChunkCount(); i++) {
-            final Chunk.SectionNetworkPayload sectionPayload = sectionPayloads[i];
-            size += sectionPayload == null ? emptySectionPayload(i + minSectionY).length : sectionPayload.data().length;
-        }
-        final ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.ioBuffer(size);
-        for (int i = 0; i < payload.subChunkCount(); i++) {
-            final Chunk.SectionNetworkPayload sectionPayload = sectionPayloads[i];
-            byteBuf.writeBytes(sectionPayload == null ? emptySectionPayload(i + minSectionY) : sectionPayload.data());
-        }
-        byteBuf.writeBytes(payload.tail());
-        return byteBuf;
     }
 
     @Override
@@ -981,6 +944,11 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveChunks(Collection<IChunk> chunks) {
+        saveChunks(chunks, true);
+    }
+
+    @Override
+    public void saveChunks(Collection<IChunk> chunks, boolean parallel) {
         List<IChunk> changedChunks = chunks.stream()
                 .filter(IChunk::hasChanged)
                 .filter(chunk -> chunk.getGenerationState() == ChunkGenerationState.COMPLETE)
@@ -996,7 +964,7 @@ public class LevelDBProvider implements LevelProvider {
             Map<IChunk, Long> scheduledTickVersions = new ConcurrentHashMap<>();
             Map<IChunk, Long> randomTickVersions = new ConcurrentHashMap<>();
 
-            CompletableFuture.runAsync(() -> changedChunks.parallelStream().forEach(chunk -> {
+            Consumer<IChunk> serializer = chunk -> {
                 BiomeState biomeState = chunk.getBiomeState();
                 if (biomeState.hasStorageChanges()) {
                     biomeStateVersions.put(chunk, biomeState.getStorageChangeVersion());
@@ -1018,7 +986,13 @@ public class LevelDBProvider implements LevelProvider {
                 }
 
                 LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
-            }), Server.getInstance().getComputeThreadPool()).join();
+            };
+            if (parallel) {
+                CompletableFuture.runAsync(() -> changedChunks.parallelStream().forEach(serializer),
+                    Server.getInstance().getComputeThreadPool()).join();
+            } else {
+                changedChunks.forEach(serializer);
+            }
 
             helper.write(batch);
             helper.close();
@@ -1270,11 +1244,6 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void close() {
-        for (IChunk chunk : this.chunks.values()) {
-            if (chunk instanceof Chunk concreteChunk) {
-                concreteChunk.releaseNetworkPayloads();
-            }
-        }
         flushWorldDynamicProperties();
         storage.getWorldMetadata().unregisterDimension(getDimensionData().getDimensionId());
         storage.close();

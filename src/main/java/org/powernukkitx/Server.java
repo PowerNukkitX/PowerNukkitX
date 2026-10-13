@@ -1,6 +1,7 @@
 package org.powernukkitx;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
@@ -68,7 +69,6 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
-import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
@@ -95,6 +95,7 @@ import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
+import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.network.process.NetworkState;
 import org.powernukkitx.network.process.auth.ProxyAuthProvider;
 import org.powernukkitx.permission.BanEntry;
@@ -146,11 +147,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 /**
@@ -224,6 +229,8 @@ public class Server {
      * other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
+    private final ThreadPoolExecutor chunkIoExecutor;
+    private final LoginService loginService;
     private final ScheduledExecutorService levelTickExecutor;
     private final ScheduledExecutorService chunkPublisherExecutor;
     private final ChunkPublisherBudgetController chunkPublisherBudgetController;
@@ -300,6 +307,47 @@ public class Server {
 
     record PlayerDataRecord(CompoundTag nbt, CompoundTag pnxExtra, CompoundTag custom) {
     }
+
+    /**
+     * Player data read ahead of the player being created, see {@link #preloadPlayerData(UUID)}.
+     *
+     * @param uuid       the player the data belongs to
+     * @param record     the stored data, or {@code null} when the player has none yet
+     * @param writeCount the number of saves requested for this player when the data was read
+     */
+    @ApiStatus.Internal
+    public record PreloadedPlayerData(UUID uuid, @Nullable PlayerDataRecord record, long writeCount) {
+        /**
+         * @return the name of the level the player was last in, or {@code null} when unknown
+         */
+        public @Nullable String levelName() {
+            return this.record != null && this.record.pnxExtra().containsString("Level")
+                ? this.record.pnxExtra().getString("Level") : null;
+        }
+
+        /**
+         * @return the stored position of the player, or {@code null} when unknown
+         */
+        public @Nullable Vector3 position() {
+            if (this.record == null || !this.record.nbt().containsList("Pos")) {
+                return null;
+            }
+            ListTag<FloatTag> pos = this.record.nbt().getList("Pos", FloatTag.class);
+            return pos.size() == 3 ? new Vector3(pos.get(0).data, pos.get(1).data, pos.get(2).data) : null;
+        }
+    }
+
+    /**
+     * Save requests and completed writes per player, used to tell whether preloaded data is current.
+     */
+    private static final class PlayerDataWrites {
+        final AtomicLong requested = new AtomicLong();
+        final AtomicLong completed = new AtomicLong();
+    }
+
+    private final Map<UUID, PlayerDataWrites> playerDataWrites = new ConcurrentHashMap<>();
+    private static final int PLAYER_LIST_ENTRIES_PER_PACKET = 16;
+    private static final long PLAYER_DATA_WRITE_WAIT_MILLIS = 10_000L;
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
@@ -401,13 +449,22 @@ public class Server {
             }
         }
         this.settings.save();
-        Chunk.setNetworkPayloadBudgetMb(this.settings.chunkSettings().payloadCacheMemoryMb());
         while (updateConfiguration()) {
             /* repeat until all configuration updates are applied */
         }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+
+        int chunkIoThreads = this.settings.chunkSettings().chunkIoThreads();
+        if (chunkIoThreads <= 0) {
+            chunkIoThreads = Math.max(2, Runtime.getRuntime().availableProcessors() / 2);
+        }
+        this.chunkIoExecutor = new ThreadPoolExecutor(chunkIoThreads, chunkIoThreads, 30L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(),
+            new ThreadFactoryBuilder().setNameFormat("Chunk IO #%d").setDaemon(true).build());
+        this.chunkIoExecutor.allowCoreThreadTimeOut(true);
+        this.loginService = new LoginService(this.settings.networkSettings());
 
         int levelWorkerThreads = this.settings.levelSettings().levelWorkerThreads();
         if (levelWorkerThreads <= 0) {
@@ -1065,6 +1122,7 @@ public class Server {
         try {
             this.levelTickExecutor.shutdown();
             this.chunkPublisherExecutor.shutdown();
+            this.chunkIoExecutor.shutdown();
             this.chunkPublisherBudgetController.shutdown();
         } catch (Throwable e) {
             log.error("Exception while shutting down level tick executors", e);
@@ -1080,6 +1138,8 @@ public class Server {
         try {
             log.debug("Stopping network interfaces");
             network.shutdown();
+            // Player saves are written on the login service, so they have to land before the database closes
+            this.loginService.shutdown();
             serverDataDB.close();
         } catch (Throwable e) {
             log.error("Exception while stopping network interfaces", e);
@@ -1114,6 +1174,7 @@ public class Server {
     }
 
     public void start() {
+        this.loginService.warmUp();
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
             try {
                 this.network.blockAddress(InetAddress.getByName(entry.getName()));
@@ -2017,7 +2078,7 @@ public class Server {
      * @param player The player
      */
     public void sendFullPlayerListData(Player player) {
-        final PlayerListPacket pk = new PlayerListPacket();
+        PlayerListPacket pk = new PlayerListPacket();
 
         for (Player value : this.playerList.values()) {
             final PlayerListAddEntry entry = new PlayerListAddEntry();
@@ -2031,6 +2092,12 @@ public class Server {
             entry.setPlayerColor(value.getLocatorBarColor().getRGB());
 
             pk.getEntries().add(entry);
+            // Every entry carries a whole skin, so a full server would otherwise make one packet
+            // of many megabytes that has to be encoded and acknowledged in one go
+            if (pk.getEntries().size() >= PLAYER_LIST_ENTRIES_PER_PACKET) {
+                player.sendPacketImmediately(pk);
+                pk = new PlayerListPacket();
+            }
         }
         if (!pk.getEntries().isEmpty()) {
             player.sendPacketImmediately(pk);
@@ -2175,6 +2242,18 @@ public class Server {
         if (existing == null || !Arrays.equals(existing, array)) {
             serverDataDB.put(nameKey, array);
         }
+    }
+
+    /**
+     * The XUID a login identifies as, after the {@link ProxyAuthProvider} has had its say.
+     *
+     * @param info  the login of the player
+     * @param proxy the installed proxy authentication provider, or {@code null}
+     * @return the XUID, which may be empty for a login that is not signed by Xbox Live
+     */
+    public static String resolveXuid(Player.PlayerInfo info, @Nullable ProxyAuthProvider proxy) {
+        String xuid = info.getIdentityClaims().extraData.xuid;
+        return proxy != null ? proxy.getXuid(info.getClientChainData(), xuid) : xuid;
     }
 
     /**
@@ -2512,23 +2591,97 @@ public class Server {
     }
 
     void saveOfflinePlayerData(UUID uuid, CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, boolean async) {
-        if (this.getSettings().playerSettings().savePlayerData()) {
-            this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
-                final AtomicBoolean hasRun = new AtomicBoolean(false);
+        if (!this.getSettings().playerSettings().savePlayerData()) {
+            return;
+        }
+        final PlayerDataWrites writes = this.playerDataWrites.computeIfAbsent(uuid, ignored -> new PlayerDataWrites());
+        writes.requested.incrementAndGet();
 
-                @Override
-                public void onRun(int currentTick) {
-                    this.onCancel();
+        if (async) {
+            // The caller keeps using its tag, so the write works on a copy. The single player data
+            // thread keeps writes and the login reads that follow them in order.
+            final CompoundTag snapshot = tag.copy();
+            final Runnable write = () -> {
+                try {
+                    saveOfflinePlayerDataInternal(snapshot, pnxExtra, custom, uuid);
+                } catch (Exception e) {
+                    log.error("Failed to save player data for {}", uuid, e);
+                } finally {
+                    writes.completed.incrementAndGet();
                 }
+            };
+            try {
+                this.loginService.executePlayerData(write);
+            } catch (RejectedExecutionException e) {
+                // Shutting down: write on the caller rather than lose the data
+                write.run();
+            }
+            return;
+        }
 
-                @Override
-                public void onCancel() {
-                    if (!hasRun.getAndSet(true)) {
+        this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
+            final AtomicBoolean hasRun = new AtomicBoolean(false);
+
+            @Override
+            public void onRun(int currentTick) {
+                this.onCancel();
+            }
+
+            @Override
+            public void onCancel() {
+                if (!hasRun.getAndSet(true)) {
+                    try {
                         saveOfflinePlayerDataInternal(tag, pnxExtra, custom, uuid);
+                    } finally {
+                        writes.completed.incrementAndGet();
                     }
                 }
-            }, async);
+            }
+        }, false);
+    }
+
+    /**
+     * Reads a player's stored data ahead of creating the player. Runs on the player data thread
+     * of the {@link LoginService}, so it is ordered after every save requested before it.
+     * <p>
+     * Unlike {@link #getOfflinePlayerDataRecord(UUID, boolean)} this never creates data, since new
+     * player data needs a safe spawn position from the world.
+     *
+     * @return the data, or {@code null} when a save requested earlier has not been written yet
+     */
+    @ApiStatus.Internal
+    public @Nullable PreloadedPlayerData preloadPlayerData(UUID uuid) {
+        final PlayerDataWrites writes = this.playerDataWrites.get(uuid);
+        final long requested = writes != null ? writes.requested.get() : 0L;
+        if (writes != null && writes.completed.get() != requested) {
+            return null;
         }
+        return new PreloadedPlayerData(uuid, this.getOfflinePlayerDataRecord(uuid, false), requested);
+    }
+
+    /**
+     * Waits for this player's saves that are still queued on the player data thread, so a read
+     * that follows sees them. Saves scheduled on the main thread are not waited for, since the
+     * caller may be the main thread itself.
+     */
+    void awaitPlayerDataWrites(UUID uuid) {
+        final PlayerDataWrites writes = this.playerDataWrites.get(uuid);
+        if (writes == null || writes.completed.get() == writes.requested.get()) {
+            return;
+        }
+        if (!this.loginService.awaitPlayerData(PLAYER_DATA_WRITE_WAIT_MILLIS)) {
+            log.warn("Player data of {} was still being written after {} ms, it may load outdated",
+                uuid, PLAYER_DATA_WRITE_WAIT_MILLIS);
+        }
+    }
+
+    /**
+     * Whether preloaded data is still what storage holds, meaning no save of that player was
+     * requested since it was read.
+     */
+    boolean isPreloadCurrent(PreloadedPlayerData preloaded) {
+        final PlayerDataWrites writes = this.playerDataWrites.get(preloaded.uuid());
+        return (writes != null ? writes.requested.get() : 0L) == preloaded.writeCount();
     }
 
     private void saveOfflinePlayerDataInternal(CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, UUID uuid) {
@@ -3609,6 +3762,21 @@ public class Server {
 
     public ForkJoinPool getComputeThreadPool() {
         return computeThreadPool;
+    }
+
+    /**
+     * Executor that loads chunks from storage for {@link Level#getChunkAsync(int, int, boolean)}.
+     * Kept apart from the plugin {@link ServerScheduler#getAsyncTaskThreadPool() async pool}, which
+     * grows a thread per task, and from the compute pool, which world generation saturates.
+     */
+    @ApiStatus.Internal
+    public ThreadPoolExecutor getChunkIoExecutor() {
+        return chunkIoExecutor;
+    }
+
+    @ApiStatus.Internal
+    public LoginService getLoginService() {
+        return loginService;
     }
 
     /**
