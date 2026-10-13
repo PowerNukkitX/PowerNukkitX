@@ -13,6 +13,7 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSetting
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.PortalAxis;
 import org.powernukkitx.blockentity.BlockEntity;
+import org.powernukkitx.blockentity.BlockEntityMobSpawner;
 import org.powernukkitx.blockentity.BlockEntitySpawnable;
 import org.powernukkitx.config.category.GameplaySettings;
 import org.powernukkitx.config.category.LevelSettings;
@@ -6000,7 +6001,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (!chunk.isAvailable() || chunk.isDiscarded() || this.getChunkIfLoaded(x, z) != chunk) return false;
 
             player.sendChunk(x, z, levelChunkPacket);
-            return player.getPlayerChunkManager().isSentChunk(index);
+            if (!player.getPlayerChunkManager().isSentChunk(index)) return false;
+            if (!useSubChunkRequestSystem) {
+                sendChunkBlockEntities(chunk, player);
+            }
+            return true;
         } finally {
             if (closeCacheTransfer
                     && cacheTransfer != null
@@ -6186,10 +6191,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                                 player.sendChunk(x, z, levelChunkPacket);
 
                                 if (player.getPlayerChunkManager().isSentChunk(index)) {
+                                    if (!useSubChunkRequestSystem) {
+                                        sendChunkBlockEntities(chunk, player);
+                                    }
                                     completeChunkSendRequest(index, request);
                                 }
-
-                                //player.refreshBlockEntity(chunk);
                             } finally {
                                 if (closeCacheTransfer && cacheTransfer != null) {
                                     cacheTransfer.close();
@@ -6215,6 +6221,22 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 } else if (chunk == null) {
                     prepareChunkLightingForSend(x, z, false);
                 }
+            }
+        }
+    }
+
+    /**
+     * Sends the spawn packets of a chunk's spawnable block entities to one player, which the
+     * client needs in addition to the NBT carried by the chunk packet before some block
+     * entities render.
+     */
+    private void sendChunkBlockEntities(IChunk chunk, Player player) {
+        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+            if (blockEntity instanceof BlockEntitySpawnable spawnable) {
+                if (blockEntity instanceof BlockEntityMobSpawner spawner && !spawner.hasSpawnEntityType()) {
+                    continue;
+                }
+                spawnable.spawnTo(player);
             }
         }
     }
@@ -7099,10 +7121,14 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
             //gcDeadChunks
+            final long now = System.nanoTime();
             for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
                 long index = entry.getKey();
+                IChunk chunk = entry.getValue();
+                if (chunk instanceof Chunk concreteChunk) {
+                    concreteChunk.expireNetworkPayloads(now);
+                }
                 if (!this.unloadQueue.containsKey(index)) {
-                    IChunk chunk = entry.getValue();
                     int X = chunk.getX();
                     int Z = chunk.getZ();
                     this.unloadChunkRequest(X, Z, true);
