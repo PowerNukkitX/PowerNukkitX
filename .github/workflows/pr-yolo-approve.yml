@@ -1,0 +1,60 @@
+name: Approve PR on /yolo command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+jobs:
+  approve:
+    name: Approve pull request
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.issue.state == 'open' &&
+      startsWith(github.event.comment.body, '/yolo')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check command and commenter permission
+        id: auth
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BODY: ${{ github.event.comment.body }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+        run: |
+          # only the exact first line counts, so a stray "/yolo" in a longer comment does nothing
+          command=$(printf '%s' "$BODY" | head -n1 | tr -d '\r' | xargs)
+          if [ "$command" != "/yolo approve-pr" ]; then
+            echo "Not an approve command, skipping."
+            echo "allowed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          permission=$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$COMMENTER/permission" --jq .permission)
+          case "$permission" in
+            admin|maintain|write)
+              echo "allowed=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::notice::$COMMENTER has '$permission' permission, ignoring."
+              echo "allowed=false" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+      - name: Generate bot token
+        if: steps.auth.outputs.allowed == 'true'
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.PNX_BOT_APP_ID }}
+          private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
+
+      - name: Approve pull request
+        if: steps.auth.outputs.allowed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+        run: |
+          gh pr review "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --approve
