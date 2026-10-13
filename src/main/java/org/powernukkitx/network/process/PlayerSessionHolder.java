@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process;
 
+import io.netty.channel.Channel;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -35,6 +36,7 @@ import org.powernukkitx.config.category.network.RateLimitSettings;
 import org.powernukkitx.entity.data.property.EntityProperty;
 import org.powernukkitx.event.player.PlayerCreationEvent;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.network.HoldableServerSession;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -54,10 +56,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -105,6 +110,10 @@ public class PlayerSessionHolder {
     private volatile boolean disconnected = false;
     @Getter(AccessLevel.NONE)
     private final AtomicBoolean loginAdmitted = new AtomicBoolean();
+    @Getter(AccessLevel.NONE)
+    private final AtomicBoolean playerSlotReserved = new AtomicBoolean();
+    @Getter(AccessLevel.NONE)
+    private final AtomicBoolean playerDataPreloading = new AtomicBoolean();
 
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
@@ -116,12 +125,25 @@ public class PlayerSessionHolder {
 
     private static volatile ItemRegistryCache itemRegistryCache;
 
+    /** How often the stored player data is read again while a save of it is still on its way. */
+    private static final int MAX_PRELOAD_ATTEMPTS = 5;
+
+    /** Share of a tick a level spends creating joining players before the rest wait for the next tick. */
+    private static final int SPAWN_BUDGET_DIVISOR = 5;
+
+    /**
+     * Per level: the tick the spawn budget was last counted for, and the nanoseconds spent creating
+     * players in it. Only touched by the thread that ticks the level.
+     */
+    private static final Map<Level, long[]> SPAWN_BUDGETS = Collections.synchronizedMap(new WeakHashMap<>());
+
     /**
      * The item palette sent to every client, built once instead of per join. Rebuilt when items are
-     * registered after it was built.
+     * registered after it was built. Only the immutable definitions are shared; every client gets a
+     * packet of its own, since plugins may change a packet while it is sent.
      */
     private record ItemRegistryCache(int itemDataCount, int customItemCount, NbtMap itemComponents,
-                                     ItemRegistryPacket packet, DefinitionRegistry<ItemDefinition> definitions) {
+                                     List<ItemDefinition> itemDefinitions, DefinitionRegistry<ItemDefinition> definitions) {
         boolean matches() {
             return this.itemDataCount == ItemRuntimeIdRegistry.getITEMDATA().size()
                 && this.customItemCount == Registries.ITEM.getCustomItemDefinition().size()
@@ -131,29 +153,86 @@ public class PlayerSessionHolder {
 
     /**
      * Reserves one of the {@link LoginService} slots for this session while its login is verified,
-     * see {@link #releaseLogin(Server)}. The slot is freed when the session closes at the latest.
+     * or queues the login until a slot frees up, see {@link LoginService#admit}. The slot is freed by
+     * {@link #releaseLogin(Server)}, or when the session closes at the latest, and a queued login is
+     * dropped from the queue when the session closes first.
      *
-     * @return {@code false} when too many logins are already in progress
+     * @param onAdmitted run on the session's event loop once a queued login got its slot; not run
+     *                   when the login was admitted right away or refused
+     * @return whether the login holds a slot now, waits for one, or was refused
      */
-    public boolean tryAdmitLogin(Server server) {
+    public LoginService.Admission admitLogin(Server server, Runnable onAdmitted) {
         if (this.loginAdmitted.get()) {
+            return LoginService.Admission.ADMITTED;
+        }
+        final Channel channel = this.session.getPeer().getChannel();
+        final Runnable resume = () -> {
+            this.markLoginAdmitted(server);
+            try {
+                channel.eventLoop().execute(() -> {
+                    if (this.session.isConnected()) {
+                        onAdmitted.run();
+                    } else {
+                        this.releaseLogin(server);
+                    }
+                });
+            } catch (RejectedExecutionException e) {
+                this.releaseLogin(server);
+            }
+        };
+        final LoginService.Admission admission = server.getLoginService().admit(this.remoteAddress(), resume);
+        if (admission == LoginService.Admission.ADMITTED) {
+            this.markLoginAdmitted(server);
+        } else if (admission == LoginService.Admission.QUEUED) {
+            channel.closeFuture().addListener(_ -> server.getLoginService().cancelWaiting(resume));
+        }
+        return admission;
+    }
+
+    private void markLoginAdmitted(Server server) {
+        this.loginAdmitted.set(true);
+        this.session.getPeer().getChannel().closeFuture().addListener(_ -> this.releaseLogin(server));
+    }
+
+    /**
+     * Frees the login slot taken by {@link #admitLogin(Server, Runnable)}, if any. Safe to call more than once.
+     */
+    public void releaseLogin(Server server) {
+        if (this.loginAdmitted.compareAndSet(true, false)) {
+            server.getLoginService().release(this.remoteAddress());
+        }
+    }
+
+    /**
+     * Takes one of the {@code max-players} slots for this session until its player is online, see
+     * {@link LoginService#tryReservePlayerSlot(int, int)}. The slot is freed when the session
+     * closes at the latest.
+     *
+     * @return {@code false} when the server is full
+     */
+    public boolean tryReservePlayerSlot(Server server) {
+        if (this.playerSlotReserved.get()) {
             return true;
         }
-        if (!server.getLoginService().tryAdmit()) {
+        if (!server.getLoginService().tryReservePlayerSlot(server.getOnlinePlayers().size(), server.getMaxPlayers())) {
             return false;
         }
-        this.loginAdmitted.set(true);
-        this.session.getPeer().getChannel().closeFuture().addListener(future -> this.releaseLogin(server));
+        this.playerSlotReserved.set(true);
+        this.session.getPeer().getChannel().closeFuture().addListener(_ -> this.releasePlayerSlot(server));
         return true;
     }
 
     /**
-     * Frees the login slot taken by {@link #tryAdmitLogin(Server)}, if any. Safe to call more than once.
+     * Frees the slot taken by {@link #tryReservePlayerSlot(Server)}, if any. Safe to call more than once.
      */
-    public void releaseLogin(Server server) {
-        if (this.loginAdmitted.compareAndSet(true, false)) {
-            server.getLoginService().release();
+    public void releasePlayerSlot(Server server) {
+        if (this.playerSlotReserved.compareAndSet(true, false)) {
+            server.getLoginService().releasePlayerSlot();
         }
+    }
+
+    private @Nullable InetAddress remoteAddress() {
+        return this.session.getSocketAddress() instanceof InetSocketAddress inet ? inet.getAddress() : null;
     }
 
     public InternalPackManager getInternalPackManager() {
@@ -301,24 +380,46 @@ public class PlayerSessionHolder {
     public void beginSpawn(Server server) {
         this.setState(SessionState.SPAWNING);
         final UUID uuid = Server.uuidFromXUID(Server.resolveXuid(this.playerInfo, server.getProxyAuthProvider()));
+        server.beginPlayerDataPreload(uuid);
+        this.playerDataPreloading.set(true);
+        this.session.getPeer().getChannel().closeFuture().addListener(_ -> this.endPlayerDataPreload(server, uuid));
+        this.schedulePreload(server, uuid, 1);
+    }
+
+    private void schedulePreload(Server server, UUID uuid, int attempt) {
         try {
-            server.getLoginService().executePlayerData(() -> this.preloadAndSchedule(server, uuid));
+            server.getLoginService().executePlayerData(() -> this.preloadAndSchedule(server, uuid, attempt));
         } catch (RejectedExecutionException e) {
+            this.endPlayerDataPreload(server, uuid);
             this.disconnect(DisconnectFailReason.UNKNOWN, "Server is shutting down");
         }
     }
 
-    private void preloadAndSchedule(Server server, UUID uuid) {
+    private void endPlayerDataPreload(Server server, UUID uuid) {
+        if (this.playerDataPreloading.compareAndSet(true, false)) {
+            server.endPlayerDataPreload(uuid);
+        }
+    }
+
+    private void preloadAndSchedule(Server server, UUID uuid, int attempt) {
         if (!this.session.isConnected()) {
+            this.endPlayerDataPreload(server, uuid);
             return;
         }
 
         Server.PreloadedPlayerData preloaded = null;
+        boolean failed = false;
         try {
             preloaded = server.preloadPlayerData(uuid);
         } catch (Exception e) {
             // processLogin reads storage itself when nothing was preloaded
             log.warn("Failed to preload player data for {}", uuid, e);
+            failed = true;
+        }
+        if (preloaded == null && !failed && attempt < MAX_PRELOAD_ATTEMPTS) {
+            server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE,
+                () -> this.schedulePreload(server, uuid, attempt + 1), 1);
+            return;
         }
 
         final String levelName = preloaded != null ? preloaded.levelName() : null;
@@ -328,10 +429,35 @@ public class PlayerSessionHolder {
         final Server.PreloadedPlayerData data = preloaded;
 
         final CompletableFuture<?> spawnChunk = position != null
-            ? level.getChunkAsync((int) position.x >> 4, (int) position.z >> 4)
+            ? level.getChunkAsync(NukkitMath.floorDouble(position.x) >> 4, NukkitMath.floorDouble(position.z) >> 4)
             : CompletableFuture.completedFuture(null);
-        spawnChunk.whenComplete((ignored, error) ->
-            level.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> this.completeSpawn(server, data)));
+        spawnChunk.whenComplete((ignored, _) ->
+            level.getScheduler().scheduleTask(InternalPlugin.INSTANCE,
+                () -> this.spawnWithinBudget(server, level, () -> this.completeSpawn(server, uuid, data, attempt))));
+    }
+
+    /**
+     * Runs {@code spawn} on the level's thread unless the level has already spent its share of this
+     * tick on creating players, in which case it waits for the next tick. A burst of joins is spread
+     * over several ticks instead of stalling one; the first spawn of a tick always runs.
+     */
+    private void spawnWithinBudget(Server server, Level level, Runnable spawn) {
+        final long[] budget = SPAWN_BUDGETS.computeIfAbsent(level, _ -> new long[]{Long.MIN_VALUE, 0L});
+        final long tick = level.getTick();
+        if (budget[0] != tick) {
+            budget[0] = tick;
+            budget[1] = 0L;
+        } else if (budget[1] >= server.getNanosPerTick() / SPAWN_BUDGET_DIVISOR) {
+            level.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE,
+                () -> this.spawnWithinBudget(server, level, spawn), 1);
+            return;
+        }
+        final long start = System.nanoTime();
+        try {
+            spawn.run();
+        } finally {
+            budget[1] += System.nanoTime() - start;
+        }
     }
 
     /**
@@ -381,8 +507,13 @@ public class PlayerSessionHolder {
      * can spawn. A disconnect that happened meanwhile is handled here, because the network thread
      * leaves a session in {@link SessionState#SPAWNING} alone.
      */
-    private void completeSpawn(Server server, Server.PreloadedPlayerData preloaded) {
+    private void completeSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded, int attempt) {
         if (!this.session.isConnected()) {
+            this.endPlayerDataPreload(server, uuid);
+            return;
+        }
+        if (preloaded != null && !server.isPreloadCurrent(preloaded) && attempt < MAX_PRELOAD_ATTEMPTS) {
+            this.schedulePreload(server, uuid, attempt + 1);
             return;
         }
 
@@ -404,6 +535,7 @@ public class PlayerSessionHolder {
             }
         } finally {
             this.preloadedPlayerData = null;
+            this.endPlayerDataPreload(server, uuid);
             this.setState(SessionState.CHUNKS);
             if (holdable != null) {
                 holdable.releaseOutbound();
@@ -477,6 +609,7 @@ public class PlayerSessionHolder {
         this.player.sendPacketImmediately(gameRulesChangedPacket);
 
         server.addOnlinePlayer(this.player);
+        this.releasePlayerSlot(server);
         server.onPlayerCompleteLoginSequence(this.player);
 
         this.runInOutboundOrder(() -> {
@@ -624,12 +757,18 @@ public class PlayerSessionHolder {
     private void sendItemRegistry() {
         final ItemRegistryCache cache = itemRegistryCache();
         this.runInOutboundOrder(() -> this.session.getPeer().getCodecHelper().setItemDefinitions(cache.definitions()));
-        this.player.sendPacketImmediately(cache.packet());
+        final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
+        itemRegistryPacket.getItemData().addAll(cache.itemDefinitions());
+        this.player.sendPacketImmediately(itemRegistryPacket);
     }
 
     /**
      * Applies a codec helper change at the current point of the outbound stream, so packets sent
      * before it are still encoded without it. See {@link HoldableServerSession#runInOrder}.
+     * <p>
+     * Only a {@link HoldableServerSession} keeps that order when called off the session's event
+     * loop. Every transport PowerNukkitX binds creates one; a session of another kind gets the
+     * change applied right away.
      */
     private void runInOutboundOrder(Runnable action) {
         if (this.session instanceof HoldableServerSession holdable) {
@@ -674,14 +813,13 @@ public class PlayerSessionHolder {
                 );
             }
 
-            // Shared by every session: the packet and the registry are only read once built
-            final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-            itemRegistryPacket.getItemData().addAll(itemDefinitions);
+            // Shared by every session: the definitions and the registry are only read once built
             final DefinitionRegistry<ItemDefinition> itemDefinitionRegistry = new SimpleDefinitionRegistry.Builder<ItemDefinition>()
                 .addAll(itemDefinitions)
                 .build();
 
-            cache = new ItemRegistryCache(itemDataCount, customItemCount, itemComponents, itemRegistryPacket, itemDefinitionRegistry);
+            cache = new ItemRegistryCache(itemDataCount, customItemCount, itemComponents,
+                List.copyOf(itemDefinitions), itemDefinitionRegistry);
             itemRegistryCache = cache;
             return cache;
         }

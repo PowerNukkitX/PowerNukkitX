@@ -1,6 +1,7 @@
 package org.powernukkitx.level.generator;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import org.powernukkitx.Player;
 import org.powernukkitx.level.ChunkBuildOrderPolicy;
 import org.powernukkitx.level.Level;
@@ -53,8 +54,7 @@ public final class ChunkGenerationManager {
     private final ReentrantLock generationQueueLock = new ReentrantLock();
     private final Map<ChunkGenerationState, ChunkGenerationTask> tasksByState = new EnumMap<>(ChunkGenerationState.class);
     private final ConcurrentHashMap<Long, GenerationDemand> demands = new ConcurrentHashMap<>();
-    /** Chunks driven because a demand around them needs them, counted per demand. */
-    private final ConcurrentHashMap<Long, Integer> demandNeighborhoods = new ConcurrentHashMap<>();
+    private final Long2IntOpenHashMap demandNeighborhoods = new Long2IntOpenHashMap();
     private final ConcurrentHashMap<GenerationRequestKey, GenerationRequest> requests = new ConcurrentHashMap<>();
     private final ConcurrentLinkedDeque<GenerationRequest> pending = new ConcurrentLinkedDeque<>();
 
@@ -232,7 +232,9 @@ public final class ChunkGenerationManager {
                 final long chunkHash = Level.chunkHash(chunkX, chunkZ);
                 // Retained before it is acquired, so it never sits in the unload queue
                 level.retainGenerationTask(chunkHash);
-                demandNeighborhoods.merge(chunkHash, 1, Integer::sum);
+                synchronized (demandNeighborhoods) {
+                    demandNeighborhoods.addTo(chunkHash, 1);
+                }
                 try {
                     if (dx != 0 || dz != 0) {
                         onChunkViewAcquired(level.acquireGenerationChunk(chunkX, chunkZ));
@@ -251,7 +253,11 @@ public final class ChunkGenerationManager {
         for (int dx = -DEMAND_NEIGHBORHOOD_RADIUS; dx <= DEMAND_NEIGHBORHOOD_RADIUS; dx++) {
             for (int dz = -DEMAND_NEIGHBORHOOD_RADIUS; dz <= DEMAND_NEIGHBORHOOD_RADIUS; dz++) {
                 final long chunkHash = Level.chunkHash(demand.chunkX + dx, demand.chunkZ + dz);
-                demandNeighborhoods.computeIfPresent(chunkHash, (hash, count) -> count > 1 ? count - 1 : null);
+                synchronized (demandNeighborhoods) {
+                    if (demandNeighborhoods.addTo(chunkHash, -1) <= 1) {
+                        demandNeighborhoods.remove(chunkHash);
+                    }
+                }
                 level.releaseGenerationTask(chunkHash);
             }
         }
@@ -769,7 +775,13 @@ public final class ChunkGenerationManager {
     private boolean isCurrentChunk(Chunk chunk) {
         return isSameChunkIdentity(chunk)
                 && (level.isChunkViewRetained(chunk.getIndex()) || demands.containsKey(chunk.getIndex())
-                || demandNeighborhoods.containsKey(chunk.getIndex()));
+                || isInDemandNeighborhood(chunk.getIndex()));
+    }
+
+    private boolean isInDemandNeighborhood(long chunkHash) {
+        synchronized (demandNeighborhoods) {
+            return demandNeighborhoods.containsKey(chunkHash);
+        }
     }
 
     private boolean launch(Candidate candidate) {

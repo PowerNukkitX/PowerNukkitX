@@ -90,17 +90,22 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             return;
         }
 
-        // Refused before any cryptography, so a burst of joins is shed instead of queueing up
-        if (!holder.tryAdmitLogin(server)) {
-            failLogin(holder, server, DisconnectFailReason.SERVER_FULL, null);
-            return;
-        }
-
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
         final Credentials credentials = new Credentials(type, packet.getToken(), chain, packet.getClientJwt());
 
         holder.setState(SessionState.AUTHENTICATING);
 
+        // Admitted before any cryptography, so a burst of joins waits its turn instead of piling up
+        final LoginService.Admission admission = holder.admitLogin(server,
+            () -> this.validate(credentials, xboxAuthRequired, holder, server));
+        if (admission == LoginService.Admission.REFUSED) {
+            failLogin(holder, server, DisconnectFailReason.SERVER_FULL, null);
+        } else if (admission == LoginService.Admission.ADMITTED) {
+            this.validate(credentials, xboxAuthRequired, holder, server);
+        }
+    }
+
+    private void validate(Credentials credentials, boolean xboxAuthRequired, PlayerSessionHolder holder, Server server) {
         offLoop(holder, server,
             () -> validateChain(credentials, server, xboxAuthRequired),
             outcome -> applyChain(outcome, credentials, holder, server));
@@ -151,9 +156,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, DisconnectFailReason.UNKNOWN, event.getKickMessage());
             return;
         }
-        // Other logins in progress will take a slot too; this one is counted among them
-        final int otherPendingLogins = Math.max(0, server.getLoginService().getPendingLogins() - 1);
-        if (server.getOnlinePlayers().size() + otherPendingLogins >= server.getMaxPlayers()) {
+        if (!holder.tryReservePlayerSlot(server)) {
             failLogin(holder, server, DisconnectFailReason.SERVER_FULL, null);
             return;
         }
@@ -324,6 +327,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
      */
     private void failLogin(PlayerSessionHolder holder, Server server, DisconnectFailReason reason, @Nullable String message) {
         holder.releaseLogin(server);
+        holder.releasePlayerSlot(server);
         final PlayerLoginFailEvent sessionFailEvent = new PlayerLoginFailEvent(holder, reason);
         if (message != null) {
             sessionFailEvent.setDisconnectMessage(message);

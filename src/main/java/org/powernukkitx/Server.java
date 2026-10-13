@@ -146,6 +146,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -154,6 +155,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -190,6 +192,8 @@ import java.util.function.Function;
 public class Server {
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
+    private static final int PLAYER_LIST_ENTRIES_PER_PACKET = 16;
+    private static final long PLAYER_DATA_WRITE_WAIT_MILLIS = 10_000L;
     private static Server instance = null;
 
     private BanList banByName;
@@ -339,16 +343,23 @@ public class Server {
     }
 
     /**
-     * Save requests and completed writes per player, used to tell whether preloaded data is current.
+     * Save requests and completed writes of one player, used to tell whether preloaded data is
+     * current. An entry only exists while a save is outstanding or a login is preloading the
+     * player, so the counters never restart while somebody compares against them. Changed only
+     * inside {@link ConcurrentHashMap#compute}.
      */
     private static final class PlayerDataWrites {
         final AtomicLong requested = new AtomicLong();
         final AtomicLong completed = new AtomicLong();
+        int preloads;
+        volatile @Nullable CompletableFuture<Void> lastAsyncWrite;
+
+        boolean idle() {
+            return this.requested.get() == this.completed.get() && this.preloads == 0;
+        }
     }
 
-    private final Map<UUID, PlayerDataWrites> playerDataWrites = new ConcurrentHashMap<>();
-    private static final int PLAYER_LIST_ENTRIES_PER_PACKET = 16;
-    private static final long PLAYER_DATA_WRITE_WAIT_MILLIS = 10_000L;
+    private final ConcurrentHashMap<UUID, PlayerDataWrites> playerDataWrites = new ConcurrentHashMap<>();
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
@@ -2596,8 +2607,15 @@ public class Server {
         if (!this.getSettings().playerSettings().savePlayerData()) {
             return;
         }
-        final PlayerDataWrites writes = this.playerDataWrites.computeIfAbsent(uuid, ignored -> new PlayerDataWrites());
-        writes.requested.incrementAndGet();
+        final CompletableFuture<Void> written = async ? new CompletableFuture<>() : null;
+        this.playerDataWrites.compute(uuid, (_, writes) -> {
+            final PlayerDataWrites entry = writes != null ? writes : new PlayerDataWrites();
+            entry.requested.incrementAndGet();
+            if (written != null) {
+                entry.lastAsyncWrite = written;
+            }
+            return entry;
+        });
 
         if (async) {
             // The caller keeps using its tag, so the write works on a copy. The single player data
@@ -2609,7 +2627,8 @@ public class Server {
                 } catch (Exception e) {
                     log.error("Failed to save player data for {}", uuid, e);
                 } finally {
-                    writes.completed.incrementAndGet();
+                    this.completePlayerDataWrite(uuid);
+                    written.complete(null);
                 }
             };
             try {
@@ -2635,16 +2654,49 @@ public class Server {
                     try {
                         saveOfflinePlayerDataInternal(tag, pnxExtra, custom, uuid);
                     } finally {
-                        writes.completed.incrementAndGet();
+                        completePlayerDataWrite(uuid);
                     }
                 }
             }
         }, false);
     }
 
+    private void completePlayerDataWrite(UUID uuid) {
+        this.playerDataWrites.computeIfPresent(uuid, (_, writes) -> {
+            writes.completed.incrementAndGet();
+            return writes.idle() ? null : writes;
+        });
+    }
+
+    /**
+     * Marks that a login is about to preload this player's data, which keeps the save counters
+     * of the player around until {@link #endPlayerDataPreload(UUID)}. Every call must be paired
+     * with exactly one call to that method.
+     */
+    @ApiStatus.Internal
+    public void beginPlayerDataPreload(UUID uuid) {
+        this.playerDataWrites.compute(uuid, (_, writes) -> {
+            final PlayerDataWrites entry = writes != null ? writes : new PlayerDataWrites();
+            entry.preloads++;
+            return entry;
+        });
+    }
+
+    /**
+     * Ends what {@link #beginPlayerDataPreload(UUID)} started.
+     */
+    @ApiStatus.Internal
+    public void endPlayerDataPreload(UUID uuid) {
+        this.playerDataWrites.computeIfPresent(uuid, (_, writes) -> {
+            writes.preloads--;
+            return writes.idle() ? null : writes;
+        });
+    }
+
     /**
      * Reads a player's stored data ahead of creating the player. Runs on the player data thread
-     * of the {@link LoginService}, so it is ordered after every save requested before it.
+     * of the {@link LoginService}, so it is ordered after every save requested before it. The
+     * caller must have called {@link #beginPlayerDataPreload(UUID)} first.
      * <p>
      * Unlike {@link #getOfflinePlayerDataRecord(UUID, boolean)} this never creates data, since new
      * player data needs a safe spawn position from the world.
@@ -2658,32 +2710,42 @@ public class Server {
         if (writes != null && writes.completed.get() != requested) {
             return null;
         }
-        return new PreloadedPlayerData(uuid, this.getOfflinePlayerDataRecord(uuid, false), requested);
+        final PlayerDataRecord record = this.hasOfflinePlayerData(uuid) ? this.getOfflinePlayerDataRecord(uuid, false) : null;
+        return new PreloadedPlayerData(uuid, record, requested);
     }
 
     /**
-     * Waits for this player's saves that are still queued on the player data thread, so a read
-     * that follows sees them. Saves scheduled on the main thread are not waited for, since the
-     * caller may be the main thread itself.
+     * Waits for the last save of this player queued on the player data thread, so a read that
+     * follows sees it. Only this player's own write is waited for, not the whole queue. Saves
+     * scheduled on the main thread are not waited for, since the caller may be the main thread
+     * itself.
      */
     void awaitPlayerDataWrites(UUID uuid) {
         final PlayerDataWrites writes = this.playerDataWrites.get(uuid);
-        if (writes == null || writes.completed.get() == writes.requested.get()) {
+        final CompletableFuture<Void> pending = writes != null ? writes.lastAsyncWrite : null;
+        if (pending == null || pending.isDone()) {
             return;
         }
-        if (!this.loginService.awaitPlayerData(PLAYER_DATA_WRITE_WAIT_MILLIS)) {
+        try {
+            pending.get(PLAYER_DATA_WRITE_WAIT_MILLIS, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
             log.warn("Player data of {} was still being written after {} ms, it may load outdated",
                 uuid, PLAYER_DATA_WRITE_WAIT_MILLIS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            log.error("Waiting for the player data of {} failed", uuid, e);
         }
     }
 
     /**
      * Whether preloaded data is still what storage holds, meaning no save of that player was
-     * requested since it was read.
+     * requested since it was read. Data whose preload has already ended is never current.
      */
-    boolean isPreloadCurrent(PreloadedPlayerData preloaded) {
+    @ApiStatus.Internal
+    public boolean isPreloadCurrent(PreloadedPlayerData preloaded) {
         final PlayerDataWrites writes = this.playerDataWrites.get(preloaded.uuid());
-        return (writes != null ? writes.requested.get() : 0L) == preloaded.writeCount();
+        return writes != null && writes.requested.get() == preloaded.writeCount();
     }
 
     private void saveOfflinePlayerDataInternal(CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, UUID uuid) {

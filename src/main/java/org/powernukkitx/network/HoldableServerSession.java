@@ -36,6 +36,9 @@ public class HoldableServerSession extends BedrockServerSession {
      * Runs {@code action} at this point of the outbound stream: right away when nothing is held,
      * otherwise on the event loop between the held packets around it. Meant for changes to the
      * codec helper that the packets after them depend on.
+     * <p>
+     * When nothing is held the action runs on the calling thread, so off the event loop it is only
+     * ordered against packets while the session is held.
      */
     public void runInOrder(Runnable action) {
         synchronized (this.holdLock) {
@@ -93,11 +96,18 @@ public class HoldableServerSession extends BedrockServerSession {
     }
 
     private void flushHeld() {
-        synchronized (this.holdLock) {
-            final List<Held> entries = this.held;
-            this.held = null;
-            if (entries == null) {
-                return;
+        while (true) {
+            final List<Held> entries;
+            synchronized (this.holdLock) {
+                if (this.held == null) {
+                    return;
+                }
+                if (this.held.isEmpty()) {
+                    this.held = null;
+                    return;
+                }
+                entries = this.held;
+                this.held = new ArrayList<>();
             }
             // On the event loop, immediate packets are written inline and queued ones wait for the
             // next session tick, which is the order an event loop caller would have produced

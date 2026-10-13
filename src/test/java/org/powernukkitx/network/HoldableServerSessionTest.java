@@ -108,6 +108,29 @@ class HoldableServerSessionTest {
     }
 
     @Test
+    void packetsSentWhileFlushingQueueBehindTheHeldOnes() {
+        StartGamePacket startGame = new StartGamePacket();
+        SetTimePacket heldLast = new SetTimePacket();
+        SetTimePacket sentDuringFlush = new SetTimePacket();
+
+        this.session.holdOutbound();
+        this.session.sendPacketImmediately(startGame);
+        this.session.runInOrder(() -> this.session.sendPacket(sentDuringFlush));
+        this.session.sendPacket(heldLast);
+        this.session.releaseOutbound();
+        this.eventLoopTasks.getFirst().run();
+
+        InOrder inOrder = inOrder(this.peer);
+        inOrder.verify(this.peer).sendPacketImmediately(anyInt(), anyInt(), same(startGame));
+        inOrder.verify(this.peer).sendPacket(anyInt(), anyInt(), same(heldLast));
+        inOrder.verify(this.peer).sendPacket(anyInt(), anyInt(), same(sentDuringFlush));
+
+        SetTimePacket after = new SetTimePacket();
+        this.session.sendPacket(after);
+        verify(this.peer).sendPacket(anyInt(), anyInt(), same(after));
+    }
+
+    @Test
     void releaseWithoutHoldDoesNothing() {
         this.session.releaseOutbound();
         Assertions.assertTrue(this.eventLoopTasks.isEmpty());

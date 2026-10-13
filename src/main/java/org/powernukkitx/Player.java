@@ -1241,11 +1241,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Installs the dispatcher used to handle this player's inbound packets. Set once by the network
-     * layer; lets {@link #drainInboundPackets} run a packet through the full handle path without the
-     * player owning that logic.
-     */
-    /**
      * Hands over player data read off the level thread before this player was created, so
      * {@link #processLogin()} does not read storage itself. Ignored when it is stale by then.
      *
@@ -1256,6 +1251,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.preloadedPlayerData = preloaded;
     }
 
+    /**
+     * Installs the dispatcher used to handle this player's inbound packets. Set once by the network
+     * layer; lets {@link #drainInboundPackets} run a packet through the full handle path without the
+     * player owning that logic.
+     */
     public void setInboundProcessor(Consumer<BedrockPacket> processor) {
         this.inboundProcessor = processor;
     }

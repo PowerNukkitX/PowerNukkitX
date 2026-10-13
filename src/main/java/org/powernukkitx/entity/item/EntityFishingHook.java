@@ -324,7 +324,7 @@ public class EntityFishingHook extends SlenderProjectile {
             ownerId = this.shootingEntity.uniqueIdLong();
         }
         this.actorDataMap.put(ActorDataTypes.OWNER, ownerId);
-        pk.setActorData(this.actorDataMap);
+        pk.setActorData(this.snapshotActorDataMap());
         return pk;
     }
 

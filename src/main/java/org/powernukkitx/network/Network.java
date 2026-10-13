@@ -571,7 +571,7 @@ public class Network implements NetworkInterface, SignalingService {
         if (this.provider != null) {
             this.provider.close();
         }
-        if (this.channel != null) {
+        if (this.channel != null && this.rakChannels.isEmpty()) {
             this.channel.close();
         }
         for (Channel rakChannel : this.rakChannels) {

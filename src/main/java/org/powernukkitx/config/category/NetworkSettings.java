@@ -56,6 +56,10 @@ public class NetworkSettings extends OkaeriConfig {
     boolean checkLoginTime = false;
     @Comment("pnx.settings.network.maxpendinglogins")
     int maxPendingLogins = 0;
+    @Comment("pnx.settings.network.maxpendingloginsperaddress")
+    int maxPendingLoginsPerAddress = 4;
+    @Comment("pnx.settings.network.maxqueuedlogins")
+    int maxQueuedLogins = 0;
     @Comment("pnx.settings.network.loginthreads")
     int loginThreads = 0;
 
