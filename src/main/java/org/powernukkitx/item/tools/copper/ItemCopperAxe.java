@@ -1,34 +1,18 @@
 package org.powernukkitx.item.tools.copper;
 
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemCopperAxe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(4)
+            .axe(true)
+            .canBreakShield(true)
+            .maxDurability(ItemTool.DURABILITY_COPPER)
+            .tier(WEARABLE_TIER_COPPER)
+            .build();
+
     public ItemCopperAxe() {
-        super(COPPER_AXE);
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_COPPER;
-    }
-
-    @Override
-    public boolean isAxe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return WEARABLE_TIER_COPPER;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 4;
-    }
-
-    @Override
-    public boolean canBreakShield() {
-        return true;
+        super(COPPER_AXE, DEFINITION);
     }
 }

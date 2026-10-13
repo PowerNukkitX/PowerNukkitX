@@ -1,29 +1,17 @@
 package org.powernukkitx.item.tools.copper;
 
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemCopperSword extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(4)
+            .maxDurability(ItemTool.DURABILITY_COPPER)
+            .sword(true)
+            .tier(WEARABLE_TIER_COPPER)
+            .build();
+
     public ItemCopperSword() {
-        super(COPPER_SWORD);
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_COPPER;
-    }
-
-    @Override
-    public boolean isSword() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return WEARABLE_TIER_COPPER;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 4;
+        super(COPPER_SWORD, DEFINITION);
     }
 }

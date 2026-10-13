@@ -1,24 +1,29 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 /**
  * ItemFish
  */
 public class ItemCod extends ItemFish {
+    public static final ItemDefinition DEFINITION = ItemFish.DEFINITION.toBuilder()
+            .nutrition(2)
+            .saturation(0.4f)
+            .build();
+
     public ItemCod() {
-        super(COD, 0, 1);
+        this(COD, 0, 1, DEFINITION);
+    }
+
+    public ItemCod(ItemDefinition definition) {
+        this(COD, 0, 1, definition);
     }
 
     protected ItemCod(String id, Integer meta, int count) {
-        super(id, meta, count);
+        this(id, meta, count, DEFINITION);
     }
 
-    @Override
-    public int getNutrition() {
-        return 2;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 0.4F;
+    protected ItemCod(String id, Integer meta, int count, ItemDefinition definition) {
+        super(id, meta, count, definition);
     }
 }

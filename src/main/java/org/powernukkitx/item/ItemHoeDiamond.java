@@ -1,9 +1,16 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemHoeDiamond extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .hoe(true)
+            .maxDurability(ItemTool.DURABILITY_DIAMOND)
+            .tier(ItemTool.TIER_DIAMOND)
+            .build();
 
     public ItemHoeDiamond() {
         this(0, 1);
@@ -14,21 +21,6 @@ public class ItemHoeDiamond extends ItemTool {
     }
 
     public ItemHoeDiamond(Integer meta, int count) {
-        super(DIAMOND_HOE, meta, count, "Diamond Hoe");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_DIAMOND;
-    }
-
-    @Override
-    public boolean isHoe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_DIAMOND;
+        super(DIAMOND_HOE, meta, count, "Diamond Hoe", DEFINITION);
     }
 }

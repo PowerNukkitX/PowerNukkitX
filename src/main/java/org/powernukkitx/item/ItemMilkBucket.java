@@ -3,29 +3,25 @@ package org.powernukkitx.item;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.player.PlayerItemConsumeEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.Vector3;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 
 public class ItemMilkBucket extends ItemBucket {
+    public static final ItemDefinition DEFINITION = ItemBucket.DEFINITION.toBuilder()
+            .consumable(true)
+            .usingTicks(31)
+            .build();
+
     public ItemMilkBucket() {
-        super(MILK_BUCKET);
+        super(MILK_BUCKET, DEFINITION);
     }
 
     @Override
     public void setDamage(int meta) {
 
-    }
-
-    @Override
-    public boolean isConsumable() {
-        return true;
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 31;
     }
 
     @Override

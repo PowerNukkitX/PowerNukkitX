@@ -1,30 +1,17 @@
 package org.powernukkitx.item.armor.copper;
 
 import org.powernukkitx.item.ItemArmor;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 public class ItemCopperLeggings extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(3)
+            .leggings(true)
+            .maxDurability(166)
+            .tier(WEARABLE_TIER_COPPER)
+            .build();
+
     public ItemCopperLeggings() {
-        super(COPPER_LEGGINGS);
+        super(COPPER_LEGGINGS, DEFINITION);
     }
-
-    @Override
-    public boolean isLeggings() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return WEARABLE_TIER_COPPER;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 3;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 166;
-    }
-
 }
