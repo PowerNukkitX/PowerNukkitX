@@ -96,6 +96,7 @@ import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
+import org.powernukkitx.network.SharedPacket;
 import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.network.process.NetworkState;
 import org.powernukkitx.network.process.auth.ProxyAuthProvider;
@@ -1774,8 +1775,9 @@ public class Server {
      * @see #broadcastPacket(Player[], BedrockPacket)
      */
     public static void broadcastPacket(Collection<Player> players, BedrockPacket packet) {
+        final BedrockPacket shared = SharedPacket.forBroadcast(packet, players.size());
         for (Player player : players) {
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
     }
 
@@ -1786,8 +1788,9 @@ public class Server {
      * @param packet  The data packet
      */
     public static void broadcastPacket(Player[] players, BedrockPacket packet) {
+        final BedrockPacket shared = SharedPacket.forBroadcast(packet, players.length);
         for (Player player : players) {
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
     }
 

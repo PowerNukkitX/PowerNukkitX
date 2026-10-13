@@ -482,6 +482,11 @@ public class Network implements NetworkInterface, SignalingService {
             "badPacketHandler",
             new BadPacketHandler(session)
         );
+        session.getPeer().getChannel().pipeline().addAfter(
+            BedrockPacketCodec.NAME,
+            SharedPacketEncoder.NAME,
+            new SharedPacketEncoder()
+        );
 
         final InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
         if (this.getState() == NetworkState.STARTING || this.getState() == NetworkState.STOPPING) {

@@ -326,7 +326,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         this.actorDataMap.put(ActorDataTypes.POSE_INDEX, pose);
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.setTargetRuntimeID(this.runtimeId());
-        packet.setActorData(this.getActorDataMap());
+        packet.setActorData(this.snapshotActorDataMap());
         Server.getInstance().getOnlinePlayers().values().forEach(all -> all.sendPacket(packet));
     }
 

@@ -72,6 +72,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.network.SharedPacket;
 import org.powernukkitx.plugin.Plugin;
 import org.powernukkitx.registry.EntityRegistry;
 import org.powernukkitx.registry.Registries;
@@ -1752,14 +1753,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
         packet.getSyncedProperties().getIntProperties().addAll(syncData.getIntProperties());
 
+        final BedrockPacket shared = SharedPacket.forBroadcast(packet, players.length);
         for (Player player : players) {
             if (player == this) {
                 continue;
             }
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
         if (this instanceof Player player) {
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
     }
 
