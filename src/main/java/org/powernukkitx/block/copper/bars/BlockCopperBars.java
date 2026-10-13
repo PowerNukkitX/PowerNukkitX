@@ -1,6 +1,9 @@
 package org.powernukkitx.block.copper.bars;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
@@ -18,7 +21,16 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  * @since 1.21.110
  */
 public class BlockCopperBars extends BlockCopperBarBase implements BlockConnectable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_BARS);
+    public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_BARS, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
+    public static final BlockDefinition DEFINITION = BlockCopperBarBase.DEFINITION.toBuilder()
+            .hardness(5)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .isSolid(false)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -30,7 +42,11 @@ public class BlockCopperBars extends BlockCopperBarBase implements BlockConnecta
     }
 
     public BlockCopperBars(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCopperBars(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -39,49 +55,15 @@ public class BlockCopperBars extends BlockCopperBarBase implements BlockConnecta
     }
 
     @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+        return new ItemBlock(new BlockCopperBars(), 0);
     }
 
     /**
      * @see BlockThin
      */
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
@@ -126,8 +108,10 @@ public class BlockCopperBars extends BlockCopperBarBase implements BlockConnecta
                  CYAN_STAINED_GLASS_PANE, GRAY_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE,
                  LIGHT_BLUE_STAINED_GLASS_PANE, LIGHT_GRAY_STAINED_GLASS_PANE, LIME_STAINED_GLASS_PANE,
                  MAGENTA_STAINED_GLASS_PANE, ORANGE_STAINED_GLASS_PANE, PINK_STAINED_GLASS_PANE, PURPLE_STAINED_GLASS_PANE,
-                 RED_STAINED_GLASS_PANE, WHITE_STAINED_GLASS_PANE, YELLOW_STAINED_GLASS_PANE, IRON_BARS, COBBLESTONE_WALL, COBBLED_DEEPSLATE_WALL ->
-                    true;
+                 RED_STAINED_GLASS_PANE, WHITE_STAINED_GLASS_PANE, YELLOW_STAINED_GLASS_PANE, IRON_BARS,
+                 COPPER_BARS, EXPOSED_COPPER_BARS, WEATHERED_COPPER_BARS, OXIDIZED_COPPER_BARS,
+                 WAXED_COPPER_BARS, WAXED_EXPOSED_COPPER_BARS, WAXED_WEATHERED_COPPER_BARS, WAXED_OXIDIZED_COPPER_BARS,
+                 COBBLESTONE_WALL, COBBLED_DEEPSLATE_WALL -> true;
             default -> {
                 if (block instanceof BlockTrapdoor trapdoor) {
                     yield trapdoor.isOpen() && trapdoor.getBlockFace() == calculateFace(this, trapdoor);

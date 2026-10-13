@@ -63,7 +63,7 @@ public abstract class EntityProjectile extends Entity {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
-            this.setDataProperty(ActorDataTypes.OWNER, shootingEntity.getId());
+            this.setDataProperty(ActorDataTypes.OWNER, shootingEntity.uniqueIdLong());
         }
     }
 
@@ -157,7 +157,7 @@ public abstract class EntityProjectile extends Entity {
             this.age = this.getNbt().getShort("Age");
         }
 
-        if (this.nbt.contains("ench")) {
+        if (this.usesProjectileEnchantmentListNbt() && this.nbt.contains("ench")) {
             ListTag<CompoundTag> enchs = this.getNbt().getList("ench", CompoundTag.class);
             this.enchantments = new Enchantment[enchs.size()];
             for (int i = 0; i < enchs.size(); i++) {
@@ -179,7 +179,7 @@ public abstract class EntityProjectile extends Entity {
             this.nbt.putShort("Age", this.age);
         }
 
-        if (this.enchantments != null && this.enchantments.length > 0) {
+        if (this.usesProjectileEnchantmentListNbt() && this.enchantments != null && this.enchantments.length > 0) {
             ListTag<CompoundTag> enchs = new ListTag<>();
             for (Enchantment enchantment : this.enchantments) {
                 enchs.add(new CompoundTag()
@@ -189,6 +189,10 @@ public abstract class EntityProjectile extends Entity {
             }
             this.nbt.putList("ench", enchs);
         }
+    }
+
+    protected boolean usesProjectileEnchantmentListNbt() {
+        return true;
     }
 
     protected void updateMotion() {
@@ -357,6 +361,12 @@ public abstract class EntityProjectile extends Entity {
     public void spawnToAll() {
         super.spawnToAll();
         //vibration: minecraft:projectile_shoot
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.shootingEntity, this.getVector3(), VibrationType.PROJECTILE_SHOOT));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(
+                this.shootingEntity,
+                this.getVector3(),
+                VibrationType.PROJECTILE_SHOOT,
+                this.uniqueIdLong(),
+                this.shootingEntity != null ? this.shootingEntity.uniqueIdLong() : 0L
+        ));
     }
 }

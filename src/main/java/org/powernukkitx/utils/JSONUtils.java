@@ -20,16 +20,18 @@ import lombok.Setter;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +144,7 @@ public class JSONUtils {
      * JSON deserialization
      */
     public static <V> V from(File file, Class<V> type) {
-        try (FileReader fileReader = new FileReader(file);
+        try (Reader fileReader = Files.newBufferedReader(file.toPath());
             JsonReader jsonReader = new JsonReader(fileReader)) {
             return GSON.fromJson(jsonReader, type);
         } catch (IOException e) {
@@ -154,7 +156,7 @@ public class JSONUtils {
      * JSON deserialization
      */
     public static <V> V from(File file, TypeToken<V> typeToken) {
-        try (FileReader fileReader = new FileReader(file);
+        try (Reader fileReader = Files.newBufferedReader(file.toPath());
              JsonReader jsonReader = new JsonReader(fileReader)) {
             return GSON.fromJson(jsonReader, typeToken.getType());
         } catch (IOException e) {
@@ -166,7 +168,7 @@ public class JSONUtils {
      * JSON deserialization（List）
      */
     public static <V> List<V> fromList(File file, Class<V> type) {
-        try (FileReader fileReader = new FileReader(file);
+        try (Reader fileReader = Files.newBufferedReader(file.toPath());
              JsonReader jsonReader = new JsonReader(fileReader)) {
             TypeToken<List<V>> typeToken = (TypeToken<List<V>>) com.google.gson.reflect.TypeToken.getParameterized(ArrayList.class, type);
             return GSON.fromJson(jsonReader, typeToken.getType());
@@ -260,7 +262,7 @@ public class JSONUtils {
      * Lenient JSON deserialization
      */
     public static <V> V fromLenient(File file, Class<V> type) {
-        try (FileReader fileReader = new FileReader(file);
+        try (Reader fileReader = Files.newBufferedReader(file.toPath());
             JsonReader jsonReader = new JsonReader(fileReader)) {
             jsonReader.setLenient(true);
             return GSON.fromJson(jsonReader, type);
@@ -273,7 +275,7 @@ public class JSONUtils {
      * Lenient JSON deserialization（List）
      */
     public static <V> List<V> fromListLenient(File file, Class<V> type) {
-        try (FileReader fileReader = new FileReader(file);
+        try (Reader fileReader = Files.newBufferedReader(file.toPath());
             JsonReader jsonReader = new JsonReader(fileReader)) {
             jsonReader.setLenient(true);
             TypeToken<List<V>> typeToken = (TypeToken<List<V>>) com.google.gson.reflect.TypeToken.getParameterized(ArrayList.class, type);
@@ -380,7 +382,7 @@ public class JSONUtils {
      * Serialize as a file
      */
     public static <V> void toFile(String path, List<V> list) {
-        try (FileWriter fileWriter = new FileWriter(path, true); JsonWriter jsonWriter = new JsonWriter(fileWriter)) {
+        try (Writer fileWriter = Files.newBufferedWriter(Path.of(path), StandardOpenOption.CREATE, StandardOpenOption.APPEND); JsonWriter jsonWriter = new JsonWriter(fileWriter)) {
             GSON.toJson(list, new TypeToken<List<V>>() {
             }.getType(), jsonWriter);
             jsonWriter.flush();
@@ -403,7 +405,7 @@ public class JSONUtils {
      * Serialize to JSON file
      */
     public static <V> void toFile(String path, V v, Consumer<JsonWriter> jsonWriterConfigurator) {
-        try (FileWriter fileWriter = new FileWriter(path, true); JsonWriter jsonWriter = new JsonWriter(fileWriter)) {
+        try (Writer fileWriter = Files.newBufferedWriter(Path.of(path), StandardOpenOption.CREATE, StandardOpenOption.APPEND); JsonWriter jsonWriter = new JsonWriter(fileWriter)) {
             if (jsonWriterConfigurator != null) jsonWriterConfigurator.accept(jsonWriter);
             GSON.toJson(v, v.getClass(), jsonWriter);
             jsonWriter.flush();

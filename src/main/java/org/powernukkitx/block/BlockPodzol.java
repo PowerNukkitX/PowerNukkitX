@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -13,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockPodzol extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(PODZOL);
+    public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
+            .canSilkTouch(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -20,11 +25,11 @@ public class BlockPodzol extends BlockDirt {
     }
 
     public BlockPodzol() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockPodzol(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -32,11 +37,7 @@ public class BlockPodzol extends BlockDirt {
         return "Podzol";
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isShovel()) {

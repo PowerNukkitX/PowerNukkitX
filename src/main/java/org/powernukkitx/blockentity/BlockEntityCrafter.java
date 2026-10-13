@@ -26,16 +26,16 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.nbt.contains("disabledSlots")) {
-            this.nbt.putShort("disabledSlots", (short) 0);
+        if (!this.nbt.contains("disabled_slots")) {
+            this.nbt.putShort("disabled_slots", (short) 0);
         }
-        this.getInventory().setLockedBitMask(this.getNbt().getShort("disabledSlots"));
+        this.getInventory().setLockedBitMask(this.getNbt().getShort("disabled_slots"));
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putShort("disabledSlots", (short) getInventory().getLockedBitMask());
+        this.nbt.putShort("disabled_slots", (short) getInventory().getLockedBitMask());
     }
 
     @Override

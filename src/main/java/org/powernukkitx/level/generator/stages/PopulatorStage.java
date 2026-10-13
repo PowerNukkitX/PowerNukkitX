@@ -1,6 +1,5 @@
 package org.powernukkitx.level.generator.stages;
 
-import org.powernukkitx.level.format.ChunkState;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateStage;
 import org.powernukkitx.level.generator.object.BlockManager;
@@ -15,7 +14,6 @@ public abstract class PopulatorStage extends GenerateStage {
 
     @Override
     public final void apply(ChunkGenerateContext context) {
-        context.getChunk().setChunkState(ChunkState.POPULATED);
         BlockManager root = new BlockManager(context.getLevel());
         for(String name : populators()) {
             try {
@@ -26,10 +24,24 @@ public abstract class PopulatorStage extends GenerateStage {
                 log.error("Error while applying populator {}", name, e);
             }
         }
+        beforeApplyBlocks(context, root);
         if (!root.getBlocks().isEmpty()) {
             root.applySubChunkUpdate();
             root.getBlocks().forEach(block -> block.getChunk().setChanged());
         }
+        afterApplyBlocks(context, root);
+    }
+
+    /**
+     * Runs after populators finish and before queued generated blocks are committed.
+     */
+    protected void beforeApplyBlocks(ChunkGenerateContext context, BlockManager root) {
+    }
+
+    /**
+     * Runs after queued generated blocks are committed.
+     */
+    protected void afterApplyBlocks(ChunkGenerateContext context, BlockManager root) {
     }
 
     public abstract ObjectArraySet<String> populators();

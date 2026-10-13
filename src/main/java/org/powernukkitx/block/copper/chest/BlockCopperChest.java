@@ -2,6 +2,7 @@ package org.powernukkitx.block.copper.chest;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
@@ -18,6 +19,12 @@ import javax.annotation.Nullable;
  */
 public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable {
     public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = BlockChest.DEFINITION.toBuilder()
+            .hardness(3)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_STONE)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -29,7 +36,11 @@ public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable 
     }
 
     public BlockCopperChest(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockCopperChest(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -49,26 +60,6 @@ public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable 
             return true;
         }
         return super.onActivate(item, player, blockFace, fx, fy, fz);
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
     }
 
     @Override

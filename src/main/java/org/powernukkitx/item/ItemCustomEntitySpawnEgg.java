@@ -14,7 +14,6 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.Identifier;
@@ -113,8 +112,8 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
             nbt.putString("CustomName", this.getCustomName());
         }
         if (this.entityNBT != null) {
-            this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
-            this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
+            this.entityNBT.putList("Pos", nbt.getList("Pos", FloatTag.class));
+            this.entityNBT.putList("Motion", nbt.getList("Motion", FloatTag.class));
             this.entityNBT.putList("Rotation", nbt.getList("Rotation", FloatTag.class));
             nbt = this.entityNBT;
         }

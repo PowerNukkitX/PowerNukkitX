@@ -12,6 +12,11 @@ public class EffectPoison extends Effect {
     }
 
     @Override
+    public boolean canBeApplied(Entity entity) {
+        return !entity.isUndead();
+    }
+
+    @Override
     public int getInterval() {
         return 25 >> this.getAmplifier();
     }

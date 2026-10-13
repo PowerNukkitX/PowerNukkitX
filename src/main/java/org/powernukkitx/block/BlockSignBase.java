@@ -20,6 +20,7 @@ import org.powernukkitx.utils.BlockColor;
 import org.powernukkitx.utils.Faceable;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,23 +28,23 @@ import java.util.Objects;
 
 
 public abstract class BlockSignBase extends BlockTransparent implements Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1)
+            .resistance(5)
+            .isSolid(false)
+            .toolType(ItemTool.TYPE_AXE)
+            .breaksWhenMoved(true)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
+
     public BlockSignBase(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
+    public BlockSignBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -56,15 +57,23 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
         return 1;
     }
 
+    /**
+     * Ignores sign interactions without a player because editing and item use require one.
+     *
+     * @param player the interacting player, or {@code null} if no player is available
+     */
     @Override
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
+        if (player == null) {
+            return;
+        }
         if(action== PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
             var blockEntity = this.getLevel().getBlockEntity(this);
             if (!(blockEntity instanceof BlockEntitySign sign)) {
                 return;
             }
             // If a sign is waxed, it cannot be modified.
-            if (sign.isWaxed() || (Objects.requireNonNull(player).isSneaking() && !Objects.equals(item.getId(), AIR))) {
+            if (sign.isWaxed() || (player.isSneaking() && !Objects.equals(item.getId(), AIR))) {
                 level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), SoundEvent.WAXED_SIGN_INTERACT_FAIL);
                 return;
             }
@@ -136,11 +145,6 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
         }
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
     public CompassRoseDirection getSignDirection() {
         return CompassRoseDirection.from(getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION));
     }
@@ -157,15 +161,5 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     @Override
     public void setBlockFace(BlockFace face) {
         setSignDirection(face.getCompassRoseDirection());
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 }

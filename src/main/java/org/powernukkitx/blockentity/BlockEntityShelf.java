@@ -25,24 +25,38 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
         this.inventory = new ShelfInventory(this);
 
-        if (!this.nbt.containsList("Items")) {
-            this.nbt.putList("Items", new ListTag<CompoundTag>());
-        }
-
         ListTag<CompoundTag> itemsTag = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < itemsTag.size(); i++) {
             if (i >= this.getSize()) break;
             this.inventory.setItemInternal(i, ItemHelper.read(itemsTag.get(i)));
         }
+
+        if (itemsTag.size() == 0) {
+            this.nbt.remove("Items");
+        }
+
         this.scheduleComparatorOutputUpdate();
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", new ListTag<CompoundTag>());
+
+        ListTag<CompoundTag> items = new ListTag<>();
+        boolean hasItems = false;
+
         for (int index = 0; index < this.getSize(); index++) {
-            this.setItem(index, this.inventory.getItem(index));
+            Item item = this.inventory.getItem(index);
+            if (!item.isNull() && item.getCount() > 0) {
+                hasItems = true;
+            }
+            items.add(ItemHelper.write(item));
+        }
+
+        if (hasItems) {
+            this.nbt.putList("Items", items);
+        } else {
+            this.nbt.remove("Items");
         }
     }
 

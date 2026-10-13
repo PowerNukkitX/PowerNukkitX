@@ -7,15 +7,7 @@ import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityPhysical;
 import org.powernukkitx.entity.item.EntityBoat;
-import org.powernukkitx.event.player.PlayerHackDetectedEvent;
-import org.powernukkitx.event.player.PlayerJumpEvent;
-import org.powernukkitx.event.player.PlayerKickEvent;
-import org.powernukkitx.event.player.PlayerToggleCrawlEvent;
-import org.powernukkitx.event.player.PlayerToggleFlightEvent;
-import org.powernukkitx.event.player.PlayerToggleGlideEvent;
-import org.powernukkitx.event.player.PlayerToggleSneakEvent;
-import org.powernukkitx.event.player.PlayerToggleSprintEvent;
-import org.powernukkitx.event.player.PlayerToggleSwimEvent;
+import org.powernukkitx.event.player.*;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
@@ -235,31 +227,41 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     private static void handleBlockActionsAndItemStackRequest(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server, Player player) {
         // the override toggle ensures that an external source implements server authoritative block breaking, defaults to false
         if (!packet.getPlayerBlockActions().isEmpty() && !server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
+            final PlayerHandle playerHandle = new PlayerHandle(player);
             for (PlayerBlockActionData action : packet.getPlayerBlockActions()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
+                    // fire only sends START_DESTROY_BLOCK, so extinguish it before filtering the action out
+                    Vector3 hitPos = Vector3.fromNetwork(action.getBlockPosition().toFloat());
+                    BlockFace hitFace = BlockFace.fromIndex(action.getFacing());
+                    if (Player.getFireAt(player.getLevel().getBlock(hitPos), hitFace) != null) {
+                        player.onBlockBreakStart(hitPos, hitFace);
+                    }
                     continue;
                 }
                 Vector3i blockPos = action.getBlockPosition();
                 BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
-                PlayerHandle playerHandle = new PlayerHandle(player);
-                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getPlayerActionType() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
-                        action.getPlayerActionType() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
-                    playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
-                }
-
                 PlayerBlockActionData lastAction = playerHandle.getLastBlockAction();
                 BlockVector3 lastBreakPos = lastAction == null ? null : BlockVector3.fromNetwork(lastAction.getBlockPosition());
-                if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
+                boolean blockPositionChanged = lastBreakPos != null
+                        && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ());
+                if (blockPositionChanged) {
                     //When a block is broken instantaneous, the client sometimes just sends a START_DESTROY_BLOCK, but never completes or aborts it. On the client side, the block is also broken.
                     double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTime(player.getInventory().getItemInMainHand(), player);
                     boolean canCompleteBreak = Long.sum(player.lastBreak, (long) (breakTime * 1000)) <= System.currentTimeMillis() + 50;
-                    if (canCompleteBreak && lastAction.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
+                    if (canCompleteBreak && player.isBreakingBlock()
+                            && lastAction.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {
                         player.onBlockBreakComplete(lastBreakPos, BlockFace.fromIndex(lastAction.getFacing()));
                     } else {
                         playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
                     }
-                    player.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
+                }
+
+                boolean continueAfterPrediction = lastAction != null
+                        && lastAction.getPlayerActionType() == PlayerActionType.PREDICT_DESTROY_BLOCK;
+                if (action.getPlayerActionType() == PlayerActionType.CONTINUE_DESTROY_BLOCK
+                        && (blockPositionChanged || continueAfterPrediction)) {
+                    playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
                 }
 
                 switch (action.getPlayerActionType()) {
@@ -297,7 +299,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
         Long clientPredictedVehicle = pk.getClientPredictedVehicle();
         if (clientPredictedVehicle == null || clientPredictedVehicle == 0L) return;
-        if (clientPredictedVehicle.longValue() != vehicle.getId()) return;
+        if (clientPredictedVehicle.longValue() != vehicle.runtimeId()) return;
 
         Vector3f pos = Vector3f.fromNetwork(pk.getPosition());
 

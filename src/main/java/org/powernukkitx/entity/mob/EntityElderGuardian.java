@@ -29,6 +29,8 @@ import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.enchantment.Enchantment;
+import org.powernukkitx.item.randomitem.Fishing;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -41,6 +43,7 @@ import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -137,15 +140,39 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        int shards = Utils.rand(0, 2 + looting);
+        if (shards > 0) {
+            drops.add(Item.get(Item.PRISMARINE_SHARD, 0, shards));
+        }
+
         int secondLoot = ThreadLocalRandom.current().nextInt(6);
-        return new Item[]{
-                Item.get(Item.PRISMARINE_SHARD, 0, Utils.rand(0, 2)),
-                Item.get(Block.WET_SPONGE, 0, 1),
-                ThreadLocalRandom.current().nextInt(100) < 20 ? Item.get(Item.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, 0, 1) : Item.AIR,
-                ThreadLocalRandom.current().nextInt(1000) < 25 ? Item.get(Item.COD, 0, 1) : Item.AIR,
-                secondLoot <= 2 ? Item.get(Item.COD, 0, Utils.rand(0, 1)) : Item.AIR,
-                secondLoot > 2 && secondLoot <= 4 ? Item.get(Item.PRISMARINE_CRYSTALS, 0, Utils.rand(0, 1)) : Item.AIR
-        };
+        if (secondLoot <= 2) {
+            drops.add(Item.get(Item.COD, 0, 1 + Utils.rand(0, looting)));
+        } else if (secondLoot <= 4) {
+            drops.add(Item.get(Item.PRISMARINE_CRYSTALS, 0, 1 + Utils.rand(0, looting)));
+        }
+
+        if (killedByPlayer()) {
+            drops.add(Item.get(Block.WET_SPONGE, 0, 1));
+
+            if (Utils.rand(0, 999) < (25 + looting * 10)) {
+                drops.add(Fishing.getRandomFish());
+            }
+        }
+
+        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+            drops.add(Item.get(Item.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, 0, 1));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

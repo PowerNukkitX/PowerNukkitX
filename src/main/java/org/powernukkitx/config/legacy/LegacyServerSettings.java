@@ -131,12 +131,10 @@ public final class LegacyServerSettings extends OkaeriConfig {
         int chunksPerTicks = 40;
         @Comment("nukkit.server.settings.chunkSettings.tickRadius")
         int tickRadius = 3;
-        @Comment("nukkit.server.settings.chunkSettings.lightUpdates")
-        boolean lightUpdates = true;
         @Comment("nukkit.server.settings.chunkSettings.clearTickList")
         boolean clearTickList = false;
         @Comment("nukkit.server.settings.chunkSettings.generationQueueSize")
-        int generationQueueSize = 128;
+        int generationQueueSize = -1;
     }
 
     @EqualsAndHashCode(callSuper = true)

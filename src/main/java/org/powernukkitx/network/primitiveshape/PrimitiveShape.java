@@ -85,7 +85,7 @@ public abstract class PrimitiveShape<T extends PrimitiveShape<T>> {
     }
 
     public T attachTo(Entity entity) {
-        this.attachedToEntityId = entity.getId();
+        this.attachedToEntityId = entity.runtimeId();
         return self();
     }
 

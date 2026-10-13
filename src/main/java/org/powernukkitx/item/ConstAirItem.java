@@ -87,7 +87,8 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public void setCount(int count) {
+    public Item setCount(int count) {
+        return this;
     }
 
     @Override

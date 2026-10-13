@@ -5,23 +5,25 @@ import org.powernukkitx.level.generator.noise.minecraft.noise.Noise;
 import org.powernukkitx.utils.random.RandomSourceProvider;
 
 public class PerlinNoiseSampler extends Noise {
-    private static final double[] FLAT_SIMPLEX_GRAD = new double[] {
-            1, 1, 0, 0,
-            -1, 1, 0, 0,
-            1, -1, 0, 0,
-            -1, -1, 0, 0,
-            1, 0, 1, 0,
-            -1, 0, 1, 0,
-            1, 0, -1, 0,
-            -1, 0, -1, 0,
-            0, 1, 1, 0,
-            0, -1, 1, 0,
-            0, 1, -1, 0,
-            0, -1, -1, 0,
-            1, 1, 0, 0,
-            0, -1, 1, 0,
-            -1, 1, 0, 0,
-            0, -1, -1, 0,
+    private static final double[] GRAD_X = new double[] {
+            1, -1, 1, -1,
+            1, -1, 1, -1,
+            0, 0, 0, 0,
+            1, 0, -1, 0
+    };
+
+    private static final double[] GRAD_Y = new double[] {
+            1, 1, -1, -1,
+            0, 0, 0, 0,
+            1, -1, 1, -1,
+            1, -1, 1, -1
+    };
+
+    private static final double[] GRAD_Z = new double[] {
+            0, 0, 0, 0,
+            1, 1, -1, -1,
+            1, 1, -1, -1,
+            0, 1, 0, -1
     };
 
     public PerlinNoiseSampler(RandomSourceProvider rand) {
@@ -70,25 +72,25 @@ public class PerlinNoiseSampler extends Noise {
         int var17 = (var9 + sectionZ + 1) & 0xFF;
         int var18 = (var10 + sectionZ + 1) & 0xFF;
         int var19 = (var11 + sectionZ + 1) & 0xFF;
-        int var20 = (permutation[var12] & 15) << 2;
-        int var21 = (permutation[var13] & 15) << 2;
-        int var22 = (permutation[var14] & 15) << 2;
-        int var23 = (permutation[var15] & 15) << 2;
-        int var24 = (permutation[var16] & 15) << 2;
-        int var25 = (permutation[var17] & 15) << 2;
-        int var26 = (permutation[var18] & 15) << 2;
-        int var27 = (permutation[var19] & 15) << 2;
+        int var20 = permutation[var12] & 15;
+        int var21 = permutation[var13] & 15;
+        int var22 = permutation[var14] & 15;
+        int var23 = permutation[var15] & 15;
+        int var24 = permutation[var16] & 15;
+        int var25 = permutation[var17] & 15;
+        int var26 = permutation[var18] & 15;
+        int var27 = permutation[var19] & 15;
         double xMinusOne = localX - 1.0D;
         double yMinusOne = localY - 1.0D;
         double zMinusOne = localZ - 1.0D;
-        double grad000 = FLAT_SIMPLEX_GRAD[var20] * localX + FLAT_SIMPLEX_GRAD[var20 | 1] * localY + FLAT_SIMPLEX_GRAD[var20 | 2] * localZ;
-        double grad100 = FLAT_SIMPLEX_GRAD[var21] * xMinusOne + FLAT_SIMPLEX_GRAD[var21 | 1] * localY + FLAT_SIMPLEX_GRAD[var21 | 2] * localZ;
-        double grad010 = FLAT_SIMPLEX_GRAD[var22] * localX + FLAT_SIMPLEX_GRAD[var22 | 1] * yMinusOne + FLAT_SIMPLEX_GRAD[var22 | 2] * localZ;
-        double grad110 = FLAT_SIMPLEX_GRAD[var23] * xMinusOne + FLAT_SIMPLEX_GRAD[var23 | 1] * yMinusOne + FLAT_SIMPLEX_GRAD[var23 | 2] * localZ;
-        double grad001 = FLAT_SIMPLEX_GRAD[var24] * localX + FLAT_SIMPLEX_GRAD[var24 | 1] * localY + FLAT_SIMPLEX_GRAD[var24 | 2] * zMinusOne;
-        double grad101 = FLAT_SIMPLEX_GRAD[var25] * xMinusOne + FLAT_SIMPLEX_GRAD[var25 | 1] * localY + FLAT_SIMPLEX_GRAD[var25 | 2] * zMinusOne;
-        double grad011 = FLAT_SIMPLEX_GRAD[var26] * localX + FLAT_SIMPLEX_GRAD[var26 | 1] * yMinusOne + FLAT_SIMPLEX_GRAD[var26 | 2] * zMinusOne;
-        double grad111 = FLAT_SIMPLEX_GRAD[var27] * xMinusOne + FLAT_SIMPLEX_GRAD[var27 | 1] * yMinusOne + FLAT_SIMPLEX_GRAD[var27 | 2] * zMinusOne;
+        double grad000 = GRAD_X[var20] * localX + GRAD_Y[var20] * localY + GRAD_Z[var20] * localZ;
+        double grad100 = GRAD_X[var21] * xMinusOne + GRAD_Y[var21] * localY + GRAD_Z[var21] * localZ;
+        double grad010 = GRAD_X[var22] * localX + GRAD_Y[var22] * yMinusOne + GRAD_Z[var22] * localZ;
+        double grad110 = GRAD_X[var23] * xMinusOne + GRAD_Y[var23] * yMinusOne + GRAD_Z[var23] * localZ;
+        double grad001 = GRAD_X[var24] * localX + GRAD_Y[var24] * localY + GRAD_Z[var24] * zMinusOne;
+        double grad101 = GRAD_X[var25] * xMinusOne + GRAD_Y[var25] * localY + GRAD_Z[var25] * zMinusOne;
+        double grad011 = GRAD_X[var26] * localX + GRAD_Y[var26] * yMinusOne + GRAD_Z[var26] * zMinusOne;
+        double grad111 = GRAD_X[var27] * xMinusOne + GRAD_Y[var27] * yMinusOne + GRAD_Z[var27] * zMinusOne;
 
         double fadeX = localX * localX * localX * (localX * (localX * 6.0D - 15.0D) + 10.0D);
         double fadeY = fadeLocalY * fadeLocalY * fadeLocalY * (fadeLocalY * (fadeLocalY * 6.0D - 15.0D) + 10.0D);

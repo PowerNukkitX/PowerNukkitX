@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
@@ -109,7 +109,7 @@ public final class PluginI18nManager {
             assert files != null;
             int count = 0;
             for (var f : files) {
-                try (InputStream inputStream = new FileInputStream(f)) {
+                try (InputStream inputStream = Files.newInputStream(f.toPath())) {
                     i18n.reloadLang(LangCode.from(f.getName().replace(".json", "")), inputStream);
                     count++;
                 } catch (IOException e) {
@@ -167,7 +167,7 @@ public final class PluginI18nManager {
             assert files != null;
             var pluginMultiLanguage = new PluginI18n(plugin);
             for (var f : files) {
-                try (InputStream inputStream = new FileInputStream(f)) {
+                try (InputStream inputStream = Files.newInputStream(f.toPath())) {
                     pluginMultiLanguage.addLang(LangCode.from(f.getName().replace(".json", "")), inputStream);
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);

@@ -1,6 +1,5 @@
 package org.powernukkitx.level.generator.stages;
 
-import org.powernukkitx.level.format.ChunkState;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateStage;
@@ -22,6 +21,5 @@ public class VoidGenerateStage extends GenerateStage {
                 chunk.setHeightMap(x, z, minHeight);
             }
         }
-        chunk.setChunkState(ChunkState.POPULATED);
     }
 }

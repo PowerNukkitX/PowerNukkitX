@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.BambooLeafSize;
 import org.powernukkitx.block.property.enums.BambooStalkThickness;
@@ -28,13 +30,22 @@ import static org.powernukkitx.block.property.enums.BambooLeafSize.SMALL_LEAVES;
 
 public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.FlowerPotBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(BAMBOO, AGE_BIT, BAMBOO_LEAF_SIZE, BAMBOO_STALK_THICKNESS);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(5)
+            .toolType(ItemTool.TYPE_AXE)
+            .canPassThrough(true)
+            .breaksWhenMoved(true)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
 
     public BlockBamboo() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockBamboo(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -89,6 +100,11 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         return false;
     }
 
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
     public int countHeight() {
         int count = 0;
         Optional<Block> opt;
@@ -121,7 +137,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
             if (player != null) {
                 final AnimatePacket animatePacket = new AnimatePacket();
                 animatePacket.setAction(AnimatePacket.Action.SWING);
-                animatePacket.setTargetRuntimeID(player.getId());
+                animatePacket.setTargetRuntimeID(player.runtimeId());
                 this.getLevel().addChunkPacket(player.getChunkX(), player.getChunkZ(), animatePacket);
             }
             setBambooLeafSize(BambooLeafSize.SMALL_LEAVES);
@@ -204,11 +220,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         return super.onBreak(item);
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
+    
     private boolean isSupportInvalid() {
         return switch (down().getId()) {
             case BAMBOO, DIRT, GRASS_BLOCK, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK, MUD,
@@ -220,16 +232,6 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockBamboo());
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
     }
 
     public boolean isThick() {
@@ -248,11 +250,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         setPropertyValue(BAMBOO_STALK_THICKNESS, value);
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
+    
     public BambooLeafSize getBambooLeafSize() {
         return getPropertyValue(BAMBOO_LEAF_SIZE);
     }
@@ -261,11 +259,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         setPropertyValue(BAMBOO_LEAF_SIZE, bambooLeafSize);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
@@ -324,13 +318,5 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         setPropertyValue(AGE_BIT, age == 1);
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
+    
     }
-
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-}

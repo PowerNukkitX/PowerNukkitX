@@ -8,7 +8,6 @@ import org.powernukkitx.entity.item.EntityChestBoat;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -69,14 +68,14 @@ public class ItemChestBoat extends Item {
         if (block instanceof BlockFlowingWater) block = block.up();
         EntityChestBoat boat = (EntityChestBoat) Entity.createEntity(Entity.CHEST_BOAT,
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
-                        .putList("Pos", new ListTag<DoubleTag>()
-                                .add(new DoubleTag(block.getX() + 0.5))
-                                .add(new DoubleTag(block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
-                                .add(new DoubleTag(block.getZ() + 0.5)))
-                        .putList("Motion", new ListTag<DoubleTag>()
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0)))
+                        .putList("Pos", new ListTag<FloatTag>()
+                                .add(new FloatTag(block.getX() + 0.5))
+                                .add(new FloatTag(block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
+                                .add(new FloatTag(block.getZ() + 0.5)))
+                        .putList("Motion", new ListTag<FloatTag>()
+                                .add(new FloatTag(0))
+                                .add(new FloatTag(0))
+                                .add(new FloatTag(0)))
                         .putList("Rotation", new ListTag<FloatTag>()
                                 .add(new FloatTag((float) ((player.yaw + 90f) % 360)))
                                 .add(new FloatTag(0)))

@@ -2,6 +2,7 @@ package org.powernukkitx.entity.passive;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behavior.Behavior;
 import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
@@ -35,6 +36,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +48,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class EntityCamelHusk extends EntityCamel {
+public class EntityCamelHusk extends EntityCamel implements EntitySmite {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -124,6 +126,11 @@ public class EntityCamelHusk extends EntityCamel {
     }
 
     @Override
+    public boolean isUndead() {
+        return true;
+    }
+
+    @Override
     public @Nullable BreedableComponent getComponentBreedable() {
         return null;
     }
@@ -169,11 +176,9 @@ public class EntityCamelHusk extends EntityCamel {
         ArrayList<Item> drops = new ArrayList<>();
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-        if (Utils.rand(0, 2) != 0) {
-            int rottenFlesh = Utils.rand(2, 3 + looting);
-            if (rottenFlesh > 0) {
-                drops.add(Item.get(Item.ROTTEN_FLESH, 0, rottenFlesh));
-            }
+        int rottenFlesh = Utils.rand(2, 3 + looting);
+        if (rottenFlesh > 0) {
+            drops.add(Item.get(Item.ROTTEN_FLESH, 0, rottenFlesh));
         }
 
         // Drop Ride Inventory
@@ -245,12 +250,12 @@ public class EntityCamelHusk extends EntityCamel {
 
         if (entityId.equals(Entity.HUSK)) {
             Item ironSpear = Item.get(Item.IRON_SPEAR, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(ironSpear));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(ironSpear)));
             nbt.putBoolean(NBT_HUSK_RIDER, true);
         }
         if (entityId.equals(Entity.PARCHED)) {
             Item bow = Item.get(Item.BOW, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(bow));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(bow)));
         }
 
         Entity newEntity = Entity.createEntity(entityId, this.getChunk(), nbt);

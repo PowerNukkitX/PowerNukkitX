@@ -2,10 +2,7 @@ package org.powernukkitx.level.generator.populator.normal;
 
 import org.powernukkitx.block.*;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.entity.effect.PotionType;
-import org.powernukkitx.entity.mob.EntityZombieVillagerV2;
-import org.powernukkitx.entity.passive.EntityVillagerV2;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemPotion;
 import org.powernukkitx.item.ItemSplashPotion;
@@ -16,29 +13,32 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
+import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
-import org.powernukkitx.nbt.tag.FloatTag;
-import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 
-import java.util.Random;
+import java.util.List;
+
+import static org.powernukkitx.block.property.CommonBlockProperties.HEIGHT;
 
 public class IglooPopulator extends Populator implements PopulatorStructure {
 
     public static final String NAME = "normal_igloo";
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
-            .salt(14357618L)
+    public static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(14357617L)
             .minDistance(8)
             .maxDistance(32)
+            .biomeSampleOffset(3)
             .isBiomeValid(biome -> biome == BiomeID.ICE_PLAINS || biome == BiomeID.COLD_TAIGA || biome == BiomeID.SNOWY_SLOPES)
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.LINEAR);
 
     protected final PNXStructure TOP = (PNXStructure) Registries.STRUCTURE.get("igloo/top");
     protected final PNXStructure MIDDLE = (PNXStructure) Registries.STRUCTURE.get("igloo/middle");
@@ -67,17 +67,18 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
                 for (int z = 2; z < size.getZ() + 2; z++) {
                     int y = chunk.getHeightMap(x, z);
 
-                    Block block = chunk.getBlockState(x, y, z).toBlock();
-                    while (block.canBeReplaced() && y > 64) {
-                        block = chunk.getBlockState(x, --y, z).toBlock();
+                    BlockState state = chunk.getBlockState(x, y, z);
+                    while (isReplaceableSurface(chunk, x, y, z, state) && y > 64) {
+                        state = chunk.getBlockState(x, --y, z);
                     }
 
                     sumY += Math.max(64, y);
                     blockCount++;
                 }
             }
+            int structureY = sumY / blockCount - 1;
             BlockManager object = new BlockManager(level);
-            BlockVector3 vec = new BlockVector3(chunkX << 4, sumY / blockCount, (chunkZ << 4) + 2);
+            BlockVector3 vec = new BlockVector3(chunkX << 4, structureY + 1, (chunkZ << 4) + 2);
             TOP.preparePlace(new Position(vec.x, vec.y, vec.z, level), object);
             if (hasLaboratory) {
 
@@ -128,8 +129,27 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
                     });
                 }
             }
+            StructureAabbVolumes.addDynamic(
+                    level,
+                    "minecraft:igloo",
+                    List.of(new BoundingBox(
+                            chunkX << 4,
+                            structureY,
+                            chunkZ << 4,
+                            (chunkX << 4) + 6,
+                            structureY + 4,
+                            (chunkZ << 4) + 7
+                    ))
+            );
             queueObject(chunk, object);
         }
+    }
+
+    private static boolean isReplaceableSurface(IChunk chunk, int x, int y, int z, BlockState state) {
+        if (BlockID.SNOW_LAYER.equals(state.getIdentifier())) {
+            return state.getPropertyValue(HEIGHT) < HEIGHT.getMax() && chunk.getBlockState(x, y, z, 1).equals(BlockAir.STATE);
+        }
+        return state.toBlock().canBeReplaced();
     }
 
     @Override

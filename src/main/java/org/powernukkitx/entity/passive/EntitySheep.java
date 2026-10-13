@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.EntityID;
+import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityShearable;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.behavior.Behavior;
@@ -53,7 +54,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
+public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable, EntityInteractable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -187,7 +188,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         this.setDataFlag(ActorFlags.SHEARED, true);
 
         Item woolItem = this.getWoolItem();
-        woolItem.setCount(ThreadLocalRandom.current().nextInt(2) + 1);
+        woolItem.setCount(Utils.rand(1, 3));
         this.level.dropItem(this, woolItem);
 
         level.addSound(this, Sound.MOB_SHEEP_SHEAR);
@@ -198,6 +199,23 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     public void growWool() {
         this.setDataFlag(ActorFlags.SHEARED, false);
         this.sheared = false;
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        Item held = player.getInventory().getItemInMainHand();
+        if (held instanceof ItemDye) {
+            return "action.interact.dye";
+        }
+        if (held.isShears() && !this.sheared && !this.isBaby()) {
+            return "action.interact.shear";
+        }
+        return "";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
+        return true;
     }
 
     @Override

@@ -1,10 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBeeNest extends BlockBeehive {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEE_NEST, CommonBlockProperties.DIRECTION, CommonBlockProperties.HONEY_LEVEL);
+    public static final BlockDefinition DEFINITION = BlockBeehive.DEFINITION.toBuilder()
+            .hardness(0.3)
+            .resistance(1.5)
+            .burnChance(30)
+            .burnAbility(60)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +24,7 @@ public class BlockBeeNest extends BlockBeehive {
     }
 
     public BlockBeeNest(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,23 +32,4 @@ public class BlockBeeNest extends BlockBeehive {
         return "Bee Nest";
     }
 
-    @Override
-    public int getBurnChance() {
-        return 30;
     }
-
-    @Override
-    public int getBurnAbility() {
-        return 60;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-}

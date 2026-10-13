@@ -64,13 +64,13 @@ public class PiglinTradeExecutor implements EntityControl, IBehaviorExecutor {
 
     public Item getDrop() {
         Item item;
-        int random = ThreadLocalRandom.current().nextInt(459);
+        int random = ThreadLocalRandom.current().nextInt(469);
         if(random < 5) {
             item = Item.get(Item.ENCHANTED_BOOK);
-            item.addEnchantment(Enchantment.get(Enchantment.ID_SOUL_SPEED).setLevel(ThreadLocalRandom.current().nextInt(1, 3)));
+            item.addEnchantment(Enchantment.get(Enchantment.ID_SOUL_SPEED).setLevel(ThreadLocalRandom.current().nextInt(1, 4)));
         } else if(random < 13) {
             item = Item.get(Item.IRON_BOOTS);
-            item.addEnchantment(Enchantment.get(Enchantment.ID_SOUL_SPEED).setLevel(ThreadLocalRandom.current().nextInt(1, 3)));
+            item.addEnchantment(Enchantment.get(Enchantment.ID_SOUL_SPEED).setLevel(ThreadLocalRandom.current().nextInt(1, 4)));
         } else if(random < 21) {
             item = Item.get(Item.SPLASH_POTION, EffectType.FIRE_RESISTANCE.id());
         } else if(random < 29) {
@@ -98,11 +98,13 @@ public class PiglinTradeExecutor implements EntityControl, IBehaviorExecutor {
         } else if(random < 339) {
             item = Item.get(Item.NETHERBRICK, 0 , ThreadLocalRandom.current().nextInt(2, 9));
         } else if(random < 379) {
-            item = Item.get(Item.ARROW, 0 , ThreadLocalRandom.current().nextInt(6, 12));
+            item = Item.get(Item.ARROW, 0 , ThreadLocalRandom.current().nextInt(6, 13));
         } else if(random < 419) {
             item = Item.get(Block.GRAVEL, 0 , ThreadLocalRandom.current().nextInt(8, 17));
-        } else {
+        } else if(random < 459) {
             item = Item.get(Block.BLACKSTONE, 0 , ThreadLocalRandom.current().nextInt(8, 17));
+        } else {
+            item = Item.get(Block.DRIED_GHAST);
         }
         return item;
     }

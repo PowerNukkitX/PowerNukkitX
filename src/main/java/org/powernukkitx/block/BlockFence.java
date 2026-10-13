@@ -1,8 +1,16 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.Player;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
+import org.powernukkitx.block.definition.BlockDefinition;
 
 import static org.powernukkitx.math.VectorMath.calculateFace;
 
@@ -11,28 +19,21 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  * @since 2015/12/7
  */
 public abstract class BlockFence extends BlockTransparent implements BlockConnectable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_AXE)
+            .burnChance(5)
+            .burnAbility(20)
+            .waterloggingLevel(1)
+            .build();
+
     public BlockFence(BlockState blockState) {
-        super(blockState);
+        this(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
+    public BlockFence(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -46,23 +47,13 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
         double w = west ? 0 : 0.375;
         double e = east ? 1 : 0.625;
         return new SimpleAxisAlignedBB(
-                this.x + w,
-                this.y,
-                this.z + n,
-                this.x + e,
-                this.y + 1.5,
-                this.z + s
+            this.x + w,
+            this.y,
+            this.z + n,
+            this.x + e,
+            this.y + 1.5,
+            this.z + s
         );
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
     }
 
     @Override
@@ -79,4 +70,25 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
         return block instanceof BlockFenceGate || block.isSolid() && !block.isTransparent();
     }
 
+
+    public boolean autoConfigureState() {
+        return HorizontalConnections.configure(this);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (autoConfigureState()) {
+                level.setBlock(this, this, true);
+            }
+            return type;
+        }
+        return super.onUpdate(type);
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        autoConfigureState();
+        return super.place(item, block, target, face, fx, fy, fz, player);
+    }
 }

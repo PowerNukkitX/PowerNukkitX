@@ -372,6 +372,11 @@ public class Vector3f implements Cloneable {
         return this.x == other.x && this.y == other.y && this.z == other.z;
     }
 
+    @Override
+    public int hashCode() {
+        return ((int) x ^ ((int) z << 12)) ^ ((int) y << 24);
+    }
+
     public int rawHashCode() {
         return super.hashCode();
     }

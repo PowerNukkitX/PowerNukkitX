@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -29,6 +31,14 @@ import java.util.List;
 
 public class BlockChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityChest> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2.5)
+            .resistance(12.5)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -41,7 +51,11 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     }
 
     public BlockChest(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockChest(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
@@ -56,34 +70,10 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         return BlockEntity.CHEST;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public String getName() {
         return "Chest";
-    }
-
-    @Override
-    public double getHardness() {
-        return 2.5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 12.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     @Override
@@ -157,7 +147,6 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             return false;
 
         chest.pairWith(blockEntity);
-        blockEntity.pairWith(chest);
         return true;
     }
 
@@ -239,11 +228,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         return true;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         BlockEntityChest blockEntity = getBlockEntity();
@@ -257,7 +242,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockChest(), 0);
     }
 
     @Override
@@ -272,20 +257,12 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
 
     @Override
     public boolean canBePushed() {
-        return canMove();
+        return true;
     }
 
     @Override
     public boolean canBePulled() {
-        return canMove();
-    }
-
-    /**
-     * TODO: Double chests cannot be moved
-     */
-    protected boolean canMove() {
-        var blockEntity = this.getBlockEntity();
-        return blockEntity == null || !blockEntity.isPaired();
+        return true;
     }
 
     @Override

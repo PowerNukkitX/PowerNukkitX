@@ -757,7 +757,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
     }
 
     protected boolean isBreedingLeader(EntityIntelligent entity, EntityIntelligent spouse) {
-        return entity.getId() < spouse.getId();
+        return entity.runtimeId() < spouse.runtimeId();
     }
 
     protected void clearBreedingState(EntityIntelligent entity) {

@@ -25,8 +25,10 @@ import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
@@ -112,6 +114,11 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
     }
 
     @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(6f);
+    }
+
+    @Override
     protected @Nullable MovementComponent getComponentMovement() {
         return MovementComponent.value(0.1f);
     }
@@ -128,20 +135,24 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-
-        if (Utils.rand(0, 1) == 0) {
+        if (!killedByPlayer()) {
             return Item.EMPTY_ARRAY;
         }
 
-        int amount = Utils.rand(0, 1 + looting);
-        if (amount <= 0) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int membranes = Utils.rand(0, 1 + looting);
+        if (membranes == 0) {
             return Item.EMPTY_ARRAY;
         }
 
         return new Item[]{
-                Item.get(ItemID.PHANTOM_MEMBRANE, 0, amount)
+                Item.get(ItemID.PHANTOM_MEMBRANE, 0, membranes)
         };
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 
     @Override

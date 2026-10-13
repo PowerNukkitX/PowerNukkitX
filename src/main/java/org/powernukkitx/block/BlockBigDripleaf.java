@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -28,13 +30,24 @@ import static org.powernukkitx.block.property.CommonBlockProperties.BIG_DRIPLEAF
 import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(BIG_DRIPLEAF, BIG_DRIPLEAF_HEAD, BIG_DRIPLEAF_TILT, MINECRAFT_CARDINAL_DIRECTION);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .toolType(ItemTool.TYPE_NONE)
+            .burnChance(15)
+            .burnAbility(100)
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .hasEntityCollision(true)
+            .waterloggingLevel(2)
+            .build();
 
     public BlockBigDripleaf() {
         this(PROPERTIES.getDefaultState());
     }
 
     public BlockBigDripleaf(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -77,41 +90,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return true;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_NONE;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 15;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 100;
-    }
-
+    
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block below = block.down();
@@ -231,11 +210,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return 0;
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
+    
     @Override
     public void onEntityCollide(Entity entity) {
         if (!isHead() || getTilt() != BigDripleafTilt.NONE || entity instanceof EntityProjectile) return;
@@ -331,8 +306,4 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return true;
     }
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
     }
-}

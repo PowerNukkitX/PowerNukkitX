@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityBed;
@@ -36,6 +38,14 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OCCUPIED_BIT
 @Slf4j
 public class BlockBed extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBed> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .resistance(1)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -48,7 +58,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     }
 
     public BlockBed(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -63,19 +73,21 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         return BlockEntity.BED;
     }
 
-    @Override
-    public boolean canBeActivated() {
+    /**
+     * Determines whether sleeping in this bed updates the player's respawn point.
+     *
+     * @return {@code true} for beds that can be used as respawn points
+     */
+    public boolean setsRespawnPoint() {
         return true;
     }
 
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
+    /**
+     * Called after a player leaves this bed.
+     *
+     * @param player the player that left the bed
+     */
+    public void onSleepEnd(@NotNull Player player) {
     }
 
     @Override
@@ -87,12 +99,6 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
     public double getMaxY() {
         return this.y + 0.5625;
     }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
@@ -157,10 +163,12 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         }
 
         Location spawn = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
-        if (!player.getSpawn().first().equals(spawn)) {
+        if (setsRespawnPoint() && !player.getSpawn().first().equals(spawn)) {
             player.setSpawn(this, Player.SpawnPointType.BLOCK);
         }
-        player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
+        if (setsRespawnPoint()) {
+            player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
+        }
 
         if (!(level.isNight() || level.isThundering())) {
             player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.noSleep"));
@@ -209,14 +217,14 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         setBlockFace(direction);
 
-        level.setBlock(block, this, false, true);
+        level.setBlock(block, this, true, true);
         if (next instanceof BlockLiquid && ((BlockLiquid) next).usesWaterLogging()) {
             level.setBlock(next, 1, next, false, false);
         }
 
         BlockBed head = (BlockBed) clone();
         head.setHeadPiece(true);
-        level.setBlock(next, head, false, true);
+        level.setBlock(next, head, true, true);
 
         BlockEntityBed thisBed = null;
         try {
@@ -298,16 +306,6 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
     public void setOccupied(boolean occupied) {
         setPropertyValue(OCCUPIED_BIT, occupied);
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     public boolean isBedValid() {

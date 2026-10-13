@@ -230,7 +230,7 @@ public final class BotnetDetector {
         // Signal 4: Subnet overlap: 50%+ from same /24 (or /48 for IPv6)
         Map<String, Long> subnetCounts = flooding.stream()
                 .collect(Collectors.groupingBy(
-                        s -> subnet24(s.address.getAddress()),
+                        s -> subnet24(s.address == null ? null : s.address.getAddress()),
                         Collectors.counting()
                 ));
         long maxSubnetCount = Collections.max(subnetCounts.values());
@@ -262,7 +262,7 @@ public final class BotnetDetector {
 
     public boolean isSuspicious(InetAddress ip) {
         return floodingSessions.keySet().stream()
-                .anyMatch(addr -> addr.getAddress().equals(ip));
+                .anyMatch(addr -> ip != null && ip.equals(addr.getAddress()));
     }
 
     /**
@@ -270,10 +270,19 @@ public final class BotnetDetector {
      * or the /48 prefix for IPv6. Used to group sessions by network proximity.
      */
     private static String subnet24(InetAddress addr) {
+        if (addr == null) {
+            return "unresolved";
+        }
         byte[] b = addr.getAddress();
+        if (b == null) {
+            return "unresolved";
+        }
         if (b.length == 4) {
             // IPv4: first three octets
             return (b[0] & 0xFF) + "." + (b[1] & 0xFF) + "." + (b[2] & 0xFF);
+        }
+        if (b.length < 6) {
+            return "unresolved";
         }
         // IPv6: first 6 bytes (48-bit prefix)
         return String.format("%02x%02x:%02x%02x:%02x%02x", b[0], b[1], b[2], b[3], b[4], b[5]);

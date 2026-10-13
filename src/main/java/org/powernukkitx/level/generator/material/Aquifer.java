@@ -18,7 +18,7 @@ import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 
 @SuppressWarnings("PMD.ExcessiveParameterList")
 public final class Aquifer {
-    public static final double FLOWING_UPDATE_SIMILARITY = similarity(100, 144);
+    public static final double FLOWING_UPDATE_SIMILARITY = -0.4;
 
     private static final int X_RANGE = 10;
     private static final int Y_RANGE = 9;
@@ -154,7 +154,7 @@ public final class Aquifer {
         }
 
         if (isLava(globalAtPos)) {
-            this.shouldScheduleFluidUpdate = false;
+            this.shouldScheduleFluidUpdate = posY == -55;
             return BlockLava.PROPERTIES.getDefaultState();
         }
 
@@ -214,19 +214,15 @@ public final class Aquifer {
 
         FluidStatus closestStatus1 = this.getAquiferStatus(closestIndex1);
         double similarity12 = similarity(distanceSqr1, distanceSqr2);
+        boolean scheduleFluidUpdate = similarity12 > FLOWING_UPDATE_SIMILARITY;
         BlockState fluidState = closestStatus1.at(posY);
         if (similarity12 <= 0.0) {
-            if (similarity12 >= FLOWING_UPDATE_SIMILARITY) {
-                FluidStatus closestStatus2 = this.getAquiferStatus(closestIndex2);
-                this.shouldScheduleFluidUpdate = !closestStatus1.equals(closestStatus2);
-            } else {
-                this.shouldScheduleFluidUpdate = false;
-            }
+            this.shouldScheduleFluidUpdate = scheduleFluidUpdate;
             return fluidState;
         }
 
         if (isWater(fluidState) && isLava(this.globalFluidPicker.computeFluid(posX, posY - 1, posZ).at(posY - 1))) {
-            this.shouldScheduleFluidUpdate = true;
+            this.shouldScheduleFluidUpdate = scheduleFluidUpdate;
             return fluidState;
         }
 
@@ -257,17 +253,7 @@ public final class Aquifer {
             }
         }
 
-        boolean mayFlow12 = !closestStatus1.equals(closestStatus2);
-        boolean mayFlow23 = similarity23 >= FLOWING_UPDATE_SIMILARITY && !closestStatus2.equals(closestStatus3);
-        boolean mayFlow13 = similarity13 >= FLOWING_UPDATE_SIMILARITY && !closestStatus1.equals(closestStatus3);
-        if (!mayFlow12 && !mayFlow23 && !mayFlow13) {
-            this.shouldScheduleFluidUpdate = similarity13 >= FLOWING_UPDATE_SIMILARITY
-                    && similarity(distanceSqr1, distanceSqr4) >= FLOWING_UPDATE_SIMILARITY
-                    && !closestStatus1.equals(this.getAquiferStatus(closestIndex4));
-        } else {
-            this.shouldScheduleFluidUpdate = true;
-        }
-
+        this.shouldScheduleFluidUpdate = scheduleFluidUpdate;
         return fluidState;
     }
 

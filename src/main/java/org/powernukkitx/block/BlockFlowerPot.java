@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -9,6 +11,7 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.utils.ItemHelper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -18,13 +21,19 @@ import javax.annotation.Nullable;
  */
 public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<BlockEntityFlowerPot> {
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockFlowerPot() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFlowerPot(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -33,11 +42,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return PROPERTIES;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public String getName() {
         return "Flower Pot";
@@ -88,10 +93,15 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         if (blockEntity == null || !blockEntity.getNbt().containsCompound("PlantBlock")) {
             return Item.AIR;
         }
-        var plantBlockTag = blockEntity.getNbt().getCompound("PlantBlock");
-        var id = plantBlockTag.getString("itemId");
-        var meta = plantBlockTag.getInt("itemMeta");
-        return Item.get(id, meta);
+
+        CompoundTag plantBlockTag = blockEntity.getNbt().getCompound("PlantBlock");
+        BlockState plantBlockState = ItemHelper.getBlockStateHelper(plantBlockTag);
+
+        if (plantBlockState == null) {
+            return Item.AIR;
+        }
+
+        return plantBlockState.toItem();
     }
 
     public boolean setFlower(@Nullable Item item) {
@@ -128,11 +138,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return blockEntity.getNbt().containsCompound("PlantBlock");
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(CommonBlockProperties.UPDATE_BIT)) {
@@ -172,25 +178,13 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Override
     public Item[] getDrops(Item item) {
-        boolean dropInside = false;
-        String insideID = "minecraft:air";
-        int insideMeta = 0;
-        BlockEntityFlowerPot blockEntity = getBlockEntity();
-        if (blockEntity != null) {
-            dropInside = true;
-            insideID = blockEntity.getNbt().getCompound("PlantBlock").getString("itemId");
-            insideMeta = blockEntity.getNbt().getCompound("PlantBlock").getInt("itemMeta");
+        Item flower = getFlower();
+
+        if (!flower.isNull()) {
+            return new Item[]{toItem(), flower};
         }
-        if (dropInside) {
-            return new Item[]{
-                    toItem(),
-                    Item.get(insideID, insideMeta)
-            };
-        } else {
-            return new Item[]{
-                    toItem()
-            };
-        }
+
+        return new Item[]{toItem()};
     }
 
     @Override
@@ -223,41 +217,21 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return this.z + 0.6875;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     /**
      * Blocks implementing this interface can be placed in flower pots.
      */
     public interface FlowerPotBlock {
 
         /**
-         * Retrieve the tag of a block in the flowerpot's NBT file<p/>
-         * Formatted as follows:<p/>
-         * {@code
-         * “PlantBlock”: {
-         * “name”: “minecraft:red_flower”,
-         * “states”: {
-         * “flower_type”: “poppy”
-         * },
-         * “version”: 17959425i
-         * “itemId”: xxx,
-         * “itemMeta”: xxx
-         * }
-         * }<p/>
-         * Note: The keys “itemId” and “itemMeta” must be included within this tag. The server will rapidly reconstruct the Item object by reading these two parameters, rather than rebuilding via stateId, which is too slow.
+         * Returns the block-state tag stored in the
+         * FlowerPot PlantBlock compound.
          *
-         * @return The tag of the block in the flowerpot's NBT file
+         * @return block-state tag containing name, states and version
          */
-
         default CompoundTag getPlantBlockTag() {
             var block = (Block) this;
-            var tag = CompoundTag.fromNetwork(block.getBlockState().getBlockStateTag());
-            var item = block.toItem();
-            return tag.putString("itemId", item.getId())
-                    .putInt("itemMeta", item.getDamage()); // only exists in PNX
+            return CompoundTag.fromNetwork(block.getBlockState().getBlockStateTag());
         }
 
         /**

@@ -18,6 +18,7 @@ import java.util.Comparator;
  */
 public abstract class SlenderProjectile extends EntityProjectile {
     private static final int SPLIT_NUMBER = 10;
+    private static final int COLLISION_REFINEMENT_STEPS = 8;
     private MovingObjectPosition lastHitBlock;
 
     public SlenderProjectile(IChunk chunk, CompoundTag nbt) {
@@ -70,8 +71,24 @@ public abstract class SlenderProjectile extends EntityProjectile {
             var collisionBlocks = this.level.getCollisionBlocks(currentAABB.offset(dirVector.x, dirVector.y, dirVector.z));
             var collisionEntities = this.getLevel().fastCollidingEntities(currentAABB, this);
             if (collisionBlocks.length != 0) {
-                currentAABB.offset(-dirVector.x, -dirVector.y, -dirVector.z);
                 collisionBlock = Arrays.stream(collisionBlocks).min(Comparator.comparingDouble(projectile::distanceSquared)).get();
+                currentAABB.offset(-dirVector.x, -dirVector.y, -dirVector.z);
+                double low = 0;
+                double high = 1;
+
+                for (int j = 0; j < COLLISION_REFINEMENT_STEPS; ++j) {
+                    double middle = (low + high) * 0.5;
+                    var testAABB = currentAABB.clone().offset(dirVector.x * middle, dirVector.y * middle, dirVector.z * middle);
+
+                    if (this.level.getCollisionBlocks(testAABB).length == 0) {
+                        low = middle;
+                    } else {
+                        high = middle;
+                    }
+                }
+
+                currentAABB.offset(dirVector.x * low, dirVector.y * low, dirVector.z * low);
+
                 break;
             }
             collisionEntity = collisionEntities.stream()
@@ -169,7 +186,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
             ProjectileHitEvent event = new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this));
             this.server.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                onCollideWithBlock(getPosition(), getMotion(), block);
+                onCollideWithBlock(getPosition(), new Vector3(movX, movY, movZ), block);
                 addHitEffect();
             }
         }

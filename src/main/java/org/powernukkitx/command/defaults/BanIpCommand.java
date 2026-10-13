@@ -13,11 +13,12 @@ import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class BanIpCommand extends VanillaCommand {
                     File file = new File(path + name + ".dat");
                     NbtMap nbt = null;
                     if (file.exists()) {
-                        try (FileInputStream inputStream = new FileInputStream(file);
+                        try (InputStream inputStream = Files.newInputStream(file.toPath());
                              NBTInputStream nbtInputStream = NbtUtils.createReader(inputStream)) {
                             nbt = (NbtMap) nbtInputStream.readTag();
                         } catch (IOException e) {

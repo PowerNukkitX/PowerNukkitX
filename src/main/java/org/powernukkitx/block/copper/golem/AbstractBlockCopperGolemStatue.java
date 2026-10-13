@@ -1,5 +1,7 @@
 package org.powernukkitx.block.copper.golem;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -26,18 +28,20 @@ import static org.powernukkitx.blockentity.BlockEntityCopperGolemStatue.CopperPo
  * @since 1.21.110
  */
 public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent implements Oxidizable, Waxable, Faceable, BlockEntityHolder<BlockEntityCopperGolemStatue> {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(3)
+            .resistance(6)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .canBePulled(false)
+            .breaksWhenMoved(true)
+            .build();
     public AbstractBlockCopperGolemStatue(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
+    public AbstractBlockCopperGolemStatue(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -55,8 +59,9 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
         if(player != null && player.getInventory().getItemInMainHand().isNull()) {
             BlockEntityCopperGolemStatue blockEntity = this.getOrCreateBlockEntity();
             CopperPose[] poses = CopperPose.values();
-            blockEntity.setPose(poses[(blockEntity.getPose().ordinal()+1)%poses.length]);
+            blockEntity.setPose(poses[(blockEntity.getPose().ordinal() + 1) % poses.length]);
             blockEntity.spawnToAll();
+            getLevel().updateComparatorOutputLevel(this);
             return true;
         } else return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
                 || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
@@ -66,6 +71,7 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setBlockFace(player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH);
         this.getLevel().setBlock(this, this, true);
+        this.getOrCreateBlockEntity();
         return true;
     }
 
@@ -75,39 +81,43 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
     public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState().toBlock();
     }
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        if (getOxidizationLevel().equals(oxidizationLevel)) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)));
+        if (getOxidizationLevel().equals(oxidizationLevel)) return true;
+
+        Block replacement = Block.get(getCopperId(isWaxed(), oxidizationLevel));
+        replacement.setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
+
+        return getValidLevel().setBlock(this, replacement);
     }
 
     @Override
     public boolean setWaxed(boolean waxed) {
-        if (isWaxed() == waxed) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(waxed, getOxidizationLevel())));
+        if (isWaxed() == waxed) return true;
+
+        Block replacement = Block.get(getCopperId(waxed, getOxidizationLevel()));
+        replacement.setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
+
+        return getValidLevel().setBlock(this, replacement);
     }
 
     @Override
     public boolean isWaxed() {
         return false;
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride() {
+        return getOrCreateBlockEntity().getPose().ordinal() + 1;
     }
 
     protected String getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {

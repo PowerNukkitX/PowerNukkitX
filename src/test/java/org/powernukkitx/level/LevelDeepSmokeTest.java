@@ -64,7 +64,7 @@ public class LevelDeepSmokeTest {
         safe(() -> level.getNearbyEntities(bb, entity));
         safe(() -> level.getNearbyEntitiesSafe(bb));
         if (entity != null) {
-            safe(() -> level.getEntity(entity.getId()));
+            safe(() -> level.getEntity(entity.runtimeId()));
             safe(() -> level.getChunkEntities(entity.getChunkX(), entity.getChunkZ()));
             safe(() -> level.removeEntity(entity));
             safe(() -> level.addEntity(entity));

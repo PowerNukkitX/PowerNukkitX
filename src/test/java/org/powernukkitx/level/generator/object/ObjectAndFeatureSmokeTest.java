@@ -138,7 +138,6 @@ class ObjectAndFeatureSmokeTest {
                 new org.powernukkitx.level.generator.feature.decoration.JungleGrassFeature(),
                 new org.powernukkitx.level.generator.feature.decoration.JungleMelonGenerateFeature(),
                 new org.powernukkitx.level.generator.feature.decoration.KelpFeature(),
-                new org.powernukkitx.level.generator.feature.decoration.MesaFoliageFeature(),
                 new org.powernukkitx.level.generator.feature.decoration.MonsterRoomFeature(),
                 new org.powernukkitx.level.generator.feature.decoration.MossPatchSnapToFloorFeature(),
                 new org.powernukkitx.level.generator.feature.decoration.MossSnapToCeilingFeature(),

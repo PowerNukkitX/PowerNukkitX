@@ -3,10 +3,11 @@ package org.powernukkitx.education.block.glass;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHardLimeStainedGlassPane extends Block {
-     public static final BlockProperties PROPERTIES = new BlockProperties(HARD_LIME_STAINED_GLASS_PANE);
+     public static final BlockProperties PROPERTIES = new BlockProperties(HARD_LIME_STAINED_GLASS_PANE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
      @Override
      @NotNull

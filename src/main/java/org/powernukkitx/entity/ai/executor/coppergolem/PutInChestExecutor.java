@@ -10,7 +10,6 @@ import org.powernukkitx.entity.ai.executor.EntityControl;
 import org.powernukkitx.entity.ai.executor.IBehaviorExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.mob.EntityCopperGolem;
-import org.powernukkitx.inventory.ChestInventory;
 import org.powernukkitx.item.Item;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
@@ -53,7 +52,7 @@ public class PutInChestExecutor implements EntityControl, IBehaviorExecutor {
             animateChest(golem, false);
             if (chest instanceof BlockChest chest) {
                 BlockEntityChest blockEntityChest = chest.getOrCreateBlockEntity();
-                ChestInventory chestInventory = (ChestInventory) blockEntityChest.getInventory();
+                var chestInventory = blockEntityChest.getInventory();
                 Item item = golem.getInventory().getItemInHand();
                 Item single = item.clone();
                 single.setCount(1);

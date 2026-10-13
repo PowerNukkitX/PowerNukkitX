@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -21,6 +23,14 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDaylightDetector extends BlockTransparent implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .isSolid(false)
+            .isPowerSource(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -32,7 +42,11 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     public BlockDaylightDetector(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
+    }
+
+    public BlockDaylightDetector(BlockState state, BlockDefinition definition) {
+        super(state, definition);
     }
 
     @Override
@@ -51,30 +65,16 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
+    public int getLightFilter() {
+        return 0;
     }
 
     @Override
     public Item toItem() {
-        return new ItemBlock(this, 0);
+        return new ItemBlock(new BlockDaylightDetector(), 0);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
@@ -134,11 +134,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         return getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL);
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     public boolean isInverted() {
         return false;
     }
@@ -148,12 +144,12 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         Level level = this.getLevel();
 
         if (level.getDimension() == Level.DIMENSION_OVERWORLD) {
-            int skylight = getEffectiveSkyLightSignalAround(level, getFloorX(), getFloorY(), getFloorZ());
-            i = skylight - level.calculateSkylightSubtracted(1.0F);
+            i = level.getBlockSkyLightAt(getFloorX(), getFloorY(), getFloorZ()) - level.skyLightSubtracted;
 
-            float f = level.getCelestialAngle(1.0F) * 6.2831855F;
-
-            if (i > 0) {
+            if (this.isInverted()) {
+                i = 15 - i;
+            } else if (i > 0) {
+                float f = level.getCelestialAngle(1.0F) * 6.2831855F;
                 float f1 = f < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
                 f = f + (f1 - f) * 0.2F;
                 i = Math.round((float) i * MathHelper.cos(f));
@@ -169,51 +165,13 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
         if (i != current) {
             this.setPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL, i);
-            BlockState blockState = this.getBlockState();
-            level.setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), blockState);
+            level.setBlock(this, this, false, true);
             updateAroundRedstone();
         }
     }
 
-    public int getEffectiveSkyLightSignalAround(Level level, int x, int y, int z) {
-        int skyReduction = level.skyLightSubtracted;
-
-        int bestSignal = level.getBlockSkyLightAt(x, y + 1, z) - skyReduction;
-        if (bestSignal >= 15) {
-            return 15;
-        }
-
-        final int radius = 11;
-
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                int dist = Math.abs(dx) + Math.abs(dz);
-                if (dist == 0 || dist > radius) continue;
-
-                int cx = x + dx;
-                int cz = z + dz;
-
-                int skylight = level.getBlockSkyLightAt(cx, y + 1, cz);
-                int signal = skylight - skyReduction - dist;
-
-                if (signal > bestSignal) {
-                    bestSignal = signal;
-                    if (bestSignal >= 15) return 15;
-                }
-            }
-        }
-
-        return Math.max(0, bestSignal);
-    }
-
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
     @Override
     public double getMaxY() {
-        return this.y + 0.625;
+        return this.y + 0.375;
     }
 }

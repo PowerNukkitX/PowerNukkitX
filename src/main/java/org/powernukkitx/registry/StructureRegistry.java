@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.util.InternalApi;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.packet.JigsawStructureDataPacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -21,6 +22,7 @@ import java.util.Set;
 @InternalApi
 public final class StructureRegistry implements IRegistry<String, AbstractStructure, AbstractStructure> {
     private static final Object2ObjectOpenHashMap<String, AbstractStructure> REGISTRY = new Object2ObjectOpenHashMap<>();
+    private static JigsawStructureDataPacket jigsawPacket = new JigsawStructureDataPacket();
 
     @Override
     public void init() {
@@ -31,6 +33,26 @@ public final class StructureRegistry implements IRegistry<String, AbstractStruct
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+        loadJigsawStructureData();
+    }
+
+    /**
+     * Jigsaw structures never reach the server side, the client assembles them itself, so the whole
+     * registry is one tag we read once and send along on join.
+     */
+    private void loadJigsawStructureData() {
+        try (var stream = StructureRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/jigsaw_structure_data.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            JigsawStructureDataPacket packet = new JigsawStructureDataPacket();
+            packet.setJigsawStructureDataTag((NbtMap) nbtInputStream.readTag());
+            jigsawPacket = packet;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public JigsawStructureDataPacket getJigsawStructureData() {
+        return jigsawPacket;
     }
 
     @SneakyThrows

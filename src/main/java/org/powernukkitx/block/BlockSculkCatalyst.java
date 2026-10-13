@@ -1,13 +1,29 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntitySculkCatalyst;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.level.Sound;
+import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 
 public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<BlockEntitySculkCatalyst> {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_CATALYST, CommonBlockProperties.BLOOM);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(3.0)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_HOE)
+            .lightEmission(6)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -19,42 +35,12 @@ public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<
     }
 
     public BlockSculkCatalyst(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Sculk Catalyst";
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 6;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3.0;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
     }
 
     @Override
@@ -67,4 +53,30 @@ public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<
         return BlockEntity.SCULK_CATALYST;
     }
 
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
+    }
+
+    /**
+     * Starts the catalyst bloom state and schedules its reset.
+     */
+    public void bloom() {
+        if (getPropertyValue(CommonBlockProperties.BLOOM)) return;
+
+        setPropertyValue(CommonBlockProperties.BLOOM, true);
+        getLevel().setBlock(this, this, true, true);
+        getLevel().addSound(this, Sound.BLOOM_SCULK_CATALYST);
+        getLevel().scheduleUpdate(this, 8);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED && getPropertyValue(CommonBlockProperties.BLOOM)) {
+            setPropertyValue(CommonBlockProperties.BLOOM, false);
+            getLevel().setBlock(this, this, true, true);
+        }
+
+        return type;
+    }
 }

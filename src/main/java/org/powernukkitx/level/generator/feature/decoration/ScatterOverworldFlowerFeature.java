@@ -50,7 +50,7 @@ public class ScatterOverworldFlowerFeature extends CountGenerateFeature implemen
                     continue;
                 }
 
-                int y = level.getHeightMap(x, z);
+                int y = level.getHeightMap(x, z) - 1;
                 BlockState targetState = level.getBlockStateAt(x, y + 1, z);
                 if (targetState != BlockAir.STATE) {
                     continue;

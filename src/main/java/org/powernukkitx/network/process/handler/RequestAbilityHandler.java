@@ -29,11 +29,14 @@ public class RequestAbilityHandler implements PacketHandler<RequestAbilityPacket
             return;
         }
 
-        if (!packet.isBoolValue() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+        if (packet.isBoolValue() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
             PlayerHackDetectedEvent detectedEvent = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.FLIGHT);
             Server.getInstance().getPluginManager().callEvent(detectedEvent);
-            if (detectedEvent.isKick())
+            if (detectedEvent.isKick()) {
                 player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+            } else {
+                player.getAdventureSettings().update();
+            }
             return;
         }
 

@@ -25,6 +25,7 @@ import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.passive.EntityArmadillo;
+import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
@@ -138,15 +139,18 @@ public class EntityCaveSpider extends EntityMob implements EntityWalkable, Entit
             drops.add(Item.get(Item.STRING, 0, stringAmount));
         }
 
-        float eyeChance = 0.5f - (looting * (1f / 12f));
-        if (eyeChance < 0f) {
-            eyeChance = 0f;
-        }
-
-        if (Utils.rand(0f, 1f) < eyeChance) {
-            drops.add(Item.get(Item.SPIDER_EYE, 0, 1));
+        if (killedByPlayer()) {
+            int eyes = Utils.rand(0, 1 + looting);
+            if (eyes > 0) {
+                drops.add(Item.get(Item.SPIDER_EYE, 0, eyes));
+            }
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    private boolean killedByPlayer() {
+        return this.lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player;
     }
 }

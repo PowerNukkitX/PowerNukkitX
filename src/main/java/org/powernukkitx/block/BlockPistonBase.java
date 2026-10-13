@@ -1,9 +1,12 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.TorchFacingDirection;
 import org.powernukkitx.blockentity.BlockEntity;
+import org.powernukkitx.blockentity.BlockEntityChest;
 import org.powernukkitx.blockentity.BlockEntityMovingBlock;
 import org.powernukkitx.blockentity.BlockEntityPistonArm;
 import org.powernukkitx.event.block.BlockPistonEvent;
@@ -18,6 +21,7 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.Faceable;
 import org.powernukkitx.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
@@ -28,17 +32,26 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * @author CreeperFace
  */
 @Slf4j
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1.5)
+            .resistance(1.5)
+            .isSolid(false)
+            .waterloggingLevel(1)
+            .build();
     public boolean sticky = false;
 
     public BlockPistonBase(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockPistonBase(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     /**
@@ -54,8 +67,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 return false;
             if (block.breaksWhenMoved())
                 return destroyBlocks || block.sticksToPiston();
-            BlockEntity blockEntity = block.getLevelBlockEntity();
-            return blockEntity == null || blockEntity.isMovable();
+            return true;
         }
 
         return false;
@@ -74,18 +86,15 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     @Override
-    public double getResistance() {
-        return 1.5;
+    public boolean canBePushed() {
+        BlockEntityPistonArm pistonArm = getBlockEntity();
+        return pistonArm == null || pistonArm.isMovable();
     }
 
     @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
+    public boolean canBePulled() {
+        BlockEntityPistonArm pistonArm = getBlockEntity();
+        return pistonArm == null || pistonArm.isMovable();
     }
 
     @Override
@@ -107,9 +116,14 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         }
         this.level.setBlock(block, this, false, true);
         var nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
-                .putInt("facing", this.getBlockFace().getIndex())
+                .putList("AttachedBlocks", new ListTag<>())
+                .putList("BreakBlocks", new ListTag<>())
+                .putFloat("LastProgress", 0.0f)
+                .putByte("NewState", (byte) 0)
+                .putFloat("Progress", 0.0f)
+                .putByte("State", (byte) 0)
                 .putBoolean("Sticky", this.sticky)
-                .putBoolean("powered", isGettingPower());
+                .putBoolean("isMovable", true);
         var piston = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
         piston.powered = isGettingPower();
         this.checkState(piston.powered);
@@ -271,6 +285,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         }
 
         List<BlockVector3> toMoveBlockVec = new ArrayList<>();
+        List<BlockVector3> breakBlockVec = new ArrayList<>();
         var event = new BlockPistonEvent(this, pistonFace, calculator.getBlocksToMove(), calculator.getBlocksToDestroy(), extending);
         this.level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -282,6 +297,11 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         var nbtList = new ArrayList<CompoundTag>();
         if (canMove && (this.sticky || extending)) {
             var destroyBlocks = calculator.getBlocksToDestroy();
+            breakBlockVec = new ArrayList<>(destroyBlocks.size());
+            for (var block : destroyBlocks) {
+                breakBlockVec.add(block.asBlockVector3());
+            }
+
             //Destroy the blocks that need to be destroyed.
             for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
                 var block = destroyBlocks.get(i);
@@ -291,7 +311,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 this.level.useBreakOn(block, item);
             }
             var blocksToMove = calculator.getBlocksToMove();
-            toMoveBlockVec = blocksToMove.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
+            toMoveBlockVec = new ArrayList<>(blocksToMove.size());
+            for (var block : blocksToMove) {
+                toMoveBlockVec.add(block.asBlockVector3());
+            }
             var moveDirection = extending ? pistonFace : pistonFace.getOpposite();
             for (Block blockToMove : blocksToMove) {
                 var oldPos = new Vector3(blockToMove.x, blockToMove.y, blockToMove.z);
@@ -304,13 +327,23 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                         .putInt("pistonPosY", this.getFloorY())
                         .putInt("pistonPosZ", this.getFloorZ())
                         .putCompound("movingBlock", CompoundTag.fromNetwork(blockToMove.blockstate.getBlockStateTag()))
-                        .putCompound("movingBlockExtra", CompoundTag.fromNetwork(level.getBlock(blockToMove, 1).getBlockState().getBlockStateTag()))
-                        .putBoolean("isMovable", true);
+                        .putCompound("movingBlockExtra", CompoundTag.fromNetwork(level.getBlock(blockToMove, 1).getBlockState().getBlockStateTag()));
                 var blockEntity = this.level.getBlockEntity(oldPos);
+
+                if (blockEntity instanceof BlockEntityChest chest) {
+                    chest.prepareForPistonMove();
+                }
+
                 //Moveable Block Entity
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
-                    nbt.putCompound("movingEntity", blockEntity.getNbt());
+
+                    CompoundTag movingEntity = blockEntity.getNbt().copy()
+                            .putInt("x", newPos.getFloorX())
+                            .putInt("y", newPos.getFloorY())
+                            .putInt("z", newPos.getFloorZ());
+
+                    nbt.putCompound("movingEntity", movingEntity);
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);
@@ -323,8 +356,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (blockEntity == null) {
             return false;
         }
-        final List<BlockVector3> finalToMoveBlockVec = toMoveBlockVec;
-        blockEntity.preMove(extending, finalToMoveBlockVec);
+        blockEntity.preMove(extending, toMoveBlockVec, breakBlockVec);
         //Generate moving_block
         if (!oldPosList.isEmpty()) {
             for (int i = 0; i < oldPosList.size(); i++) {
@@ -375,11 +407,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     public class BlocksCalculator {
         private static int MOVE_BLOCK_LIMIT = 12;
 
@@ -592,8 +620,12 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             if (!stickyBlock.canSticksBlock() || !adjacentBlock.sticksToPiston()) {
                 return false;
             }
-            return !(stickyBlock instanceof BlockSlime && adjacentBlock instanceof BlockHoneyBlock)
-                    && !(stickyBlock instanceof BlockHoneyBlock && adjacentBlock instanceof BlockSlime);
+
+            if (adjacentBlock.canSticksBlock()) {
+                return stickyBlock.getId().equals(adjacentBlock.getId());
+            }
+
+            return true;
         }
 
         public List<Block> getBlocksToMove() {

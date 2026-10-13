@@ -70,7 +70,7 @@ public class LoveTimeoutExecutor implements IBehaviorExecutor {
 
     protected void sendLoveParticle(EntityIntelligent entity) {
         final ActorEventPacket pk = new ActorEventPacket();
-        pk.setTargetRuntimeID(entity.getId());
+        pk.setTargetRuntimeID(entity.runtimeId());
         pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

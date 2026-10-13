@@ -6,6 +6,9 @@ package org.powernukkitx.level.generator.noise.minecraft.utils;
 @SuppressWarnings("PMD.ExcessiveParameterList")
 public class MathHelper {
 
+    private static final double PRECISION_WRAP = 0x1.0p25;
+    private static final double PRECISION_WRAP_HALF = 0x1.0p24;
+
     public static final int[][] GRADIENTS = new int[][] {
             {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1},
             {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}
@@ -82,6 +85,7 @@ public class MathHelper {
     }
 
     public static double maintainPrecision(double d) {
-        return d - (double)MathHelper.lfloor(d / 3.3554432E7D + 0.5D) * 3.3554432E7D;
+        if (d >= -PRECISION_WRAP_HALF && d < PRECISION_WRAP_HALF) return d;
+        return d - (double) MathHelper.lfloor(d / PRECISION_WRAP + 0.5D) * PRECISION_WRAP;
     }
 }

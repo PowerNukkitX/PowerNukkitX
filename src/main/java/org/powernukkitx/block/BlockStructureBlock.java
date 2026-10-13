@@ -1,9 +1,11 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.StructureBlockType;
 import org.powernukkitx.blockentity.BlockEntity;
-import org.powernukkitx.blockentity.BlockEntityStructBlock;
+import org.powernukkitx.blockentity.BlockEntityStructureBlock;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
@@ -15,8 +17,16 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.STRUCTURE_BLOCK_TYPE;
 
-public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder<BlockEntityStructBlock>, RedstoneComponent {
+public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder<BlockEntityStructureBlock>, RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(STRUCTURE_BLOCK, STRUCTURE_BLOCK_TYPE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull
@@ -29,7 +39,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
     }
 
     public BlockStructureBlock(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     public StructureBlockType getStructureBlockType() {
@@ -40,16 +50,12 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
         setPropertyValue(STRUCTURE_BLOCK_TYPE, type);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null) {
             if (player.isCreative() && player.isOp()) {
-                BlockEntityStructBlock tile = this.getOrCreateBlockEntity();
+                BlockEntityStructureBlock tile = this.getOrCreateBlockEntity();
                 tile.spawnTo(player);
                 player.addWindow(tile.getInventory());
             }
@@ -71,7 +77,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
             }
         }
 
-        BlockEntityStructBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
+        BlockEntityStructureBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
         return blockEntity != null;
     }
 
@@ -80,40 +86,16 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
         return getStructureBlockType().name() + "Structure Block";
     }
 
-    @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
+    
     @Override
     public boolean isBreakable(@NotNull Vector3 vector, int layer, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player) {
         return player != null && player.isCreative();
     }
 
     @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
     @NotNull
-    public Class<? extends BlockEntityStructBlock> getBlockEntityClass() {
-        return BlockEntityStructBlock.class;
+    public Class<? extends BlockEntityStructureBlock> getBlockEntityClass() {
+        return BlockEntityStructureBlock.class;
     }
 
     @Override

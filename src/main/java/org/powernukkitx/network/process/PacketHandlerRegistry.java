@@ -64,6 +64,9 @@ public class PacketHandlerRegistry {
         register(TextPacket.class, new TextHandler());
         register(TickSyncPacket.class, new TickSyncHandler());
         register(NetworkStackLatencyPacket.class, new NetworkStackLatencyHandler());
+        register(ClientCacheStatusPacket.class, new ClientCacheStatusHandler());
+        register(ClientCacheBlobStatusPacket.class, new ClientCacheBlobStatusHandler());
+        register(SubChunkRequestPacket.class, new SubChunkRequestHandler());
     }
 
     private void register(Class<? extends BedrockPacket> clazz, PacketHandler packetHandler) {

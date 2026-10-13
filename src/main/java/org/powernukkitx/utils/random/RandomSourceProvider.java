@@ -35,6 +35,11 @@ public interface RandomSourceProvider {
     int nextBoundedInt(int max);
 
     /**
+     * Generates a random integer in the range [0, bound).
+     */
+    int nextExclusiveInt(int bound);
+
+    /**
      * Generate random long between {@link Long#MIN_VALUE} and {@link Long#MIN_VALUE}
      */
     long nextLong();

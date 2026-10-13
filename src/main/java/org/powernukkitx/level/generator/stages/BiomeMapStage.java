@@ -11,6 +11,8 @@ import org.powernukkitx.level.generator.biome.result.BiomeResult;
 import org.powernukkitx.level.generator.biome.result.OverworldBiomeResult;
 import org.powernukkitx.level.generator.densityfunction.DensityCommon;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class BiomeMapStage extends GenerateStage {
@@ -38,7 +40,7 @@ public class BiomeMapStage extends GenerateStage {
                     int x = chunkX * 16 + _x;
                     for(int _z = 0; _z < 16; _z++) {
                         int z = chunkZ * 16 + _z;
-                        biomes[_x * 16 + _z] = overworldBiomePicker.pick(x, SEA_LEVEL, z, functionContext.set(x, SEA_LEVEL, z));
+                        biomes[_x * 16 + _z] = overworldBiomePicker.pickRaw(x, SEA_LEVEL, z, functionContext.set(x, SEA_LEVEL, z));
                     }
                 }
             } finally {
@@ -53,18 +55,91 @@ public class BiomeMapStage extends GenerateStage {
                 }
             }
         }
+        int[] surfaceBiomeIds = new int[256];
+        int[] caveBiomeIds = new int[256];
+        int[] deepBiomeIds = new int[256];
+
+        for (int index = 0; index < biomes.length; index++) {
+            BiomeResult result = biomes[index];
+            int biomeId = result.getBiomeId();
+            surfaceBiomeIds[index] = biomeId;
+            caveBiomeIds[index] = biomeId;
+            deepBiomeIds[index] = biomeId;
+
+            if (result instanceof OverworldBiomeResult biomeResult) {
+                caveBiomeIds[index] = biomeResult.correct(-26).getBiomeId();
+                biomeResult.reset();
+                deepBiomeIds[index] = biomeResult.correct(-127).getBiomeId();
+                biomeResult.reset();
+            }
+        }
+
         chunk.batchProcess(unsafeChunk -> {
-            for (int y = maxHeight; y >= minHeight; y--) {
-                ChunkSection section = unsafeChunk.getOrCreateSection(y >> 4);
-                for(int x = 0; x < 16; x++) {
-                    for(int z = 0; z < 16; z++) {
-                        BiomeResult result = biomes[x * 16 + z];
-                        if(result instanceof OverworldBiomeResult biomeResult) biomeResult.correct(y - unsafeChunk.getHeightMap(x, z));
-                        section.setBiomeId(x, y & 0x0f, z, result.getBiomeId());
-                        if(result instanceof OverworldBiomeResult biomeResult) biomeResult.reset();
+            var assignedBiomeIds = new IntOpenHashSet();
+            var featureBiomeIds = new IntOpenHashSet();
+            int[] surfaceMinY = new int[256];
+            int[] caveMinY = new int[256];
+
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int index = x * 16 + z;
+                    int height = unsafeChunk.getHeightMap(x, z);
+                    int surfaceStart = height - 26;
+                    int caveStart = height - 127;
+                    surfaceMinY[index] = surfaceStart;
+                    caveMinY[index] = caveStart;
+
+                    if (maxHeight >= surfaceStart) {
+                        assignedBiomeIds.add(surfaceBiomeIds[index]);
+                    }
+                    if (Math.max(minHeight, caveStart) <= Math.min(maxHeight, surfaceStart - 1)) {
+                        assignedBiomeIds.add(caveBiomeIds[index]);
+                    }
+                    if (minHeight < caveStart) {
+                        assignedBiomeIds.add(deepBiomeIds[index]);
+                    }
+
+                    int featureMinY = minHeight + 1;
+                    int featureMaxY = Math.min(maxHeight, height - 1);
+                    if (featureMaxY >= featureMinY) {
+                        if (Math.max(featureMinY, surfaceStart) <= featureMaxY) {
+                            featureBiomeIds.add(surfaceBiomeIds[index]);
+                        }
+                        if (Math.max(featureMinY, caveStart) <= Math.min(featureMaxY, surfaceStart - 1)) {
+                            featureBiomeIds.add(caveBiomeIds[index]);
+                        }
+                        if (featureMinY <= Math.min(featureMaxY, caveStart - 1)) {
+                            featureBiomeIds.add(deepBiomeIds[index]);
+                        }
                     }
                 }
             }
+
+            for (int y = maxHeight; y >= minHeight; y--) {
+                ChunkSection section = unsafeChunk.getOrCreateSection(y >> 4);
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
+                        int index = x * 16 + z;
+                        int biomeId;
+
+                        if (y >= surfaceMinY[index]) {
+                            biomeId = surfaceBiomeIds[index];
+                        } else if (y >= caveMinY[index]) {
+                            biomeId = caveBiomeIds[index];
+                        } else {
+                            biomeId = deepBiomeIds[index];
+                        }
+
+                        section.setBiomeId(x, y & 0x0f, z, biomeId);
+                    }
+                }
+            }
+
+            for (int biomeId : assignedBiomeIds) {
+                unsafeChunk.getBiomeState().updateBiome(biomeId);
+            }
+
+            NormalChunkFeatureStage.cacheGeneratedBiomes(chunk, featureBiomeIds);
         });
     }
 
