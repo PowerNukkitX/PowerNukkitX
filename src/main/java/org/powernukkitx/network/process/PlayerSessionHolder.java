@@ -166,8 +166,6 @@ public class PlayerSessionHolder {
         packet.setMessages(new DisconnectPacketMessages(message, ""));
 
         this.session.sendPacketImmediately(packet);
-        // Same idea as BedrockServerSession#disconnect, which we can't use since it drops the reason:
-        // let the client read the message and leave first, then close whatever is still open.
         this.session.getPeer().getChannel().eventLoop().schedule(() -> {
             if (this.session.isConnected()) {
                 this.session.close(message);
