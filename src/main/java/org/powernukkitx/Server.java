@@ -99,6 +99,7 @@ import org.powernukkitx.network.NetworkInterface;
 import org.powernukkitx.network.SharedPacket;
 import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.network.process.NetworkState;
+import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.network.process.auth.ProxyAuthProvider;
 import org.powernukkitx.permission.BanEntry;
 import org.powernukkitx.permission.BanList;
@@ -1030,7 +1031,16 @@ public class Server {
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         CreativeGroupsRegistry.register();
+        this.warmLoginPackets();
         this.network.setState(NetworkState.STARTED);
+    }
+
+    /**
+     * Encodes the login packets that are the same for every player in the background, once the
+     * plugins are enabled and the registries complete, see {@link PlayerSessionHolder#warmEncodedPackets()}.
+     */
+    private void warmLoginPackets() {
+        CompletableFuture.runAsync(PlayerSessionHolder::warmEncodedPackets, this.computeThreadPool);
     }
 
     /**
@@ -1189,6 +1199,7 @@ public class Server {
 
     public void start() {
         this.loginService.warmUp();
+        this.warmLoginPackets();
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
             try {
                 this.network.blockAddress(InetAddress.getByName(entry.getName()));
@@ -2035,7 +2046,7 @@ public class Server {
         entry.setXblXUID(xboxUserId);
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        entry.setSerializedSkin(SkinConverter.toSerializedSkin(skin.getSkin(), skin.isTrusted()));
+        entry.setSerializedSkin(skin.toSerializedSkin());
         entry.setPlayerColor(color.getRGB());
 
         pk.getEntries().add(entry);
@@ -2104,7 +2115,7 @@ public class Server {
             entry.setXblXUID(value.getXUID());
             entry.setPlatformOnlineID("");
             entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-            entry.setSerializedSkin(SkinConverter.toSerializedSkin(value.getSkin().getSkin(), value.getSkin().isTrusted()));
+            entry.setSerializedSkin(value.getSkin().toSerializedSkin());
             entry.setPlayerColor(value.getLocatorBarColor().getRGB());
 
             pk.getEntries().add(entry);

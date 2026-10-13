@@ -1,6 +1,7 @@
 package org.powernukkitx.network.process;
 
 import io.netty.channel.Channel;
+import io.netty.util.ReferenceCountUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -53,7 +54,6 @@ import org.powernukkitx.registry.VoxelShapeRegistry;
 import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
 import org.powernukkitx.utils.DefaultCameraPresets;
 import org.powernukkitx.utils.RuntimeBlockDefinitionRegistry;
-import org.powernukkitx.utils.SkinConverter;
 
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -67,6 +67,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -130,13 +131,6 @@ public class PlayerSessionHolder {
 
     private static volatile ItemRegistryCache itemRegistryCache;
 
-    private static final EncodedPacketCache VOXEL_SHAPES = new EncodedPacketCache(NetworkConstants.CODEC);
-    private static final EncodedPacketCache JIGSAW_STRUCTURES = new EncodedPacketCache(NetworkConstants.CODEC);
-    private static final EncodedPacketCache ITEM_REGISTRY = new EncodedPacketCache(NetworkConstants.CODEC);
-    private static final EncodedPacketCache ACTOR_IDENTIFIERS = new EncodedPacketCache(NetworkConstants.CODEC);
-    private static final EncodedPacketCache CRAFTING_DATA = new EncodedPacketCache(NetworkConstants.CODEC);
-    private static final EncodedPacketCache BIOME_DEFINITIONS = new EncodedPacketCache(NetworkConstants.CODEC);
-    private static final EncodedPacketCache CREATIVE_CONTENT = new EncodedPacketCache(NetworkConstants.CODEC);
 
     /** How often the stored player data is read again while a save of it is still on its way. */
     private static final int MAX_PRELOAD_ATTEMPTS = 5;
@@ -581,12 +575,7 @@ public class PlayerSessionHolder {
         playerListEntry.setXblXUID(this.player.getXUID());
         playerListEntry.setPlatformOnlineID("");
         playerListEntry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        playerListEntry.setSerializedSkin(
-            SkinConverter.toSerializedSkin(
-                this.player.getSkin().getSkin(),
-                this.player.getSkin().isTrusted()
-            )
-        );
+        playerListEntry.setSerializedSkin(this.player.getSkin().toSerializedSkin());
         playerListEntry.setPlayerColor(this.player.getLocatorBarColor().getRGB());
 
         playerListPacket.getEntries().add(playerListEntry);
@@ -594,10 +583,8 @@ public class PlayerSessionHolder {
 
         this.player.getLevel().sendTime(this.player);
 
-        final VoxelShapesPacket voxelShapes = VoxelShapeRegistry.getPACKET();
-        this.sendEncoded(VOXEL_SHAPES, voxelShapes, () -> voxelShapes, true);
-        final JigsawStructureDataPacket jigsawStructures = Registries.STRUCTURE.getJigsawStructureData();
-        this.sendEncoded(JIGSAW_STRUCTURES, jigsawStructures, () -> jigsawStructures, true);
+        this.sendEncoded(StaticPacket.VOXEL_SHAPES);
+        this.sendEncoded(StaticPacket.JIGSAW_STRUCTURES);
         this.sendStartGame(server);
 
         for (SyncActorPropertyPacket syncActorPropertyPacket : EntityProperty.getEntityPropertyCache()) {
@@ -632,15 +619,8 @@ public class PlayerSessionHolder {
             this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
         });
 
-        this.sendEncoded(BIOME_DEFINITIONS, Registries.BIOME, Registries.BIOME.getBiomeDefinitionListFingerprint(), null,
-            Registries.BIOME::getBiomeDefinitionListPacket, false);
-
-        final NbtMap actorIdentifiers = Registries.ENTITY.getTag();
-        this.sendEncoded(ACTOR_IDENTIFIERS, actorIdentifiers, () -> {
-            final AvailableActorIdentifiersPacket availableActorIdentifiersPacket = new AvailableActorIdentifiersPacket();
-            availableActorIdentifiersPacket.setActorInfoList(actorIdentifiers);
-            return availableActorIdentifiersPacket;
-        }, false);
+        this.sendEncoded(StaticPacket.BIOME_DEFINITIONS);
+        this.sendEncoded(StaticPacket.ACTOR_IDENTIFIERS);
 
         final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
         playerFogPacket.getFogStack().addAll(this.player.getFogStack());
@@ -678,8 +658,7 @@ public class PlayerSessionHolder {
         this.session.sendPacketImmediately(Registries.TRIM.buildPacket());
 
         this.player.syncInventory();
-        final CraftingDataPacket craftingData = Registries.RECIPE.getCraftingPacket();
-        this.sendEncoded(CRAFTING_DATA, craftingData, itemRegistryCache(), () -> craftingData, true);
+        this.sendEncoded(StaticPacket.CRAFTING_DATA);
 
         this.player.setCanClimb(true);
         this.player.setMovementSpeed(this.player.getMovementSpeed());
@@ -777,38 +756,110 @@ public class PlayerSessionHolder {
     private void sendItemRegistry() {
         final ItemRegistryCache cache = itemRegistryCache();
         this.runInOutboundOrder(() -> this.session.getPeer().getCodecHelper().setItemDefinitions(cache.definitions()));
-        this.sendEncoded(ITEM_REGISTRY, cache, () -> {
-            final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-            itemRegistryPacket.getItemData().addAll(cache.itemDefinitions());
-            return itemRegistryPacket;
-        }, true);
+        this.sendEncoded(StaticPacket.ITEM_REGISTRY);
+    }
+
+    /**
+     * The packets of the login sequence that are the same for every player, each with the
+     * {@link EncodedPacketCache} it is sent from and what identifies its current content there, see
+     * {@link EncodedPacketCache#get}. Sending and encoding ahead of time, see
+     * {@link #warmEncodedPackets()}, both go through the same constant, so they always agree on the
+     * content, and sending one allocates nothing beyond the packet that goes out.
+     */
+    private enum StaticPacket {
+        VOXEL_SHAPES(true, VoxelShapeRegistry::getPACKET),
+        JIGSAW_STRUCTURES(true, Registries.STRUCTURE::getJigsawStructureData),
+        ITEM_REGISTRY(true, PlayerSessionHolder::itemRegistryCache, () -> 0L, () -> null, PlayerSessionHolder::itemRegistryPacket),
+        BIOME_DEFINITIONS(false, () -> Registries.BIOME, Registries.BIOME::getBiomeDefinitionListFingerprint, () -> null,
+            Registries.BIOME::getBiomeDefinitionListPacket),
+        ACTOR_IDENTIFIERS(false, Registries.ENTITY::getTag, () -> 0L, () -> null, PlayerSessionHolder::actorIdentifiersPacket),
+        CRAFTING_DATA(true, Registries.RECIPE::getCraftingPacket, () -> 0L, PlayerSessionHolder::itemRegistryCache,
+            Registries.RECIPE::getCraftingPacket),
+        CREATIVE_CONTENT(true, () -> Registries.CREATIVE, PlayerSessionHolder::creativeContentFingerprint,
+            PlayerSessionHolder::itemRegistryCache, PlayerSessionHolder::creativeContentPacket);
+
+        private final EncodedPacketCache cache = new EncodedPacketCache(NetworkConstants.CODEC);
+        /** Whether the packet goes through the player, firing {@link PacketSendEvent}, when it is sent the regular way. */
+        private final boolean fireEvent;
+        private final Supplier<?> key;
+        private final LongSupplier stamp;
+        private final Supplier<?> dependency;
+        private final Supplier<? extends BedrockPacket> packet;
+
+        /** For a packet that is its own key, kept until a registry replaces it. */
+        StaticPacket(boolean fireEvent, Supplier<? extends BedrockPacket> packet) {
+            this(fireEvent, packet, () -> 0L, () -> null, packet);
+        }
+
+        StaticPacket(boolean fireEvent, Supplier<?> key, LongSupplier stamp, Supplier<?> dependency,
+                     Supplier<? extends BedrockPacket> packet) {
+            this.fireEvent = fireEvent;
+            this.key = key;
+            this.stamp = stamp;
+            this.dependency = dependency;
+            this.packet = packet;
+        }
+
+        BedrockPacket encoded() {
+            return this.cache.get(this.key.get(), this.stamp.getAsLong(), this.dependency.get(), this.packet,
+                PlayerSessionHolder::prepareEncodingHelper);
+        }
+    }
+
+    private static ItemRegistryPacket itemRegistryPacket() {
+        final ItemRegistryPacket packet = new ItemRegistryPacket();
+        packet.getItemData().addAll(itemRegistryCache().itemDefinitions());
+        return packet;
+    }
+
+    private static AvailableActorIdentifiersPacket actorIdentifiersPacket() {
+        final AvailableActorIdentifiersPacket packet = new AvailableActorIdentifiersPacket();
+        packet.setActorInfoList(Registries.ENTITY.getTag());
+        return packet;
+    }
+
+    private static long creativeContentFingerprint() {
+        return EncodedPacketCache.identityFingerprint(Registries.CREATIVE.getCreativeGroups(), Registries.CREATIVE.getCreativeItemData());
+    }
+
+    private static CreativeContentPacket creativeContentPacket() {
+        final CreativeContentPacket packet = new CreativeContentPacket();
+        packet.getGroups().addAll(Registries.CREATIVE.getCreativeGroups());
+        packet.getEntries().addAll(Registries.CREATIVE.getCreativeItemData());
+        return packet;
+    }
+
+    /**
+     * Encodes every packet of the login sequence that is the same for all players, so the first
+     * players to join do not pay for it. Meant to run once the registries are complete, after the
+     * plugins have been enabled; anything registered later is encoded again when first sent.
+     * Safe to call from any thread, and concurrently with logins.
+     */
+    @ApiStatus.Internal
+    public static void warmEncodedPackets() {
+        for (StaticPacket packet : StaticPacket.values()) {
+            try {
+                if (packet.key.get() != null) {
+                    ReferenceCountUtil.release(packet.encoded());
+                }
+            } catch (Exception e) {
+                log.warn("Could not encode the {} login packet ahead of time", packet, e);
+            }
+        }
     }
 
     /**
      * Sends a packet that is the same for every player, from its {@link EncodedPacketCache} when
      * nothing can change it on the way out, and the regular way otherwise.
-     *
-     * @param key       identifies the content of the packet, see {@link EncodedPacketCache#get}
-     * @param fireEvent whether the regular way goes through the player, firing {@link PacketSendEvent}
      */
-    private void sendEncoded(EncodedPacketCache cache, Object key, Supplier<? extends BedrockPacket> packet, boolean fireEvent) {
-        this.sendEncoded(cache, key, null, packet, fireEvent);
-    }
-
-    private void sendEncoded(EncodedPacketCache cache, Object key, @Nullable Object dependency,
-                             Supplier<? extends BedrockPacket> packet, boolean fireEvent) {
-        this.sendEncoded(cache, key, 0L, dependency, packet, fireEvent);
-    }
-
-    private void sendEncoded(EncodedPacketCache cache, Object key, long stamp, @Nullable Object dependency,
-                             Supplier<? extends BedrockPacket> packet, boolean fireEvent) {
-        if (trySendEncoded(this.session, cache, key, stamp, dependency, packet)) {
+    private void sendEncoded(StaticPacket packet) {
+        if (trySendEncoded(this.session, packet)) {
             return;
         }
-        if (fireEvent) {
-            this.player.sendPacketImmediately(packet.get());
+        if (packet.fireEvent) {
+            this.player.sendPacketImmediately(packet.packet.get());
         } else {
-            this.session.sendPacketImmediately(packet.get());
+            this.session.sendPacketImmediately(packet.packet.get());
         }
     }
 
@@ -821,13 +872,12 @@ public class PlayerSessionHolder {
         return PacketSendEvent.getHandlers().isEmpty() && session.getCodec() == NetworkConstants.CODEC;
     }
 
-    private static boolean trySendEncoded(BedrockServerSession session, EncodedPacketCache cache, Object key, long stamp,
-                                          @Nullable Object dependency, Supplier<? extends BedrockPacket> packet) {
-        if (key == null || !canSendEncoded(session)) {
+    private static boolean trySendEncoded(BedrockServerSession session, StaticPacket packet) {
+        if (!canSendEncoded(session) || packet.key.get() == null) {
             return false;
         }
         if (session.isConnected()) {
-            session.sendPacketImmediately(cache.get(key, stamp, dependency, packet, PlayerSessionHolder::prepareEncodingHelper));
+            session.sendPacketImmediately(packet.encoded());
         }
         return true;
     }
@@ -841,17 +891,7 @@ public class PlayerSessionHolder {
      */
     @ApiStatus.Internal
     public static boolean trySendCreativeContent(BedrockServerSession session) {
-        if (!canSendEncoded(session)) {
-            return false;
-        }
-        final long fingerprint = EncodedPacketCache.identityFingerprint(
-            Registries.CREATIVE.getCreativeGroups(), Registries.CREATIVE.getCreativeItemData());
-        return trySendEncoded(session, CREATIVE_CONTENT, Registries.CREATIVE, fingerprint, itemRegistryCache(), () -> {
-            final CreativeContentPacket packet = new CreativeContentPacket();
-            packet.getGroups().addAll(Registries.CREATIVE.getCreativeGroups());
-            packet.getEntries().addAll(Registries.CREATIVE.getCreativeItemData());
-            return packet;
-        });
+        return trySendEncoded(session, StaticPacket.CREATIVE_CONTENT);
     }
 
     private static void prepareEncodingHelper(BedrockCodecHelper helper) {

@@ -195,7 +195,6 @@ import org.powernukkitx.utils.DummyBossBar;
 import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.PortalHelper;
-import org.powernukkitx.utils.SkinConverter;
 import org.powernukkitx.utils.TextFormat;
 import org.powernukkitx.utils.Utils;
 
@@ -2632,7 +2631,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             var skinPacket = new PlayerSkinPacket();
             skinPacket.setUuid(this.getUniqueId());
-            skinPacket.setSerializedSkin(SkinConverter.toSerializedSkin(serializedSkin, skin.isTrusted()));
+            skinPacket.setSerializedSkin(skin.toSerializedSkin());
             skinPacket.setLocalizedNewSkinName(serializedSkin.getSkinId());
             skinPacket.setLocalizedOldSkinName("");
             Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
