@@ -1,6 +1,7 @@
 package org.powernukkitx.network.compression;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.math.NukkitMath;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.BatchCompression;
@@ -13,9 +14,9 @@ import org.cloudburstmc.protocol.common.util.Zlib;
 /**
  * Builds the outbound compression setup for a session from {@code network-settings}.
  * <p>
- * Both login paths (single- and multi-version) used to hand the session a bare algorithm, which
- * left the connection on the protocol library's default deflate level and compressed every batch
- * no matter how small. Going through here applies the configured level and threshold instead.
+ * The login handler used to hand the session a bare algorithm, which left the connection on the
+ * protocol library's default deflate level and compressed every batch no matter how small. Going
+ * through here applies the configured level and threshold instead.
  */
 public final class NetworkCompression {
 
@@ -41,7 +42,7 @@ public final class NetworkCompression {
                 : PacketCompressionAlgorithm.ZLIB;
 
         BatchCompression compression = snappy ? new SnappyCompression() : new ZlibCompression(Zlib.RAW);
-        compression.setLevel(settings.compressionLevel());
+        compression.setLevel(NukkitMath.clamp(settings.compressionLevel(), 0, 9));
 
         int threshold = settings.compressionThreshold();
         if (threshold > 1 && session.getPeer().getCodec().getProtocolVersion() < PREFIXED_COMPRESSION_PROTOCOL) {
