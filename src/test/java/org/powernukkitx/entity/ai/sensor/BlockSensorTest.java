@@ -64,4 +64,16 @@ public class BlockSensorTest {
 
         Assertions.assertNull(zombie.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK));
     }
+
+    @Test
+    void rejectsSearchVolumesOutsideTheLimit() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new BlockSensor(BlockTurtleEgg.class, CoreMemoryTypes.NEAREST_BLOCK, -1, 2));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new BlockSensor(BlockTurtleEgg.class, CoreMemoryTypes.NEAREST_BLOCK, 8, -1));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new BlockSensor(BlockTurtleEgg.class, CoreMemoryTypes.NEAREST_BLOCK, 65, 2));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new BlockSensor(BlockTurtleEgg.class, CoreMemoryTypes.NEAREST_BLOCK, 8, 65));
+    }
 }
