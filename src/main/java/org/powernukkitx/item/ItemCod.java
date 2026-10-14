@@ -26,4 +26,9 @@ public class ItemCod extends ItemFish {
     protected ItemCod(String id, Integer meta, int count, ItemDefinition definition) {
         super(id, meta, count, definition);
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:fish"};
+    }
 }
