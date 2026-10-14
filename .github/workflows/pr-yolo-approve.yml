@@ -22,11 +22,19 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BODY: ${{ github.event.comment.body }}
           COMMENTER: ${{ github.event.comment.user.login }}
+          COMMENTER_ID: ${{ github.event.comment.user.id }}
         run: |
           # only the exact first line counts, so a stray "/yolo" in a longer comment does nothing
           command=$(printf '%s' "$BODY" | head -n1 | tr -d '\r' | xargs)
           if [ "$command" != "/yolo approve-pr" ]; then
             echo "Not an approve command, skipping."
+            echo "allowed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Buddelbubi, matched by id so a username change doesn't slip past
+          if [ "$COMMENTER_ID" = "44944269" ]; then
+            echo "::notice::$COMMENTER is not allowed to use /yolo, ignoring."
             echo "allowed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
