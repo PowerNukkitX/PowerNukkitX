@@ -5751,13 +5751,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
             //move oldChunk to new Chunk
             if (!oldEntities.isEmpty()) {
-                Iterator<Map.Entry<Long, Entity>> iter = oldEntities.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Map.Entry<Long, Entity> entry = iter.next();
-                    Entity entity = entry.getValue();
-                    chunk.addEntity(entity);
-                    iter.remove();
+                // Detach first. Removing from the old chunk after attaching to the new one resets
+                // the section index the new chunk just assigned, and the entity ends up unindexed.
+                for (Entity entity : new ArrayList<>(oldEntities.values())) {
                     oldChunk.removeEntity(entity);
+                    chunk.addEntity(entity);
                     entity.chunk = chunk;
                 }
             }
