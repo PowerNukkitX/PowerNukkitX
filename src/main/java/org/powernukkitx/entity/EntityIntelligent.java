@@ -42,6 +42,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         if (storage != null) {
             storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, getLevel().getTick());
             MemoryType.getPersistentMemories().forEach(memory -> processMemoryStorage(storage, memory));
+            getLevel().getVillageManager().restoreRaider(this);
         }
     }
 

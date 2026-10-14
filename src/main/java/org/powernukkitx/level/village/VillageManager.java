@@ -27,6 +27,8 @@ import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.command.utils.RawText;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.BossBarColor;
+import org.powernukkitx.utils.DummyBossBar;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 import java.util.ArrayList;
@@ -93,7 +95,7 @@ public final class VillageManager {
 
     private final Level level;
     private final ConcurrentHashMap<UUID, Village> villages = new ConcurrentHashMap<>();
-    private final Map<UUID, Map<UUID, Long>> raidBossBars = new HashMap<>();
+    private final Map<UUID, Map<UUID, DummyBossBar>> raidBossBars = new HashMap<>();
     private record JobSiteCache(Set<String> ids, int version) {
     }
 
@@ -253,23 +255,37 @@ public final class VillageManager {
     }
 
     public void addVillage(Village village) {
-        villages.put(village.uuid(), village);
+        Village previous = villages.put(village.uuid(), village);
+        if (previous != null && previous != village) {
+            stopRaid(previous);
+        }
     }
 
     public boolean removeVillage(Village village) {
-        return villages.remove(village.uuid(), village);
+        if (!villages.remove(village.uuid(), village)) {
+            return false;
+        }
+        stopRaid(village);
+        return true;
     }
 
     public Village removeVillage(UUID uuid) {
-        return villages.remove(uuid);
+        Village removed = villages.remove(uuid);
+        if (removed != null) {
+            stopRaid(removed);
+        }
+        return removed;
     }
 
     public void clear() {
+        for (Village village : villages.values()) {
+            stopRaid(village);
+        }
         villages.clear();
     }
 
     public void load(Collection<Village> villages) {
-        this.villages.clear();
+        clear();
         villages.forEach(village -> this.villages.put(village.uuid(), village));
     }
 
@@ -350,8 +366,10 @@ public final class VillageManager {
             return null;
         }
         if (!village.isValid()) {
-            return raid.withStatus(VillageRaid.STATUS_LOSS);
+            stopRaid(village);
+            return null;
         }
+        restoreRaiderTargets(village, raid);
         if (!hasPlayerInRaidBounds(village)) {
             return raid;
         }
@@ -382,8 +400,7 @@ public final class VillageManager {
                     continue;
                 }
                 if (level.getBlock(position.x, position.y, position.z, false) instanceof BlockBell bell) {
-                    bell.ring(null, BellRingEvent.RingCause.UNKNOWN,
-                            BlockFace.fromIndex(ThreadLocalRandom.current().nextInt(2, 6)));
+                    bell.ring(null, BellRingEvent.RingCause.UNKNOWN, null);
                 }
             }
         }
@@ -408,7 +425,7 @@ public final class VillageManager {
     private VillageRaid tickPickingSpawnPoint(Village village, VillageRaid raid) {
         Vector3 spawnPoint = findSpawnPoint(village);
         if (spawnPoint != null) {
-            return raid.withSpawnPoint(spawnPoint, 0).withState(VillageRaid.STATE_SPAWNING_GROUP);
+            return raid.withSpawnPoint(spawnPoint, raid.spawnFails()).withState(VillageRaid.STATE_SPAWNING_GROUP);
         }
         int spawnFails = raid.spawnFails() + 1;
         return spawnFails > ALLOWED_SPAWN_FAILURES
@@ -516,12 +533,22 @@ public final class VillageManager {
             if (raider == null) {
                 continue;
             }
-            if (!raider.hasCustomName()) {
-                raider.setPersistent(false);
-            }
-            if (celebrating && raider instanceof EntityIntelligent intelligent) {
-                intelligent.getMemoryStorage().put(CoreMemoryTypes.CELEBRATING, true);
-            }
+            clearRaider(raider, celebrating);
+        }
+    }
+
+    private void clearRaider(Entity raider, boolean celebrating) {
+        raider.getNbt().remove("RaidVillageUUID");
+        if (!raider.hasCustomName()) {
+            raider.setPersistent(false);
+        }
+        if (raider instanceof EntityIllager illager) {
+            illager.setRaiding(false);
+        }
+        if (raider instanceof EntityIntelligent intelligent) {
+            intelligent.getMemoryStorage().clear(CoreMemoryTypes.RAID_TARGET);
+            intelligent.setMoveTarget(null);
+            intelligent.getMemoryStorage().put(CoreMemoryTypes.CELEBRATING, celebrating);
         }
     }
 
@@ -625,6 +652,7 @@ public final class VillageManager {
                 if (raider instanceof EntityIllager illager) {
                     illager.setRaiding(true);
                 }
+                raider.getNbt().putString("RaidVillageUUID", village.uuid().toString());
                 raider.setPersistent(true);
                 raider.spawnToAll();
                 raiders.add(raider.uniqueIdLong());
@@ -658,26 +686,96 @@ public final class VillageManager {
         if (raid == null) {
             return;
         }
-        Map<UUID, Long> bars = raidBossBars.computeIfAbsent(village.uuid(), uuid -> new HashMap<>());
-        BlockVector3 center = village.center();
-        String title = bossBarTitle(raid);
-        int length = (int) (raid.bossBarProgress() * 100);
-        for (Player player : level.getPlayers().values()) {
-            UUID playerUuid = player.getUniqueId();
-            if (!isInsideRaidBounds(village, player)) {
-                Long removed = bars.remove(playerUuid);
-                if (removed != null) {
-                    player.removeBossBar(removed);
-                }
-                continue;
+        Map<UUID, DummyBossBar> bars = raidBossBars.computeIfAbsent(village.uuid(), uuid -> new HashMap<>());
+        bars.values().removeIf(bar -> {
+            Player player = bar.getPlayer();
+            if (!player.isConnected() || player.getLevel() != level || !isInsideRaidBounds(village, player)) {
+                player.removeBossBar(bar.getBossBarId());
+                return true;
             }
-            Long bossBarId = bars.get(playerUuid);
-            if (bossBarId == null) {
-                bars.put(playerUuid, player.createBossBar(title, length));
-            } else {
-                player.updateBossBar(title, length, bossBarId);
+            return false;
+        });
+        String title = bossBarTitle(raid);
+        float health = 0f;
+        for (long raiderId : raid.raiders()) {
+            Entity raider = level.getEntityByUniqueId(raiderId);
+            if (raider != null && !raider.isClosed() && raider.isAlive()) {
+                health += raider.getHealth();
             }
         }
+        float length = Math.max(1f, raid.bossBarProgress(health) * 100f);
+        for (Player player : level.getPlayers().values()) {
+            if (!player.isConnected() || !isInsideRaidBounds(village, player)) {
+                continue;
+            }
+            UUID playerUuid = player.getUniqueId();
+            DummyBossBar bar = bars.get(playerUuid);
+            if (bar == null || bar.getPlayer() != player || player.getDummyBossBar(bar.getBossBarId()) != bar) {
+                if (bar != null) {
+                    bar.getPlayer().removeBossBar(bar.getBossBarId());
+                }
+                bar = new DummyBossBar.Builder(player).text(title).length(length).color(BossBarColor.RED).build();
+                player.createBossBar(bar);
+                bars.put(playerUuid, bar);
+            } else {
+                bar.setText(title);
+                bar.setLength(length);
+            }
+        }
+    }
+
+    /**
+     * Restores a loaded raider's village target, or clears its raid state if the saved raid ended.
+     * Reads only loaded entities and does not load chunks. Called during entity initialization.
+     *
+     * @param raider the initialized entity whose saved raid association is being restored
+     */
+    public void restoreRaider(EntityIntelligent raider) {
+        String villageId = raider.getNbt().getString("RaidVillageUUID");
+        if (villageId.isEmpty()) {
+            return;
+        }
+        Village village;
+        try {
+            village = villages.get(UUID.fromString(villageId));
+        } catch (IllegalArgumentException ignored) {
+            clearRaider(raider, false);
+            return;
+        }
+        VillageRaid raid = village == null ? null : village.raid();
+        if (raid == null || raid.isFinished() || !raid.raiders().contains(raider.uniqueIdLong())) {
+            clearRaider(raider, false);
+            return;
+        }
+        BlockVector3 center = village.center();
+        raider.getMemoryStorage().put(CoreMemoryTypes.RAID_TARGET,
+                new Vector3(center.x + 0.5, center.y, center.z + 0.5));
+    }
+
+    private void restoreRaiderTargets(Village village, VillageRaid raid) {
+        BlockVector3 center = village.center();
+        for (long raiderId : raid.raiders()) {
+            if (level.getEntityByUniqueId(raiderId) instanceof EntityIntelligent raider
+                    && raider.isAlive() && !raider.isClosed()) {
+                village.raiderPositions().put(raiderId, raider.asBlockVector3());
+                raider.getNbt().putString("RaidVillageUUID", village.uuid().toString());
+                if (raider.getMemoryStorage().isEmpty(CoreMemoryTypes.RAID_TARGET)) {
+                    raider.getMemoryStorage().put(CoreMemoryTypes.RAID_TARGET,
+                            new Vector3(center.x + 0.5, center.y, center.z + 0.5));
+                }
+            }
+        }
+    }
+
+    private void stopRaid(Village village) {
+        removeBossBars(village);
+        if (village.raid() != null) {
+            expireRaiders(village.raid(), false);
+            village.setRaid(null);
+        }
+        village.raiderPositions().clear();
+        village.setBellRingTick(0);
+        setDwellersHiding(village, false);
     }
 
     private void setDwellersHiding(Village village, boolean hiding) {
@@ -702,14 +800,10 @@ public final class VillageManager {
     }
 
     private void removeBossBars(Village village) {
-        Map<UUID, Long> bars = raidBossBars.remove(village.uuid());
-        if (bars == null) {
-            return;
-        }
-        for (Player player : level.getPlayers().values()) {
-            Long bossBarId = bars.get(player.getUniqueId());
-            if (bossBarId != null) {
-                player.removeBossBar(bossBarId);
+        Map<UUID, DummyBossBar> bars = raidBossBars.remove(village.uuid());
+        if (bars != null) {
+            for (DummyBossBar bar : bars.values()) {
+                bar.getPlayer().removeBossBar(bar.getBossBarId());
             }
         }
     }
@@ -756,7 +850,7 @@ public final class VillageManager {
     }
 
     private void dissolveVillage(Village village) {
-        if (!villages.remove(village.uuid(), village)) {
+        if (!removeVillage(village)) {
             return;
         }
         for (VillageDwellers.Dweller dweller : village.dwellers().dwellers()) {

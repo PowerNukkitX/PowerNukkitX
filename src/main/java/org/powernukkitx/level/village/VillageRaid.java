@@ -47,12 +47,23 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
      * the current group still standing
      */
     public float bossBarProgress() {
+        if (state == STATE_GROUP_IN_PLAY) {
+            return numberOfRaiders <= 0 ? 0f : Math.clamp(raiders.size() / (float) numberOfRaiders, 0f, 1f);
+        }
+        return bossBarProgress(0f);
+    }
+
+    /**
+     * @param currentHealth total current health of the surviving raiders
+     * @return preparation progress or the surviving health divided by the group maximum, clamped to [0, 1]
+     */
+    public float bossBarProgress(float currentHealth) {
         return switch (state) {
             case STATE_PREPARATION -> Math.clamp(ticks / (float) VillageManager.RAID_PREPARATION_TIME, 0f, 1f);
             case STATE_PICKING_SPAWN_POINT, STATE_SPAWNING_GROUP -> 1f;
-            case STATE_GROUP_IN_PLAY -> numberOfRaiders <= 0
+            case STATE_GROUP_IN_PLAY -> totalMaxHealth <= 0
                     ? 0f
-                    : Math.clamp(raiders.size() / (float) numberOfRaiders, 0f, 1f);
+                    : Math.clamp(currentHealth / totalMaxHealth, 0f, 1f);
             default -> 0f;
         };
     }
