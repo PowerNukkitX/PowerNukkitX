@@ -20,6 +20,7 @@ import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.MemorizedBlockSensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
@@ -78,7 +79,7 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
                 .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestPlayerSensor(40, 0, 0),
-                        new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0),
+                        new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0, ISensor.DEFAULT_TARGETING_PERIOD),
                         new MemorizedBlockSensor(11, 5, 20)
                 )
                 .controllers(new WalkController(), new LookController(true, true))

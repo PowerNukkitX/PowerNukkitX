@@ -2032,7 +2032,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             this.chunk.addEntity(this);
+            return;
         }
+
+        updateChunkSection();
     }
 
     protected void sendPlayStatus(PlayStatus status) {

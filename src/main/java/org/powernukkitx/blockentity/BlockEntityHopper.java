@@ -242,9 +242,15 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
-        HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
-        this.server.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
+        // Every hopper fired this event on every tick it was off cooldown, allocating it even with
+        // no listener registered. Hoppers are numerous and tick constantly.
+        boolean searchCancelled = false;
+        if (!HopperSearchItemEvent.getHandlers().isEmpty()) {
+            HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
+            this.server.getPluginManager().callEvent(event);
+            searchCancelled = event.isCancelled();
+        }
+        if (!searchCancelled) {
             if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
                 changed = pullItems(this, this) || changed;
             } else {

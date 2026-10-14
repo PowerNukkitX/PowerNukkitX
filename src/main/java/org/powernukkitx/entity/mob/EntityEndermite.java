@@ -16,6 +16,7 @@ import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.components.AttackComponent;
@@ -59,8 +60,8 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
                 .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestPlayerSensor(16, 0, 0),
-                        new NearestEntitySensor(EntityIronGolem.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0),
-                        new NearestEntitySensor(EntityEnderman.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0)
+                        new NearestEntitySensor(EntityIronGolem.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0, ISensor.DEFAULT_TARGETING_PERIOD),
+                        new NearestEntitySensor(EntityEnderman.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0, ISensor.DEFAULT_TARGETING_PERIOD)
                 )
                 .controllers(new WalkController(), new LookController(true, true))
                 .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))

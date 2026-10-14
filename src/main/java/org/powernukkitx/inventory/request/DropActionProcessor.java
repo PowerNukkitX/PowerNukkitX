@@ -35,13 +35,11 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
         Inventory inventory = NetworkMapping.getInventory(player, containerName.getContainerName(), dynamicId);
         var count = action.getAmount();
         var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
-        var item = inventory.getItem(slot);
-
-        PlayerDropItemEvent ev;
-        player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, item));
-        if (ev.isCancelled()) {
+        if (slot < 0 || slot >= inventory.getSize()) {
+            log.warn("drop action points at slot {} which is outside of {}", slot, inventory.getClass().getSimpleName());
             return context.error();
         }
+        var item = inventory.getItem(slot);
 
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
@@ -51,12 +49,25 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
             log.warn("cannot throw an air!");
             return context.error();
         }
+        if (count <= 0) {
+            log.warn("cannot throw a non positive amount of items!");
+            return context.error();
+        }
         if (item.getCount() < count) {
             log.warn("cannot throw more items than the current amount!");
             return context.error();
         }
+
         Item drop = item.clone();
         drop.setCount(count);
+
+        // The event has to see what actually leaves the inventory, not the whole stack it comes from.
+        PlayerDropItemEvent ev;
+        player.getServer().getPluginManager().callEvent(ev = new PlayerDropItemEvent(player, drop));
+        if (ev.isCancelled()) {
+            return context.error();
+        }
+
         player.dropItem(drop);
 
         int c = item.getCount() - count;

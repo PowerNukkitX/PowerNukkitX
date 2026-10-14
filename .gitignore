@@ -265,3 +265,6 @@ __pycache__
 src/test/resources/newlevel_fixture_*/
 src/test/resources/gen_smoke_*/
 src/test/resources/newlevel/
+
+# Leftover output of LevelStorageTest when a run crashes before teardown
+src/test/resources/level2/

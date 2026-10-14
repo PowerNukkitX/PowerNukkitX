@@ -12,6 +12,12 @@ import org.powernukkitx.entity.ai.memory.IMemoryStorage;
 public interface ISensor {
 
     /**
+     * Refresh period for sensors that feed targeting. 1 keeps vanilla reaction time. Raising it
+     * saves AI ticks but delays every reaction by that many gt.
+     */
+    int DEFAULT_TARGETING_PERIOD = 1;
+
+    /**
      * @param entity the target entity
      */
     void sense(EntityIntelligent entity);

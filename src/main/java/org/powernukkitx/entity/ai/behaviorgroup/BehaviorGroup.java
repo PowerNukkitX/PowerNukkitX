@@ -14,8 +14,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,15 +39,18 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * "Core" behaviors that will not be overridden by other behaviors
      */
+    @Getter(AccessLevel.NONE)
     protected final Set<IBehavior> coreBehaviors;
 
     /**
      * All behaviors
      */
+    @Getter(AccessLevel.NONE)
     protected final Set<IBehavior> behaviors;
     /**
      * Sensors
      */
+    @Getter(AccessLevel.NONE)
     protected final Set<ISensor> sensors;
     /**
      * Controllers
@@ -82,6 +89,31 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Getter(AccessLevel.NONE)
     private final List<IBehavior> evaluationResult = new ArrayList<>();
+
+    /**
+     * Unmodifiable view. The per-tick arrays are built from these sets at construction, so a behavior
+     * added later would be silently ignored. The view throws on the change instead.
+     */
+    @Override
+    public Set<IBehavior> getBehaviors() {
+        return Collections.unmodifiableSet(behaviors);
+    }
+
+    /**
+     * Unmodifiable view, see {@link #getBehaviors()}
+     */
+    @Override
+    public Set<IBehavior> getCoreBehaviors() {
+        return Collections.unmodifiableSet(coreBehaviors);
+    }
+
+    /**
+     * Unmodifiable view, see {@link #getBehaviors()}
+     */
+    @Override
+    public Set<ISensor> getSensors() {
+        return Collections.unmodifiableSet(sensors);
+    }
 
     public BehaviorGroup(int startRouteUpdateTick,
                          Set<IBehavior> coreBehaviors,

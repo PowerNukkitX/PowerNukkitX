@@ -43,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -1591,36 +1592,65 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 : null;
     }
 
+    private static final String MINECRAFT_NAMESPACE = "minecraft:";
+    private static final String FLOWING_PREFIX = "flowing_";
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+    /**
+     * Copy of the settings list the normalized ids were built from. Kept together in one object so
+     * a reader never pairs a new source with old normalized ids.
+     */
+    private record TickingDisabledCache(List<String> source, String[] normalized) {
+    }
+
+    private static volatile TickingDisabledCache tickingDisabledCache = new TickingDisabledCache(List.of(), EMPTY_STRING_ARRAY);
+
     public static boolean isTickingDisabled(Level level, String id) {
         if (level == null) return false;
 
         List<String> disabledList = level.getServer().getSettings().chunkSettings().disableBlockTicking();
         if (disabledList == null || disabledList.isEmpty()) return false;
 
-        String normalizedId = id.toLowerCase();
-        if (normalizedId.startsWith("minecraft:")) {
-            normalizedId = normalizedId.substring(10);
-        }
-        if (normalizedId.startsWith("flowing_")) {
-            normalizedId = normalizedId.substring(8);
-        }
-
-        for (String disabledId : disabledList) {
-            String normalizedDisabled = disabledId.toLowerCase();
-
-            if (normalizedDisabled.startsWith("minecraft:")) {
-                normalizedDisabled = normalizedDisabled.substring(10);
+        // compared by content, the settings hand out a plain ArrayList that can be edited in place.
+        // the elements are the same String instances between edits, so equals mostly stops at ==
+        TickingDisabledCache cache = tickingDisabledCache;
+        if (!cache.source().equals(disabledList)) {
+            String[] normalized = new String[disabledList.size()];
+            for (int i = 0; i < normalized.length; i++) {
+                normalized[i] = stripBlockIdPrefixes(disabledList.get(i));
             }
-            if (normalizedDisabled.startsWith("flowing_")) {
-                normalizedDisabled = normalizedDisabled.substring(8);
-            }
+            cache = new TickingDisabledCache(new ArrayList<>(disabledList), normalized);
+            tickingDisabledCache = cache;
+        }
+        String[] normalized = cache.normalized();
 
-            if (normalizedId.equals(normalizedDisabled)) {
+        int offset = 0;
+        if (id.regionMatches(true, 0, MINECRAFT_NAMESPACE, 0, MINECRAFT_NAMESPACE.length())) {
+            offset = MINECRAFT_NAMESPACE.length();
+        }
+        if (id.regionMatches(true, offset, FLOWING_PREFIX, 0, FLOWING_PREFIX.length())) {
+            offset += FLOWING_PREFIX.length();
+        }
+        int length = id.length() - offset;
+
+        for (String candidate : normalized) {
+            if (candidate.length() == length && id.regionMatches(true, offset, candidate, 0, length)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static String stripBlockIdPrefixes(String id) {
+        String normalized = id.toLowerCase();
+        if (normalized.startsWith(MINECRAFT_NAMESPACE)) {
+            normalized = normalized.substring(MINECRAFT_NAMESPACE.length());
+        }
+        if (normalized.startsWith(FLOWING_PREFIX)) {
+            normalized = normalized.substring(FLOWING_PREFIX.length());
+        }
+        return normalized;
     }
 
     public boolean isTickingDisabled() {
