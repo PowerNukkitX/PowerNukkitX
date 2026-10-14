@@ -2753,16 +2753,15 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     int chunkX = getHashX(index);
                     int chunkZ = getHashZ(index);
 
-                    // The chunk's own lookup runs first so an entry for an unloaded chunk is
-                    // rejected by one probe instead of the four the neighbour check costs. Same
-                    // ordering as addResolvedTickChunk.
-                    IChunk chunk = this.getChunk(chunkX, chunkZ, false);
-                    if (chunk == null) {
+                    // Neighbour check first. getChunk(..., false) on an unloaded chunk goes to the
+                    // provider and can read LevelDB, which is wasted when the neighbours are missing.
+                    if (!tickingAreaChunk && !areNeighboringChunksLoaded(index)) {
                         iter.remove();
                         continue;
                     }
 
-                    if (!tickingAreaChunk && !areNeighboringChunksLoaded(index)) {
+                    IChunk chunk = this.getChunk(chunkX, chunkZ, false);
+                    if (chunk == null) {
                         iter.remove();
                         continue;
                     }
@@ -2914,12 +2913,12 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return;
         }
-        IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
-        if (chunk == null) {
-            return;
-        }
         if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
                 && !areNeighboringChunksLoaded(index)) {
+            return;
+        }
+        IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
+        if (chunk == null) {
             return;
         }
         resolved.add(chunk);
