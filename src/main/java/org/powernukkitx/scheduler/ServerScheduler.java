@@ -11,6 +11,7 @@ import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +38,9 @@ public class ServerScheduler {
      */
     private final AtomicInteger inFlightAsyncTasks = new AtomicInteger();
     private final Object asyncTaskDrainLock = new Object();
+    // Submitters count themselves in before reading this, and close() sets it before counting. Either
+    // a submitter sees closed, or close() sees its task.
+    private volatile boolean closed;
 
     private volatile int currentTick = -1;
 
@@ -520,6 +524,7 @@ public class ServerScheduler {
     public void executeAsync(Runnable task) {
         this.inFlightAsyncTasks.incrementAndGet();
         try {
+            if (this.closed) throw new RejectedExecutionException("The scheduler is closed");
             this.asyncPool.execute(() -> {
                 try {
                     task.run();
@@ -540,6 +545,7 @@ public class ServerScheduler {
     public <T> CompletableFuture<T> supplyAsync(Supplier<T> supplier) {
         this.inFlightAsyncTasks.incrementAndGet();
         try {
+            if (this.closed) throw new RejectedExecutionException("The scheduler is closed");
             return CompletableFuture.supplyAsync(supplier, this.asyncPool)
                     .whenComplete((result, error) -> asyncTaskFinished());
         } catch (RuntimeException e) {
@@ -579,6 +585,7 @@ public class ServerScheduler {
     }
 
     public void close() {
+        this.closed = true;
         // A borrowed pool outlives this scheduler and is shut down by whoever created it, so the
         // best we can do is wait for the work we submitted before the caller releases its resources.
         if (!this.ownsAsyncPool) {
@@ -597,6 +604,15 @@ public class ServerScheduler {
             this.asyncPool.shutdownNow();
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * Whether work submitted through this scheduler is still running. After {@link #close()} this only
+     * turns false once that work is done, so it tells whether the resources it uses can be released.
+     */
+    @ApiStatus.Internal
+    public boolean hasPendingAsyncTasks() {
+        return this.inFlightAsyncTasks.get() > 0;
     }
 
     @ApiStatus.Internal

@@ -1127,6 +1127,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
         this.scheduler.close();
         if (levelProvider != null) {
+            if (this.scheduler.hasPendingAsyncTasks()) {
+                // Work that outlived the drain timeout may still read the provider, so it stays open
+                log.error("Level {} keeps its provider open, asynchronous work is still running", getName());
+                return;
+            }
             levelProvider.close();
         }
         this.provider.set(null);
