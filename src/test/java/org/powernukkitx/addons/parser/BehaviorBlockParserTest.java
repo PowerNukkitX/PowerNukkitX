@@ -6,6 +6,10 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.property.type.BlockPropertyType;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
+import org.powernukkitx.loot.LootTable;
+import org.powernukkitx.loot.LootTableRegistry;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
@@ -15,6 +19,8 @@ import com.google.gson.JsonParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -202,5 +208,39 @@ class BehaviorBlockParserTest {
         assertNotNull(parser.parseDefinition("TestPack", "block.json",
                 block("pnxtest:unknown_component", "", "{ \"minecraft:totally_made_up\": {} }", "[]")));
         assertFalse(tracker.isEmpty());
+    }
+
+    private static LootTable singleItemTable(String item) {
+        LootTable.Entry entry = new LootTable.Entry(LootTable.EntryType.ITEM, item, 1, LootTable.NumberRange.ONE,
+                null, null, null, List.of());
+        return new LootTable(List.of(new LootTable.Pool(LootTable.NumberRange.ONE, List.of(), List.of(entry))));
+    }
+
+    @Test
+    void dropsFromLootTableChosenPerState() {
+        LootTableRegistry.register("loot_tables/pnxtest/base.json", singleItemTable(ItemID.STICK));
+        LootTableRegistry.register("loot_tables/pnxtest/ripe.json", singleItemTable(ItemID.DIAMOND));
+        BlockDataDriven.Spec spec = parse(block("pnxtest:loot_block",
+                ", \"states\": { \"pnxtest:ripe\": [false, true] }",
+                "{ \"minecraft:loot\": \"loot_tables/pnxtest/base.json\" }",
+                "[ { \"condition\": \"q.block_state('pnxtest:ripe')\", \"components\": { \"minecraft:loot\": { \"table\": \"loot_tables/pnxtest/ripe.json\" } } } ]"));
+
+        Item[] unripe = new BlockDataDriven(stateWith(spec, "pnxtest:ripe", false), spec).getDrops(Item.AIR);
+        Item[] ripe = new BlockDataDriven(stateWith(spec, "pnxtest:ripe", true), spec).getDrops(Item.AIR);
+
+        assertEquals(1, unripe.length);
+        assertEquals(ItemID.STICK, unripe[0].getId());
+        assertEquals(1, ripe.length);
+        assertEquals(ItemID.DIAMOND, ripe[0].getId());
+        assertFalse(spec.definition().nbt().contains("permutations"), "loot is server-side only and must not reach the client");
+    }
+
+    @Test
+    void dropsNothingWhenNamedLootTableIsMissing() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:missing_loot", "",
+                "{ \"minecraft:loot\": \"loot_tables/pnxtest/does_not_exist.json\" }", "[]"));
+
+        assertEquals(0, new BlockDataDriven(spec.properties().getDefaultState(), spec).getDrops(Item.AIR).length);
+        assertTrue(tracker.isEmpty());
     }
 }

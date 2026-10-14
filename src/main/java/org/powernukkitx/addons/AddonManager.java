@@ -3,6 +3,8 @@ package org.powernukkitx.addons;
 import org.powernukkitx.Server;
 import org.powernukkitx.addons.parser.BehaviorBlockParser;
 import org.powernukkitx.addons.parser.BehaviorItemParser;
+import org.powernukkitx.addons.parser.LootTableParser;
+import org.powernukkitx.loot.LootTableRegistry;
 import org.powernukkitx.resourcepacks.ResourcePack;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
 
@@ -49,7 +51,6 @@ public final class AddonManager {
     private static final Map<String, String> UNSUPPORTED_SECTIONS = Map.of(
             "entities/", "entities",
             "recipes/", "recipes",
-            "loot_tables/", "loot tables",
             "spawn_rules/", "spawn rules",
             "trading/", "trading",
             "functions/", "functions",
@@ -61,6 +62,7 @@ public final class AddonManager {
 
     private final BehaviorBlockParser blockParser = new BehaviorBlockParser(featureTracker);
     private final BehaviorItemParser itemParser = new BehaviorItemParser(featureTracker);
+    private final LootTableParser lootTableParser = new LootTableParser(featureTracker);
 
     /**
      * Parses every loaded behaviour pack and registers its content.
@@ -79,6 +81,7 @@ public final class AddonManager {
 
         int blockCount = 0;
         int itemCount = 0;
+        int lootTableCount = 0;
         for (ResourcePack pack : behaviorPacks) {
             File file = pack.getFile();
             if (file == null) {
@@ -88,15 +91,16 @@ public final class AddonManager {
                 Map<String, List<String>> entries = indexEntries(zip);
                 blockCount += loadBlocks(pack, zip, entries.getOrDefault("blocks/", List.of()));
                 itemCount += loadItems(pack, zip, entries.getOrDefault("items/", List.of()));
+                lootTableCount += loadLootTables(pack, zip, entries.getOrDefault("loot_tables/", List.of()));
                 trackUnsupportedSections(pack, entries);
             } catch (IOException e) {
                 log.error("Failed to read behavior pack {}", pack.getPackName(), e);
             }
         }
 
-        if (blockCount > 0 || itemCount > 0) {
-            log.info("Registered {} data-driven block(s) and {} item(s) from {} behavior pack(s)",
-                    blockCount, itemCount, behaviorPacks.size());
+        if (blockCount > 0 || itemCount > 0 || lootTableCount > 0) {
+            log.info("Registered {} data-driven block(s), {} item(s) and {} loot table(s) from {} behavior pack(s)",
+                    blockCount, itemCount, lootTableCount, behaviorPacks.size());
         }
         if (!featureTracker.isEmpty()) {
             featureTracker.logSummary();
@@ -143,6 +147,25 @@ public final class AddonManager {
                 continue;
             }
             if (itemParser.parseAndRegister(pack.getPackName(), entryName, root) != null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Loot tables are looked up by path when loot is generated, so they may load after the
+     * blocks that reference them.
+     */
+    private int loadLootTables(ResourcePack pack, ZipFile zip, List<String> entryNames) {
+        int count = 0;
+        for (String entryName : entryNames) {
+            if (!entryName.toLowerCase(Locale.ENGLISH).endsWith(".json")) {
+                continue;
+            }
+            JsonObject root = readJson(zip, entryName, pack.getPackName());
+            if (root != null) {
+                LootTableRegistry.register(entryName, lootTableParser.parse(pack.getPackName(), root));
                 count++;
             }
         }

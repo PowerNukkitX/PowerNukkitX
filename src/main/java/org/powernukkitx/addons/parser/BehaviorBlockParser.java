@@ -148,7 +148,8 @@ public final class BehaviorBlockParser {
             }
             CustomBlockDefinition definition = buildDefinition(packName, identifier, properties, description,
                     components, permutations, baseTags);
-            BlockDataDriven.Spec spec = BlockDataDriven.Spec.of(properties, definition, baseTags, collectTagRules(permutations));
+            BlockDataDriven.Spec spec = BlockDataDriven.Spec.of(properties, definition, baseTags, collectTagRules(permutations),
+                    lootTableOf(components), collectLootRules(permutations));
             return new ParsedBlock(identifier, spec);
         } catch (RuntimeException e) {
             log.error("Behavior pack '{}': could not parse block {}", packName, identifier, e);
@@ -388,6 +389,8 @@ public final class BehaviorBlockParser {
                 }
             }
             case "minecraft:unit_cube" -> raw.putCompound(key, new CompoundTag());
+            case "minecraft:loot" -> {
+            }
             default -> tracker.reportUnsupported(packName, "block-component", key);
         }
     }
@@ -442,6 +445,42 @@ public final class BehaviorBlockParser {
             if (!tags.isEmpty()) {
                 rules.add(new BlockDataDriven.TagRule(
                         MolangExpression.compile(optString(permutation, "condition")), List.copyOf(tags)));
+            }
+        }
+        return rules;
+    }
+
+    /**
+     * @return the table a {@code minecraft:loot} component names, in either its object or its
+     * string form, or null when the components declare none
+     */
+    private static @Nullable String lootTableOf(@Nullable JsonObject components) {
+        if (components == null) {
+            return null;
+        }
+        JsonElement loot = components.get("minecraft:loot");
+        if (loot == null) {
+            return null;
+        }
+        if (loot.isJsonObject()) {
+            return asStringOrNull(loot.getAsJsonObject().get("table"));
+        }
+        return asStringOrNull(loot);
+    }
+
+    private static List<BlockDataDriven.LootRule> collectLootRules(@Nullable JsonArray permutations) {
+        List<BlockDataDriven.LootRule> rules = new ArrayList<>();
+        if (permutations == null) {
+            return rules;
+        }
+        for (JsonElement element : permutations) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            JsonObject permutation = element.getAsJsonObject();
+            String table = lootTableOf(permutation.getAsJsonObject("components"));
+            if (table != null) {
+                rules.add(new BlockDataDriven.LootRule(MolangExpression.compile(optString(permutation, "condition")), table));
             }
         }
         return rules;
@@ -515,6 +554,8 @@ public final class BehaviorBlockParser {
                 if (transformation != null) {
                     target.putCompound(key, transformation.toCompoundTag());
                 }
+            }
+            case "minecraft:loot" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-permutation-component", key);
         }
@@ -700,6 +741,10 @@ public final class BehaviorBlockParser {
 
     private static String asStringOrEmpty(@Nullable JsonElement element) {
         return element != null && element.isJsonPrimitive() ? element.getAsString() : "";
+    }
+
+    private static @Nullable String asStringOrNull(@Nullable JsonElement element) {
+        return element != null && element.isJsonPrimitive() ? element.getAsString() : null;
     }
 
     private static boolean asBoolean(@Nullable JsonElement element, boolean fallback) {

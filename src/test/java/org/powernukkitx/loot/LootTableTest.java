@@ -29,12 +29,12 @@ class LootTableTest {
 
     private static LootTable.Entry item(String id, int weight, int min, int max) {
         return new LootTable.Entry(LootTable.EntryType.ITEM, id, weight,
-                new LootTable.NumberRange(min, max), null, null, null);
+                new LootTable.NumberRange(min, max), null, null, null, List.of());
     }
 
     private static LootTable single(LootTable.Entry... entries) {
         return new LootTable(List.of(
-                new LootTable.Pool(LootTable.NumberRange.ONE, 1.0f, List.of(entries))));
+                new LootTable.Pool(LootTable.NumberRange.ONE, List.of(), List.of(entries))));
     }
 
     @Test
@@ -64,7 +64,7 @@ class LootTableTest {
     @Test
     void appliesRollsPerPool() {
         LootTable table = new LootTable(List.of(
-                new LootTable.Pool(new LootTable.NumberRange(3, 3), 1.0f, List.of(item(ItemID.STICK, 1, 1, 1)))));
+                new LootTable.Pool(new LootTable.NumberRange(3, 3), List.of(), List.of(item(ItemID.STICK, 1, 1, 1)))));
 
         assertEquals(3, table.generate(new Random(7)).size());
     }
@@ -72,7 +72,7 @@ class LootTableTest {
     @Test
     void skipsPoolBelowRandomChance() {
         LootTable never = new LootTable(List.of(
-                new LootTable.Pool(LootTable.NumberRange.ONE, 0.0f, List.of(item(ItemID.DIAMOND, 1, 1, 1)))));
+                new LootTable.Pool(LootTable.NumberRange.ONE, List.of(new LootTable.RandomChance(0.0f)), List.of(item(ItemID.DIAMOND, 1, 1, 1)))));
 
         assertTrue(never.generate(new Random(3)).isEmpty());
     }
@@ -113,7 +113,7 @@ class LootTableTest {
     void resolvesNestedTableThroughRegistry() {
         LootTableRegistry.register("pnxtest/nested_inner", single(item(ItemID.EMERALD, 1, 1, 1)));
         LootTable outer = single(new LootTable.Entry(LootTable.EntryType.LOOT_TABLE,
-                "pnxtest/nested_inner", 1, LootTable.NumberRange.ONE, null, null, null));
+                "pnxtest/nested_inner", 1, LootTable.NumberRange.ONE, null, null, null, List.of()));
 
         List<Item> loot = outer.generate(new Random(9));
 
@@ -124,7 +124,7 @@ class LootTableTest {
     @Test
     void skipsMissingNestedTable() {
         LootTable outer = single(new LootTable.Entry(LootTable.EntryType.LOOT_TABLE,
-                "pnxtest/does_not_exist", 1, LootTable.NumberRange.ONE, null, null, null));
+                "pnxtest/does_not_exist", 1, LootTable.NumberRange.ONE, null, null, null, List.of()));
 
         assertTrue(outer.generate(new Random(9)).isEmpty());
     }
@@ -133,7 +133,7 @@ class LootTableTest {
     void stopsOnSelfReferencingTable() {
         String path = "pnxtest/recursive";
         LootTable recursive = single(new LootTable.Entry(LootTable.EntryType.LOOT_TABLE,
-                path, 1, LootTable.NumberRange.ONE, null, null, null));
+                path, 1, LootTable.NumberRange.ONE, null, null, null, List.of()));
         LootTableRegistry.register(path, recursive);
 
         assertTrue(recursive.generate(new Random(4)).isEmpty(), "a cycle must terminate, not overflow");
@@ -142,7 +142,7 @@ class LootTableTest {
     @Test
     void appliesDisplayNameAndLore() {
         LootTable table = single(new LootTable.Entry(LootTable.EntryType.ITEM, ItemID.DIAMOND, 1,
-                LootTable.NumberRange.ONE, null, "Shiny", List.of("line one", "line two")));
+                LootTable.NumberRange.ONE, null, "Shiny", List.of("line one", "line two"), List.of()));
 
         Item generated = table.generate(new Random(6)).getFirst();
 
@@ -179,5 +179,56 @@ class LootTableTest {
         assertNotNull(LootTableRegistry.get("loot_tables\\pnxtest\\spelling.json"));
         assertTrue(LootTableRegistry.contains("pnxtest/spelling"));
         assertFalse(LootTableRegistry.contains("pnxtest/other"));
+    }
+
+    private static LootTable.Entry conditioned(String id, int weight, LootTable.Condition... conditions) {
+        return new LootTable.Entry(LootTable.EntryType.ITEM, id, weight,
+                LootTable.NumberRange.ONE, null, null, null, List.of(conditions));
+    }
+
+    private static LootTable.MatchTool needsTag(String tag) {
+        return new LootTable.MatchTool(null, List.of(tag), List.of(), List.of(), false);
+    }
+
+    @Test
+    void excludesEntriesWhoseConditionFailsBeforeWeighting() {
+        LootTable table = single(
+                conditioned(ItemID.DIAMOND, 5000, needsTag("minecraft:is_shears")),
+                conditioned(ItemID.STICK, 1));
+
+        for (int i = 0; i < 50; i++) {
+            List<Item> loot = table.generate(new Random(i));
+            assertEquals(1, loot.size());
+            assertEquals(ItemID.STICK, loot.getFirst().getId(), "a failed condition must remove the entry, whatever its weight");
+        }
+    }
+
+    @Test
+    void matchToolHoldsForToolCarryingTheTag() {
+        LootTable table = single(conditioned(ItemID.DIAMOND, 1, needsTag("minecraft:is_shears")));
+
+        assertEquals(1, table.generate(new Random(1), Item.get(ItemID.SHEARS)).size());
+        assertTrue(table.generate(new Random(1), Item.get(ItemID.STICK)).isEmpty());
+        assertTrue(table.generate(new Random(1), null).isEmpty(), "an empty hand never matches a tool requirement");
+    }
+
+    @Test
+    void matchToolChecksItemAndExcludedTags() {
+        LootTable.MatchTool exactShears = new LootTable.MatchTool(ItemID.SHEARS, List.of(), List.of(), List.of(), false);
+        LootTable.MatchTool notShears = new LootTable.MatchTool(null, List.of(), List.of(), List.of("minecraft:is_shears"), false);
+        Random random = new Random(3);
+
+        assertTrue(exactShears.test(random, Item.get(ItemID.SHEARS)));
+        assertFalse(exactShears.test(random, Item.get(ItemID.STICK)));
+        assertFalse(notShears.test(random, Item.get(ItemID.SHEARS)));
+        assertTrue(notShears.test(random, Item.get(ItemID.STICK)));
+        assertTrue(notShears.test(random, null));
+    }
+
+    @Test
+    void unsatisfiableMatchToolNeverHolds() {
+        LootTable.MatchTool unsatisfiable = new LootTable.MatchTool(null, List.of(), List.of(), List.of(), true);
+
+        assertFalse(unsatisfiable.test(new Random(4), Item.get(ItemID.SHEARS)));
     }
 }

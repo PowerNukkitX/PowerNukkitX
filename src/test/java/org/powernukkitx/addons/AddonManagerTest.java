@@ -2,6 +2,8 @@ package org.powernukkitx.addons;
 
 import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.block.customblock.BlockDataDriven;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -49,7 +52,7 @@ class AddonManagerTest {
     }
 
     @Test
-    void registersBlocksAndItemsFromBehaviorPack() throws IOException {
+    void registersBlocksItemsAndLootFromBehaviorPack() throws IOException {
         Map<String, String> entries = new LinkedHashMap<>();
         entries.put("manifest.json", """
                 {
@@ -60,7 +63,11 @@ class AddonManagerTest {
                 """);
         entries.put("blocks/lamp.json", """
                 { "format_version": "1.21.0", "minecraft:block": { "description": { "identifier": "pnxtest:pipeline_lamp" },
-                  "components": { "minecraft:light_emission": 12 } } }
+                  "components": { "minecraft:light_emission": 12, "minecraft:loot": "loot_tables/blocks/pipeline_lamp.json" } } }
+                """);
+        entries.put("loot_tables/blocks/pipeline_lamp.json", """
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:glowstone_dust",
+                  "functions": [ { "function": "set_count", "count": 3 } ] } ] } ] }
                 """);
         entries.put("items/lamp_item.json", """
                 { "format_version": "1.21.0", "minecraft:item": { "description": { "identifier": "pnxtest:pipeline_lamp" },
@@ -76,6 +83,10 @@ class AddonManagerTest {
 
         assertInstanceOf(BlockDataDriven.class, Registries.BLOCK.get("pnxtest:pipeline_lamp"));
         assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get("pnxtest:pipeline_wrench"));
+        Item[] drops = Registries.BLOCK.get("pnxtest:pipeline_lamp").getDrops(Item.AIR);
+        assertEquals(1, drops.length);
+        assertEquals(ItemID.GLOWSTONE_DUST, drops[0].getId());
+        assertEquals(3, drops[0].getCount());
         assertNull(ItemRegistry.getCustomItemDefinitionByIdStatic("pnxtest:pipeline_lamp"),
                 "an item document reusing a block's identifier must not register a second definition");
     }
