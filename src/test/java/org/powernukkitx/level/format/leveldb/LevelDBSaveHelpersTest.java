@@ -39,7 +39,7 @@ class LevelDBSaveHelpersTest {
         ExecutorService helpers = Executors.newFixedThreadPool(4);
         try {
             LevelDBProvider.serializeWithHelpers(chunks, chunk -> {
-                if (Thread.currentThread() == caller) {
+                if (caller.equals(Thread.currentThread())) {
                     callerStarted.countDown();
                 } else {
                     try {
