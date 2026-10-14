@@ -1212,7 +1212,7 @@ public abstract class Item implements Cloneable, ItemID {
     @InternalApi
     public Item setNbtBytes(byte[] tags) {
         this.tags = tags;
-        // Decoding is deferred to getNbt(); callers that only move bytes around never pay for it.
+        // Decoding is deferred to getNbt()
         this.cachedNBT = null;
         return this;
     }
@@ -1675,8 +1675,8 @@ public abstract class Item implements Cloneable, ItemID {
         try {
             Item item = (Item) super.clone();
             item.tags = this.hasNbt() ? this.tags.clone() : EmptyArrays.EMPTY_BYTES;
-            // Left unparsed: getNbt() decodes on demand, and the overwhelming majority of clones -
-            // inventory reads, recipe matching, item movement - never look at the tag at all.
+            // The clone stays unparsed and getNbt() decodes on demand. hasNbt() above still parses
+            // the source tag if nobody has read it yet.
             item.cachedNBT = null;
             return item;
         } catch (CloneNotSupportedException e) {

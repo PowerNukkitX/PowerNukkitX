@@ -52,12 +52,12 @@ public class ShapelessRecipe extends CraftingRecipe {
         return RecipeType.SHAPELESS;
     }
 
-    @Override
     /**
      * Matching runs over every candidate recipe of the right size, and the copy of the ingredient
      * list that each call used to make was pure overhead. A bit per ingredient tracks what has been
      * consumed instead, so the common case allocates nothing.
      */
+    @Override
     public boolean match(Input input) {
         int ingredientCount = ingredients.size();
         if (ingredientCount > Long.SIZE) {

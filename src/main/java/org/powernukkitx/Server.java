@@ -1385,6 +1385,7 @@ public class Server {
             this.titleTick();
             this.maxTick = getBaseTps();
             this.maxUse = 0;
+
             if (tickTime - this.lastQueryRegenMillis >= 25_600) {
                 this.lastQueryRegenMillis = tickTime;
                 try {

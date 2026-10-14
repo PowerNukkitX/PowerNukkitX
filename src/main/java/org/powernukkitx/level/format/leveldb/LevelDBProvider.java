@@ -1227,11 +1227,6 @@ public class LevelDBProvider implements LevelProvider {
         return this.getChunk(chunkX, chunkZ, false);
     }
 
-    @Nullable
-    protected final IChunk getThreadLastChunk() {
-        return this.lastChunk;
-    }
-
     @Override
     public IChunk getLoadedChunk(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
