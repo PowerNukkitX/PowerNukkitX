@@ -3,8 +3,10 @@ package org.powernukkitx.addons;
 import org.powernukkitx.Server;
 import org.powernukkitx.addons.parser.BehaviorBlockParser;
 import org.powernukkitx.addons.parser.BehaviorItemParser;
+import org.powernukkitx.addons.parser.BehaviorRecipeParser;
 import org.powernukkitx.addons.parser.LootTableParser;
 import org.powernukkitx.loot.LootTableRegistry;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.resourcepacks.ResourcePack;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
 
@@ -50,7 +52,6 @@ public final class AddonManager {
      */
     private static final Map<String, String> UNSUPPORTED_SECTIONS = Map.of(
             "entities/", "entities",
-            "recipes/", "recipes",
             "spawn_rules/", "spawn rules",
             "trading/", "trading",
             "functions/", "functions",
@@ -62,6 +63,7 @@ public final class AddonManager {
 
     private final BehaviorBlockParser blockParser = new BehaviorBlockParser(featureTracker);
     private final BehaviorItemParser itemParser = new BehaviorItemParser(featureTracker);
+    private final BehaviorRecipeParser recipeParser = new BehaviorRecipeParser(featureTracker);
     private final LootTableParser lootTableParser = new LootTableParser(featureTracker);
 
     /**
@@ -81,6 +83,7 @@ public final class AddonManager {
 
         int blockCount = 0;
         int itemCount = 0;
+        int recipeCount = 0;
         int lootTableCount = 0;
         for (ResourcePack pack : behaviorPacks) {
             File file = pack.getFile();
@@ -91,6 +94,7 @@ public final class AddonManager {
                 Map<String, List<String>> entries = indexEntries(zip);
                 blockCount += loadBlocks(pack, zip, entries.getOrDefault("blocks/", List.of()));
                 itemCount += loadItems(pack, zip, entries.getOrDefault("items/", List.of()));
+                recipeCount += loadRecipes(pack, zip, entries.getOrDefault("recipes/", List.of()));
                 lootTableCount += loadLootTables(pack, zip, entries.getOrDefault("loot_tables/", List.of()));
                 trackUnsupportedSections(pack, entries);
             } catch (IOException e) {
@@ -98,9 +102,12 @@ public final class AddonManager {
             }
         }
 
-        if (blockCount > 0 || itemCount > 0 || lootTableCount > 0) {
-            log.info("Registered {} data-driven block(s), {} item(s) and {} loot table(s) from {} behavior pack(s)",
-                    blockCount, itemCount, lootTableCount, behaviorPacks.size());
+        if (recipeCount > 0) {
+            Registries.RECIPE.rebuildPacket();
+        }
+        if (blockCount > 0 || itemCount > 0 || recipeCount > 0 || lootTableCount > 0) {
+            log.info("Registered {} data-driven block(s), {} item(s), {} recipe(s) and {} loot table(s) from {} behavior pack(s)",
+                    blockCount, itemCount, recipeCount, lootTableCount, behaviorPacks.size());
         }
         if (!featureTracker.isEmpty()) {
             featureTracker.logSummary();
@@ -148,6 +155,28 @@ public final class AddonManager {
             }
             if (itemParser.parseAndRegister(pack.getPackName(), entryName, root) != null) {
                 count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Recipes are read after blocks and items, because their ingredients and results are
+     * resolved against the item registry as they are parsed. They are not read at all while
+     * recipes are disabled in the gameplay settings.
+     */
+    private int loadRecipes(ResourcePack pack, ZipFile zip, List<String> entryNames) {
+        if (!Registries.RECIPE.isEnabled()) {
+            return 0;
+        }
+        int count = 0;
+        for (String entryName : entryNames) {
+            if (!entryName.toLowerCase(Locale.ENGLISH).endsWith(".json")) {
+                continue;
+            }
+            JsonObject root = readJson(zip, entryName, pack.getPackName());
+            if (root != null) {
+                count += recipeParser.parseAndRegister(pack.getPackName(), entryName, root);
             }
         }
         return count;

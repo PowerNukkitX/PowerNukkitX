@@ -5,6 +5,7 @@ import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.customitem.ItemDataDriven;
+import org.powernukkitx.recipe.ShapedRecipe;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
@@ -26,6 +27,7 @@ import java.util.zip.ZipOutputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Loads a behaviour pack from disk through the whole pipeline - pack loader, pack manager and
@@ -52,7 +54,7 @@ class AddonManagerTest {
     }
 
     @Test
-    void registersBlocksItemsAndLootFromBehaviorPack() throws IOException {
+    void registersBehaviorPackContent() throws IOException {
         Map<String, String> entries = new LinkedHashMap<>();
         entries.put("manifest.json", """
                 {
@@ -64,6 +66,13 @@ class AddonManagerTest {
         entries.put("blocks/lamp.json", """
                 { "format_version": "1.21.0", "minecraft:block": { "description": { "identifier": "pnxtest:pipeline_lamp" },
                   "components": { "minecraft:light_emission": 12, "minecraft:loot": "loot_tables/blocks/pipeline_lamp.json" } } }
+                """);
+        entries.put("recipes/wrench.json", """
+                { "format_version": "1.12", "minecraft:recipe_shaped": {
+                  "description": { "identifier": "pnxtest:pipeline_wrench_recipe" },
+                  "tags": [ "crafting_table" ], "pattern": [ "L", "S" ],
+                  "key": { "L": { "item": "pnxtest:pipeline_lamp" }, "S": { "item": "minecraft:stick" } },
+                  "result": { "item": "pnxtest:pipeline_wrench" } } }
                 """);
         entries.put("loot_tables/blocks/pipeline_lamp.json", """
                 { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:glowstone_dust",
@@ -83,6 +92,11 @@ class AddonManagerTest {
 
         assertInstanceOf(BlockDataDriven.class, Registries.BLOCK.get("pnxtest:pipeline_lamp"));
         assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get("pnxtest:pipeline_wrench"));
+        ShapedRecipe recipe = assertInstanceOf(ShapedRecipe.class, Registries.RECIPE.get("pnxtest:pipeline_wrench_recipe"));
+        assertEquals("pnxtest:pipeline_wrench", recipe.getResults().getFirst().getId());
+        assertTrue(Registries.RECIPE.getCraftingPacket().getShapedRecipes().stream()
+                        .anyMatch(payload -> "pnxtest:pipeline_wrench_recipe".equals(payload.getRecipeId())),
+                "the crafting data packet must be rebuilt to include pack recipes");
         Item[] drops = Registries.BLOCK.get("pnxtest:pipeline_lamp").getDrops(Item.AIR);
         assertEquals(1, drops.length);
         assertEquals(ItemID.GLOWSTONE_DUST, drops[0].getId());
