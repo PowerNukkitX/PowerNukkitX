@@ -3,8 +3,7 @@ package org.powernukkitx.entity.mob;
 import org.powernukkitx.block.BlockDoor;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -66,23 +65,27 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PiglinTransformExecutor(), all(
+        return EntityAI.of(this)
+                .behavior(new PiglinTransformExecutor())
+                        .when(all(
                                 entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
                                 entity -> !isImmobile(),
                                 entity -> !entity.getNbt().getBoolean("IsImmuneToZombification")
-                        ), 12, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> isAngry()), 10, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> !isAngry()), 9, 1),
-                        new Behavior(new EntityPiglin.PiglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30),new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6, 1),
-                        new Behavior(new EntityPiglin.PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 5, 1),
-                        new Behavior(new EntityPiglin.PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY), all(
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(new RandomSoundEvaluator(), entity -> isAngry()))
+                .behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(all(new RandomSoundEvaluator(), entity -> !isAngry()))
+                .behavior(new EntityPiglin.PiglinMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new EntityPiglin.PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new EntityPiglin.PiglinFleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
                                 entity -> !isBaby()
-                        ), 3, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),

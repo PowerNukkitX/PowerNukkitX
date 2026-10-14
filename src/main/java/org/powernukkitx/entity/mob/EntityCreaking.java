@@ -8,8 +8,7 @@ import org.powernukkitx.block.BlockSculkCatalyst;
 import org.powernukkitx.blockentity.BlockEntityCreakingHeart;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -104,18 +103,14 @@ public class EntityCreaking extends EntityMob {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new DoNothingExecutor(),
-                                new EntityCheckEvaluator(CoreMemoryTypes.STARING_PLAYER), 5, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_CREAKING_AMBIENT),
-                                all(new RandomSoundEvaluator(),
-                                        not(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 24, true, 30),
-                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.12f, 12, 100, false, -1, true, 10),
-                                none(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new DoNothingExecutor())
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.STARING_PLAYER))
+                .behavior(new PlaySoundExecutor(Sound.MOB_CREAKING_AMBIENT))
+                        .when(all(new RandomSoundEvaluator(), not(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.4f, 24, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new FlatRandomRoamExecutor(0.12f, 12, 100, false, -1, true, 10))
                 .sensors(new PlayerStaringCreakingSensor(24, 60, true))
                 .controllers(new WalkController(), new LookController(true, true))
                 .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))

@@ -8,8 +8,7 @@ import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntitySwimmable;
 import org.powernukkitx.entity.EntityVariant;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.ConditionalController;
 import org.powernukkitx.entity.ai.controller.DiveController;
@@ -86,94 +85,60 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     @Override
     @SuppressWarnings("unchecked")
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new LoveTimeoutExecutor(20 * 30),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        ),
-                        new Behavior(entity -> {
-                            setMoveTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK));
-                            return true;
-                        },
-                                all(
-                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
-                                        entity -> !isInsideOfWater(),
-                                        not(new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 9))
-                                ),
-                                1, 1
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_AXOLOTL_SPLASH), all(
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .coreBehavior(entity -> {
+                    setMoveTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK));
+                    return true;
+                })
+                        .when(all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
+                                entity -> !isInsideOfWater(),
+                                not(new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 9))
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_AXOLOTL_SPLASH))
+                        .when(all(
                                 entity -> getAirTicks() == 399
-                        ),
-                                8, 1
-                        ),
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE_WATER),
-                                all(
-                                        new RandomSoundEvaluator(), entity -> isInsideOfWater()
-                                ),
-                                7, 1
-                        ),
-                        new Behavior(
-                                new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE),
-                                all(new RandomSoundEvaluator(), entity -> !isInsideOfWater()
-                                ),
-                                6, 1
-                        ),
-                        new Behavior(
-                                new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 17, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                                5, 1
-                        ),
-                        new Behavior(
-                                new BreedingExecutor(16, 200, 0.35f),
-                                all(
-                                        e -> !e.isBaby(),
-                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                                3, 1
-                        ),
-                        new Behavior(
-                                new TemptExecutor(1.1f, TEMPT_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10),
-                                1, 1, 100
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, false, 10),
-                                entity -> !entity.isInsideOfWater(),
-                                1, 1
-                        ),
-                        new Behavior(
-                                new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
-                                Entity::isInsideOfWater,
-                                1, 1
-                        )
-                )
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE_WATER))
+                        .when(all(
+                                new RandomSoundEvaluator(), entity -> isInsideOfWater()
+                        ))
+                .behavior(new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE))
+                        .when(all(new RandomSoundEvaluator(), entity -> !isInsideOfWater()
+                        ))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 17, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET))
+                .behavior(new BreedingExecutor(16, 200, 0.35f))
+                        .when(all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10))
+                        .when(new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100))
+                .behavior(new TemptExecutor(1.1f, TEMPT_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(new ProbabilityEvaluator(4, 10))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, false, 10))
+                        .when(entity -> !entity.isInsideOfWater())
+                        .alongsidePrevious()
+                .behavior(new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10))
+                        .when(Entity::isInsideOfWater)
+                        .alongsidePrevious()
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
