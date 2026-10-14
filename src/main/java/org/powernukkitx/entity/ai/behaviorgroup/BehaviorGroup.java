@@ -63,15 +63,18 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * "Core" behaviors that will not be overridden by other behaviors
      */
+    @Getter(AccessLevel.NONE)
     protected final Set<IBehavior> coreBehaviors;
 
     /**
      * All behaviors
      */
+    @Getter(AccessLevel.NONE)
     protected final Set<IBehavior> behaviors;
     /**
      * Sensors
      */
+    @Getter(AccessLevel.NONE)
     protected final Set<ISensor> sensors;
     /**
      * Controllers
@@ -155,6 +158,28 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected int currentRouteUpdateTick;//gt
 
     protected boolean forceUpdateRoute = false;
+
+    /**
+     * Unmodifiable view. The per-tick arrays are built from these sets at construction, so a behavior
+     * added later would be silently ignored. The view throws on the change instead.
+     */
+    public Set<IBehavior> getBehaviors() {
+        return Collections.unmodifiableSet(behaviors);
+    }
+
+    /**
+     * Unmodifiable view, see {@link #getBehaviors()}
+     */
+    public Set<IBehavior> getCoreBehaviors() {
+        return Collections.unmodifiableSet(coreBehaviors);
+    }
+
+    /**
+     * Unmodifiable view, see {@link #getBehaviors()}
+     */
+    public Set<ISensor> getSensors() {
+        return Collections.unmodifiableSet(sensors);
+    }
 
     public BehaviorGroup(int startRouteUpdateTick,
                          Set<IBehavior> coreBehaviors,
