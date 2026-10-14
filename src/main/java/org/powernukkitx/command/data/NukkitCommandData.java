@@ -8,6 +8,8 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOverloadData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,7 +196,23 @@ public class NukkitCommandData implements Cloneable {
         return List.of(without, with);
     }
 
-    public CommandData toNetwork() {
+    /**
+     * Converts this metadata using its original command name without changing the source data.
+     *
+     * @return the network command data
+     */
+    public @NotNull CommandData toNetwork() {
+        return toNetwork(this.name);
+    }
+
+    /**
+     * Converts this metadata with a registered label without changing the source data.
+     * The caller must prevent concurrent modification of this metadata.
+     *
+     * @param name the name sent to the client, or null to keep the original name
+     * @return the network command data
+     */
+    public @NotNull CommandData toNetwork(@Nullable String name) {
         final Set<CommandData.Flag> flags = new ObjectOpenHashSet<>();
         for (Flag flag : this.flags) {
             flags.add(CommandData.Flag.valueOf(flag.name()));
@@ -220,7 +238,7 @@ public class NukkitCommandData implements Cloneable {
             }
         }
         return new CommandData(
-                this.name,
+                name == null ? this.name : name,
                 this.description,
                 flags,
                 this.permission,
