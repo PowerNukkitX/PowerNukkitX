@@ -450,10 +450,8 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                                 entity -> getVariant() == LAZY,
                                 new PandaSittingEvaluator(30)
                         ))
-                        .weight(2)
                 .behavior(new SittingExecutor(10))
                         .when(new PandaSittingEvaluator(30))
-                        .weight(2)
                 .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
                         .when((entity -> true))
                 .sensors(

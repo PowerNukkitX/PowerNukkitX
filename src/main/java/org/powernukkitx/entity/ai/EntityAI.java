@@ -274,14 +274,6 @@ public final class EntityAI {
         }
 
         /**
-         * Sets how likely this behavior is to be picked among the behaviors sharing its priority.
-         */
-        public BehaviorSpec weight(int weight) {
-            builder.weight(weight);
-            return this;
-        }
-
-        /**
          * Sets how many gt pass between two evaluations of this behavior. A larger period means the behavior
          * reacts more slowly, but costs less.
          */
