@@ -34,7 +34,7 @@ class FreezableBucketTest {
 
         var out = new ArrayList<AutoFreezable>();
         assertEquals(4, bucket.scan(4, ALL, out));
-        assertEquals(strong.subList(0, 4), out);
+        assertEquals(List.of(strong.get(0), strong.get(1), strong.get(2), strong.get(3)), out);
         assertEquals(10, bucket.size());
     }
 

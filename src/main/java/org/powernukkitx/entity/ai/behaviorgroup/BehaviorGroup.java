@@ -163,6 +163,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * Unmodifiable view. The per-tick arrays are built from these sets at construction, so a behavior
      * added later would be silently ignored. The view throws on the change instead.
      */
+    @Override
     public Set<IBehavior> getBehaviors() {
         return Collections.unmodifiableSet(behaviors);
     }
@@ -170,6 +171,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * Unmodifiable view, see {@link #getBehaviors()}
      */
+    @Override
     public Set<IBehavior> getCoreBehaviors() {
         return Collections.unmodifiableSet(coreBehaviors);
     }
@@ -177,6 +179,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * Unmodifiable view, see {@link #getBehaviors()}
      */
+    @Override
     public Set<ISensor> getSensors() {
         return Collections.unmodifiableSet(sensors);
     }
