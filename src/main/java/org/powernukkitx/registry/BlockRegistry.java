@@ -1647,12 +1647,23 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
      * @param prototype       an instance carrying the {@link CustomBlockDefinition} to register
      * @param blockProperties the block's state definition
      * @param factory         creates block instances for a given state
-     * @throws RegisterException when the identifier is already registered
+     * @throws RegisterException when the identifier is already registered, or when any of its states
+     *                           hashes the same as a state of another block. Clients compute these hashes
+     *                           themselves and key their palette by them, so a collision cannot be worked
+     *                           around server-side and would fail the client on join; every state is checked
+     *                           before any registry is touched, so a rejected block leaves nothing behind
      */
     public void registerCustomBlockDefinition(@NotNull Plugin plugin, @NotNull CustomBlock prototype,
                                               @NotNull BlockProperties blockProperties,
                                               @NotNull BlockFactory factory) throws RegisterException {
         String key = blockProperties.getIdentifier();
+        for (BlockState state : blockProperties.getSpecialValueMap().values()) {
+            BlockState existing = Registries.BLOCKSTATE.get(state.blockStateHash());
+            if (existing != null && !existing.getIdentifier().equals(key)) {
+                throw new RegisterException("Block state hash collision registering " + key
+                        + ": " + state + " collides with " + existing);
+            }
+        }
         if (CACHE_CONSTRUCTORS.putIfAbsent(key, factory) != null) {
             throw new RegisterException("This custom block has already been registered with the identifier: " + key);
         }

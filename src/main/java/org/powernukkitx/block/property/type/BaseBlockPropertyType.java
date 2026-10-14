@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author daoge_cmd
  */
-public abstract sealed class BaseBlockPropertyType<DATATYPE> implements BlockPropertyType<DATATYPE> permits BooleanPropertyType, EnumPropertyType, IntPropertyType {
+public abstract sealed class BaseBlockPropertyType<DATATYPE> implements BlockPropertyType<DATATYPE> permits BooleanPropertyType, EnumPropertyType, IntPropertyType, StringEnumPropertyType {
 
     protected final String name;
     protected final List<DATATYPE> validValues;

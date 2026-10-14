@@ -1,6 +1,7 @@
 package org.powernukkitx.addons;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.addons.parser.BehaviorBlockParser;
 import org.powernukkitx.addons.parser.BehaviorItemParser;
 import org.powernukkitx.resourcepacks.ResourcePack;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
@@ -46,7 +47,6 @@ public final class AddonManager {
      * so the gap is visible, rather than the pack looking like it loaded completely.
      */
     private static final Map<String, String> UNSUPPORTED_SECTIONS = Map.of(
-            "blocks/", "blocks",
             "entities/", "entities",
             "recipes/", "recipes",
             "loot_tables/", "loot tables",
@@ -59,6 +59,7 @@ public final class AddonManager {
     @Getter
     private final AddonFeatureTracker featureTracker = new AddonFeatureTracker();
 
+    private final BehaviorBlockParser blockParser = new BehaviorBlockParser(featureTracker);
     private final BehaviorItemParser itemParser = new BehaviorItemParser(featureTracker);
 
     /**
@@ -76,6 +77,7 @@ public final class AddonManager {
         }
         warnAboutRegistryCache();
 
+        int blockCount = 0;
         int itemCount = 0;
         for (ResourcePack pack : behaviorPacks) {
             File file = pack.getFile();
@@ -84,6 +86,7 @@ public final class AddonManager {
             }
             try (ZipFile zip = new ZipFile(file, StandardCharsets.UTF_8)) {
                 Map<String, List<String>> entries = indexEntries(zip);
+                blockCount += loadBlocks(pack, zip, entries.getOrDefault("blocks/", List.of()));
                 itemCount += loadItems(pack, zip, entries.getOrDefault("items/", List.of()));
                 trackUnsupportedSections(pack, entries);
             } catch (IOException e) {
@@ -91,8 +94,9 @@ public final class AddonManager {
             }
         }
 
-        if (itemCount > 0) {
-            log.info("Registered {} data-driven item(s) from {} behavior pack(s)", itemCount, behaviorPacks.size());
+        if (blockCount > 0 || itemCount > 0) {
+            log.info("Registered {} data-driven block(s) and {} item(s) from {} behavior pack(s)",
+                    blockCount, itemCount, behaviorPacks.size());
         }
         if (!featureTracker.isEmpty()) {
             featureTracker.logSummary();
@@ -108,6 +112,24 @@ public final class AddonManager {
             log.warn("registryCacheEnabled does not work together with behavior packs: the cached creative "
                     + "and recipe data is built without addon content. Disable it in pnx.yml.");
         }
+    }
+
+    /**
+     * Blocks are loaded before items so that an item document reusing a block's identifier is
+     * recognised as that block's item form rather than registered twice.
+     */
+    private int loadBlocks(ResourcePack pack, ZipFile zip, List<String> entryNames) {
+        int count = 0;
+        for (String entryName : entryNames) {
+            if (!entryName.toLowerCase(Locale.ENGLISH).endsWith(".json")) {
+                continue;
+            }
+            JsonObject root = readJson(zip, entryName, pack.getPackName());
+            if (root != null && blockParser.parseAndRegister(pack.getPackName(), entryName, root) != null) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private int loadItems(ResourcePack pack, ZipFile zip, List<String> entryNames) {

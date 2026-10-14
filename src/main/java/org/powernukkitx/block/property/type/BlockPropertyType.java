@@ -17,6 +17,7 @@ public sealed interface BlockPropertyType<DATATYPE> permits BaseBlockPropertyTyp
         if (clazz == BooleanPropertyType.class) return Type.BOOLEAN;
         else if (clazz == IntPropertyType.class) return Type.INT;
         else if (clazz == EnumPropertyType.class) return Type.ENUM;
+        else if (clazz == StringEnumPropertyType.class) return Type.ENUM;
         else return null;
     }
 
@@ -47,7 +48,7 @@ public sealed interface BlockPropertyType<DATATYPE> permits BaseBlockPropertyTyp
 
     @Getter
     @ToString
-    abstract sealed class BlockPropertyValue<DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>, SERIALIZED_DATATYPE> permits BooleanPropertyType.BooleanPropertyValue, EnumPropertyType.EnumPropertyValue, IntPropertyType.IntPropertyValue {
+    abstract sealed class BlockPropertyValue<DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>, SERIALIZED_DATATYPE> permits BooleanPropertyType.BooleanPropertyValue, EnumPropertyType.EnumPropertyValue, IntPropertyType.IntPropertyValue, StringEnumPropertyType.StringEnumPropertyValue {
 
         protected final PROPERTY propertyType;
         protected final DATATYPE value;
