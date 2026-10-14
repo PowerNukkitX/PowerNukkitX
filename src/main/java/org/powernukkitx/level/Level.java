@@ -4929,7 +4929,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         final Block hand = beforePlaceBlock(item, face, block, target);
         if (hand == null) return null;
-        if (!hand.canPassThrough() && hand.getBoundingBox() != null
+        if (!(hand instanceof BlockSlab) && !hand.canPassThrough() && hand.getBoundingBox() != null
                 && this.isBlockPlacementObstructed(hand.getBoundingBox(), player)) {
             return null;
         }
