@@ -479,6 +479,11 @@ public class Network implements NetworkInterface, SignalingService {
     }
 
     private void initSession(BedrockServerSession session) {
+        // A NetherNet peer is handed the same session again (NetherNetServerInitializer.createSession0); setting it up
+        // a second time would throw on the duplicate handler and reset the login it is in the middle of.
+        if (session.getPacketHandler() != null) {
+            return;
+        }
         session.getPeer().getChannel().pipeline().addAfter(
             BedrockPacketCodec.NAME,
             "badPacketHandler",
