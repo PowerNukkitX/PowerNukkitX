@@ -261,7 +261,7 @@ public class EntityHuman extends EntityHumanType {
             this.actorDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX,  64.0f);
 
             final AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-            addPlayerPacket.setActorData(this.actorDataMap);
+            addPlayerPacket.setActorData(this.snapshotActorDataMap());
             addPlayerPacket.setUuid(this.getUniqueId());
             addPlayerPacket.setPlayerName(this.getName());
             addPlayerPacket.setTargetActorID(this.uniqueIdLong());

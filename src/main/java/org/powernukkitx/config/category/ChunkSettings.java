@@ -26,6 +26,10 @@ public class ChunkSettings extends OkaeriConfig {
     int generationQueueSize = -1;
     @Comment("pnx.settings.chunk.payloadcachememorymb")
     int payloadCacheMemoryMb = 256;
+    @Comment("pnx.settings.chunk.chunkiothreads")
+    int chunkIoThreads = 0;
+    @Comment("pnx.settings.chunk.maxchunkloadsperplayertick")
+    int maxChunkLoadsPerPlayerTick = 32;
     @Comment("pnx.settings.chunk.saveGenerated")
     boolean saveGenerated = true;
     @Comment("pnx.settings.chunk.disableblockticking")

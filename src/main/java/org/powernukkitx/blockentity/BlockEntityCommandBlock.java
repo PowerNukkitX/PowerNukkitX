@@ -86,7 +86,10 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.powered = false;
         }
 
-        this.conditionalMode = this.getLevelBlock().getPropertyValue(CommonBlockProperties.CONDITIONAL_BIT);
+        // The block is not a command block yet when the block entity is created ahead of it, or no
+        // longer one in a damaged world, and then it has no conditional bit to read
+        final Boolean conditional = this.getLevelBlock().getPropertyValue(CommonBlockProperties.CONDITIONAL_BIT);
+        this.conditionalMode = conditional != null && conditional;
 
         final CompoundTag nbtMap = getNbt();
 

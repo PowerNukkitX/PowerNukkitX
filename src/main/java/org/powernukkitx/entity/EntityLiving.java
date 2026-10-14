@@ -1051,8 +1051,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (!changed) return;
 
         this.setDataFlags(ext);
-
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.actorDataMap);
     }
 
     private void tickShieldBlockingState(int tickDiff) {

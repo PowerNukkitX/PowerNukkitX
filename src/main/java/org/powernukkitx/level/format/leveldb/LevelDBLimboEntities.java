@@ -62,12 +62,11 @@ final class LevelDBLimboEntities {
 
             if (data.contains("LimboEntities")) {
                 Preconditions.checkState(data.containsList("LimboEntities"), "Canonical dimension data contains invalid LimboEntities");
-                ListTag<?> buckets = data.getList("LimboEntities");
-                Preconditions.checkState(buckets.type == Tag.TAG_Compound, "LimboEntities is not List<Compound>");
+                Preconditions.checkState(isCompoundList(data.getList("LimboEntities")), "LimboEntities is not List<Compound>");
                 return;
             }
 
-            data.putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_Compound));
+            data.putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_End));
             root.putCompound("data", data);
             this.storage.writeGlobalCompound(key, root);
         }
@@ -112,7 +111,7 @@ final class LevelDBLimboEntities {
         synchronized (this.storage) {
             CompoundTag root = readCanonicalRoot(dimensionData);
             CompoundTag data = root.getCompound("data").copy();
-            ListTag<CompoundTag> buckets = new ListTag<>(Tag.TAG_Compound);
+            ListTag<CompoundTag> buckets = new ListTag<>(Tag.TAG_End);
 
             for (CompoundTag bucket : getRuntimeBuckets(dimensionData).values()) {
                 validateBucket(bucket);
@@ -271,8 +270,7 @@ final class LevelDBLimboEntities {
         CompoundTag data = root.getCompound("data");
         Preconditions.checkState(data.containsList("LimboEntities"), "Canonical dimension data is missing LimboEntities");
 
-        ListTag<?> buckets = data.getList("LimboEntities");
-        Preconditions.checkState(buckets.type == Tag.TAG_Compound, "LimboEntities is not List<Compound>");
+        Preconditions.checkState(isCompoundList(data.getList("LimboEntities")), "LimboEntities is not List<Compound>");
         return root;
     }
 
@@ -285,8 +283,15 @@ final class LevelDBLimboEntities {
         Preconditions.checkState(bucket.containsInt("ChunkZ"), "LimboEntities bucket is missing INT ChunkZ");
         Preconditions.checkState(bucket.containsList("EntityTagList"), "LimboEntities bucket is missing EntityTagList");
 
-        ListTag<?> entityTags = bucket.getList("EntityTagList");
-        Preconditions.checkState(entityTags.type == Tag.TAG_Compound, "EntityTagList is not List<Compound>");
+        Preconditions.checkState(isCompoundList(bucket.getList("EntityTagList")), "EntityTagList is not List<Compound>");
+    }
+
+    /**
+     * Whether a stored list can be read as a list of compounds. BDS writes an empty list with the
+     * {@link Tag#TAG_End} element type, so an empty list is accepted whatever its element type is.
+     */
+    static boolean isCompoundList(ListTag<?> list) {
+        return list.type == Tag.TAG_Compound || list.size() == 0;
     }
 
     private static ListTag<CompoundTag> getEntityTagList(CompoundTag bucket) {

@@ -81,7 +81,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         packet.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         packet.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
         packet.setRotation(Vector2f.from(this.pitch, this.yaw));
-        packet.setActorData(this.actorDataMap);
+        packet.setActorData(this.snapshotActorDataMap());
 
         for (int i = 0; i < this.passengers.size(); i++) {
             packet.getActorLinks().add(

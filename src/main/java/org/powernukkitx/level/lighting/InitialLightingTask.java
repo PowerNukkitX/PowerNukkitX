@@ -27,7 +27,8 @@ public final class InitialLightingTask {
      * @return the requested value
      */
     public boolean process() {
-        InitialSubChunkLighter lighter = new InitialSubChunkLighter(centerChunk);
+        InitialSubChunkLighter lighter = new InitialSubChunkLighter(centerChunk, true);
+        boolean[] processed = null;
         for (int sectionY = minSectionY; sectionY <= maxSectionY; sectionY++) {
             ChunkSection section = centerChunk.getSection(sectionY);
 
@@ -35,6 +36,15 @@ public final class InitialLightingTask {
             if (!lighter.processSection(sectionY)) return false;
 
             section.setNeedsInitLighting(false);
+            if (processed == null) processed = new boolean[maxSectionY - minSectionY + 1];
+            processed[sectionY - minSectionY] = true;
+        }
+
+        if (processed == null || !lighter.skippedNeighborStartedLighting()) return true;
+
+        InitialSubChunkLighter full = new InitialSubChunkLighter(centerChunk, false);
+        for (int sectionY = minSectionY; sectionY <= maxSectionY; sectionY++) {
+            if (processed[sectionY - minSectionY] && !full.processSection(sectionY)) return false;
         }
 
         return true;

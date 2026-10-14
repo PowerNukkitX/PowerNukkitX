@@ -38,6 +38,14 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         final Player player = this.session.getPlayer();
         final PacketHandler packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass());
 
+        if (packetHandler != null && packetHandler.requiresPlayer() && !packetHandler.runsOnNetworkThread()
+                && this.session.shouldDeferUntilSpawned()) {
+            // The level thread is creating the player, or still handling what arrived meanwhile;
+            // handling this now would either drop it, race the creation or overtake older packets
+            this.session.deferUntilSpawned(packet);
+            return PacketSignal.HANDLED;
+        }
+
         if (packetHandler != null && packetHandler.requiresPlayer() && player == null) {
             return PacketSignal.HANDLED;
         }
@@ -121,6 +129,13 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
     @Override
     public void onDisconnect(String reason) {
         ClientBlobCacheManager.removeSession(this.session.getSession());
+
+        if (this.session.isSpawning()) {
+            // The level thread is creating the player and closes it itself once it notices the
+            // session is gone; closing it here as well would race that
+            BedrockPacketHandler.super.onDisconnect(reason);
+            return;
+        }
 
         final Player player = this.session.getPlayer();
         if (player != null) {

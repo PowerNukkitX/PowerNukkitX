@@ -7,9 +7,11 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -72,6 +74,23 @@ public interface LevelProvider {
     void saveChunks();
 
     void saveChunks(Collection<IChunk> chunks);
+
+    /**
+     * Saves the given chunks, with the calling thread taking part in serializing them.
+     * <p>
+     * Unlike {@link #saveChunks(Collection)}, which hands serialization to the compute pool and
+     * waits for it, the caller serializes chunks itself while idle threads of {@code helpers} pick
+     * up the rest. It only ever waits for chunks a helper is already serializing, never for a
+     * helper task that has not started, so a busy executor slows the save down to serial speed
+     * instead of stalling it. Meant for tick threads.
+     *
+     * @param chunks  chunks to save; unchanged chunks are skipped
+     * @param helpers executor whose threads may help serializing, or {@code null} to serialize
+     *                on the calling thread alone
+     */
+    default void saveChunks(Collection<IChunk> chunks, @Nullable Executor helpers) {
+        saveChunks(chunks);
+    }
 
     void saveChunk(int x, int z);
 
